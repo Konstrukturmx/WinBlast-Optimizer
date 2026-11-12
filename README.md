@@ -4,10 +4,10 @@
 
 ### Next-Generation, Pure-Rust Windows System Optimizer & Hardware Latency Engine
 
-[![Release](https://img.shields.io/github/v/release/Devinance/WinBlast-Optimizer?style=for-the-badge&color=blue)](https://github.com/Devinance/WinBlast-Optimizer/releases/latest)
+[![Release](https://img.shields.io/github/v/release/Konstrukturmx/WinBlast-Optimizer?style=for-the-badge&color=blue)](https://github.com/Konstrukturmx/WinBlast-Optimizer/releases/latest)
 [![VirusTotal](https://img.shields.io/badge/VirusTotal-Clean%20(69%2F75)-brightgreen?style=for-the-badge&logo=virustotal)](https://www.virustotal.com/gui/file/19895c54d3699391aebedb5c3e384aeb7ac5a73f8d1bee9ff7da4cd623d2fa00)
 [![License](https://img.shields.io/badge/License-MIT-blueviolet?style=for-the-badge)](LICENSE)
-[![Platform](https://img.shields.io/badge/Platform-Windows%2010%20%7C%2011%20(x64)-0078D6?style=for-the-badge&logo=windows)](https://github.com/Devinance/WinBlast-Optimizer)
+[![Platform](https://img.shields.io/badge/Platform-Windows%2010%20%7C%2011%20(x64)-0078D6?style=for-the-badge&logo=windows)](https://github.com/Konstrukturmx/WinBlast-Optimizer)
 [![Rust](https://img.shields.io/badge/Rust-2021%20Edition-DEA584?style=for-the-badge&logo=rust)](https://www.rust-lang.org/)
 [![Tests](https://img.shields.io/badge/Tests-97%20Passed%20(100%25)-success?style=for-the-badge)](tests/)
 [![Languages](https://img.shields.io/badge/i18n-8%20Languages-orange?style=for-the-badge)](src/core/tweak_i18n/)
@@ -16,7 +16,7 @@
   <b>WinBlast Optimizer</b> is a standalone, lightweight, zero-dependency Windows optimization suite designed for performance enthusiasts, competitive gamers, power users, and system administrators. Built in pure Rust with direct Win32/NT kernel bindings, it replaces bloated PowerShell scripts and black-box tweakers with an auditable, transactional, and fully reversible optimization engine.
 </p>
 
-[**Download Latest Release (v0.9.0)**](https://github.com/Devinance/WinBlast-Optimizer/releases/latest) • [**Changelog**](CHANGELOG.md) • [**Architecture Guide**](DEVELOPMENT.md) • [**VirusTotal Report**](https://www.virustotal.com/gui/file/19895c54d3699391aebedb5c3e384aeb7ac5a73f8d1bee9ff7da4cd623d2fa00) • [**Documentation Vault**](WinBlast0/)
+[**Download Latest Release (v0.9.0)**](https://github.com/Konstrukturmx/WinBlast-Optimizer/releases/latest) • [**Changelog**](CHANGELOG.md) • [**Architecture Guide**](DEVELOPMENT.md) • [**VirusTotal Report**](https://www.virustotal.com/gui/file/19895c54d3699391aebedb5c3e384aeb7ac5a73f8d1bee9ff7da4cd623d2fa00) • [**Documentation Vault**](WinBlast0/)
 
 ---
 
@@ -141,7 +141,7 @@ Because WinBlast Optimizer adjusts low-level system settings, Windows Registry p
 ### Build Commands
 ```powershell
 # Clone repository
-git clone https://github.com/Devinance/WinBlast-Optimizer.git
+git clone https://github.com/Konstrukturmx/WinBlast-Optimizer.git
 cd WinBlast-Optimizer
 
 # Check codebase and dependencies
