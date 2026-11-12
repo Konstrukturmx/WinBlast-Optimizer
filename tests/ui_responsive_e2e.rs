@@ -1455,6 +1455,65 @@ fn init_gpu_state() -> AppState {
     s
 }
 
+fn init_dashboard_state() -> AppState {
+    let mut s = build_populated_sandbox_state();
+    s.navigate(ActiveView::EasyDashboard);
+    s
+}
+
+#[test]
+fn snap_dashboard_view() {
+    let spec = rune::AppSpec::new(
+        "WinBlast0 Dashboard",
+        (1150.0, 780.0),
+        init_dashboard_state,
+        ui::view,
+    );
+    let out_path = std::path::Path::new("assets/screenshots/dashboard.png");
+    let res = rune::App::new(spec)
+        .args([
+            "--snap".to_string(),
+            out_path.to_string_lossy().to_string(),
+            "--size".to_string(),
+            "1150x780".to_string(),
+        ])
+        .try_run();
+    println!("Snap result: {:?}", res);
+    assert!(out_path.exists(), "Snapshot file should be created");
+}
+
+fn init_cpu_parking_state() -> AppState {
+    let mut s = build_populated_sandbox_state();
+    s.navigate(ActiveView::CoreParking);
+    let mut cores = Vec::new();
+    for i in 0..16 {
+        cores.push(winblast0::hardware::parking::CoreStatus {
+            core_index: i,
+            is_parked: i >= 12,
+            usage_pct: if i >= 12 { 0.0 } else { 18.0 + ((i * 5) % 40) as f32 },
+            core_type_label: if i < 8 { "P-Core".to_string() } else { "E-Core".to_string() },
+        });
+    }
+    s.core_parking = winblast0::hardware::parking::CoreParkingState {
+        total_cores: 16,
+        unparked_count: 12,
+        parked_count: 4,
+        min_cores_ac_pct: 100,
+        min_cores_dc_pct: 50,
+        max_cores_ac_pct: 100,
+        max_cores_dc_pct: 100,
+        is_fully_unparked: false,
+        is_hybrid_architecture: true,
+        cores,
+        on_ac_power: true,
+        pcore_min_ac_pct: Some(100),
+        pcore_min_dc_pct: Some(50),
+        pcore_max_ac_pct: Some(100),
+        pcore_max_dc_pct: Some(100),
+    };
+    s
+}
+
 #[test]
 fn snap_gpu_tuning_view() {
     let spec = rune::AppSpec::new(
@@ -1464,6 +1523,54 @@ fn snap_gpu_tuning_view() {
         ui::view,
     );
     let out_path = std::path::Path::new("assets/screenshots/gpu_tuning.png");
+    let res = rune::App::new(spec)
+        .args([
+            "--snap".to_string(),
+            out_path.to_string_lossy().to_string(),
+            "--size".to_string(),
+            "1150x780".to_string(),
+        ])
+        .try_run();
+    println!("Snap result: {:?}", res);
+    assert!(out_path.exists(), "Snapshot file should be created");
+}
+
+fn init_matrix_state() -> AppState {
+    let mut s = build_populated_sandbox_state();
+    s.navigate(ActiveView::AdvancedMatrix);
+    s
+}
+
+#[test]
+fn snap_advanced_matrix_view() {
+    let spec = rune::AppSpec::new(
+        "WinBlast0 Advanced Matrix",
+        (1150.0, 780.0),
+        init_matrix_state,
+        ui::view,
+    );
+    let out_path = std::path::Path::new("assets/screenshots/advanced_matrix.png");
+    let res = rune::App::new(spec)
+        .args([
+            "--snap".to_string(),
+            out_path.to_string_lossy().to_string(),
+            "--size".to_string(),
+            "1150x780".to_string(),
+        ])
+        .try_run();
+    println!("Snap result: {:?}", res);
+    assert!(out_path.exists(), "Snapshot file should be created");
+}
+
+#[test]
+fn snap_cpu_parking_view() {
+    let spec = rune::AppSpec::new(
+        "WinBlast0 CPU Parking",
+        (1150.0, 780.0),
+        init_cpu_parking_state,
+        ui::view,
+    );
+    let out_path = std::path::Path::new("assets/screenshots/cpu_parking.png");
     let res = rune::App::new(spec)
         .args([
             "--snap".to_string(),

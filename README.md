@@ -37,7 +37,7 @@
 <br/><br/>
 
 ### ⚡ CPU Core Parking & Hybrid Architecture Visualizer
-<img src="assets/screenshots/cpu_parking.jpg" alt="CPU Core Parking" width="900" />
+<img src="assets/screenshots/cpu_parking.png" alt="CPU Core Parking" width="900" />
 
 <br/><br/>
 
