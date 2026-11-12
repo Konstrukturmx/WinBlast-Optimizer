@@ -1448,3 +1448,30 @@ fn test_ui_v08_not_applicable_diff_modal_privacy_cores_and_protected_appx() {
 fn _keep_el_import_used() {
     let _ = el();
 }
+
+fn init_gpu_state() -> AppState {
+    let mut s = build_populated_sandbox_state();
+    s.navigate(ActiveView::GpuTuning);
+    s
+}
+
+#[test]
+fn snap_gpu_tuning_view() {
+    let spec = rune::AppSpec::new(
+        "WinBlast0 GPU Tuning",
+        (1150.0, 780.0),
+        init_gpu_state,
+        ui::view,
+    );
+    let out_path = std::path::Path::new("assets/screenshots/gpu_tuning.png");
+    let res = rune::App::new(spec)
+        .args([
+            "--snap".to_string(),
+            out_path.to_string_lossy().to_string(),
+            "--size".to_string(),
+            "1150x780".to_string(),
+        ])
+        .try_run();
+    println!("Snap result: {:?}", res);
+    assert!(out_path.exists(), "Snapshot file should be created");
+}

@@ -31,6 +31,20 @@ fn main() {
     spec.min_size = Some((420.0, 400.0));
     spec.setup = Some(app::AppState::setup);
     spec.poll = Some(app::AppState::poll);
+    spec.scenes = &[
+        ("gpu", |s: &mut app::AppState| {
+            s.navigate(app::ActiveView::GpuTuning);
+        }),
+        ("cpu", |s: &mut app::AppState| {
+            s.navigate(app::ActiveView::CoreParking);
+        }),
+        ("matrix", |s: &mut app::AppState| {
+            s.navigate(app::ActiveView::AdvancedMatrix);
+        }),
+        ("dashboard", |s: &mut app::AppState| {
+            s.navigate(app::ActiveView::EasyDashboard);
+        }),
+    ];
 
     rune::run(spec);
 }
