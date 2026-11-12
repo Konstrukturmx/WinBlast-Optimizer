@@ -1,0 +1,440 @@
+# =============================================================================
+# WinBlast0 — Privacy Settings Tweaks
+# =============================================================================
+
+[[tweaks]]
+id = "disable_advertising_id"
+title = "Disable Advertising ID"
+category = "Privacy"
+description = "Disables the per-user advertising ID that Windows provides to apps for targeted advertising and cross-app tracking."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 0
+privacy_gain = 5
+reversibility = "Instant"
+broken_features = ["Apps will not receive a unique advertising ID"]
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Software\\Microsoft\\Windows\\CurrentVersion\\AdvertisingInfo"
+name = "Enabled"
+optimized_value = 0
+default_value = 1
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SOFTWARE\\Policies\\Microsoft\\Windows\\AdvertisingInfo"
+name = "DisabledByGroupPolicy"
+optimized_value = 1
+default_value = 0
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "disable_cortana"
+title = "Disable Cortana"
+category = "Privacy"
+description = "Disables Cortana via Group Policy, preventing it from running, listening, and sending data to Microsoft cloud services."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 19041
+max_build = 21999
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 2
+privacy_gain = 5
+reversibility = "Instant"
+broken_features = ["Cortana voice assistant will be disabled"]
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SOFTWARE\\Policies\\Microsoft\\Windows\\Windows Search"
+name = "AllowCortana"
+optimized_value = 0
+default_value = 1
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SOFTWARE\\Policies\\Microsoft\\Windows\\Windows Search"
+name = "AllowCortanaAboveLock"
+optimized_value = 0
+default_value = 1
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "disable_activity_history"
+title = "Disable Activity History / Timeline"
+category = "Privacy"
+description = "Disables the Windows Activity History (Timeline) feature, preventing Windows from collecting and storing a history of your activities, websites visited, and documents opened."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 1
+privacy_gain = 5
+reversibility = "Instant"
+broken_features = ["Timeline/Activity History in Task View will be empty"]
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SOFTWARE\\Policies\\Microsoft\\Windows\\System"
+name = "EnableActivityFeed"
+optimized_value = 0
+default_value = 1
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SOFTWARE\\Policies\\Microsoft\\Windows\\System"
+name = "PublishUserActivities"
+optimized_value = 0
+default_value = 1
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SOFTWARE\\Policies\\Microsoft\\Windows\\System"
+name = "UploadUserActivities"
+optimized_value = 0
+default_value = 1
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "disable_online_speech_recognition"
+title = "Disable Online Speech Recognition"
+category = "Privacy"
+description = "Disables the cloud-based online speech recognition service. Voice data will not be sent to Microsoft servers for processing."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 0
+privacy_gain = 5
+reversibility = "Instant"
+broken_features = ["Cloud-based speech recognition will not work; local/offline recognition is unaffected"]
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Software\\Microsoft\\Speech_OneCore\\Settings\\OnlineSpeechPrivacy"
+name = "HasAccepted"
+optimized_value = 0
+default_value = 1
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SOFTWARE\\Policies\\Microsoft\\InputPersonalization"
+name = "AllowInputPersonalization"
+optimized_value = 0
+default_value = 1
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "disable_tailored_experiences"
+title = "Disable Tailored Experiences"
+category = "Privacy"
+description = "Prevents Microsoft from using diagnostic data to offer personalized tips, ads, and recommendations in Windows."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 0
+privacy_gain = 4
+reversibility = "Instant"
+broken_features = ["Personalized Windows suggestions and tips will be disabled"]
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Software\\Policies\\Microsoft\\Windows\\CloudContent"
+name = "DisableTailoredExperiencesWithDiagnosticData"
+optimized_value = 1
+default_value = 0
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Software\\Microsoft\\Windows\\CurrentVersion\\Privacy"
+name = "TailoredExperiencesWithDiagnosticDataEnabled"
+optimized_value = 0
+default_value = 1
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "disable_windows_recall"
+title = "Disable Windows Recall (AI Snapshot)"
+category = "Privacy"
+description = "Disables the Windows Recall feature introduced in Windows 11 24H2, which periodically takes AI-indexed screenshots of your activity. Requires build 26100+."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 26100
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 2
+privacy_gain = 5
+reversibility = "Instant"
+broken_features = ["Windows Recall AI snapshot feature will be disabled"]
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Software\\Policies\\Microsoft\\Windows\\WindowsAI"
+name = "DisableAIDataAnalysis"
+optimized_value = 1
+default_value = 0
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsAI"
+name = "DisableAIDataAnalysis"
+optimized_value = 1
+default_value = 0
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "disable_cloud_content_spotlight"
+title = "Disable Cloud Content and Spotlight Suggestions"
+category = "Privacy"
+description = "Disables Windows Spotlight, suggested content in Settings, and pre-installed app suggestions delivered via the cloud."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 1
+privacy_gain = 4
+reversibility = "Instant"
+broken_features = ["Lock screen Spotlight images will be disabled", "Suggested apps in Start will not appear"]
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Software\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager"
+name = "SubscribedContent-338389Enabled"
+optimized_value = 0
+default_value = 1
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Software\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager"
+name = "SubscribedContent-353694Enabled"
+optimized_value = 0
+default_value = 1
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Software\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager"
+name = "SubscribedContent-353696Enabled"
+optimized_value = 0
+default_value = 1
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Software\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager"
+name = "RotatingLockScreenOverlayEnabled"
+optimized_value = 0
+default_value = 1
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "disable_location_tracking"
+title = "Disable Location Tracking"
+category = "Privacy"
+description = "Disables the Windows location service globally, preventing apps and the OS from accessing your geographic location."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 0
+privacy_gain = 5
+reversibility = "Instant"
+broken_features = ["Apps requiring location (Maps, Weather) will not have access to your position"]
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SOFTWARE\\Policies\\Microsoft\\Windows\\LocationAndSensors"
+name = "DisableLocation"
+optimized_value = 1
+default_value = 0
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SOFTWARE\\Policies\\Microsoft\\Windows\\LocationAndSensors"
+name = "DisableLocationScripting"
+optimized_value = 1
+default_value = 0
+
+[[tweaks.actions]]
+type = "ServiceState"
+service_name = "lfsvc"
+target_start_type = 4
+default_start_type = 3
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "disable_activity_cloud_sync"
+title = "Disable Cloud Clipboard & Cross-Device Sync"
+category = "Privacy"
+description = "Disables Windows Clipboard History persistence and cross-device cloud clipboard synchronization via Group Policy so copied passwords and sensitive data stay strictly local."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 1
+privacy_gain = 5
+reversibility = "Instant"
+broken_features = ["Win+V Clipboard History and cross-device paste sync will be disabled"]
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SOFTWARE\\Policies\\Microsoft\\Windows\\System"
+name = "AllowCrossDeviceClipboard"
+optimized_value = 0
+default_value = 1
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SOFTWARE\\Policies\\Microsoft\\Windows\\System"
+name = "AllowClipboardHistory"
+optimized_value = 0
+default_value = 1
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "disable_cdp_service"
+title = "Disable Connected Devices Platform Service"
+category = "Privacy"
+description = "Disables the Connected Devices Platform Service (CDPUserSvc), preventing cross-device telemetry, app synchronization broadcasts, and background activity beacons."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 2
+privacy_gain = 4
+reversibility = "Instant"
+broken_features = ["Nearby sharing and cross-device sync with mobile devices will be disabled"]
+
+[[tweaks.actions]]
+type = "ServiceState"
+service_name = "CDPUserSvc"
+target_start_type = 4
+default_start_type = 2
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "spotlight_desktop_disable"
+title = "Disable Windows Spotlight Lock Screen Downloads"
+category = "Privacy"
+description = "Disables automatic background fetching of Windows Spotlight lockscreen wallpapers and Microsoft promotional imagery."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 2
+privacy_gain = 3
+reversibility = "Instant"
+broken_features = []
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager"
+name = "RotatingLockScreenEnabled"
+optimized_value = 0
+default_value = 1
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "spotlight_features_disable"
+title = "Disable Lock Screen Tips & Advertisements"
+category = "Privacy"
+description = "Disables lock screen tips, suggestions, and sponsored Microsoft Store app promotions delivered via Content Delivery Manager."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 2
+privacy_gain = 3
+reversibility = "Instant"
+broken_features = []
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager"
+name = "SubscribedContent-338387Enabled"
+optimized_value = 0
+default_value = 1
+
+

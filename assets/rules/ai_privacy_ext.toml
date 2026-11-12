@@ -1,0 +1,1431 @@
+# =============================================================================
+# WinBlast0 v0.7.0 — Extended AI, Privacy, AutoLogger & Telemetry Shield Rules
+# Deduplicated strictly against privacy.toml, telemetry_os.toml, telemetry_apps.toml,
+# and os_settings.toml. Ported from Winhance & optimizerDuck.
+# =============================================================================
+
+[[tweaks]]
+id = "disable_windows_ai_recall_extended"
+title = "Disable Windows Recall, Click to Do & Copilot+ AI Agents"
+category = "Privacy"
+description = "Blocks Windows Recall snapshot capture, Click to Do, Settings AI Agent, AI Agent Connectors/Workspaces, and Copilot Runtime via Group Policy keys introduced in Windows 11 24H2+."
+easy_mode_included = true
+unattend_safe = true
+
+[tweaks.os_req]
+min_build = 26100
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 3
+privacy_gain = 5
+reversibility = "Instant"
+broken_features = ["Windows Recall timeline snapshots & Click to Do AI overlay"]
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsAI"
+name = "AllowRecallEnablement"
+optimized_value = 0
+default_value = 1
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsAI"
+name = "TurnOffSavingSnapshots"
+optimized_value = 1
+default_value = 0
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Software\\Policies\\Microsoft\\Windows\\WindowsAI"
+name = "TurnOffSavingSnapshots"
+optimized_value = 1
+default_value = 0
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsAI"
+name = "DisableClickToDo"
+optimized_value = 1
+default_value = 0
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Software\\Policies\\Microsoft\\Windows\\WindowsAI"
+name = "DisableClickToDo"
+optimized_value = 1
+default_value = 0
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsAI"
+name = "DisableSettingsAgent"
+optimized_value = 1
+default_value = 0
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsAI"
+name = "DisableAgentConnectors"
+optimized_value = 1
+default_value = 0
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsAI"
+name = "DisableAgentWorkspaces"
+optimized_value = 1
+default_value = 0
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsAI"
+name = "DisableRemoteAgentConnectors"
+optimized_value = 1
+default_value = 0
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsAI"
+name = "AllowCopilotRuntime"
+optimized_value = 0
+default_value = 1
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "disable_generative_ai_app_access"
+title = "Block App Access to Generative & System AI Models"
+category = "Privacy"
+description = "Denies background UWP/WinUI app access to local generative AI and system AI model capabilities via AppPrivacy and CapabilityAccessManager ConsentStore policies."
+easy_mode_included = true
+unattend_safe = true
+
+[tweaks.os_req]
+min_build = 26100
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 2
+privacy_gain = 5
+reversibility = "Instant"
+broken_features = ["Third-party apps cannot query built-in Windows AI model endpoints"]
+
+[[tweaks.actions]]
+type = "RegistryString"
+hive = "HKLM"
+path = "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\CapabilityAccessManager\\ConsentStore\\generativeAI"
+name = "Value"
+optimized_value = "Deny"
+default_value = "Allow"
+case_insensitive = true
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SOFTWARE\\Policies\\Microsoft\\Windows\\AppPrivacy"
+name = "LetAppsAccessGenerativeAI"
+optimized_value = 2
+default_value = 0
+
+[[tweaks.actions]]
+type = "RegistryString"
+hive = "HKLM"
+path = "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\CapabilityAccessManager\\ConsentStore\\systemAIModels"
+name = "Value"
+optimized_value = "Deny"
+default_value = "Allow"
+case_insensitive = true
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SOFTWARE\\Policies\\Microsoft\\Windows\\AppPrivacy"
+name = "LetAppsAccessSystemAIModels"
+optimized_value = 2
+default_value = 0
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\CapabilityAccessManager\\ConsentStore\\systemAIModels"
+name = "RecordUsageData"
+optimized_value = 0
+default_value = 1
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "disable_copilot_shell_and_hardware_key"
+title = "Disable Copilot Taskbar Button, Nudges, Hardware Key & Mic"
+category = "Privacy"
+description = "Hides the Windows Copilot taskbar button and nudges, neutralizes the dedicated Copilot keyboard key assignment, blocks account-state AI promos, and denies microphone access to Copilot & OfficeHub."
+easy_mode_included = true
+unattend_safe = true
+
+[tweaks.os_req]
+min_build = 22000
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 2
+privacy_gain = 4
+reversibility = "Instant"
+broken_features = ["Dedicated Copilot key does not launch Copilot", "Copilot voice input blocked"]
+
+[[tweaks.actions]]
+type = "RegistryString"
+hive = "HKCU"
+path = "Software\\Policies\\Microsoft\\Windows\\CopilotKey"
+name = "SetCopilotHardwareKey"
+optimized_value = ""
+default_value = "__ABSENT__"
+absent_is_default = true
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Software\\Microsoft\\Windows\\Shell\\Copilot"
+name = "IsCopilotAvailable"
+optimized_value = 0
+default_value = 1
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Software\\Microsoft\\Windows\\Shell\\Copilot\\BingChat"
+name = "IsUserEligible"
+optimized_value = 0
+default_value = 1
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced"
+name = "ShowCopilotNudges"
+optimized_value = 0
+default_value = 1
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced"
+name = "ShowCopilotButton"
+optimized_value = 0
+default_value = 1
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SOFTWARE\\Policies\\Microsoft\\Windows\\CloudContent"
+name = "DisableConsumerAccountStateContent"
+optimized_value = 1
+default_value = 0
+
+[[tweaks.actions]]
+type = "RegistryString"
+hive = "HKCU"
+path = "Software\\Microsoft\\Windows\\CurrentVersion\\CapabilityAccessManager\\ConsentStore\\microphone\\Microsoft.Copilot_8wekyb3d8bbwe"
+name = "Value"
+optimized_value = "Deny"
+default_value = "Allow"
+case_insensitive = true
+
+[[tweaks.actions]]
+type = "RegistryString"
+hive = "HKCU"
+path = "Software\\Microsoft\\Windows\\CurrentVersion\\CapabilityAccessManager\\ConsentStore\\microphone\\Microsoft.MicrosoftOfficeHub_8wekyb3d8bbwe"
+name = "Value"
+optimized_value = "Deny"
+default_value = "Allow"
+case_insensitive = true
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "disable_paint_ai_features"
+title = "Disable Microsoft Paint Cloud & Generative AI Features"
+category = "Privacy"
+description = "Disables Image Creator, Cocreator, Generative Fill, Generative Erase, and AI Remove Background inside Windows 11 Paint via official Policy keys."
+easy_mode_included = true
+unattend_safe = true
+
+[tweaks.os_req]
+min_build = 22000
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 1
+privacy_gain = 4
+reversibility = "Instant"
+broken_features = ["AI generation tools hidden inside Microsoft Paint"]
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\Paint"
+name = "DisableImageCreator"
+optimized_value = 1
+default_value = 0
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\Paint"
+name = "DisableCocreator"
+optimized_value = 1
+default_value = 0
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\Paint"
+name = "DisableGenerativeFill"
+optimized_value = 1
+default_value = 0
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\Paint"
+name = "DisableGenerativeErase"
+optimized_value = 1
+default_value = 0
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\Paint"
+name = "DisableRemoveBackground"
+optimized_value = 1
+default_value = 0
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "disable_edge_ai_policies"
+title = "Disable Microsoft Edge Copilot, Sidebar & Built-in AI APIs"
+category = "Telemetry (Apps)"
+description = "Disables 12 Microsoft Edge AI policies including Copilot Page Context, Hubs Sidebar, Entra Copilot, Inline Compose, AI History Search, Local Foundational Models, DevTools GenAI, and History Sharing."
+easy_mode_included = true
+unattend_safe = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 2
+privacy_gain = 5
+reversibility = "Instant"
+broken_features = ["Edge Copilot sidebar and inline writing assist disabled"]
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SOFTWARE\\Policies\\Microsoft\\Edge"
+name = "CopilotCDPPageContext"
+optimized_value = 0
+default_value = 1
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SOFTWARE\\Policies\\Microsoft\\Edge"
+name = "CopilotPageContext"
+optimized_value = 0
+default_value = 1
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SOFTWARE\\Policies\\Microsoft\\Edge"
+name = "HubsSidebarEnabled"
+optimized_value = 0
+default_value = 1
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SOFTWARE\\Policies\\Microsoft\\Edge"
+name = "EdgeEntraCopilotPageContext"
+optimized_value = 0
+default_value = 1
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SOFTWARE\\Policies\\Microsoft\\Edge"
+name = "Microsoft365CopilotChatIconEnabled"
+optimized_value = 0
+default_value = 1
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SOFTWARE\\Policies\\Microsoft\\Edge"
+name = "EdgeHistoryAISearchEnabled"
+optimized_value = 0
+default_value = 1
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SOFTWARE\\Policies\\Microsoft\\Edge"
+name = "ComposeInlineEnabled"
+optimized_value = 0
+default_value = 1
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SOFTWARE\\Policies\\Microsoft\\Edge"
+name = "GenAILocalFoundationalModelSettings"
+optimized_value = 1
+default_value = 0
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SOFTWARE\\Policies\\Microsoft\\Edge"
+name = "BuiltInAIAPIsEnabled"
+optimized_value = 0
+default_value = 1
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SOFTWARE\\Policies\\Microsoft\\Edge"
+name = "AIGenThemesEnabled"
+optimized_value = 0
+default_value = 1
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SOFTWARE\\Policies\\Microsoft\\Edge"
+name = "DevToolsGenAiSettings"
+optimized_value = 2
+default_value = 0
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SOFTWARE\\Policies\\Microsoft\\Edge"
+name = "ShareBrowsingHistoryWithCopilotSearchAllowed"
+optimized_value = 0
+default_value = 1
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "disable_office_ai_copilot"
+title = "Disable Microsoft Office AI Training & App Copilots"
+category = "Telemetry (Apps)"
+description = "Disables Microsoft 365 AI training, connected content analysis, Content Safety Service, and per-app Copilot toggles in Word, Excel, and OneNote."
+easy_mode_included = true
+unattend_safe = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 1
+privacy_gain = 5
+reversibility = "Instant"
+broken_features = ["Copilot assistant in Word, Excel and OneNote disabled"]
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Software\\Policies\\Microsoft\\office\\16.0\\common\\ai\\training"
+name = "optionalconnectedexperiencesenabled"
+optimized_value = 0
+default_value = 1
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Software\\Policies\\Microsoft\\office\\16.0\\common\\privacy"
+name = "controllerconnectedservicesenabled"
+optimized_value = 2
+default_value = 0
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Software\\Policies\\Microsoft\\office\\16.0\\common\\privacy"
+name = "usercontentdisabled"
+optimized_value = 2
+default_value = 0
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Software\\Policies\\Microsoft\\office\\16.0\\common\\ai"
+name = "contentsafetyserviceenabled"
+optimized_value = 0
+default_value = 1
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Software\\Microsoft\\Office\\16.0\\Word\\Options"
+name = "EnableCopilot"
+optimized_value = 0
+default_value = 1
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Software\\Microsoft\\Office\\16.0\\Excel\\Options"
+name = "EnableCopilot"
+optimized_value = 0
+default_value = 1
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Software\\Microsoft\\Office\\16.0\\OneNote\\Options\\Other"
+name = "EnableCopilot"
+optimized_value = 0
+default_value = 1
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Software\\Microsoft\\Office\\16.0\\OneNote\\Options\\Other"
+name = "EnableCopilotNotebooks"
+optimized_value = 0
+default_value = 1
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Software\\Microsoft\\Office\\16.0\\OneNote\\Options\\Other"
+name = "EnableCopilotSkittle"
+optimized_value = 0
+default_value = 1
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "disable_wmi_telemetry_autologgers"
+title = "Disable 10 WMI Kernel Telemetry AutoLogger Sessions"
+category = "Telemetry (OS)"
+description = "Prevents Windows from spawning persistent ETW background AutoLogger trace sessions (Diagtrack-Listener, SQMLogger, DiagLog, Cellcore, DataMarket, AppModel, CloudExperienceHostOobe, LwtNetLog, WdiContextLog, WiFiSession)."
+easy_mode_included = true
+unattend_safe = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 3
+privacy_gain = 5
+reversibility = "RequiresReboot"
+broken_features = ["Kernel ETW diagnostic trace logs disabled"]
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SYSTEM\\CurrentControlSet\\Control\\WMI\\Autologger\\AppModel"
+name = "Start"
+optimized_value = 0
+default_value = 1
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SYSTEM\\CurrentControlSet\\Control\\WMI\\Autologger\\Cellcore"
+name = "Start"
+optimized_value = 0
+default_value = 1
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SYSTEM\\CurrentControlSet\\Control\\WMI\\Autologger\\CloudExperienceHostOobe"
+name = "Start"
+optimized_value = 0
+default_value = 1
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SYSTEM\\CurrentControlSet\\Control\\WMI\\Autologger\\DataMarket"
+name = "Start"
+optimized_value = 0
+default_value = 1
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SYSTEM\\CurrentControlSet\\Control\\WMI\\Autologger\\DiagLog"
+name = "Start"
+optimized_value = 0
+default_value = 1
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SYSTEM\\CurrentControlSet\\Control\\WMI\\Autologger\\Diagtrack-Listener"
+name = "Start"
+optimized_value = 0
+default_value = 1
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SYSTEM\\CurrentControlSet\\Control\\WMI\\Autologger\\LwtNetLog"
+name = "Start"
+optimized_value = 0
+default_value = 1
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SYSTEM\\CurrentControlSet\\Control\\WMI\\Autologger\\SQMLogger"
+name = "Start"
+optimized_value = 0
+default_value = 1
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SYSTEM\\CurrentControlSet\\Control\\WMI\\Autologger\\WdiContextLog"
+name = "Start"
+optimized_value = 0
+default_value = 1
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SYSTEM\\CurrentControlSet\\Control\\WMI\\Autologger\\WiFiSession"
+name = "Start"
+optimized_value = 0
+default_value = 1
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "block_silent_preinstalled_apps"
+title = "Block Silent Preinstalled Apps, Start & Settings Suggestions"
+category = "Privacy"
+description = "Prevents Windows ContentDeliveryManager from silently installing OEM or Microsoft Store promotional apps and hides suggested content across Settings, Start menu, and Timeline."
+easy_mode_included = true
+unattend_safe = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 2
+privacy_gain = 4
+reversibility = "Instant"
+broken_features = []
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Software\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager"
+name = "OemPreInstalledAppsEnabled"
+optimized_value = 0
+default_value = 1
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Software\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager"
+name = "PreInstalledAppsEnabled"
+optimized_value = 0
+default_value = 1
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Software\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager"
+name = "PreInstalledAppsEverEnabled"
+optimized_value = 0
+default_value = 1
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Software\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager"
+name = "SilentInstalledAppsEnabled"
+optimized_value = 0
+default_value = 1
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Software\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager"
+name = "ContentDeliveryAllowed"
+optimized_value = 0
+default_value = 1
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Software\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager"
+name = "SubscribedContentEnabled"
+optimized_value = 0
+default_value = 1
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Software\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager"
+name = "FeatureManagementEnabled"
+optimized_value = 0
+default_value = 1
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Software\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager"
+name = "SubscribedContent-338393Enabled"
+optimized_value = 0
+default_value = 1
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Software\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager"
+name = "SubscribedContent-353698Enabled"
+optimized_value = 0
+default_value = 1
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Software\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager"
+name = "SubscribedContent-310093Enabled"
+optimized_value = 0
+default_value = 1
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Software\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager"
+name = "SubscribedContent-338388Enabled"
+optimized_value = 0
+default_value = 1
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "disable_extra_telemetry_policies"
+title = "Harden Feedback, AppCompat Inventory, OOBE Prompts & Tracking"
+category = "Telemetry (OS)"
+description = "Caps MaxTelemetryAllowed=0, suppresses Windows feedback SIUF prompts (deletes PeriodInNanoSeconds), disables Application Compatibility Inventory/UAR, Find My Device, Welcome/Finish-Setup nags, app launch tracking, Workplace Join prompts, and Remote Assistance."
+easy_mode_included = true
+unattend_safe = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 2
+privacy_gain = 5
+reversibility = "Instant"
+broken_features = ["Remote Assistance invitations disabled", "Start Frequent/Recent app launch tracking off"]
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\DataCollection"
+name = "MaxTelemetryAllowed"
+optimized_value = 0
+default_value = 3
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SOFTWARE\\Policies\\Microsoft\\Windows\\DataCollection"
+name = "DoNotShowFeedbackNotifications"
+optimized_value = 1
+default_value = 0
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "SOFTWARE\\Microsoft\\Siuf\\Rules"
+name = "NumberOfSIUFInPeriod"
+optimized_value = 0
+default_value = 1
+
+[[tweaks.actions]]
+type = "RegistryDelete"
+hive = "HKCU"
+path = "SOFTWARE\\Microsoft\\Siuf\\Rules"
+name = "PeriodInNanoSeconds"
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SOFTWARE\\Policies\\Microsoft\\Windows\\AppCompat"
+name = "AITEnable"
+optimized_value = 0
+default_value = 1
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SOFTWARE\\Policies\\Microsoft\\Windows\\AppCompat"
+name = "DisableInventory"
+optimized_value = 1
+default_value = 0
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SOFTWARE\\Policies\\Microsoft\\Windows\\AppCompat"
+name = "DisableUAR"
+optimized_value = 1
+default_value = 0
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SOFTWARE\\Policies\\Microsoft\\FindMyDevice"
+name = "AllowFindMyDevice"
+optimized_value = 0
+default_value = 1
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Software\\Microsoft\\Windows\\CurrentVersion\\UserProfileEngagement"
+name = "ScoobeSystemSettingEnabled"
+optimized_value = 0
+default_value = 1
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Software\\Microsoft\\Windows\\CurrentVersion\\SystemSettings\\AccountNotifications"
+name = "EnableAccountNotifications"
+optimized_value = 0
+default_value = 1
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Control Panel\\International\\User Profile"
+name = "HttpAcceptLanguageOptOut"
+optimized_value = 1
+default_value = 0
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced"
+name = "Start_TrackProgs"
+optimized_value = 0
+default_value = 1
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced"
+name = "Start_TrackDocs"
+optimized_value = 0
+default_value = 1
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SOFTWARE\\Policies\\Microsoft\\Windows\\WorkplaceJoin"
+name = "BlockAADWorkplaceJoin"
+optimized_value = 1
+default_value = 0
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SYSTEM\\CurrentControlSet\\Control\\Remote Assistance"
+name = "fAllowToGetHelp"
+optimized_value = 0
+default_value = 1
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "disable_typing_and_inking_telemetry"
+title = "Disable Inking, Typing Personalization & Input Insights"
+category = "Privacy"
+description = "Restricts implicit keystroke/ink data collection, contact harvesting for custom typing dictionaries, linguistic diagnostic logging (TIPC), and Windows Input Insights."
+easy_mode_included = true
+unattend_safe = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 1
+privacy_gain = 5
+reversibility = "Instant"
+broken_features = ["Personalized typing & handwriting prediction dictionary off"]
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Software\\Microsoft\\InputPersonalization"
+name = "RestrictImplicitTextCollection"
+optimized_value = 1
+default_value = 0
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Software\\Microsoft\\InputPersonalization"
+name = "RestrictImplicitInkCollection"
+optimized_value = 1
+default_value = 0
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Software\\Microsoft\\InputPersonalization\\TrainedDataStore"
+name = "HarvestContacts"
+optimized_value = 0
+default_value = 1
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Software\\Microsoft\\Personalization\\Settings"
+name = "AcceptedPrivacyPolicy"
+optimized_value = 0
+default_value = 1
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Software\\Microsoft\\Input\\TIPC"
+name = "Enabled"
+optimized_value = 0
+default_value = 1
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Software\\Microsoft\\input\\Settings"
+name = "InsightsEnabled"
+optimized_value = 0
+default_value = 1
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "disable_search_cloud_and_history"
+title = "Disable Windows Search Highlights, Cloud Search & Device History"
+category = "Privacy"
+description = "Turns off Windows Search Highlights (Dynamic Search Box), MSA/AAD cloud content search, and local device search history logging without disabling the indexer service."
+easy_mode_included = true
+unattend_safe = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 2
+privacy_gain = 4
+reversibility = "Instant"
+broken_features = ["Search highlights daily illustration & OneDrive cloud results hidden"]
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Software\\Microsoft\\Windows\\CurrentVersion\\SearchSettings"
+name = "IsDeviceSearchHistoryEnabled"
+optimized_value = 0
+default_value = 1
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Software\\Microsoft\\Windows\\CurrentVersion\\SearchSettings"
+name = "IsDynamicSearchBoxEnabled"
+optimized_value = 0
+default_value = 1
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Software\\Microsoft\\Windows\\CurrentVersion\\SearchSettings"
+name = "IsMSACloudSearchEnabled"
+optimized_value = 0
+default_value = 1
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Software\\Microsoft\\Windows\\CurrentVersion\\SearchSettings"
+name = "IsAADCloudSearchEnabled"
+optimized_value = 0
+default_value = 1
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SOFTWARE\\Policies\\Microsoft\\Windows\\Windows Search"
+name = "AllowCloudSearch"
+optimized_value = 0
+default_value = 1
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SOFTWARE\\Policies\\Microsoft\\Windows\\Windows Search"
+name = "ConnectedSearchUseWeb"
+optimized_value = 0
+default_value = 1
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "disable_wifi_sense_and_location_extras"
+title = "Disable WiFi-Sense Auto-Connect, Maps AutoUpdate & Location ConsentStore"
+category = "Privacy"
+description = "Disables WiFi hotspot auto-connect (WcmSvc\\AutoConnectAllowedOEM=0) alongside Windows Maps offline auto-updates and global Location Capability ConsentStore permission."
+easy_mode_included = true
+unattend_safe = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 1
+privacy_gain = 5
+reversibility = "Instant"
+broken_features = ["Automatic Windows Maps downloads and system-wide app location prompts"]
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SOFTWARE\\Microsoft\\WcmSvc\\wifinetworkmanager\\config"
+name = "AutoConnectAllowedOEM"
+optimized_value = 0
+default_value = 1
+
+[[tweaks.actions]]
+type = "RegistryString"
+hive = "HKLM"
+path = "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\CapabilityAccessManager\\ConsentStore\\location"
+name = "Value"
+optimized_value = "Deny"
+default_value = "Allow"
+case_insensitive = true
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SYSTEM\\Maps"
+name = "AutoUpdateEnabled"
+optimized_value = 0
+default_value = 1
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "block_onedrive_kfm_auto_backup"
+title = "Block OneDrive Automatic Known Folder Move (Desktop/Documents Sync)"
+category = "Privacy"
+description = "Sets KFMBlockOptIn=1 so OneDrive cannot silently hijack Desktop, Documents, and Pictures folders into cloud backup. Safe if you only want local storage or manual sync."
+easy_mode_included = false
+unattend_safe = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 1
+privacy_gain = 4
+reversibility = "Instant"
+broken_features = ["OneDrive automatic Known Folder Move wizard disabled"]
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SOFTWARE\\Policies\\Microsoft\\OneDrive"
+name = "KFMBlockOptIn"
+optimized_value = 1
+default_value = 0
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "SOFTWARE\\Policies\\Microsoft\\OneDrive"
+name = "KFMBlockOptIn"
+optimized_value = 1
+default_value = 0
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "disable_bitlocker_auto_encryption"
+title = "Disable Automatic Windows BitLocker Device Encryption"
+category = "Privacy"
+description = "Sets PreventDeviceEncryption=1 so Windows does not silently encrypt drives on Microsoft Account sign-in or new setups without backing up recovery keys first."
+easy_mode_included = false
+unattend_safe = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Low"
+performance_gain = 1
+privacy_gain = 1
+reversibility = "Instant"
+broken_features = ["Automatic zero-touch BitLocker drive encryption will not activate"]
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SYSTEM\\CurrentControlSet\\Control\\BitLocker"
+name = "PreventDeviceEncryption"
+optimized_value = 1
+default_value = 0
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "disable_extra_telemetry_scheduled_tasks"
+title = "Disable Extra Telemetry, WER Queue, SQM, Power Diag & Maps Tasks"
+category = "Telemetry (OS)"
+description = "Disables additional diagnostic and background scheduled tasks: QueueReporting, Sqm-Tasks, MareBackup, StartupAppTask, PcaPatchDbTask, MapsUpdateTask, AnalyzeSystem, and FamilySafetyMonitor."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 2
+privacy_gain = 4
+reversibility = "Instant"
+broken_features = ["Automated power efficiency report & offline map updates disabled"]
+
+[[tweaks.actions]]
+type = "ScheduledTask"
+task_path = "\\Microsoft\\Windows\\Windows Error Reporting\\QueueReporting"
+enable = false
+
+[[tweaks.actions]]
+type = "ScheduledTask"
+task_path = "\\Microsoft\\Windows\\PI\\Sqm-Tasks"
+enable = false
+
+[[tweaks.actions]]
+type = "ScheduledTask"
+task_path = "\\Microsoft\\Windows\\Application Experience\\MareBackup"
+enable = false
+
+[[tweaks.actions]]
+type = "ScheduledTask"
+task_path = "\\Microsoft\\Windows\\Application Experience\\StartupAppTask"
+enable = false
+
+[[tweaks.actions]]
+type = "ScheduledTask"
+task_path = "\\Microsoft\\Windows\\Application Experience\\PcaPatchDbTask"
+enable = false
+
+[[tweaks.actions]]
+type = "ScheduledTask"
+task_path = "\\Microsoft\\Windows\\Maps\\MapsUpdateTask"
+enable = false
+
+[[tweaks.actions]]
+type = "ScheduledTask"
+task_path = "\\Microsoft\\Windows\\Power Efficiency Diagnostics\\AnalyzeSystem"
+enable = false
+
+[[tweaks.actions]]
+type = "ScheduledTask"
+task_path = "\\Microsoft\\Windows\\Shell\\FamilySafetyMonitor"
+enable = false
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "disable_windows_ai_scheduled_tasks"
+title = "Disable Windows AI Recall Background Scheduled Tasks"
+category = "Telemetry (OS)"
+description = "Disables Windows Recall configuration and ML background pipeline scheduled tasks introduced in Windows 11 24H2+."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 26100
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 2
+privacy_gain = 5
+reversibility = "Instant"
+broken_features = ["Windows Recall background indexing tasks disabled"]
+
+[[tweaks.actions]]
+type = "ScheduledTask"
+task_path = "\\Microsoft\\Windows\\WindowsAI\\Recall\\PolicyConfiguration"
+enable = false
+
+[[tweaks.actions]]
+type = "ScheduledTask"
+task_path = "\\Microsoft\\Windows\\WindowsAI\\Recall\\InitialConfiguration"
+enable = false
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "disable_office_actions_scheduled_task"
+title = "Disable Microsoft Office AI Actions Server Task"
+category = "Telemetry (Apps)"
+description = "Disables the Microsoft Office Actions Server background scheduled task to reduce Office AI background CPU/memory wakeups."
+easy_mode_included = false
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 1
+privacy_gain = 3
+reversibility = "Instant"
+broken_features = []
+
+[[tweaks.actions]]
+type = "ScheduledTask"
+task_path = "\\Microsoft\\Office\\Office Actions Server"
+enable = false
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "disable_optional_bloat_services"
+title = "Disable Unused Optional Windows Services (Maps, Fax, Demo, Wallet, tzautoupdate)"
+category = "Telemetry (OS)"
+description = "Disables MapsBroker, RetailDemo, Fax, WalletService, WMPNetworkSvc, AJRouter, shpamsvc, and tzautoupdate without touching core OS or Windows Update services."
+easy_mode_included = false
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Low"
+performance_gain = 2
+privacy_gain = 3
+reversibility = "Instant"
+broken_features = ["Windows Fax, Offline Maps Broker, Retail Demo, WMP Sharing & Auto Timezone disabled"]
+
+[[tweaks.actions]]
+type = "ServiceState"
+service_name = "MapsBroker"
+target_start_type = 4
+default_start_type = 2
+
+[[tweaks.actions]]
+type = "ServiceState"
+service_name = "RetailDemo"
+target_start_type = 4
+default_start_type = 3
+
+[[tweaks.actions]]
+type = "ServiceState"
+service_name = "Fax"
+target_start_type = 4
+default_start_type = 3
+
+[[tweaks.actions]]
+type = "ServiceState"
+service_name = "WalletService"
+target_start_type = 4
+default_start_type = 3
+
+[[tweaks.actions]]
+type = "ServiceState"
+service_name = "WMPNetworkSvc"
+target_start_type = 4
+default_start_type = 3
+
+[[tweaks.actions]]
+type = "ServiceState"
+service_name = "AJRouter"
+target_start_type = 4
+default_start_type = 3
+
+[[tweaks.actions]]
+type = "ServiceState"
+service_name = "shpamsvc"
+target_start_type = 4
+default_start_type = 3
+
+[[tweaks.actions]]
+type = "ServiceState"
+service_name = "tzautoupdate"
+target_start_type = 4
+default_start_type = 3
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "disable_xbox_live_services"
+title = "Disable Xbox Live Background Services (XblAuthManager, GameSave, Networking)"
+category = "OS Settings"
+description = "Disables Xbox Live Auth Manager, Game Save, and Networking background services for users who do not play Xbox App / Game Pass titles."
+easy_mode_included = false
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Low"
+performance_gain = 1
+privacy_gain = 2
+reversibility = "Instant"
+broken_features = ["Xbox Game Pass & Microsoft Store Xbox Live sign-in / cloud saves stop working"]
+
+[[tweaks.actions]]
+type = "ServiceState"
+service_name = "XblAuthManager"
+target_start_type = 4
+default_start_type = 3
+
+[[tweaks.actions]]
+type = "ServiceState"
+service_name = "XblGameSave"
+target_start_type = 4
+default_start_type = 3
+
+[[tweaks.actions]]
+type = "ServiceState"
+service_name = "XboxNetApiSvc"
+target_start_type = 4
+default_start_type = 3
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "disable_ai_fabric_service"
+title = "Disable Windows AI Fabric Service (WSAIFabricSvc)"
+category = "Telemetry (OS)"
+description = "Disables WSAIFabricSvc background local AI orchestration daemon on Windows 11 24H2+."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 26100
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 2
+privacy_gain = 5
+reversibility = "Instant"
+broken_features = ["Copilot+ AI orchestration service stopped"]
+
+[[tweaks.actions]]
+type = "ServiceState"
+service_name = "WSAIFabricSvc"
+target_start_type = 4
+default_start_type = 2
+
+# -----------------------------------------------------------------------------
+# High-Risk Opt-In Only (excluded from Easy Mode, presets & Select All)
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "deny_global_camera_mic_diagnostics"
+title = "Block Global App Access to Camera, Microphone, Account Info & Diagnostics [Opt-In]"
+category = "Privacy"
+description = "Globally denies ConsentStore permissions for webcam, microphone, userAccountInformation, and appDiagnostics across all desktop and UWP apps. High disruption risk: disables Zoom/Discord/OBS cameras & mics until reverted."
+easy_mode_included = false
+unattend_safe = false
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "High"
+performance_gain = 0
+privacy_gain = 5
+reversibility = "Instant"
+broken_features = ["Disables Camera and Microphone across ALL applications until re-allowed"]
+
+[[tweaks.actions]]
+type = "RegistryString"
+hive = "HKLM"
+path = "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\CapabilityAccessManager\\ConsentStore\\webcam"
+name = "Value"
+optimized_value = "Deny"
+default_value = "Allow"
+case_insensitive = true
+
+[[tweaks.actions]]
+type = "RegistryString"
+hive = "HKLM"
+path = "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\CapabilityAccessManager\\ConsentStore\\microphone"
+name = "Value"
+optimized_value = "Deny"
+default_value = "Allow"
+case_insensitive = true
+
+[[tweaks.actions]]
+type = "RegistryString"
+hive = "HKLM"
+path = "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\CapabilityAccessManager\\ConsentStore\\userAccountInformation"
+name = "Value"
+optimized_value = "Deny"
+default_value = "Allow"
+case_insensitive = true
+
+[[tweaks.actions]]
+type = "RegistryString"
+hive = "HKLM"
+path = "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\CapabilityAccessManager\\ConsentStore\\appDiagnostics"
+name = "Value"
+optimized_value = "Deny"
+default_value = "Allow"
+case_insensitive = true

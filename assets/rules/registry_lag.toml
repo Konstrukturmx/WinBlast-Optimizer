@@ -1,0 +1,539 @@
+# =============================================================================
+# WinBlast0 — Registry Lag, Input & Scheduling Tweaks
+# =============================================================================
+
+[[tweaks]]
+id = "win32_priority_separation"
+title = "Win32PrioritySeparation — Foreground Boost"
+category = "Registry Lag"
+description = "Sets the scheduler quantum to short, variable, with high foreground boost (0x26 = 38). This prioritizes foreground applications for lower input latency in games and interactive workloads."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Low"
+performance_gain = 4
+privacy_gain = 0
+reversibility = "Instant"
+broken_features = []
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SYSTEM\\CurrentControlSet\\Control\\PriorityControl"
+name = "Win32PrioritySeparation"
+optimized_value = 38
+default_value = 2
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "menu_show_delay"
+title = "Reduce Menu Show Delay to 0 ms"
+category = "Registry Lag"
+description = "Removes the artificial delay before menus appear on hover. Default is 400 ms; setting to 0 makes menus open instantly."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 1
+privacy_gain = 0
+reversibility = "Instant"
+broken_features = []
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Control Panel\\Desktop"
+name = "MenuShowDelay"
+optimized_value = 0
+default_value = 400
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "mmcss_gpu_priority"
+title = "MMCSS — Elevate Games and Pro Audio Priority"
+category = "Registry Lag"
+description = "Raises the Games and Pro Audio thread priority within the Multimedia Class Scheduler Service (MMCSS), ensuring audio and real-time game threads receive higher scheduling priority."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Low"
+performance_gain = 3
+privacy_gain = 0
+reversibility = "Instant"
+broken_features = []
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile\\Tasks\\Games"
+name = "Priority"
+optimized_value = 6
+default_value = 2
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile\\Tasks\\Pro Audio"
+name = "Priority"
+optimized_value = 6
+default_value = 1
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "mouse_data_queue_size"
+title = "Increase Mouse Data Queue Size"
+category = "Registry Lag"
+description = "Increases the mouse input data queue size from the default 100 entries to a larger 256-entry buffer, reducing the chance of dropped mouse input events on high-polling gaming mice."
+easy_mode_included = false
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 1
+privacy_gain = 0
+reversibility = "Instant"
+broken_features = []
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SYSTEM\\CurrentControlSet\\Services\\mouclass\\Parameters"
+name = "MouseDataQueueSize"
+optimized_value = 256
+default_value = 100
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "keyboard_response"
+title = "Optimize Keyboard Response"
+category = "Registry Lag"
+description = "Sets the keyboard repeat delay to shortest and repeat rate to fastest via registry values, and increases the keyboard data queue size."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 1
+privacy_gain = 0
+reversibility = "Instant"
+broken_features = []
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Control Panel\\Keyboard"
+name = "KeyboardDelay"
+optimized_value = 0
+default_value = 1
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SYSTEM\\CurrentControlSet\\Services\\kbdclass\\Parameters"
+name = "KeyboardDataQueueSize"
+optimized_value = 256
+default_value = 100
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "disable_wer_queue"
+title = "Disable Windows Error Reporting Queue"
+category = "Registry Lag"
+description = "Disables the Windows Error Reporting (WER) queue, preventing the system from writing crash dump data and reports in the background after application failures."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Low"
+performance_gain = 1
+privacy_gain = 2
+reversibility = "Instant"
+broken_features = ["Crash reports will not be sent to Microsoft"]
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SOFTWARE\\Microsoft\\Windows\\Windows Error Reporting"
+name = "Disabled"
+optimized_value = 1
+default_value = 0
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "auto_end_tasks"
+title = "Auto End Hung Tasks on Shutdown"
+category = "Registry Lag"
+description = "Automatically terminates hung applications during shutdown instead of prompting the user. Also reduces the WaitToKillAppTimeout and HungAppTimeout to speed up logoff and shutdown."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Low"
+performance_gain = 2
+privacy_gain = 0
+reversibility = "Instant"
+broken_features = ["Unsaved work in hung applications may be lost during shutdown"]
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Control Panel\\Desktop"
+name = "AutoEndTasks"
+optimized_value = 1
+default_value = 0
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Control Panel\\Desktop"
+name = "WaitToKillAppTimeout"
+optimized_value = 2000
+default_value = 20000
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Control Panel\\Desktop"
+name = "HungAppTimeout"
+optimized_value = 1000
+default_value = 5000
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "network_throttling_disable"
+title = "Disable Network Throttling Index"
+category = "Registry Lag"
+description = "Disables Windows multimedia network throttling (setting NetworkThrottlingIndex to 0xFFFFFFFF), preventing packet drops and latency spikes during high network traffic or gaming."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 4
+privacy_gain = 0
+reversibility = "Instant"
+broken_features = []
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile"
+name = "NetworkThrottlingIndex"
+optimized_value = 4294967295
+default_value = 10
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "system_responsiveness_gaming"
+title = "Maximize Foreground System Responsiveness"
+category = "Registry Lag"
+description = "Configures SystemResponsiveness to 0%, dedicating 100% of CPU processing cycles to foreground interactive gaming and applications rather than reserving 20% for background OS tasks."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 4
+privacy_gain = 0
+reversibility = "Instant"
+broken_features = []
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile"
+name = "SystemResponsiveness"
+optimized_value = 0
+default_value = 20
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "ntfs_disable_last_access"
+title = "Disable NTFS Last Access Timestamps"
+category = "Registry Lag"
+description = "Prevents the NTFS filesystem from updating disk metadata timestamps on every file read operation, significantly reducing SSD and NVMe read/write I/O overhead."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 3
+privacy_gain = 0
+reversibility = "Instant"
+broken_features = ["File properties will not show the exact last access date"]
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SYSTEM\\CurrentControlSet\\Control\\FileSystem"
+name = "NtfsDisableLastAccessUpdate"
+optimized_value = 1
+default_value = 2147483650
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "disable_paging_executive"
+title = "Keep Windows Kernel & Drivers in RAM"
+category = "Registry Lag"
+description = "Forces the Windows NT executive kernel and driver routines to remain resident in physical RAM instead of being paged out to disk, ensuring instant kernel interrupt response."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 4
+privacy_gain = 0
+reversibility = "Instant"
+broken_features = []
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management"
+name = "DisablePagingExecutive"
+optimized_value = 1
+default_value = 0
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "large_system_cache"
+title = "Enable Large System File Cache"
+category = "Registry Lag"
+description = "Configures Windows to maintain a larger file system cache in physical RAM, accelerating repetitive file access and game texture streaming."
+easy_mode_included = false
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Low"
+performance_gain = 3
+privacy_gain = 0
+reversibility = "Instant"
+broken_features = []
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management"
+name = "LargeSystemCache"
+optimized_value = 1
+default_value = 0
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "disable_fast_startup"
+title = "Disable Fast Startup (Hybrid Sleep Leak Prevention)"
+category = "Registry Lag"
+description = "Disables Windows Fast Startup (hiberboot), ensuring a true clean boot cycle on every shutdown and preventing kernel memory leaks and driver state corruption across sessions."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 2
+privacy_gain = 0
+reversibility = "Instant"
+broken_features = ["Cold boot time might increase by 1-2 seconds on slow mechanical drives"]
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Power"
+name = "HiberbootEnabled"
+optimized_value = 0
+default_value = 1
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "ntfs_disable_8dot3"
+title = "Disable NTFS 8.3 Short Name Creation"
+category = "Registry Lag"
+description = "Disables legacy MS-DOS 8.3 short filename generation on NTFS volumes, eliminating directory file indexing latency and write overhead on high-speed NVMe/SSDs."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 3
+privacy_gain = 0
+reversibility = "Instant"
+broken_features = []
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SYSTEM\\CurrentControlSet\\Control\\FileSystem"
+name = "NtfsDisable8dot3NameCreation"
+optimized_value = 1
+default_value = 2
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "increase_mft_zone_reservation"
+title = "Increase Master File Table (MFT) Zone Buffer"
+category = "Registry Lag"
+description = "Reserves a larger contiguous disk buffer for the NTFS Master File Table, preventing MFT fragmentation and maintaining maximum disk access throughput."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 2
+privacy_gain = 0
+reversibility = "Instant"
+broken_features = []
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SYSTEM\\CurrentControlSet\\Control\\FileSystem"
+name = "NtfsMftZoneReservation"
+optimized_value = 2
+default_value = 1
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "tcp_ack_frequency"
+title = "TCP Low Latency (TcpAckFrequency)"
+category = "Registry Lag"
+description = "Forces the Windows TCP networking stack to send packet ACKs immediately without waiting for timeout coalescing, slashing network ping in online games."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 4
+privacy_gain = 0
+reversibility = "Instant"
+broken_features = []
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SYSTEM\\CurrentControlSet\\Services\\Tcpip\\Parameters\\Interfaces\\<NET_INTERFACE_GUID>"
+name = "TcpAckFrequency"
+optimized_value = 1
+default_value = 2
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "tcp_no_delay_global"
+title = "Disable Nagle's Algorithm (TCPNoDelay)"
+category = "Registry Lag"
+description = "Disables Nagle's packet buffering algorithm across active network interfaces, transmitting small packets immediately for minimal network round-trip latency."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 4
+privacy_gain = 0
+reversibility = "Instant"
+broken_features = []
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SYSTEM\\CurrentControlSet\\Services\\Tcpip\\Parameters\\Interfaces\\<NET_INTERFACE_GUID>"
+name = "TCPNoDelay"
+optimized_value = 1
+default_value = 0
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "disable_mouse_acceleration"
+title = "Disable Enhanced Pointer Precision (1:1 Mouse Input)"
+category = "Registry Lag"
+description = "Disables non-linear Windows cursor acceleration, delivering true 1:1 hardware raw mouse movement essential for competitive precision aiming."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 3
+privacy_gain = 0
+reversibility = "Instant"
+broken_features = []
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Control Panel\\Mouse"
+name = "MouseSpeed"
+optimized_value = 0
+default_value = 1
+
+

@@ -1,0 +1,653 @@
+# =============================================================================
+# WinBlast0 — Bloatware AppX Package Removal
+# =============================================================================
+
+[[tweaks]]
+id = "remove_bing_weather"
+title = "Remove Bing Weather"
+category = "Bloatware"
+description = "Removes the Microsoft Bing Weather UWP app. Weather can be accessed via browser instead."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 1
+privacy_gain = 2
+reversibility = "RequiresPackageReinstall"
+broken_features = ["Bing Weather app will be removed"]
+
+[[tweaks.actions]]
+type = "AppXPackage"
+package_family = "Microsoft.BingWeather_8wekyb3d8bbwe"
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "remove_bing_news"
+title = "Remove Bing News"
+category = "Bloatware"
+description = "Removes the Microsoft Bing News (Microsoft News) UWP app."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 1
+privacy_gain = 2
+reversibility = "RequiresPackageReinstall"
+broken_features = ["Bing News / Microsoft News app will be removed"]
+
+[[tweaks.actions]]
+type = "AppXPackage"
+package_family = "Microsoft.BingNews_8wekyb3d8bbwe"
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "remove_get_help"
+title = "Remove Get Help"
+category = "Bloatware"
+description = "Removes the Microsoft Get Help UWP app. Users can still access support via the web."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 1
+privacy_gain = 1
+reversibility = "RequiresPackageReinstall"
+broken_features = ["Get Help app will be removed"]
+
+[[tweaks.actions]]
+type = "AppXPackage"
+package_family = "Microsoft.GetHelp_8wekyb3d8bbwe"
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "remove_getstarted_tips"
+title = "Remove Tips (Get Started)"
+category = "Bloatware"
+description = "Removes the Microsoft Tips / Get Started UWP app."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 1
+privacy_gain = 1
+reversibility = "RequiresPackageReinstall"
+broken_features = ["Tips / Get Started app will be removed"]
+
+[[tweaks.actions]]
+type = "AppXPackage"
+package_family = "Microsoft.Getstarted_8wekyb3d8bbwe"
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "remove_solitaire"
+title = "Remove Microsoft Solitaire Collection"
+category = "Bloatware"
+description = "Removes the Microsoft Solitaire Collection UWP app, which contains ads and telemetry."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 1
+privacy_gain = 2
+reversibility = "RequiresPackageReinstall"
+broken_features = ["Solitaire Collection will be removed"]
+
+[[tweaks.actions]]
+type = "AppXPackage"
+package_family = "Microsoft.MicrosoftSolitaireCollection_8wekyb3d8bbwe"
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "remove_people"
+title = "Remove People App"
+category = "Bloatware"
+description = "Removes the Microsoft People UWP app."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 1
+privacy_gain = 1
+reversibility = "RequiresPackageReinstall"
+broken_features = ["People app will be removed"]
+
+[[tweaks.actions]]
+type = "AppXPackage"
+package_family = "Microsoft.People_8wekyb3d8bbwe"
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "remove_windows_maps"
+title = "Remove Windows Maps"
+category = "Bloatware"
+description = "Removes the Microsoft Windows Maps UWP app."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 1
+privacy_gain = 2
+reversibility = "RequiresPackageReinstall"
+broken_features = ["Windows Maps app will be removed"]
+
+[[tweaks.actions]]
+type = "AppXPackage"
+package_family = "Microsoft.WindowsMaps_8wekyb3d8bbwe"
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "remove_groove_music"
+title = "Remove Groove Music (Zune Music)"
+category = "Bloatware"
+description = "Removes the Groove Music (ZuneMusic) UWP app. Media Player or third-party players can be used instead."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 1
+privacy_gain = 1
+reversibility = "RequiresPackageReinstall"
+broken_features = ["Groove Music app will be removed"]
+
+[[tweaks.actions]]
+type = "AppXPackage"
+package_family = "Microsoft.ZuneMusic_8wekyb3d8bbwe"
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "remove_zune_video"
+title = "Remove Movies & TV (Zune Video)"
+category = "Bloatware"
+description = "Removes the Movies & TV (ZuneVideo) UWP app. VLC or other players can be used instead."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 1
+privacy_gain = 1
+reversibility = "RequiresPackageReinstall"
+broken_features = ["Movies & TV app will be removed"]
+
+[[tweaks.actions]]
+type = "AppXPackage"
+package_family = "Microsoft.ZuneVideo_8wekyb3d8bbwe"
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "remove_clipchamp"
+title = "Remove Clipchamp"
+category = "Bloatware"
+description = "Removes the Clipchamp video editor UWP app pre-installed on Windows 11."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 22000
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 1
+privacy_gain = 1
+reversibility = "RequiresPackageReinstall"
+broken_features = ["Clipchamp video editor will be removed"]
+
+[[tweaks.actions]]
+type = "AppXPackage"
+package_family = "Clipchamp.Clipchamp_yxz26nhyzhsrt"
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "remove_todos"
+title = "Remove Microsoft To Do"
+category = "Bloatware"
+description = "Removes the Microsoft To Do UWP app."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 1
+privacy_gain = 1
+reversibility = "RequiresPackageReinstall"
+broken_features = ["Microsoft To Do app will be removed"]
+
+[[tweaks.actions]]
+type = "AppXPackage"
+package_family = "Microsoft.Todos_8wekyb3d8bbwe"
+
+
+# -----------------------------------------------------------------------------
+# Extended Safe & AI Bloatware Packages (Winhance + optimizerDuck)
+# Protected Core OS components (Store, Terminal, WebView, VCLibs, etc.) never included.
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "remove_bing_search_appx"
+title = "Remove Microsoft Bing Search AppX Extension"
+category = "Bloatware"
+description = "Removes the Microsoft.BingSearch Store package that powers web widgets and Windows Search web integrations."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 22000
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 1
+privacy_gain = 3
+reversibility = "RequiresPackageReinstall"
+broken_features = ["Bing Search AppX integration removed"]
+
+[[tweaks.actions]]
+type = "AppXPackage"
+package_family = "Microsoft.BingSearch_8wekyb3d8bbwe"
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "remove_feedback_hub"
+title = "Remove Microsoft Feedback Hub"
+category = "Bloatware"
+description = "Removes the preinstalled Windows Feedback Hub telemetry/survey application."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 1
+privacy_gain = 2
+reversibility = "RequiresPackageReinstall"
+broken_features = ["Feedback Hub app removed"]
+
+[[tweaks.actions]]
+type = "AppXPackage"
+package_family = "Microsoft.WindowsFeedbackHub_8wekyb3d8bbwe"
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "remove_copilot_appx"
+title = "Remove Microsoft Copilot UWP Package"
+category = "Bloatware"
+description = "Uninstalls the standalone Microsoft.Copilot Store package."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 22000
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 2
+privacy_gain = 5
+reversibility = "RequiresPackageReinstall"
+broken_features = ["Copilot app removed"]
+
+[[tweaks.actions]]
+type = "AppXPackage"
+package_family = "Microsoft.Copilot_8wekyb3d8bbwe"
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "remove_edge_game_assist"
+title = "Remove Microsoft Edge Game Assist Overlay"
+category = "Bloatware"
+description = "Removes the Edge Game Assist in-game browser overlay AppX package."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 22000
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 1
+privacy_gain = 2
+reversibility = "RequiresPackageReinstall"
+broken_features = ["Edge Game Assist widget removed"]
+
+[[tweaks.actions]]
+type = "AppXPackage"
+package_family = "Microsoft.Edge.GameAssist_8wekyb3d8bbwe"
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "remove_dev_home"
+title = "Remove Windows Dev Home App"
+category = "Bloatware"
+description = "Removes the Microsoft.Windows.DevHome dashboard package pre-installed on Windows 11."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 22000
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 1
+privacy_gain = 1
+reversibility = "RequiresPackageReinstall"
+broken_features = ["Dev Home dashboard removed"]
+
+[[tweaks.actions]]
+type = "AppXPackage"
+package_family = "Microsoft.Windows.DevHome_8wekyb3d8bbwe"
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "remove_power_automate_desktop"
+title = "Remove Microsoft Power Automate Desktop"
+category = "Bloatware"
+description = "Removes the Microsoft Power Automate Desktop RPA package."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 22000
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 1
+privacy_gain = 2
+reversibility = "RequiresPackageReinstall"
+broken_features = ["Power Automate desktop flows app removed"]
+
+[[tweaks.actions]]
+type = "AppXPackage"
+package_family = "Microsoft.PowerAutomateDesktop_8wekyb3d8bbwe"
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "remove_office_hub"
+title = "Remove Microsoft 365 Copilot (OfficeHub)"
+category = "Bloatware"
+description = "Removes the preinstalled Microsoft 365 Office Hub promo launcher app."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 1
+privacy_gain = 2
+reversibility = "RequiresPackageReinstall"
+broken_features = ["Office promo launcher removed (does not uninstall desktop Office)"]
+
+[[tweaks.actions]]
+type = "AppXPackage"
+package_family = "Microsoft.MicrosoftOfficeHub_8wekyb3d8bbwe"
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "remove_family_safety"
+title = "Remove Microsoft Family Safety App"
+category = "Bloatware"
+description = "Removes the Microsoft Family Safety consumer UWP app."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 1
+privacy_gain = 2
+reversibility = "RequiresPackageReinstall"
+broken_features = ["Family Safety UWP app removed"]
+
+[[tweaks.actions]]
+type = "AppXPackage"
+package_family = "MicrosoftCorporationII.MicrosoftFamily_8wekyb3d8bbwe"
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "remove_3d_viewer_and_mixed_reality"
+title = "Remove 3D Viewer & Mixed Reality Portal"
+category = "Bloatware"
+description = "Removes legacy Microsoft 3D Viewer and Mixed Reality Portal packages."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 1
+privacy_gain = 1
+reversibility = "RequiresPackageReinstall"
+broken_features = ["Legacy 3D Viewer & Windows Mixed Reality Portal removed"]
+
+[[tweaks.actions]]
+type = "AppXPackage"
+package_family = "Microsoft.Microsoft3DViewer_8wekyb3d8bbwe"
+
+[[tweaks.actions]]
+type = "AppXPackage"
+package_family = "Microsoft.MixedReality.Portal_8wekyb3d8bbwe"
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "remove_outlook_for_windows"
+title = "Remove New Outlook for Windows (WebView Client)"
+category = "Bloatware"
+description = "Removes the preinstalled Microsoft.OutlookForWindows web wrapper app."
+easy_mode_included = false
+
+[tweaks.os_req]
+min_build = 22000
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 1
+privacy_gain = 2
+reversibility = "RequiresPackageReinstall"
+broken_features = ["New Outlook UWP client removed"]
+
+[[tweaks.actions]]
+type = "AppXPackage"
+package_family = "Microsoft.OutlookForWindows_8wekyb3d8bbwe"
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "remove_your_phone_link"
+title = "Remove Phone Link (YourPhone)"
+category = "Bloatware"
+description = "Uninstalls the Microsoft.YourPhone mobile syncing companion app."
+easy_mode_included = false
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 2
+privacy_gain = 3
+reversibility = "RequiresPackageReinstall"
+broken_features = ["Android/iOS Phone Link desktop syncing removed"]
+
+[[tweaks.actions]]
+type = "AppXPackage"
+package_family = "Microsoft.YourPhone_8wekyb3d8bbwe"
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "remove_sound_recorder_and_sticky_notes"
+title = "Remove Windows Sound Recorder & Sticky Notes"
+category = "Bloatware"
+description = "Removes Sound Recorder and Sticky Notes Store packages."
+easy_mode_included = false
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 1
+privacy_gain = 1
+reversibility = "RequiresPackageReinstall"
+broken_features = ["Built-in Sound Recorder & Sticky Notes apps removed"]
+
+[[tweaks.actions]]
+type = "AppXPackage"
+package_family = "Microsoft.WindowsSoundRecorder_8wekyb3d8bbwe"
+
+[[tweaks.actions]]
+type = "AppXPackage"
+package_family = "Microsoft.MicrosoftStickyNotes_8wekyb3d8bbwe"
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "remove_ms_teams_and_quick_assist"
+title = "Remove Consumer Microsoft Teams & Quick Assist"
+category = "Bloatware"
+description = "Removes consumer MSTeams personal chat and Quick Assist support apps."
+easy_mode_included = false
+
+[tweaks.os_req]
+min_build = 22000
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 2
+privacy_gain = 2
+reversibility = "RequiresPackageReinstall"
+broken_features = ["Personal Teams & Quick Assist support tool removed"]
+
+[[tweaks.actions]]
+type = "AppXPackage"
+package_family = "MSTeams_8wekyb3d8bbwe"
+
+[[tweaks.actions]]
+type = "AppXPackage"
+package_family = "MicrosoftCorporationII.QuickAssist_8wekyb3d8bbwe"
+
+# -----------------------------------------------------------------------------
+# Windows Optional Features / Capabilities Bloat Removal (DISM Native Action)
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "disable_recall_optional_feature"
+title = "Uninstall Windows Recall Optional Feature (DISM)"
+category = "Bloatware"
+description = "Disables the optional 'Recall' Windows feature package at the OS servicing level."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 26100
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 2
+privacy_gain = 5
+reversibility = "RequiresReboot"
+broken_features = ["Windows Recall feature binaries disabled cleanly"]
+
+[[tweaks.actions]]
+type = "WindowsFeature"
+feature_name = "Recall"
+kind = "OptionalFeature"
+enable = false
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "remove_legacy_steps_recorder_ie_wordpad"
+title = "Disable Legacy Steps Recorder & Internet Explorer 11 Capability"
+category = "Bloatware"
+description = "Removes legacy Steps Recorder (App.StepsRecorder) and Internet Explorer mode capability via DISM."
+easy_mode_included = false
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 1
+privacy_gain = 1
+reversibility = "RequiresReboot"
+broken_features = ["Steps Recorder (psr.exe) and IE11 Mode removed"]
+
+[[tweaks.actions]]
+type = "WindowsFeature"
+feature_name = "App.StepsRecorder~~~~0.0.1.0"
+kind = "Capability"
+enable = false
+
+[[tweaks.actions]]
+type = "WindowsFeature"
+feature_name = "Browser.InternetExplorer~~~~0.0.11.0"
+kind = "Capability"
+enable = false

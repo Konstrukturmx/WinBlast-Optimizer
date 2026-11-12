@@ -1,0 +1,713 @@
+# =============================================================================
+# WinBlast0 — OS Settings & Visual Effects Tweaks
+# =============================================================================
+
+[[tweaks]]
+id = "disable_animations"
+title = "Disable Window Animations"
+category = "OS Settings"
+description = "Disables the animate-windows-when-minimizing-and-maximizing visual effect, reducing perceived UI lag."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 2
+privacy_gain = 0
+reversibility = "Instant"
+broken_features = []
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Control Panel\\Desktop\\WindowMetrics"
+name = "MinAnimate"
+optimized_value = 0
+default_value = 1
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced"
+name = "TaskbarAnimations"
+optimized_value = 0
+default_value = 1
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "disable_transparency"
+title = "Disable Transparency Effects"
+category = "OS Settings"
+description = "Disables the acrylic/transparency effect on taskbar, Start menu, and Action Center, freeing GPU compositing overhead."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 2
+privacy_gain = 0
+reversibility = "Instant"
+broken_features = ["Transparent taskbar and Start menu appearance"]
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize"
+name = "EnableTransparency"
+optimized_value = 0
+default_value = 1
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "disable_ntfs_last_access"
+title = "Disable Windows Background Apps Globally"
+category = "OS Settings"
+description = "Prevents UWP / Microsoft Store apps from waking up, polling networks, and consuming CPU/RAM silently in the background when minimized or closed."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 19041
+max_build = 21999
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 3
+privacy_gain = 3
+reversibility = "Instant"
+broken_features = ["Store apps stop syncing in the background when closed"]
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Software\\Microsoft\\Windows\\CurrentVersion\\BackgroundAccessApplications"
+name = "GlobalUserDisabled"
+optimized_value = 1
+default_value = 0
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "disable_nagle_algorithm"
+title = "Disable MSMQ Nagle's Algorithm (TCPNoDelay)"
+category = "OS Settings"
+description = "Disables Nagle's algorithm specifically for Microsoft Message Queuing (MSMQ\\Parameters\\TCPNoDelay), reducing queueing latency for MSMQ small-message workloads."
+easy_mode_included = false
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Low"
+performance_gain = 2
+privacy_gain = 0
+reversibility = "Instant"
+broken_features = ["May slightly increase network bandwidth usage for small packets"]
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SOFTWARE\\Microsoft\\MSMQ\\Parameters"
+name = "TCPNoDelay"
+optimized_value = 1
+default_value = 0
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "disable_sticky_keys"
+title = "Disable Sticky Keys & Accessibility Hotkeys"
+category = "OS Settings"
+description = "Disables the 5x Shift Sticky Keys dialog, Filter Keys, and Toggle Keys acoustic beeps, preventing intrusive popups and input interruption during competitive gaming."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 2
+privacy_gain = 0
+reversibility = "Instant"
+broken_features = ["Accessibility hotkeys (5x Shift, 8s Right Shift) disabled"]
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Control Panel\\Accessibility\\StickyKeys"
+name = "Flags"
+optimized_value = 506
+default_value = 510
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Control Panel\\Accessibility\\Keyboard Response"
+name = "Flags"
+optimized_value = 122
+default_value = 126
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Control Panel\\Accessibility\\ToggleKeys"
+name = "Flags"
+optimized_value = 58
+default_value = 62
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "disable_mouse_shadow"
+title = "Disable Explorer Drop Shadows & Selection Alpha"
+category = "OS Settings"
+description = "Disables desktop icon label drop shadows and translucent Explorer drag-selection rectangle alpha blending, reducing DWM GPU compositing work."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 1
+privacy_gain = 0
+reversibility = "Instant"
+broken_features = []
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced"
+name = "ListviewAlphaSelect"
+optimized_value = 0
+default_value = 1
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced"
+name = "ListviewShadow"
+optimized_value = 0
+default_value = 1
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "high_performance_power_plan"
+title = "Set Aggressive Processor Performance Boost"
+category = "OS Settings"
+description = "Sets the Processor Performance Boost Mode on AC power to Aggressive via PowerSchemes PerfBoostMode, preventing boost clock throttling under interactive loads."
+easy_mode_included = false
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Low"
+performance_gain = 3
+privacy_gain = 0
+reversibility = "Instant"
+broken_features = ["Higher idle power consumption", "Increased heat output on laptops"]
+
+[[tweaks.actions]]
+type = "PowerCfgSetting"
+subgroup_guid = "54533251-82be-4824-96c1-47b60b740d00"
+setting_guid = "be337238-0d82-4146-a960-4f3749d470c7"
+optimized_ac = 2
+optimized_dc = 2
+default_ac = 1
+default_dc = 1
+scope = "AcOnly"
+unhide_attribute = true
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "disable_bing_search_start"
+title = "Disable Bing Web Search in Start Menu"
+category = "OS Settings"
+description = "Prevents Windows Search from sending every keystroke to Bing servers, making Start menu app and local file search instantaneous with zero cloud network delay."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 3
+privacy_gain = 4
+reversibility = "Instant"
+broken_features = ["Web search results will not appear in the Start menu"]
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SOFTWARE\\Policies\\Microsoft\\Windows\\Explorer"
+name = "DisableSearchBoxSuggestions"
+optimized_value = 1
+default_value = 0
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Software\\Microsoft\\Windows\\CurrentVersion\\Search"
+name = "BingSearchEnabled"
+optimized_value = 0
+default_value = 1
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Software\\Microsoft\\Windows\\CurrentVersion\\Search"
+name = "CortanaConsent"
+optimized_value = 0
+default_value = 1
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "disable_windows_copilot"
+title = "Disable Windows Copilot AI Integration"
+category = "OS Settings"
+description = "Disables Windows Copilot across the system via Group Policy, stopping Copilot background resident agents, taskbar buttons, and AI network queries."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 22621
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 3
+privacy_gain = 4
+reversibility = "Instant"
+broken_features = ["Windows Copilot sidebar and shortcut (Win+C) will be disabled"]
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsCopilot"
+name = "TurnOffWindowsCopilot"
+optimized_value = 1
+default_value = 0
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Software\\Policies\\Microsoft\\Windows\\WindowsCopilot"
+name = "TurnOffWindowsCopilot"
+optimized_value = 1
+default_value = 0
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "disable_game_bar_presence_writer"
+title = "Disable Game Bar Presence, Nexus Launcher & Startup Tips"
+category = "OS Settings"
+description = "Disables Game Bar controller Nexus launch and startup prompt panels via user-writable HKCU\\Software\\Microsoft\\GameBar keys, eliminating overlay hook overhead without TrustedInstaller ACL failures."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 3
+privacy_gain = 1
+reversibility = "Instant"
+broken_features = ["Xbox Guide Nexus button launch and Game Bar startup panel disabled"]
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Software\\Microsoft\\GameBar"
+name = "UseNexusForGameBarEnabled"
+optimized_value = 0
+default_value = 1
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Software\\Microsoft\\GameBar"
+name = "ShowStartupPanel"
+optimized_value = 0
+default_value = 1
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "disable_widgets_news"
+title = "Disable Windows Widgets & MSN News Feed"
+category = "OS Settings"
+description = "Disables the Taskbar Widgets icon and prevents background web fetching of MSN news feeds, trending topics, and weather widgets."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 22000
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 3
+privacy_gain = 3
+reversibility = "Instant"
+broken_features = ["Taskbar Widgets flyout will be disabled"]
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SOFTWARE\\Policies\\Microsoft\\Dsh"
+name = "AllowNewsAndInterests"
+optimized_value = 0
+default_value = 1
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "gamedvr_config_store"
+title = "Disable Xbox GameDVR Recording Overlay"
+category = "OS Settings"
+description = "Disables background gameplay video recording and Xbox Game Bar hook injection, eliminating frametime drops and micro-stutters."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 4
+privacy_gain = 1
+reversibility = "Instant"
+broken_features = ["Xbox Game Bar instant background replay clip recording will be disabled"]
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "System\\GameConfigStore"
+name = "GameDVR_Enabled"
+optimized_value = 0
+default_value = 1
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "gamedvr_app_capture"
+title = "Disable Windows GameDVR App Capture"
+category = "OS Settings"
+description = "Disables background audio/video recording buffers in the Windows GameDVR subsystem."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 3
+privacy_gain = 1
+reversibility = "Instant"
+broken_features = []
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\GameDVR"
+name = "AppCaptureEnabled"
+optimized_value = 0
+default_value = 1
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "gamedvr_policy_disable"
+title = "Disable GameDVR System Policy"
+category = "OS Settings"
+description = "System-wide Group Policy lock preventing Windows from re-enabling GameDVR capture services in the background."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 3
+privacy_gain = 1
+reversibility = "Instant"
+broken_features = []
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SOFTWARE\\Policies\\Microsoft\\Windows\\GameDVR"
+name = "AllowGameDVR"
+optimized_value = 0
+default_value = 1
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "consumer_features_disable"
+title = "Disable Windows Consumer Cloud Features"
+category = "OS Settings"
+description = "Prevents Windows from automatically downloading and installing third-party sponsored apps and games (e.g. TikTok, Disney, Candy Crush) during maintenance."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 3
+privacy_gain = 4
+reversibility = "Instant"
+broken_features = []
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SOFTWARE\\Policies\\Microsoft\\Windows\\CloudContent"
+name = "DisableWindowsConsumerFeatures"
+optimized_value = 1
+default_value = 0
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "disable_telemetry_scheduled_tasks"
+title = "Disable Feedback, Autochk & Maps Telemetry Tasks"
+category = "OS Settings"
+description = "Disables Windows Feedback Hub SIUF diagnostic prompts, Autochk telemetry proxy, and background Maps toast update tasks (curated from Sophia Script)."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 2
+privacy_gain = 4
+reversibility = "Instant"
+broken_features = ["Feedback Hub proactive survey notifications will be disabled"]
+
+[[tweaks.actions]]
+type = "ScheduledTask"
+task_path = "\\Microsoft\\Windows\\Autochk\\Proxy"
+enable = false
+
+[[tweaks.actions]]
+type = "ScheduledTask"
+task_path = "\\Microsoft\\Windows\\Feedback\\Siuf\\DmClient"
+enable = false
+
+[[tweaks.actions]]
+type = "ScheduledTask"
+task_path = "\\Microsoft\\Windows\\Feedback\\Siuf\\DmClientOnScenarioDownload"
+enable = false
+
+[[tweaks.actions]]
+type = "ScheduledTask"
+task_path = "\\Microsoft\\Windows\\Maps\\MapsToastTask"
+enable = false
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "disable_hpet_synthetic_timer"
+title = "Disable Dynamic Tick (Synthetic Kernel Timer)"
+category = "Hardware Tuning"
+description = "Disables dynamic tick power saving in the Windows NT kernel, preventing synthetic timer clock drift and enforcing reliable high-frequency Invariant TSC timer queries for ultra-low DPC latency."
+easy_mode_included = false
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Low"
+performance_gain = 4
+privacy_gain = 0
+reversibility = "Instant"
+broken_features = ["Slightly higher CPU power usage on idle"]
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SYSTEM\\CurrentControlSet\\Control\\Session Manager\\kernel"
+name = "DisableDynamicTick"
+optimized_value = 1
+default_value = 0
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "optimize_tcp_congestion_tuning"
+title = "Optimize Network TCP Congestion & Window Auto-Tuning"
+category = "Registry Lag"
+description = "Enables RFC 1323 high performance TCP timestamps and disables Web Services Dynamic Discovery (WSD) broadcast chatter to minimize network gaming latency and packet serialization lag."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 3
+privacy_gain = 0
+reversibility = "Instant"
+broken_features = []
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SYSTEM\\CurrentControlSet\\Services\\Tcpip\\Parameters"
+name = "EnableWsd"
+optimized_value = 0
+default_value = 1
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SYSTEM\\CurrentControlSet\\Services\\Tcpip\\Parameters"
+name = "Tcp1323Opts"
+optimized_value = 3
+default_value = 0
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "disable_windows_error_reporting"
+title = "Disable Windows Error Reporting Group Policy & Uploads"
+category = "OS Settings"
+description = "Enforces Windows Error Reporting Group Policy lock and disables sending additional diagnostic crash dump data to Microsoft servers."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 2
+privacy_gain = 3
+reversibility = "Instant"
+broken_features = ["Automatic error crash reports and telemetry uploads are blocked"]
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SOFTWARE\\Policies\\Microsoft\\Windows\\Windows Error Reporting"
+name = "Disabled"
+optimized_value = 1
+default_value = 0
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SOFTWARE\\Policies\\Microsoft\\Windows\\Windows Error Reporting"
+name = "DontSendAdditionalData"
+optimized_value = 1
+default_value = 0
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "disable_bing_search_start_menu"
+title = "Disable Start Menu Recommendations & Iris Ads"
+category = "OS Settings"
+description = "Removes sponsored Start Menu website/account recommendations, Iris tips, and Recently Added app clutter in Windows 10/11 Start layouts."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 2
+privacy_gain = 4
+reversibility = "Instant"
+broken_features = ["Promotional recommendations in Start Menu are hidden"]
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Software\\Policies\\Microsoft\\Windows\\Explorer"
+name = "HideRecentlyAddedApps"
+optimized_value = 1
+default_value = 0
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced"
+name = "Start_IrisRecommendations"
+optimized_value = 0
+default_value = 1
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "disable_cortana_autostart"
+title = "Disable Per-User Cortana Search & Taskbar Button"
+category = "OS Settings"
+description = "Disables per-user Cortana activation, search location permissions, and hides the Cortana taskbar entry."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 19041
+max_build = 21999
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 2
+privacy_gain = 4
+reversibility = "Instant"
+broken_features = ["Per-user Cortana taskbar search integration will be disabled"]
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Software\\Microsoft\\Windows\\CurrentVersion\\Search"
+name = "CanCortanaBeEnabled"
+optimized_value = 0
+default_value = 1
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Software\\Microsoft\\Windows\\CurrentVersion\\Search"
+name = "AllowSearchToUseLocation"
+optimized_value = 0
+default_value = 1
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced"
+name = "ShowCortanaButton"
+optimized_value = 0
+default_value = 1
+
+
+

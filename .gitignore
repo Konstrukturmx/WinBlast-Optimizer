@@ -1,0 +1,8 @@
+/target
+**/*.rs.bk
+*.pdb
+*.ilk
+winblast0_ledger.db
+winblast0_ledger.db-*
+.obsidian/workspace*
+.obsidian/cache*

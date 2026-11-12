@@ -1,0 +1,571 @@
+# =============================================================================
+# WinBlast0 — Hardware Tuning Tweaks
+# =============================================================================
+
+[[tweaks]]
+id = "enable_hags"
+title = "Enable Hardware Accelerated GPU Scheduling (HAGS)"
+category = "Hardware Tuning"
+description = "Enables Hardware Accelerated GPU Scheduling, allowing the GPU to manage its own VRAM scheduling directly. Reduces latency and CPU overhead for GPU-bound workloads. Requires a compatible GPU (NVIDIA GTX 1000+, AMD RX 5000+) and driver support."
+easy_mode_included = false
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Low"
+performance_gain = 3
+privacy_gain = 0
+reversibility = "RequiresReboot"
+broken_features = ["Some older games or GPU tools may exhibit instability"]
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SYSTEM\\CurrentControlSet\\Control\\GraphicsDrivers"
+name = "HwSchMode"
+optimized_value = 2
+default_value = 1
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "disable_mpo"
+title = "Disable Multi-Plane Overlay (MPO)"
+category = "Hardware Tuning"
+description = "Disables the Multi-Plane Overlay hardware compositor feature. MPO is known to cause stuttering, black screens, and frame pacing issues on many GPU/driver combinations, especially with mixed-refresh-rate multi-monitor setups."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 19041
+max_build = 25999
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 3
+privacy_gain = 0
+reversibility = "RequiresReboot"
+broken_features = ["Slightly higher GPU compositor power usage on laptops"]
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SOFTWARE\\Microsoft\\Windows\\Dwm"
+name = "OverlayTestMode"
+optimized_value = 5
+default_value = 0
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "disable_core_parking"
+title = "Disable CPU Core Parking"
+category = "Hardware Tuning"
+description = "Sets the minimum percentage of processor cores that must remain unparked to 100%, ensuring all cores are always available for workloads. Eliminates core wake-up latency at the cost of higher idle power."
+easy_mode_included = false
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Low"
+performance_gain = 3
+privacy_gain = 0
+reversibility = "Instant"
+broken_features = ["Higher idle power consumption", "Reduced battery life on laptops"]
+
+[[tweaks.actions]]
+type = "PowerCfgSetting"
+subgroup_guid = "54533251-82be-4824-96c1-47b60b740d00"
+setting_guid = "0cc5b647-c1df-4637-891a-dec35c318583"
+optimized_ac = 100
+optimized_dc = 100
+default_ac = 10
+default_dc = 5
+scope = "AcAndDc"
+unhide_attribute = true
+
+[[tweaks.actions]]
+type = "PowerCfgSetting"
+subgroup_guid = "54533251-82be-4824-96c1-47b60b740d00"
+setting_guid = "0cc5b647-c1df-4637-891a-dec35c318584"
+optimized_ac = 100
+optimized_dc = 100
+default_ac = 10
+default_dc = 5
+scope = "AcAndDc"
+unhide_attribute = true
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "disable_cstates"
+title = "Disable CPU Idle C-States"
+category = "Hardware Tuning"
+description = "Prevents the processor from entering deep idle C-states (C6/C7/C8) by setting the idle state policy to performance mode. Reduces latency spikes when the CPU transitions between power states, at the cost of idle power draw."
+easy_mode_included = false
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Moderate"
+performance_gain = 3
+privacy_gain = 0
+reversibility = "Instant"
+broken_features = ["Significantly higher idle power consumption", "Reduced battery life on laptops", "Higher CPU temperatures at idle"]
+
+[[tweaks.actions]]
+type = "PowerCfgSetting"
+subgroup_guid = "54533251-82be-4824-96c1-47b60b740d00"
+setting_guid = "5d76a2ca-e8c0-402f-a133-2158492d58ad"
+optimized_ac = 1
+optimized_dc = 1
+default_ac = 0
+default_dc = 0
+scope = "AcOnly"
+unhide_attribute = true
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "gpu_shader_cache_size"
+title = "Extend GPU TDR Timeout & Prevent Driver Resets"
+category = "Hardware Tuning"
+description = "Increases the WDDM Timeout Detection and Recovery (TdrDelay) interval from 2s to 10s, preventing false GPU driver resets and stutters during heavy DirectX shader compilation."
+easy_mode_included = false
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 2
+privacy_gain = 0
+reversibility = "Instant"
+broken_features = ["Display driver recovery waits up to 10s if a GPU hang genuinely occurs"]
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SYSTEM\\CurrentControlSet\\Control\\GraphicsDrivers"
+name = "TdrDelay"
+optimized_value = 10
+default_value = 2
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "enable_game_mode"
+title = "Enable Windows Game Mode"
+category = "Hardware Tuning"
+description = "Ensures Windows Game Mode is enabled (AutoGameModeEnabled=1, AllowAutoGameMode=1), useful if previously disabled or stripped, prioritizing gaming processes and suppressing Windows Update and restart notifications during gameplay."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 2
+privacy_gain = 0
+reversibility = "Instant"
+broken_features = []
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Software\\Microsoft\\GameBar"
+name = "AutoGameModeEnabled"
+optimized_value = 1
+default_value = 0
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Software\\Microsoft\\GameBar"
+name = "AllowAutoGameMode"
+optimized_value = 1
+default_value = 0
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "disable_fullscreen_optimizations"
+title = "Disable Fullscreen Optimizations Globally"
+category = "Hardware Tuning"
+description = "Disables the Windows fullscreen optimizations (borderless fullscreen hybrid) globally for all applications. This forces true exclusive fullscreen mode, which can reduce input latency and frame-time variance in older games."
+easy_mode_included = false
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Low"
+performance_gain = 2
+privacy_gain = 0
+reversibility = "Instant"
+broken_features = ["Alt-Tab from fullscreen games will be slower", "Game Bar overlay will not work in exclusive fullscreen"]
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "System\\GameConfigStore"
+name = "GameDVR_FSEBehaviorMode"
+optimized_value = 2
+default_value = 0
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "System\\GameConfigStore"
+name = "GameDVR_HonorUserFSEBehaviorMode"
+optimized_value = 1
+default_value = 0
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "System\\GameConfigStore"
+name = "GameDVR_FSEBehavior"
+optimized_value = 2
+default_value = 0
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "System\\GameConfigStore"
+name = "GameDVR_DXGIHonorFSEWindowsCompatible"
+optimized_value = 1
+default_value = 0
+
+# =============================================================================
+# GPU Vendor-Specific Silicon Optimizations
+# =============================================================================
+
+# --- AMD Silicon Tweaks ---
+
+[[tweaks]]
+id = "4433ce93-b632-4d67-ae71-0241c31099c0"
+title = "Disable AMD ULPS"
+category = "GPU Tuning"
+gpu_vendor = "AMD"
+description = "Disables Ultra Low Power State (ULPS) in the AMD Radeon driver stack. Prevents secondary GPU cores or sleep states from waking up with micro-stutters and frame latency spikes during 3D gaming."
+easy_mode_included = false
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 3
+privacy_gain = 0
+reversibility = "RequiresReboot"
+broken_features = ["Slightly higher idle power consumption on AMD multi-GPU / crossfire laptops"]
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SYSTEM\\CurrentControlSet\\Control\\Class\\{4d36e968-e325-11ce-bfc1-08002be10318}\\0000"
+name = "EnableUlps"
+optimized_value = 0
+default_value = 1
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "8a4b4c4d-000e-42db-8bd7-293067f8fae7"
+title = "Disable AMD ASPM"
+category = "GPU Tuning"
+gpu_vendor = "AMD"
+description = "Disables PCIe Active State Power Management for AMD graphics cards. Prevents the PCIe bus link from transitioning to low-power L0s/L1 states during frame render gaps, reducing PCIe bus transmission jitter."
+easy_mode_included = false
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Low"
+performance_gain = 3
+privacy_gain = 0
+reversibility = "RequiresReboot"
+broken_features = ["Increased PCIe bus idle power consumption"]
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SYSTEM\\CurrentControlSet\\Control\\Class\\{4d36e968-e325-11ce-bfc1-08002be10318}\\0000"
+name = "EnableAspmL0s"
+optimized_value = 0
+default_value = 1
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SYSTEM\\CurrentControlSet\\Control\\Class\\{4d36e968-e325-11ce-bfc1-08002be10318}\\0000"
+name = "EnableAspmL1"
+optimized_value = 0
+default_value = 1
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "a3836587-c461-4beb-9c4c-88493b36c138"
+title = "Disable AMD Power Gating"
+category = "GPU Tuning"
+gpu_vendor = "AMD"
+description = "Disables aggressive dynamic power gating across AMD compute units and render backends (DisablePowerGating=1, PP_GPUPowerDownEnabled=0). Sustains continuous clock frequencies without throttling."
+easy_mode_included = false
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Low"
+performance_gain = 3
+privacy_gain = 0
+reversibility = "RequiresReboot"
+broken_features = ["Higher GPU die temperatures at low utilization"]
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SYSTEM\\CurrentControlSet\\Control\\Class\\{4d36e968-e325-11ce-bfc1-08002be10318}\\0000"
+name = "DisablePowerGating"
+optimized_value = 1
+default_value = 0
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SYSTEM\\CurrentControlSet\\Control\\Class\\{4d36e968-e325-11ce-bfc1-08002be10318}\\0000"
+name = "PP_GPUPowerDownEnabled"
+optimized_value = 0
+default_value = 1
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "db379bb5-fc8c-4ad3-be32-11be09e76fba"
+title = "Disable AMD Video Clock Gating"
+category = "GPU Tuning"
+gpu_vendor = "AMD"
+description = "Prevents clock and power gating on AMD VCE/UVD multimedia and hardware display engines (DisableVCEPowerGating=1, DisableVceClockGating=1, EnableUvdClockGating=0, EnableVceSwClockGating=0). Eliminates DPC latency spikes."
+easy_mode_included = false
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Low"
+performance_gain = 2
+privacy_gain = 0
+reversibility = "RequiresReboot"
+broken_features = []
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SYSTEM\\CurrentControlSet\\Control\\Class\\{4d36e968-e325-11ce-bfc1-08002be10318}\\0000"
+name = "DisableVCEPowerGating"
+optimized_value = 1
+default_value = 0
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SYSTEM\\CurrentControlSet\\Control\\Class\\{4d36e968-e325-11ce-bfc1-08002be10318}\\0000"
+name = "DisableVceClockGating"
+optimized_value = 1
+default_value = 0
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SYSTEM\\CurrentControlSet\\Control\\Class\\{4d36e968-e325-11ce-bfc1-08002be10318}\\0000"
+name = "EnableUvdClockGating"
+optimized_value = 0
+default_value = 1
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SYSTEM\\CurrentControlSet\\Control\\Class\\{4d36e968-e325-11ce-bfc1-08002be10318}\\0000"
+name = "EnableVceSwClockGating"
+optimized_value = 0
+default_value = 1
+
+# --- Intel Silicon Tweaks ---
+
+[[tweaks]]
+id = "df8739ff-e322-4958-b369-df584bb9b0c1"
+title = "Disable Intel Async Flips"
+category = "GPU Tuning"
+gpu_vendor = "Intel"
+description = "Sets Display1_DisableAsyncFlips=1 on Intel Graphics display adapter class keys to enforce synchronized display engine flips and eliminate presentation queue jitter."
+easy_mode_included = false
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 2
+privacy_gain = 0
+reversibility = "RequiresReboot"
+broken_features = []
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SYSTEM\\CurrentControlSet\\Control\\Class\\{4d36e968-e325-11ce-bfc1-08002be10318}\\0000"
+name = "Display1_DisableAsyncFlips"
+optimized_value = 1
+default_value = 0
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "ebfb0ded-5d1a-4cd1-b5c0-4f7018dd6054"
+title = "Disable Intel Adaptive V-Sync"
+category = "GPU Tuning"
+gpu_vendor = "Intel"
+description = "Sets AdaptiveVsyncEnable=0 on Intel Graphics display adapter class keys to prevent adaptive refresh throttling when frame rates dip below monitor refresh."
+easy_mode_included = false
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 2
+privacy_gain = 0
+reversibility = "RequiresReboot"
+broken_features = []
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SYSTEM\\CurrentControlSet\\Control\\Class\\{4d36e968-e325-11ce-bfc1-08002be10318}\\0000"
+name = "AdaptiveVsyncEnable"
+optimized_value = 0
+default_value = 1
+
+# --- NVIDIA Silicon Tweaks ---
+
+[[tweaks]]
+id = "fa58802f-b98c-4e98-aa67-067c5a394296"
+title = "Disable NVIDIA Dynamic P-State"
+category = "GPU Tuning"
+gpu_vendor = "NVIDIA"
+sub_category = "Power"
+description = "Sets DisableDynamicPstate=1 to lock NVIDIA GPU into fixed performance state, preventing clock speed fluctuations. Increases idle power draw."
+easy_mode_included = false
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 4
+privacy_gain = 0
+reversibility = "RequiresReboot"
+broken_features = ["Increases idle GPU power draw and heat"]
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SYSTEM\\CurrentControlSet\\Control\\Class\\{4d36e968-e325-11ce-bfc1-08002be10318}\\0000"
+name = "DisableDynamicPstate"
+optimized_value = 1
+default_value = 0
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "9e7702be-9e03-4c96-a316-c4e435cb993e"
+title = "Disable NVIDIA Async P-States"
+category = "GPU Tuning"
+gpu_vendor = "NVIDIA"
+sub_category = "Performance"
+description = "Sets DisableAsyncPstates=1 to prevent NVIDIA asynchronous power state switching, providing deterministic performance for VR/real-time apps."
+easy_mode_included = false
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Moderate"
+performance_gain = 3
+privacy_gain = 0
+reversibility = "RequiresReboot"
+broken_features = ["May prevent GPU memory downclocking during video playback"]
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SYSTEM\\CurrentControlSet\\Control\\Class\\{4d36e968-e325-11ce-bfc1-08002be10318}\\0000"
+name = "DisableAsyncPstates"
+optimized_value = 1
+default_value = 0
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "5f1a2b3c-4d5e-6f7a-8b9c-0d1e2f3a4b5c"
+title = "Enable NVIDIA Maximum Performance PowerMizer"
+category = "GPU Tuning"
+gpu_vendor = "NVIDIA"
+sub_category = "Power & Clocks"
+description = "Enforces PowerMizer maximum performance mode on AC power, locking PCIe bus and memory controllers to full speed without throttling."
+easy_mode_included = false
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 3
+privacy_gain = 0
+reversibility = "RequiresReboot"
+broken_features = ["Higher GPU temperatures and idle fan speed"]
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SYSTEM\\CurrentControlSet\\Control\\Class\\{4d36e968-e325-11ce-bfc1-08002be10318}\\0000"
+name = "PowerMizerLevel"
+optimized_value = 1
+default_value = 2
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SYSTEM\\CurrentControlSet\\Control\\Class\\{4d36e968-e325-11ce-bfc1-08002be10318}\\0000"
+name = "PowerMizerLevelAC"
+optimized_value = 1
+default_value = 2
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SYSTEM\\CurrentControlSet\\Control\\Class\\{4d36e968-e325-11ce-bfc1-08002be10318}\\0000"
+name = "PerfLevelSrc"
+optimized_value = 8738
+default_value = 13107

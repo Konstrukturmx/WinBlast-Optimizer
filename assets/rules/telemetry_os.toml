@@ -1,0 +1,405 @@
+# =============================================================================
+# WinBlast0 — Windows OS Telemetry Tweaks
+# =============================================================================
+
+[[tweaks]]
+id = "disable_diagtrack"
+title = "Disable DiagTrack (Connected User Experiences and Telemetry)"
+category = "Telemetry (OS)"
+description = "Disables the Connected User Experiences and Telemetry service (DiagTrack / diagsvc), which is the primary Windows telemetry collection service."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Low"
+performance_gain = 2
+privacy_gain = 5
+reversibility = "Instant"
+broken_features = ["Diagnostic data will not be sent to Microsoft"]
+
+[[tweaks.actions]]
+type = "ServiceState"
+service_name = "DiagTrack"
+target_start_type = 4
+default_start_type = 2
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "disable_dmwappushservice"
+title = "Disable dmwappushservice (WAP Push Message Routing)"
+category = "Telemetry (OS)"
+description = "Disables the Device Management Wireless Application Protocol (WAP) Push message routing service, used for telemetry data routing."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Low"
+performance_gain = 1
+privacy_gain = 4
+reversibility = "Instant"
+broken_features = ["MDM push messages will not be received"]
+
+[[tweaks.actions]]
+type = "ServiceState"
+service_name = "dmwappushservice"
+target_start_type = 4
+default_start_type = 3
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "disable_telemetry_registry"
+title = "Disable Telemetry via AllowTelemetry Registry"
+category = "Telemetry (OS)"
+description = "Sets the AllowTelemetry policy to 0 (Security/Off), the lowest telemetry level. On Enterprise and Education editions this fully disables telemetry; on Home and Pro it reduces it to the minimum required level."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Low"
+performance_gain = 1
+privacy_gain = 5
+reversibility = "Instant"
+broken_features = ["Some Windows Insider and diagnostic features may not work"]
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SOFTWARE\\Policies\\Microsoft\\Windows\\DataCollection"
+name = "AllowTelemetry"
+optimized_value = 0
+default_value = 3
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\DataCollection"
+name = "AllowTelemetry"
+optimized_value = 0
+default_value = 3
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "disable_compat_telrunner"
+title = "Disable Application Compatibility Appraiser Tasks"
+category = "Telemetry (OS)"
+description = "Disables the Microsoft Compatibility Appraiser and ProgramDataUpdater scheduled tasks that run CompatTelRunner.exe, which scans installed software and sends compatibility telemetry."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Low"
+performance_gain = 3
+privacy_gain = 4
+reversibility = "Instant"
+broken_features = ["Windows upgrade compatibility checks will not run automatically"]
+
+[[tweaks.actions]]
+type = "ScheduledTask"
+task_path = "\\Microsoft\\Windows\\Application Experience\\Microsoft Compatibility Appraiser"
+enable = false
+
+[[tweaks.actions]]
+type = "ScheduledTask"
+task_path = "\\Microsoft\\Windows\\Application Experience\\ProgramDataUpdater"
+enable = false
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "disable_ceip"
+title = "Disable Customer Experience Improvement Program (CEIP)"
+category = "Telemetry (OS)"
+description = "Disables CEIP scheduled tasks (Consolidator, UsbCeip, KernelCeipTask) and the CEIP policy registry key."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 1
+privacy_gain = 4
+reversibility = "Instant"
+broken_features = ["CEIP telemetry data will not be collected"]
+
+[[tweaks.actions]]
+type = "ScheduledTask"
+task_path = "\\Microsoft\\Windows\\Customer Experience Improvement Program\\Consolidator"
+enable = false
+
+[[tweaks.actions]]
+type = "ScheduledTask"
+task_path = "\\Microsoft\\Windows\\Customer Experience Improvement Program\\UsbCeip"
+enable = false
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SOFTWARE\\Policies\\Microsoft\\SQMClient\\Windows"
+name = "CEIPEnable"
+optimized_value = 0
+default_value = 1
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "disable_wer_service"
+title = "Disable Windows Error Reporting Service"
+category = "Telemetry (OS)"
+description = "Disables the Windows Error Reporting service (WerSvc), preventing crash reports and error telemetry from being uploaded to Microsoft."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Low"
+performance_gain = 1
+privacy_gain = 3
+reversibility = "Instant"
+broken_features = ["Crash reports will not be sent to Microsoft", "Problem Reports history will not be updated"]
+
+[[tweaks.actions]]
+type = "ServiceState"
+service_name = "WerSvc"
+target_start_type = 4
+default_start_type = 3
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "disable_connected_user_experiences"
+title = "Disable Connected User Experiences and Suggestions"
+category = "Telemetry (OS)"
+description = "Disables suggestions in the Settings app, Start menu, and lock screen driven by cloud-based content and telemetry feedback."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 1
+privacy_gain = 4
+reversibility = "Instant"
+broken_features = ["Windows suggestions and tips will not appear"]
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Software\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager"
+name = "SystemPaneSuggestionsEnabled"
+optimized_value = 0
+default_value = 1
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Software\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager"
+name = "SoftLandingEnabled"
+optimized_value = 0
+default_value = 1
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "disable_diagnostic_data_viewer"
+title = "Disable Diagnostic Data Viewer"
+category = "Telemetry (OS)"
+description = "Disables the Diagnostic Data Viewer event logging, which stores a local copy of diagnostic data sent to Microsoft. Frees disk I/O and storage."
+easy_mode_included = false
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 1
+privacy_gain = 2
+reversibility = "Instant"
+broken_features = ["Cannot view diagnostic data locally via the Diagnostic Data Viewer app"]
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Diagnostics\\DiagTrack\\EventTranscriptKey"
+name = "EnableEventTranscript"
+optimized_value = 0
+default_value = 1
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "disable_delivery_optimization_p2p"
+title = "Disable Delivery Optimization P2P Upload Bandwidth Stealing"
+category = "Telemetry (OS)"
+description = "Restricts Windows Delivery Optimization (DODownloadMode = 0), stopping Windows from using your upload bandwidth to seed Windows updates to random PCs across the internet."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 4
+privacy_gain = 3
+reversibility = "Instant"
+broken_features = []
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SOFTWARE\\Policies\\Microsoft\\Windows\\DeliveryOptimization"
+name = "DODownloadMode"
+optimized_value = 0
+default_value = 1
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "disable_diagnostic_execution_service"
+title = "Disable Diagnostic Execution Service (diagsvc)"
+category = "Telemetry (OS)"
+description = "Disables the Diagnostic Execution Service (diagsvc), which performs scheduled background diagnostics and telemetry package executions."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 2
+privacy_gain = 4
+reversibility = "Instant"
+broken_features = []
+
+[[tweaks.actions]]
+type = "ServiceState"
+service_name = "diagsvc"
+target_start_type = 4
+default_start_type = 3
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "wersvc_service_disable"
+title = "Disable Diagnostics Hub Standard Collector"
+category = "Telemetry (OS)"
+description = "Disables the Visual Studio / Windows Diagnostics Hub Standard Collector Service, stopping background ETW tracing collectors when idle."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 2
+privacy_gain = 4
+reversibility = "Instant"
+broken_features = ["VS/Windows Diagnostics Hub trace collection requires manual start"]
+
+[[tweaks.actions]]
+type = "ServiceState"
+service_name = "diagnosticshub.standardcollector.service"
+target_start_type = 4
+default_start_type = 3
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "disable_remote_registry"
+title = "Disable Remote Registry Service"
+category = "Telemetry (OS)"
+description = "Disables the RemoteRegistry service, preventing remote users and external network entities from querying or modifying local registry keys."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 1
+privacy_gain = 4
+reversibility = "Instant"
+broken_features = ["Remote administrative management of registry over local LAN will be disabled"]
+
+[[tweaks.actions]]
+type = "ServiceState"
+service_name = "RemoteRegistry"
+target_start_type = 4
+default_start_type = 3
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "disable_disk_diagnostic_task"
+title = "Disable Disk Diagnostic Telemetry Task"
+category = "Telemetry (OS)"
+description = "Disables the scheduled task collecting disk usage metrics and hardware diagnostics for telemetry reporting."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 2
+privacy_gain = 3
+reversibility = "Instant"
+broken_features = []
+
+[[tweaks.actions]]
+type = "ScheduledTask"
+task_path = "\\Microsoft\\Windows\\DiskDiagnostic\\Microsoft-Windows-DiskDiagnosticDataCollector"
+enable = false
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "disable_winsat_task"
+title = "Disable WinSAT Background Benchmark Task"
+category = "Telemetry (OS)"
+description = "Disables the scheduled Windows System Assessment Tool task from running unprompted disk and GPU benchmark stress tests during system idle."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 3
+privacy_gain = 1
+reversibility = "Instant"
+broken_features = []
+
+[[tweaks.actions]]
+type = "ScheduledTask"
+task_path = "\\Microsoft\\Windows\\Maintenance\\WinSAT"
+enable = false
+
+

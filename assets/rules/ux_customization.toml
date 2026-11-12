@@ -1,0 +1,630 @@
+# =============================================================================
+# WinBlast0 v0.7.0 — UX, Explorer, VisualEffects, Taskbar, Themes & Sound Rules
+# Zero HKCR usage (HKCU\Software\Classes only). Zero duplicate targets against
+# os_settings.toml or registry_lag.toml. Ported from Winhance & optimizerDuck.
+# =============================================================================
+
+[[tweaks]]
+id = "enable_classic_context_menu"
+title = "Restore Full Classic Windows 10 Right-Click Context Menu"
+category = "OS Settings"
+description = "Registers the CLSID override under HKCU\\Software\\Classes so right-clicking opens the complete context menu immediately without an extra 'Show more options' click."
+easy_mode_included = true
+unattend_safe = true
+
+[tweaks.os_req]
+min_build = 22000
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 2
+privacy_gain = 0
+reversibility = "RequiresLogoff"
+broken_features = ["Modern compact Win11 context menu replaced by classic full menu"]
+
+[[tweaks.actions]]
+type = "RegistryString"
+hive = "HKCU"
+path = "Software\\Classes\\CLSID\\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\\InprocServer32"
+name = ""
+optimized_value = ""
+default_value = "__ABSENT__"
+absent_is_default = true
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "explorer_power_user_defaults"
+title = "Show File Extensions, Full Titlebar Path, This PC Launch & Hide Sync Nags"
+category = "OS Settings"
+description = "Shows known file extensions, shows hidden files, launches Explorer directly to 'This PC' instead of Quick Access, enables title bar full paths and compact item spacing, and hides OneDrive/sync provider banners in Explorer."
+easy_mode_included = true
+unattend_safe = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 2
+privacy_gain = 1
+reversibility = "Instant"
+broken_features = []
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced"
+name = "HideFileExt"
+optimized_value = 0
+default_value = 1
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced"
+name = "Hidden"
+optimized_value = 1
+default_value = 2
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced"
+name = "LaunchTo"
+optimized_value = 1
+default_value = 2
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced"
+name = "ShowSyncProviderNotifications"
+optimized_value = 0
+default_value = 1
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced"
+name = "UseCompactMode"
+optimized_value = 1
+default_value = 0
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\CabinetState"
+name = "FullPath"
+optimized_value = 1
+default_value = 0
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "explorer_hide_win11_home_gallery_nav"
+title = "Hide Cluttered Home & Gallery Pins from File Explorer Navigation Pane"
+category = "OS Settings"
+description = "Unpins Windows 11 Home and Gallery entries from the File Explorer left navigation pane via HKCU\\Software\\Classes\\CLSID."
+easy_mode_included = false
+unattend_safe = true
+
+[tweaks.os_req]
+min_build = 22621
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 1
+privacy_gain = 0
+reversibility = "Instant"
+broken_features = ["Home & Gallery quick links hidden from Explorer left sidebar"]
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Software\\Classes\\CLSID\\{f874310e-b6b7-47dc-bc84-b9e6b38f5903}"
+name = "System.IsPinnedToNameSpaceTree"
+optimized_value = 0
+default_value = 1
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Software\\Classes\\CLSID\\{e88865ea-0e1c-4e20-9aa6-edcd0212c87c}"
+name = "System.IsPinnedToNameSpaceTree"
+optimized_value = 0
+default_value = 1
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "explorer_disable_startup_delay_and_jpeg_compression"
+title = "Eliminate App Startup Delay & Disable Wallpaper JPEG Compression"
+category = "OS Settings"
+description = "Sets Explorer\\Serialize\\StartupDelayInMSec=0 so startup programs launch without artificial 10s throttling, and sets JPEGImportQuality=100 for lossless desktop wallpapers."
+easy_mode_included = true
+unattend_safe = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 3
+privacy_gain = 0
+reversibility = "RequiresLogoff"
+broken_features = []
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Serialize"
+name = "StartupDelayInMSec"
+optimized_value = 0
+default_value = 10000
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Control Panel\\Desktop"
+name = "JPEGImportQuality"
+optimized_value = 100
+default_value = 85
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "explorer_desktop_this_pc_and_disable_autoplay"
+title = "Show 'This PC' Desktop Icon & Disable Removable Media Autoplay"
+category = "OS Settings"
+description = "Places the 'This PC' shortcut icon on Desktop and turns off Autoplay/AutoRun across removable USB/optical drives to block automatic media popups and autorun threats."
+easy_mode_included = true
+unattend_safe = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 1
+privacy_gain = 2
+reversibility = "Instant"
+broken_features = ["Plugged USB/SD media no longer auto-opens prompts"]
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\HideDesktopIcons\\NewStartPanel"
+name = "{20D04FE0-3AEA-1069-A2D8-08002B30309D}"
+optimized_value = 0
+default_value = 1
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\AutoplayHandlers"
+name = "DisableAutoplay"
+optimized_value = 1
+default_value = 0
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer"
+name = "NoDriveTypeAutoRun"
+optimized_value = 255
+default_value = 145
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "disable_visual_effects_userpreferencesmask_bits"
+title = "Strip Heavy UI Fade/Slide/Shadow Animations via UserPreferencesMask Bitfields & DWM"
+category = "OS Settings"
+description = "Uses surgical bit-masked mutations on UserPreferencesMask (disabling menu fade/slide, tooltip fade, menu selection fade, cursor shadow, combo slide, smooth listbox scroll, and UI control animations while preserving font smoothing & desktop basics) plus EnableAeroPeek=0."
+easy_mode_included = true
+unattend_safe = false
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 3
+privacy_gain = 0
+reversibility = "RequiresLogoff"
+broken_features = ["Classic snappy UI transitions without slide/fade animations or drop shadows"]
+
+[[tweaks.actions]]
+type = "RegistryBinaryBit"
+hive = "HKCU"
+path = "Control Panel\\Desktop"
+name = "UserPreferencesMask"
+byte_index = 4
+min_length = 8
+bit_mask = 2
+optimized_bits = 0
+default_bits = 2
+create_if_missing = true
+default_full_hex = "9e3e078012000000"
+
+[[tweaks.actions]]
+type = "RegistryBinaryBit"
+hive = "HKCU"
+path = "Control Panel\\Desktop"
+name = "UserPreferencesMask"
+byte_index = 0
+min_length = 8
+bit_mask = 2
+optimized_bits = 0
+default_bits = 2
+create_if_missing = true
+default_full_hex = "9e3e078012000000"
+
+[[tweaks.actions]]
+type = "RegistryBinaryBit"
+hive = "HKCU"
+path = "Control Panel\\Desktop"
+name = "UserPreferencesMask"
+byte_index = 0
+min_length = 8
+bit_mask = 4
+optimized_bits = 0
+default_bits = 4
+create_if_missing = true
+default_full_hex = "9e3e078012000000"
+
+[[tweaks.actions]]
+type = "RegistryBinaryBit"
+hive = "HKCU"
+path = "Control Panel\\Desktop"
+name = "UserPreferencesMask"
+byte_index = 0
+min_length = 8
+bit_mask = 8
+optimized_bits = 0
+default_bits = 8
+create_if_missing = true
+default_full_hex = "9e3e078012000000"
+
+[[tweaks.actions]]
+type = "RegistryBinaryBit"
+hive = "HKCU"
+path = "Control Panel\\Desktop"
+name = "UserPreferencesMask"
+byte_index = 1
+min_length = 8
+bit_mask = 4
+optimized_bits = 0
+default_bits = 4
+create_if_missing = true
+default_full_hex = "9e3e078012000000"
+
+[[tweaks.actions]]
+type = "RegistryBinaryBit"
+hive = "HKCU"
+path = "Control Panel\\Desktop"
+name = "UserPreferencesMask"
+byte_index = 1
+min_length = 8
+bit_mask = 8
+optimized_bits = 0
+default_bits = 8
+create_if_missing = true
+default_full_hex = "9e3e078012000000"
+
+[[tweaks.actions]]
+type = "RegistryBinaryBit"
+hive = "HKCU"
+path = "Control Panel\\Desktop"
+name = "UserPreferencesMask"
+byte_index = 1
+min_length = 8
+bit_mask = 32
+optimized_bits = 0
+default_bits = 32
+create_if_missing = true
+default_full_hex = "9e3e078012000000"
+
+[[tweaks.actions]]
+type = "RegistryBinaryBit"
+hive = "HKCU"
+path = "Control Panel\\Desktop"
+name = "UserPreferencesMask"
+byte_index = 2
+min_length = 8
+bit_mask = 4
+optimized_bits = 0
+default_bits = 4
+create_if_missing = true
+default_full_hex = "9e3e078012000000"
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Software\\Microsoft\\Windows\\DWM"
+name = "EnableAeroPeek"
+optimized_value = 0
+default_value = 1
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "taskbar_win11_power_layout_and_end_task"
+title = "Left-Align Win11 Taskbar, Hide Widgets/TaskView/Search, Enable Taskbar End-Task (Pro/Ent Policy)"
+category = "OS Settings"
+description = "Left-aligns taskbar icons (TaskbarAl=0), removes Task View and Widgets clutter (TaskbarDa=0), hides taskbar Search box, enables right-click 'End Task' in taskbar developer settings, disables Aero Shake minimize, and removes Start menu 'Recommended' bloat (Windows 11 22H2+ Pro/Enterprise/Education)."
+easy_mode_included = false
+unattend_safe = true
+
+[tweaks.os_req]
+min_build = 22621
+editions = ["Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 1
+privacy_gain = 1
+reversibility = "Instant"
+broken_features = ["Taskbar icons align left; Task View & Widgets buttons hidden"]
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced"
+name = "TaskbarAl"
+optimized_value = 0
+default_value = 1
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced"
+name = "TaskbarDa"
+optimized_value = 0
+default_value = 1
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced"
+name = "ShowTaskViewButton"
+optimized_value = 0
+default_value = 1
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\\TaskbarDeveloperSettings"
+name = "TaskbarEndTask"
+optimized_value = 1
+default_value = 0
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Software\\Microsoft\\Windows\\CurrentVersion\\Search"
+name = "SearchboxTaskbarMode"
+optimized_value = 0
+default_value = 2
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced"
+name = "DisallowShaking"
+optimized_value = 1
+default_value = 0
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Software\\Policies\\Microsoft\\Windows\\Explorer"
+name = "HideRecommendedSection"
+optimized_value = 1
+default_value = 0
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "hide_win10_meet_now_tray"
+title = "Hide Windows 10 'Meet Now' Camera Tray Icon"
+category = "OS Settings"
+description = "Hides the Skype 'Meet Now' icon from the Windows 10 notification area (Windows 10 builds only)."
+easy_mode_included = true
+unattend_safe = true
+
+[tweaks.os_req]
+min_build = 19041
+max_build = 21999
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 1
+privacy_gain = 0
+reversibility = "Instant"
+broken_features = []
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer"
+name = "HideSCAMeetNow"
+optimized_value = 1
+default_value = 0
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "enable_windows_dark_mode_and_clock_seconds"
+title = "Enable Windows System & App Dark Mode + Taskbar Clock Seconds"
+category = "OS Settings"
+description = "Switches AppsUseLightTheme=0 and SystemUsesLightTheme=0 for native Dark Mode across Windows UI, and displays live seconds in the taskbar clock."
+easy_mode_included = false
+unattend_safe = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 0
+privacy_gain = 0
+reversibility = "Instant"
+broken_features = []
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize"
+name = "AppsUseLightTheme"
+optimized_value = 0
+default_value = 1
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize"
+name = "SystemUsesLightTheme"
+optimized_value = 0
+default_value = 1
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced"
+name = "ShowSecondsInSystemClock"
+optimized_value = 1
+default_value = 0
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "disable_startup_sound_and_audio_ducking"
+title = "Disable Windows Boot Startup Sound & Call Audio Volume Ducking"
+category = "OS Settings"
+description = "Silences the Windows logon chime and stops Windows from lowering game/music volume by 80% when Discord, Teams, or voice apps open a communications stream."
+easy_mode_included = true
+unattend_safe = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 1
+privacy_gain = 0
+reversibility = "Instant"
+broken_features = []
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "Software\\Microsoft\\Windows\\CurrentVersion\\Authentication\\LogonUI\\BootAnimation"
+name = "DisableStartupSound"
+optimized_value = 1
+default_value = 0
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Software\\Microsoft\\Multimedia\\Audio"
+name = "UserDuckingPreference"
+optimized_value = 3
+default_value = 1
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "enable_verbose_logon_status"
+title = "Enable Verbose Windows Boot / Sign-In / Shutdown Status Messages"
+category = "OS Settings"
+description = "Sets VerboseStatus=1 so Windows displays exact service/update stages instead of generic spinner screens."
+easy_mode_included = false
+unattend_safe = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 0
+privacy_gain = 0
+reversibility = "Instant"
+broken_features = []
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System"
+name = "VerboseStatus"
+optimized_value = 1
+default_value = 0
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "disable_lock_screen_pro"
+title = "Bypass Pre-Logon Lock Screen Curtain (Pro/Enterprise Policy)"
+category = "OS Settings"
+description = "Jumps directly to the password/PIN sign-in prompt after boot or lock without needing to dismiss the Lock Screen photo first."
+easy_mode_included = false
+unattend_safe = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 1
+privacy_gain = 0
+reversibility = "Instant"
+broken_features = ["Lock screen slide-up curtain bypassed on Pro/Enterprise editions"]
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SOFTWARE\\Policies\\Microsoft\\Windows\\Personalization"
+name = "NoLockScreen"
+optimized_value = 1
+default_value = 0
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "enable_windows_developer_mode"
+title = "Enable Windows Developer Mode (Unpack Sideloaded Apps & Symlinks)"
+category = "OS Settings"
+description = "Enables AllowDevelopmentWithoutDevLicense=1 so users can create filesystem symbolic links without UAC and sideload MSIX/AppX builds."
+easy_mode_included = false
+unattend_safe = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Low"
+performance_gain = 0
+privacy_gain = 0
+reversibility = "Instant"
+broken_features = ["Allows unsigned MSIX sideloading; intended for developers"]
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\AppModelUnlock"
+name = "AllowDevelopmentWithoutDevLicense"
+optimized_value = 1
+default_value = 0

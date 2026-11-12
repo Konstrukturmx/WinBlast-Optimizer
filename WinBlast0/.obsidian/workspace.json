@@ -1,0 +1,224 @@
+{
+  "main": {
+    "id": "6a4e9ce6066105a4",
+    "type": "split",
+    "children": [
+      {
+        "id": "036ed7cf3fc4637b",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "f09f24063dc14b22",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Architecture/Pure-Rust Rune UI Engine.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "Pure-Rust Rune UI Engine"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "f5809d6b1558e8c4",
+    "type": "split",
+    "children": [
+      {
+        "id": "084a093b39a34442",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "49c23a06a9ec81e3",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-folder-closed",
+              "title": "Files"
+            }
+          },
+          {
+            "id": "93f3785c21c5c84a",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "Search"
+            }
+          },
+          {
+            "id": "2afa29e4480a16e0",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-bookmark",
+              "title": "Bookmarks"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "1119bf09689b6403",
+    "type": "split",
+    "children": [
+      {
+        "id": "8e0cb969a487c05d",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "cca6a38045760542",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "Backlinks"
+            }
+          },
+          {
+            "id": "b896a22e802fc897",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "Outgoing links"
+            }
+          },
+          {
+            "id": "9fc6858940a1d932",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "Tags"
+            }
+          },
+          {
+            "id": "3f145d0f94f90e7b",
+            "type": "leaf",
+            "state": {
+              "type": "all-properties",
+              "state": {
+                "sortOrder": "frequency",
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-archive",
+              "title": "All properties"
+            }
+          },
+          {
+            "id": "988fa9dc83b1d38c",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "Outline"
+            }
+          },
+          {
+            "id": "c57153b18b404885",
+            "type": "leaf",
+            "state": {
+              "type": "antigravity-hub-view",
+              "state": {},
+              "icon": "sparkles",
+              "title": "Antigravity hub"
+            }
+          }
+        ],
+        "currentTab": 5
+      }
+    ],
+    "direction": "horizontal",
+    "width": 651.9000244140625
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false,
+      "bases:Create new base": false,
+      "antigravity-cli:Open Antigravity": false,
+      "antigravity:Antigravity": false
+    }
+  },
+  "active": "f09f24063dc14b22",
+  "lastOpenFiles": [
+    "Core & Internals/NT Kernel Timer Resolution (ntdll).md",
+    "Project History/Roadmap & Future Vision.md",
+    "Project History/Changelog v0.1.0 to v0.2.0.md",
+    "Project History/Changelog v0.5.0 to v0.6.0.md",
+    "00 - Index (MOC).md",
+    "Architecture/Comprehensive i18n & Localization Architecture.md",
+    "Architecture/CPU Core Parking & Dynamic Scheduling.md",
+    "Architecture/Hardware & GPU Low-Level Tuning.md",
+    "Architecture/Multi-Engine Scanning Subsystem.md",
+    "Verification & Testing/Debugging & Edge Cases Resolved.md",
+    "Tweak Catalog/Registry Lag & Kernel Scheduling.md",
+    "Tweak Catalog/Privacy & Telemetry Shield.md",
+    "Tweak Catalog/OS Settings & Windows 11 AI.md",
+    "Tweak Catalog/Hardware Tuning & MSI Mode.md",
+    "Tweak Catalog/Catalog Overview & Risk Model.md",
+    "Core & Internals/Windows OS Detection & Edition Aliases.md",
+    "Core & Internals/SQLite WAL Transaction Ledger.md",
+    "Core & Internals/Privilege & Elevation Token Verification.md",
+    "Architecture/State Ledger & Rollback Engine.md",
+    "Architecture/Pure-Rust Rune UI Engine.md",
+    "Welcome.md"
+  ]
+}

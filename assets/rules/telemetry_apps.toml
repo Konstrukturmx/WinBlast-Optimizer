@@ -1,0 +1,238 @@
+# =============================================================================
+# WinBlast0 — Third-Party Application Telemetry Tweaks
+# =============================================================================
+
+[[tweaks]]
+id = "disable_nvidia_telemetry_service"
+title = "Disable NVIDIA Telemetry Container Service"
+category = "Telemetry (Apps)"
+description = "Disables the NvTelemetryContainer service, which collects and transmits NVIDIA driver usage statistics and crash data."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 1
+privacy_gain = 4
+reversibility = "Instant"
+broken_features = ["NVIDIA crash data and usage telemetry will not be collected"]
+
+[[tweaks.actions]]
+type = "ServiceState"
+service_name = "NvTelemetryContainer"
+target_start_type = 4
+default_start_type = 2
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "disable_nvidia_telemetry_tasks"
+title = "Disable NVIDIA Telemetry Scheduled Tasks"
+category = "Telemetry (Apps)"
+description = "Disables the NvTmMon, NvTmRep, and NvProfile scheduled tasks that periodically report NVIDIA telemetry data."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 1
+privacy_gain = 3
+reversibility = "Instant"
+broken_features = []
+
+[[tweaks.actions]]
+type = "ScheduledTask"
+task_path = "\\NvTmMon_{B2FE1952-0186-46C3-BAEC-A80AA35AC5B8}"
+enable = false
+
+[[tweaks.actions]]
+type = "ScheduledTask"
+task_path = "\\NvTmRep_{B2FE1952-0186-46C3-BAEC-A80AA35AC5B8}"
+enable = false
+
+[[tweaks.actions]]
+type = "ScheduledTask"
+task_path = "\\NvProfileUpdaterDaily_{B2FE1952-0186-46C3-BAEC-A80AA35AC5B8}"
+enable = false
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "disable_adobe_update_service"
+title = "Disable Adobe Update Services"
+category = "Telemetry (Apps)"
+description = "Disables the Adobe Acrobat Update Service (AdobeARMservice) and the Adobe Genuine Monitor Service. Prevents background update checks and license telemetry."
+easy_mode_included = false
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Low"
+performance_gain = 1
+privacy_gain = 3
+reversibility = "Instant"
+broken_features = ["Adobe products will not auto-update; update manually"]
+
+[[tweaks.actions]]
+type = "ServiceState"
+service_name = "AdobeARMservice"
+target_start_type = 4
+default_start_type = 2
+
+[[tweaks.actions]]
+type = "ServiceState"
+service_name = "AGMService"
+target_start_type = 4
+default_start_type = 2
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "disable_edge_update"
+title = "Disable Microsoft Edge Update Services"
+category = "Telemetry (Apps)"
+description = "Disables the Microsoft Edge Update services (edgeupdate and edgeupdatem) and the scheduled update tasks. Edge will still function but will not auto-update or phone home for update checks."
+easy_mode_included = false
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Moderate"
+performance_gain = 1
+privacy_gain = 3
+reversibility = "Instant"
+broken_features = ["Microsoft Edge will not auto-update; security patches must be applied manually"]
+
+[[tweaks.actions]]
+type = "ServiceState"
+service_name = "edgeupdate"
+target_start_type = 4
+default_start_type = 3
+
+[[tweaks.actions]]
+type = "ServiceState"
+service_name = "edgeupdatem"
+target_start_type = 4
+default_start_type = 3
+
+[[tweaks.actions]]
+type = "ScheduledTask"
+task_path = "\\MicrosoftEdgeUpdateTaskMachineCore"
+enable = false
+
+[[tweaks.actions]]
+type = "ScheduledTask"
+task_path = "\\MicrosoftEdgeUpdateTaskMachineUA"
+enable = false
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "disable_chrome_update"
+title = "Disable Google Chrome Update Services"
+category = "Telemetry (Apps)"
+description = "Disables the Google Update services (gupdate and gupdatem) and their scheduled tasks. Chrome will still function but will not auto-update."
+easy_mode_included = false
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Moderate"
+performance_gain = 1
+privacy_gain = 3
+reversibility = "Instant"
+broken_features = ["Google Chrome will not auto-update; security patches must be applied manually"]
+
+[[tweaks.actions]]
+type = "ServiceState"
+service_name = "gupdate"
+target_start_type = 4
+default_start_type = 2
+
+[[tweaks.actions]]
+type = "ServiceState"
+service_name = "gupdatem"
+target_start_type = 4
+default_start_type = 3
+
+[[tweaks.actions]]
+type = "ScheduledTask"
+task_path = "\\GoogleUpdateTaskMachineCore"
+enable = false
+
+[[tweaks.actions]]
+type = "ScheduledTask"
+task_path = "\\GoogleUpdateTaskMachineUA"
+enable = false
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "disable_steam_client_service"
+title = "Disable Steam Client Service Auto-Start"
+category = "Telemetry (Apps)"
+description = "Changes the Steam Client Service from automatic to manual start. Steam will still start the service on demand when launched, but it will not run in the background consuming resources when Steam is not in use."
+easy_mode_included = false
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 1
+privacy_gain = 1
+reversibility = "Instant"
+broken_features = []
+
+[[tweaks.actions]]
+type = "ServiceState"
+service_name = "Steam Client Service"
+target_start_type = 3
+default_start_type = 2
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "disable_razer_telemetry"
+title = "Disable Razer Telemetry and Analytics"
+category = "Telemetry (Apps)"
+description = "Disables the Razer Game Manager Service and Razer Chroma SDK services from auto-starting, reducing background telemetry and analytics from Razer Synapse."
+easy_mode_included = false
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Low"
+performance_gain = 1
+privacy_gain = 3
+reversibility = "Instant"
+broken_features = ["Razer Synapse auto-start features may require manual launch"]
+
+[[tweaks.actions]]
+type = "ServiceState"
+service_name = "Razer Game Manager Service"
+target_start_type = 4
+default_start_type = 2
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SOFTWARE\\WOW6432Node\\Razer\\Synapse3\\Analytics"
+name = "Enabled"
+optimized_value = 0
+default_value = 1

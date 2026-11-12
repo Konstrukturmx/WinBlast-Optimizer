@@ -1,0 +1,829 @@
+# =============================================================================
+# WinBlast0 v0.7.0 — Extended Performance, GPU, MMCSS, PowerCfg & Kernel Tuning
+# Deduplicated strictly against hardware_tuning.toml, registry_lag.toml, and
+# os_settings.toml. Ported from Winhance & optimizerDuck.
+# =============================================================================
+
+[[tweaks]]
+id = "enable_long_file_paths"
+title = "Enable NTFS Win32 Long File Paths (>260 Characters)"
+category = "OS Settings"
+description = "Removes the legacy 260-character MAX_PATH limitation in Windows 10/11 via LongPathsEnabled=1, preventing build and archive extraction path truncation errors."
+easy_mode_included = true
+unattend_safe = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 1
+privacy_gain = 0
+reversibility = "RequiresReboot"
+broken_features = []
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SYSTEM\\CurrentControlSet\\Control\\FileSystem"
+name = "LongPathsEnabled"
+optimized_value = 1
+default_value = 0
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "disable_background_search_toggle_and_app_policy"
+title = "Deny Background Apps Execution & Search Background Toggle"
+category = "OS Settings"
+description = "Sets AppPrivacy\\LetAppsRunInBackground=2 (Force Deny) and disables Search\\BackgroundAppGlobalToggle=0 so idle UWP/Store apps cannot consume CPU or RAM in the background."
+easy_mode_included = false
+unattend_safe = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 3
+privacy_gain = 2
+reversibility = "Instant"
+broken_features = ["UWP apps like Store/Mail will not sync while closed"]
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Search"
+name = "BackgroundAppGlobalToggle"
+optimized_value = 0
+default_value = 1
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SOFTWARE\\Policies\\Microsoft\\Windows\\AppPrivacy"
+name = "LetAppsRunInBackground"
+optimized_value = 2
+default_value = 0
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "extend_webclient_file_size_limit"
+title = "Maximize WebClient / WebDAV File Size Limit (4 GB)"
+category = "Registry Lag"
+description = "Raises the Windows WebClient service download limit from 50 MB to the 4 GB maximum (0xFFFFFFFF), fixing mounted WebDAV / network share copy failures."
+easy_mode_included = false
+unattend_safe = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 1
+privacy_gain = 0
+reversibility = "Instant"
+broken_features = []
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SYSTEM\\CurrentControlSet\\Services\\WebClient\\Parameters"
+name = "FileSizeLimitInBytes"
+optimized_value = 4294967295
+default_value = 50000000
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "reduce_services_pipe_timeout"
+title = "Reduce Service Startup & Pipe Shutdown Timeout to 15s"
+category = "Registry Lag"
+description = "Lowers ServicesPipeTimeout from the stock 30000 ms (30s) default to 15000 ms (15s) so hung background services release sooner during boot and shutdown."
+easy_mode_included = false
+unattend_safe = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Moderate"
+performance_gain = 2
+privacy_gain = 0
+reversibility = "RequiresReboot"
+broken_features = ["Very slow custom database services taking >15s at boot may time out"]
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SYSTEM\\CurrentControlSet\\Control"
+name = "ServicesPipeTimeout"
+optimized_value = 15000
+default_value = 30000
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "mmcss_scheduler_full_optimization"
+title = "Full MMCSS Multimedia Scheduler Optimization (NoLazyMode, AlwaysOn, High SFIO)"
+category = "Registry Lag"
+description = "Configures Multimedia\\SystemProfile NoLazyMode=1, AlwaysOn=1, and Games Tasks Scheduling Category='High' plus SFIO Priority='High' for uninterrupted multimedia and game thread scheduling."
+easy_mode_included = true
+unattend_safe = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 4
+privacy_gain = 0
+reversibility = "RequiresReboot"
+broken_features = []
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile"
+name = "NoLazyMode"
+optimized_value = 1
+default_value = 0
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile"
+name = "AlwaysOn"
+optimized_value = 1
+default_value = 0
+
+[[tweaks.actions]]
+type = "RegistryString"
+hive = "HKLM"
+path = "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile\\Tasks\\Games"
+name = "Scheduling Category"
+optimized_value = "High"
+default_value = "Medium"
+case_insensitive = true
+
+[[tweaks.actions]]
+type = "RegistryString"
+hive = "HKLM"
+path = "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile\\Tasks\\Games"
+name = "SFIO Priority"
+optimized_value = "High"
+default_value = "Normal"
+case_insensitive = true
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "enable_directx_windowed_game_optimizations"
+title = "Enable DirectX Windowed Flip-Model & VRR Optimizations (Lossless Merge)"
+category = "GPU Tuning"
+sub_category = "Latency"
+description = "Safely merges SwapEffectUpgradeEnable=1 and VRROptimizeEnable=1 inside DirectXUserGlobalSettings without overwriting your per-game GPU or AutoHDR preferences."
+easy_mode_included = true
+unattend_safe = false
+
+[tweaks.os_req]
+min_build = 22621
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 4
+privacy_gain = 0
+reversibility = "Instant"
+broken_features = []
+
+[[tweaks.actions]]
+type = "CompositeStringKey"
+hive = "HKCU"
+path = "Software\\Microsoft\\DirectX\\UserGpuPreferences"
+name = "DirectXUserGlobalSettings"
+entry_key = "SwapEffectUpgradeEnable"
+optimized_entry_value = "1"
+default_entry_value = "0"
+pair_separator = ";"
+kv_separator = "="
+trailing_separator = true
+
+[[tweaks.actions]]
+type = "CompositeStringKey"
+hive = "HKCU"
+path = "Software\\Microsoft\\DirectX\\UserGpuPreferences"
+name = "DirectXUserGlobalSettings"
+entry_key = "VRROptimizeEnable"
+optimized_entry_value = "1"
+default_entry_value = "0"
+pair_separator = ";"
+kv_separator = "="
+trailing_separator = true
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "disable_hardware_overlays_and_min_fps"
+title = "Disable Kernel Hardware Overlays & DWM Minimum FPS Throttling"
+category = "GPU Tuning"
+sub_category = "Compositor"
+description = "Sets GraphicsDrivers\\DisableOverlays=1 and Dwm\\OverlayMinFPS=0 to prevent DWM hardware overlay plane promotion stalls and stutter at low refresh rates."
+easy_mode_included = false
+unattend_safe = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Low"
+performance_gain = 2
+privacy_gain = 0
+reversibility = "RequiresReboot"
+broken_features = ["Slightly higher idle DWM compositor power usage on laptops"]
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SYSTEM\\CurrentControlSet\\Control\\GraphicsDrivers"
+name = "DisableOverlays"
+optimized_value = 1
+default_value = 0
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SOFTWARE\\Microsoft\\Windows\\Dwm"
+name = "OverlayMinFPS"
+optimized_value = 0
+default_value = 2
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "nvidia_restore_legacy_sharpening"
+title = "Restore Legacy NVIDIA Driver Sharpening Policy (EnableGR535=0)"
+category = "GPU Tuning"
+gpu_vendor = "NVIDIA"
+sub_category = "Driver & Clarity"
+description = "Sets Global\\FTS\\EnableGR535=0 so NVIDIA Control Panel displays classic low-overhead Image Sharpening instead of forcing the newer overlay filter path."
+easy_mode_included = false
+unattend_safe = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 1
+privacy_gain = 0
+reversibility = "Instant"
+broken_features = []
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SOFTWARE\\NVIDIA Corporation\\Global\\FTS"
+name = "EnableGR535"
+optimized_value = 0
+default_value = 1
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "nvidia_dlss_debug_indicator"
+title = "Show NVIDIA DLSS Version & Preset Debug Watermark Overlay"
+category = "GPU Tuning"
+gpu_vendor = "NVIDIA"
+sub_category = "Diagnostics"
+description = "Sets Global\\NGXCore\\ShowDlssIndicator=1024 to display active DLSS SDK version, resolution scaling, and preset on-screen in DirectX/Vulkan games."
+easy_mode_included = false
+unattend_safe = false
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 0
+privacy_gain = 0
+reversibility = "Instant"
+broken_features = ["Displays bottom-left DLSS diagnostic watermark in supported games"]
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SOFTWARE\\NVIDIA Corporation\\Global\\NGXCore"
+name = "ShowDlssIndicator"
+optimized_value = 1024
+default_value = 0
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "disable_game_bar_tips_and_capture"
+title = "Disable Game Bar Controller Nexus, Startup Tips & Historical Capture"
+category = "Hardware Tuning"
+description = "Turns off UseNexusForGameBarEnabled (Xbox Guide button launcher), ShowStartupPanel tips, and background HistoricalCaptureEnabled ring buffer recording."
+easy_mode_included = true
+unattend_safe = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 2
+privacy_gain = 1
+reversibility = "Instant"
+broken_features = ["Controller Nexus button does not trigger Game Bar overlay"]
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Software\\Microsoft\\GameBar"
+name = "UseNexusForGameBarEnabled"
+optimized_value = 0
+default_value = 1
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Software\\Microsoft\\GameBar"
+name = "ShowStartupPanel"
+optimized_value = 0
+default_value = 1
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Software\\Microsoft\\Windows\\CurrentVersion\\GameDVR"
+name = "HistoricalCaptureEnabled"
+optimized_value = 0
+default_value = 1
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "optimize_mouse_thresholds_and_hover"
+title = "Zero Mouse Acceleration Thresholds & Instant 10ms Hover Response"
+category = "Registry Lag"
+description = "Sets MouseThreshold1='0', MouseThreshold2='0', and MouseHoverTime='10' ms so pointer acceleration thresholds are completely flat and taskbar/tooltip hover reacts instantly."
+easy_mode_included = true
+unattend_safe = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 2
+privacy_gain = 0
+reversibility = "RequiresLogoff"
+broken_features = []
+
+[[tweaks.actions]]
+type = "RegistryString"
+hive = "HKCU"
+path = "Control Panel\\Mouse"
+name = "MouseThreshold1"
+optimized_value = "0"
+default_value = "6"
+
+[[tweaks.actions]]
+type = "RegistryString"
+hive = "HKCU"
+path = "Control Panel\\Mouse"
+name = "MouseThreshold2"
+optimized_value = "0"
+default_value = "10"
+
+[[tweaks.actions]]
+type = "RegistryString"
+hive = "HKCU"
+path = "Control Panel\\Mouse"
+name = "MouseHoverTime"
+optimized_value = "10"
+default_value = "400"
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "disable_extra_accessibility_hotkeys"
+title = "Disable MouseKeys, High-Contrast & Narrator Accidental Hotkeys"
+category = "OS Settings"
+description = "Disables Alt+Shift+NumLock (MouseKeys), Alt+Shift+PrtScn (HighContrast), and Win+Ctrl+Enter (Narrator) shortcut popups during gaming."
+easy_mode_included = true
+unattend_safe = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 1
+privacy_gain = 0
+reversibility = "Instant"
+broken_features = ["Accessibility keyboard shortcuts must be toggled via Settings app"]
+
+[[tweaks.actions]]
+type = "RegistryString"
+hive = "HKCU"
+path = "Control Panel\\Accessibility\\MouseKeys"
+name = "Flags"
+optimized_value = "130"
+default_value = "126"
+
+[[tweaks.actions]]
+type = "RegistryString"
+hive = "HKCU"
+path = "Control Panel\\Accessibility\\HighContrast"
+name = "Flags"
+optimized_value = "4194"
+default_value = "126"
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Software\\Microsoft\\Narrator\\NoRoam"
+name = "WinEnterLaunchEnabled"
+optimized_value = 0
+default_value = 1
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "disable_smart_multi_homed_name_resolution"
+title = "Disable Windows Smart Multi-Homed DNS Name Resolution"
+category = "Registry Lag"
+description = "Sets DNSClient\\DisableSmartNameResolution=1 so Windows queries DNS strictly on the primary interface instead of broadcasting parallel DNS requests across VPN/virtual adapters."
+easy_mode_included = true
+unattend_safe = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 3
+privacy_gain = 3
+reversibility = "Instant"
+broken_features = ["Split-tunnel VPNs must configure adapter DNS metrics cleanly"]
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SOFTWARE\\Policies\\Microsoft\\Windows NT\\DNSClient"
+name = "DisableSmartNameResolution"
+optimized_value = 1
+default_value = 0
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "harden_windows_update_ux_and_store"
+title = "Block WU Driver Overwrites, Unexpected Update Reboots & Store AutoDownloads"
+category = "OS Settings"
+description = "Excludes GPU/peripheral driver pushes during quality updates, prevents forced reboots while logged in, unlocks extended update pause duration (3650 days), and disables silent Store background downloads while keeping security updates functional."
+easy_mode_included = true
+unattend_safe = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 2
+privacy_gain = 1
+reversibility = "Instant"
+broken_features = ["Microsoft Store app updates must be checked manually"]
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsUpdate"
+name = "ExcludeWUDriversInQualityUpdate"
+optimized_value = 1
+default_value = 0
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsUpdate\\AU"
+name = "NoAutoRebootWithLoggedOnUsers"
+optimized_value = 1
+default_value = 0
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SOFTWARE\\Microsoft\\WindowsUpdate\\UX\\Settings"
+name = "FlightSettingsMaxPauseDays"
+optimized_value = 3650
+default_value = 35
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SOFTWARE\\Policies\\Microsoft\\WindowsStore"
+name = "AutoDownload"
+optimized_value = 2
+default_value = 4
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "power_settings_pcie_usb_nvme_epb"
+title = "Active Power Plan Ultra-Low-Latency Tuning (PCIe ASPM, USB Suspend, NVMe, EPP, PowerThrottling)"
+category = "Hardware Tuning"
+description = "Uses native Windows powrprof APIs across the active power scheme (works on Balanced, High Performance, and custom plans) to disable AC PCIe ASPM, USB selective suspend, USB 3 link power saving, primary/secondary NVMe idle sleep, and CPU Energy Performance Preference (EPP=0), while turning off kernel PowerThrottling."
+easy_mode_included = false
+unattend_safe = false
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Moderate"
+performance_gain = 5
+privacy_gain = 0
+reversibility = "Instant"
+broken_features = ["Higher AC idle power consumption on desktops and plugged-in laptops"]
+
+[[tweaks.actions]]
+type = "PowerCfgSetting"
+subgroup_guid = "501a4d13-42af-4429-9fd1-a8218c268e20"
+setting_guid = "ee12f906-d277-404b-b6da-e5fa1a576df5"
+optimized_ac = 0
+optimized_dc = 1
+default_ac = 1
+default_dc = 2
+scope = "AcOnly"
+
+[[tweaks.actions]]
+type = "PowerCfgSetting"
+subgroup_guid = "2a737441-1930-4402-8d77-b2bebba308a3"
+setting_guid = "48e6b7a6-50f5-4782-a5d4-53bb8f07e226"
+optimized_ac = 0
+optimized_dc = 1
+default_ac = 1
+default_dc = 1
+scope = "AcOnly"
+
+[[tweaks.actions]]
+type = "PowerCfgSetting"
+subgroup_guid = "2a737441-1930-4402-8d77-b2bebba308a3"
+setting_guid = "d4e98f31-5ffe-4ce1-be31-1b38b384c009"
+optimized_ac = 0
+optimized_dc = 2
+default_ac = 2
+default_dc = 2
+scope = "AcOnly"
+unhide_attribute = true
+
+[[tweaks.actions]]
+type = "PowerCfgSetting"
+subgroup_guid = "54533251-82be-4824-96c1-47b60b740d00"
+setting_guid = "893dee8e-2bef-41e0-89c6-b55d0929964c"
+optimized_ac = 100
+optimized_dc = 5
+default_ac = 5
+default_dc = 5
+scope = "AcOnly"
+
+[[tweaks.actions]]
+type = "PowerCfgSetting"
+subgroup_guid = "54533251-82be-4824-96c1-47b60b740d00"
+setting_guid = "36687f9e-e3a5-4dbf-b1dc-15eb381c6863"
+optimized_ac = 0
+optimized_dc = 50
+default_ac = 25
+default_dc = 50
+scope = "AcOnly"
+unhide_attribute = true
+
+[[tweaks.actions]]
+type = "PowerCfgSetting"
+subgroup_guid = "54533251-82be-4824-96c1-47b60b740d00"
+setting_guid = "465e1f50-b610-473a-ab58-00d1077dc418"
+optimized_ac = 2
+optimized_dc = 0
+default_ac = 1
+default_dc = 0
+scope = "AcOnly"
+unhide_attribute = true
+
+[[tweaks.actions]]
+type = "PowerCfgSetting"
+subgroup_guid = "0012ee47-9041-4b5d-9b77-535fba8b1442"
+setting_guid = "d639518a-e56d-4345-8af2-b9f32fb26109"
+optimized_ac = 0
+optimized_dc = 100
+default_ac = 200
+default_dc = 100
+scope = "AcOnly"
+unhide_attribute = true
+
+[[tweaks.actions]]
+type = "PowerCfgSetting"
+subgroup_guid = "0012ee47-9041-4b5d-9b77-535fba8b1442"
+setting_guid = "fc95af4d-40e7-4b6d-835a-56d131dbc80e"
+optimized_ac = 0
+optimized_dc = 100
+default_ac = 200
+default_dc = 100
+scope = "AcOnly"
+unhide_attribute = true
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SYSTEM\\CurrentControlSet\\Control\\Power\\PowerThrottling"
+name = "PowerThrottlingOff"
+optimized_value = 1
+default_value = 0
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SYSTEM\\CurrentControlSet\\Control\\USB\\AutomaticSurpriseRemoval"
+name = "AttemptRecoveryFromUsbPowerDrain"
+optimized_value = 0
+default_value = 1
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "disable_storage_sense_policy"
+title = "Disable Automatic Storage Sense Background Sweeps"
+category = "OS Settings"
+description = "Prevents Windows Storage Sense from running automated background disk sweeps during interactive sessions."
+easy_mode_included = false
+unattend_safe = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 1
+privacy_gain = 0
+reversibility = "Instant"
+broken_features = ["Temporary files & Recycle Bin must be cleaned manually via Clean & Apps"]
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SOFTWARE\\Policies\\Microsoft\\Windows\\StorageSense"
+name = "AllowStorageSenseGlobal"
+optimized_value = 0
+default_value = 1
+
+# -----------------------------------------------------------------------------
+# High-Risk / Security-Tradeoff Opt-In Tweaks (Excluded from Easy Mode & Select All)
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "consolidate_svchost_split_threshold"
+title = "Consolidate Service Hosts Dynamically to Physical RAM (SvcHostSplitThresholdInKB) [Opt-In]"
+category = "Registry Lag"
+description = "Dynamically computes SvcHostSplitThresholdInKB from detected system RAM (TotalRamInKb), reducing process count and virtual memory overhead on 8GB+ machines. Caution: sacrifices per-service process isolation."
+easy_mode_included = false
+unattend_safe = false
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "High"
+performance_gain = 3
+privacy_gain = 0
+reversibility = "RequiresReboot"
+broken_features = ["Shared svchost crash isolation reduced; Task Manager shows fewer grouped services"]
+
+[[tweaks.actions]]
+type = "RegistryDynamicDword"
+hive = "HKLM"
+path = "SYSTEM\\CurrentControlSet\\Control"
+name = "SvcHostSplitThresholdInKB"
+formula = "TotalRamInKb"
+default_value = 3670016
+tolerance_pct = 5
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "disable_vbs_deviceguard"
+title = "Disable Virtualization-Based Security (VBS) [Security Tradeoff Opt-In]"
+category = "Hardware Tuning"
+description = "Disables EnableVirtualizationBasedSecurity and RequirePlatformSecurityFeatures. Can raise gaming frame rates by 5-15% on CPUs with virtualization overhead, at the cost of kernel virtualization security boundaries."
+easy_mode_included = false
+unattend_safe = false
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "High"
+performance_gain = 5
+privacy_gain = 0
+reversibility = "RequiresReboot"
+broken_features = ["Disables VBS security isolation; anti-cheat / Windows Security warning may appear"]
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SYSTEM\\CurrentControlSet\\Control\\DeviceGuard"
+name = "EnableVirtualizationBasedSecurity"
+optimized_value = 0
+default_value = 1
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SYSTEM\\CurrentControlSet\\Control\\DeviceGuard"
+name = "RequirePlatformSecurityFeatures"
+optimized_value = 0
+default_value = 1
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "disable_hvci_memory_integrity"
+title = "Disable Core Isolation / Memory Integrity (HVCI) [Security Tradeoff Opt-In]"
+category = "Hardware Tuning"
+description = "Disables Hypervisor-Enforced Code Integrity (HVCI). Reduces DPC/interrupt latency in competitive games on systems where HVCI hurts frame times, at the cost of kernel driver code signing enforcement."
+easy_mode_included = false
+unattend_safe = false
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "High"
+performance_gain = 4
+privacy_gain = 0
+reversibility = "RequiresReboot"
+broken_features = ["Windows Security Core Isolation / Memory Integrity shows Off warning"]
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SYSTEM\\CurrentControlSet\\Control\\DeviceGuard\\Scenarios\\HypervisorEnforcedCodeIntegrity"
+name = "Enabled"
+optimized_value = 0
+default_value = 1
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "disable_prefetch_and_sysmain"
+title = "Disable Kernel Prefetcher & SysMain (Superfetch) for Fast NVMe SSDs [Opt-In]"
+category = "Registry Lag"
+description = "Disables application/boot Prefetcher and stops SysMain memory preloading on fast NVMe drives where RAM caching adds unnecessary background disk I/O."
+easy_mode_included = false
+unattend_safe = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "High"
+performance_gain = 2
+privacy_gain = 0
+reversibility = "RequiresReboot"
+broken_features = ["Cold launch speed may slow slightly on SATA HDDs"]
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management\\PrefetchParameters"
+name = "EnablePrefetcher"
+optimized_value = 0
+default_value = 3
+
+[[tweaks.actions]]
+type = "ServiceState"
+service_name = "SysMain"
+target_start_type = 4
+default_start_type = 2
