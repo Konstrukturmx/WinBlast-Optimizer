@@ -12,6 +12,7 @@ use crate::ui::widgets::button::{
     action_button, action_button_guarded, pill_badge, switch_toggle, tweak_state_meta,
 };
 use crate::ui::widgets::risk_badge;
+use crate::ui::widgets::scrollbar::WinBlastScrollable;
 use crate::ui::LayoutTier;
 
 /// Renders the categorized matrix of all tweaks with live search & category filter bar.
@@ -419,6 +420,7 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
 
     let pad = if tier == LayoutTier::Compact { 10.0 } else { 14.0 };
     col()
+        .key("advanced_matrix_viewport")
         .w_full()
         .grow(1.0)
         .min_w(0.0)
@@ -429,4 +431,5 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
         .child(header_card)
         .child(filter_card)
         .child(matrix_col)
+        .winblast_scroll(p)
 }

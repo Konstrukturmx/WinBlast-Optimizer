@@ -8,6 +8,7 @@ use crate::core::i18n::TextKey;
 use crate::core::risk::TweakAction;
 use crate::ui::theme::ThemePalette;
 use crate::ui::widgets::button::action_button;
+use crate::ui::widgets::scrollbar::WinBlastScrollable;
 
 fn diff_pair_card(p: &ThemePalette, header: String, left: String, right: String) -> El {
     col()
@@ -491,8 +492,10 @@ pub fn view_items_with_palette(
         )
         .child(
             items
+                .key("diff_modal_items_scroll")
                 .grow(1.0)
                 .min_h(0.0)
-                .scroll(ScrollSpec { stick_bottom: false }),
+                .scroll(ScrollSpec { stick_bottom: false })
+                .winblast_scroll(p),
         )
 }

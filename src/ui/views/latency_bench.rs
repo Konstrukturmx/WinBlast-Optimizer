@@ -9,6 +9,7 @@ use crate::app::AppState;
 use crate::core::i18n::TextKey;
 use crate::hardware::net_latency::LatencyBenchmarkSnapshot;
 use crate::ui::widgets::button::{action_button, action_button_guarded};
+use crate::ui::widgets::scrollbar::WinBlastScrollable;
 use crate::ui::LayoutTier;
 
 /// Comparison delta card between Before and After snapshots.
@@ -434,6 +435,7 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
 
     let pad = if tier == LayoutTier::Compact { 10.0 } else { 14.0 };
     col()
+        .key("latency_bench_viewport")
         .w_full()
         .grow(1.0)
         .min_w(0.0)
@@ -444,4 +446,5 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
         .child(header_card)
         .child(actions_card)
         .child(content_col)
+        .winblast_scroll(p)
 }

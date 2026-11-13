@@ -11,6 +11,7 @@ use crate::ui::theme::ThemePalette;
 use crate::ui::widgets::button::{
     action_button, action_button_guarded, pill_badge, switch_toggle, tweak_state_meta,
 };
+use crate::ui::widgets::scrollbar::WinBlastScrollable;
 use crate::ui::widgets::{risk_badge, sparkline};
 use crate::ui::LayoutTier;
 
@@ -602,6 +603,7 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
 
     let pad = if tier == LayoutTier::Compact { 10.0 } else { 14.0 };
     let mut main_col = col()
+        .key("easy_dashboard_viewport")
         .w_full()
         .grow(1.0)
         .min_w(0.0)
@@ -619,4 +621,5 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
     main_col
         .child(presets_card)
         .child(tweak_list)
+        .winblast_scroll(p)
 }

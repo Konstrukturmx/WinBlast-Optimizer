@@ -12,6 +12,7 @@ use crate::ui::widgets::button::{
     action_button, action_button_guarded, pill_badge, switch_toggle, tweak_state_meta,
 };
 use crate::ui::widgets::risk_badge;
+use crate::ui::widgets::scrollbar::WinBlastScrollable;
 use crate::ui::LayoutTier;
 
 fn state_counts<'b>(results: impl Iterator<Item = &'b ScanResult>) -> (usize, usize, usize) {
@@ -386,6 +387,7 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
 
     let pad = if tier == LayoutTier::Compact { 10.0 } else { 14.0 };
     col()
+        .key("privacy_shield_viewport")
         .w_full()
         .grow(1.0)
         .min_w(0.0)
@@ -398,4 +400,5 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
         .child(audit_card)
         .child(action_bar)
         .child(list)
+        .winblast_scroll(p)
 }

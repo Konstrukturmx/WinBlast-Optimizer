@@ -9,6 +9,7 @@ use rune::{col, el, row, text, El, ScrollSpec};
 use crate::app::AppState;
 use crate::core::i18n::TextKey;
 use crate::ui::widgets::button::{action_button, action_button_guarded};
+use crate::ui::widgets::scrollbar::WinBlastScrollable;
 use crate::ui::LayoutTier;
 
 /// Renders the CPU Core Parking Manager view.
@@ -308,6 +309,7 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
     }
 
     col()
+        .key("cpu_parking_viewport")
         .w_full()
         .grow(1.0)
         .min_w(0.0)
@@ -326,4 +328,5 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
                 .gaps(8.0, 8.0)
                 .children(core_cards),
         )
+        .winblast_scroll(p)
 }

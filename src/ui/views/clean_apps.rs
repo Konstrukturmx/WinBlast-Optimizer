@@ -15,6 +15,7 @@ use crate::ui::theme::ThemePalette;
 use crate::ui::widgets::button::{
     action_button, action_button_guarded, pill_badge, switch_indicator,
 };
+use crate::ui::widgets::scrollbar::WinBlastScrollable;
 use crate::ui::LayoutTier;
 
 fn sub_tab_btn(
@@ -296,6 +297,7 @@ fn build_disk_cleaner_body(s: &AppState, p: &ThemePalette, tier: LayoutTier) -> 
             .min_h(100.0)
             .scroll(ScrollSpec { stick_bottom: false })
             .child(list_col)
+            .winblast_scroll(p)
     };
 
     let mut wrapper = col()
@@ -592,6 +594,7 @@ fn build_appx_features_body(s: &AppState, p: &ThemePalette, tier: LayoutTier) ->
                     },
                 ),
         )
+        .winblast_scroll(p)
     };
 
     let mut feat_col = col()
@@ -717,6 +720,7 @@ fn build_appx_features_body(s: &AppState, p: &ThemePalette, tier: LayoutTier) ->
             .min_w(0.0)
             .scroll(ScrollSpec { stick_bottom: false })
             .child(feat_col)
+            .winblast_scroll(p)
     };
 
     let mut wrapper = col()
@@ -905,6 +909,7 @@ fn build_winget_body(s: &AppState, p: &ThemePalette, tier: LayoutTier) -> El {
                 .min_h(100.0)
                 .scroll(ScrollSpec { stick_bottom: false })
                 .child(cards)
+                .winblast_scroll(p)
         }
     };
 
@@ -1002,7 +1007,7 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
         .child(body);
 
     if tier == LayoutTier::Compact {
-        outer.scroll(ScrollSpec { stick_bottom: false })
+        outer.key("clean_apps_compact_viewport").scroll(ScrollSpec { stick_bottom: false }).winblast_scroll(p)
     } else {
         outer
     }

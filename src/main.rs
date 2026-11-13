@@ -46,5 +46,13 @@ fn main() {
         }),
     ];
 
-    rune::run(spec);
+    // Themed scroll bars are a first-class part of the WinBlast UI, so they stay visible in every
+    // overflowing viewport instead of following Windows' hide-until-scrolling system default.
+    // An explicit `--scroll-bars MODE` on the command line still wins (e.g. for scripted captures).
+    let mut argv: Vec<String> = std::env::args().skip(1).collect();
+    if !argv.iter().any(|a| a == "--scroll-bars") {
+        argv.push("--scroll-bars".to_string());
+        argv.push("always".to_string());
+    }
+    rune::App::new(spec).args(argv).run();
 }

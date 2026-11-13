@@ -15,6 +15,7 @@ use crate::ui::theme::ThemePalette;
 use crate::ui::widgets::button::{
     action_button, action_button_guarded, pill_badge, switch_toggle_with,
 };
+use crate::ui::widgets::scrollbar::WinBlastScrollable;
 use crate::ui::LayoutTier;
 
 fn sub_tab_btn(
@@ -234,6 +235,7 @@ fn build_startup_apps_list(s: &AppState, p: &ThemePalette, tier: LayoutTier) -> 
                 },
             ),
     )
+    .winblast_scroll(p)
 }
 
 fn build_tasks_list(s: &AppState, p: &ThemePalette, tier: LayoutTier) -> El {
@@ -379,6 +381,7 @@ fn build_tasks_list(s: &AppState, p: &ThemePalette, tier: LayoutTier) -> El {
                 },
             ),
     )
+    .winblast_scroll(p)
 }
 
 fn build_services_list(s: &AppState, p: &ThemePalette, tier: LayoutTier) -> El {
@@ -542,6 +545,7 @@ fn build_services_list(s: &AppState, p: &ThemePalette, tier: LayoutTier) -> El {
                 },
             ),
     )
+    .winblast_scroll(p)
 }
 
 /// Renders Startup Apps, Scheduled Tasks & Services inside responsive virtualized lists.
@@ -686,7 +690,7 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
         .child(body);
 
     if tier == LayoutTier::Compact {
-        outer.scroll(ScrollSpec { stick_bottom: false })
+        outer.key("startup_tasks_compact_viewport").scroll(ScrollSpec { stick_bottom: false }).winblast_scroll(p)
     } else {
         outer
     }

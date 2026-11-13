@@ -5,6 +5,25 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ---
 
+## [v0.9.1] - 2026-11-13
+
+### 🌟 Highlights
+- **Themed Scroll Bars Across the Entire UI**: Every overflowing viewport — all main views, the sidebar navigation, the changelog drawer, the diff-preview modal, and the Clean & Apps / Startup & Tasks sub-lists — now renders a custom palette-driven Rune-Kit scroll bar with a muted 6 pt thumb at rest that widens to a 9 pt theme-accent thumb on hover and while dragging.
+- **Always Visible by Default**: Windows 11 hides scroll bars until the user scrolls; WinBlast now explicitly forces `ScrollBars::Always` at launch so scroll affordances are always discoverable, while an explicit `--scroll-bars MODE` command-line override is still honoured.
+- **Regression-Tested**: Four new headless E2E tests (geometry, presence across all viewports, hover-widening, and drag + wheel-scroll interaction) bring the automated suite to 105 passing tests.
+
+### Added
+- **`src/ui/widgets/scrollbar.rs`**: `WinBlastScrollable` extension trait plus `winblast_scrollbar_style()`, building the themed `ScrollBarStyle` from the active light/dark `ThemePalette` (`text_muted` thumb at rest, `accent` thumb on hover/drag).
+- **Scroll-bar integration** in `easy_dashboard`, `advanced_matrix`, `gpu_tuning`, `cpu_parking`, `hardware_view`, `privacy_shield`, `backup_center`, `latency_bench`, `clean_apps`, `startup_tasks`, the sidebar navigation, the changelog drawer, and the diff modal.
+- **`tests/ui_scrollbar_test.rs`**: headless E2E coverage that asserts a `scroll-bar` + `thumb` are rendered for every main view, validates thumb geometry and hover-widening, and verifies drag and wheel scrolling move the viewport.
+
+### Changed
+- **Version Footer**: `FooterStatus` now derives its version from `CARGO_PKG_VERSION` at compile time instead of eight hardcoded `v0.9.0` literals, so the footer can never drift from the released build.
+- **README Screenshots**: re-rendered with the shipped scroll-bar default so previews match the released UI; QA matrix counts refreshed to 105 tests.
+- **`main.rs` Launch Args**: Rune now receives its flags without the executable path (matching `App::args`), and the forced `--scroll-bars always` default is only appended when the user has not supplied their own mode.
+
+---
+
 ## [v0.9.0] - 2026-11-12
 
 ### 🌟 Highlights

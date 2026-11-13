@@ -7,6 +7,7 @@ use rune::{col, row, text, El, ScrollSpec};
 use crate::app::AppState;
 use crate::core::i18n::TextKey;
 use crate::ui::widgets::button::{action_button, action_button_guarded};
+use crate::ui::widgets::scrollbar::WinBlastScrollable;
 use crate::ui::LayoutTier;
 
 /// Renders the responsive, fully localized Backup Center view.
@@ -480,6 +481,7 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
 
     let pad = if tier == LayoutTier::Compact { 10.0 } else { 14.0 };
     col()
+        .key("backup_center_viewport")
         .w_full()
         .grow(1.0)
         .min_w(0.0)
@@ -493,4 +495,5 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
         .child(unattend_card)
         .child(ledger_header)
         .child(ledger_col)
+        .winblast_scroll(p)
 }

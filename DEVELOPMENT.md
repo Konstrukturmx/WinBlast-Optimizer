@@ -22,7 +22,7 @@ graph TD
 ```
 
 ### Key Subsystems:
-1. **`src/ui/`**: Pure-Rust Rune immediate-mode GUI engine with dynamic responsive tiering, 60 FPS spring animations, and theme styling.
+1. **`src/ui/`**: Pure-Rust Rune immediate-mode GUI engine with dynamic responsive tiering, 60 FPS spring animations, theme styling, and palette-driven scroll bars (`widgets/scrollbar.rs`).
 2. **`src/core/`**: Core definitions, OS version detection, elevation token verification, internationalization (`i18n.rs` & `tweak_i18n/`), and the `SystemBackend` abstraction.
 3. **`src/scanner/`**: Detection engines for 64-bit/32-bit Registry values, Win32 SCM services, scheduled tasks, and provisioned AppX packages.
 4. **`src/executor/`**: Transactional mutators for registry keys, Windows services, hosts blocking, and power scheme parameters.
@@ -54,8 +54,11 @@ cargo test --lib
 # Run isolated sandbox regression tests (18 tests)
 cargo test --test tweak_sandbox_e2e
 
-# Run headless UI responsive matrix & multi-locale sweeps (4 tests)
+# Run headless UI responsive matrix & multi-locale sweeps (8 tests)
 cargo test --test ui_responsive_e2e
+
+# Run headless scroll-bar geometry, hover & drag interaction E2E tests (4 tests)
+cargo test --test ui_scrollbar_test
 
 # Run live Windows environment read-only audit (3 tests)
 cargo test --test real_windows_env

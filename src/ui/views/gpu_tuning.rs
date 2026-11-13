@@ -18,6 +18,7 @@ use crate::ui::widgets::button::{
     tweak_state_meta,
 };
 use crate::ui::widgets::risk_badge;
+use crate::ui::widgets::scrollbar::WinBlastScrollable;
 use crate::ui::LayoutTier;
 
 /// Renders a locked/incompatible GPU card when host silicon does not match target vendor.
@@ -755,6 +756,7 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
 
     let pad = if tier == LayoutTier::Compact { 10.0 } else { 14.0 };
     col()
+        .key("gpu_tuning_viewport")
         .w_full()
         .grow(1.0)
         .min_w(0.0)
@@ -767,4 +769,5 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
         .child(display_engine_card)
         .child(msi_section)
         .child(vendor_cards_grid)
+        .winblast_scroll(p)
 }

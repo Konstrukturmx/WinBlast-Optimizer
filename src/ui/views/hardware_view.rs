@@ -7,6 +7,7 @@ use rune::{col, el, row, text, El, ScrollSpec};
 use crate::app::{ActiveView, AppState};
 use crate::core::i18n::TextKey;
 use crate::ui::widgets::button::{action_button, action_button_guarded, kv_row, section_card};
+use crate::ui::widgets::scrollbar::WinBlastScrollable;
 use crate::ui::widgets::sparkline;
 use crate::ui::LayoutTier;
 
@@ -517,6 +518,7 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
 
     let pad = if compact { 10.0 } else { 14.0 };
     col()
+        .key("hardware_view_viewport")
         .w_full()
         .grow(1.0)
         .min_w(0.0)
@@ -533,4 +535,5 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
         .child(dimms_card)
         .child(storage_card)
         .child(gpu_nav_card)
+        .winblast_scroll(p)
 }

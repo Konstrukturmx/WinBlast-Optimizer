@@ -13,6 +13,7 @@ use crate::core::i18n::{Language, TextKey};
 use crate::ui::theme::{ColorScheme, ThemeMode, ThemePalette};
 use crate::ui::widgets::button::{action_button, action_button_guarded};
 use crate::ui::widgets::diff_modal;
+use crate::ui::widgets::scrollbar::WinBlastScrollable;
 
 /// Single-breakpoint responsive viewport tier evaluated cleanly via `Cx::layout_with`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -296,7 +297,8 @@ fn build_sidebar(s: &AppState, p: &ThemePalette, tier: LayoutTier) -> El {
                 .min_w(0.0)
                 .min_h(0.0)
                 .scroll(ScrollSpec { stick_bottom: false })
-                .child(nav_items),
+                .child(nav_items)
+                .winblast_scroll(p),
         )
         .child(
             col()
@@ -994,9 +996,11 @@ pub fn view(s: &AppState, cx: &mut Cx<AppState>) -> El {
             )
             .child(
                 entries_col
+                    .key("changelog_drawer_scroll")
                     .grow(1.0)
                     .min_h(0.0)
-                    .scroll(ScrollSpec { stick_bottom: false }),
+                    .scroll(ScrollSpec { stick_bottom: false })
+                    .winblast_scroll(p),
             )
     } else {
         el()

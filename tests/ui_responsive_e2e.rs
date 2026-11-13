@@ -1437,7 +1437,7 @@ fn test_ui_v08_not_applicable_diff_modal_privacy_cores_and_protected_appx() {
 
     assert!(
         failures.is_empty(),
-        "Found {} v0.9.0 UI regression failures ({} unique):\n{}",
+        "Found {} UI regression failures ({} unique):\n{}",
         failures.len(),
         unique_issues.len(),
         unique_issues.values().cloned().collect::<Vec<_>>().join("\n")
@@ -1476,6 +1476,9 @@ fn snap_dashboard_view() {
             out_path.to_string_lossy().to_string(),
             "--size".to_string(),
             "1150x780".to_string(),
+            // Capture the shipped default (see `src/main.rs`), so the themed scroll bars show.
+            "--scroll-bars".to_string(),
+            "always".to_string(),
         ])
         .try_run();
     println!("Snap result: {:?}", res);
@@ -1529,6 +1532,9 @@ fn snap_gpu_tuning_view() {
             out_path.to_string_lossy().to_string(),
             "--size".to_string(),
             "1150x780".to_string(),
+            // Capture the shipped default (see `src/main.rs`), so the themed scroll bars show.
+            "--scroll-bars".to_string(),
+            "always".to_string(),
         ])
         .try_run();
     println!("Snap result: {:?}", res);
@@ -1556,6 +1562,9 @@ fn snap_advanced_matrix_view() {
             out_path.to_string_lossy().to_string(),
             "--size".to_string(),
             "1150x780".to_string(),
+            // Capture the shipped default (see `src/main.rs`), so the themed scroll bars show.
+            "--scroll-bars".to_string(),
+            "always".to_string(),
         ])
         .try_run();
     println!("Snap result: {:?}", res);
@@ -1577,6 +1586,9 @@ fn snap_cpu_parking_view() {
             out_path.to_string_lossy().to_string(),
             "--size".to_string(),
             "1150x780".to_string(),
+            // Capture the shipped default (see `src/main.rs`), so the themed scroll bars show.
+            "--scroll-bars".to_string(),
+            "always".to_string(),
         ])
         .try_run();
     println!("Snap result: {:?}", res);
