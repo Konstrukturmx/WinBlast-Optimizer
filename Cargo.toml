@@ -1,6 +1,6 @@
 [package]
 name = "winblast0"
-version = "1.0.0"
+version = "1.1.0"
 edition = "2021"
 description = "WinBlast0 – Windows System Optimizer & Debloater"
 
@@ -69,6 +69,7 @@ uuid = { version = "1", features = ["v4"] }
 
 [build-dependencies]
 embed-manifest = "1.4"
+winres = "0.1"
 
 [profile.release]
 opt-level = 3

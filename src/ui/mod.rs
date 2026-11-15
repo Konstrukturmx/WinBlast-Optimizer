@@ -37,37 +37,102 @@ fn tier_from_rect(r: [f32; 4]) -> LayoutTier {
     }
 }
 
-/// Navigation button in the sidebar with hover lift and spring motion.
+/// Navigation section category title.
+fn nav_section_header(title: &'static str, p: &ThemePalette) -> El {
+    text(title)
+        .font(rune::tok::type_::LABEL)
+        .color(p.text_muted)
+        .px(6.0)
+        .pt(8.0)
+        .pb(2.0)
+        .shrink()
+        .wrap()
+}
+
+/// Navigation button in the sidebar with active bar indicator, icon glyph, and optional status dot/badge.
+#[allow(clippy::too_many_arguments)]
 fn nav_button(
     key_id: &'static str,
-    label: &'static str,
+    icon: &'static str,
+    label: &str,
     active: bool,
     p: &ThemePalette,
+    style: crate::ui::theme::UiThemeStyle,
+    status_dot: bool,
+    badge_count: usize,
     target: ActiveView,
 ) -> El {
-    row()
+    let mut btn = row()
         .key(key_id)
         .w_full()
         .min_w(0.0)
-        .px(10.0)
-        .py(7.0)
-        .radius(6.0)
+        .px(8.0)
+        .py(6.0)
+        .radius(style.btn_radius())
         .fill(if active { p.accent.alpha(0.18) } else { Color::TRANSPARENT })
         .hover(if active { p.accent.alpha(0.26) } else { p.bg_card_hover })
         .press(p.accent.alpha(0.35))
         .border(1.0, if active { p.accent.alpha(0.6) } else { Color::TRANSPARENT })
-        .motion(rune::tok::motion::SNAPPY)
+        .motion(style.motion())
         .center()
-        .on_press(move |s: &mut AppState| s.navigate(target))
-        .child(
-            text(label)
-                .font(rune::tok::type_::LABEL)
-                .color(if active { p.text_primary } else { p.text_secondary })
-                .grow(1.0)
-                .min_w(0.0)
-                .shrink()
-                .truncate(),
-        )
+        .on_press(move |s: &mut AppState| s.navigate(target));
+
+    // Active vertical indicator bar on left edge (yellow bar in screenshot)
+    if active {
+        btn = btn.child(
+            el()
+                .size(3.0, 16.0)
+                .radius(1.5)
+                .fill(p.warning)
+                .mr(6.0),
+        );
+    } else {
+        btn = btn.child(el().size(3.0, 16.0).mr(6.0));
+    }
+
+    // Icon glyph
+    btn = btn.child(
+        text(icon)
+            .font(rune::tok::type_::LABEL)
+            .color(if active { p.accent } else { p.text_muted })
+            .mr(6.0),
+    );
+
+    // Label
+    btn = btn.child(
+        text(label)
+            .font(rune::tok::type_::LABEL)
+            .color(if active { p.text_primary } else { p.text_secondary })
+            .grow(1.0)
+            .min_w(0.0)
+            .shrink()
+            .truncate(),
+    );
+
+    // Right-side indicators (alert badge or amber status dot)
+    if badge_count > 0 {
+        btn = btn.child(
+            row()
+                .size(18.0, 18.0)
+                .radius(9.0)
+                .fill(p.danger)
+                .center()
+                .child(
+                    text(badge_count.to_string())
+                        .font(rune::tok::type_::LABEL)
+                        .color(Color::WHITE),
+                ),
+        );
+    } else if status_dot {
+        btn = btn.child(
+            el()
+                .size(6.0, 6.0)
+                .radius(3.0)
+                .fill(p.warning),
+        );
+    }
+
+    btn
 }
 
 /// Mode selection tab button (Easy vs Advanced / Instant vs Normal) with spring transition.
@@ -101,116 +166,53 @@ fn mode_tab(
 
 /// Shared sidebar navigation column rendered inline on `Wide` or inside the mobile drawer on `Compact`/`Medium`.
 fn build_sidebar(s: &AppState, p: &ThemePalette, tier: LayoutTier) -> El {
+    let style = s.theme_style;
+    let fault_count = s
+        .fault_report
+        .as_ref()
+        .map(|r| r.total_critical_faults.max(1))
+        .unwrap_or(1);
+
     let mut nav_items = col()
         .w_full()
         .min_w(0.0)
-        .gap(4.0)
-        .child(
-            text(s.tr(TextKey::NavOptimizationModes))
-                .font(rune::tok::type_::LABEL)
-                .color(p.text_muted)
-                .px(6.0)
-                .pb(2.0)
-                .shrink()
-                .wrap(),
-        )
-        .child(nav_button(
-            "nav_easy",
-            s.tr(TextKey::EasyMode),
-            s.active_view == ActiveView::EasyDashboard,
-            p,
-            ActiveView::EasyDashboard,
-        ))
-        .child(nav_button(
-            "nav_advanced",
-            s.tr(TextKey::AdvancedMatrix),
-            s.active_view == ActiveView::AdvancedMatrix,
-            p,
-            ActiveView::AdvancedMatrix,
-        ))
-        .child(nav_button(
-            "nav_goal_planner",
-            "A* Goal Planner",
-            s.active_view == ActiveView::GoalPlanner,
-            p,
-            ActiveView::GoalPlanner,
-        ))
-        .child(nav_button(
-            "nav_clean_apps",
-            s.tr(TextKey::CleanAppsTab),
-            s.active_view == ActiveView::CleanAndApps,
-            p,
-            ActiveView::CleanAndApps,
-        ))
-        .child(nav_button(
-            "nav_startup_tasks",
-            s.tr(TextKey::StartupTasksTab),
-            s.active_view == ActiveView::StartupAndTasks,
-            p,
-            ActiveView::StartupAndTasks,
-        ))
-        .child(
-            text(s.tr(TextKey::NavHardwareEngines))
-                .font(rune::tok::type_::LABEL)
-                .color(p.text_muted)
-                .px(6.0)
-                .pt(8.0)
-                .pb(2.0)
-                .shrink()
-                .wrap(),
-        )
-        .child(nav_button(
-            "nav_gpu",
-            s.tr(TextKey::GpuTuning),
-            s.active_view == ActiveView::GpuTuning,
-            p,
-            ActiveView::GpuTuning,
-        ))
-        .child(nav_button(
-            "nav_parking",
-            s.tr(TextKey::CoreParking),
-            s.active_view == ActiveView::CoreParking,
-            p,
-            ActiveView::CoreParking,
-        ))
-        .child(nav_button(
-            "nav_latency",
-            s.tr(TextKey::LatencyTester),
-            s.active_view == ActiveView::LatencyTester,
-            p,
-            ActiveView::LatencyTester,
-        ))
-        .child(nav_button(
-            "nav_hardware",
-            s.tr(TextKey::CpuDiagnostics),
-            s.active_view == ActiveView::HardwareView,
-            p,
-            ActiveView::HardwareView,
-        ))
-        .child(
-            text(s.tr(TextKey::NavSystemSafety))
-                .font(rune::tok::type_::LABEL)
-                .color(p.text_muted)
-                .px(6.0)
-                .pt(8.0)
-                .pb(2.0)
-                .shrink()
-                .wrap(),
-        )
-        .child(nav_button(
-            "nav_privacy",
-            s.tr(TextKey::PrivacyShield),
-            s.active_view == ActiveView::PrivacyShield,
-            p,
-            ActiveView::PrivacyShield,
-        ))
-        .child(nav_button(
-            "nav_backup",
-            s.tr(TextKey::BackupCenter),
-            s.active_view == ActiveView::BackupCenter,
-            p,
-            ActiveView::BackupCenter,
-        ));
+        .gap(3.0)
+        // Group 1: Genel bakış (Overview)
+        .child(nav_section_header("Genel bakış", p))
+        .child(nav_button("nav_easy", "⚡", "Sistem paneli", s.active_view == ActiveView::EasyDashboard, p, style, false, 0, ActiveView::EasyDashboard))
+        .child(nav_button("nav_hardware", "🖹", "Donanım", s.active_view == ActiveView::HardwareView, p, style, false, 0, ActiveView::HardwareView))
+        .child(nav_button("nav_driver_bios", "💾", "Sürücü ve BIOS", s.active_view == ActiveView::DriverBios, p, style, true, 0, ActiveView::DriverBios))
+
+        // Group 2: Test ve teşhis (Testing & Diagnostics)
+        .child(nav_section_header("Test ve teşhis", p))
+        .child(nav_button("nav_perf_tests", "📈", "Performans testleri", s.active_view == ActiveView::PerformanceTests, p, style, false, 0, ActiveView::PerformanceTests))
+        .child(nav_button("nav_fault_diag", "🛡️", "Arıza teşhisi", s.active_view == ActiveView::FaultDiagnostics, p, style, false, fault_count, ActiveView::FaultDiagnostics))
+        .child(nav_button("nav_latency", "⏱", "Gecikme testi", s.active_view == ActiveView::LatencyTester, p, style, true, 0, ActiveView::LatencyTester))
+        .child(nav_button("nav_core_parking", "🔲", "İşlemci analizi", s.active_view == ActiveView::CoreParking, p, style, true, 0, ActiveView::CoreParking))
+        .child(nav_button("nav_thermal", "❄", "Sıcaklık ve fanlar", s.active_view == ActiveView::ThermalMonitor, p, style, true, 0, ActiveView::ThermalMonitor))
+        .child(nav_button("nav_disks", "💽", "Diskler", s.active_view == ActiveView::DiskHealth, p, style, true, 0, ActiveView::DiskHealth))
+        .child(nav_button("nav_gaming_stats", "🎮", "Oyun içi izleme", s.active_view == ActiveView::GamingStats, p, style, false, 0, ActiveView::GamingStats))
+        .child(nav_button("nav_fps_bench", "📊", "FPS karşılaştırma", s.active_view == ActiveView::FpsBenchmark, p, style, false, 0, ActiveView::FpsBenchmark))
+        .child(nav_button("nav_network", "📶", "İnternet ve ağ", s.active_view == ActiveView::NetworkDiag, p, style, false, 0, ActiveView::NetworkDiag))
+
+        // Group 3: İyileştirme (Optimization & Enhancement)
+        .child(nav_section_header("İyileştirme", p))
+        .child(nav_button("nav_advanced", "⚡", "FPS optimizasyonu", s.active_view == ActiveView::AdvancedMatrix, p, style, false, 0, ActiveView::AdvancedMatrix))
+        .child(nav_button("nav_goal_planner", "🎯", "A* Hedef Planlayıcı", s.active_view == ActiveView::GoalPlanner, p, style, false, 0, ActiveView::GoalPlanner))
+        .child(nav_button("nav_game_profiles", "🕹️", "Oyun profilleri", s.active_view == ActiveView::GameProfiles, p, style, false, 0, ActiveView::GameProfiles))
+        .child(nav_button("nav_game_overlay", "🖥️", "Oyun içi overlay", s.active_view == ActiveView::GameOverlay, p, style, false, 0, ActiveView::GameOverlay))
+        .child(nav_button("nav_game_suitability", "🎯", "Oyun uygunluğu", s.active_view == ActiveView::GameSuitability, p, style, false, 0, ActiveView::GameSuitability))
+        .child(nav_button("nav_clean_apps", "🗑️", "Temizlik ve başlangıç", s.active_view == ActiveView::CleanAndApps, p, style, false, 0, ActiveView::CleanAndApps))
+        .child(nav_button("nav_startup_tasks", "⚙️", "Başlangıç ve Görevler", s.active_view == ActiveView::StartupAndTasks, p, style, false, 0, ActiveView::StartupAndTasks))
+        .child(nav_button("nav_win_repair", "🔧", "Windows onarımı", s.active_view == ActiveView::WindowsRepair, p, style, false, 0, ActiveView::WindowsRepair))
+        .child(nav_button("nav_backup", "📄", "Rapor", s.active_view == ActiveView::BackupCenter, p, style, false, 0, ActiveView::BackupCenter))
+        .child(nav_button("nav_gpu", "🎛️", "GPU MSI & HAGS", s.active_view == ActiveView::GpuTuning, p, style, false, 0, ActiveView::GpuTuning))
+        .child(nav_button("nav_privacy", "🛡️", "Gizlilik Kalkanı", s.active_view == ActiveView::PrivacyShield, p, style, false, 0, ActiveView::PrivacyShield))
+
+        // Group 4: Hesap (Account / System)
+        .child(nav_section_header("Hesap", p))
+        .child(nav_button("nav_license", "🔑", "Lisans", s.active_view == ActiveView::LicenseInfo, p, style, false, 0, ActiveView::LicenseInfo))
+        .child(nav_button("nav_support", "✉", "Destek ve iletişim", s.active_view == ActiveView::SupportAbout, p, style, false, 0, ActiveView::SupportAbout));
 
     if tier == LayoutTier::Compact {
         nav_items = nav_items
@@ -463,7 +465,39 @@ pub fn view(s: &AppState, cx: &mut Cx<AppState>) -> El {
         );
 
     if tier != LayoutTier::Compact {
+        let style = s.theme_style;
         controls_group = controls_group
+            .child(
+                row()
+                    .key("theme_style_selector")
+                    .min_w(0.0)
+                    .shrink()
+                    .px(8.0)
+                    .py(4.0)
+                    .radius(style.btn_radius())
+                    .fill(p.bg_card)
+                    .border(1.0, p.border)
+                    .hover(p.bg_card_hover)
+                    .motion(style.motion())
+                    .center()
+                    .on_press(|s: &mut AppState| {
+                        let next = match s.theme_style {
+                            crate::ui::theme::UiThemeStyle::Glassy => crate::ui::theme::UiThemeStyle::Minimalistic,
+                            crate::ui::theme::UiThemeStyle::Minimalistic => crate::ui::theme::UiThemeStyle::Classic,
+                            crate::ui::theme::UiThemeStyle::Classic => crate::ui::theme::UiThemeStyle::Compact,
+                            crate::ui::theme::UiThemeStyle::Compact => crate::ui::theme::UiThemeStyle::Materialistic,
+                            crate::ui::theme::UiThemeStyle::Materialistic => crate::ui::theme::UiThemeStyle::Glassy,
+                        };
+                        s.set_theme_style(next);
+                    })
+                    .child(
+                        text(s.theme_style.label())
+                            .font(rune::tok::type_::LABEL)
+                            .color(p.accent)
+                            .shrink()
+                            .wrap(),
+                    ),
+            )
             .child(
                 row()
                     .min_w(0.0)
@@ -675,6 +709,21 @@ pub fn view(s: &AppState, cx: &mut Cx<AppState>) -> El {
         ActiveView::LatencyTester => views::latency_bench::view(s, tier),
         ActiveView::CleanAndApps => views::clean_apps::view(s, tier),
         ActiveView::StartupAndTasks => views::startup_tasks::view(s, tier),
+        // v1.1.0 New Views
+        ActiveView::DriverBios => views::driver_bios::view(s, tier),
+        ActiveView::PerformanceTests => views::performance_tests::view(s, tier),
+        ActiveView::FaultDiagnostics => views::fault_diagnostics::view(s, tier),
+        ActiveView::ThermalMonitor => views::thermal_monitor::view(s, tier),
+        ActiveView::DiskHealth => views::disk_health::view(s, tier),
+        ActiveView::GamingStats => views::gaming_stats::view(s, tier),
+        ActiveView::FpsBenchmark => views::fps_benchmark::view(s, tier),
+        ActiveView::NetworkDiag => views::network_diag::view(s, tier),
+        ActiveView::GameProfiles => views::game_profiles::view(s, tier),
+        ActiveView::GameOverlay => views::game_overlay::view(s, tier),
+        ActiveView::GameSuitability => views::game_suitability::view(s, tier),
+        ActiveView::WindowsRepair => views::windows_repair::view(s, tier),
+        ActiveView::LicenseInfo => views::license_info::view(s, tier),
+        ActiveView::SupportAbout => views::support_about::view(s, tier),
     };
 
     // Centered max-reading-width container on 4K/ultrawide while 100% fluid on normal sizes

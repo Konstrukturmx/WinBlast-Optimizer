@@ -17,6 +17,135 @@ pub const fn rgba(r: f32, g: f32, b: f32, a: f32) -> Color {
     Color { r, g, b, a }
 }
 
+/// Complete UI theme layout and design system (geometry, elevation, animations, surface materials).
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize, Default)]
+pub enum UiThemeStyle {
+    #[default]
+    Glassy,
+    Minimalistic,
+    Classic,
+    Compact,
+    Materialistic,
+}
+
+impl UiThemeStyle {
+    pub const ALL: [UiThemeStyle; 5] = [
+        UiThemeStyle::Glassy,
+        UiThemeStyle::Minimalistic,
+        UiThemeStyle::Classic,
+        UiThemeStyle::Compact,
+        UiThemeStyle::Materialistic,
+    ];
+
+    pub const fn label(self) -> &'static str {
+        match self {
+            UiThemeStyle::Glassy => "💎 Glassy (Mica / Acrylic)",
+            UiThemeStyle::Minimalistic => "📐 Minimalistic (Flat Swiss)",
+            UiThemeStyle::Classic => "🖥️ Classic (Win2000 Retro)",
+            UiThemeStyle::Compact => "⚡ Compact (High Density)",
+            UiThemeStyle::Materialistic => "🎨 Materialistic (MD3 Expressive)",
+        }
+    }
+
+    pub const fn short_label(self) -> &'static str {
+        match self {
+            UiThemeStyle::Glassy => "Glassy",
+            UiThemeStyle::Minimalistic => "Minimal",
+            UiThemeStyle::Classic => "Classic",
+            UiThemeStyle::Compact => "Compact",
+            UiThemeStyle::Materialistic => "Material",
+        }
+    }
+
+    /// Corner radius for standard card containers.
+    pub const fn card_radius(self) -> f32 {
+        match self {
+            UiThemeStyle::Minimalistic => 0.0,
+            UiThemeStyle::Classic => 2.0,
+            UiThemeStyle::Compact => 4.0,
+            UiThemeStyle::Glassy => 12.0,
+            UiThemeStyle::Materialistic => 18.0,
+        }
+    }
+
+    /// Corner radius for interactive buttons.
+    pub const fn btn_radius(self) -> f32 {
+        match self {
+            UiThemeStyle::Minimalistic => 2.0,
+            UiThemeStyle::Classic => 2.0,
+            UiThemeStyle::Compact => 4.0,
+            UiThemeStyle::Glassy => 8.0,
+            UiThemeStyle::Materialistic => 24.0,
+        }
+    }
+
+    /// Corner radius for input text boxes.
+    pub const fn input_radius(self) -> f32 {
+        match self {
+            UiThemeStyle::Minimalistic => 1.0,
+            UiThemeStyle::Classic => 2.0,
+            UiThemeStyle::Compact => 4.0,
+            UiThemeStyle::Glassy => 8.0,
+            UiThemeStyle::Materialistic => 12.0,
+        }
+    }
+
+    /// Corner radius for status tags and pill badges.
+    pub const fn badge_radius(self) -> f32 {
+        match self {
+            UiThemeStyle::Minimalistic => 2.0,
+            UiThemeStyle::Classic => 2.0,
+            UiThemeStyle::Compact => 3.0,
+            UiThemeStyle::Glassy => 8.0,
+            UiThemeStyle::Materialistic => 16.0,
+        }
+    }
+
+    /// Outer border stroke width for cards.
+    pub const fn border_width(self) -> f32 {
+        match self {
+            UiThemeStyle::Minimalistic => 1.0,
+            UiThemeStyle::Classic => 2.0,
+            UiThemeStyle::Compact => 1.0,
+            UiThemeStyle::Glassy => 1.2,
+            UiThemeStyle::Materialistic => 1.0,
+        }
+    }
+
+    /// Internal content padding for cards.
+    pub const fn card_padding(self) -> f32 {
+        match self {
+            UiThemeStyle::Compact => 8.0,
+            UiThemeStyle::Classic => 10.0,
+            UiThemeStyle::Minimalistic => 12.0,
+            UiThemeStyle::Glassy => 14.0,
+            UiThemeStyle::Materialistic => 18.0,
+        }
+    }
+
+    /// Preferred sidebar width.
+    pub const fn sidebar_width(self) -> f32 {
+        match self {
+            UiThemeStyle::Compact => 195.0,
+            UiThemeStyle::Classic => 210.0,
+            UiThemeStyle::Minimalistic => 215.0,
+            UiThemeStyle::Glassy => 235.0,
+            UiThemeStyle::Materialistic => 245.0,
+        }
+    }
+
+    /// Motion spring for interactive transitions and element animations.
+    pub const fn motion(self) -> rune_motion::Spring {
+        match self {
+            UiThemeStyle::Minimalistic => rune_motion::Spring::NONE,
+            UiThemeStyle::Classic => rune_motion::Spring::new(0.15, 0.0),
+            UiThemeStyle::Compact => rune_motion::Spring::SNAPPY,
+            UiThemeStyle::Glassy => rune_motion::Spring::BOUNCY,
+            UiThemeStyle::Materialistic => rune_motion::Spring::SMOOTH,
+        }
+    }
+}
+
 /// Mode determining baseline dark vs light tone.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize, Default)]
 pub enum ThemeMode {
@@ -109,6 +238,70 @@ pub struct ThemePalette {
 }
 
 impl ThemePalette {
+    /// Card fill color customized for the active UI theme style (acrylic translucent, flat Swiss, retro beveled, compact, or tonal Material 3).
+    pub fn card_fill_styled(&self, style: UiThemeStyle) -> Color {
+        match style {
+            UiThemeStyle::Glassy => {
+                if self.is_dark {
+                    rgba(0.024, 0.030, 0.046, 0.72)
+                } else {
+                    rgba(1.0, 1.0, 1.0, 0.82)
+                }
+            }
+            UiThemeStyle::Minimalistic => {
+                if self.is_dark {
+                    rgb(0.016, 0.018, 0.026)
+                } else {
+                    rgb(0.99, 0.99, 1.00)
+                }
+            }
+            UiThemeStyle::Classic => {
+                if self.is_dark {
+                    rgb(0.042, 0.048, 0.062)
+                } else {
+                    rgb(0.93, 0.94, 0.96)
+                }
+            }
+            UiThemeStyle::Compact => {
+                if self.is_dark {
+                    rgb(0.022, 0.026, 0.036)
+                } else {
+                    rgb(0.96, 0.97, 0.98)
+                }
+            }
+            UiThemeStyle::Materialistic => {
+                if self.is_dark {
+                    rgb(0.032, 0.038, 0.054)
+                } else {
+                    rgb(0.95, 0.96, 0.99)
+                }
+            }
+        }
+    }
+
+    /// Border stroke color customized for the active UI theme style.
+    pub fn border_styled(&self, style: UiThemeStyle) -> Color {
+        match style {
+            UiThemeStyle::Glassy => self.accent.alpha(0.35),
+            UiThemeStyle::Minimalistic => {
+                if self.is_dark {
+                    rgba(1.0, 1.0, 1.0, 0.12)
+                } else {
+                    rgba(0.0, 0.0, 0.0, 0.12)
+                }
+            }
+            UiThemeStyle::Classic => {
+                if self.is_dark {
+                    rgba(1.0, 1.0, 1.0, 0.28)
+                } else {
+                    rgba(0.0, 0.0, 0.0, 0.30)
+                }
+            }
+            UiThemeStyle::Compact => self.border,
+            UiThemeStyle::Materialistic => self.accent.alpha(0.20),
+        }
+    }
+
     /// Generate a theme palette given mode and scheme, tuned for WCAG 2.1 AA compliance.
     pub fn new(mode: ThemeMode, scheme: ColorScheme) -> Self {
         match mode {

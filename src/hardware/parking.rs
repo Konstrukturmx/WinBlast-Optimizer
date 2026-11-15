@@ -84,6 +84,7 @@ impl ParkingSnapshot {
 
 /// Evaluate whether the active power rail (`AC` when `on_ac`, `DC` otherwise) keeps all
 /// cores unparked (`min >= 100 && max >= 100`), including Class 1 P-core bounds on hybrid CPUs.
+#[allow(clippy::too_many_arguments)]
 pub(crate) fn compute_is_fully_unparked(
     on_ac: bool,
     is_hybrid: bool,

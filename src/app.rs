@@ -56,6 +56,21 @@ pub enum ActiveView {
     CleanAndApps,
     StartupAndTasks,
     GoalPlanner,
+    // v1.1.0 New Feature Views
+    DriverBios,
+    PerformanceTests,
+    FaultDiagnostics,
+    ThermalMonitor,
+    DiskHealth,
+    GamingStats,
+    FpsBenchmark,
+    NetworkDiag,
+    GameProfiles,
+    GameOverlay,
+    GameSuitability,
+    WindowsRepair,
+    LicenseInfo,
+    SupportAbout,
 }
 
 /// Sub-tabs inside the Clean & Apps view.
@@ -419,6 +434,23 @@ pub struct AppState {
     pub rx_events: crossbeam_channel::Receiver<WorkerEvent>,
     pub tx_events: crossbeam_channel::Sender<WorkerEvent>,
     pub waker: Option<rune::Waker>,
+
+    // v1.1.0 Advanced Themes & Diagnostics Subsystems
+    pub theme_style: crate::ui::theme::UiThemeStyle,
+    pub bios_info: Option<crate::hardware::bios::BiosSystemInfo>,
+    pub fault_report: Option<crate::tools::diagnostics::FaultDiagnosticsReport>,
+    pub thermal_snapshot: Option<crate::hardware::thermal::SystemThermalSnapshot>,
+    pub disk_report: Option<crate::hardware::disks::DiskSubsystemReport>,
+    pub perf_score: Option<crate::tools::performance_tests::BenchmarkScore>,
+    pub is_benchmarking_perf: bool,
+    pub game_telemetry: crate::tools::gaming_stats::LiveGameTelemetry,
+    pub network_diag: Option<crate::tools::network_diag::NetworkDiagnostics>,
+    pub game_profiles: Vec<crate::tools::game_profiles::GameProfile>,
+    pub game_suitability: crate::tools::game_overlay::GameSuitabilityReport,
+    pub game_overlay: crate::tools::game_overlay::GameOverlaySettings,
+    pub repair_tasks: Vec<crate::tools::windows_repair::RepairTask>,
+    pub repair_log: Vec<String>,
+    pub license_info: crate::tools::license::WindowsLicenseInfo,
 }
 
 impl Default for AppState {
@@ -588,6 +620,23 @@ impl AppState {
             rx_events,
             tx_events,
             waker: None,
+
+            // v1.1.0 Subsystems
+            theme_style: crate::ui::theme::UiThemeStyle::default(),
+            bios_info: None,
+            fault_report: Some(crate::tools::diagnostics::FaultDiagnosticsReport::scan()),
+            thermal_snapshot: Some(crate::hardware::thermal::SystemThermalSnapshot::read()),
+            disk_report: None,
+            perf_score: Some(crate::tools::performance_tests::BenchmarkScore::default()),
+            is_benchmarking_perf: false,
+            game_telemetry: crate::tools::gaming_stats::LiveGameTelemetry::default(),
+            network_diag: None,
+            game_profiles: crate::tools::game_profiles::GameProfile::all(),
+            game_suitability: crate::tools::game_overlay::GameSuitabilityReport::default(),
+            game_overlay: crate::tools::game_overlay::GameOverlaySettings::default(),
+            repair_tasks: crate::tools::windows_repair::RepairTask::all(),
+            repair_log: Vec::new(),
+            license_info: crate::tools::license::WindowsLicenseInfo::query(),
         }
     }
 
@@ -1436,6 +1485,11 @@ impl AppState {
         self.theme_palette = ThemePalette::new(self.theme_mode, self.color_scheme);
     }
 
+    /// Set complete UI theme layout & geometry style (Minimalistic, Classic, Glassy, Compact, Materialistic).
+    pub fn set_theme_style(&mut self, style: crate::ui::theme::UiThemeStyle) {
+        self.theme_style = style;
+    }
+
     /// Toggle compact navigation drawer open/closed.
     pub fn toggle_sidebar(&mut self) {
         self.sidebar_open = !self.sidebar_open;
@@ -1467,6 +1521,21 @@ impl AppState {
             }
             ActiveView::HardwareView if self.power_schemes.is_empty() => {
                 self.refresh_platform_inventory();
+            }
+            ActiveView::DriverBios if self.bios_info.is_none() => {
+                self.bios_info = Some(crate::hardware::bios::BiosSystemInfo::probe());
+            }
+            ActiveView::FaultDiagnostics if self.fault_report.is_none() => {
+                self.fault_report = Some(crate::tools::diagnostics::FaultDiagnosticsReport::scan());
+            }
+            ActiveView::ThermalMonitor => {
+                self.thermal_snapshot = Some(crate::hardware::thermal::SystemThermalSnapshot::read());
+            }
+            ActiveView::DiskHealth if self.disk_report.is_none() => {
+                self.disk_report = Some(crate::hardware::disks::DiskSubsystemReport::probe());
+            }
+            ActiveView::NetworkDiag if self.network_diag.is_none() => {
+                self.network_diag = Some(crate::tools::network_diag::NetworkDiagnostics::default());
             }
             _ => {}
         }
