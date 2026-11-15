@@ -170,8 +170,7 @@ fn build_sidebar(s: &AppState, p: &ThemePalette, tier: LayoutTier) -> El {
     let fault_count = s
         .fault_report
         .as_ref()
-        .map(|r| r.total_critical_faults)
-        .unwrap_or(0);
+        .map_or(0, |r| r.total_critical_faults);
 
     let mut nav_items = col()
         .w_full()
@@ -1079,7 +1078,7 @@ pub fn view(s: &AppState, cx: &mut Cx<AppState>) -> El {
                         p.danger.alpha(0.15),
                         p.danger,
                         p,
-                        |s| s.clear_changelog(),
+                        AppState::clear_changelog,
                     )),
             )
             .child(

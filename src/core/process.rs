@@ -17,8 +17,8 @@ impl SilentCommand {
         #[cfg(windows)]
         {
             use std::os::windows::process::CommandExt;
-            // CREATE_NO_WINDOW: 0x08000000
-            const CREATE_NO_WINDOW: u32 = 0x08000000;
+            // CREATE_NO_WINDOW: 0x0800_0000
+            const CREATE_NO_WINDOW: u32 = 0x0800_0000;
             cmd.creation_flags(CREATE_NO_WINDOW);
         }
         cmd
