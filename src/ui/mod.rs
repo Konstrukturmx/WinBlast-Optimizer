@@ -38,7 +38,7 @@ fn tier_from_rect(r: [f32; 4]) -> LayoutTier {
 }
 
 /// Navigation section category title.
-fn nav_section_header(title: &'static str, p: &ThemePalette) -> El {
+fn nav_section_header(title: &str, p: &ThemePalette) -> El {
     text(title)
         .font(rune::tok::type_::LABEL)
         .color(p.text_muted)
@@ -177,42 +177,41 @@ fn build_sidebar(s: &AppState, p: &ThemePalette, tier: LayoutTier) -> El {
         .w_full()
         .min_w(0.0)
         .gap(3.0)
-        // Group 1: Genel bakış (Overview)
-        .child(nav_section_header("Genel bakış", p))
-        .child(nav_button("nav_easy", "⚡", "Sistem paneli", s.active_view == ActiveView::EasyDashboard, p, style, false, 0, ActiveView::EasyDashboard))
-        .child(nav_button("nav_hardware", "🖹", "Donanım", s.active_view == ActiveView::HardwareView, p, style, false, 0, ActiveView::HardwareView))
-        .child(nav_button("nav_driver_bios", "💾", "Sürücü ve BIOS", s.active_view == ActiveView::DriverBios, p, style, true, 0, ActiveView::DriverBios))
+        // Group 1: Overview
+        .child(nav_section_header(s.tr(TextKey::NavGroupOverview), p))
+        .child(nav_button("nav_easy", "⚡", s.tr(TextKey::NavSystemPanel), s.active_view == ActiveView::EasyDashboard, p, style, false, 0, ActiveView::EasyDashboard))
+        .child(nav_button("nav_hardware", "🖹", s.tr(TextKey::NavHardware), s.active_view == ActiveView::HardwareView, p, style, false, 0, ActiveView::HardwareView))
+        .child(nav_button("nav_driver_bios", "💾", s.tr(TextKey::NavDriverBios), s.active_view == ActiveView::DriverBios, p, style, true, 0, ActiveView::DriverBios))
 
-        // Group 2: Test ve teşhis (Testing & Diagnostics)
-        .child(nav_section_header("Test ve teşhis", p))
-        .child(nav_button("nav_perf_tests", "📈", "Performans testleri", s.active_view == ActiveView::PerformanceTests, p, style, false, 0, ActiveView::PerformanceTests))
-        .child(nav_button("nav_fault_diag", "🛡️", "Arıza teşhisi", s.active_view == ActiveView::FaultDiagnostics, p, style, false, fault_count, ActiveView::FaultDiagnostics))
-        .child(nav_button("nav_latency", "⏱", "Gecikme testi", s.active_view == ActiveView::LatencyTester, p, style, true, 0, ActiveView::LatencyTester))
-        .child(nav_button("nav_core_parking", "🔲", "İşlemci analizi", s.active_view == ActiveView::CoreParking, p, style, true, 0, ActiveView::CoreParking))
-        .child(nav_button("nav_thermal", "❄", "Sıcaklık ve fanlar", s.active_view == ActiveView::ThermalMonitor, p, style, true, 0, ActiveView::ThermalMonitor))
-        .child(nav_button("nav_disks", "💽", "Diskler", s.active_view == ActiveView::DiskHealth, p, style, true, 0, ActiveView::DiskHealth))
-        .child(nav_button("nav_gaming_stats", "🎮", "Oyun içi izleme", s.active_view == ActiveView::GamingStats, p, style, false, 0, ActiveView::GamingStats))
-        .child(nav_button("nav_fps_bench", "📊", "FPS karşılaştırma", s.active_view == ActiveView::FpsBenchmark, p, style, false, 0, ActiveView::FpsBenchmark))
-        .child(nav_button("nav_network", "📶", "İnternet ve ağ", s.active_view == ActiveView::NetworkDiag, p, style, false, 0, ActiveView::NetworkDiag))
+        // Group 2: Testing & Diagnostics
+        .child(nav_section_header(s.tr(TextKey::NavGroupDiagnostics), p))
+        .child(nav_button("nav_perf_tests", "📈", s.tr(TextKey::NavPerfTests), s.active_view == ActiveView::PerformanceTests, p, style, false, 0, ActiveView::PerformanceTests))
+        .child(nav_button("nav_fault_diag", "🛡️", s.tr(TextKey::NavFaultDiag), s.active_view == ActiveView::FaultDiagnostics, p, style, false, fault_count, ActiveView::FaultDiagnostics))
+        .child(nav_button("nav_latency", "⏱", s.tr(TextKey::NavLatency), s.active_view == ActiveView::LatencyTester, p, style, true, 0, ActiveView::LatencyTester))
+        .child(nav_button("nav_core_parking", "🔲", s.tr(TextKey::NavCoreParking), s.active_view == ActiveView::CoreParking, p, style, true, 0, ActiveView::CoreParking))
+        .child(nav_button("nav_thermal", "❄", s.tr(TextKey::NavThermal), s.active_view == ActiveView::ThermalMonitor, p, style, true, 0, ActiveView::ThermalMonitor))
+        .child(nav_button("nav_disks", "💽", s.tr(TextKey::NavDisks), s.active_view == ActiveView::DiskHealth, p, style, true, 0, ActiveView::DiskHealth))
+        .child(nav_button("nav_gaming_stats", "🎮", s.tr(TextKey::NavGamingStats), s.active_view == ActiveView::GamingStats, p, style, false, 0, ActiveView::GamingStats))
+        .child(nav_button("nav_fps_bench", "📊", s.tr(TextKey::NavFpsBench), s.active_view == ActiveView::FpsBenchmark, p, style, false, 0, ActiveView::FpsBenchmark))
+        .child(nav_button("nav_network", "📶", s.tr(TextKey::NavNetwork), s.active_view == ActiveView::NetworkDiag, p, style, false, 0, ActiveView::NetworkDiag))
 
-        // Group 3: İyileştirme (Optimization & Enhancement)
-        .child(nav_section_header("İyileştirme", p))
-        .child(nav_button("nav_advanced", "⚡", "FPS optimizasyonu", s.active_view == ActiveView::AdvancedMatrix, p, style, false, 0, ActiveView::AdvancedMatrix))
-        .child(nav_button("nav_goal_planner", "🎯", "A* Hedef Planlayıcı", s.active_view == ActiveView::GoalPlanner, p, style, false, 0, ActiveView::GoalPlanner))
-        .child(nav_button("nav_game_profiles", "🕹️", "Oyun profilleri", s.active_view == ActiveView::GameProfiles, p, style, false, 0, ActiveView::GameProfiles))
-        .child(nav_button("nav_game_overlay", "🖥️", "Oyun içi overlay", s.active_view == ActiveView::GameOverlay, p, style, false, 0, ActiveView::GameOverlay))
-        .child(nav_button("nav_game_suitability", "🎯", "Oyun uygunluğu", s.active_view == ActiveView::GameSuitability, p, style, false, 0, ActiveView::GameSuitability))
-        .child(nav_button("nav_clean_apps", "🗑️", "Temizlik ve başlangıç", s.active_view == ActiveView::CleanAndApps, p, style, false, 0, ActiveView::CleanAndApps))
-        .child(nav_button("nav_startup_tasks", "⚙️", "Başlangıç ve Görevler", s.active_view == ActiveView::StartupAndTasks, p, style, false, 0, ActiveView::StartupAndTasks))
-        .child(nav_button("nav_win_repair", "🔧", "Windows onarımı", s.active_view == ActiveView::WindowsRepair, p, style, false, 0, ActiveView::WindowsRepair))
-        .child(nav_button("nav_backup", "📄", "Rapor", s.active_view == ActiveView::BackupCenter, p, style, false, 0, ActiveView::BackupCenter))
-        .child(nav_button("nav_gpu", "🎛️", "GPU MSI & HAGS", s.active_view == ActiveView::GpuTuning, p, style, false, 0, ActiveView::GpuTuning))
-        .child(nav_button("nav_privacy", "🛡️", "Gizlilik Kalkanı", s.active_view == ActiveView::PrivacyShield, p, style, false, 0, ActiveView::PrivacyShield))
+        // Group 3: Optimization
+        .child(nav_section_header(s.tr(TextKey::NavGroupOptimization), p))
+        .child(nav_button("nav_advanced", "⚡", s.tr(TextKey::NavFpsOptimization), s.active_view == ActiveView::AdvancedMatrix, p, style, false, 0, ActiveView::AdvancedMatrix))
+        .child(nav_button("nav_goal_planner", "🎯", s.tr(TextKey::NavGoalPlanner), s.active_view == ActiveView::GoalPlanner, p, style, false, 0, ActiveView::GoalPlanner))
+        .child(nav_button("nav_game_profiles", "🕹️", s.tr(TextKey::NavGameProfiles), s.active_view == ActiveView::GameProfiles, p, style, false, 0, ActiveView::GameProfiles))
+        .child(nav_button("nav_game_overlay", "🖥️", s.tr(TextKey::NavGameOverlay), s.active_view == ActiveView::GameOverlay, p, style, false, 0, ActiveView::GameOverlay))
+        .child(nav_button("nav_game_suitability", "🎯", s.tr(TextKey::NavGameSuitability), s.active_view == ActiveView::GameSuitability, p, style, false, 0, ActiveView::GameSuitability))
+        .child(nav_button("nav_clean_apps", "🗑️", s.tr(TextKey::NavCleanApps), s.active_view == ActiveView::CleanAndApps, p, style, false, 0, ActiveView::CleanAndApps))
+        .child(nav_button("nav_startup_tasks", "⚙️", s.tr(TextKey::NavStartupTasks), s.active_view == ActiveView::StartupAndTasks, p, style, false, 0, ActiveView::StartupAndTasks))
+        .child(nav_button("nav_win_repair", "🔧", s.tr(TextKey::NavWindowsRepair), s.active_view == ActiveView::WindowsRepair, p, style, false, 0, ActiveView::WindowsRepair))
+        .child(nav_button("nav_backup", "📄", s.tr(TextKey::NavBackupReport), s.active_view == ActiveView::BackupCenter, p, style, false, 0, ActiveView::BackupCenter))
+        .child(nav_button("nav_gpu", "🎛️", s.tr(TextKey::NavGpuMsiHags), s.active_view == ActiveView::GpuTuning, p, style, false, 0, ActiveView::GpuTuning))
+        .child(nav_button("nav_privacy", "🛡️", s.tr(TextKey::NavPrivacyShield), s.active_view == ActiveView::PrivacyShield, p, style, false, 0, ActiveView::PrivacyShield))
 
-        // Group 4: Hesap (Account / System)
-        .child(nav_section_header("Hesap", p))
-        .child(nav_button("nav_license", "🔑", "Lisans", s.active_view == ActiveView::LicenseInfo, p, style, false, 0, ActiveView::LicenseInfo))
-        .child(nav_button("nav_support", "✉", "Destek ve iletişim", s.active_view == ActiveView::SupportAbout, p, style, false, 0, ActiveView::SupportAbout));
+        // Group 4: Account / Support (Lisans deleted)
+        .child(nav_section_header(s.tr(TextKey::NavGroupAccount), p))
+        .child(nav_button("nav_support", "✉", s.tr(TextKey::NavSupportAbout), s.active_view == ActiveView::SupportAbout, p, style, false, 0, ActiveView::SupportAbout));
 
     if tier == LayoutTier::Compact {
         nav_items = nav_items
@@ -745,7 +744,6 @@ pub fn view(s: &AppState, cx: &mut Cx<AppState>) -> El {
         ActiveView::GameOverlay => views::game_overlay::view(s, tier),
         ActiveView::GameSuitability => views::game_suitability::view(s, tier),
         ActiveView::WindowsRepair => views::windows_repair::view(s, tier),
-        ActiveView::LicenseInfo => views::license_info::view(s, tier),
         ActiveView::SupportAbout => views::support_about::view(s, tier),
     };
 

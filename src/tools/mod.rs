@@ -10,7 +10,6 @@ pub mod features_apps;
 pub mod game_overlay;
 pub mod game_profiles;
 pub mod gaming_stats;
-pub mod license;
 pub mod network_diag;
 pub mod performance_tests;
 pub mod startup;

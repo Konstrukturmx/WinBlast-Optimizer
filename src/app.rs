@@ -69,7 +69,6 @@ pub enum ActiveView {
     GameOverlay,
     GameSuitability,
     WindowsRepair,
-    LicenseInfo,
     SupportAbout,
 }
 
@@ -450,7 +449,9 @@ pub struct AppState {
     pub game_overlay: crate::tools::game_overlay::GameOverlaySettings,
     pub repair_tasks: Vec<crate::tools::windows_repair::RepairTask>,
     pub repair_log: Vec<String>,
-    pub license_info: crate::tools::license::WindowsLicenseInfo,
+    pub driver_updates: Vec<crate::hardware::driver_update::DriverUpdateItem>,
+    pub is_driver_scanning: bool,
+    pub driver_install_in_flight: Option<String>,
 }
 
 impl Default for AppState {
@@ -637,7 +638,9 @@ impl AppState {
             game_overlay: crate::tools::game_overlay::GameOverlaySettings::default(),
             repair_tasks: crate::tools::windows_repair::RepairTask::all(),
             repair_log: Vec::new(),
-            license_info: crate::tools::license::WindowsLicenseInfo::query(),
+            driver_updates: Vec::new(),
+            is_driver_scanning: false,
+            driver_install_in_flight: None,
         }
     }
 
@@ -1524,8 +1527,13 @@ impl AppState {
             ActiveView::HardwareView if self.power_schemes.is_empty() => {
                 self.refresh_platform_inventory();
             }
-            ActiveView::DriverBios if self.bios_info.is_none() => {
-                self.bios_info = Some(crate::hardware::bios::BiosSystemInfo::probe());
+            ActiveView::DriverBios => {
+                if self.bios_info.is_none() {
+                    self.bios_info = Some(crate::hardware::bios::BiosSystemInfo::probe());
+                }
+                if self.driver_updates.is_empty() && !self.is_driver_scanning {
+                    self.scan_online_drivers();
+                }
             }
             ActiveView::FaultDiagnostics if self.fault_report.is_none() => {
                 self.fault_report = Some(crate::tools::diagnostics::FaultDiagnosticsReport::scan());
@@ -1540,6 +1548,46 @@ impl AppState {
                 self.network_diag = Some(crate::tools::network_diag::NetworkDiagnostics::default());
             }
             _ => {}
+        }
+    }
+
+    /// Perform online driver scan across Display, Network, Audio, Storage, and Virtual Sandbox devices.
+    pub fn scan_online_drivers(&mut self) {
+        self.is_driver_scanning = true;
+        self.driver_updates = crate::hardware::driver_update::scan_online_drivers();
+        self.is_driver_scanning = false;
+        if let Some(ref w) = self.waker {
+            w();
+        }
+    }
+
+    /// Download and stage driver update.
+    pub fn install_driver_update(&mut self, driver_id: String) {
+        self.driver_install_in_flight = Some(driver_id.clone());
+        let staging_dir = std::env::temp_dir().join("winblast_driver_staging");
+        if let Some(item) = self.driver_updates.iter_mut().find(|d| d.id == driver_id) {
+            let _ = crate::hardware::driver_update::download_and_install_driver(item, &staging_dir);
+        }
+        self.driver_install_in_flight = None;
+        if let Some(ref w) = self.waker {
+            w();
+        }
+    }
+
+    /// Run isolated test driver install in virtual sandbox.
+    pub fn test_sandbox_driver_install(&mut self) {
+        self.driver_install_in_flight = Some("virtual_test_sandbox_driver".to_string());
+        let staging_dir = std::env::temp_dir().join("winblast_driver_sandbox");
+        if let Some(item) = self.driver_updates.iter_mut().find(|d| d.id == "virtual_test_sandbox_driver") {
+            let _ = crate::hardware::driver_update::download_and_install_driver(item, &staging_dir);
+        } else {
+            let mut item = crate::hardware::driver_update::create_sandbox_test_item();
+            let _ = crate::hardware::driver_update::download_and_install_driver(&mut item, &staging_dir);
+            self.driver_updates.push(item);
+        }
+        self.driver_install_in_flight = None;
+        if let Some(ref w) = self.waker {
+            w();
         }
     }
 

@@ -1,25 +1,23 @@
-//! Easy Mode Dashboard in Rune — one-click presets, health gauge, spring switches,
-//! live Task Manager waveforms, and Before/After impact metrics responsive across all resolutions.
+//! Easy Mode Dashboard in Rune — Pure telemetry control center, real-time hardware waveforms,
+//! Before/After impact metrics, system architecture summary, and quick launcher navigation cards.
 
 use rune::color::Color;
 use rune::{col, row, text, El, ScrollSpec};
 
-use crate::app::{AppState, BeforeAfterImpact, PresetKind};
+use crate::app::{ActiveView, AppState, BeforeAfterImpact};
 use crate::core::i18n::TextKey;
 use crate::scanner::{ScanResult, TweakState};
 use crate::ui::theme::ThemePalette;
-use crate::ui::widgets::button::{
-    action_button, action_button_guarded, pill_badge, switch_toggle, tweak_state_meta,
-};
+use crate::ui::widgets::button::{action_button, action_button_guarded};
 use crate::ui::widgets::scrollbar::WinBlastScrollable;
-use crate::ui::widgets::{risk_badge, sparkline};
+use crate::ui::widgets::sparkline;
 use crate::ui::LayoutTier;
 
-/// Compute a health score (0–100) from scan results for Easy Mode eligible tweaks.
+/// Compute an overall health score (0–100) from scan results across all applicable tweaks.
 fn health_score(results: &[ScanResult]) -> u32 {
     let eligible: Vec<&ScanResult> = results
         .iter()
-        .filter(|r| r.easy_mode_included && r.current_state != TweakState::NotApplicable)
+        .filter(|r| r.current_state != TweakState::NotApplicable)
         .collect();
 
     if eligible.is_empty() {
@@ -142,8 +140,8 @@ fn before_after_card(impact: &BeforeAfterImpact, p: &ThemePalette, s: &AppState)
                                         s.tr(TextKey::WasLabel),
                                         impact.baseline_ram_mb as f64 / 1024.0
                                     ))
-                                    .font(rune::tok::type_::LABEL)
-                                    .color(p.text_muted),
+                                        .font(rune::tok::type_::LABEL)
+                                        .color(p.text_muted),
                                 ),
                         )
                         .child(
@@ -194,8 +192,8 @@ fn before_after_card(impact: &BeforeAfterImpact, p: &ThemePalette, s: &AppState)
                                         s.tr(TextKey::WasLabel),
                                         impact.baseline_processes
                                     ))
-                                    .font(rune::tok::type_::LABEL)
-                                    .color(p.text_muted),
+                                        .font(rune::tok::type_::LABEL)
+                                        .color(p.text_muted),
                                 ),
                         )
                         .child(
@@ -275,8 +273,8 @@ fn before_after_card(impact: &BeforeAfterImpact, p: &ThemePalette, s: &AppState)
                                         s.tr(TextKey::WasLabel),
                                         impact.baseline_optimized_count
                                     ))
-                                    .font(rune::tok::type_::LABEL)
-                                    .color(p.text_muted),
+                                        .font(rune::tok::type_::LABEL)
+                                        .color(p.text_muted),
                                 ),
                         )
                         .child(
@@ -298,7 +296,7 @@ fn before_after_card(impact: &BeforeAfterImpact, p: &ThemePalette, s: &AppState)
         )
 }
 
-/// Real-time 1-second Task Manager style waveform sparklines wrapping seamlessly on compact screens.
+/// Real-time 1-second Task Manager style waveform sparklines.
 fn live_telemetry_card(s: &AppState, p: &ThemePalette, tier: LayoutTier) -> El {
     let Some(ref m) = s.realtime_metrics else {
         return col();
@@ -316,7 +314,7 @@ fn live_telemetry_card(s: &AppState, p: &ThemePalette, tier: LayoutTier) -> El {
                 &format!("{:.1}% ({} {})", m.cpu_usage, m.thread_count, s.tr(TextKey::ThreadsLabel)),
                 &s.cpu_sparkline,
                 p.sparkline_cpu,
-                38.0,
+                42.0,
                 30,
                 p,
             )
@@ -334,7 +332,7 @@ fn live_telemetry_card(s: &AppState, p: &ThemePalette, tier: LayoutTier) -> El {
                 ),
                 &s.ram_sparkline,
                 p.sparkline_ram,
-                38.0,
+                42.0,
                 30,
                 p,
             )
@@ -343,263 +341,369 @@ fn live_telemetry_card(s: &AppState, p: &ThemePalette, tier: LayoutTier) -> El {
         )
 }
 
-/// Renders the responsive Easy Mode dashboard inside a single outer scroll viewport.
+/// System Architecture and Hardware Specs Overview Card.
+fn hardware_overview_card(s: &AppState, p: &ThemePalette) -> El {
+    let cpu_name = s.cpu_info.as_ref().map(|c| c.model_name.as_str()).unwrap_or("Intel / AMD Processor");
+    let cpu_topology = s.cpu_info.as_ref().map(|c| {
+        format!("{} Physical / {} Logical Threads", c.physical_cores, c.logical_cores)
+    }).unwrap_or_else(|| "Multi-Core Topology".to_string());
+
+    let primary_gpu = s.gpus.first();
+    let gpu_name = primary_gpu.map(|g| g.name.as_str()).unwrap_or("Discrete / Integrated GPU");
+    let gpu_driver = primary_gpu.map(|g| {
+        if g.dedicated_vram_mb > 0 {
+            format!("{:.1} GB Dedicated VRAM", g.dedicated_vram_mb as f64 / 1024.0)
+        } else {
+            "WHQL Display Driver".to_string()
+        }
+    }).unwrap_or_else(|| "WHQL Driver".to_string());
+
+    let ram_text = s.platform_security.as_ref().map(|ps| ps.ram_summary.as_str()).unwrap_or("DDR4/DDR5 Memory");
+    let motherboard = s.platform_security.as_ref().map(|ps| ps.motherboard.as_str()).unwrap_or("Standard PC Motherboard");
+    let uptime = s.platform_security.as_ref().map(|ps| format!("{:.1} Hours Uptime", ps.uptime_hours)).unwrap_or_else(|| "Active Session".to_string());
+
+    col()
+        .w_full()
+        .min_w(0.0)
+        .padding(p.card_padding)
+        .radius(p.card_radius)
+        .fill(p.bg_card)
+        .border(p.border_width, p.border)
+        .gap(10.0)
+        .child(
+            row()
+                .gap(6.0)
+                .center()
+                .child(text("💻").font(rune::tok::type_::LABEL))
+                .child(
+                    text("Sistem Özellikleri & Donanım Özeti")
+                        .font(rune::tok::type_::TITLE)
+                        .color(p.text_primary),
+                ),
+        )
+        .child(
+            row()
+                .w_full()
+                .min_w(0.0)
+                .flex_wrap()
+                .gaps(10.0, 10.0)
+                .child(
+                    col()
+                        .grow(1.0)
+                        .min_w(220.0)
+                        .padding(10.0)
+                        .radius(6.0)
+                        .fill(p.bg_primary)
+                        .border(1.0, p.border)
+                        .gap(2.0)
+                        .child(text("İşlemci (CPU)").font(rune::tok::type_::LABEL).color(p.accent))
+                        .child(text(cpu_name).font(rune::tok::type_::TITLE).color(p.text_primary))
+                        .child(text(cpu_topology).font(rune::tok::type_::BODY).color(p.text_muted)),
+                )
+                .child(
+                    col()
+                        .grow(1.0)
+                        .min_w(220.0)
+                        .padding(10.0)
+                        .radius(6.0)
+                        .fill(p.bg_primary)
+                        .border(1.0, p.border)
+                        .gap(2.0)
+                        .child(text("Ekran Kartı (GPU)").font(rune::tok::type_::LABEL).color(p.accent))
+                        .child(text(gpu_name).font(rune::tok::type_::TITLE).color(p.text_primary))
+                        .child(text(gpu_driver).font(rune::tok::type_::BODY).color(p.text_muted)),
+                )
+                .child(
+                    col()
+                        .grow(1.0)
+                        .min_w(220.0)
+                        .padding(10.0)
+                        .radius(6.0)
+                        .fill(p.bg_primary)
+                        .border(1.0, p.border)
+                        .gap(2.0)
+                        .child(text("Bellek (RAM)").font(rune::tok::type_::LABEL).color(p.accent))
+                        .child(text(ram_text).font(rune::tok::type_::TITLE).color(p.text_primary))
+                        .child(text(motherboard).font(rune::tok::type_::BODY).color(p.text_muted)),
+                )
+                .child(
+                    col()
+                        .grow(1.0)
+                        .min_w(220.0)
+                        .padding(10.0)
+                        .radius(6.0)
+                        .fill(p.bg_primary)
+                        .border(1.0, p.border)
+                        .gap(2.0)
+                        .child(text("Platform & Oturum").font(rune::tok::type_::LABEL).color(p.accent))
+                        .child(text(uptime).font(rune::tok::type_::TITLE).color(p.text_primary))
+                        .child(text(format!("{} Optimizasyon Kuralı", s.scan_results.len())).font(rune::tok::type_::BODY).color(p.text_muted)),
+                ),
+        )
+}
+
+/// Quick navigation launcher cards to direct sections.
+fn quick_actions_card(_s: &AppState, p: &ThemePalette) -> El {
+    col()
+        .w_full()
+        .min_w(0.0)
+        .padding(p.card_padding)
+        .radius(p.card_radius)
+        .fill(p.bg_card)
+        .border(p.border_width, p.border)
+        .gap(10.0)
+        .child(
+            row()
+                .gap(6.0)
+                .center()
+                .child(text("⚡").font(rune::tok::type_::LABEL))
+                .child(
+                    text("Hızlı Modül ve Optimizasyon Başlatıcı")
+                        .font(rune::tok::type_::TITLE)
+                        .color(p.text_primary),
+                ),
+        )
+        .child(
+            row()
+                .w_full()
+                .min_w(0.0)
+                .flex_wrap()
+                .gaps(10.0, 10.0)
+                .child(
+                    col()
+                        .grow(1.0)
+                        .min_w(200.0)
+                        .padding(12.0)
+                        .radius(6.0)
+                        .fill(p.bg_primary)
+                        .border(1.0, p.border)
+                        .gap(6.0)
+                        .child(text("⚡ FPS Optimizasyonu").font(rune::tok::type_::TITLE).color(p.text_primary))
+                        .child(text("Tüm sistem ve oyun tweak matrisi, 1-tık profiller ve canlı anahtarlar.").font(rune::tok::type_::BODY).color(p.text_muted))
+                        .child(action_button("Matrise Git", p.accent, Color::WHITE, p, |s| {
+                            s.navigate(ActiveView::AdvancedMatrix);
+                        })),
+                )
+                .child(
+                    col()
+                        .grow(1.0)
+                        .min_w(200.0)
+                        .padding(12.0)
+                        .radius(6.0)
+                        .fill(p.bg_primary)
+                        .border(1.0, p.border)
+                        .gap(6.0)
+                        .child(text("🗑️ Temizlik & Başlangıç").font(rune::tok::type_::TITLE).color(p.text_primary))
+                        .child(text("Disk temizleyici, AppX bloatware silici ve başlangıç programları.").font(rune::tok::type_::BODY).color(p.text_muted))
+                        .child(action_button("Temizliğe Git", p.btn_secondary, p.text_primary, p, |s| {
+                            s.navigate(ActiveView::CleanAndApps);
+                        })),
+                )
+                .child(
+                    col()
+                        .grow(1.0)
+                        .min_w(200.0)
+                        .padding(12.0)
+                        .radius(6.0)
+                        .fill(p.bg_primary)
+                        .border(1.0, p.border)
+                        .gap(6.0)
+                        .child(text("🔲 İşlemci Analizi").font(rune::tok::type_::TITLE).color(p.text_primary))
+                        .child(text("Çekirdek parkını kaldır, mikrosaniyeler seviyesinde gecikmeyi azalt.").font(rune::tok::type_::BODY).color(p.text_muted))
+                        .child(action_button("İşlemciye Git", p.btn_secondary, p.text_primary, p, |s| {
+                            s.navigate(ActiveView::CoreParking);
+                        })),
+                )
+                .child(
+                    col()
+                        .grow(1.0)
+                        .min_w(200.0)
+                        .padding(12.0)
+                        .radius(6.0)
+                        .fill(p.bg_primary)
+                        .border(1.0, p.border)
+                        .gap(6.0)
+                        .child(text("💾 Sürücü ve BIOS").font(rune::tok::type_::TITLE).color(p.text_primary))
+                        .child(text("Donanım SMBIOS bilgisi ve çevrimiçi sürücü güncelleme motoru.").font(rune::tok::type_::BODY).color(p.text_muted))
+                        .child(action_button("Sürücülere Git", p.btn_secondary, p.text_primary, p, |s| {
+                            s.navigate(ActiveView::DriverBios);
+                        })),
+                )
+                .child(
+                    col()
+                        .grow(1.0)
+                        .min_w(200.0)
+                        .padding(12.0)
+                        .radius(6.0)
+                        .fill(p.bg_primary)
+                        .border(1.0, p.border)
+                        .gap(6.0)
+                        .child(text("🛡️ Arıza Teşhisi").font(rune::tok::type_::TITLE).color(p.text_primary))
+                        .child(text("BSOD minidump tarayıcı ve bekleyen CBS yeniden başlatma analizi.").font(rune::tok::type_::BODY).color(p.text_muted))
+                        .child(action_button("Arıza Teşhisi Aç", p.btn_secondary, p.text_primary, p, |s| {
+                            s.navigate(ActiveView::FaultDiagnostics);
+                        })),
+                ),
+        )
+}
+
+/// Renders the pure Dashboard view.
 pub fn view(s: &AppState, tier: LayoutTier) -> El {
     let p = s.palette();
     let score = health_score(&s.scan_results);
     let color = health_color(score, p);
 
-    let header_card = row()
-        .w_full()
-        .min_w(0.0)
-        .padding(p.card_padding)
-        .radius(p.card_radius)
-        .fill(p.bg_card)
-        .border(p.border_width, p.border)
-        .hover(p.bg_card_hover)
-        .motion(p.motion)
-        .flex_wrap()
-        .justify_between()
-        .items_center()
-        .gaps(10.0, 16.0)
-        .child(
-            col()
-                .grow(1.0)
-                .min_w(200.0)
-                .gap(4.0)
-                .child(
-                    text(s.tr(TextKey::EasyMode))
-                        .font(rune::tok::type_::TITLE)
-                        .color(p.text_primary)
-                        .shrink()
-                        .wrap(),
-                )
-                .child(
-                    text(s.tr(TextKey::SystemHealthSub))
-                        .font(rune::tok::type_::BODY)
-                        .color(p.text_muted)
-                        .shrink()
-                        .wrap(),
-                ),
-        )
-        .child(
-            row()
-                .min_w(0.0)
-                .shrink()
-                .px(14.0)
-                .py(8.0)
-                .radius(p.badge_radius)
-                .fill(color.alpha(0.18))
-                .border(p.border_width, color.alpha(0.4))
-                .center()
-                .child(
-                    text(format!(
-                        "{}: {}% {}",
-                        s.tr(TextKey::SystemHealth),
-                        score,
-                        s.tr(TextKey::OptimizedLabel)
-                    ))
-                    .font(rune::tok::type_::TITLE)
-                    .color(color)
-                    .shrink()
-                    .wrap(),
-                ),
-        );
-
-    let presets_card = row()
-        .w_full()
-        .min_w(0.0)
-        .padding(p.card_padding)
-        .radius(p.card_radius)
-        .fill(p.bg_card)
-        .border(p.border_width, p.border)
-        .flex_wrap()
-        .justify_between()
-        .items_center()
-        .gaps(8.0, 10.0)
-        .child(
-            row()
-                .min_w(0.0)
-                .shrink()
-                .flex_wrap()
-                .gaps(8.0, 8.0)
-                .child(action_button(
-                    s.tr(TextKey::GamingPreset),
-                    p.accent,
-                    Color::WHITE,
-                    p,
-                    |s| s.apply_preset(PresetKind::Gaming),
-                ))
-                .child(action_button(
-                    s.tr(TextKey::ProAudioPreset),
-                    p.btn_secondary,
-                    p.text_primary,
-                    p,
-                    |s| s.apply_preset(PresetKind::ProAudio),
-                ))
-                .child(action_button(
-                    s.tr(TextKey::LaptopBatteryPreset),
-                    p.btn_secondary,
-                    p.text_primary,
-                    p,
-                    |s| s.apply_preset(PresetKind::LaptopBattery),
-                )),
-        )
-        .child(
-            row()
-                .min_w(0.0)
-                .shrink()
-                .flex_wrap()
-                .gaps(8.0, 8.0)
-                .child(action_button_guarded(
-                    if s.is_scanning {
-                        s.tr(TextKey::Scanning)
-                    } else {
-                        s.tr(TextKey::ScanSystem)
-                    },
-                    p.btn_secondary,
-                    p.text_primary,
-                    !s.is_scanning,
-                    p,
-                    |s| s.start_scan(),
-                ))
-                .child(action_button_guarded(
-                    if s.is_applying {
-                        s.tr(TextKey::BusyWorking).to_string()
-                    } else if s.selected_tweaks.is_empty() {
-                        s.tr(TextKey::ApplySelected).to_string()
-                    } else {
-                        format!("{} ({})", s.tr(TextKey::ApplySelected), s.selected_tweaks.len())
-                    },
-                    p.success,
-                    Color::WHITE,
-                    !s.is_applying && !s.is_rolling_back,
-                    p,
-                    |s| s.apply_selected(),
-                ))
-                .child(action_button(
-                    s.tr(TextKey::PreviewDiff),
-                    p.btn_secondary,
-                    p.text_primary,
-                    p,
-                    |s| {
-                        if s.show_diff_preview && s.inspected_tweak.is_none() {
-                            s.show_diff_preview = false;
-                        } else {
-                            s.open_diff_preview();
-                        }
-                    },
-                )),
-        );
-
-    let mut tweak_list = col().w_full().min_w(0.0).gap(6.0);
-    let easy_tweaks: Vec<&ScanResult> = s
-        .scan_results
-        .iter()
-        .filter(|r| r.easy_mode_included)
-        .collect();
-
-    if easy_tweaks.is_empty() {
-        tweak_list = tweak_list.child(
-            row()
-                .w_full()
-                .padding(p.card_padding)
-                .radius(p.card_radius)
-                .fill(p.bg_card)
-                .border(p.border_width, p.border)
-                .center()
-                .child(
-                    text(if s.is_scanning {
-                        s.tr(TextKey::ScanningEvaluating)
-                    } else {
-                        s.tr(TextKey::NoEligibleTweaks)
-                    })
-                    .font(rune::tok::type_::BODY)
-                    .color(p.text_muted)
-                    .shrink()
-                    .wrap(),
-                ),
-        );
-    } else {
-        for sr in easy_tweaks {
-            let is_active = s.is_switch_active(&sr.tweak_id);
-            let in_flight = s.in_flight_tweaks.contains(&sr.tweak_id);
-            let (state_text, state_color) = tweak_state_meta(&sr.current_state, s);
-            let loc_title = s.tweak_title(&sr.tweak_id, &sr.title);
-            let loc_desc = s.tweak_description(&sr.tweak_id, &sr.description);
-            let loc_detail = s.scan_detail_text(sr);
-
-            let switch = if sr.current_state == TweakState::NotApplicable {
-                pill_badge(s.tr(TextKey::StatusNotApplicable), p.text_muted, p)
-            } else {
-                switch_toggle(is_active, in_flight, sr.tweak_id.clone(), p)
-            };
-            let badge = risk_badge::view_localized(&sr.risk, p, s);
-
-            let item_card = row()
-                .w_full()
-                .min_w(0.0)
-                .padding(p.card_padding.min(10.0))
-                .radius(p.card_radius.min(6.0))
-                .fill(if is_active { p.bg_card_hover } else { p.bg_card })
-                .border(
-                    p.border_width,
-                    if is_active { p.accent.alpha(0.35) } else { p.border },
-                )
-                .hover(p.bg_card_hover)
-                .motion(p.motion)
-                .flex_wrap()
-                .items_center()
-                .gaps(8.0, 12.0)
-                .child(switch)
-                .child(
-                    col()
-                        .grow(1.0)
-                        .min_w(180.0)
-                        .gap(2.0)
-                        .child(
-                            text(loc_title)
-                                .font(rune::tok::type_::TITLE)
-                                .color(p.text_primary)
-                                .shrink()
-                                .wrap()
-                                .wrap_anywhere(),
-                        )
-                        .child(
-                            text(loc_desc)
-                                .font(rune::tok::type_::BODY)
-                                .color(p.text_muted)
-                                .shrink()
-                                .wrap()
-                                .wrap_anywhere(),
-                        ),
-                )
-                .child(badge)
-                .child(
-                    col()
-                        .shrink()
-                        .min_w(110.0)
-                        .gap(2.0)
-                        .child(
-                            text(state_text)
+    let header_card = if tier == LayoutTier::Compact {
+        col()
+            .w_full()
+            .min_w(0.0)
+            .padding(p.card_padding)
+            .radius(p.card_radius)
+            .fill(p.bg_card)
+            .border(p.border_width, p.border)
+            .hover(p.bg_card_hover)
+            .motion(p.motion)
+            .gap(10.0)
+            .child(
+                col()
+                    .w_full()
+                    .min_w(0.0)
+                    .gap(4.0)
+                    .child(
+                        text(s.tr(TextKey::NavSystemPanel))
+                            .font(rune::tok::type_::TITLE)
+                            .color(p.text_primary)
+                            .shrink()
+                            .wrap(),
+                    )
+                    .child(
+                        text("Canlı telemetri, çekirdek dalga formları ve sistem kaynak verimliliği göstergesi.")
+                            .font(rune::tok::type_::BODY)
+                            .color(p.text_muted)
+                            .shrink()
+                            .wrap(),
+                    ),
+            )
+            .child(
+                row()
+                    .w_full()
+                    .min_w(0.0)
+                    .gap(8.0)
+                    .flex_wrap()
+                    .items_center()
+                    .child(
+                        row()
+                            .min_w(0.0)
+                            .shrink()
+                            .px(10.0)
+                            .py(6.0)
+                            .radius(p.badge_radius)
+                            .fill(color.alpha(0.18))
+                            .border(p.border_width, color.alpha(0.4))
+                            .center()
+                            .child(
+                                text(format!(
+                                    "{}: {}% {}",
+                                    s.tr(TextKey::SystemHealth),
+                                    score,
+                                    s.tr(TextKey::OptimizedLabel)
+                                ))
                                 .font(rune::tok::type_::LABEL)
-                                .color(state_color)
+                                .color(color)
                                 .shrink()
                                 .wrap(),
-                        )
-                        .child(
-                            text(&loc_detail)
+                            ),
+                    )
+                    .child(action_button_guarded(
+                        if s.is_scanning {
+                            s.tr(TextKey::Scanning)
+                        } else {
+                            s.tr(TextKey::ScanSystem)
+                        },
+                        p.accent,
+                        Color::WHITE,
+                        !s.is_scanning,
+                        p,
+                        |s| s.start_scan(),
+                    )),
+            )
+    } else {
+        row()
+            .w_full()
+            .min_w(0.0)
+            .padding(p.card_padding)
+            .radius(p.card_radius)
+            .fill(p.bg_card)
+            .border(p.border_width, p.border)
+            .hover(p.bg_card_hover)
+            .motion(p.motion)
+            .flex_wrap()
+            .justify_between()
+            .items_center()
+            .gaps(10.0, 16.0)
+            .child(
+                col()
+                    .grow(1.0)
+                    .min_w(180.0)
+                    .gap(4.0)
+                    .child(
+                        text(s.tr(TextKey::NavSystemPanel))
+                            .font(rune::tok::type_::TITLE)
+                            .color(p.text_primary)
+                            .shrink()
+                            .wrap(),
+                    )
+                    .child(
+                        text("Canlı telemetri, çekirdek dalga formları ve sistem kaynak verimliliği göstergesi.")
+                            .font(rune::tok::type_::BODY)
+                            .color(p.text_muted)
+                            .shrink()
+                            .wrap(),
+                    ),
+            )
+            .child(
+                row()
+                    .min_w(0.0)
+                    .gap(8.0)
+                    .flex_wrap()
+                    .center()
+                    .child(
+                        row()
+                            .min_w(0.0)
+                            .shrink()
+                            .px(12.0)
+                            .py(6.0)
+                            .radius(p.badge_radius)
+                            .fill(color.alpha(0.18))
+                            .border(p.border_width, color.alpha(0.4))
+                            .center()
+                            .child(
+                                text(format!(
+                                    "{}: {}% {}",
+                                    s.tr(TextKey::SystemHealth),
+                                    score,
+                                    s.tr(TextKey::OptimizedLabel)
+                                ))
                                 .font(rune::tok::type_::LABEL)
-                                .color(p.text_muted)
+                                .color(color)
                                 .shrink()
-                                .wrap()
-                                .wrap_anywhere(),
-                        ),
-                );
-
-            tweak_list = tweak_list.child(item_card);
-        }
-    }
+                                .wrap(),
+                            ),
+                    )
+                    .child(action_button_guarded(
+                        if s.is_scanning {
+                            s.tr(TextKey::Scanning)
+                        } else {
+                            s.tr(TextKey::ScanSystem)
+                        },
+                        p.accent,
+                        Color::WHITE,
+                        !s.is_scanning,
+                        p,
+                        |s| s.start_scan(),
+                    )),
+            )
+    };
 
     let pad = if tier == LayoutTier::Compact { 10.0 } else { 14.0 };
     let mut main_col = col()
@@ -619,7 +723,7 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
     }
 
     main_col
-        .child(presets_card)
-        .child(tweak_list)
+        .child(hardware_overview_card(s, p))
+        .child(quick_actions_card(s, p))
         .winblast_scroll(p)
 }

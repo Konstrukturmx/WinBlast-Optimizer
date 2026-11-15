@@ -1192,32 +1192,20 @@ fn test_ui_v08_not_applicable_diff_modal_privacy_cores_and_protected_appx() {
     assert!(!rt.state.selected_tweaks.contains("disable_mpo"));
     assert!(!rt.state.staged_transitions.contains_key("disable_mpo"));
 
-    // Same check on EasyDashboard (disable_mpo is easy_mode_included = true)
+    // Verify EasyDashboard (System Panel) functions as a pure telemetry overview dashboard with 0 raw tweak switches
     rt.update(|s, _| {
         s.search_edit.text.clear();
         s.navigate(ActiveView::EasyDashboard);
     });
     settle_frames(&mut rt);
     let els_easy = rt.elements();
-    let expected_easy_switches = rt
-        .state
-        .scan_results
-        .iter()
-        .filter(|r| r.easy_mode_included && r.current_state != TweakState::NotApplicable)
-        .count();
     let actual_easy_switches = els_easy
         .iter()
         .filter(|e| !e.exiting && (e.rect[2] - 36.0).abs() < 0.5 && (e.rect[3] - 20.0).abs() < 0.5)
         .count();
     assert_eq!(
-        actual_easy_switches, expected_easy_switches,
-        "EasyDashboard must render switch_toggle ONLY for applicable tweaks (not NotApplicable)"
-    );
-    assert!(
-        els_easy
-            .iter()
-            .any(|e| !e.exiting && e.text.as_deref() == Some(not_app_label.as_str())),
-        "EasyDashboard must render StatusNotApplicable badge for NotApplicable easy tweaks"
+        actual_easy_switches, 0,
+        "EasyDashboard is now a pure telemetry overview dashboard with 0 raw tweak switches"
     );
 
     // 2. StageRevert renders [Revert] badge & swapped labels inside DiffModal (open_diff_preview vs inspect_tweak)
