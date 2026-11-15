@@ -6,6 +6,7 @@ use rune::color::Color;
 use rune::{col, el, row, text, El, ScrollSpec};
 
 use crate::app::AppState;
+use crate::core::view_i18n::ViewTextKey;
 use crate::ui::widgets::button::action_button;
 use crate::ui::widgets::scrollbar::WinBlastScrollable;
 use crate::ui::LayoutTier;
@@ -25,12 +26,12 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                 .w_full()
                 .gap(2.0)
                 .child(
-                    text("WinBlast Optimizer — Destek ve İletişim")
+                    text(s.tr_v(ViewTextKey::AboutTitle))
                         .font(rune::tok::type_::TITLE)
                         .color(p.text_primary),
                 )
                 .child(
-                    text("Sürüm 1.1.0 • Açık kaynak Windows optimizasyon ve düşük gecikmeli çekirdek motoru.")
+                    text(s.tr_v(ViewTextKey::AboutSubtitle))
                         .font(rune::tok::type_::BODY)
                         .color(p.text_muted),
                 ),
@@ -55,7 +56,7 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                                 .grow(1.0)
                                 .min_w(220.0)
                                 .child(
-                                    text("Geliştirici & GitHub Deposu")
+                                    text(s.tr_v(ViewTextKey::AboutRepoLabel))
                                         .font(rune::tok::type_::LABEL)
                                         .color(p.text_secondary),
                                 )
@@ -71,7 +72,7 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                                 ),
                         )
                         .child(
-                            action_button("GitHub Sayfasını Aç", p.accent, Color::WHITE, p, |_| {
+                            action_button(s.tr_v(ViewTextKey::AboutOpenGithub), p.accent, Color::WHITE, p, |_| {
                                 let _ = crate::core::process::SilentCommand::new("rundll32")
                                     .args(["url.dll,FileProtocolHandler", "https://github.com/Konstrukturmx/WinBlast-Optimizer"])
                                     .spawn();
@@ -80,7 +81,7 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                         ),
                 )
                 .child(
-                    text("WinBlast0, GPU destekli Rune UI çerçevesi ve saf Rust Win32 FFI çekirdeği ile inşa edilmiştir. Lisans: MIT License.")
+                    text(s.tr_v(ViewTextKey::AboutLicense))
                         .font(rune::tok::type_::BODY)
                         .color(p.text_secondary),
                 ),
@@ -95,18 +96,18 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                 .border(style.border_width(), p.border_styled(style))
                 .gap(6.0)
                 .child(
-                    text("Sürüm 1.1.0 Yenilikleri")
+                    text(s.tr_v(ViewTextKey::AboutReleaseNotesTitle))
                         .font(rune::tok::type_::LABEL)
                         .color(p.text_primary),
                 )
-                .child(text("• 5 Tam UI Teması: Minimalistic, Classic, Glassy, Compact ve Materialistic.") .font(rune::tok::type_::BODY).color(p.text_secondary))
-                .child(text("• Sürücü ve BIOS teşhisi: SMBIOS anakart, UEFI ve GPU display driver analizi.") .font(rune::tok::type_::BODY).color(p.text_secondary))
-                .child(text("• Arıza teşhisi: BSOD minidump tarayıcı ve CBS bekleyen yeniden başlatma tespit motoru.") .font(rune::tok::type_::BODY).color(p.text_secondary))
-                .child(text("• Sıcaklık ve Fanlar: Canlı CPU/GPU junction sıcaklıkları ve PROCHOT uyarısı.") .font(rune::tok::type_::BODY).color(p.text_secondary))
-                .child(text("• Diskler: SMART sağlık yüzdesi, TBW yazma ömrü ve tek tıkla TRIM.") .font(rune::tok::type_::BODY).color(p.text_secondary))
-                .child(text("• Oyun Profilleri: CS2, Valorant, Apex, Warzone, Cyberpunk için özel öncelik ve shader ayarları.") .font(rune::tok::type_::BODY).color(p.text_secondary))
-                .child(text("• Windows Onarımı: SFC, DISM, Winsock reset ve DNS flush araçları.") .font(rune::tok::type_::BODY).color(p.text_secondary))
-                .child(text("• Kalıcı WinBlast İkonu ve Microsoft SignTool dijital imzalı PE dosyası.") .font(rune::tok::type_::BODY).color(p.text_secondary)),
+                .child(text(s.tr_v(ViewTextKey::AboutBullet1)).font(rune::tok::type_::BODY).color(p.text_secondary))
+                .child(text(s.tr_v(ViewTextKey::AboutBullet2)).font(rune::tok::type_::BODY).color(p.text_secondary))
+                .child(text(s.tr_v(ViewTextKey::AboutBullet3)).font(rune::tok::type_::BODY).color(p.text_secondary))
+                .child(text(s.tr_v(ViewTextKey::AboutBullet4)).font(rune::tok::type_::BODY).color(p.text_secondary))
+                .child(text(s.tr_v(ViewTextKey::AboutBullet5)).font(rune::tok::type_::BODY).color(p.text_secondary))
+                .child(text(s.tr_v(ViewTextKey::AboutBullet6)).font(rune::tok::type_::BODY).color(p.text_secondary))
+                .child(text(s.tr_v(ViewTextKey::AboutBullet7)).font(rune::tok::type_::BODY).color(p.text_secondary))
+                .child(text(s.tr_v(ViewTextKey::AboutBullet8)).font(rune::tok::type_::BODY).color(p.text_secondary)),
         )
         // Interactive Theme Studio Card
         .child({
@@ -148,7 +149,7 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                                             .radius(t_style.badge_radius())
                                             .fill(p.accent)
                                             .child(
-                                                text("✓ AKTİF")
+                                                text(s.tr_v(ViewTextKey::AboutActiveBadge))
                                                     .font(rune::tok::type_::LABEL)
                                                     .color(Color::WHITE),
                                             )
@@ -177,12 +178,12 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                 .border(style.border_width(), p.border_styled(style))
                 .gap(8.0)
                 .child(
-                    text("🎨 UI Tasarım ve Tema Stüdyosu")
+                    text(s.tr_v(ViewTextKey::AboutStudioTitle))
                         .font(rune::tok::type_::TITLE)
                         .color(p.text_primary),
                 )
                 .child(
-                    text("Tüm geometriler, yüzey şeffaflıkları, sınır kalınlıkları ve yay fiziği animasyonları anında güncellenir:")
+                    text(s.tr_v(ViewTextKey::AboutStudioSubtitle))
                         .font(rune::tok::type_::BODY)
                         .color(p.text_secondary),
                 )

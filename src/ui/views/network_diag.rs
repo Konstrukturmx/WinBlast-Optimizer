@@ -6,6 +6,7 @@ use rune::color::Color;
 use rune::{col, row, text, El, ScrollSpec};
 
 use crate::app::AppState;
+use crate::core::view_i18n::ViewTextKey;
 use crate::ui::widgets::button::action_button;
 use crate::ui::widgets::scrollbar::WinBlastScrollable;
 use crate::ui::LayoutTier;
@@ -32,12 +33,12 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                         .grow(1.0)
                         .min_w(200.0)
                         .child(
-                            text("İnternet ve Ağ Teşhisi")
+                            text(s.tr_v(ViewTextKey::NetDiagTitle))
                                 .font(rune::tok::type_::TITLE)
                                 .color(p.text_primary),
                         )
                         .child(
-                            text("Socket round-trip ping probes, adapter MTU optimization, and TCP ACK gaming stack tuning.")
+                            text(s.tr_v(ViewTextKey::NetDiagSubtitle))
                                 .font(rune::tok::type_::BODY)
                                 .color(p.text_muted),
                         ),
@@ -46,13 +47,13 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                     row()
                         .gap(8.0)
                         .child(
-                            action_button("Ping Testi Yap", p.accent, Color::WHITE, p, |s| {
+                            action_button(s.tr_v(ViewTextKey::NetDiagPingBtn), p.accent, Color::WHITE, p, |s| {
                                 s.network_diag = Some(crate::tools::network_diag::NetworkDiagnostics::probe_live());
                             })
                             .radius(style.btn_radius()),
                         )
                         .child(
-                            action_button("DNS Temizle", p.btn_secondary, p.text_primary, p, |_| {
+                            action_button(s.tr_v(ViewTextKey::NetDiagFlushDnsBtn), p.btn_secondary, p.text_primary, p, |_| {
                                 let _ = crate::tools::network_diag::NetworkDiagnostics::flush_dns();
                             })
                             .radius(style.btn_radius()),
@@ -74,10 +75,10 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                         .fill(p.card_fill_styled(style))
                         .border(style.border_width(), p.border_styled(style))
                         .gap(4.0)
-                        .child(text("Ağ Bağdaştırıcısı & IP").font(rune::tok::type_::LABEL).color(p.text_secondary))
+                        .child(text(s.tr_v(ViewTextKey::NetDiagAdapterLabel)).font(rune::tok::type_::LABEL).color(p.text_secondary))
                         .child(text(&net.adapter_name).font(rune::tok::type_::TITLE).color(p.accent))
                         .child(
-                            text(format!("IP: {} • MTU Boyutu: {} Bayt", net.ip_address, net.mtu_size))
+                            text(format!("IP: {} • {}: {} B", net.ip_address, s.tr_v(ViewTextKey::NetDiagMtuLabel), net.mtu_size))
                                 .font(rune::tok::type_::BODY)
                                 .color(p.text_muted),
                         ),
@@ -91,14 +92,14 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                         .fill(p.card_fill_styled(style))
                         .border(style.border_width(), p.border_styled(style))
                         .gap(4.0)
-                        .child(text("TCP ACK & NoDelay Ayarı").font(rune::tok::type_::LABEL).color(p.text_secondary))
+                        .child(text(s.tr_v(ViewTextKey::NetDiagTcpAckLabel)).font(rune::tok::type_::LABEL).color(p.text_secondary))
                         .child(
-                            text(if net.tcp_ack_frequency_optimized { "✔ Anında ACK (Zero Latency)" } else { "Standart" })
+                            text(if net.tcp_ack_frequency_optimized { "✔ (Low Latency)" } else { "Default" })
                                 .font(rune::tok::type_::TITLE)
                                 .color(p.success),
                         )
                         .child(
-                            text("Nagle Algoritması devre dışı; paketler gecikmesiz iletilir.")
+                            text(s.tr_v(ViewTextKey::NetDiagTcpNoDelayLabel))
                                 .font(rune::tok::type_::BODY)
                                 .color(p.text_muted),
                         ),
@@ -114,12 +115,12 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                 .border(style.border_width(), p.border_styled(style))
                 .gap(8.0)
                 .child(
-                    text("Canlı DNS Ping & Sunucu Gecikme Ölçümleri")
+                    text(s.tr_v(ViewTextKey::NetDiagDnsProbesTitle))
                         .font(rune::tok::type_::LABEL)
                         .color(p.text_primary),
                 )
                 .children(net.probes.iter().map(|probe| {
-                    let ping_text = probe.ping_ms.map(|ms| format!("{} ms", ms)).unwrap_or_else(|| "Zaman aşımı".to_string());
+                    let ping_text = probe.ping_ms.map(|ms| format!("{} ms", ms)).unwrap_or_else(|| "Timeout".to_string());
                     let ping_color = match probe.ping_ms {
                         Some(ms) if ms < 20 => p.success,
                         Some(ms) if ms < 50 => p.warning,

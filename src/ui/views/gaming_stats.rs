@@ -6,6 +6,7 @@ use rune::color::Color;
 use rune::{col, row, text, El, ScrollSpec};
 
 use crate::app::AppState;
+use crate::core::view_i18n::ViewTextKey;
 use crate::ui::widgets::button::action_button;
 use crate::ui::widgets::scrollbar::WinBlastScrollable;
 use crate::ui::LayoutTier;
@@ -32,18 +33,18 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                         .grow(1.0)
                         .min_w(200.0)
                         .child(
-                            text("Oyun İçi İzleme & Kare Zamanlaması")
+                            text(s.tr_v(ViewTextKey::GamingStatsTitle))
                                 .font(rune::tok::type_::TITLE)
                                 .color(p.text_primary),
                         )
                         .child(
-                            text("Real-time frametime consistency, microstutter detection, and background process thread affinity.")
+                            text(s.tr_v(ViewTextKey::GamingStatsSubtitle))
                                 .font(rune::tok::type_::BODY)
                                 .color(p.text_muted),
                         ),
                 )
                 .child(
-                    action_button("Yenile", p.accent, Color::WHITE, p, |s| {
+                    action_button(s.tr_v(ViewTextKey::GamingStatsRefreshBtn), p.accent, Color::WHITE, p, |s| {
                         s.game_telemetry = crate::tools::gaming_stats::LiveGameTelemetry::probe();
                     })
                     .radius(style.btn_radius()),
@@ -64,14 +65,14 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                         .fill(p.card_fill_styled(style))
                         .border(style.border_width(), p.border_styled(style))
                         .gap(4.0)
-                        .child(text("Kare Kararlılığı (Frame Pacing)").font(rune::tok::type_::LABEL).color(p.text_secondary))
+                        .child(text(s.tr_v(ViewTextKey::GamingStatsFpsTelemetry)).font(rune::tok::type_::LABEL).color(p.text_secondary))
                         .child(
                             text(format!("%{}", telemetry.frame_pacing_rating))
                                 .font(rune::tok::type_::TITLE)
                                 .color(p.success),
                         )
                         .child(
-                            text("Mükemmel: Dalgalanma ve drop yaşanmıyor.")
+                            text(s.tr_v(ViewTextKey::GamingStatsOptimizationNote))
                                 .font(rune::tok::type_::BODY)
                                 .color(p.text_muted),
                         ),
@@ -85,14 +86,14 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                         .fill(p.card_fill_styled(style))
                         .border(style.border_width(), p.border_styled(style))
                         .gap(4.0)
-                        .child(text("Arka Plan CPU Etkisi").font(rune::tok::type_::LABEL).color(p.text_secondary))
+                        .child(text(s.tr_v(ViewTextKey::GamingStatsAvgFps)).font(rune::tok::type_::LABEL).color(p.text_secondary))
                         .child(
-                            text(format!("%{:.1}", telemetry.background_cpu_impact_pct))
+                            text(format!("{:.1}%", telemetry.background_cpu_impact_pct))
                                 .font(rune::tok::type_::TITLE)
                                 .color(p.accent),
                         )
                         .child(
-                            text("Düşük gecikmeli oyun önceliği devrede.")
+                            text(s.tr_v(ViewTextKey::GamingStatsOptimizationNote))
                                 .font(rune::tok::type_::BODY)
                                 .color(p.text_muted),
                         ),
@@ -106,9 +107,9 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                         .fill(p.card_fill_styled(style))
                         .border(style.border_width(), p.border_styled(style))
                         .gap(4.0)
-                        .child(text("Mikro-Takılma Oranı").font(rune::tok::type_::LABEL).color(p.text_secondary))
+                        .child(text(s.tr_v(ViewTextKey::GamingStatsJitter)).font(rune::tok::type_::LABEL).color(p.text_secondary))
                         .child(
-                            text(format!("{}/dakika", telemetry.micro_stutters_per_min))
+                            text(format!("{}/min", telemetry.micro_stutters_per_min))
                                 .font(rune::tok::type_::TITLE)
                                 .color(p.success),
                         )
@@ -129,12 +130,12 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                 .border(style.border_width(), p.border_styled(style))
                 .gap(6.0)
                 .child(
-                    text("Aktif Oyun Süreç Önceliği (Process Priority Booster)")
+                    text(s.tr_v(ViewTextKey::GamingStatsActiveProcess))
                         .font(rune::tok::type_::LABEL)
                         .color(p.text_primary),
                 )
                 .child(
-                    text("Bir oyun çalıştırıldığında WinBlast otomatik olarak oyun sürecine 'High' CPU önceliği atar, Windows Game Mode'u kilitler ve arka plan Windows Update indirmelerini askıya alır.")
+                    text(s.tr_v(ViewTextKey::GamingStatsOptimizationNote))
                         .font(rune::tok::type_::BODY)
                         .color(p.text_secondary),
                 ),

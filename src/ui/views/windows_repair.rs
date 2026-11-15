@@ -6,6 +6,7 @@ use rune::color::Color;
 use rune::{col, row, text, El, ScrollSpec};
 
 use crate::app::AppState;
+use crate::core::view_i18n::ViewTextKey;
 use crate::tools::windows_repair::RepairTask;
 use crate::ui::widgets::button::action_button;
 use crate::ui::widgets::scrollbar::WinBlastScrollable;
@@ -27,12 +28,12 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                 .w_full()
                 .gap(2.0)
                 .child(
-                    text("Windows Sistem Onarım Merkezi")
+                    text(s.tr_v(ViewTextKey::RepairTitle))
                         .font(rune::tok::type_::TITLE)
                         .color(p.text_primary),
                 )
                 .child(
-                    text("Bozulan sistem dosyalarını, kilitlenen güncelleme servislerini ve ağ protokollerini orijinal Windows yedekleriyle onarın.")
+                    text(s.tr_v(ViewTextKey::RepairSubtitle))
                         .font(rune::tok::type_::BODY)
                         .color(p.text_muted),
                 ),
@@ -68,22 +69,22 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                                                 .color(p.text_primary),
                                         )
                                         .child(
-                                            text(format!("Komut: {}", task.command_preview))
+                                            text(format!("{}: {}", s.tr_v(ViewTextKey::RepairCommandLabel), task.command_preview))
                                                 .font(rune::tok::type_::BODY)
                                                 .color(p.text_muted),
                                         ),
-                                ),
+                                 ),
                         )
                         .child(
-                            action_button("Onarımı Çalıştır", p.accent, Color::WHITE, p, move |s| {
+                            action_button(s.tr_v(ViewTextKey::RepairRunBtn), p.accent, Color::WHITE, p, move |s| {
                                 match RepairTask::execute(task_id) {
                                     Ok(msg) => {
                                         s.repair_log.push(format!("✔ [{}] {}", task_id, msg));
-                                        s.status_message = format!("Onarım tamamlandı: {}", task_id);
+                                        s.status_message = format!("{}: {}", s.tr_v(ViewTextKey::RepairDonePrefix), task_id);
                                     }
                                     Err(err) => {
-                                        s.repair_log.push(format!("✖ [{}] Hata: {}", task_id, err));
-                                        s.status_message = format!("Onarım hatası: {}", err);
+                                        s.repair_log.push(format!("✖ [{}] Error: {}", task_id, err));
+                                        s.status_message = format!("{}: {}", s.tr_v(ViewTextKey::RepairErrPrefix), err);
                                     }
                                 }
                             })
@@ -106,12 +107,12 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                 .border(1.0, p.border)
                 .gap(6.0)
                 .child(
-                    text("Onarım Konsol Çıktısı (Execution Log)")
+                    text(s.tr_v(ViewTextKey::RepairConsoleTitle))
                         .font(rune::tok::type_::LABEL)
                         .color(p.accent),
                 )
                 .child(if s.repair_log.is_empty() {
-                    text("Henüz onarım komutu çalıştırılmadı. Bir görev seçip 'Onarımı Çalıştır' butonuna tıklayın.")
+                    text(s.tr_v(ViewTextKey::RepairReadyStatus))
                         .font(rune::tok::type_::BODY)
                         .color(p.text_muted)
                 } else {

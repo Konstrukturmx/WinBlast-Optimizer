@@ -6,6 +6,7 @@ use rune::color::Color;
 use rune::{col, row, text, El, ScrollSpec};
 
 use crate::app::AppState;
+use crate::core::view_i18n::ViewTextKey;
 use crate::hardware::thermal::{SystemThermalSnapshot, ThermalHealth};
 use crate::ui::widgets::button::action_button;
 use crate::ui::widgets::scrollbar::WinBlastScrollable;
@@ -49,18 +50,18 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                         .grow(1.0)
                         .min_w(200.0)
                         .child(
-                            text("Sıcaklık ve Fan İzleme")
+                            text(s.tr_v(ViewTextKey::ThermalTitle))
                                 .font(rune::tok::type_::TITLE)
                                 .color(p.text_primary),
                         )
                         .child(
-                            text("Real-time junction thermal sensors, fan speed telemetry, and PROCHOT throttling alerts.")
+                            text(s.tr_v(ViewTextKey::ThermalSubtitle))
                                 .font(rune::tok::type_::BODY)
                                 .color(p.text_muted),
                         ),
                 )
                 .child(
-                    action_button("Yenile", p.accent, Color::WHITE, p, |s| {
+                    action_button(s.tr_v(ViewTextKey::ThermalRefreshBtn), p.accent, Color::WHITE, p, |s| {
                         s.thermal_snapshot = Some(crate::hardware::thermal::SystemThermalSnapshot::read());
                     })
                     .radius(style.btn_radius()),
@@ -76,9 +77,9 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                 .border(1.0, if thermals.sensors_available { p.success.alpha(0.3) } else { p.border })
                 .child(
                     text(if thermals.sensors_available {
-                        "✔ Canlı ACPI donanım sensörleri aktif ve okunuyor."
+                        s.tr_v(ViewTextKey::ThermalActiveSensors)
                     } else {
-                        "ℹ Donanım Sensör Notu: Doğrudan ACPI/Ring-0 sıcaklık sensörleri için OEM çekirdek sürücüsü gerekir. WinBlast0 sahte tahmini değerler göstermez."
+                        s.tr_v(ViewTextKey::ThermalOemBanner)
                     })
                     .font(rune::tok::type_::LABEL)
                     .color(if thermals.sensors_available { p.success } else { p.text_secondary })
@@ -107,7 +108,7 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                                 .gap(6.0)
                                 .center()
                                 .child(text("❄").font(rune::tok::type_::LABEL))
-                                .child(text("İşlemci (CPU Package)").font(rune::tok::type_::LABEL).color(p.text_secondary)),
+                                .child(text(s.tr_v(ViewTextKey::ThermalCpuPackage)).font(rune::tok::type_::LABEL).color(p.text_secondary)),
                         )
                         .child(
                             text(format!("{:.1}°C", thermals.cpu_package_temp_c))
@@ -116,9 +117,10 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                         )
                         .child(
                             text(format!(
-                                "Maks Çekirdek: {:.1}°C • Throttling: {}",
+                                "{}: {:.1}°C • Throttling: {}",
+                                s.tr_v(ViewTextKey::ThermalMaxCore),
                                 thermals.cpu_max_core_temp_c,
-                                if thermals.cpu_throttling_active { "AKTİF (Thermal Limit)" } else { "Yok (Normal)" }
+                                if thermals.cpu_throttling_active { s.tr_v(ViewTextKey::ThermalThrottlingActive) } else { s.tr_v(ViewTextKey::ThermalThrottlingNone) }
                             ))
                             .font(rune::tok::type_::BODY)
                             .color(if thermals.cpu_throttling_active { p.danger } else { p.text_muted }),
@@ -139,7 +141,7 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                                 .gap(6.0)
                                 .center()
                                 .child(text("🎮").font(rune::tok::type_::LABEL))
-                                .child(text("Ekran Kartı (GPU Core)").font(rune::tok::type_::LABEL).color(p.text_secondary)),
+                                .child(text(s.tr_v(ViewTextKey::ThermalGpuCore)).font(rune::tok::type_::LABEL).color(p.text_secondary)),
                         )
                         .child(
                             text(format!("{:.1}°C", thermals.gpu_core_temp_c))
@@ -147,7 +149,7 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                                 .color(gpu_color),
                         )
                         .child(
-                            text(format!("Hotspot: {:.1}°C • Throttling: Normal", thermals.gpu_hotspot_temp_c))
+                            text(format!("Hotspot: {:.1}°C • Throttling: {}", thermals.gpu_hotspot_temp_c, s.tr_v(ViewTextKey::ThermalThrottlingNone)))
                                 .font(rune::tok::type_::BODY)
                                 .color(p.text_muted),
                         ),
@@ -167,7 +169,7 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                                 .gap(6.0)
                                 .center()
                                 .child(text("💨").font(rune::tok::type_::LABEL))
-                                .child(text("Fan Hızı & Soğutma").font(rune::tok::type_::LABEL).color(p.text_secondary)),
+                                .child(text(s.tr_v(ViewTextKey::ThermalFanRpm)).font(rune::tok::type_::LABEL).color(p.text_secondary)),
                         )
                         .child(
                             text(format!("{} RPM", thermals.fan_speed_rpm))
@@ -191,7 +193,7 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                 .border(style.border_width(), p.border_styled(style))
                 .gap(8.0)
                 .child(
-                    text("Bileşen Sıcaklık Sensör Detayları")
+                    text(s.tr_v(ViewTextKey::ThermalComponentsTitle))
                         .font(rune::tok::type_::LABEL)
                         .color(p.text_primary),
                 )

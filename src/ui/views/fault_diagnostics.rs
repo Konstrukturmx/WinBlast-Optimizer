@@ -6,6 +6,7 @@ use rune::color::Color;
 use rune::{col, row, text, El, ScrollSpec};
 
 use crate::app::{ActiveView, AppState};
+use crate::core::view_i18n::ViewTextKey;
 use crate::tools::diagnostics::FaultDiagnosticsReport;
 use crate::ui::widgets::button::action_button;
 use crate::ui::widgets::scrollbar::WinBlastScrollable;
@@ -34,7 +35,7 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                         .gap(8.0)
                         .center()
                         .child(
-                            text("Arıza Teşhisi ve Hata Analizi")
+                            text(s.tr_v(ViewTextKey::FaultTitle))
                                 .font(rune::tok::type_::TITLE)
                                 .color(p.text_primary),
                         )
@@ -46,9 +47,9 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                                 .fill(if report.total_critical_faults > 0 { p.danger } else { p.success })
                                 .child(
                                     text(if report.total_critical_faults > 0 {
-                                        format!("⚠ {} Arıza Tespit Edildi", report.total_critical_faults)
+                                        format!("{}{}{}", s.tr_v(ViewTextKey::FaultAlertBadgePrefix), report.total_critical_faults, s.tr_v(ViewTextKey::FaultAlertBadgeSuffix))
                                     } else {
-                                        "✔ Sistem Kararlı (0 Arıza)".to_string()
+                                        s.tr_v(ViewTextKey::FaultSystemStable).to_string()
                                     })
                                     .font(rune::tok::type_::LABEL)
                                     .color(Color::WHITE),
@@ -59,13 +60,13 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                     row()
                         .gap(8.0)
                         .child(
-                            action_button("Yeniden Tara", p.accent, Color::WHITE, p, |s| {
+                            action_button(s.tr_v(ViewTextKey::FaultRescanBtn), p.accent, Color::WHITE, p, |s| {
                                 s.fault_report = Some(crate::tools::diagnostics::FaultDiagnosticsReport::scan());
                             })
                             .radius(style.btn_radius()),
                         )
                         .child(
-                            action_button("Minidumpları Temizle", p.btn_secondary, p.text_primary, p, |s| {
+                            action_button(s.tr_v(ViewTextKey::FaultClearDumpsBtn), p.btn_secondary, p.text_primary, p, |s| {
                                 if let Some(ref r) = s.fault_report {
                                     let _ = r.clear_minidumps();
                                 }
@@ -86,15 +87,18 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                     .border(1.0, p.warning)
                     .gap(4.0)
                     .child(
-                        text("⚠ Sistem Yeniden Başlatma Bekliyor (Pending Reboot Active)")
+                        text(s.tr_v(ViewTextKey::FaultPendingRebootWarn))
                             .font(rune::tok::type_::LABEL)
                             .color(p.warning),
                     )
                     .child(
                         text(format!(
-                            "CBS Servicing: {} • Windows Update: {} • Bekleyen Dosya Değişimi: {} adet",
-                            if report.pending_reboot.cbs_reboot { "Evet" } else { "Hayır" },
-                            if report.pending_reboot.windows_update_reboot { "Evet" } else { "Hayır" },
+                            "{}: {} • {}: {} • {}: {} ",
+                            s.tr_v(ViewTextKey::FaultPendingRebootCbs),
+                            if report.pending_reboot.cbs_reboot { s.tr_v(ViewTextKey::FaultYes) } else { s.tr_v(ViewTextKey::FaultNo) },
+                            s.tr_v(ViewTextKey::FaultPendingRebootWu),
+                            if report.pending_reboot.windows_update_reboot { s.tr_v(ViewTextKey::FaultYes) } else { s.tr_v(ViewTextKey::FaultNo) },
+                            s.tr_v(ViewTextKey::FaultPendingRebootRename),
                             report.pending_reboot.pending_file_count
                         ))
                         .font(rune::tok::type_::BODY)
@@ -108,7 +112,7 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                     .fill(p.success.alpha(0.12))
                     .border(1.0, p.success)
                     .child(
-                        text("✔ Bekleyen Sistem Yeniden Başlatması Yok (Reboot lock temiz)")
+                        text(s.tr_v(ViewTextKey::FaultPendingRebootClean))
                             .font(rune::tok::type_::LABEL)
                             .color(p.success),
                     )
@@ -129,13 +133,13 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                         .center()
                         .child(text("🛡️").font(rune::tok::type_::LABEL))
                         .child(
-                            text("Mavi Ekran (BSOD) Minidump Dosyaları (%SystemRoot%\\Minidump)")
+                            text(s.tr_v(ViewTextKey::FaultMinidumpSectionTitle))
                                 .font(rune::tok::type_::LABEL)
                                 .color(p.text_primary),
                         ),
                 )
                 .child(if report.minidumps.is_empty() {
-                    text("Temiz: Sisteminizde kayıtlı mavi ekran minidump dosyası bulunamadı.")
+                    text(s.tr_v(ViewTextKey::FaultMinidumpEmpty))
                         .font(rune::tok::type_::BODY)
                         .color(p.text_muted)
                 } else {
@@ -157,7 +161,7 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                                                 .color(p.danger),
                                         )
                                         .child(
-                                            text(format!("Boyut: {} KB • Tarih: {}", dump.size_kb, dump.created_at))
+                                            text(format!("{}: {} KB • {}: {}", s.tr_v(ViewTextKey::FaultSize), dump.size_kb, s.tr_v(ViewTextKey::FaultCreated), dump.created_at))
                                                 .font(rune::tok::type_::BODY)
                                                 .color(p.text_muted),
                                         ),

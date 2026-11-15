@@ -1421,6 +1421,11 @@ impl AppState {
         I18n::get(self.language, key)
     }
 
+    /// Retrieve localized view-specific text string without allocation.
+    pub fn tr_v(&self, key: crate::core::view_i18n::ViewTextKey) -> &'static str {
+        crate::core::view_i18n::tr_view(self.language, key)
+    }
+
     /// Set typed status message specification and re-render localized string.
     pub fn set_status_spec(&mut self, spec: StatusMessageSpec) {
         self.status_message = status_i18n::localize_status(self.language, &spec);
