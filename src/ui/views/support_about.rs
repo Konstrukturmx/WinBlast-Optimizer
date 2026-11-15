@@ -3,7 +3,7 @@
 //! Release metadata, GitHub repository links, and diagnostic report exporter.
 
 use rune::color::Color;
-use rune::{col, row, text, El, ScrollSpec};
+use rune::{col, el, row, text, El, ScrollSpec};
 
 use crate::app::AppState;
 use crate::ui::widgets::button::action_button;
@@ -108,5 +108,85 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                 .child(text("• Windows Onarımı: SFC, DISM, Winsock reset ve DNS flush araçları.") .font(rune::tok::type_::BODY).color(p.text_secondary))
                 .child(text("• Kalıcı WinBlast İkonu ve Microsoft SignTool dijital imzalı PE dosyası.") .font(rune::tok::type_::BODY).color(p.text_secondary)),
         )
+        // Interactive Theme Studio Card
+        .child({
+            let mut theme_cards = row().w_full().min_w(0.0).gap(8.0).flex_wrap();
+            for &t_style in &crate::ui::theme::UiThemeStyle::ALL {
+                let is_active = s.theme_style == t_style;
+                let bg_fill = if is_active { p.accent.alpha(0.22) } else { p.card_fill_styled(t_style) };
+                let border_col = if is_active { p.accent } else { p.border_styled(t_style) };
+
+                theme_cards = theme_cards.child(
+                    col()
+                        .grow(1.0)
+                        .min_w(170.0)
+                        .padding(t_style.card_padding())
+                        .radius(t_style.card_radius())
+                        .fill(bg_fill)
+                        .border(t_style.border_width(), border_col)
+                        .hover(if is_active { p.accent.alpha(0.32) } else { p.bg_card_hover })
+                        .motion(t_style.motion())
+                        .on_press(move |s: &mut AppState| s.set_theme_style(t_style))
+                        .gap(4.0)
+                        .child(
+                            row()
+                                .w_full()
+                                .justify_between()
+                                .items_center()
+                                .child(
+                                    text(t_style.label())
+                                        .font(rune::tok::type_::LABEL)
+                                        .color(if is_active { p.accent } else { p.text_primary })
+                                        .shrink()
+                                        .wrap(),
+                                )
+                                .child(
+                                    if is_active {
+                                        row()
+                                            .px(5.0)
+                                            .py(1.0)
+                                            .radius(t_style.badge_radius())
+                                            .fill(p.accent)
+                                            .child(
+                                                text("✓ AKTİF")
+                                                    .font(rune::tok::type_::LABEL)
+                                                    .color(Color::WHITE),
+                                            )
+                                    } else {
+                                        el()
+                                    },
+                                ),
+                        )
+                        .child(
+                            text(format!(
+                                "Radius: {:.0}px • Pad: {:.0}px",
+                                t_style.card_radius(),
+                                t_style.card_padding(),
+                            ))
+                            .font(rune::tok::type_::BODY)
+                            .color(p.text_muted),
+                        ),
+                );
+            }
+
+            col()
+                .w_full()
+                .padding(style.card_padding())
+                .radius(style.card_radius())
+                .fill(p.card_fill_styled(style))
+                .border(style.border_width(), p.border_styled(style))
+                .gap(8.0)
+                .child(
+                    text("🎨 UI Tasarım ve Tema Stüdyosu")
+                        .font(rune::tok::type_::TITLE)
+                        .color(p.text_primary),
+                )
+                .child(
+                    text("Tüm geometriler, yüzey şeffaflıkları, sınır kalınlıkları ve yay fiziği animasyonları anında güncellenir:")
+                        .font(rune::tok::type_::BODY)
+                        .color(p.text_secondary),
+                )
+                .child(theme_cards)
+        })
         .scroll(ScrollSpec { stick_bottom: false }).winblast_scroll(p)
 }

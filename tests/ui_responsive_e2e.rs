@@ -491,7 +491,7 @@ fn test_ui_responsive_matrix_all_viewports_views_themes_locales_scales() {
             rt.set_system_dark(theme == ThemeMode::Dark);
             rt.update(|s, _| {
                 s.theme_mode = theme;
-                s.theme_palette = ThemePalette::new(theme, s.color_scheme);
+                s.theme_palette = ThemePalette::new(theme, s.color_scheme, s.theme_style);
                 s.set_language(Language::English);
                 s.show_changelog = false;
                 s.show_diff_preview = false;
@@ -564,7 +564,7 @@ fn test_ui_responsive_matrix_all_viewports_views_themes_locales_scales() {
                 rt.set_system_dark(theme == ThemeMode::Dark);
                 rt.update(|s, _| {
                     s.theme_mode = theme;
-                    s.theme_palette = ThemePalette::new(theme, s.color_scheme);
+                    s.theme_palette = ThemePalette::new(theme, s.color_scheme, s.theme_style);
                     s.set_language(lang);
                     s.show_changelog = false;
                     s.show_diff_preview = false;
@@ -644,7 +644,7 @@ fn test_ui_responsive_matrix_all_viewports_views_themes_locales_scales() {
         // Changelog drawer + Sidebar drawer (compact/medium)
         rt.update(|s, _| {
             s.theme_mode = theme;
-            s.theme_palette = ThemePalette::new(theme, s.color_scheme);
+            s.theme_palette = ThemePalette::new(theme, s.color_scheme, s.theme_style);
             s.set_language(lang);
             s.navigate(ActiveView::BackupCenter);
             s.show_changelog = true;
@@ -1602,4 +1602,100 @@ fn snap_cpu_parking_view() {
         .try_run();
     println!("Snap result: {:?}", res);
     assert!(out_path.exists(), "Snapshot file should be created");
+}
+
+#[test]
+fn test_ui_theme_styles_dynamic_regeneration_and_geometry() {
+    use winblast0::ui::theme::{ColorScheme, ThemeMode, UiThemeStyle};
+
+    let mut s = AppState::new();
+    s.language = Language::English;
+
+    // Initial default is Glassy
+    assert_eq!(s.theme_style, UiThemeStyle::Glassy);
+    assert_eq!(s.theme_palette.card_radius, 12.0);
+    assert_eq!(s.theme_palette.btn_radius, 8.0);
+    assert_eq!(s.theme_palette.border_width, 1.2);
+
+    // 1. Switch to Minimalistic (Flat Swiss: 0px card radius, 2px button, 1.0px hairline, Spring::NONE)
+    s.set_theme_style(UiThemeStyle::Minimalistic);
+    assert_eq!(s.theme_style, UiThemeStyle::Minimalistic);
+    assert_eq!(s.theme_palette.theme_style, UiThemeStyle::Minimalistic);
+    assert_eq!(s.theme_palette.card_radius, 0.0);
+    assert_eq!(s.theme_palette.btn_radius, 2.0);
+    assert_eq!(s.theme_palette.input_radius, 1.0);
+    assert_eq!(s.theme_palette.border_width, 1.0);
+    assert_eq!(s.theme_palette.card_padding, 12.0);
+    assert_eq!(s.theme_palette.sidebar_width, 215.0);
+
+    // 2. Switch to Classic (Win2000 Retro: 2px radius, 2px border, tactile mechanical snap)
+    s.set_theme_style(UiThemeStyle::Classic);
+    assert_eq!(s.theme_style, UiThemeStyle::Classic);
+    assert_eq!(s.theme_palette.theme_style, UiThemeStyle::Classic);
+    assert_eq!(s.theme_palette.card_radius, 2.0);
+    assert_eq!(s.theme_palette.btn_radius, 2.0);
+    assert_eq!(s.theme_palette.border_width, 2.0);
+    assert_eq!(s.theme_palette.card_padding, 10.0);
+    assert_eq!(s.theme_palette.sidebar_width, 210.0);
+
+    // 3. Switch to Compact (High Density: 4px radius, 8px padding, 195px sidebar, Spring::SNAPPY)
+    s.set_theme_style(UiThemeStyle::Compact);
+    assert_eq!(s.theme_style, UiThemeStyle::Compact);
+    assert_eq!(s.theme_palette.theme_style, UiThemeStyle::Compact);
+    assert_eq!(s.theme_palette.card_radius, 4.0);
+    assert_eq!(s.theme_palette.btn_radius, 4.0);
+    assert_eq!(s.theme_palette.border_width, 1.0);
+    assert_eq!(s.theme_palette.card_padding, 8.0);
+    assert_eq!(s.theme_palette.sidebar_width, 195.0);
+
+    // 4. Switch to Materialistic (MD3 Expressive: 18px card, 24px pill button, 18px padding, Spring::SMOOTH)
+    s.set_theme_style(UiThemeStyle::Materialistic);
+    assert_eq!(s.theme_style, UiThemeStyle::Materialistic);
+    assert_eq!(s.theme_palette.theme_style, UiThemeStyle::Materialistic);
+    assert_eq!(s.theme_palette.card_radius, 18.0);
+    assert_eq!(s.theme_palette.btn_radius, 24.0);
+    assert_eq!(s.theme_palette.input_radius, 12.0);
+    assert_eq!(s.theme_palette.badge_radius, 16.0);
+    assert_eq!(s.theme_palette.card_padding, 18.0);
+    assert_eq!(s.theme_palette.sidebar_width, 245.0);
+
+    // 5. Switch to Light Mode and verify that theme_palette preserves theme_style and recomputes light colors
+    s.toggle_theme_mode();
+    assert_eq!(s.theme_mode, ThemeMode::Light);
+    assert!(!s.theme_palette.is_dark);
+    assert_eq!(s.theme_palette.theme_style, UiThemeStyle::Materialistic);
+    assert_eq!(s.theme_palette.card_radius, 18.0);
+
+    // 6. Switch ColorScheme and verify that theme_palette preserves theme_style
+    s.set_color_scheme(ColorScheme::EmeraldMint);
+    assert_eq!(s.color_scheme, ColorScheme::EmeraldMint);
+    assert_eq!(s.theme_palette.theme_style, UiThemeStyle::Materialistic);
+}
+
+#[test]
+fn test_ui_theme_style_selector_button_clicks_all_tiers() {
+    use winblast0::ui::theme::UiThemeStyle;
+
+    let viewports = [(1280.0, 800.0), (750.0, 600.0), (420.0, 400.0)];
+
+    for &(w, h) in &viewports {
+        let state = build_populated_sandbox_state();
+        let mut rt = Runtime::new(state, ui::view, (w, h), Env::new(true, 1.0));
+        settle_frames(&mut rt);
+
+        // Verify initial theme is Glassy
+        assert_eq!(rt.state.theme_style, UiThemeStyle::Glassy);
+
+        // Click theme_style_selector -> should advance to Minimalistic
+        click_key(&mut rt, "theme_style_selector");
+        settle_frames(&mut rt);
+        assert_eq!(rt.state.theme_style, UiThemeStyle::Minimalistic, "Failed at vp {}x{}", w, h);
+        assert_eq!(rt.state.theme_palette.card_radius, 0.0);
+
+        // Click again -> should advance to Classic
+        click_key(&mut rt, "theme_style_selector");
+        settle_frames(&mut rt);
+        assert_eq!(rt.state.theme_style, UiThemeStyle::Classic);
+        assert_eq!(rt.state.theme_palette.card_radius, 2.0);
+    }
 }

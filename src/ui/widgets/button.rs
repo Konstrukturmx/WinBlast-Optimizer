@@ -49,12 +49,12 @@ pub fn action_button(
         .shrink()
         .px(11.0)
         .py(7.0)
-        .radius(6.0)
+        .radius(p.btn_radius)
         .fill(bg)
         .hover(hover_bg)
         .press(press_bg)
-        .border(1.0, border_col)
-        .motion(rune::tok::motion::SNAPPY)
+        .border(p.border_width, border_col)
+        .motion(p.motion)
         .center()
         .on_press(on_click)
         .child(
@@ -84,9 +84,9 @@ pub fn action_button_guarded(
             .shrink()
             .px(11.0)
             .py(7.0)
-            .radius(6.0)
+            .radius(p.btn_radius)
             .fill(p.btn_secondary.alpha(0.65))
-            .border(1.0, p.border.alpha(0.65))
+            .border(p.border_width, p.border.alpha(0.65))
             .center()
             .child(
                 text(label.into())
@@ -118,18 +118,18 @@ fn switch_visual_shell(active: bool, in_flight: bool, p: &ThemePalette) -> El {
 
     let knob = el()
         .size(16.0, 16.0)
-        .radius(8.0)
+        .radius(if p.theme_style == crate::ui::theme::UiThemeStyle::Minimalistic { 1.0 } else { 8.0 })
         .fill(knob_fill)
         .border(1.0, if p.is_dark { Color::TRANSPARENT } else { p.border })
         .absolute(if active { 18.0 } else { 2.0 }, 2.0);
 
     el()
         .size(36.0, 20.0)
-        .radius(10.0)
+        .radius(if p.theme_style == crate::ui::theme::UiThemeStyle::Minimalistic { 2.0 } else { 10.0 })
         .fill(track_fill)
         .hover(if active { p.accent_hover } else { p.btn_secondary_hover })
-        .border(1.0, if active { p.border_accent } else { p.border_hover })
-        .motion(rune::tok::motion::SNAPPY)
+        .border(p.border_width, if active { p.border_accent } else { p.border_hover })
+        .motion(p.motion)
         .child(knob)
 }
 
@@ -213,17 +213,17 @@ pub fn kv_row(key: impl Into<String>, value: impl Into<String>, compact: bool, p
     }
 }
 
-/// Shared elevated card container with hover wash & smooth spring motion.
+/// Shared elevated card container with hover wash & dynamic spring motion.
 pub fn section_card(title: impl Into<String>, body: El, p: &ThemePalette) -> El {
     col()
         .w_full()
         .min_w(0.0)
-        .padding(14.0)
-        .radius(8.0)
+        .padding(p.card_padding)
+        .radius(p.card_radius)
         .fill(p.bg_card)
-        .border(1.0, p.border)
+        .border(p.border_width, p.border)
         .hover(p.bg_card_hover)
-        .motion(rune::tok::motion::SNAPPY)
+        .motion(p.motion)
         .gap(10.0)
         .child(
             text(title.into())
@@ -248,15 +248,15 @@ pub fn tweak_state_meta(state: &TweakState, s: &AppState) -> (&'static str, Colo
 }
 
 /// Compact rounded status pill badge with high-contrast tinted background.
-pub fn pill_badge(label: impl Into<String>, color: Color, _p: &ThemePalette) -> El {
+pub fn pill_badge(label: impl Into<String>, color: Color, p: &ThemePalette) -> El {
     row()
         .min_w(0.0)
         .shrink()
         .px(7.0)
         .py(3.0)
-        .radius(4.0)
+        .radius(p.badge_radius)
         .fill(color.alpha(0.16))
-        .border(1.0, color.alpha(0.45))
+        .border(p.border_width, color.alpha(0.45))
         .child(
             text(label.into())
                 .font(rune::tok::type_::LABEL)
