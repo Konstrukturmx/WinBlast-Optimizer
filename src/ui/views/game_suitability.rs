@@ -11,7 +11,23 @@ use crate::ui::LayoutTier;
 pub fn view(s: &AppState, _tier: LayoutTier) -> El {
     let p = s.palette();
     let style = s.theme_style;
-    let report = &s.game_suitability;
+
+    let cpu_cores = s.cpu_info.as_ref().map(|c| c.physical_cores as u32).unwrap_or(4);
+    let ram_mb = s.realtime_metrics.as_ref().map(|m| m.total_ram_mb).unwrap_or(8192);
+    let gpu_name = s.gpus.first().map(|g| g.name.as_str()).unwrap_or("GPU");
+    let hags_active = s.hags_enabled;
+    let has_nvme = s.platform_security.as_ref().map(|ps| {
+        ps.volumes.iter().any(|v| v.media_kind == crate::hardware::sys_inventory::DriveMediaKind::Nvme)
+    }).unwrap_or(false);
+
+    let evaluated_report = crate::tools::game_overlay::GameSuitabilityReport::evaluate(
+        cpu_cores,
+        ram_mb,
+        gpu_name,
+        hags_active,
+        has_nvme,
+    );
+    let report = &evaluated_report;
 
     col()
         .w_full()
@@ -116,7 +132,7 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                         ),
                 )
                 .child(
-                    text(chk.description)
+                    text(&chk.description)
                         .font(rune::tok::type_::BODY)
                         .color(p.text_muted),
                 )

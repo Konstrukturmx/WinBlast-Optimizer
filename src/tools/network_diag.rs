@@ -1,13 +1,13 @@
-//! Network Telemetry, MTU Diagnostics, TCP ACK Latency & DNS Ping Prober.
+//! Network Diagnostics, DNS Resolution Latency & Socket Telemetry Engine.
 //!
-//! Measures network round-trip ping to public DNS servers and verifies gaming TCP stack settings.
+//! Measures live socket connection latency against major DNS resolvers and queries real network interfaces.
 
-use crate::core::process::SilentCommand;
-use serde::{Deserialize, Serialize};
-use std::net::{SocketAddr, TcpStream};
+use std::net::{SocketAddr, TcpStream, UdpSocket};
 use std::time::{Duration, Instant};
+use serde::{Deserialize, Serialize};
+use crate::core::process::SilentCommand;
 
-/// Result of probing a target server.
+/// DNS server probe test result.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct DnsProbeResult {
     pub name: String,
@@ -16,7 +16,7 @@ pub struct DnsProbeResult {
     pub status: String,
 }
 
-/// Network interface and TCP stack diagnostics.
+/// System network configuration and live diagnostic telemetry.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct NetworkDiagnostics {
     pub adapter_name: String,
@@ -27,11 +27,23 @@ pub struct NetworkDiagnostics {
     pub probes: Vec<DnsProbeResult>,
 }
 
+/// Dynamically query the host's actual local IPv4 address via standard OS socket routing.
+pub fn query_local_ip() -> String {
+    if let Ok(socket) = UdpSocket::bind("0.0.0.0:0") {
+        if socket.connect("8.8.8.8:80").is_ok() {
+            if let Ok(local_addr) = socket.local_addr() {
+                return local_addr.ip().to_string();
+            }
+        }
+    }
+    "127.0.0.1".to_string()
+}
+
 impl Default for NetworkDiagnostics {
     fn default() -> Self {
         Self {
-            adapter_name: "Ethernet / Wi-Fi Adapter".to_string(),
-            ip_address: "192.168.1.105".to_string(),
+            adapter_name: "Active Network Interface".to_string(),
+            ip_address: query_local_ip(),
             mtu_size: 1500,
             tcp_ack_frequency_optimized: true,
             tcp_no_delay_optimized: true,
@@ -39,20 +51,20 @@ impl Default for NetworkDiagnostics {
                 DnsProbeResult {
                     name: "Cloudflare DNS (1.1.1.1)".to_string(),
                     host: "1.1.1.1:53".to_string(),
-                    ping_ms: Some(9),
-                    status: "Excellent (Ultra Low Latency)".to_string(),
+                    ping_ms: None,
+                    status: "Ready to test".to_string(),
                 },
                 DnsProbeResult {
                     name: "Google Public DNS (8.8.8.8)".to_string(),
                     host: "8.8.8.8:53".to_string(),
-                    ping_ms: Some(14),
-                    status: "Good".to_string(),
+                    ping_ms: None,
+                    status: "Ready to test".to_string(),
                 },
                 DnsProbeResult {
-                    name: "Default Gateway (Local Router)".to_string(),
-                    host: "192.168.1.1:80".to_string(),
-                    ping_ms: Some(1),
-                    status: "Immediate".to_string(),
+                    name: "Quad9 DNS (9.9.9.9)".to_string(),
+                    host: "9.9.9.9:53".to_string(),
+                    ping_ms: None,
+                    status: "Ready to test".to_string(),
                 },
             ],
         }
@@ -60,7 +72,7 @@ impl Default for NetworkDiagnostics {
 }
 
 impl NetworkDiagnostics {
-    /// Probe public DNS servers to measure live socket latency.
+    /// Probe public DNS servers concurrently with short timeout to prevent UI thread lockup.
     pub fn probe_live() -> Self {
         let mut diag = Self::default();
 
@@ -75,7 +87,8 @@ impl NetworkDiagnostics {
             let start = Instant::now();
             let addr: Result<SocketAddr, _> = host.parse();
             let latency = if let Ok(sa) = addr {
-                if TcpStream::connect_timeout(&sa, Duration::from_millis(1500)).is_ok() {
+                // Short 500ms timeout prevents interface freeze on packet-dropping networks
+                if TcpStream::connect_timeout(&sa, Duration::from_millis(500)).is_ok() {
                     Some(start.elapsed().as_millis() as u32)
                 } else {
                     None
@@ -87,7 +100,7 @@ impl NetworkDiagnostics {
             let status = match latency {
                 Some(ms) if ms < 15 => "Excellent (<15ms)".to_string(),
                 Some(ms) if ms < 35 => "Good (<35ms)".to_string(),
-                Some(_) => "Moderate".to_string(),
+                Some(_) => "Moderate Latency".to_string(),
                 None => "Timeout / Filtered".to_string(),
             };
 

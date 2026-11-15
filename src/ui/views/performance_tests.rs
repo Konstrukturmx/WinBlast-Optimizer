@@ -6,8 +6,7 @@ use rune::color::Color;
 use rune::{col, row, text, El, ScrollSpec};
 
 use crate::app::AppState;
-use crate::tools::performance_tests::BenchmarkRunner;
-use crate::ui::widgets::button::action_button;
+use crate::ui::widgets::button::action_button_guarded;
 use crate::ui::widgets::scrollbar::WinBlastScrollable;
 use crate::ui::LayoutTier;
 
@@ -44,12 +43,14 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                         ),
                 )
                 .child(
-                    action_button("Testi Başlat", p.accent, Color::WHITE, p, |s| {
-                        s.is_benchmarking_perf = true;
-                        let res = BenchmarkRunner::run_quick();
-                        s.perf_score = Some(res);
-                        s.is_benchmarking_perf = false;
-                    })
+                    action_button_guarded(
+                        if s.is_benchmarking_perf { "Test Yapılıyor..." } else { "Testi Başlat" },
+                        p.accent,
+                        Color::WHITE,
+                        !s.is_benchmarking_perf,
+                        p,
+                        |s| s.start_perf_benchmark_async(),
+                    )
                     .radius(style.btn_radius()),
                 ),
         )

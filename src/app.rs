@@ -242,6 +242,7 @@ pub enum WorkerEvent {
     ExplorerRestarted(Result<String, String>),
     BaselineReset(Result<(Option<SystemBaseline>, Option<SystemBaseline>), String>),
     StatusUpdate(String),
+    PerfBenchmarkCompleted(crate::tools::performance_tests::BenchmarkScore),
 }
 
 struct WorkerDropGuard<P: FnOnce(String) -> WorkerEvent> {
@@ -1337,6 +1338,11 @@ impl AppState {
             WorkerEvent::StatusUpdate(msg) => {
                 self.set_status_spec(StatusMessageSpec::Raw(msg));
             }
+            WorkerEvent::PerfBenchmarkCompleted(score) => {
+                self.perf_score = Some(score);
+                self.is_benchmarking_perf = false;
+                self.set_status("Performans testi başarıyla tamamlandı.");
+            }
         }
     }
 
@@ -1419,6 +1425,11 @@ impl AppState {
     pub fn set_status_spec(&mut self, spec: StatusMessageSpec) {
         self.status_message = status_i18n::localize_status(self.language, &spec);
         self.status_spec = spec;
+    }
+
+    /// Set status message from a raw string or format macro.
+    pub fn set_status(&mut self, msg: impl Into<String>) {
+        self.set_status_spec(StatusMessageSpec::Raw(msg.into()));
     }
 
     /// Retrieve dynamically localized status message in currently active language.
@@ -1588,6 +1599,44 @@ impl AppState {
         self.driver_install_in_flight = None;
         if let Some(ref w) = self.waker {
             w();
+        }
+    }
+
+    /// Launch performance benchmark in an isolated worker thread so the UI never freezes.
+    pub fn start_perf_benchmark_async(&mut self) {
+        if self.is_benchmarking_perf {
+            return;
+        }
+        self.is_benchmarking_perf = true;
+        self.set_status("Performans benchmark'ı çalıştırılıyor...");
+        let tx = self.tx_events.clone();
+        let waker = self.waker.clone();
+
+        std::thread::spawn(move || {
+            let score = crate::tools::performance_tests::BenchmarkRunner::run_quick();
+            let _ = tx.send(WorkerEvent::PerfBenchmarkCompleted(score));
+            if let Some(ref w) = waker {
+                w();
+            }
+        });
+    }
+
+    /// Relaunch WinBlast0 with elevated administrator privileges via Windows UAC.
+    pub fn relaunch_elevated(&self) {
+        if let Ok(exe) = std::env::current_exe() {
+            let file_w: Vec<u16> = exe.to_string_lossy().encode_utf16().chain(std::iter::once(0)).collect();
+            let op_w: Vec<u16> = "runas".encode_utf16().chain(std::iter::once(0)).collect();
+            unsafe {
+                windows::Win32::UI::Shell::ShellExecuteW(
+                    None,
+                    windows::core::PCWSTR(op_w.as_ptr()),
+                    windows::core::PCWSTR(file_w.as_ptr()),
+                    None,
+                    None,
+                    windows::Win32::UI::WindowsAndMessaging::SW_SHOW,
+                );
+            }
+            std::process::exit(0);
         }
     }
 
@@ -2152,6 +2201,14 @@ impl AppState {
         let planner = crate::graph::astar::AStarPlanner::new();
         let candidates: Vec<crate::graph::astar::TweakCandidate> = self.tweaks
             .iter()
+            .filter(|t| {
+                if let Some(sr) = self.get_tweak_scan(&t.id) {
+                    sr.current_state != TweakState::AlreadyOptimized
+                        && sr.current_state != TweakState::NotApplicable
+                } else {
+                    true
+                }
+            })
             .map(|t| {
                 let risk_weight = match t.valuation.stability_risk {
                     crate::core::risk::RiskLevel::Safe => 0,
@@ -2222,10 +2279,13 @@ impl AppState {
     /// Stage all tweaks recommended by the current A* plan into pending mutations.
     pub fn stage_planned_goal(&mut self) {
         if let Some(plan) = &self.planned_path {
+            let count = plan.selected_tweak_ids.len();
             for id in &plan.selected_tweak_ids {
                 self.selected_tweaks.insert(id.clone());
                 self.staged_transitions.insert(id.clone(), StagedTransition::StageApply);
             }
+            self.refresh_pending_actions();
+            self.set_status(format!("{} A* plan tweak'i başarıyla aşamalandırıldı.", count));
         }
     }
 

@@ -170,8 +170,8 @@ fn build_sidebar(s: &AppState, p: &ThemePalette, tier: LayoutTier) -> El {
     let fault_count = s
         .fault_report
         .as_ref()
-        .map(|r| r.total_critical_faults.max(1))
-        .unwrap_or(1);
+        .map(|r| r.total_critical_faults)
+        .unwrap_or(0);
 
     let mut nav_items = col()
         .w_full()
@@ -678,22 +678,32 @@ pub fn view(s: &AppState, cx: &mut Cx<AppState>) -> El {
                     .fill(if is_elevated {
                         p.success.alpha(0.18)
                     } else {
-                        p.warning.alpha(0.18)
+                        p.warning.alpha(0.25)
+                    })
+                    .hover(if is_elevated {
+                        p.success.alpha(0.25)
+                    } else {
+                        p.warning.alpha(0.4)
                     })
                     .border(
                         1.0,
                         if is_elevated {
                             p.success.alpha(0.5)
                         } else {
-                            p.warning.alpha(0.5)
+                            p.warning.alpha(0.7)
                         },
                     )
+                    .on_press(move |s: &mut AppState| {
+                        if !is_elevated {
+                            s.relaunch_elevated();
+                        }
+                    })
                     .child(
-                        text(s.tr(if is_elevated {
-                            TextKey::AdminElevated
+                        text(if is_elevated {
+                            s.tr(TextKey::AdminElevated).to_string()
                         } else {
-                            TextKey::AdminStandard
-                        }))
+                            format!("{} (Yönetici Başlat ↗)", s.tr(TextKey::AdminStandard))
+                        })
                         .font(rune::tok::type_::LABEL)
                         .color(if is_elevated { p.success } else { p.warning })
                         .shrink()
