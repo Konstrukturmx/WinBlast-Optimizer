@@ -1604,6 +1604,94 @@ fn snap_cpu_parking_view() {
     assert!(out_path.exists(), "Snapshot file should be created");
 }
 
+fn init_fault_diagnostics_state() -> AppState {
+    let mut s = build_populated_sandbox_state();
+    s.navigate(ActiveView::FaultDiagnostics);
+    s
+}
+
+#[test]
+fn snap_fault_diagnostics_view() {
+    let spec = rune::AppSpec::new(
+        "WinBlast0 Fault Diagnostics",
+        (1150.0, 780.0),
+        init_fault_diagnostics_state,
+        ui::view,
+    );
+    let out_path = std::path::Path::new("assets/screenshots/fault_diagnostics.png");
+    let res = rune::App::new(spec)
+        .args([
+            "--snap".to_string(),
+            out_path.to_string_lossy().to_string(),
+            "--size".to_string(),
+            "1150x780".to_string(),
+            "--scroll-bars".to_string(),
+            "always".to_string(),
+        ])
+        .try_run();
+    println!("Snap result: {:?}", res);
+    assert!(out_path.exists(), "Snapshot file should be created");
+}
+
+fn init_support_about_state() -> AppState {
+    let mut s = build_populated_sandbox_state();
+    s.navigate(ActiveView::SupportAbout);
+    s
+}
+
+#[test]
+fn snap_support_about_view() {
+    let spec = rune::AppSpec::new(
+        "WinBlast0 Support and About",
+        (1150.0, 780.0),
+        init_support_about_state,
+        ui::view,
+    );
+    let out_path = std::path::Path::new("assets/screenshots/support_about.png");
+    let res = rune::App::new(spec)
+        .args([
+            "--snap".to_string(),
+            out_path.to_string_lossy().to_string(),
+            "--size".to_string(),
+            "1150x780".to_string(),
+            "--scroll-bars".to_string(),
+            "always".to_string(),
+        ])
+        .try_run();
+    println!("Snap result: {:?}", res);
+    assert!(out_path.exists(), "Snapshot file should be created");
+}
+
+fn init_minimalistic_theme_state() -> AppState {
+    let mut s = build_populated_sandbox_state();
+    s.set_theme_style(winblast0::ui::theme::UiThemeStyle::Minimalistic);
+    s.navigate(ActiveView::EasyDashboard);
+    s
+}
+
+#[test]
+fn snap_minimalistic_theme_view() {
+    let spec = rune::AppSpec::new(
+        "WinBlast0 Minimalistic Theme",
+        (1150.0, 780.0),
+        init_minimalistic_theme_state,
+        ui::view,
+    );
+    let out_path = std::path::Path::new("assets/screenshots/minimalistic_theme.png");
+    let res = rune::App::new(spec)
+        .args([
+            "--snap".to_string(),
+            out_path.to_string_lossy().to_string(),
+            "--size".to_string(),
+            "1150x780".to_string(),
+            "--scroll-bars".to_string(),
+            "always".to_string(),
+        ])
+        .try_run();
+    println!("Snap result: {:?}", res);
+    assert!(out_path.exists(), "Snapshot file should be created");
+}
+
 #[test]
 fn test_ui_theme_styles_dynamic_regeneration_and_geometry() {
     use winblast0::ui::theme::{ColorScheme, ThemeMode, UiThemeStyle};
