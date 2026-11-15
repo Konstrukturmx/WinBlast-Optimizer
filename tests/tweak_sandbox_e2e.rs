@@ -3238,3 +3238,59 @@ fn test_appx_cache_evaluate_package_with_underscores_regression() {
         "AppxCache::evaluate_package must match underscore package name My_Cool_App_8wekyb3d8bbwe (split_once vs rsplit_once bug)"
     );
 }
+
+#[test]
+fn test_driver_sandbox_lifecycle_e2e() {
+    let res = winblast0::hardware::driver_update::test_driver_sandbox_lifecycle();
+    assert!(res.is_ok(), "Driver sandbox lifecycle failed: {:?}", res.err());
+    let msg = res.unwrap();
+    assert!(msg.contains("Virtual Sandbox Test Driver"));
+}
+
+#[test]
+fn test_left_menu_translations_all_8_languages_e2e() {
+    use winblast0::core::i18n::{I18n, Language, TextKey};
+
+    let left_menu_keys = [
+        TextKey::NavGroupOverview,
+        TextKey::NavSystemPanel,
+        TextKey::NavHardware,
+        TextKey::NavDriverBios,
+        TextKey::NavGroupDiagnostics,
+        TextKey::NavPerfTests,
+        TextKey::NavFaultDiag,
+        TextKey::NavLatency,
+        TextKey::NavCoreParking,
+        TextKey::NavThermal,
+        TextKey::NavDisks,
+        TextKey::NavGamingStats,
+        TextKey::NavFpsBench,
+        TextKey::NavNetwork,
+        TextKey::NavGroupOptimization,
+        TextKey::NavFpsOptimization,
+        TextKey::NavGoalPlanner,
+        TextKey::NavGameProfiles,
+        TextKey::NavGameOverlay,
+        TextKey::NavGameSuitability,
+        TextKey::NavCleanApps,
+        TextKey::NavStartupTasks,
+        TextKey::NavWindowsRepair,
+        TextKey::NavBackupReport,
+        TextKey::NavGpuMsiHags,
+        TextKey::NavPrivacyShield,
+        TextKey::NavGroupAccount,
+        TextKey::NavSupportAbout,
+    ];
+
+    for lang in Language::ALL {
+        for &key in &left_menu_keys {
+            let trans = I18n::translate(lang, key);
+            assert!(
+                !trans.trim().is_empty(),
+                "Left menu key {:?} empty for language {:?}",
+                key,
+                lang
+            );
+        }
+    }
+}

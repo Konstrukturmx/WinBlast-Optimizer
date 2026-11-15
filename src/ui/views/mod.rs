@@ -17,7 +17,6 @@ pub mod goal_planner;
 pub mod gpu_tuning;
 pub mod hardware_view;
 pub mod latency_bench;
-pub mod license_info;
 pub mod network_diag;
 pub mod performance_tests;
 pub mod privacy_shield;

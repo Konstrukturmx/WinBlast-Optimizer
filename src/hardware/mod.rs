@@ -5,6 +5,7 @@
 pub mod bios;
 pub mod cpu;
 pub mod disks;
+pub mod driver_update;
 pub mod gpu;
 pub mod latency;
 pub mod monitor;

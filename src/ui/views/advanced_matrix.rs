@@ -173,6 +173,58 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
                 )),
         );
 
+    // 1-Click Optimization Presets Card
+    let presets_card = row()
+        .w_full()
+        .min_w(0.0)
+        .padding(p.card_padding.min(10.0))
+        .radius(p.card_radius)
+        .fill(p.bg_card)
+        .border(p.border_width, p.border)
+        .flex_wrap()
+        .justify_between()
+        .items_center()
+        .gaps(8.0, 10.0)
+        .child(
+            row()
+                .gap(6.0)
+                .center()
+                .child(text("🎯").font(rune::tok::type_::LABEL))
+                .child(
+                    text("1-Tık Hızlı Optimizasyon Profilleri")
+                        .font(rune::tok::type_::LABEL)
+                        .color(p.text_primary),
+                ),
+        )
+        .child(
+            row()
+                .min_w(0.0)
+                .shrink()
+                .flex_wrap()
+                .gaps(8.0, 8.0)
+                .child(action_button(
+                    s.tr(TextKey::GamingPreset),
+                    p.accent,
+                    Color::WHITE,
+                    p,
+                    |s| s.apply_preset(crate::app::PresetKind::Gaming),
+                ))
+                .child(action_button(
+                    s.tr(TextKey::ProAudioPreset),
+                    p.btn_secondary,
+                    p.text_primary,
+                    p,
+                    |s| s.apply_preset(crate::app::PresetKind::ProAudio),
+                ))
+                .child(action_button(
+                    s.tr(TextKey::LaptopBatteryPreset),
+                    p.btn_secondary,
+                    p.text_primary,
+                    p,
+                    |s| s.apply_preset(crate::app::PresetKind::LaptopBattery),
+                )),
+        );
+
     // Search + Category Filter Bar
     let search_box = row()
         .w_full()
@@ -430,6 +482,7 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
         .gap(12.0)
         .scroll(ScrollSpec { stick_bottom: false })
         .child(header_card)
+        .child(presets_card)
         .child(filter_card)
         .child(matrix_col)
         .winblast_scroll(p)
