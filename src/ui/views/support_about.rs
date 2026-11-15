@@ -1,4 +1,4 @@
-//! Destek ve iletişim (Support, Release 1.1 & About) View in Rune.
+//! Destek ve iletişim (Support, Release 1.2 & About) View in Rune.
 //!
 //! Release metadata, GitHub repository links, and diagnostic report exporter.
 
@@ -86,7 +86,7 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                         .color(p.text_secondary),
                 ),
         )
-        // Release 1.1 Features Card
+        // Release 1.2 Features Card
         .child(
             col()
                 .w_full()
