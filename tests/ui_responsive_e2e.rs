@@ -173,9 +173,18 @@ fn settle_frames(rt: &mut Runtime<AppState>) {
 
 /// Click an element by key or key-path in window points.
 fn click_key(rt: &mut Runtime<AppState>, key: &str) {
-    let (x, y) = rt
+    let (mut x, mut y) = rt
         .find(key)
         .unwrap_or_else(|| panic!("Could not find element with key {:?} at viewport {:?}", key, rt.viewport));
+    if y >= rt.viewport.1 || y < 0.0 {
+        let scroll_delta = y - rt.viewport.1 * 0.5;
+        rt.wheel(x.clamp(10.0, rt.viewport.0 - 10.0), rt.viewport.1 * 0.5, -scroll_delta);
+        settle_frames(rt);
+        if let Some((nx, ny)) = rt.find(key) {
+            x = nx;
+            y = ny;
+        }
+    }
     rt.pointer_move(x, y);
     rt.pointer_down(x, y);
     rt.frame(0.016);

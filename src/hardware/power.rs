@@ -482,6 +482,7 @@ pub fn create_and_activate_performance_plan() -> Result<String> {
     };
 
     // Tune key settings even when the plan already existed (ignore unsupported hardware GUIDs cleanly)
+    #[allow(clippy::type_complexity)]
     let tuned_settings: &[(&str, &str, Option<u32>, Option<u32>, bool)] = &[
         // Min cores AC/DC = 100 (Class 0)
         ("54533251-82be-4824-96c1-47b60b740d00", "0cc5b647-c1df-4637-891a-dec35c318583", Some(100), Some(100), true),
