@@ -988,11 +988,9 @@ pub fn revert_tweak_with(
                     default_start_type,
                     ..
                 } => {
-                    let prev = backend.get_service_start_type(service_name);
-                    if prev.is_none() {
+                    let Some(current_start) = backend.get_service_start_type(service_name) else {
                         continue;
-                    }
-                    let current_start = prev.unwrap();
+                    };
                     let prev_delayed = if current_start == 2 {
                         backend
                             .reg_get_dword(

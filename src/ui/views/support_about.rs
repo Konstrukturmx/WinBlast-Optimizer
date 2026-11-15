@@ -72,7 +72,7 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                         )
                         .child(
                             action_button("GitHub Sayfasını Aç", p.accent, Color::WHITE, p, |_| {
-                                let _ = std::process::Command::new("rundll32")
+                                let _ = crate::core::process::SilentCommand::new("rundll32")
                                     .args(["url.dll,FileProtocolHandler", "https://github.com/Konstrukturmx/WinBlast-Optimizer"])
                                     .spawn();
                             })

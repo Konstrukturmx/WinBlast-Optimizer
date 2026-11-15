@@ -51,7 +51,12 @@ impl FaultDiagnosticsReport {
             if let Ok(entries) = std::fs::read_dir(&minidump_dir) {
                 for entry in entries.filter_map(|e| e.ok()) {
                     let path = entry.path();
-                    if path.extension().and_then(|ext| ext.to_str()) == Some("dmp") {
+                    if path
+                        .extension()
+                        .and_then(|ext| ext.to_str())
+                        .map(|s| s.eq_ignore_ascii_case("dmp"))
+                        == Some(true)
+                    {
                         if let Ok(meta) = entry.metadata() {
                             let size_kb = meta.len() / 1024;
                             let created = meta

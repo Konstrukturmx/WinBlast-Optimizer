@@ -2,8 +2,8 @@
 //!
 //! Provides clean execution of Windows system restoration routines.
 
+use crate::core::process::SilentCommand;
 use serde::{Deserialize, Serialize};
-use std::process::Command;
 
 /// One-click repair task definition.
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -67,12 +67,12 @@ impl RepairTask {
     pub fn execute(id: &str) -> Result<String, String> {
         match id {
             "dns" => {
-                let _ = Command::new("ipconfig").arg("/flushdns").output();
+                let _ = SilentCommand::new("ipconfig").arg("/flushdns").output();
                 Ok("DNS resolver cache successfully purged and renewed.".to_string())
             }
             "winsock" => {
-                let _ = Command::new("netsh").args(["winsock", "reset"]).output();
-                let _ = Command::new("netsh").args(["int", "ip", "reset"]).output();
+                let _ = SilentCommand::new("netsh").args(["winsock", "reset"]).output();
+                let _ = SilentCommand::new("netsh").args(["int", "ip", "reset"]).output();
                 Ok("Winsock catalog and TCP/IP stack successfully reset.".to_string())
             }
             "icon_cache" => {
