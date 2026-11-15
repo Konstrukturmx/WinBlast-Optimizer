@@ -284,6 +284,15 @@ pub struct TweakDefinition {
     /// Optional provenance tag (e.g., `"Winhance"`, `"optimizerDuck"`).
     #[serde(default)]
     pub source_attribution: Option<String>,
+    /// Fallback execution strategies if primary actions fail.
+    #[serde(default)]
+    pub fallbacks: Vec<Vec<TweakAction>>,
+    /// Prerequisites that must be applied before this tweak.
+    #[serde(default)]
+    pub prerequisites: Vec<String>,
+    /// Mutual exclusion or conflicting tweak IDs.
+    #[serde(default)]
+    pub conflicts_with: Vec<String>,
 }
 
 /// Container for deserializing TOML rule files.
@@ -582,6 +591,9 @@ mod tests {
             sub_category: None,
             unattend_safe: false,
             source_attribution: None,
+            fallbacks: Vec::new(),
+            prerequisites: Vec::new(),
+            conflicts_with: Vec::new(),
         };
 
         assert!(tweak.is_compatible(19041, "Professional"));
@@ -590,6 +602,56 @@ mod tests {
         assert!(tweak.is_compatible(19045, "EnterpriseS"));
         assert!(tweak.is_compatible(22000, "Unknown"));
         assert!(!tweak.is_compatible(10000, "Professional"));
+    }
+
+    #[test]
+    fn test_deserialize_tweak_with_fallbacks_and_graph_metadata() {
+        let toml_str = r#"
+        [[tweaks]]
+        id = "tweak_with_fallbacks"
+        title = "Test Fallbacks"
+        category = "Test"
+        description = "Test multi-strategy execution and graph constraints"
+        easy_mode_included = false
+        prerequisites = ["prior_tweak_a", "prior_tweak_b"]
+        conflicts_with = ["conflicting_tweak_c"]
+        fallbacks = [
+            [
+                { type = "RegistryDword", hive = "HKCU", path = "Software\\WinBlast", name = "Fallback1", optimized_value = 1, default_value = 0 }
+            ],
+            [
+                { type = "RegistryString", hive = "HKLM", path = "Software\\WinBlast", name = "Fallback2", optimized_value = "Enabled", default_value = "Disabled" }
+            ]
+        ]
+
+        [tweaks.os_req]
+        min_build = 19041
+        editions = ["Pro"]
+
+        [tweaks.valuation]
+        stability_risk = "Safe"
+        performance_gain = 3
+        privacy_gain = 0
+        reversibility = "Instant"
+        broken_features = []
+
+        [[tweaks.actions]]
+        type = "RegistryDword"
+        hive = "HKLM"
+        path = "Software\\WinBlast"
+        name = "Primary"
+        optimized_value = 1
+        default_value = 0
+        "#;
+
+        let catalog: TweakCatalog = toml::from_str(toml_str).expect("Failed to deserialize TOML with fallbacks");
+        assert_eq!(catalog.tweaks.len(), 1);
+        let t = &catalog.tweaks[0];
+        assert_eq!(t.prerequisites, vec!["prior_tweak_a", "prior_tweak_b"]);
+        assert_eq!(t.conflicts_with, vec!["conflicting_tweak_c"]);
+        assert_eq!(t.fallbacks.len(), 2);
+        assert_eq!(t.fallbacks[0].len(), 1);
+        assert_eq!(t.fallbacks[1].len(), 1);
     }
 
     #[test]
@@ -645,6 +707,9 @@ mod tests {
             sub_category: None,
             unattend_safe: false,
             source_attribution: None,
+            fallbacks: Vec::new(),
+            prerequisites: Vec::new(),
+            conflicts_with: Vec::new(),
         };
 
         // System with NVIDIA GPU

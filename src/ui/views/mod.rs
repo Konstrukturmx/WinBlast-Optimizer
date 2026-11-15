@@ -5,6 +5,7 @@ pub mod backup_center;
 pub mod clean_apps;
 pub mod cpu_parking;
 pub mod easy_dashboard;
+pub mod goal_planner;
 pub mod gpu_tuning;
 pub mod hardware_view;
 pub mod latency_bench;

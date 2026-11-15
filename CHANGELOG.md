@@ -5,6 +5,24 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ---
 
+## [v1.0.0] - 2026-11-15
+
+### 🌟 Landmark Highlights
+- **Graph-Theoretic Optimization Engine**:
+  - **Dijkstra's Shortest-Path & Topological Scheduler** (`src/graph/dijkstra.rs`): Sequences tweak applications in topological prerequisite order while minimizing service disruption penalties and grouping reboot requirements at the tail of execution.
+  - **A* Heuristic Goal Planner** (`src/graph/astar.rs`): Solves multi-objective optimization profiles (Ultra Gaming Rig, Stealth Privacy Fortress, Balanced Daily Driver) to satisfy target performance and privacy gains with minimal risk friction.
+  - **Raven Multi-Criteria Decision & Pareto Engine** (`src/graph/raven.rs`): Evaluates Pareto dominance across Performance, Privacy, Stability, and Reversibility, automatically detecting and resolving mutual exclusions between conflicting tweaks.
+- **Multi-Strategy Fallback & Resilient Mutation Engine**:
+  - Tweaks now support cascaded `fallbacks: Vec<Vec<TweakAction>>` across Registry, Services, and Windows Policies. If a primary mutation encounters permissions or policy locks, the executor sequentially attempts fallback strategies with atomic intermediate rollback.
+- **Interactive Rune 1.0 Goal Planner View** (`src/ui/views/goal_planner.rs`):
+  - Dedicated interactive UI view allowing users to select target optimization goals, explore A* heuristic paths in real time, inspect Raven Pareto dominance scores, and view the step-by-step topological execution timeline.
+- **`rune-motion` Physics & Spring Animation Integration**:
+  - Integrated `rune-motion` spring animation physics for fluid interactive switches, cards, and view transitions.
+- **Exhaustive Automated QA**:
+  - Test suite expanded to 115 passing tests across 5 test suites (`cargo test --lib`, `tweak_sandbox_e2e`, `ui_responsive_e2e`, `ui_scrollbar_test`, and `real_windows_env`) with 100% pass rate and zero warnings.
+
+---
+
 ## [v0.9.1] - 2026-11-13
 
 ### 🌟 Highlights

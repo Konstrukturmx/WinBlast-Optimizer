@@ -55,6 +55,7 @@ pub enum ActiveView {
     CoreParking,
     CleanAndApps,
     StartupAndTasks,
+    GoalPlanner,
 }
 
 /// Sub-tabs inside the Clean & Apps view.
@@ -342,6 +343,10 @@ pub struct AppState {
     pub ledger_history: Vec<LedgerEntry>,
     pub ledger_path: PathBuf,
     pub profile_path: PathBuf,
+    pub active_goal: crate::graph::astar::OptimizationGoal,
+    pub planned_path: Option<crate::graph::astar::OptimizationPlan>,
+    pub raven_resolutions: Vec<crate::graph::raven::ConflictResolution>,
+    pub scheduled_order: Option<crate::graph::dijkstra::ExecutionOrder>,
     pub is_scanning: bool,
     scan_worker_inflight: bool,
     mutated_during_scan: HashSet<String>,
@@ -517,6 +522,10 @@ impl AppState {
             ledger_history,
             ledger_path,
             profile_path,
+            active_goal: crate::graph::astar::OptimizationGoal::ultra_gaming(),
+            planned_path: None,
+            raven_resolutions: Vec::new(),
+            scheduled_order: None,
             is_scanning: true,
             scan_worker_inflight: false,
             mutated_during_scan: HashSet::new(),
@@ -2016,6 +2025,89 @@ impl AppState {
                 let _ = tx.send(WorkerEvent::ApplyCompleted(res));
             },
         );
+    }
+
+    /// Solve the current optimization goal using A* heuristic graph search,
+    /// validate Pareto dominance with Raven, and sequence dependencies via Dijkstra.
+    pub fn solve_current_goal(&mut self) {
+        let planner = crate::graph::astar::AStarPlanner::new();
+        let candidates: Vec<crate::graph::astar::TweakCandidate> = self.tweaks
+            .iter()
+            .map(|t| {
+                let risk_weight = match t.valuation.stability_risk {
+                    crate::core::risk::RiskLevel::Safe => 0,
+                    crate::core::risk::RiskLevel::Low => 1,
+                    crate::core::risk::RiskLevel::Moderate => 2,
+                    crate::core::risk::RiskLevel::High => 4,
+                    crate::core::risk::RiskLevel::Extreme => 8,
+                };
+                let requires_reboot = t.valuation.reversibility == crate::core::risk::Reversibility::RequiresReboot;
+                crate::graph::astar::TweakCandidate {
+                    id: t.id.clone(),
+                    category: t.category.clone(),
+                    perf_gain: t.valuation.performance_gain as u32,
+                    privacy_gain: t.valuation.privacy_gain as u32,
+                    risk_weight,
+                    requires_reboot,
+                }
+            })
+            .collect();
+
+        let plan = planner.plan(&self.active_goal, &candidates);
+
+        let raven = crate::graph::raven::RavenEngine::default();
+        let raven_candidates: Vec<crate::graph::raven::TweakCriteria> = self.tweaks
+            .iter()
+            .filter(|t| plan.selected_tweak_ids.contains(&t.id))
+            .map(|t| {
+                let stab_score = match t.valuation.stability_risk {
+                    crate::core::risk::RiskLevel::Safe => 0.0,
+                    crate::core::risk::RiskLevel::Low => 2.5,
+                    crate::core::risk::RiskLevel::Moderate => 5.0,
+                    crate::core::risk::RiskLevel::High => 8.5,
+                    crate::core::risk::RiskLevel::Extreme => 10.0,
+                };
+                let rev_score = match t.valuation.reversibility {
+                    crate::core::risk::Reversibility::Instant => 10.0,
+                    crate::core::risk::Reversibility::RequiresLogoff => 7.0,
+                    crate::core::risk::Reversibility::RequiresReboot => 4.0,
+                    crate::core::risk::Reversibility::RequiresPackageReinstall => 2.0,
+                };
+                crate::graph::raven::TweakCriteria {
+                    id: t.id.clone(),
+                    title: t.title.clone(),
+                    performance_gain: t.valuation.performance_gain as f32,
+                    privacy_gain: t.valuation.privacy_gain as f32,
+                    stability_risk: stab_score,
+                    reversibility_score: rev_score,
+                    conflicts_with: t.conflicts_with.clone(),
+                }
+            })
+            .collect();
+
+        let (sanitized_ids, resolutions) = raven.resolve_conflicts(&raven_candidates);
+        self.raven_resolutions = resolutions;
+
+        let scheduler = crate::graph::dijkstra::DijkstraScheduler::new();
+        let tweak_tuples = self.tweaks.iter().map(|t| {
+            let requires_reboot = t.valuation.reversibility == crate::core::risk::Reversibility::RequiresReboot;
+            let touches_services = t.actions.iter().any(|a| matches!(a, TweakAction::ServiceState { .. }));
+            (t.id.as_str(), t.prerequisites.as_slice(), requires_reboot, touches_services)
+        });
+
+        let execution_order = scheduler.schedule_execution(tweak_tuples, &sanitized_ids);
+        self.scheduled_order = Some(execution_order);
+        self.planned_path = Some(plan);
+    }
+
+    /// Stage all tweaks recommended by the current A* plan into pending mutations.
+    pub fn stage_planned_goal(&mut self) {
+        if let Some(plan) = &self.planned_path {
+            for id in &plan.selected_tweak_ids {
+                self.selected_tweaks.insert(id.clone());
+                self.staged_transitions.insert(id.clone(), StagedTransition::StageApply);
+            }
+        }
     }
 
     /// Create a Windows System Restore point asynchronously.

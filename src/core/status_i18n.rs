@@ -1805,13 +1805,6 @@ pub fn localize_status(lang: Language, spec: &StatusMessageSpec) -> String {
     }
 }
 
-/// Wait — fix `DiskCleaned` argument order across non-English templates so (mb, files, skipped) match!
-/// Let's double check `DiskCleaned` above:
-/// - EN: "Cleanup complete: freed {} MB across {} files ({} locked skipped)." -> {mb}, {files}, {skipped} -> OK!
-/// - TR: "{} dosya genelinde {} MB" had files then mb! Let's fix `DiskCleaned` cleanly via a helper!
-/// Let's rewrite `DiskCleaned` properly right before saving? Actually we're writing the whole file now, let's fix the TR string in `DiskCleaned` right now in the content below!
-/// Wait: we already put `"Temizlik tamamlandı: {} dosya genelinde {} MB boşaltıldı ({} kilitli dosya atlandı)."` in the write_file above — let's make sure we fix it to `"{} MB temizlendi ({} dosya, {} kilitli atlandı)."` so `{}` order is ALWAYS `(mb, files, skipped)`! Let's edit that after writing or fix before calling? Too late, `write_file` was in this turn's call? No, I haven't emitted the tool call yet! Let's emit the corrected version right now.
-
 static ERROR_PREFIX_TABLE: &[(&str, [&str; 7])] = &[
     (
         "I/O or Registry error:",

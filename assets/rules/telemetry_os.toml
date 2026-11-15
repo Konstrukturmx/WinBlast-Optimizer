@@ -8,6 +8,11 @@ title = "Disable DiagTrack (Connected User Experiences and Telemetry)"
 category = "Telemetry (OS)"
 description = "Disables the Connected User Experiences and Telemetry service (DiagTrack / diagsvc), which is the primary Windows telemetry collection service."
 easy_mode_included = true
+fallbacks = [
+    [
+        { type = "RegistryDword", hive = "HKLM", path = "SYSTEM\\CurrentControlSet\\Services\\DiagTrack", name = "Start", optimized_value = 4, default_value = 2 }
+    ]
+]
 
 [tweaks.os_req]
 min_build = 19041
@@ -34,6 +39,11 @@ title = "Disable dmwappushservice (WAP Push Message Routing)"
 category = "Telemetry (OS)"
 description = "Disables the Device Management Wireless Application Protocol (WAP) Push message routing service, used for telemetry data routing."
 easy_mode_included = true
+fallbacks = [
+    [
+        { type = "RegistryDword", hive = "HKLM", path = "SYSTEM\\CurrentControlSet\\Services\\dmwappushservice", name = "Start", optimized_value = 4, default_value = 3 }
+    ]
+]
 
 [tweaks.os_req]
 min_build = 19041

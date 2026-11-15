@@ -129,6 +129,13 @@ fn build_sidebar(s: &AppState, p: &ThemePalette, tier: LayoutTier) -> El {
             ActiveView::AdvancedMatrix,
         ))
         .child(nav_button(
+            "nav_goal_planner",
+            "A* Goal Planner",
+            s.active_view == ActiveView::GoalPlanner,
+            p,
+            ActiveView::GoalPlanner,
+        ))
+        .child(nav_button(
             "nav_clean_apps",
             s.tr(TextKey::CleanAppsTab),
             s.active_view == ActiveView::CleanAndApps,
@@ -659,6 +666,7 @@ pub fn view(s: &AppState, cx: &mut Cx<AppState>) -> El {
     let content_view = match s.active_view {
         ActiveView::EasyDashboard => views::easy_dashboard::view(s, tier),
         ActiveView::AdvancedMatrix => views::advanced_matrix::view(s, tier),
+        ActiveView::GoalPlanner => views::goal_planner::view(s, tier),
         ActiveView::GpuTuning => views::gpu_tuning::view(s, tier),
         ActiveView::HardwareView => views::hardware_view::view(s, tier),
         ActiveView::PrivacyShield => views::privacy_shield::view(s, tier),

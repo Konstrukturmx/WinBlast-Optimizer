@@ -135,6 +135,7 @@ fn test_scrollbars_render_across_all_main_views() {
     let views = &[
         ActiveView::AdvancedMatrix,
         ActiveView::EasyDashboard,
+        ActiveView::GoalPlanner,
         ActiveView::GpuTuning,
         ActiveView::HardwareView,
         ActiveView::PrivacyShield,

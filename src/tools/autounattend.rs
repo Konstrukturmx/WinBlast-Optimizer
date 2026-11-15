@@ -506,6 +506,9 @@ mod tests {
             sub_category: None,
             unattend_safe: true,
             source_attribution: Some("Winhance".to_string()),
+            fallbacks: Vec::new(),
+            prerequisites: Vec::new(),
+            conflicts_with: Vec::new(),
         };
 
         let unsafe_tweak = TweakDefinition {

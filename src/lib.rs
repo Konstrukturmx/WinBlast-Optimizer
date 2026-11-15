@@ -5,6 +5,7 @@ pub mod app;
 pub mod backup;
 pub mod core;
 pub mod executor;
+pub mod graph;
 pub mod hardware;
 pub mod scanner;
 pub mod tools;

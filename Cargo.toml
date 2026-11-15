@@ -1,6 +1,6 @@
 [package]
 name = "winblast0"
-version = "0.9.1"
+version = "1.0.0"
 edition = "2021"
 description = "WinBlast0 – Windows System Optimizer & Debloater"
 
@@ -8,6 +8,7 @@ description = "WinBlast0 – Windows System Optimizer & Debloater"
 # GUI – Rune native GPU-rendered framework & Rune Kit
 rune = { path = "C:/Hive/rune-framework/crates/rune" }
 rune-kit = { path = "C:/Hive/rune-framework/crates/rune-kit" }
+rune-motion = { path = "C:/Hive/rune-framework/crates/rune-motion" }
 crossbeam-channel = "0.5"
 
 # Official Microsoft Win32 Rust bindings (matching rune's 0.62 version)

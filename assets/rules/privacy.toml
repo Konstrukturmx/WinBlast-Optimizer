@@ -8,6 +8,11 @@ title = "Disable Advertising ID"
 category = "Privacy"
 description = "Disables the per-user advertising ID that Windows provides to apps for targeted advertising and cross-app tracking."
 easy_mode_included = true
+fallbacks = [
+    [
+        { type = "RegistryDword", hive = "HKCU", path = "Software\\Microsoft\\Windows\\CurrentVersion\\AdvertisingInfo", name = "Enabled", optimized_value = 0, default_value = 1 }
+    ]
+]
 
 [tweaks.os_req]
 min_build = 19041
@@ -81,6 +86,11 @@ title = "Disable Activity History / Timeline"
 category = "Privacy"
 description = "Disables the Windows Activity History (Timeline) feature, preventing Windows from collecting and storing a history of your activities, websites visited, and documents opened."
 easy_mode_included = true
+fallbacks = [
+    [
+        { type = "RegistryDword", hive = "HKCU", path = "Software\\Policies\\Microsoft\\Windows\\System", name = "EnableActivityFeed", optimized_value = 0, default_value = 1 }
+    ]
+]
 
 [tweaks.os_req]
 min_build = 19041
@@ -197,6 +207,11 @@ title = "Disable Windows Recall (AI Snapshot)"
 category = "Privacy"
 description = "Disables the Windows Recall feature introduced in Windows 11 24H2, which periodically takes AI-indexed screenshots of your activity. Requires build 26100+."
 easy_mode_included = true
+fallbacks = [
+    [
+        { type = "RegistryDword", hive = "HKCU", path = "Software\\Policies\\Microsoft\\Windows\\WindowsAI", name = "DisableAIDataAnalysis", optimized_value = 1, default_value = 0 }
+    ]
+]
 
 [tweaks.os_req]
 min_build = 26100

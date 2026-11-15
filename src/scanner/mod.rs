@@ -787,6 +787,9 @@ mod tests {
             sub_category: Some("Power".to_string()),
             unattend_safe: false,
             source_attribution: None,
+            fallbacks: Vec::new(),
+            prerequisites: Vec::new(),
+            conflicts_with: Vec::new(),
         }
     }
 

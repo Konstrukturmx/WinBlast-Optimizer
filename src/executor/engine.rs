@@ -113,22 +113,22 @@ fn format_dword_action_key(prefix: &str, hive: &str, path: &str, name: &str, ven
     }
 }
 
-/// Apply a single tweak definition using an explicit `SystemBackend`, recording exact pre-change
-/// states in the ledger. If action `k > 0` fails, already-committed actions `0..k` are rolled back.
-pub fn apply_tweak_with(
+/// Internal helper to execute a single list of actions atomically for a tweak.
+/// If any mutation fails, already-committed actions in this slice are rolled back immediately.
+fn apply_action_slice_with(
     tweak: &TweakDefinition,
+    actions: &[TweakAction],
     ledger: &StateLedger,
     backend: &dyn SystemBackend,
 ) -> Result<usize> {
-    ensure_tweak_compatible(tweak, backend)?;
-    let mut recorded_ids: Vec<i64> = Vec::with_capacity(tweak.actions.len());
+    let mut recorded_ids: Vec<i64> = Vec::with_capacity(actions.len());
     let vendor_ref = tweak.gpu_vendor.as_deref();
 
     let res: Result<usize> = (|| {
         let mut applied = 0usize;
         let mut skipped_power = 0usize;
         let mut last_power_err: Option<WinBlastError> = None;
-        for action in &tweak.actions {
+        for action in actions {
             match action {
                 TweakAction::RegistryDword {
                     hive,
@@ -532,19 +532,137 @@ pub fn apply_tweak_with(
     res
 }
 
+/// Apply a single tweak definition using an explicit `SystemBackend`, recording exact pre-change
+/// states in the ledger. Supports multi-strategy execution: if the primary actions fail,
+/// it rolls back partial mutations and sequentially attempts each defined fallback strategy.
+pub fn apply_tweak_with(
+    tweak: &TweakDefinition,
+    ledger: &StateLedger,
+    backend: &dyn SystemBackend,
+) -> Result<usize> {
+    ensure_tweak_compatible(tweak, backend)?;
+
+    // 1. Attempt Primary strategy
+    match apply_action_slice_with(tweak, &tweak.actions, ledger, backend) {
+        Ok(count) => Ok(count),
+        Err(primary_err) => {
+            if tweak.fallbacks.is_empty() {
+                return Err(primary_err);
+            }
+
+            tracing::warn!(
+                "Primary actions for tweak '{}' failed: {}. Attempting {} fallback strategies...",
+                tweak.id,
+                primary_err,
+                tweak.fallbacks.len()
+            );
+
+            // 2. Attempt Fallbacks sequentially
+            for (idx, fallback_actions) in tweak.fallbacks.iter().enumerate() {
+                match apply_action_slice_with(tweak, fallback_actions, ledger, backend) {
+                    Ok(count) => {
+                        tracing::info!(
+                            "Fallback strategy #{} succeeded for tweak '{}' ({} actions applied).",
+                            idx + 1,
+                            tweak.id,
+                            count
+                        );
+                        return Ok(count);
+                    }
+                    Err(fallback_err) => {
+                        tracing::warn!(
+                            "Fallback strategy #{} failed for tweak '{}': {}",
+                            idx + 1,
+                            tweak.id,
+                            fallback_err
+                        );
+                    }
+                }
+            }
+
+            // All fallback strategies exhausted; return the original primary error
+            Err(primary_err)
+        }
+    }
+}
+
 /// Apply multiple tweaks by ID using an explicit `SystemBackend`.
+/// Uses `DijkstraScheduler` to resolve prerequisite dependencies and sequence execution
+/// to minimize service disruptions and reboot requirements, and checks `RavenEngine` for conflict filtering.
 pub fn apply_tweaks_by_id_with(
     tweak_ids: &[String],
     all_tweaks: &[TweakDefinition],
     ledger: &StateLedger,
     backend: &dyn SystemBackend,
 ) -> Result<usize> {
+    if tweak_ids.is_empty() {
+        return Ok(0);
+    }
+
+    // 1. Check for mutual conflicts via Raven engine
+    let raven = crate::graph::raven::RavenEngine::default();
+    let candidates: Vec<crate::graph::raven::TweakCriteria> = all_tweaks
+        .iter()
+        .filter(|t| tweak_ids.contains(&t.id))
+        .map(|t| {
+            let stab_score = match t.valuation.stability_risk {
+                crate::core::risk::RiskLevel::Safe => 0.0,
+                crate::core::risk::RiskLevel::Low => 2.5,
+                crate::core::risk::RiskLevel::Moderate => 5.0,
+                crate::core::risk::RiskLevel::High => 8.5,
+                crate::core::risk::RiskLevel::Extreme => 10.0,
+            };
+            let rev_score = match t.valuation.reversibility {
+                crate::core::risk::Reversibility::Instant => 10.0,
+                crate::core::risk::Reversibility::RequiresLogoff => 7.0,
+                crate::core::risk::Reversibility::RequiresReboot => 4.0,
+                crate::core::risk::Reversibility::RequiresPackageReinstall => 2.0,
+            };
+            crate::graph::raven::TweakCriteria {
+                id: t.id.clone(),
+                title: t.title.clone(),
+                performance_gain: t.valuation.performance_gain as f32,
+                privacy_gain: t.valuation.privacy_gain as f32,
+                stability_risk: stab_score,
+                reversibility_score: rev_score,
+                conflicts_with: t.conflicts_with.clone(),
+            }
+        })
+        .collect();
+
+    let (active_ids, _conflicts) = raven.resolve_conflicts(&candidates);
+
+    // 2. Schedule execution sequence via Dijkstra shortest-path / topological scheduler
+    let scheduler = crate::graph::dijkstra::DijkstraScheduler::new();
+    let tweak_tuples = all_tweaks.iter().map(|t| {
+        let requires_reboot = t.valuation.reversibility == crate::core::risk::Reversibility::RequiresReboot;
+        let touches_services = t.actions.iter().any(|a| matches!(a, TweakAction::ServiceState { .. }));
+        (t.id.as_str(), t.prerequisites.as_slice(), requires_reboot, touches_services)
+    });
+
+    let execution_order = scheduler.schedule_execution(tweak_tuples, &active_ids);
+
+    // 3. Sequentially apply tweaks in scheduled order
     let mut total = 0usize;
-    for id in tweak_ids {
-        if let Some(tweak) = all_tweaks.iter().find(|t| t.id == *id) {
+    let mut applied_set = std::collections::HashSet::new();
+
+    for step in &execution_order.steps {
+        if let Some(tweak) = all_tweaks.iter().find(|t| t.id == step.tweak_id) {
             total += apply_tweak_with(tweak, ledger, backend)?;
+            applied_set.insert(step.tweak_id.clone());
         }
     }
+
+    // Apply any unmapped IDs remaining
+    for id in &active_ids {
+        if !applied_set.contains(id) {
+            if let Some(tweak) = all_tweaks.iter().find(|t| t.id == *id) {
+                total += apply_tweak_with(tweak, ledger, backend)?;
+                applied_set.insert(id.clone());
+            }
+        }
+    }
+
     Ok(total)
 }
 
@@ -990,18 +1108,47 @@ pub fn revert_tweak_with(
 }
 
 /// Revert multiple tweaks by ID back to default Windows states using an explicit `SystemBackend`.
+/// Sequences revert operations in reverse topological order using `DijkstraScheduler`.
 pub fn revert_tweaks_by_id_with(
     tweak_ids: &[String],
     all_tweaks: &[TweakDefinition],
     ledger: &StateLedger,
     backend: &dyn SystemBackend,
 ) -> Result<usize> {
+    if tweak_ids.is_empty() {
+        return Ok(0);
+    }
+
+    let scheduler = crate::graph::dijkstra::DijkstraScheduler::new();
+    let tweak_tuples = all_tweaks.iter().map(|t| {
+        let requires_reboot = t.valuation.reversibility == crate::core::risk::Reversibility::RequiresReboot;
+        let touches_services = t.actions.iter().any(|a| matches!(a, TweakAction::ServiceState { .. }));
+        (t.id.as_str(), t.prerequisites.as_slice(), requires_reboot, touches_services)
+    });
+
+    let execution_order = scheduler.schedule_execution(tweak_tuples, tweak_ids);
+
     let mut total = 0usize;
-    for id in tweak_ids {
-        if let Some(tweak) = all_tweaks.iter().find(|t| t.id == *id) {
+    let mut reverted_set = std::collections::HashSet::new();
+
+    // Revert in reverse order of application to honor reverse dependencies
+    for step in execution_order.steps.iter().rev() {
+        if let Some(tweak) = all_tweaks.iter().find(|t| t.id == step.tweak_id) {
             total += revert_tweak_with(tweak, ledger, backend)?;
+            reverted_set.insert(step.tweak_id.clone());
         }
     }
+
+    // Revert any unmapped IDs remaining
+    for id in tweak_ids {
+        if !reverted_set.contains(id) {
+            if let Some(tweak) = all_tweaks.iter().find(|t| t.id == *id) {
+                total += revert_tweak_with(tweak, ledger, backend)?;
+                reverted_set.insert(id.clone());
+            }
+        }
+    }
+
     Ok(total)
 }
 
@@ -1476,6 +1623,7 @@ pub fn rollback_by_id(entry_id: i64, ledger: &StateLedger) -> Result<()> {
 mod tests {
     use super::*;
     use crate::core::backend::SandboxEnv;
+    use crate::core::risk::{OsRequirement, Reversibility, RiskLevel, RiskValuation};
 
     #[test]
     fn test_rollback_revert_prefix_in_sandbox() {
@@ -1537,6 +1685,9 @@ mod tests {
             sub_category: None,
             unattend_safe: false,
             source_attribution: None,
+            fallbacks: Vec::new(),
+            prerequisites: Vec::new(),
+            conflicts_with: Vec::new(),
         };
 
         assert_eq!(sbx.reg_get_dword("HKCU", "Software\\WinBlast0_Test", "TransientKey"), None);
@@ -1575,6 +1726,9 @@ mod tests {
             sub_category: None,
             unattend_safe: false,
             source_attribution: None,
+            fallbacks: Vec::new(),
+            prerequisites: Vec::new(),
+            conflicts_with: Vec::new(),
         };
 
         // 1. OS + GPU vendor guard on apply/revert
@@ -1911,5 +2065,77 @@ mod tests {
         assert!(!cp_stock.is_fully_unparked);
         assert_eq!(cp_stock.min_cores_ac_pct, 10);
         assert_eq!(cp_stock.min_cores_dc_pct, 5);
+    }
+
+    #[test]
+    fn test_apply_tweak_fallback_execution() {
+        let sbx = SandboxEnv::new();
+        let ledger = StateLedger::in_memory().expect("Failed to create memory ledger");
+
+        // Primary action attempts to update a non-existent binary key with create_if_missing: false (fails)
+        let primary_failing_action = TweakAction::RegistryBinaryBit {
+            hive: "HKLM".to_string(),
+            path: r"SOFTWARE\WinBlastTest\NonExistent".to_string(),
+            name: "NonExistentBinary".to_string(),
+            byte_index: 0,
+            min_length: 4,
+            bit_mask: 0x01,
+            optimized_bits: 0x01,
+            default_bits: 0x00,
+            create_if_missing: false,
+            default_full_hex: None,
+        };
+
+        // Fallback strategy attempts standard DWORD registry write (succeeds)
+        let fallback_working_action = TweakAction::RegistryDword {
+            hive: "HKLM".to_string(),
+            path: r"SOFTWARE\WinBlastTest\FallbackWorking".to_string(),
+            name: "FallbackApplied".to_string(),
+            optimized_value: 42,
+            default_value: 0,
+        };
+
+        let tweak = TweakDefinition {
+            id: "test_fallback_tweak".to_string(),
+            title: "Test Fallback Tweak".to_string(),
+            category: "Testing".to_string(),
+            sub_category: None,
+            description: "Verifies fallback execution when primary strategy fails".to_string(),
+            easy_mode_included: false,
+            os_req: OsRequirement {
+                min_build: 19041,
+                max_build: None,
+                editions: vec![],
+            },
+            valuation: RiskValuation {
+                stability_risk: RiskLevel::Safe,
+                performance_gain: 1,
+                privacy_gain: 0,
+                reversibility: Reversibility::Instant,
+                broken_features: vec![],
+            },
+            actions: vec![primary_failing_action],
+            gpu_vendor: None,
+            unattend_safe: false,
+            source_attribution: None,
+            fallbacks: vec![vec![fallback_working_action]],
+            prerequisites: Vec::new(),
+            conflicts_with: Vec::new(),
+        };
+
+        // Execution should fail primary, attempt fallback #1, and succeed!
+        let applied_count = apply_tweak_with(&tweak, &ledger, &sbx)
+            .expect("Tweak application should succeed via fallback strategy");
+        assert_eq!(applied_count, 1);
+
+        // Verify fallback action took effect in sandbox backend
+        let val = sbx.reg_get_dword_for_vendor("HKLM", r"SOFTWARE\WinBlastTest\FallbackWorking", "FallbackApplied", None);
+        assert_eq!(val, Some(42));
+
+        // Verify ledger recorded the fallback mutation
+        let history = ledger.get_history().expect("History fetch failed");
+        assert_eq!(history.len(), 1);
+        assert_eq!(history[0].tweak_id, "test_fallback_tweak");
+        assert_eq!(history[0].new_value, "42");
     }
 }

@@ -9,14 +9,14 @@
 [![License](https://img.shields.io/badge/License-MIT-blueviolet?style=for-the-badge)](LICENSE)
 [![Platform](https://img.shields.io/badge/Platform-Windows%2010%20%7C%2011%20(x64)-0078D6?style=for-the-badge&logo=windows)](https://github.com/Konstrukturmx/WinBlast-Optimizer)
 [![Rust](https://img.shields.io/badge/Rust-2021%20Edition-DEA584?style=for-the-badge&logo=rust)](https://www.rust-lang.org/)
-[![Tests](https://img.shields.io/badge/Tests-105%20Passed%20(100%25)-success?style=for-the-badge)](tests/)
+[![Tests](https://img.shields.io/badge/Tests-115%20Passed%20(100%25)-success?style=for-the-badge)](tests/)
 [![Languages](https://img.shields.io/badge/i18n-8%20Languages-orange?style=for-the-badge)](src/core/tweak_i18n/)
 
 <p align="center">
   <b>WinBlast Optimizer</b> is a standalone, lightweight, zero-dependency Windows optimization suite designed for performance enthusiasts, competitive gamers, power users, and system administrators. Built in pure Rust with direct Win32/NT kernel bindings, it replaces bloated PowerShell scripts and black-box tweakers with an auditable, transactional, and fully reversible optimization engine.
 </p>
 
-[**Download Latest Release (v0.9.1)**](https://github.com/Konstrukturmx/WinBlast-Optimizer/releases/latest) • [**Changelog**](CHANGELOG.md) • [**Architecture Guide**](DEVELOPMENT.md) • [**VirusTotal Report (v0.9.0 build)**](https://www.virustotal.com/gui/file/19895c54d3699391aebedb5c3e384aeb7ac5a73f8d1bee9ff7da4cd623d2fa00) • [**Documentation Vault**](WinBlast0/)
+[**Download Latest Release (v1.0.0)**](https://github.com/Konstrukturmx/WinBlast-Optimizer/releases/latest) • [**Changelog**](CHANGELOG.md) • [**Architecture Guide**](DEVELOPMENT.md) • [**VirusTotal Report (v0.9.0 build)**](https://www.virustotal.com/gui/file/19895c54d3699391aebedb5c3e384aeb7ac5a73f8d1bee9ff7da4cd623d2fa00) • [**Knowledge Graph**](graphify-out/graph.html)
 
 ---
 
@@ -168,12 +168,12 @@ WinBlast Optimizer includes an exhaustive test suite verifying safety across rea
 
 | Test Suite | Coverage & Validation Focus | Results |
 | :--- | :--- | :---: |
-| **`cargo test --lib`** | Core i18n tables (8 languages), NT timer resolution, CPU topology classification, power range unlock, scanner logic, and risk valuation. | **72 / 72 PASS** |
+| **`cargo test --lib`** | Core i18n tables (8 languages), NT timer resolution, CPU topology classification, power range unlock, Dijkstra & A* & Raven graph engines, multi-strategy fallbacks, scanner logic, and risk valuation. | **82 / 82 PASS** |
 | **`tweak_sandbox_e2e`** | Isolated mock registry & file trees, worker panic recovery, partial mutation failure rollback, epoch scan fencing, and concurrent transactions. | **18 / 18 PASS** |
 | **`ui_responsive_e2e`** | Headless DOM tree verification, multi-resolution viewport sweeps (720p to 4K), theme switching, and multi-locale layout stress testing. | **8 / 8 PASS** |
-| **`ui_scrollbar_test`** | Headless E2E scroll-bar geometry, hover-widening, and drag/wheel-scroll interaction across every main view and the sidebar. | **4 / 4 PASS** |
+| **`ui_scrollbar_test`** | Headless E2E scroll-bar geometry, hover-widening, and drag/wheel-scroll interaction across all 9 main views (including Goal Planner) and the sidebar. | **4 / 4 PASS** |
 | **`real_windows_env`** | Live host read-only audit, Win32 registry type round-trips, and safe NTFS junction cleanups. | **3 / 3 PASS** |
-| **Total Automated Tests** | **Zero failures, zero panics, zero warnings** | **105 / 105 PASS** |
+| **Total Automated Tests** | **Zero failures, zero panics, zero warnings** | **115 / 115 PASS** |
 
 ---
 

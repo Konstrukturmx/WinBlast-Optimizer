@@ -1490,6 +1490,9 @@ fn test_wave1_ledger_rollback_and_concurrency_regressions() {
         sub_category: None,
         unattend_safe: false,
         source_attribution: None,
+        fallbacks: Vec::new(),
+        prerequisites: Vec::new(),
+        conflicts_with: Vec::new(),
     };
     let t1 = mk_bit_tweak("bit_04", 0x04, 0x04);
     let t2 = mk_bit_tweak("bit_10", 0x10, 0x10);
@@ -1713,6 +1716,9 @@ fn make_synth_tweak(id: &str, rev: Reversibility, actions: Vec<TweakAction>) -> 
         sub_category: None,
         unattend_safe: true,
         source_attribution: None,
+        fallbacks: Vec::new(),
+        prerequisites: Vec::new(),
+        conflicts_with: Vec::new(),
     }
 }
 
