@@ -508,7 +508,8 @@ impl AppState {
         let language = Language::default();
         let theme_mode = ThemeMode::default();
         let color_scheme = ColorScheme::default();
-        let theme_palette = ThemePalette::new(theme_mode, color_scheme);
+        let theme_style = crate::ui::theme::UiThemeStyle::default();
+        let theme_palette = ThemePalette::new(theme_mode, color_scheme, theme_style);
         let core_parking = backend.detect_core_parking();
 
         Self {
@@ -622,7 +623,7 @@ impl AppState {
             waker: None,
 
             // v1.1.0 Subsystems
-            theme_style: crate::ui::theme::UiThemeStyle::default(),
+            theme_style,
             bios_info: None,
             fault_report: Some(crate::tools::diagnostics::FaultDiagnosticsReport::scan()),
             thermal_snapshot: Some(crate::hardware::thermal::SystemThermalSnapshot::read()),
@@ -1476,18 +1477,19 @@ impl AppState {
             ThemeMode::Dark => ThemeMode::Light,
             ThemeMode::Light => ThemeMode::Dark,
         };
-        self.theme_palette = ThemePalette::new(self.theme_mode, self.color_scheme);
+        self.theme_palette = ThemePalette::new(self.theme_mode, self.color_scheme, self.theme_style);
     }
 
     /// Set brand accent color scheme.
     pub fn set_color_scheme(&mut self, scheme: ColorScheme) {
         self.color_scheme = scheme;
-        self.theme_palette = ThemePalette::new(self.theme_mode, self.color_scheme);
+        self.theme_palette = ThemePalette::new(self.theme_mode, self.color_scheme, self.theme_style);
     }
 
     /// Set complete UI theme layout & geometry style (Minimalistic, Classic, Glassy, Compact, Materialistic).
     pub fn set_theme_style(&mut self, style: crate::ui::theme::UiThemeStyle) {
         self.theme_style = style;
+        self.theme_palette = ThemePalette::new(self.theme_mode, self.color_scheme, style);
     }
 
     /// Toggle compact navigation drawer open/closed.

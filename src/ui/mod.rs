@@ -284,19 +284,35 @@ fn build_sidebar(s: &AppState, p: &ThemePalette, tier: LayoutTier) -> El {
                             };
                             s.set_color_scheme(next);
                         },
+                    ))
+                    .child(action_button(
+                        s.theme_style.short_label(),
+                        p.accent.alpha(0.18),
+                        p.accent,
+                        p,
+                        |s| {
+                            let next = match s.theme_style {
+                                crate::ui::theme::UiThemeStyle::Glassy => crate::ui::theme::UiThemeStyle::Minimalistic,
+                                crate::ui::theme::UiThemeStyle::Minimalistic => crate::ui::theme::UiThemeStyle::Classic,
+                                crate::ui::theme::UiThemeStyle::Classic => crate::ui::theme::UiThemeStyle::Compact,
+                                crate::ui::theme::UiThemeStyle::Compact => crate::ui::theme::UiThemeStyle::Materialistic,
+                                crate::ui::theme::UiThemeStyle::Materialistic => crate::ui::theme::UiThemeStyle::Glassy,
+                            };
+                            s.set_theme_style(next);
+                        },
                     )),
             );
     }
 
     col()
         .key("sidebar")
-        .w(224.0)
-        .max_w(260.0)
+        .w(p.sidebar_width)
+        .max_w(270.0)
         .h_full()
         .min_h(0.0)
         .padding(10.0)
         .fill(p.bg_sidebar)
-        .border(1.0, p.border)
+        .border(p.border_width, p.border)
         .gap(8.0)
         .child(
             col()
@@ -464,51 +480,58 @@ pub fn view(s: &AppState, cx: &mut Cx<AppState>) -> El {
                 ),
         );
 
+    let theme_btn_label = if tier == LayoutTier::Compact {
+        s.theme_style.short_label()
+    } else {
+        s.theme_style.label()
+    };
+
+    controls_group = controls_group.child(
+        row()
+            .key("theme_style_selector")
+            .min_w(0.0)
+            .shrink()
+            .px(8.0)
+            .py(4.0)
+            .radius(p.btn_radius)
+            .fill(p.accent.alpha(0.18))
+            .border(p.border_width, p.accent.alpha(0.60))
+            .hover(p.accent.alpha(0.30))
+            .press(p.accent.alpha(0.45))
+            .motion(p.motion)
+            .center()
+            .on_press(|s: &mut AppState| {
+                let next = match s.theme_style {
+                    crate::ui::theme::UiThemeStyle::Glassy => crate::ui::theme::UiThemeStyle::Minimalistic,
+                    crate::ui::theme::UiThemeStyle::Minimalistic => crate::ui::theme::UiThemeStyle::Classic,
+                    crate::ui::theme::UiThemeStyle::Classic => crate::ui::theme::UiThemeStyle::Compact,
+                    crate::ui::theme::UiThemeStyle::Compact => crate::ui::theme::UiThemeStyle::Materialistic,
+                    crate::ui::theme::UiThemeStyle::Materialistic => crate::ui::theme::UiThemeStyle::Glassy,
+                };
+                s.set_theme_style(next);
+            })
+            .child(
+                text(theme_btn_label)
+                    .font(rune::tok::type_::LABEL)
+                    .color(p.accent)
+                    .shrink()
+                    .wrap(),
+            ),
+    );
+
     if tier != LayoutTier::Compact {
-        let style = s.theme_style;
         controls_group = controls_group
             .child(
                 row()
-                    .key("theme_style_selector")
                     .min_w(0.0)
                     .shrink()
                     .px(8.0)
                     .py(4.0)
-                    .radius(style.btn_radius())
+                    .radius(p.btn_radius)
                     .fill(p.bg_card)
-                    .border(1.0, p.border)
+                    .border(p.border_width, p.border)
                     .hover(p.bg_card_hover)
-                    .motion(style.motion())
-                    .center()
-                    .on_press(|s: &mut AppState| {
-                        let next = match s.theme_style {
-                            crate::ui::theme::UiThemeStyle::Glassy => crate::ui::theme::UiThemeStyle::Minimalistic,
-                            crate::ui::theme::UiThemeStyle::Minimalistic => crate::ui::theme::UiThemeStyle::Classic,
-                            crate::ui::theme::UiThemeStyle::Classic => crate::ui::theme::UiThemeStyle::Compact,
-                            crate::ui::theme::UiThemeStyle::Compact => crate::ui::theme::UiThemeStyle::Materialistic,
-                            crate::ui::theme::UiThemeStyle::Materialistic => crate::ui::theme::UiThemeStyle::Glassy,
-                        };
-                        s.set_theme_style(next);
-                    })
-                    .child(
-                        text(s.theme_style.label())
-                            .font(rune::tok::type_::LABEL)
-                            .color(p.accent)
-                            .shrink()
-                            .wrap(),
-                    ),
-            )
-            .child(
-                row()
-                    .min_w(0.0)
-                    .shrink()
-                    .px(8.0)
-                    .py(4.0)
-                    .radius(5.0)
-                    .fill(p.bg_card)
-                    .border(1.0, p.border)
-                    .hover(p.bg_card_hover)
-                    .motion(rune::tok::motion::SNAPPY)
+                    .motion(p.motion)
                     .center()
                     .on_press(|s: &mut AppState| {
                         let next = match s.color_scheme {
