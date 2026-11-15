@@ -6,6 +6,7 @@ use rune::color::Color;
 use rune::{col, row, text, El, ScrollSpec};
 
 use crate::app::AppState;
+use crate::core::view_i18n::ViewTextKey;
 use crate::ui::widgets::button::action_button;
 use crate::ui::widgets::scrollbar::WinBlastScrollable;
 use crate::ui::LayoutTier;
@@ -26,12 +27,12 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                 .w_full()
                 .gap(2.0)
                 .child(
-                    text("Oyun İçi Overlay ve Game DVR Ayarları")
+                    text(s.tr_v(ViewTextKey::OverlayTitle))
                         .font(rune::tok::type_::TITLE)
                         .color(p.text_primary),
                 )
                 .child(
-                    text("Windows Game Bar, Xbox DVR arka plan kayıtları ve oyun içi katmanları yöneterek FPS düşüşlerini önleyin.")
+                    text(s.tr_v(ViewTextKey::OverlaySubtitle))
                         .font(rune::tok::type_::BODY)
                         .color(p.text_muted),
                 ),
@@ -57,19 +58,23 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                                 .grow(1.0)
                                 .min_w(220.0)
                                 .child(
-                                    text("Windows Game Bar'ı Devre Dışı Bırak")
+                                    text(s.tr_v(ViewTextKey::OverlayDisableGameBar))
                                         .font(rune::tok::type_::LABEL)
                                         .color(p.text_primary),
                                 )
                                 .child(
-                                    text("Oyun açılışında Win+G katmanını ve GameBarPresenceWriter arka plan sürecini durdurur.")
+                                    text(s.tr_v(ViewTextKey::OverlayDisableGameBarDesc))
                                         .font(rune::tok::type_::BODY)
                                         .color(p.text_muted),
                                 ),
                         )
                         .child(
                             action_button(
-                                if overlay.game_bar_disabled { "✔ Kapatıldı (Önerilen)" } else { "Açık" },
+                                if overlay.game_bar_disabled {
+                                    format!("✔ {}", s.tr_v(ViewTextKey::OverlayActiveState))
+                                } else {
+                                    s.tr_v(ViewTextKey::OverlayDisabledState).to_string()
+                                },
                                 if overlay.game_bar_disabled { p.success } else { p.btn_secondary },
                                 if overlay.game_bar_disabled { Color::WHITE } else { p.text_primary },
                                 p,
@@ -92,19 +97,23 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                                 .grow(1.0)
                                 .min_w(220.0)
                                 .child(
-                                    text("Xbox Game DVR Arka Plan Video Kaydı")
+                                    text(s.tr_v(ViewTextKey::OverlayDisableDvr))
                                         .font(rune::tok::type_::LABEL)
                                         .color(p.text_primary),
                                 )
                                 .child(
-                                    text("Oyun sırasında sürekli video kodlamasını engelleyerek GPU kodlayıcı yükünü sıfıra indirir.")
+                                    text(s.tr_v(ViewTextKey::OverlayDisableDvrDesc))
                                         .font(rune::tok::type_::BODY)
                                         .color(p.text_muted),
                                 ),
                         )
                         .child(
                             action_button(
-                                if overlay.game_dvr_background_recording_disabled { "✔ Engellendi" } else { "Etkin" },
+                                if overlay.game_dvr_background_recording_disabled {
+                                    format!("✔ {}", s.tr_v(ViewTextKey::OverlayActiveState))
+                                } else {
+                                    s.tr_v(ViewTextKey::OverlayDisabledState).to_string()
+                                },
                                 if overlay.game_dvr_background_recording_disabled { p.success } else { p.btn_secondary },
                                 if overlay.game_dvr_background_recording_disabled { Color::WHITE } else { p.text_primary },
                                 p,
@@ -128,19 +137,23 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                                 .grow(1.0)
                                 .min_w(220.0)
                                 .child(
-                                    text("Windows Oyun Modu (Game Mode)")
+                                    text(s.tr_v(ViewTextKey::OverlayGameMode))
                                         .font(rune::tok::type_::LABEL)
                                         .color(p.text_primary),
                                 )
                                 .child(
-                                    text("Windows'un oyun penceresine donanım önceliği vermesini sağlar.")
+                                    text(s.tr_v(ViewTextKey::OverlayGameModeDesc))
                                         .font(rune::tok::type_::BODY)
                                         .color(p.text_muted),
                                 ),
                         )
                         .child(
                             action_button(
-                                if overlay.game_mode_enabled { "✔ Aktif" } else { "Devre Dışı" },
+                                if overlay.game_mode_enabled {
+                                    format!("✔ {}", s.tr_v(ViewTextKey::OverlayActiveState))
+                                } else {
+                                    s.tr_v(ViewTextKey::OverlayDisabledState).to_string()
+                                },
                                 if overlay.game_mode_enabled { p.success } else { p.btn_secondary },
                                 if overlay.game_mode_enabled { Color::WHITE } else { p.text_primary },
                                 p,

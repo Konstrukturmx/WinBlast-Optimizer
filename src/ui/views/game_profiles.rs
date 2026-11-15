@@ -6,6 +6,7 @@ use rune::color::Color;
 use rune::{col, row, text, El, ScrollSpec};
 
 use crate::app::AppState;
+use crate::core::view_i18n::ViewTextKey;
 use crate::ui::widgets::button::action_button;
 use crate::ui::widgets::scrollbar::WinBlastScrollable;
 use crate::ui::LayoutTier;
@@ -25,12 +26,12 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                 .w_full()
                 .gap(2.0)
                 .child(
-                    text("Özel Oyun Optimizasyon Profilleri")
+                    text(s.tr_v(ViewTextKey::GameProfilesTitle))
                         .font(rune::tok::type_::TITLE)
                         .color(p.text_primary),
                 )
                 .child(
-                    text("Her oyunun kendine özel thread dağılımı, GPU shader önbelleği ve tam ekran optimizasyon ayarlarını uygulayın.")
+                    text(s.tr_v(ViewTextKey::GameProfilesSubtitle))
                         .font(rune::tok::type_::BODY)
                         .color(p.text_muted),
                 ),
@@ -66,7 +67,7 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                                                 .color(p.text_primary),
                                         )
                                         .child(
-                                            text(format!("Hedef: {}", profile.executable))
+                                            text(format!("{}: {}", s.tr_v(ViewTextKey::GameProfilesTarget), profile.executable))
                                                 .font(rune::tok::type_::BODY)
                                                 .color(p.text_muted),
                                         ),
@@ -74,7 +75,7 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                         )
                         .child(
                             action_button(
-                                if is_active { "✔ Profil Aktif" } else { "Profili Uygula" },
+                                if is_active { s.tr_v(ViewTextKey::GameProfilesActiveBtn) } else { s.tr_v(ViewTextKey::GameProfilesApplyBtn) },
                                 if is_active { p.success } else { p.accent },
                                 Color::WHITE,
                                 p,
@@ -83,9 +84,11 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                                         if prof.is_applied {
                                             let _ = prof.revert();
                                             prof.is_applied = prof.check_applied();
+                                            s.status_message = s.tr_v(ViewTextKey::GameProfilesRevertedToast).to_string();
                                         } else {
                                             let _ = prof.apply();
                                             prof.is_applied = prof.check_applied();
+                                            s.status_message = s.tr_v(ViewTextKey::GameProfilesAppliedToast).to_string();
                                         }
                                     }
                                 },

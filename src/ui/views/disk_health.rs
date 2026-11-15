@@ -6,6 +6,7 @@ use rune::color::Color;
 use rune::{col, row, text, El, ScrollSpec};
 
 use crate::app::AppState;
+use crate::core::view_i18n::ViewTextKey;
 use crate::hardware::disks::DiskSubsystemReport;
 use crate::ui::widgets::button::action_button;
 use crate::ui::widgets::scrollbar::WinBlastScrollable;
@@ -35,12 +36,12 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                         .grow(1.0)
                         .min_w(200.0)
                         .child(
-                            text("Disk Sağlığı ve TRIM Teşhisi")
+                            text(s.tr_v(ViewTextKey::DiskTitle))
                                 .font(rune::tok::type_::TITLE)
                                 .color(p.text_primary),
                         )
                         .child(
-                            text("Physical drive SMART wear indicators, lifetime TBW writes, and NVMe DirectStorage telemetry.")
+                            text(s.tr_v(ViewTextKey::DiskSubtitle))
                                 .font(rune::tok::type_::BODY)
                                 .color(p.text_muted),
                         ),
@@ -49,13 +50,13 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                     row()
                         .gap(8.0)
                         .child(
-                            action_button("Yenile", p.btn_secondary, p.text_primary, p, |s| {
+                            action_button(s.tr_v(ViewTextKey::DiskRefreshBtn), p.btn_secondary, p.text_primary, p, |s| {
                                 s.disk_report = Some(crate::hardware::disks::DiskSubsystemReport::probe());
                             })
                             .radius(style.btn_radius()),
                         )
                         .child(
-                            action_button("Tüm SSD'lere TRIM Uygula", p.accent, Color::WHITE, p, |s| {
+                            action_button(s.tr_v(ViewTextKey::DiskTrimAllBtn), p.accent, Color::WHITE, p, |s| {
                                 let _ = crate::hardware::disks::DiskSubsystemReport::run_trim_all();
                                 s.disk_report = Some(crate::hardware::disks::DiskSubsystemReport::probe());
                             })
@@ -74,9 +75,13 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                 .center()
                 .child(
                     text(format!(
-                        "Windows TRIM Desteği: {} • DirectStorage 1.2 Bypass: {}",
-                        if report.global_trim_active { "AKTİF (SSD Ömrü & Yazma Performansı Korunuyor)" } else { "DEVRE DIŞI" },
-                        if report.nvme_direct_storage_supported { "Hazır" } else { "Desteklenmiyor" }
+                        "{} • {}",
+                        if report.global_trim_active {
+                            s.tr_v(ViewTextKey::DiskGlobalTrimActive)
+                        } else {
+                            s.tr_v(ViewTextKey::DiskGlobalTrimDisabled)
+                        },
+                        s.tr_v(ViewTextKey::DiskDirectStorageSupported)
                     ))
                     .font(rune::tok::type_::LABEL)
                     .color(trim_color),
@@ -92,7 +97,7 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                 .border(style.border_width(), p.border_styled(style))
                 .gap(8.0)
                 .child(
-                    text("Fiziksel Depolama Sürücüleri")
+                    text(s.tr_v(ViewTextKey::DiskHealthStatus))
                         .font(rune::tok::type_::LABEL)
                         .color(p.text_primary),
                 )
@@ -128,7 +133,7 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                                                 .color(p.text_primary),
                                         )
                                         .child(
-                                            text(format!("Arayüz: {} • Kapasite: {:.1} GB", drv.interface_type, drv.total_size_gb))
+                                            text(format!("{} • {:.1} GB", drv.interface_type, drv.total_size_gb))
                                                 .font(rune::tok::type_::BODY)
                                                 .color(p.text_muted),
                                         ),
@@ -137,7 +142,7 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                                     col()
                                         .min_w(130.0)
                                         .child(
-                                            text(format!("Sağlık: %{}", drv.health_percentage))
+                                            text(format!("{}: %{}", s.tr_v(ViewTextKey::DiskHealthStatus), drv.health_percentage))
                                                 .font(rune::tok::type_::LABEL)
                                                 .color(health_color),
                                         )
@@ -153,17 +158,17 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                                 .gaps(14.0, 4.0)
                                 .flex_wrap()
                                 .child(
-                                    text(format!("Toplam Yazılan (TBW): {:.1} TB", drv.lifetime_writes_tb))
+                                    text(format!("{}: {:.1} TB", s.tr_v(ViewTextKey::DiskLifetimeWrites), drv.lifetime_writes_tb))
                                         .font(rune::tok::type_::BODY)
                                         .color(p.text_secondary),
                                 )
                                 .child(
-                                    text(format!("Çalışma Saati: {} saat", drv.power_on_hours))
+                                    text(format!("{}: {} h", s.tr_v(ViewTextKey::DiskPowerOnHours), drv.power_on_hours))
                                         .font(rune::tok::type_::BODY)
                                         .color(p.text_secondary),
                                 )
                                 .child(
-                                    text(format!("Sıcaklık: {:.0}°C", drv.temperature_c))
+                                    text(format!("{:.0}°C", drv.temperature_c))
                                         .font(rune::tok::type_::BODY)
                                         .color(p.accent),
                                 ),

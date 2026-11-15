@@ -12,3 +12,4 @@ pub mod reg_helpers;
 pub mod i18n;
 pub mod tweak_i18n;
 pub mod status_i18n;
+pub mod view_i18n;

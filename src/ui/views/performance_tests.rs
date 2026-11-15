@@ -6,6 +6,7 @@ use rune::color::Color;
 use rune::{col, row, text, El, ScrollSpec};
 
 use crate::app::AppState;
+use crate::core::view_i18n::ViewTextKey;
 use crate::ui::widgets::button::action_button_guarded;
 use crate::ui::widgets::scrollbar::WinBlastScrollable;
 use crate::ui::LayoutTier;
@@ -32,19 +33,23 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                         .grow(1.0)
                         .min_w(200.0)
                         .child(
-                            text("Sistem Performans Testleri")
+                            text(s.tr_v(ViewTextKey::PerfTitle))
                                 .font(rune::tok::type_::TITLE)
                                 .color(p.text_primary),
                         )
                         .child(
-                            text("Real-world CPU arithmetic compute, L3 cache/RAM copy throughput, and storage I/O response.")
+                            text(s.tr_v(ViewTextKey::PerfSubtitle))
                                 .font(rune::tok::type_::BODY)
                                 .color(p.text_muted),
                         ),
                 )
                 .child(
                     action_button_guarded(
-                        if s.is_benchmarking_perf { "Test Yapılıyor..." } else { "Testi Başlat" },
+                        if s.is_benchmarking_perf {
+                            s.tr_v(ViewTextKey::PerfBenchmarkingStatus)
+                        } else {
+                            s.tr_v(ViewTextKey::PerfStartBtn)
+                        },
                         p.accent,
                         Color::WHITE,
                         !s.is_benchmarking_perf,
@@ -64,17 +69,17 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                 .border(1.5, p.accent)
                 .gap(6.0)
                 .child(
-                    text("WinBlast Genel Performans Skoru")
+                    text(s.tr_v(ViewTextKey::PerfCompositeScoreTitle))
                         .font(rune::tok::type_::LABEL)
                         .color(p.accent),
                 )
                 .child(
-                    text(format!("{} Puan", score.total_composite_score))
+                    text(format!("{} {}", score.total_composite_score, s.tr_v(ViewTextKey::PerfPoints)))
                         .font(rune::tok::type_::TITLE)
                         .color(p.text_primary),
                 )
                 .child(
-                    text("Sisteminiz modern oyunlar, düşük giriş gecikmesi ve yüksek FPS için üst düzey performansa sahiptir.")
+                    text(s.tr_v(ViewTextKey::PerfHeroDesc))
                         .font(rune::tok::type_::BODY)
                         .color(p.text_secondary),
                 ),
@@ -95,14 +100,14 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                         .fill(p.card_fill_styled(style))
                         .border(style.border_width(), p.border_styled(style))
                         .gap(4.0)
-                        .child(text("İşlemci (CPU Hesaplama)").font(rune::tok::type_::LABEL).color(p.text_secondary))
+                        .child(text(s.tr_v(ViewTextKey::PerfCpuLabel)).font(rune::tok::type_::LABEL).color(p.text_secondary))
                         .child(
-                            text(format!("{} Puan (Multi-Core)", score.cpu_multi_score))
+                            text(format!("{} {}", score.cpu_multi_score, s.tr_v(ViewTextKey::PerfMultiCoreSuffix)))
                                 .font(rune::tok::type_::TITLE)
                                 .color(p.success),
                         )
                         .child(
-                            text(format!("Tek Çekirdek Skoru: {} Puan", score.cpu_single_score))
+                            text(format!("1-Core: {} {}", score.cpu_single_score, s.tr_v(ViewTextKey::PerfPoints)))
                                 .font(rune::tok::type_::BODY)
                                 .color(p.text_muted),
                         ),
@@ -117,14 +122,14 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                         .fill(p.card_fill_styled(style))
                         .border(style.border_width(), p.border_styled(style))
                         .gap(4.0)
-                        .child(text("Bellek (RAM Bant Genişliği)").font(rune::tok::type_::LABEL).color(p.text_secondary))
+                        .child(text(s.tr_v(ViewTextKey::PerfRamLabel)).font(rune::tok::type_::LABEL).color(p.text_secondary))
                         .child(
-                            text(format!("{:.1} GB/s", score.ram_read_gb_s))
+                            text(format!("{:.1} {}", score.ram_read_gb_s, s.tr_v(ViewTextKey::PerfThroughputSuffix)))
                                 .font(rune::tok::type_::TITLE)
                                 .color(p.accent),
                         )
                         .child(
-                            text(format!("Rastgele Gecikme: {:.1} ns", score.ram_latency_ns))
+                            text(format!("Latency: {:.1} ns", score.ram_latency_ns))
                                 .font(rune::tok::type_::BODY)
                                 .color(p.text_muted),
                         ),
@@ -139,14 +144,14 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                         .fill(p.card_fill_styled(style))
                         .border(style.border_width(), p.border_styled(style))
                         .gap(4.0)
-                        .child(text("Depolama (NVMe Burst)").font(rune::tok::type_::LABEL).color(p.text_secondary))
+                        .child(text(s.tr_v(ViewTextKey::PerfDiskLabel)).font(rune::tok::type_::LABEL).color(p.text_secondary))
                         .child(
-                            text(format!("{:.0} MB/s", score.disk_seq_read_mb_s))
+                            text(format!("{:.0} {}", score.disk_seq_read_mb_s, s.tr_v(ViewTextKey::PerfIoSuffix)))
                                 .font(rune::tok::type_::TITLE)
                                 .color(p.warning),
                         )
                         .child(
-                            text("PCIe 4.0 NVMe Sıralı Okuma Hızı")
+                            text("NVMe Burst Read")
                                 .font(rune::tok::type_::BODY)
                                 .color(p.text_muted),
                         ),

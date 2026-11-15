@@ -5,6 +5,7 @@
 use rune::{col, row, text, El, ScrollSpec};
 
 use crate::app::AppState;
+use crate::core::view_i18n::ViewTextKey;
 use crate::ui::widgets::scrollbar::WinBlastScrollable;
 use crate::ui::LayoutTier;
 
@@ -40,12 +41,12 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                 .w_full()
                 .gap(2.0)
                 .child(
-                    text("Oyun Uygunluğu ve Donanım Hazırlığı")
+                    text(s.tr_v(ViewTextKey::SuitabilityTitle))
                         .font(rune::tok::type_::TITLE)
                         .color(p.text_primary),
                 )
                 .child(
-                    text("Sisteminizin modern yeni nesil AAA oyun motorları, DirectX 12 Ultimate ve DirectStorage uyumluluk analizi.")
+                    text(s.tr_v(ViewTextKey::SuitabilitySubtitle))
                         .font(rune::tok::type_::BODY)
                         .color(p.text_muted),
                 ),
@@ -66,7 +67,7 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                         .grow(1.0)
                         .min_w(200.0)
                         .child(
-                            text("Genel Oyun Uygunluk Seviyesi")
+                            text(s.tr_v(ViewTextKey::SuitabilityHeroTitle))
                                 .font(rune::tok::type_::LABEL)
                                 .color(p.text_secondary),
                         )
@@ -76,7 +77,7 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                                 .color(p.accent),
                         )
                         .child(
-                            text("Tüm modern rekabetçi oyunlar (CS2, Valorant, Apex) ve yeni nesil AAA oyunlar için tam donanım desteği.")
+                            text(s.tr_v(ViewTextKey::SuitabilityRating))
                                 .font(rune::tok::type_::BODY)
                                 .color(p.text_muted),
                         ),
@@ -89,9 +90,17 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                         .fill(p.success.alpha(0.2))
                         .border(1.5, p.success)
                         .child(
-                            text(format!("%{} Hazır", report.overall_score_pct))
-                                .font(rune::tok::type_::TITLE)
-                                .color(p.success),
+                            text(format!(
+                                "{}% {}",
+                                report.overall_score_pct,
+                                if report.overall_score_pct >= 70 {
+                                    s.tr_v(ViewTextKey::SuitabilityReadyBadge)
+                                } else {
+                                    s.tr_v(ViewTextKey::SuitabilityLimitedBadge)
+                                }
+                            ))
+                            .font(rune::tok::type_::TITLE)
+                            .color(p.success),
                         ),
                 ),
         )
@@ -125,9 +134,13 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                                 .fill(chk_color.alpha(0.18))
                                 .border(1.0, chk_color)
                                 .child(
-                                    text(if chk.is_supported { "✔ Destekleniyor" } else { "Desteklenmiyor" })
-                                        .font(rune::tok::type_::LABEL)
-                                        .color(chk_color),
+                                    text(if chk.is_supported {
+                                        format!("✔ {}", s.tr_v(ViewTextKey::SuitabilityReadyBadge))
+                                    } else {
+                                        s.tr_v(ViewTextKey::SuitabilityLimitedBadge).to_string()
+                                    })
+                                    .font(rune::tok::type_::LABEL)
+                                    .color(chk_color),
                                 ),
                         ),
                 )
