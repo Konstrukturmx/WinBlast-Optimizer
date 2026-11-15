@@ -306,7 +306,7 @@ pub fn unescape_pipe(s: &str) -> String {
     while i < bytes.len() {
         if bytes[i] == b'%' && i + 2 < bytes.len() {
             match &bytes[i..i + 3] {
-                b"%7C" => {
+                b"%7C" | b"%7c" => {
                     out.push('|');
                     i += 3;
                     continue;
@@ -324,9 +324,12 @@ pub fn unescape_pipe(s: &str) -> String {
                 _ => {}
             }
         }
-        let ch = s[i..].chars().next().unwrap();
-        out.push(ch);
-        i += ch.len_utf8();
+        if let Some(ch) = s.get(i..).and_then(|sub| sub.chars().next()) {
+            out.push(ch);
+            i += ch.len_utf8();
+        } else {
+            break;
+        }
     }
     out
 }

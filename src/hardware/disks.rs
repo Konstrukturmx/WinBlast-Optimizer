@@ -2,8 +2,8 @@
 //!
 //! Uses direct Win32 IOCTL queries and volume analysis with zero external dependencies.
 
+use crate::core::process::SilentCommand;
 use serde::{Deserialize, Serialize};
-use std::process::Command;
 
 /// Drive health and SMART status.
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -37,7 +37,7 @@ impl DiskSubsystemReport {
         // fsutil behavior query DisableDeleteNotify
         // If 0, TRIM is enabled.
         let mut trim_active = true;
-        if let Ok(output) = Command::new("fsutil")
+        if let Ok(output) = SilentCommand::new("fsutil")
             .args(["behavior", "query", "DisableDeleteNotify"])
             .output()
         {
@@ -81,7 +81,7 @@ impl DiskSubsystemReport {
 
     /// Run TRIM on all SSD volumes via PowerShell `Optimize-Volume -ReTrim`.
     pub fn run_trim_all() -> Result<String, String> {
-        let output = Command::new("powershell")
+        let output = SilentCommand::new("powershell")
             .args([
                 "-NoProfile",
                 "-NonInteractive",

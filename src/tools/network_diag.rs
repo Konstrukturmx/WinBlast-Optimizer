@@ -2,6 +2,7 @@
 //!
 //! Measures network round-trip ping to public DNS servers and verifies gaming TCP stack settings.
 
+use crate::core::process::SilentCommand;
 use serde::{Deserialize, Serialize};
 use std::net::{SocketAddr, TcpStream};
 use std::time::{Duration, Instant};
@@ -104,7 +105,7 @@ impl NetworkDiagnostics {
 
     /// Flush DNS Resolver Cache via `ipconfig /flushdns`.
     pub fn flush_dns() -> Result<String, String> {
-        let out = std::process::Command::new("ipconfig")
+        let out = SilentCommand::new("ipconfig")
             .arg("/flushdns")
             .output()
             .map_err(|e| format!("Failed to flush DNS: {}", e))?;
