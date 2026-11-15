@@ -216,13 +216,13 @@ pub fn run_full_latency_benchmark(stage: &str) -> LatencyBenchmarkSnapshot {
     let overall_avg_ping_ms = if successful_targets > 0 {
         total_ping / successful_targets as f64
     } else {
-        0.0
+        -1.0
     };
 
     let overall_avg_jitter_ms = if successful_targets > 0 {
         total_jitter / successful_targets as f64
     } else {
-        0.0
+        -1.0
     };
 
     LatencyBenchmarkSnapshot {

@@ -1,8 +1,11 @@
 //! Per-Game Optimization Profiles Engine.
 //!
-//! Applies process priority boosts, fullscreen optimization flags, and GPU profiles for popular titles.
+//! Applies real process priority boosts, fullscreen optimization flags, and GPU profiles for popular titles
+//! directly via Windows Image File Execution Options (IFEO).
 
 use serde::{Deserialize, Serialize};
+use winreg::enums::*;
+use winreg::RegKey;
 
 /// Pre-configured profile for a high-performance game.
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -19,15 +22,16 @@ pub struct GameProfile {
 }
 
 impl GameProfile {
+    /// Return all game profiles initialized against live Windows registry IFEO status.
     pub fn all() -> Vec<Self> {
-        vec![
+        let mut profiles = vec![
             Self {
                 id: "cs2",
                 title: "Counter-Strike 2",
                 executable: "cs2.exe",
                 icon_glyph: "🎯",
                 description: "Disables FSO, locks High CPU priority, optimizes DX11/Vulkan shader pipeline.",
-                is_applied: true,
+                is_applied: false,
                 high_priority: true,
                 disable_fso: true,
                 unpark_cores: true,
@@ -38,7 +42,7 @@ impl GameProfile {
                 executable: "VALORANT-Win64-Shipping.exe",
                 icon_glyph: "⚡",
                 description: "Lowers input latency, optimizes Vanguard thread scheduling, locks maximum GPU clocks.",
-                is_applied: true,
+                is_applied: false,
                 high_priority: true,
                 disable_fso: true,
                 unpark_cores: true,
@@ -87,6 +91,59 @@ impl GameProfile {
                 disable_fso: true,
                 unpark_cores: true,
             },
-        ]
+        ];
+
+        for prof in &mut profiles {
+            prof.is_applied = prof.check_applied();
+        }
+
+        profiles
+    }
+
+    /// Check whether this profile is currently applied in Windows Registry (IFEO PerfOptions).
+    pub fn check_applied(&self) -> bool {
+        let hklm = RegKey::predef(HKEY_LOCAL_MACHINE);
+        let subkey = format!(
+            "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Image File Execution Options\\{}\\PerfOptions",
+            self.executable
+        );
+        if let Ok(key) = hklm.open_subkey(&subkey) {
+            let priority: Result<u32, _> = key.get_value("CpuPriorityClass");
+            priority.map(|p| p == 3).unwrap_or(false)
+        } else {
+            false
+        }
+    }
+
+    /// Apply real Windows IFEO high priority and I/O priority boost.
+    pub fn apply(&self) -> Result<(), String> {
+        let hklm = RegKey::predef(HKEY_LOCAL_MACHINE);
+        let subkey = format!(
+            "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Image File Execution Options\\{}\\PerfOptions",
+            self.executable
+        );
+        let (key, _) = hklm
+            .create_subkey(&subkey)
+            .map_err(|e| format!("Failed to create IFEO PerfOptions key (requires elevation): {}", e))?;
+
+        key.set_value("CpuPriorityClass", &3u32)
+            .map_err(|e| format!("Failed to set CpuPriorityClass: {}", e))?;
+        key.set_value("IoPriority", &2u32)
+            .map_err(|e| format!("Failed to set IoPriority: {}", e))?;
+
+        Ok(())
+    }
+
+    /// Revert profile by removing the PerfOptions subkey.
+    pub fn revert(&self) -> Result<(), String> {
+        let hklm = RegKey::predef(HKEY_LOCAL_MACHINE);
+        let parent = format!(
+            "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Image File Execution Options\\{}",
+            self.executable
+        );
+        if let Ok(key) = hklm.open_subkey_with_flags(&parent, KEY_WRITE) {
+            let _ = key.delete_subkey("PerfOptions");
+        }
+        Ok(())
     }
 }

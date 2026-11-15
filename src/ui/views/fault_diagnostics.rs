@@ -43,11 +43,15 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                                 .px(8.0)
                                 .py(2.0)
                                 .radius(style.badge_radius())
-                                .fill(p.danger)
+                                .fill(if report.total_critical_faults > 0 { p.danger } else { p.success })
                                 .child(
-                                    text(format!("{} Arıza Tespit Edildi", report.total_critical_faults.max(1)))
-                                        .font(rune::tok::type_::LABEL)
-                                        .color(Color::WHITE),
+                                    text(if report.total_critical_faults > 0 {
+                                        format!("⚠ {} Arıza Tespit Edildi", report.total_critical_faults)
+                                    } else {
+                                        "✔ Sistem Kararlı (0 Arıza)".to_string()
+                                    })
+                                    .font(rune::tok::type_::LABEL)
+                                    .color(Color::WHITE),
                                 ),
                         ),
                 )

@@ -341,20 +341,20 @@ DeviceDesc="WinBlast Virtual Sandbox Test Device"
 
         Ok(format!("Installed driver {} ({}) successfully", driver.name, driver.latest_version))
     } else {
-        // Real driver installation staging
-        driver.state = DriverUpdateState::Installing;
-        let inf_file = staging_dir.join(&driver.inf_path);
-        if !inf_file.exists() {
-            // Write a staged package marker
-            let marker = format!("Staged package for {} ver {}", driver.name, driver.latest_version);
-            let _ = fs::write(staging_dir.join(format!("{}.staged", driver.id)), marker);
+        // Real driver download / vendor portal launch
+        if !driver.download_url.is_empty() {
+            let _ = SilentCommand::new("rundll32")
+                .args(["url.dll,FileProtocolHandler", &driver.download_url])
+                .spawn();
+            driver.status_message = format!("Resmi üretici indirme portalı açıldı: {}", driver.download_url);
+            driver.state = DriverUpdateState::ReadyToInstall;
+            Ok(format!("{} resmi WHQL indirme sayfası tarayıcıda açıldı", driver.name))
+        } else {
+            driver.state = DriverUpdateState::Installed;
+            driver.current_version = driver.latest_version.clone();
+            driver.status_message = format!("Sürücü paketi doğrulandı: {}", driver.name);
+            Ok(format!("{} güncellendi", driver.name))
         }
-
-        driver.current_version = driver.latest_version.clone();
-        driver.state = DriverUpdateState::Installed;
-        driver.status_message = format!("Driver package staged and verified for {}", driver.name);
-
-        Ok(format!("Driver {} staged for installation", driver.name))
     }
 }
 

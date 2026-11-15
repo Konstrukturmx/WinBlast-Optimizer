@@ -109,8 +109,8 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                                 if overlay.game_dvr_background_recording_disabled { Color::WHITE } else { p.text_primary },
                                 p,
                                 |s| {
-                                    s.game_overlay.game_dvr_background_recording_disabled =
-                                        !s.game_overlay.game_dvr_background_recording_disabled;
+                                    let next = !s.game_overlay.game_dvr_background_recording_disabled;
+                                    let _ = s.game_overlay.set_game_dvr_disabled(next);
                                 },
                             )
                             .radius(style.btn_radius()),
@@ -145,7 +145,8 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                                 if overlay.game_mode_enabled { Color::WHITE } else { p.text_primary },
                                 p,
                                 |s| {
-                                    s.game_overlay.game_mode_enabled = !s.game_overlay.game_mode_enabled;
+                                    let next = !s.game_overlay.game_mode_enabled;
+                                    let _ = s.game_overlay.set_game_mode_enabled(next);
                                 },
                             )
                             .radius(style.btn_radius()),

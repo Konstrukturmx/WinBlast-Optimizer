@@ -43,8 +43,10 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                         ),
                 )
                 .child(
-                    action_button("Yenile", p.accent, Color::WHITE, p, |_| {})
-                        .radius(style.btn_radius()),
+                    action_button("Yenile", p.accent, Color::WHITE, p, |s| {
+                        s.game_telemetry = crate::tools::gaming_stats::LiveGameTelemetry::probe();
+                    })
+                    .radius(style.btn_radius()),
                 ),
         )
         // Telemetry Metrics Grid

@@ -66,6 +66,26 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                     .radius(style.btn_radius()),
                 ),
         )
+        // Sensor Status Banner (Honest Hardware Truth)
+        .child(
+            row()
+                .w_full()
+                .padding(10.0)
+                .radius(style.card_radius().min(6.0))
+                .fill(if thermals.sensors_available { p.success.alpha(0.12) } else { p.bg_card })
+                .border(1.0, if thermals.sensors_available { p.success.alpha(0.3) } else { p.border })
+                .child(
+                    text(if thermals.sensors_available {
+                        "✔ Canlı ACPI donanım sensörleri aktif ve okunuyor."
+                    } else {
+                        "ℹ Donanım Sensör Notu: Doğrudan ACPI/Ring-0 sıcaklık sensörleri için OEM çekirdek sürücüsü gerekir. WinBlast0 sahte tahmini değerler göstermez."
+                    })
+                    .font(rune::tok::type_::LABEL)
+                    .color(if thermals.sensors_available { p.success } else { p.text_secondary })
+                    .shrink()
+                    .wrap(),
+                ),
+        )
         // Temperature KPI Gauges
         .child(
             row()

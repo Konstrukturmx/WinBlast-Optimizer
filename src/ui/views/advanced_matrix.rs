@@ -427,9 +427,9 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
                         ),
                 )
                 .child(action_button(
-                    "< / >",
+                    format!("🔍 {}", s.tr(TextKey::InspectDiff)),
                     p.btn_secondary,
-                    p.text_muted,
+                    p.text_primary,
                     p,
                     move |s| s.inspect_tweak(&inspect_id),
                 ));

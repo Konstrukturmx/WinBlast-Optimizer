@@ -116,3 +116,34 @@ impl Default for LiveGameTelemetry {
         }
     }
 }
+
+impl LiveGameTelemetry {
+    /// Probe currently running processes to detect active games.
+    pub fn probe() -> Self {
+        let mut telemetry = Self::default();
+
+        let known_games = [
+            ("cs2.exe", "Counter-Strike 2"),
+            ("VALORANT-Win64-Shipping.exe", "Valorant"),
+            ("r5apex.exe", "Apex Legends"),
+            ("cod.exe", "Call of Duty: Warzone"),
+            ("Cyberpunk2077.exe", "Cyberpunk 2077"),
+            ("FortniteClient-Win64-Shipping.exe", "Fortnite"),
+        ];
+
+        if let Ok(output) = crate::core::process::SilentCommand::new("tasklist")
+            .args(["/NH", "/FO", "CSV"])
+            .output()
+        {
+            let text = String::from_utf8_lossy(&output.stdout);
+            for (exe, title) in known_games {
+                if text.to_lowercase().contains(&exe.to_lowercase()) {
+                    telemetry.active_game_detected = Some(title.to_string());
+                    break;
+                }
+            }
+        }
+
+        telemetry
+    }
+}

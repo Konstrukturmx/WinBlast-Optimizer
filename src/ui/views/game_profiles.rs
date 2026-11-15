@@ -80,7 +80,13 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                                 p,
                                 move |s| {
                                     if let Some(prof) = s.game_profiles.get_mut(idx) {
-                                        prof.is_applied = !prof.is_applied;
+                                        if prof.is_applied {
+                                            let _ = prof.revert();
+                                            prof.is_applied = prof.check_applied();
+                                        } else {
+                                            let _ = prof.apply();
+                                            prof.is_applied = prof.check_applied();
+                                        }
                                     }
                                 },
                             )

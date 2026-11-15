@@ -30,12 +30,17 @@ fn before_after_comparison_card(
     } else {
         p.warning
     };
-    let ping_color = if after.overall_avg_ping_ms <= before.overall_avg_ping_ms {
+    let is_offline = after.overall_avg_ping_ms < 0.0;
+    let ping_color = if is_offline {
+        p.danger
+    } else if after.overall_avg_ping_ms <= before.overall_avg_ping_ms {
         p.success
     } else {
         p.warning
     };
-    let jitter_color = if after.overall_avg_jitter_ms <= before.overall_avg_jitter_ms {
+    let jitter_color = if after.overall_avg_jitter_ms < 0.0 {
+        p.danger
+    } else if after.overall_avg_jitter_ms <= before.overall_avg_jitter_ms {
         p.success
     } else {
         p.warning
@@ -113,9 +118,13 @@ fn before_after_comparison_card(
                         .wrap(),
                 )
                 .child(
-                    text(format!("{:.1} ms", after.overall_avg_ping_ms))
-                        .font(rune::tok::type_::TITLE)
-                        .color(ping_color),
+                    text(if is_offline {
+                        "Offline (100% Loss)".to_string()
+                    } else {
+                        format!("{:.1} ms", after.overall_avg_ping_ms)
+                    })
+                    .font(rune::tok::type_::TITLE)
+                    .color(ping_color),
                 )
                 .child(
                     text(format!(
