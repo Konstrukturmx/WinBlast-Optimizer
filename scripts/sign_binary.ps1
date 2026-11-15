@@ -15,7 +15,7 @@ Write-Host "Exporting Certificate to $pfxFile..."
 Export-PfxCertificate -Cert $cert -FilePath $pfxFile -Password $password | Out-Null
 
 Write-Host "Signing $targetExe with Microsoft SignTool..."
-& $signtool sign /f $pfxFile /p "***REMOVED***" /fd SHA256 /d "WinBlast Optimizer v1.1.0" /du "https://github.com/Konstrukturmx/WinBlast-Optimizer" $targetExe
+& $signtool sign /f $pfxFile /p "***REMOVED***" /fd SHA256 /d "WinBlast Optimizer v1.2.0" /du "https://github.com/Konstrukturmx/WinBlast-Optimizer" $targetExe
 
 if ($LASTEXITCODE -eq 0) {
     Write-Host "Code signing succeeded! Attempting RFC 3161 timestamping..."

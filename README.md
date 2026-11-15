@@ -9,14 +9,14 @@
 [![License](https://img.shields.io/badge/License-MIT-blueviolet?style=for-the-badge)](LICENSE)
 [![Platform](https://img.shields.io/badge/Platform-Windows%2010%20%7C%2011%20(x64)-0078D6?style=for-the-badge&logo=windows)](https://github.com/Konstrukturmx/WinBlast-Optimizer)
 [![Rust](https://img.shields.io/badge/Rust-2021%20Edition-DEA584?style=for-the-badge&logo=rust)](https://www.rust-lang.org/)
-[![Tests](https://img.shields.io/badge/Tests-115%20Passed%20(100%25)-success?style=for-the-badge)](tests/)
+[![Tests](https://img.shields.io/badge/Tests-127%20Passed%20(100%25)-success?style=for-the-badge)](tests/)
 [![Languages](https://img.shields.io/badge/i18n-8%20Languages-orange?style=for-the-badge)](src/core/tweak_i18n/)
 
 <p align="center">
   <b>WinBlast Optimizer</b> is a standalone, lightweight, zero-dependency Windows optimization suite designed for performance enthusiasts, competitive gamers, power users, and system administrators. Built in pure Rust with direct Win32/NT kernel bindings, it replaces bloated PowerShell scripts and black-box tweakers with an auditable, transactional, and fully reversible optimization engine.
 </p>
 
-[**Download Latest Release (v1.1.0)**](https://github.com/Konstrukturmx/WinBlast-Optimizer/releases/latest) • [**Changelog**](CHANGELOG.md) • [**Architecture Guide**](DEVELOPMENT.md) • [**VirusTotal Report**](https://www.virustotal.com/gui/file/19895c54d3699391aebedb5c3e384aeb7ac5a73f8d1bee9ff7da4cd623d2fa00) • [**Knowledge Graph**](graphify-out/graph.html)
+[**Download Latest Release (v1.2.0)**](https://github.com/Konstrukturmx/WinBlast-Optimizer/releases/latest) • [**Changelog**](CHANGELOG.md) • [**Architecture Guide**](DEVELOPMENT.md) • [**VirusTotal Report**](https://www.virustotal.com/gui/file/19895c54d3699391aebedb5c3e384aeb7ac5a73f8d1bee9ff7da4cd623d2fa00) • [**Knowledge Graph**](graphify-out/graph.html)
 
 ---
 
@@ -61,19 +61,19 @@ Derived from the formal [**WinBlast0 Technical Knowledge Base**](WinBlast0/00%20
   * **⚡ Compact (High Density)**: Micro-padding (8px), 4px corners, 180px sidebar, maximized information per square inch.
   * **🎨 Materialistic (Material Design 3)**: Soft 18px rounded cards, 24px pill buttons, tonal surfaces, and smooth decelerated spring motion.
 * **4 WCAG AA Color Schemes**: *Cyber Indigo*, *Midnight Stealth*, *Emerald Mint*, and *Crimson Sunset* with Dark and Light mode support.
-* **Permanent High-Resolution Icon**: Embedded `winblast.ico` with full PE Version Information (`Konstrukturmx`, `WinBlast Optimizer`, version `1.1.0.0`).
+* **Permanent High-Resolution Icon**: Embedded `winblast.ico` with full PE Version Information (`Konstrukturmx`, `WinBlast Optimizer`, version `1.2.0.0`).
 * **Themed Always-On Scroll Bars**: Every overflowing viewport renders a custom palette-driven scroll bar (6 pt muted thumb at rest, 9 pt theme-accent thumb on hover/drag).
 
-### 2. 🔍 Comprehensive Testing, Diagnostics & Windows Repair (v1.1)
-* **Sürücü ve BIOS Teşhisi (Driver & BIOS Diagnostics)**: Direct SMBIOS queries for Motherboard vendor/model, UEFI firmware, Secure Boot status, and installed GPU display drivers.
-* **Arıza Teşhisi (Fault Diagnostics)**: Scans `%SystemRoot%\Minidump` for BSOD kernel crash dumps, detects Windows Component-Based Servicing (CBS) and Windows Update pending reboot locks, and surfaces real-time notification alert badges.
-* **Sıcaklık ve Fanlar (Thermal & Fan Monitor)**: Real-time CPU Package & GPU junction temperatures, fan RPM readings, and PROCHOT throttling limit indicators.
-* **Diskler (Disk Health & SMART)**: Physical drive health ratings, SSD wear leveling, TBW lifetime writes, and one-click TRIM execution.
-* **Oyun İçi İzleme & FPS Karşılaştırma (Gaming Telemetry & Benchmark)**: Real-time frame pacing stability ratings, microstutter suppression, and measured Before/After FPS comparison matrices across top titles (*Counter-Strike 2*, *Valorant*, *Apex Legends*, *Call of Duty: Warzone*, *Cyberpunk 2077*).
-* **İnternet ve Ağ (Network & Latency)**: Active adapter MTU inspection, TCP ACK frequency and TCP NoDelay gaming optimization, and live socket round-trip DNS ping probes to Cloudflare (1.1.1.1), Google (8.8.8.8), and local gateway.
-* **Özel Oyun Profilleri (Game Profiles Engine)**: Pre-tuned optimization profiles for competitive esports and AAA games applying high process priority, disabling fullscreen optimizations, and managing core unparking.
-* **Windows Onarımı (Windows Component Repair Suite)**: Integrated one-click repair suite for SFC Scannow, DISM Component Store RestoreHealth, Winsock & TCP/IP stack resets, DNS cache flush, and Windows Update service restoration with live console log streaming.
-* **Lisans ve Etkinleştirme (Windows License Info)**: Genuine activation status, Windows edition, digital entitlement, and license channel telemetry.
+### 2. 🔍 Comprehensive Testing, Diagnostics & Windows Repair (v1.2)
+* **Sürücü ve BIOS Teşhisi (Driver & BIOS Diagnostics)**: Direct SMBIOS queries for Motherboard vendor/model, UEFI firmware, Secure Boot status, and installed GPU display drivers with online driver update checking.
+* **Arıza Teşhisi (Fault Diagnostics)**: Scans `%SystemRoot%\Minidump` for BSOD kernel crash dumps, detects Windows Component-Based Servicing (CBS) and Windows Update pending reboot locks, and surfaces accurate status notification badges.
+* **Sıcaklık ve Fanlar (Thermal & Fan Monitor)**: Genuine ACPI ThermalZone queries for real-time CPU & GPU junction temperatures, fan RPM readings, and PROCHOT throttling limit indicators with transparent OEM driver requirements.
+* **Diskler (Disk Health & SMART)**: Win32 IOCTL physical disk interrogation for real device models, bus types (NVMe/SATA), SSD wear leveling, TBW lifetime writes, and one-click TRIM execution.
+* **Oyun İçi İzleme & FPS Karşılaştırma (Gaming Telemetry & Benchmark)**: Real-time frame pacing stability ratings, active game process detection, and measured Before/After FPS comparison matrices across top titles (*Counter-Strike 2*, *Valorant*, *Apex Legends*, *Call of Duty: Warzone*, *Cyberpunk 2077*).
+* **İnternet ve Ağ (Network & Latency)**: Active adapter MTU inspection, dynamic local IP resolution, TCP ACK frequency and TCP NoDelay gaming optimization, and live socket round-trip DNS ping probes to Cloudflare (1.1.1.1), Google (8.8.8.8), and Quad9.
+* **Özel Oyun Profilleri (Game Profiles Engine)**: Pre-tuned optimization profiles applying real Windows Image File Execution Options (IFEO) registry priority and high I/O flags.
+* **Windows Onarımı (Windows Component Repair Suite)**: Integrated one-click repair suite for SFC Scannow, DISM Component Store RestoreHealth, Winsock & TCP/IP stack resets, and DNS cache flush with real system tool execution.
+* **Çoklu Dil Desteği (Full-Stack 8-Language Localization)**: Complete zero-allocation translation engine (`view_i18n.rs`) covering all 11 subviews in English, Turkish, German, French, Spanish, Russian, Chinese, and Japanese.
 
 ### 3. 🛡️ Dual-Layer Transactional Rollback & Safety
 * **SQLite WAL Transaction Ledger**: Every change made by the optimizer is atomically written to a local SQLite Write-Ahead Logging (`winblast0_ledger.db`) database recording previous registry values, service configurations, and power settings.
@@ -136,7 +136,7 @@ The optimizer features **168 validated declarative optimizations** indexed acros
 
 Because WinBlast Optimizer adjusts low-level system settings, Windows Registry parameters, and hardware power states, transparency and security are paramount.
 
-* **Target Binary**: `winblast0.exe` (v1.1.0)
+* **Target Binary**: `winblast0.exe` (v1.2.0)
 * **Digital Signature**: Microsoft Authenticode signed by `Konstrukturmx` with DigiCert RFC 3161 SHA-256 timestamping
 * **File Size**: `30,037,848` bytes (28.6 MB)
 * **SHA-256 Checksum**:
