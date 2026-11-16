@@ -20,6 +20,7 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
         .w_full()
         .min_w(0.0)
         .padding(style.card_padding())
+        .pr(16.0)
         .gap(12.0)
         // Header
         .child(
@@ -63,10 +64,13 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
         .child(
             col()
                 .w_full()
-                .padding(16.0)
+                .min_w(0.0)
+                .padding(style.card_padding())
                 .radius(style.card_radius())
                 .fill(p.accent.alpha(0.12))
                 .border(1.5, p.accent)
+                .hover(p.bg_card_hover)
+                .motion(p.motion)
                 .gap(6.0)
                 .child(
                     text(s.tr_v(ViewTextKey::PerfCompositeScoreTitle))
@@ -99,6 +103,8 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                         .radius(style.card_radius())
                         .fill(p.card_fill_styled(style))
                         .border(style.border_width(), p.border_styled(style))
+                        .hover(p.bg_card_hover)
+                        .motion(p.motion)
                         .gap(4.0)
                         .child(text(s.tr_v(ViewTextKey::PerfCpuLabel)).font(rune::tok::type_::LABEL).color(p.text_secondary))
                         .child(
@@ -121,6 +127,8 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                         .radius(style.card_radius())
                         .fill(p.card_fill_styled(style))
                         .border(style.border_width(), p.border_styled(style))
+                        .hover(p.bg_card_hover)
+                        .motion(p.motion)
                         .gap(4.0)
                         .child(text(s.tr_v(ViewTextKey::PerfRamLabel)).font(rune::tok::type_::LABEL).color(p.text_secondary))
                         .child(
@@ -143,6 +151,8 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                         .radius(style.card_radius())
                         .fill(p.card_fill_styled(style))
                         .border(style.border_width(), p.border_styled(style))
+                        .hover(p.bg_card_hover)
+                        .motion(p.motion)
                         .gap(4.0)
                         .child(text(s.tr_v(ViewTextKey::PerfDiskLabel)).font(rune::tok::type_::LABEL).color(p.text_secondary))
                         .child(

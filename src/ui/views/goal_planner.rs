@@ -15,6 +15,7 @@ use crate::ui::LayoutTier;
 /// Renders the Goal-Driven Graph Planner view.
 pub fn view(s: &AppState, tier: LayoutTier) -> El {
     let p = s.palette();
+    let _style = s.theme_style;
 
     // 1. Header Card
     let header_card = row()
@@ -327,7 +328,7 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
         )
         .child(schedule_col);
 
-    let pad = if tier == LayoutTier::Compact { 10.0 } else { 14.0 };
+    let pad = if tier == LayoutTier::Compact { 10.0 } else { p.card_padding };
     col()
         .key("goal_planner_viewport")
         .w_full()

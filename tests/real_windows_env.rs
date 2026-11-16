@@ -284,12 +284,18 @@ fn test_real_backend_readonly_live_host_audit() {
         "Expected standard Windows core service (EventLog/RpcSs/Dnscache) in list_live_services()"
     );
 
-    // 5. Read-only full catalog scan over all 168 rules against RealBackend
+    // 5. Read-only full catalog scan over all 208 rules against RealBackend
+    // ISO 29119-3 Test Spec:
+    // - Preconditions: RealBackend initialized with read-only permissions on host Windows environment.
+    // - Equivalence Classes: Host Windows build number (Win10 vs Win11 24H2+), host GPU inventory.
+    // - Boundary Conditions: Boundary build 26000 for MPO deprecation check.
+    // - Invariants: Catalog length == 208, scan results count == 208, RealBackend performs zero system mutations.
+    // - Expected Outcome: All 208 tweaks return deterministic valid TweakState without panic or mutation.
     let tweaks = load_embedded_rules();
-    assert_eq!(tweaks.len(), 168, "Expected 168 embedded catalog rules");
+    assert_eq!(tweaks.len(), 208, "Expected 208 embedded catalog rules");
 
     let scan_results = run_full_scan_with(&backend, &tweaks, os.build_number, &os.edition);
-    assert_eq!(scan_results.len(), 168, "Expected 168 scan results");
+    assert_eq!(scan_results.len(), 208, "Expected 208 scan results");
 
     if os.build_number >= 26000 {
         let mpo_res = scan_results

@@ -45,3 +45,23 @@ pub fn check_elevation() -> crate::core::error::Result<()> {
     }
     Ok(())
 }
+
+/// Relaunches the current WinBlast0 application with elevated (Administrator) UAC privileges.
+///
+/// Triggers Windows User Account Control (UAC) elevation prompt and cleanly exits current standard instance.
+pub fn relaunch_as_admin() -> Result<(), String> {
+    let current_exe = std::env::current_exe().map_err(|e| format!("Failed to get current executable path: {}", e))?;
+    let exe_str = current_exe.to_str().ok_or_else(|| "Invalid UTF-8 executable path".to_string())?;
+
+    let cmd = format!("Start-Process -FilePath '{}' -Verb RunAs", exe_str);
+    let status = std::process::Command::new("powershell")
+        .args(["-WindowStyle", "Hidden", "-Command", &cmd])
+        .status()
+        .map_err(|e| format!("Failed to invoke PowerShell RunAs: {}", e))?;
+
+    if status.success() {
+        std::process::exit(0);
+    } else {
+        Err("UAC elevation request was canceled or rejected by the user".to_string())
+    }
+}

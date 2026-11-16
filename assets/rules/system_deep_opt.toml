@@ -1,0 +1,939 @@
+# =============================================================================
+# WinBlast0 — System Deep Optimization Tweaks
+# =============================================================================
+# 30 advanced tweaks across Kernel & Memory, Network Stack, GPU & Display,
+# Storage & IO, and Scheduler & Latency categories.
+
+# =============================================================================
+# Category 1: Kernel & Memory Optimization (8 tweaks)
+# =============================================================================
+
+[[tweaks]]
+id = "disable_spectre_meltdown_mitigations"
+title = "Disable Spectre/Meltdown CPU Vulnerability Mitigations"
+category = "Kernel & Memory Optimization"
+description = "Disables hardware-level Spectre and Meltdown CPU vulnerability mitigations by setting FeatureSettingsOverride=3 and FeatureSettingsOverrideMask=3. This removes the performance penalty imposed by speculative execution side-channel attack mitigations, yielding significant CPU throughput gains in compute-heavy workloads at the cost of leaving the system vulnerable to these hardware-level exploits."
+easy_mode_included = false
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Extreme"
+performance_gain = 5
+privacy_gain = 0
+reversibility = "RequiresReboot"
+broken_features = ["System is vulnerable to Spectre and Meltdown CPU side-channel attacks"]
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management"
+name = "FeatureSettingsOverride"
+optimized_value = 3
+default_value = 0
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management"
+name = "FeatureSettingsOverrideMask"
+optimized_value = 3
+default_value = 0
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "optimize_ntfs_memory_usage"
+title = "Aggressive NTFS Paged-Pool Caching"
+category = "Kernel & Memory Optimization"
+description = "Sets NtfsMemoryUsage to 2, instructing the NTFS driver to use a larger paged-pool allocation for directory and metadata caching. This reduces repeated disk reads on volumes with many small files, improving file enumeration and build system performance on systems with ample RAM."
+easy_mode_included = false
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Low"
+performance_gain = 2
+privacy_gain = 0
+reversibility = "RequiresReboot"
+broken_features = []
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SYSTEM\\CurrentControlSet\\Control\\FileSystem"
+name = "NtfsMemoryUsage"
+optimized_value = 2
+default_value = 1
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "increase_irp_stack_size"
+title = "Increase IRP Stack Size for Network/Disk IO"
+category = "Kernel & Memory Optimization"
+description = "Raises the I/O Request Packet stack size from the default 15 to 32 entries, giving the SMB server and layered filter drivers more stack frames for complex IO operations. Helps avoid STATUS_INSUFFICIENT_RESOURCES errors and improves throughput on systems running antivirus, backup agents, or deep storage filter stacks."
+easy_mode_included = false
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Moderate"
+performance_gain = 2
+privacy_gain = 0
+reversibility = "RequiresReboot"
+broken_features = []
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SYSTEM\\CurrentControlSet\\Services\\LanmanServer\\Parameters"
+name = "IRPStackSize"
+optimized_value = 32
+default_value = 15
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "disable_page_file_encryption"
+title = "Disable Page File Encryption & Clear-on-Shutdown"
+category = "Kernel & Memory Optimization"
+description = "Prevents Windows from encrypting the page file contents and disables clearing the page file at shutdown. Page file encryption imposes CPU overhead on every page-out operation, and clearing adds seconds to shutdown time. Disabling both improves paging throughput and shutdown speed, but leaves paged-out memory readable on the raw disk."
+easy_mode_included = false
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "High"
+performance_gain = 2
+privacy_gain = 0
+reversibility = "RequiresReboot"
+broken_features = ["Paged-out memory contents remain on disk after shutdown", "Sensitive data may be recoverable from raw disk"]
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management"
+name = "ClearPageFileAtShutdown"
+optimized_value = 0
+default_value = 1
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management"
+name = "DisablePagingEncryption"
+optimized_value = 1
+default_value = 0
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "disable_memory_compression"
+title = "Disable Memory Compression Engine"
+category = "Kernel & Memory Optimization"
+description = "Disables the Windows Memory Manager compression store by setting DisableCompression=1. Windows 10+ compresses infrequently-used memory pages instead of paging them out; this saves disk IO but adds CPU overhead. On systems with 16 GB+ RAM, disabling compression reduces CPU usage spikes from the System process memory compression thread."
+easy_mode_included = false
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "High"
+performance_gain = 3
+privacy_gain = 0
+reversibility = "RequiresReboot"
+broken_features = ["Higher page file usage on memory-constrained systems", "May cause out-of-memory conditions sooner on 8 GB systems"]
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management"
+name = "DisableCompression"
+optimized_value = 1
+default_value = 0
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "increase_nonpaged_pool_quota"
+title = "Increase Non-Paged Pool Quota for Driver Stability"
+category = "Kernel & Memory Optimization"
+description = "Raises NonPagedPoolQuota to 0 (unlimited/system-managed maximum) allowing the kernel memory manager to use all available physical memory for non-paged allocations. Prevents pool exhaustion on systems running many kernel-mode drivers, heavy network IO, or virtualization stacks."
+easy_mode_included = false
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Moderate"
+performance_gain = 2
+privacy_gain = 0
+reversibility = "RequiresReboot"
+broken_features = []
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management"
+name = "NonPagedPoolQuota"
+optimized_value = 0
+default_value = 1
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "disable_kernel_mitigations_audit"
+title = "Disable Kernel Mitigations Audit Mode"
+category = "Kernel & Memory Optimization"
+description = "Disables the kernel mitigation options audit logging by setting MitigationAuditOptions to all zeros. The kernel audit for exploit mitigations generates ETW events for every mitigation trigger, adding overhead to process creation and exception handling. Disabling the audit reduces kernel logging noise in performance-critical environments."
+easy_mode_included = false
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Moderate"
+performance_gain = 1
+privacy_gain = 0
+reversibility = "RequiresReboot"
+broken_features = ["Exploit mitigation audit events will not be logged"]
+
+[[tweaks.actions]]
+type = "RegistryString"
+hive = "HKLM"
+path = "SYSTEM\\CurrentControlSet\\Control\\Session Manager\\kernel"
+name = "MitigationAuditOptions"
+optimized_value = "000000000000000000000000000000000000000000000000"
+default_value = ""
+case_insensitive = false
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "optimize_additional_critical_worker_threads"
+title = "Increase Additional Kernel Worker Threads"
+category = "Kernel & Memory Optimization"
+description = "Sets AdditionalCriticalWorkerThreads to 2 and AdditionalDelayedWorkerThreads to 2, provisioning extra kernel-mode worker threads for handling critical and delayed work items. This reduces work-item queue stalls on systems with heavy IO and many concurrent processes."
+easy_mode_included = false
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Moderate"
+performance_gain = 2
+privacy_gain = 0
+reversibility = "RequiresReboot"
+broken_features = []
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Executive"
+name = "AdditionalCriticalWorkerThreads"
+optimized_value = 2
+default_value = 0
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Executive"
+name = "AdditionalDelayedWorkerThreads"
+optimized_value = 2
+default_value = 0
+
+# =============================================================================
+# Category 2: Network Stack Optimization (7 tweaks)
+# =============================================================================
+
+[[tweaks]]
+id = "disable_rss_base_cpu"
+title = "Set RSS Base CPU for Network Load Distribution"
+category = "Network Stack Optimization"
+description = "Sets RssBaseCpu=1 in the NDIS parameters, directing Receive Side Scaling to start distributing network interrupt processing from CPU 1 instead of CPU 0. This offloads network interrupt processing from the boot CPU, freeing CPU 0 for foreground application threads and reducing gaming micro-stutters caused by NIC interrupt contention."
+easy_mode_included = false
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Low"
+performance_gain = 2
+privacy_gain = 0
+reversibility = "RequiresReboot"
+broken_features = []
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SYSTEM\\CurrentControlSet\\Services\\Ndis\\Parameters"
+name = "RssBaseCpu"
+optimized_value = 1
+default_value = 0
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "enable_hardware_task_offload"
+title = "Enable TCP/IP Hardware Task Offloading"
+category = "Network Stack Optimization"
+description = "Sets DisableTaskOffload=0 in the TCP/IP parameters, ensuring the OS offloads checksum calculation, TCP segmentation, and large send operations to the NIC hardware. Modern NICs handle these operations faster than the CPU, reducing network processing overhead and freeing CPU cycles for application workloads."
+easy_mode_included = false
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Low"
+performance_gain = 2
+privacy_gain = 0
+reversibility = "Instant"
+broken_features = []
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SYSTEM\\CurrentControlSet\\Services\\Tcpip\\Parameters"
+name = "DisableTaskOffload"
+optimized_value = 0
+default_value = 1
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "optimize_default_ttl"
+title = "Set Optimal Default IP Packet TTL"
+category = "Network Stack Optimization"
+description = "Sets the default IP Time-To-Live value to 64 hops, matching the Linux/macOS standard. The Windows default of 128 is unnecessarily high for most internet paths and can confuse network fingerprinting-based optimizations. A TTL of 64 is sufficient for virtually all internet routing topologies."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 1
+privacy_gain = 1
+reversibility = "Instant"
+broken_features = []
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SYSTEM\\CurrentControlSet\\Services\\Tcpip\\Parameters"
+name = "DefaultTTL"
+optimized_value = 64
+default_value = 128
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "increase_max_connections_per_server"
+title = "Increase Maximum HTTP Connections Per Server"
+category = "Network Stack Optimization"
+description = "Raises MaxConnectionsPerServer and MaxConnectionsPer1_0Server from the default 2-4 to 16, allowing WinINet-based applications (Edge, Explorer, Windows Update, Store) to open more simultaneous HTTP connections to a single host. This accelerates parallel downloads, large file transfers, and web application loading."
+easy_mode_included = false
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Low"
+performance_gain = 2
+privacy_gain = 0
+reversibility = "Instant"
+broken_features = []
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Internet Settings"
+name = "MaxConnectionsPerServer"
+optimized_value = 16
+default_value = 4
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Internet Settings"
+name = "MaxConnectionsPer1_0Server"
+optimized_value = 16
+default_value = 4
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "disable_netbios_over_tcp"
+title = "Disable NetBIOS over TCP/IP"
+category = "Network Stack Optimization"
+description = "Disables NetBIOS over TCP/IP protocol by setting NetbiosOptions=2 and disabling the LMHosts lookup. NetBIOS is a legacy LAN protocol that broadcasts name resolution queries, exposing the system to unnecessary network noise and potential NBNS poisoning attacks. Disabling it reduces attack surface and network overhead on modern networks using DNS."
+easy_mode_included = false
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Low"
+performance_gain = 1
+privacy_gain = 3
+reversibility = "RequiresReboot"
+broken_features = ["Legacy applications relying on NetBIOS name resolution will fail", "Older network printers using WINS may become unreachable"]
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SYSTEM\\CurrentControlSet\\Services\\NetBT\\Parameters"
+name = "NetbiosOptions"
+optimized_value = 2
+default_value = 0
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SYSTEM\\CurrentControlSet\\Services\\NetBT\\Parameters"
+name = "EnableLMHOSTS"
+optimized_value = 0
+default_value = 1
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "optimize_dns_cache_parameters"
+title = "Optimize DNS Client Cache Size and TTL"
+category = "Network Stack Optimization"
+description = "Increases the DNS client cache maximum entry count and negative cache TTL floor. By setting MaxCacheEntryTtlLimit=86400 and MaxNegativeCacheTtl=5, the resolver caches successful lookups longer (reducing repeated DNS round-trips) while quickly retrying failed lookups. This improves web browsing responsiveness and reduces DNS query volume."
+easy_mode_included = false
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Low"
+performance_gain = 1
+privacy_gain = 0
+reversibility = "Instant"
+broken_features = []
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SYSTEM\\CurrentControlSet\\Services\\Dnscache\\Parameters"
+name = "MaxCacheEntryTtlLimit"
+optimized_value = 86400
+default_value = 14400
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SYSTEM\\CurrentControlSet\\Services\\Dnscache\\Parameters"
+name = "MaxNegativeCacheTtl"
+optimized_value = 5
+default_value = 900
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "disable_llmnr_protocol"
+title = "Disable LLMNR Name Resolution Protocol"
+category = "Network Stack Optimization"
+description = "Disables Link-Local Multicast Name Resolution (LLMNR) by setting EnableMulticast=0 in DNS client parameters. LLMNR broadcasts name queries on the local subnet when DNS fails, which is both a security risk (LLMNR poisoning/relay attacks) and a source of unnecessary multicast traffic on managed networks."
+easy_mode_included = false
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Low"
+performance_gain = 1
+privacy_gain = 3
+reversibility = "Instant"
+broken_features = ["Local network name resolution without DNS may fail", "Homegroup-style local device discovery may be impaired"]
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SOFTWARE\\Policies\\Microsoft\\Windows NT\\DNSClient"
+name = "EnableMulticast"
+optimized_value = 0
+default_value = 1
+
+# =============================================================================
+# Category 3: GPU & Display Pipeline (5 tweaks)
+# =============================================================================
+
+[[tweaks]]
+id = "optimize_gpu_preemption_level"
+title = "Set GPU Scheduler to Compute-Only Preemption"
+category = "GPU & Display Pipeline"
+description = "Sets GpuPreemptionLevel=0 in the Graphics Drivers Scheduler, forcing compute-only GPU preemption. This prevents the GPU scheduler from preempting long-running shader workloads mid-execution, reducing GPU context-switch overhead and micro-stutters in graphically intensive games at the cost of potentially longer GPU hangs if a shader stalls."
+easy_mode_included = false
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Moderate"
+performance_gain = 3
+privacy_gain = 0
+reversibility = "Instant"
+broken_features = ["GPU Timeout Detection and Recovery may trigger more slowly"]
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SYSTEM\\CurrentControlSet\\Control\\GraphicsDrivers\\Scheduler"
+name = "GpuPreemptionLevel"
+optimized_value = 0
+default_value = 2
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "disable_dwm_composition_throttle"
+title = "Disable Desktop Window Manager Composition Throttle"
+category = "GPU & Display Pipeline"
+description = "Sets DesktopCompositionThrottle=0 under the DWM (Desktop Window Manager) key, preventing the compositor from throttling rendering when frames are being dropped. This allows DWM to maintain maximum composition throughput even under GPU load, reducing perceived desktop lag when switching between a fullscreen game and windowed applications."
+easy_mode_included = false
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Low"
+performance_gain = 2
+privacy_gain = 0
+reversibility = "Instant"
+broken_features = []
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SOFTWARE\\Microsoft\\Windows\\Dwm"
+name = "DesktopCompositionThrottle"
+optimized_value = 0
+default_value = 1
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "enable_ultimate_performance_plan"
+title = "Activate Ultimate Performance Power Plan"
+category = "GPU & Display Pipeline"
+description = "Activates the hidden Ultimate Performance power scheme (e9a42b02-d5df-448d-aa00-03f14749eb61) via PowerCfgSetting. This plan eliminates micro-latencies from power management policies: no core parking, no frequency scaling delays, no USB selective suspend, and no hard disk spindown. Designed for workstation-class workloads demanding the lowest possible latency."
+easy_mode_included = false
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Moderate"
+performance_gain = 4
+privacy_gain = 0
+reversibility = "Instant"
+broken_features = ["Significantly higher idle power consumption", "Reduced laptop battery life", "Higher CPU and chipset temperatures at idle"]
+
+[[tweaks.actions]]
+type = "PowerCfgSetting"
+subgroup_guid = "54533251-82be-4824-96c1-47b60b740d00"
+setting_guid = "893dee8e-2bef-41e0-89c6-b55d0929964c"
+optimized_ac = 100
+optimized_dc = 100
+default_ac = 60
+default_dc = 30
+scope = "AcOnly"
+unhide_attribute = true
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "increase_gpu_tdr_timeout"
+title = "Increase GPU Timeout Detection and Recovery Delay"
+category = "GPU & Display Pipeline"
+description = "Raises the TdrDelay from the default 2 seconds to 10 seconds, giving the GPU more time to complete long-running shaders before the Windows Display Driver Model (WDDM) considers the GPU hung and resets the driver. This prevents false TDR resets during heavy compute or ray-tracing workloads that legitimately require extended GPU execution time."
+easy_mode_included = false
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Moderate"
+performance_gain = 2
+privacy_gain = 0
+reversibility = "Instant"
+broken_features = ["Actual GPU hangs will take longer to recover from", "Screen may appear frozen longer before driver reset"]
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SYSTEM\\CurrentControlSet\\Control\\GraphicsDrivers"
+name = "TdrDelay"
+optimized_value = 10
+default_value = 2
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "disable_dwm_animations_per_process"
+title = "Disable DWM Per-Process Transition Animations"
+category = "GPU & Display Pipeline"
+description = "Disables the per-process DWM transition animations by setting DisallowAnimations=1 and AnimationsShiftKey=1 under the DWM key. This eliminates the fade and slide transitions when windows are minimized, maximized, or switched, reducing GPU compositor overhead and making window management feel instantaneous."
+easy_mode_included = false
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 1
+privacy_gain = 0
+reversibility = "Instant"
+broken_features = ["Window transition animations will be removed"]
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SOFTWARE\\Microsoft\\Windows\\Dwm"
+name = "DisallowAnimations"
+optimized_value = 1
+default_value = 0
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SOFTWARE\\Microsoft\\Windows\\Dwm"
+name = "AnimationsShiftKey"
+optimized_value = 1
+default_value = 0
+
+# =============================================================================
+# Category 4: Storage & IO Optimization (5 tweaks)
+# =============================================================================
+
+[[tweaks]]
+id = "optimize_disk_io_page_lock_limit"
+title = "Increase IO Page Lock Limit for Larger Transfers"
+category = "Storage & IO Optimization"
+description = "Sets IoPageLockLimit to 983040 bytes (960 KB), increasing the number of bytes the IO manager can lock for direct IO transfers. The default limit is too conservative for modern NVMe drives capable of multi-gigabyte-per-second throughput; raising it allows larger scatter-gather DMA transfers and reduces the number of IO operations needed for large file copies."
+easy_mode_included = false
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Moderate"
+performance_gain = 2
+privacy_gain = 0
+reversibility = "RequiresReboot"
+broken_features = []
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management"
+name = "IoPageLockLimit"
+optimized_value = 983040
+default_value = 0
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "disable_windows_search_indexer"
+title = "Disable Windows Search Indexer Service"
+category = "Storage & IO Optimization"
+description = "Disables the WSearch (Windows Search) service, stopping the background indexer from continuously crawling and indexing file contents on all volumes. On SSD/NVMe systems, file search is fast enough without an index, and eliminating the indexer removes significant background disk IO, CPU usage, and memory consumption from the SearchIndexer.exe process."
+easy_mode_included = false
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Moderate"
+performance_gain = 3
+privacy_gain = 2
+reversibility = "Instant"
+broken_features = ["Windows Search will return no results for file contents", "Outlook desktop search may be slower", "Start Menu search will not find files by content"]
+
+[[tweaks.actions]]
+type = "ServiceState"
+service_name = "WSearch"
+target_start_type = 4
+default_start_type = 2
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "disable_ntfs_encryption_driver"
+title = "Disable NTFS Filesystem Encryption (EFS) Driver"
+category = "Storage & IO Optimization"
+description = "Sets NtfsDisableEncryption=1 under the FileSystem key, preventing the NTFS Encrypting File System filter driver from intercepting file IO operations. On systems that do not use per-file EFS encryption (most consumer and gaming PCs), this removes an unnecessary filter driver from the IO path, reducing file access latency."
+easy_mode_included = false
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Low"
+performance_gain = 1
+privacy_gain = 0
+reversibility = "RequiresReboot"
+broken_features = ["NTFS Encrypting File System (EFS) will not work", "Existing EFS-encrypted files become inaccessible"]
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SYSTEM\\CurrentControlSet\\Control\\FileSystem"
+name = "NtfsDisableEncryption"
+optimized_value = 1
+default_value = 0
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "enable_large_ntfs_frs"
+title = "Enable Large NTFS File Record Segments"
+category = "Storage & IO Optimization"
+description = "Sets NtfsAllowExtendedCharacterIn8dot3Name=0, disabling extended character support in 8.3 short names and allowing the NTFS driver to allocate larger, more efficient File Record Segments. Combined with the existing 8.3 name disable, this further reduces MFT fragmentation and directory enumeration overhead on volumes with millions of files."
+easy_mode_included = false
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Low"
+performance_gain = 1
+privacy_gain = 0
+reversibility = "RequiresReboot"
+broken_features = ["Extended Unicode characters in auto-generated 8.3 short names will be stripped"]
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SYSTEM\\CurrentControlSet\\Control\\FileSystem"
+name = "NtfsAllowExtendedCharacterIn8dot3Name"
+optimized_value = 0
+default_value = 1
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "optimize_object_manager_quota"
+title = "Increase Kernel Object Manager Handle Quota"
+category = "Storage & IO Optimization"
+description = "Raises the Session Manager ObjectDirectories additional kernel object quota threshold, and increases the handle table size limit via SessionPoolSize=48. This prevents handle table exhaustion on systems running many concurrent processes with heavy file handle usage (build systems, IDEs, game launchers with many child processes)."
+easy_mode_included = false
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Moderate"
+performance_gain = 2
+privacy_gain = 0
+reversibility = "RequiresReboot"
+broken_features = []
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management"
+name = "SessionPoolSize"
+optimized_value = 48
+default_value = 32
+
+# =============================================================================
+# Category 5: Scheduler & Latency (5 tweaks)
+# =============================================================================
+
+[[tweaks]]
+id = "optimize_mmcss_proaudio_scheduling"
+title = "MMCSS Pro Audio — Maximum Scheduling Priority"
+category = "Scheduler & Latency"
+description = "Sets the Pro Audio MMCSS task SchedulingCategory to 'High' and SFIO Priority to 'High', ensuring real-time audio threads receive the highest available multimedia scheduling priority. This minimizes audio glitches, buffer underruns, and latency in DAWs, music production software, and VoIP applications during heavy system load."
+easy_mode_included = false
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Low"
+performance_gain = 2
+privacy_gain = 0
+reversibility = "Instant"
+broken_features = []
+
+[[tweaks.actions]]
+type = "RegistryString"
+hive = "HKLM"
+path = "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile\\Tasks\\Pro Audio"
+name = "Scheduling Category"
+optimized_value = "High"
+default_value = "Medium"
+case_insensitive = true
+
+[[tweaks.actions]]
+type = "RegistryString"
+hive = "HKLM"
+path = "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile\\Tasks\\Pro Audio"
+name = "SFIO Priority"
+optimized_value = "High"
+default_value = "Normal"
+case_insensitive = true
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "optimize_timer_resolution_requests"
+title = "Allow Applications to Request High Timer Resolution"
+category = "Scheduler & Latency"
+description = "Sets GlobalTimerResolutionRequests=1 in the Session Manager kernel key, allowing applications to request the maximum platform timer resolution (0.5 ms) system-wide. Without this, Windows may ignore high-resolution timer requests from non-foreground processes, causing timing jitter in background audio engines, game servers, and real-time applications."
+easy_mode_included = false
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Moderate"
+performance_gain = 3
+privacy_gain = 0
+reversibility = "RequiresReboot"
+broken_features = ["Higher idle power consumption from increased timer interrupt frequency"]
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SYSTEM\\CurrentControlSet\\Control\\Session Manager\\kernel"
+name = "GlobalTimerResolutionRequests"
+optimized_value = 1
+default_value = 0
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "disable_threaded_dpc_optimization"
+title = "Disable Threaded DPC for Lower Interrupt Latency"
+category = "Scheduler & Latency"
+description = "Sets ThreadDpcEnable=0 in the Session Manager kernel key, forcing Deferred Procedure Calls to execute at DISPATCH_LEVEL instead of in a dedicated thread at PASSIVE_LEVEL. Threaded DPCs add scheduling overhead; disabling them reduces DPC latency at the cost of potentially blocking other PASSIVE_LEVEL work. Ideal for real-time audio production and competitive gaming where sub-millisecond interrupt handling is critical."
+easy_mode_included = false
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "High"
+performance_gain = 3
+privacy_gain = 0
+reversibility = "RequiresReboot"
+broken_features = ["Some drivers expecting threaded DPC may misbehave", "Higher DPC latency variance under extreme multi-threaded load"]
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SYSTEM\\CurrentControlSet\\Control\\Session Manager\\kernel"
+name = "ThreadDpcEnable"
+optimized_value = 0
+default_value = 1
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "optimize_interrupt_steering"
+title = "Optimize Interrupt Affinity and Steering Policy"
+category = "Scheduler & Latency"
+description = "Configures the kernel interrupt steering policy to IrqPolicySpreadMessagesAcrossAllProcessors by setting InterruptSteeringDisabled=0 and DistributeTimers=1 under the Session Manager kernel key. This distributes hardware interrupts and deferred timer callbacks across all available cores rather than concentrating them on CPU 0, reducing single-core bottlenecks from interrupt storms."
+easy_mode_included = false
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Moderate"
+performance_gain = 2
+privacy_gain = 0
+reversibility = "RequiresReboot"
+broken_features = []
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SYSTEM\\CurrentControlSet\\Control\\Session Manager\\kernel"
+name = "DistributeTimers"
+optimized_value = 1
+default_value = 0
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SYSTEM\\CurrentControlSet\\Control\\Session Manager\\kernel"
+name = "InterruptSteeringDisabled"
+optimized_value = 0
+default_value = 1
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "disable_processor_idle_demote_threshold"
+title = "Disable Processor Idle State Demotion"
+category = "Scheduler & Latency"
+description = "Sets IdleDemoteThreshold=100 and IdlePromoteThreshold=100 in the processor power management parameters, preventing the kernel power manager from demoting processor performance states during brief idle periods. This keeps the CPU at its current performance level even during short idle gaps between work bursts, eliminating latency spikes from frequency ramp-up delays in bursty workloads like gaming and real-time processing."
+easy_mode_included = false
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Moderate"
+performance_gain = 3
+privacy_gain = 0
+reversibility = "Instant"
+broken_features = ["Higher idle power consumption", "Reduced battery life on laptops"]
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SYSTEM\\CurrentControlSet\\Control\\Power\\PowerSettings\\54533251-82be-4824-96c1-47b60b740d00\\4b92d758-5a24-4851-a470-815d78aee119"
+name = "IdleDemoteThreshold"
+optimized_value = 100
+default_value = 60
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SYSTEM\\CurrentControlSet\\Control\\Power\\PowerSettings\\54533251-82be-4824-96c1-47b60b740d00\\4b92d758-5a24-4851-a470-815d78aee119"
+name = "IdlePromoteThreshold"
+optimized_value = 100
+default_value = 60

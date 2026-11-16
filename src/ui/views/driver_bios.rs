@@ -1,15 +1,16 @@
-//! Sürücü ve BIOS (Driver & BIOS Diagnostics) View in Rune.
+//! Driver and BIOS Diagnostics View in Rune.
 //!
 //! Visualizes Motherboard SMBIOS tables, UEFI firmware security, installed GPU display driver stacks,
-//! and provides full online driver scanning, version verification, download, and installation.
+//! and provides full online driver scanning, category filtering, search, version verification,
+//! backup, and installation within bounded scroll containers.
 
 use rune::color::Color;
-use rune::{col, row, text, El, ScrollSpec};
+use rune::{col, row, text, text_input, El, ScrollSpec};
 
 use crate::app::AppState;
 use crate::core::i18n::TextKey;
 use crate::hardware::bios::BiosSystemInfo;
-use crate::hardware::driver_update::DriverUpdateState;
+use crate::hardware::driver_update::{DriverCategory, DriverUpdateState};
 use crate::ui::widgets::button::{action_button, action_button_guarded};
 use crate::ui::widgets::scrollbar::WinBlastScrollable;
 use crate::ui::LayoutTier;
@@ -22,10 +23,13 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
     let sb_badge_color = if bios.secure_boot { p.success } else { p.warning };
     let sb_text = if bios.secure_boot { "✔ Secure Boot Active" } else { "⚠ Secure Boot Disabled / Setup Mode" };
 
+    let q_raw = s.driver_search_edit.text.trim().to_lowercase();
+
     col()
         .w_full()
         .min_w(0.0)
         .padding(style.card_padding())
+        .pr(16.0)
         .gap(12.0)
         // Top Header
         .child(
@@ -52,8 +56,10 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                 )
                 .child(
                     row()
-                        .gap(8.0)
+                        .min_w(0.0)
+                        .shrink()
                         .flex_wrap()
+                        .gaps(8.0, 8.0)
                         .child(
                             action_button_guarded(
                                 if s.is_driver_scanning {
@@ -83,7 +89,7 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                             .radius(style.btn_radius()),
                         )
                         .child(
-                            action_button("Yeniden Tara", p.btn_secondary, p.text_primary, p, |s| {
+                            action_button("Rescan BIOS", p.btn_secondary, p.text_primary, p, |s| {
                                 s.bios_info = Some(crate::hardware::bios::BiosSystemInfo::probe());
                             })
                             .motion(style.motion())
@@ -114,127 +120,349 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                                 .center()
                                 .child(text("🌐").font(rune::tok::type_::LABEL))
                                 .child(
-                                    text("Çevrimiçi Sürücü Güncelleme & Doğrulama")
+                                    text("Online Driver Update & Verification")
                                         .font(rune::tok::type_::TITLE)
                                         .color(p.text_primary),
                                 ),
                         )
                         .child(
-                            text(format!("{} Cihaz Taranmış", s.driver_updates.len()))
+                            text(format!("{} Devices Scanned", s.driver_updates.len()))
                                 .font(rune::tok::type_::LABEL)
                                 .color(p.text_secondary),
                         ),
                 )
+                // Filter & Search Toolbar
+                .child(
+                    row()
+                        .w_full()
+                        .min_w(0.0)
+                        .items_center()
+                        .gaps(8.0, 8.0)
+                        .flex_wrap()
+                        .child(
+                            row()
+                                .grow(1.0)
+                                .min_w(220.0)
+                                .min_h(32.0)
+                                .px(8.0)
+                                .py(4.0)
+                                .radius(6.0)
+                                .fill(p.bg_card)
+                                .border(1.0, p.border)
+                                .items_center()
+                                .child(
+                                    text_input(&s.driver_search_edit, rune::tok::type_::BODY)
+                                        .key("driver_search_input")
+                                        .single_line()
+                                        .placeholder(s.tr(TextKey::DriverSearchPlaceholder), p.text_muted)
+                                        .color(p.text_primary)
+                                        .on_edit(|s: &mut AppState| &mut s.driver_search_edit)
+                                        .grow(1.0)
+                                        .min_w(0.0),
+                                ),
+                        ),
+                )
+                // Category Filter Chips
+                .child(
+                    row()
+                        .w_full()
+                        .min_w(0.0)
+                        .gap(6.0)
+                        .flex_wrap()
+                        .child({
+                            let is_active = s.driver_category_filter.is_none();
+                            action_button(
+                                s.tr(TextKey::DriverFilterAll),
+                                if is_active { p.accent } else { p.bg_card },
+                                if is_active { Color::WHITE } else { p.text_secondary },
+                                p,
+                                |s| s.driver_category_filter = None,
+                            )
+                            .radius(style.badge_radius())
+                        })
+                        .child({
+                            let is_active = s.driver_category_filter == Some(DriverCategory::Display);
+                            action_button(
+                                s.tr(TextKey::DriverFilterDisplay),
+                                if is_active { p.accent } else { p.bg_card },
+                                if is_active { Color::WHITE } else { p.text_secondary },
+                                p,
+                                |s| s.driver_category_filter = Some(DriverCategory::Display),
+                            )
+                            .radius(style.badge_radius())
+                        })
+                        .child({
+                            let is_active = s.driver_category_filter == Some(DriverCategory::Network);
+                            action_button(
+                                s.tr(TextKey::DriverFilterNetwork),
+                                if is_active { p.accent } else { p.bg_card },
+                                if is_active { Color::WHITE } else { p.text_secondary },
+                                p,
+                                |s| s.driver_category_filter = Some(DriverCategory::Network),
+                            )
+                            .radius(style.badge_radius())
+                        })
+                        .child({
+                            let is_active = s.driver_category_filter == Some(DriverCategory::Audio);
+                            action_button(
+                                s.tr(TextKey::DriverFilterAudio),
+                                if is_active { p.accent } else { p.bg_card },
+                                if is_active { Color::WHITE } else { p.text_secondary },
+                                p,
+                                |s| s.driver_category_filter = Some(DriverCategory::Audio),
+                            )
+                            .radius(style.badge_radius())
+                        })
+                        .child({
+                            let is_active = s.driver_category_filter == Some(DriverCategory::Storage);
+                            action_button(
+                                s.tr(TextKey::DriverFilterStorage),
+                                if is_active { p.accent } else { p.bg_card },
+                                if is_active { Color::WHITE } else { p.text_secondary },
+                                p,
+                                |s| s.driver_category_filter = Some(DriverCategory::Storage),
+                            )
+                            .radius(style.badge_radius())
+                        })
+                        .child({
+                            let is_active = s.driver_category_filter == Some(DriverCategory::Chipset);
+                            action_button(
+                                "⚙ Chipset",
+                                if is_active { p.accent } else { p.bg_card },
+                                if is_active { Color::WHITE } else { p.text_secondary },
+                                p,
+                                |s| s.driver_category_filter = Some(DriverCategory::Chipset),
+                            )
+                            .radius(style.badge_radius())
+                        })
+                        .child({
+                            let is_active = s.driver_category_filter == Some(DriverCategory::Usb);
+                            action_button(
+                                "🔌 USB",
+                                if is_active { p.accent } else { p.bg_card },
+                                if is_active { Color::WHITE } else { p.text_secondary },
+                                p,
+                                |s| s.driver_category_filter = Some(DriverCategory::Usb),
+                            )
+                            .radius(style.badge_radius())
+                        })
+                        .child({
+                            let is_active = s.driver_category_filter == Some(DriverCategory::Bluetooth);
+                            action_button(
+                                "🔷 Bluetooth",
+                                if is_active { p.accent } else { p.bg_card },
+                                if is_active { Color::WHITE } else { p.text_secondary },
+                                p,
+                                |s| s.driver_category_filter = Some(DriverCategory::Bluetooth),
+                            )
+                            .radius(style.badge_radius())
+                        }),
+                )
+                // Driver Cards inside Bounded Scroll Container
                 .child(
                     if s.driver_updates.is_empty() {
-                        row()
+                        col()
                             .w_full()
-                            .padding(14.0)
+                            .min_w(0.0)
+                            .padding(p.card_padding)
                             .center()
+                            .gap(8.0)
+                            .child(
+                                text(if s.is_driver_scanning { "⟳" } else { "🔍" })
+                                    .font(rune::tok::type_::TITLE)
+                                    .color(if s.is_driver_scanning { p.accent } else { p.text_muted }),
+                            )
                             .child(
                                 text(if s.is_driver_scanning {
-                                    "Çevrimiçi sürücü katalogları taranıyor..."
+                                    "Scanning online driver catalogs and PnP devices..."
                                 } else {
-                                    "Sürücüleri taramak için 'Çevrimiçi Sürücüleri Tara' veya 'Test Sürücüsü' butonuna tıklayın."
+                                    "Click 'Scan Drivers Online' or 'Test Sandbox Driver' to scan system hardware."
                                 })
                                 .font(rune::tok::type_::BODY)
                                 .color(p.text_muted),
                             )
                     } else {
+                        let filtered_drivers: Vec<_> = s
+                            .driver_updates
+                            .iter()
+                            .filter(|item| {
+                                if let Some(cat) = s.driver_category_filter {
+                                    if item.category != cat {
+                                        return false;
+                                    }
+                                }
+                                if q_raw.is_empty() {
+                                    return true;
+                                }
+                                item.name.to_lowercase().contains(&q_raw)
+                                    || item.provider.to_lowercase().contains(&q_raw)
+                                    || item.hardware_id.to_lowercase().contains(&q_raw)
+                                    || item.category.display_name().to_lowercase().contains(&q_raw)
+                                    || item.current_version.to_lowercase().contains(&q_raw)
+                                    || item.latest_version.to_lowercase().contains(&q_raw)
+                            })
+                            .collect();
+
                         let mut driver_list = col().w_full().min_w(0.0).gap(6.0);
-                        for item in &s.driver_updates {
-                            let is_busy = s.driver_install_in_flight.as_deref() == Some(&item.id);
-                            let (badge_text, badge_color) = match item.state {
-                                DriverUpdateState::Installed => (s.tr(TextKey::DriverInstalledSuccess), p.success),
-                                DriverUpdateState::UpdateAvailable => (s.tr(TextKey::DriverUpdateAvailable), p.warning),
-                                DriverUpdateState::UpToDate => (s.tr(TextKey::DriverUpToDate), p.text_secondary),
-                                DriverUpdateState::Downloading => ("İndiriliyor...", p.accent),
-                                DriverUpdateState::Installing => (s.tr(TextKey::DriverInstalling), p.accent),
-                                DriverUpdateState::Failed => ("Hata ✘", p.danger),
-                                DriverUpdateState::ReadyToInstall => ("Kuruluma Hazır", p.accent),
-                            };
 
-                            let driver_id = item.id.clone();
-                            let row_card = row()
-                                .w_full()
-                                .min_w(0.0)
-                                .padding(10.0)
-                                .radius(style.card_radius().min(6.0))
-                                .fill(p.bg_card_hover)
-                                .border(1.0, p.border)
-                                .center()
-                                .gaps(10.0, 8.0)
-                                .flex_wrap()
-                                .child(
-                                    row()
-                                        .gap(6.0)
-                                        .items_center()
-                                        .child(text(item.category.icon()).font(rune::tok::type_::TITLE))
-                                        .child(
-                                            col()
-                                                .grow(1.0)
-                                                .min_w(200.0)
-                                                .child(
-                                                    text(&item.name)
-                                                        .font(rune::tok::type_::LABEL)
-                                                        .color(p.text_primary),
-                                                )
-                                                .child(
-                                                    text(format!("{} • Sağlayıcı: {} • {}", item.category.display_name(), item.provider, item.status_message))
-                                                        .font(rune::tok::type_::BODY)
-                                                        .color(p.text_muted),
-                                                ),
-                                        ),
-                                )
-                                .child(
-                                    col()
-                                        .min_w(160.0)
-                                        .child(
-                                            text(format!("Mevcut: {} ➔ Son: {}", item.current_version, item.latest_version))
-                                                .font(rune::tok::type_::LABEL)
-                                                .color(if item.is_update_available() { p.warning } else { p.text_secondary }),
-                                        )
-                                        .child(
-                                            text(format!("Tarih: {} ({:.1} MB)", item.release_date, item.download_size_mb))
-                                                .font(rune::tok::type_::BODY)
-                                                .color(p.text_muted),
-                                        ),
-                                )
-                                .child(
-                                    row()
-                                        .px(8.0)
-                                        .py(3.0)
-                                        .radius(style.badge_radius())
-                                        .fill(badge_color.alpha(0.18))
-                                        .border(1.0, badge_color)
-                                        .child(
-                                            text(badge_text)
-                                                .font(rune::tok::type_::LABEL)
-                                                .color(badge_color),
-                                        ),
-                                )
-                                .child(
-                                    action_button_guarded(
-                                        if is_busy {
-                                            s.tr(TextKey::DriverInstalling)
-                                        } else if item.is_update_available() {
-                                            s.tr(TextKey::DriverDownloadInstall)
-                                        } else {
-                                            "Doğrula / Kur"
-                                        },
-                                        if item.is_update_available() { p.accent } else { p.btn_secondary },
-                                        if item.is_update_available() { Color::WHITE } else { p.text_primary },
-                                        !is_busy && s.driver_install_in_flight.is_none(),
-                                        p,
-                                        move |s| s.install_driver_update(driver_id.clone()),
+                        if filtered_drivers.is_empty() {
+                            driver_list = driver_list.child(
+                                col()
+                                    .w_full()
+                                    .min_w(0.0)
+                                    .padding(16.0)
+                                    .center()
+                                    .child(
+                                        text("No devices match the current category or search filter.")
+                                            .font(rune::tok::type_::BODY)
+                                            .color(p.text_muted),
+                                    ),
+                            );
+                        } else {
+                            for item in filtered_drivers {
+                                let is_busy = s.driver_install_in_flight.as_deref() == Some(&item.id);
+                                let (badge_text, badge_color) = match item.state {
+                                    DriverUpdateState::Installed => (s.tr(TextKey::DriverInstalledSuccess), p.success),
+                                    DriverUpdateState::UpdateAvailable => (s.tr(TextKey::DriverUpdateAvailable), p.warning),
+                                    DriverUpdateState::UpToDate => (s.tr(TextKey::DriverUpToDate), p.text_secondary),
+                                    DriverUpdateState::Downloading => ("Downloading...", p.accent),
+                                    DriverUpdateState::Installing => (s.tr(TextKey::DriverInstalling), p.accent),
+                                    DriverUpdateState::Failed => ("Failed ✘", p.danger),
+                                    DriverUpdateState::ReadyToInstall => ("Ready to Install", p.accent),
+                                };
+
+                                let driver_id = item.id.clone();
+                                let backup_id = item.id.clone();
+
+                                let mut hw_details = format!("{} • Provider: {}", item.category.display_name(), item.provider);
+                                if !item.hardware_id.is_empty() {
+                                    hw_details.push_str(&format!(" • HW: {}", item.hardware_id));
+                                }
+                                hw_details.push_str(&format!(" • {}", item.status_message));
+
+                                let (whql_text, whql_color) = if item.is_whql_signed {
+                                    ("✔ WHQL", p.success)
+                                } else {
+                                    ("Unverified", p.text_secondary)
+                                };
+
+                                let row_card = row()
+                                    .w_full()
+                                    .min_w(0.0)
+                                    .padding(8.0)
+                                    .pr(12.0)
+                                    .radius(style.card_radius().min(6.0))
+                                    .fill(p.bg_card_hover)
+                                    .border(1.0, p.border)
+                                    .center()
+                                    .gaps(8.0, 6.0)
+                                    .flex_wrap()
+                                    .child(
+                                        row()
+                                            .gap(6.0)
+                                            .items_center()
+                                            .child(text(item.category.icon()).font(rune::tok::type_::TITLE))
+                                            .child(
+                                                col()
+                                                    .grow(1.0)
+                                                    .min_w(200.0)
+                                                    .child(
+                                                        text(&item.name)
+                                                            .font(rune::tok::type_::LABEL)
+                                                            .color(p.text_primary),
+                                                    )
+                                                    .child(
+                                                        text(hw_details)
+                                                            .font(rune::tok::type_::BODY)
+                                                            .color(p.text_muted),
+                                                    ),
+                                            ),
                                     )
-                                    .motion(style.motion())
-                                    .radius(style.btn_radius()),
-                                );
+                                    .child(
+                                        col()
+                                            .min_w(150.0)
+                                            .child(
+                                                text(format!("Current: {} ➔ Latest: {}", item.current_version, item.latest_version))
+                                                    .font(rune::tok::type_::LABEL)
+                                                    .color(if item.is_update_available() { p.warning } else { p.text_secondary }),
+                                            )
+                                            .child(
+                                                text(format!("Date: {} ({:.1} MB)", item.release_date, item.download_size_mb))
+                                                    .font(rune::tok::type_::BODY)
+                                                    .color(p.text_muted),
+                                            ),
+                                    )
+                                    .child(
+                                        row()
+                                            .px(6.0)
+                                            .py(2.0)
+                                            .radius(style.badge_radius())
+                                            .fill(whql_color.alpha(0.12))
+                                            .border(1.0, whql_color.alpha(0.4))
+                                            .child(
+                                                text(whql_text)
+                                                    .font(rune::tok::type_::LABEL)
+                                                    .color(whql_color),
+                                            ),
+                                    )
+                                    .child(
+                                        row()
+                                            .px(8.0)
+                                            .py(3.0)
+                                            .radius(style.badge_radius())
+                                            .fill(badge_color.alpha(0.18))
+                                            .border(1.0, badge_color)
+                                            .child(
+                                                text(badge_text)
+                                                    .font(rune::tok::type_::LABEL)
+                                                    .color(badge_color),
+                                            ),
+                                    )
+                                    .child(
+                                        row()
+                                            .gap(6.0)
+                                            .items_center()
+                                            .child(
+                                                action_button_guarded(
+                                                    "Backup",
+                                                    p.btn_secondary,
+                                                    p.text_primary,
+                                                    !is_busy,
+                                                    p,
+                                                    move |s| s.backup_driver(backup_id.clone()),
+                                                )
+                                                .motion(style.motion())
+                                                .radius(style.btn_radius()),
+                                            )
+                                            .child(
+                                                action_button_guarded(
+                                                    if is_busy {
+                                                        s.tr(TextKey::DriverInstalling)
+                                                    } else if item.is_update_available() {
+                                                        s.tr(TextKey::DriverDownloadInstall)
+                                                    } else {
+                                                        "Verify / Update"
+                                                    },
+                                                    if item.is_update_available() { p.accent } else { p.btn_secondary },
+                                                    if item.is_update_available() { Color::WHITE } else { p.text_primary },
+                                                    !is_busy && s.driver_install_in_flight.is_none(),
+                                                    p,
+                                                    move |s| s.install_driver_update(driver_id.clone()),
+                                                )
+                                                .motion(style.motion())
+                                                .radius(style.btn_radius()),
+                                            ),
+                                    );
 
-                            driver_list = driver_list.child(row_card);
+                                driver_list = driver_list.child(row_card);
+                            }
                         }
-                        driver_list
+
+                        col()
+                            .w_full()
+                            .min_w(0.0)
+                            .padding(2.0)
+                            .child(driver_list)
                     },
                 ),
         )
@@ -261,7 +489,7 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                                 .center()
                                 .child(text("🎛").font(rune::tok::type_::LABEL))
                                 .child(
-                                    text("Anakart (Motherboard)")
+                                    text("Motherboard")
                                         .font(rune::tok::type_::LABEL)
                                         .color(p.text_primary),
                                 ),
@@ -304,7 +532,7 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                                 .color(p.accent),
                         )
                         .child(
-                            text(format!("Yayın Tarihi: {} • UEFI Boot: {}", bios.bios_release_date, if bios.uefi_boot { "Active" } else { "Legacy" }))
+                            text(format!("Release Date: {} • UEFI Boot: {}", bios.bios_release_date, if bios.uefi_boot { "Active" } else { "Legacy" }))
                                 .font(rune::tok::type_::BODY)
                                 .color(p.text_secondary),
                         )
@@ -339,7 +567,7 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                         .center()
                         .child(text("🎮").font(rune::tok::type_::LABEL))
                         .child(
-                            text("Yüklü Ekran Kartı Sürücüleri (Display Drivers)")
+                            text("Installed GPU Display Drivers")
                                 .font(rune::tok::type_::LABEL)
                                 .color(p.text_primary),
                         ),
@@ -365,21 +593,21 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                                         .color(p.text_primary),
                                 )
                                 .child(
-                                    text(format!("Sağlayıcı: {} • INF: {}", drv.provider, drv.inf_path))
+                                    text(format!("Provider: {} • INF: {}", drv.provider, drv.inf_path))
                                         .font(rune::tok::type_::BODY)
                                         .color(p.text_muted),
-                                ),
+                                 ),
                         )
                         .child(
                             col()
                                 .min_w(140.0)
                                 .child(
-                                    text(format!("Sürüm: {}", drv.driver_version))
+                                    text(format!("Version: {}", drv.driver_version))
                                         .font(rune::tok::type_::LABEL)
                                         .color(p.success),
                                 )
                                 .child(
-                                    text(format!("Tarih: {}", drv.driver_date))
+                                    text(format!("Date: {}", drv.driver_date))
                                         .font(rune::tok::type_::BODY)
                                         .color(p.text_secondary),
                                 ),

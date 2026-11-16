@@ -5,6 +5,52 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ---
 
+## [v1.5.0] - 2026-11-16
+
+### 🌟 Landmark Highlights
+- **In-App GitHub Releases Self-Updater (`src/core/updater.rs`)**:
+  - Direct HTTPS API integration checking GitHub releases with semver comparison.
+  - Zero-dependency in-place binary upgrade: renames current executable to `.old`, moves new release into place, and automatically relaunches.
+- **Administrator Elevation Guard & 1-Click Relaunch (`src/core/elevation.rs`)**:
+  - Pre-flight `OpenProcessToken` and `TokenElevation` interrogation on startup.
+  - Contextual warning card on Dashboard with one-click UAC elevation via `ShellExecuteW("runas")`.
+- **Game Prerequisites & Runtimes Cascade Installer (`src/tools/game_prereqs.rs`)**:
+  - Full audit and installation of essential runtimes (DirectX, Visual C++ 2005-2022 All-in-One, Vulkan, .NET Desktop Runtime 8.0/9.0, OpenAL, XNA).
+  - 3-tier fallback engine: WinGet silent install -> Chocolatey CLI -> Direct official vendor website launch.
+- **Unified Gaming & Performance Hub (`src/ui/views/gaming_stats.rs`)**:
+  - Consolidated scattered gaming tools into a unified 5-tab workspace: Real-Time Monitor, FPS Benchmark, Game Profiles (IFEO registry tuning), In-Game HUD, and Esports Game Suitability.
+- **Multi-Axis Sorting Engine Across All Data Views**:
+  - Dynamic 1-click sorting for Advanced Matrix (Name, Category, Risk, Status), Clean & Apps (Size, Name), Startup & Tasks (Source, Status), Drivers (Class, Vendor, Updates), and Game Prerequisites (Missing First).
+- **Comprehensive UI Bug Fixes & Scrollbar Gutter Overhaul**:
+  - Added dedicated right-side padding (`.pr(14.0)` to `.pr(16.0)`) across all scrollable viewports, completely eliminating scrollbar thumb overlap with action buttons.
+  - Redesigned WinGet application cards into a two-tier layout, eliminating text wrapping and badge clipping.
+- **Expanded Declarative Tweak Catalogs (208 Total Tweaks)**:
+  - Added `assets/rules/gaming_latency_ultra.toml` and `assets/rules/system_deep_opt.toml`, expanding catalog to 208 vetted optimizations.
+  - Expanded zero-allocation 8-language localization to 510 `TextKey` variants with 100% full coverage.
+- **Exhaustive Automated QA (154 Tests)**:
+  - 154 automated tests passing with 0 warnings and 0 compiler errors.
+
+---
+
+## [v1.2.0] - 2026-11-15
+
+### 🌟 Highlights
+- **Zero-Allocation View Localization (8 Languages)**: Implemented `src/core/view_i18n.rs` with 88 zero-allocation string catalog keys covering all extended subviews in English, Turkish, German, French, Spanish, Russian, Chinese, and Japanese.
+- **Authentic Win32 Hardware Interrogation**: Replaced placeholder telemetry with direct `IOCTL_STORAGE_QUERY_PROPERTY` physical disk queries, ACPI ThermalZone telemetry, and real Windows IFEO registry mutations.
+- **Windows Component Repair Suite**: Integrated one-click repair actions for `sfc /scannow`, `dism /Online /Cleanup-Image /RestoreHealth`, `ipconfig /flushdns`, and Winsock resets.
+- **UI Thread Fluidity**: Background worker benchmark execution and accurate fault diagnostics status clamp removal.
+
+---
+
+## [v1.1.0] - 2026-11-15
+
+### 🌟 Highlights
+- **Online Driver Scanning & Hardware SMBIOS Diagnostics**: Direct SMBIOS motherboard, UEFI, and GPU driver inspection with deep-links to manufacturer update portals.
+- **Sidebar & Menu Localization**: Complete 8-language localization of sidebar navigation, theme switchers, and quick action cards.
+- **Dashboard Redesign**: Integrated real-time CPU/RAM activity waveforms and system baseline delta meters.
+
+---
+
 ## [v1.0.0] - 2026-11-15
 
 ### 🌟 Landmark Highlights

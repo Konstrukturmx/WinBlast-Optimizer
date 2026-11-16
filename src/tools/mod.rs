@@ -3,11 +3,13 @@
 //! non-elevated Explorer restart, and setup-safe `autounattend.xml` generation.
 
 pub mod autounattend;
+pub mod automation;
 pub mod cleaner;
 pub mod diagnostics;
 pub mod explorer_ctrl;
 pub mod features_apps;
 pub mod game_overlay;
+pub mod game_prereqs;
 pub mod game_profiles;
 pub mod gaming_stats;
 pub mod network_diag;

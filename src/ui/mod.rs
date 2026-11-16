@@ -37,16 +37,29 @@ fn tier_from_rect(r: [f32; 4]) -> LayoutTier {
     }
 }
 
-/// Navigation section category title.
+/// Navigation section category title with optional collapsible chevron indicator.
 fn nav_section_header(title: &str, p: &ThemePalette) -> El {
-    text(title)
-        .font(rune::tok::type_::LABEL)
-        .color(p.text_muted)
+    row()
+        .w_full()
+        .min_w(0.0)
         .px(6.0)
         .pt(8.0)
         .pb(2.0)
-        .shrink()
-        .wrap()
+        .justify_between()
+        .items_center()
+        .child(
+            text(title)
+                .font(rune::tok::type_::LABEL)
+                .color(p.text_muted)
+                .shrink()
+                .wrap(),
+        )
+        .child(
+            text("▾")
+                .font(rune::tok::type_::LABEL)
+                .color(p.accent.alpha(0.60))
+                .shrink(),
+        )
 }
 
 /// Navigation button in the sidebar with active bar indicator, icon glyph, and optional status dot/badge.
@@ -70,25 +83,21 @@ fn nav_button(
         .py(6.0)
         .radius(style.btn_radius())
         .fill(if active { p.accent.alpha(0.18) } else { Color::TRANSPARENT })
-        .hover(if active { p.accent.alpha(0.26) } else { p.bg_card_hover })
-        .press(p.accent.alpha(0.35))
-        .border(1.0, if active { p.accent.alpha(0.6) } else { Color::TRANSPARENT })
+        .hover(if active { p.accent.alpha(0.28) } else { p.bg_card_hover })
+        .press(p.accent.alpha(0.38))
+        .border(1.0, if active { p.accent.alpha(0.65) } else { Color::TRANSPARENT })
         .motion(style.motion())
         .center()
         .on_press(move |s: &mut AppState| s.navigate(target));
 
-    // Active vertical indicator bar on left edge (yellow bar in screenshot)
-    if active {
-        btn = btn.child(
-            el()
-                .size(3.0, 16.0)
-                .radius(1.5)
-                .fill(p.warning)
-                .mr(6.0),
-        );
-    } else {
-        btn = btn.child(el().size(3.0, 16.0).mr(6.0));
-    }
+    // Smooth animated active indicator bar on left edge with spring physics
+    let indicator = el()
+        .size(if active { 3.5 } else { 0.0 }, if active { 18.0 } else { 0.0 })
+        .radius(1.75)
+        .fill(if active { p.warning } else { Color::TRANSPARENT })
+        .motion(style.motion())
+        .mr(if active { 6.0 } else { 2.0 });
+    btn = btn.child(indicator);
 
     // Icon glyph
     btn = btn.child(
@@ -98,7 +107,7 @@ fn nav_button(
             .mr(6.0),
     );
 
-    // Label
+    // Label with min_w(0.0) to prevent overflow
     btn = btn.child(
         text(label)
             .font(rune::tok::type_::LABEL)
@@ -172,45 +181,159 @@ fn build_sidebar(s: &AppState, p: &ThemePalette, tier: LayoutTier) -> El {
         .as_ref()
         .map_or(0, |r| r.total_critical_faults);
 
+    let q_raw = s.search_edit.text.trim();
+    let has_filter = !q_raw.is_empty();
+    let q = if has_filter {
+        crate::core::i18n::I18n::fold_search_str(q_raw)
+    } else {
+        String::new()
+    };
+
+    let matches_filter = |label: &str, icon: &str| -> bool {
+        if !has_filter {
+            return true;
+        }
+        let folded = crate::core::i18n::I18n::fold_search_str(label);
+        folded.contains(&q) || icon.contains(q_raw)
+    };
+
+    let nav_search = row()
+        .key("sidebar_search_row")
+        .w_full()
+        .min_w(0.0)
+        .px(8.0)
+        .py(5.0)
+        .radius(p.input_radius)
+        .fill(p.bg_card)
+        .border(p.border_width, p.border)
+        .items_center()
+        .gap(6.0)
+        .child(
+            text("🔍")
+                .font(rune::tok::type_::LABEL)
+                .color(p.text_muted),
+        )
+        .child(
+            rune::text_input(&s.search_edit, rune::tok::type_::LABEL)
+                .key("sidebar_filter_input")
+                .single_line()
+                .placeholder(s.tr(TextKey::SidebarSearchPlaceholder), p.text_muted)
+                .color(p.text_primary)
+                .on_edit(|s: &mut AppState| &mut s.search_edit)
+                .grow(1.0)
+                .min_w(0.0),
+        );
+
     let mut nav_items = col()
         .w_full()
         .min_w(0.0)
-        .gap(3.0)
-        // Group 1: Overview
-        .child(nav_section_header(s.tr(TextKey::NavGroupOverview), p))
-        .child(nav_button("nav_easy", "⚡", s.tr(TextKey::NavSystemPanel), s.active_view == ActiveView::EasyDashboard, p, style, false, 0, ActiveView::EasyDashboard))
-        .child(nav_button("nav_hardware", "🖹", s.tr(TextKey::NavHardware), s.active_view == ActiveView::HardwareView, p, style, false, 0, ActiveView::HardwareView))
-        .child(nav_button("nav_driver_bios", "💾", s.tr(TextKey::NavDriverBios), s.active_view == ActiveView::DriverBios, p, style, true, 0, ActiveView::DriverBios))
+        .gap(3.0);
 
-        // Group 2: Testing & Diagnostics
-        .child(nav_section_header(s.tr(TextKey::NavGroupDiagnostics), p))
-        .child(nav_button("nav_perf_tests", "📈", s.tr(TextKey::NavPerfTests), s.active_view == ActiveView::PerformanceTests, p, style, false, 0, ActiveView::PerformanceTests))
-        .child(nav_button("nav_fault_diag", "🛡️", s.tr(TextKey::NavFaultDiag), s.active_view == ActiveView::FaultDiagnostics, p, style, false, fault_count, ActiveView::FaultDiagnostics))
-        .child(nav_button("nav_latency", "⏱", s.tr(TextKey::NavLatency), s.active_view == ActiveView::LatencyTester, p, style, true, 0, ActiveView::LatencyTester))
-        .child(nav_button("nav_core_parking", "🔲", s.tr(TextKey::NavCoreParking), s.active_view == ActiveView::CoreParking, p, style, true, 0, ActiveView::CoreParking))
-        .child(nav_button("nav_thermal", "❄", s.tr(TextKey::NavThermal), s.active_view == ActiveView::ThermalMonitor, p, style, true, 0, ActiveView::ThermalMonitor))
-        .child(nav_button("nav_disks", "💽", s.tr(TextKey::NavDisks), s.active_view == ActiveView::DiskHealth, p, style, true, 0, ActiveView::DiskHealth))
-        .child(nav_button("nav_gaming_stats", "🎮", s.tr(TextKey::NavGamingStats), s.active_view == ActiveView::GamingStats, p, style, false, 0, ActiveView::GamingStats))
-        .child(nav_button("nav_fps_bench", "📊", s.tr(TextKey::NavFpsBench), s.active_view == ActiveView::FpsBenchmark, p, style, false, 0, ActiveView::FpsBenchmark))
-        .child(nav_button("nav_network", "📶", s.tr(TextKey::NavNetwork), s.active_view == ActiveView::NetworkDiag, p, style, false, 0, ActiveView::NetworkDiag))
+    // Group 1: Overview
+    let g1_label = s.tr(TextKey::NavGroupOverview);
+    let mut g1_items = Vec::new();
+    if matches_filter(s.tr(TextKey::NavSystemPanel), "⚡") {
+        g1_items.push(nav_button("nav_easy", "⚡", s.tr(TextKey::NavSystemPanel), s.active_view == ActiveView::EasyDashboard, p, style, false, 0, ActiveView::EasyDashboard));
+    }
+    if matches_filter(s.tr(TextKey::NavHardware), "🖹") {
+        g1_items.push(nav_button("nav_hardware", "🖹", s.tr(TextKey::NavHardware), s.active_view == ActiveView::HardwareView, p, style, false, 0, ActiveView::HardwareView));
+    }
+    if matches_filter(s.tr(TextKey::NavDriverBios), "💾") {
+        g1_items.push(nav_button("nav_driver_bios", "💾", s.tr(TextKey::NavDriverBios), s.active_view == ActiveView::DriverBios, p, style, true, 0, ActiveView::DriverBios));
+    }
+    if !g1_items.is_empty() {
+        nav_items = nav_items.child(nav_section_header(g1_label, p)).children(g1_items);
+    }
 
-        // Group 3: Optimization
-        .child(nav_section_header(s.tr(TextKey::NavGroupOptimization), p))
-        .child(nav_button("nav_advanced", "⚡", s.tr(TextKey::NavFpsOptimization), s.active_view == ActiveView::AdvancedMatrix, p, style, false, 0, ActiveView::AdvancedMatrix))
-        .child(nav_button("nav_goal_planner", "🎯", s.tr(TextKey::NavGoalPlanner), s.active_view == ActiveView::GoalPlanner, p, style, false, 0, ActiveView::GoalPlanner))
-        .child(nav_button("nav_game_profiles", "🕹️", s.tr(TextKey::NavGameProfiles), s.active_view == ActiveView::GameProfiles, p, style, false, 0, ActiveView::GameProfiles))
-        .child(nav_button("nav_game_overlay", "🖥️", s.tr(TextKey::NavGameOverlay), s.active_view == ActiveView::GameOverlay, p, style, false, 0, ActiveView::GameOverlay))
-        .child(nav_button("nav_game_suitability", "🎯", s.tr(TextKey::NavGameSuitability), s.active_view == ActiveView::GameSuitability, p, style, false, 0, ActiveView::GameSuitability))
-        .child(nav_button("nav_clean_apps", "🗑️", s.tr(TextKey::NavCleanApps), s.active_view == ActiveView::CleanAndApps, p, style, false, 0, ActiveView::CleanAndApps))
-        .child(nav_button("nav_startup_tasks", "⚙️", s.tr(TextKey::NavStartupTasks), s.active_view == ActiveView::StartupAndTasks, p, style, false, 0, ActiveView::StartupAndTasks))
-        .child(nav_button("nav_win_repair", "🔧", s.tr(TextKey::NavWindowsRepair), s.active_view == ActiveView::WindowsRepair, p, style, false, 0, ActiveView::WindowsRepair))
-        .child(nav_button("nav_backup", "📄", s.tr(TextKey::NavBackupReport), s.active_view == ActiveView::BackupCenter, p, style, false, 0, ActiveView::BackupCenter))
-        .child(nav_button("nav_gpu", "🎛️", s.tr(TextKey::NavGpuMsiHags), s.active_view == ActiveView::GpuTuning, p, style, false, 0, ActiveView::GpuTuning))
-        .child(nav_button("nav_privacy", "🛡️", s.tr(TextKey::NavPrivacyShield), s.active_view == ActiveView::PrivacyShield, p, style, false, 0, ActiveView::PrivacyShield))
+    // Group 2: Testing & Diagnostics
+    let g2_label = s.tr(TextKey::NavGroupDiagnostics);
+    let mut g2_items = Vec::new();
+    if matches_filter(s.tr(TextKey::NavPerfTests), "📈") {
+        g2_items.push(nav_button("nav_perf_tests", "📈", s.tr(TextKey::NavPerfTests), s.active_view == ActiveView::PerformanceTests, p, style, false, 0, ActiveView::PerformanceTests));
+    }
+    if matches_filter(s.tr(TextKey::NavFaultDiag), "🛡️") {
+        g2_items.push(nav_button("nav_fault_diag", "🛡️", s.tr(TextKey::NavFaultDiag), s.active_view == ActiveView::FaultDiagnostics, p, style, false, fault_count, ActiveView::FaultDiagnostics));
+    }
+    if matches_filter(s.tr(TextKey::NavLatency), "⏱") {
+        g2_items.push(nav_button("nav_latency", "⏱", s.tr(TextKey::NavLatency), s.active_view == ActiveView::LatencyTester, p, style, true, 0, ActiveView::LatencyTester));
+    }
+    if matches_filter(s.tr(TextKey::NavCoreParking), "🔲") {
+        g2_items.push(nav_button("nav_core_parking", "🔲", s.tr(TextKey::NavCoreParking), s.active_view == ActiveView::CoreParking, p, style, true, 0, ActiveView::CoreParking));
+    }
+    if matches_filter(s.tr(TextKey::NavThermal), "❄") {
+        g2_items.push(nav_button("nav_thermal", "❄", s.tr(TextKey::NavThermal), s.active_view == ActiveView::ThermalMonitor, p, style, true, 0, ActiveView::ThermalMonitor));
+    }
+    if matches_filter(s.tr(TextKey::NavDisks), "💽") {
+        g2_items.push(nav_button("nav_disks", "💽", s.tr(TextKey::NavDisks), s.active_view == ActiveView::DiskHealth, p, style, true, 0, ActiveView::DiskHealth));
+    }
+    if matches_filter(s.tr(TextKey::NavGamingStats), "🎮") {
+        g2_items.push(nav_button("nav_gaming_stats", "🎮", s.tr(TextKey::NavGamingStats), s.active_view == ActiveView::GamingStats, p, style, false, 0, ActiveView::GamingStats));
+    }
+    if matches_filter(s.tr(TextKey::NavFpsBench), "📊") {
+        g2_items.push(nav_button("nav_fps_bench", "📊", s.tr(TextKey::NavFpsBench), s.active_view == ActiveView::FpsBenchmark, p, style, false, 0, ActiveView::FpsBenchmark));
+    }
+    if matches_filter(s.tr(TextKey::NavNetwork), "📶") {
+        g2_items.push(nav_button("nav_network", "📶", s.tr(TextKey::NavNetwork), s.active_view == ActiveView::NetworkDiag, p, style, false, 0, ActiveView::NetworkDiag));
+    }
+    if !g2_items.is_empty() {
+        nav_items = nav_items.child(nav_section_header(g2_label, p)).children(g2_items);
+    }
 
-        // Group 4: Account / Support (Lisans deleted)
-        .child(nav_section_header(s.tr(TextKey::NavGroupAccount), p))
-        .child(nav_button("nav_support", "✉", s.tr(TextKey::NavSupportAbout), s.active_view == ActiveView::SupportAbout, p, style, false, 0, ActiveView::SupportAbout));
+    // Group 3: Optimization
+    let g3_label = s.tr(TextKey::NavGroupOptimization);
+    let mut g3_items = Vec::new();
+    if matches_filter(s.tr(TextKey::NavFpsOptimization), "⚡") {
+        g3_items.push(nav_button("nav_advanced", "⚡", s.tr(TextKey::NavFpsOptimization), s.active_view == ActiveView::AdvancedMatrix, p, style, false, 0, ActiveView::AdvancedMatrix));
+    }
+    if matches_filter(s.tr(TextKey::NavAutomationCenter), "🤖") {
+        g3_items.push(nav_button("nav_automation", "🤖", s.tr(TextKey::NavAutomationCenter), s.active_view == ActiveView::AutomationCenter, p, style, false, 0, ActiveView::AutomationCenter));
+    }
+    if matches_filter(s.tr(TextKey::NavGamePrereqs), "🎮") {
+        g3_items.push(nav_button("nav_game_prereqs", "🎮", s.tr(TextKey::NavGamePrereqs), s.active_view == ActiveView::GamePrerequisites, p, style, false, 0, ActiveView::GamePrerequisites));
+    }
+    if matches_filter(s.tr(TextKey::NavGoalPlanner), "🎯") {
+        g3_items.push(nav_button("nav_goal_planner", "🎯", s.tr(TextKey::NavGoalPlanner), s.active_view == ActiveView::GoalPlanner, p, style, false, 0, ActiveView::GoalPlanner));
+    }
+    if matches_filter(s.tr(TextKey::NavGameProfiles), "🕹️") {
+        g3_items.push(nav_button("nav_game_profiles", "🕹️", s.tr(TextKey::NavGameProfiles), s.active_view == ActiveView::GameProfiles, p, style, false, 0, ActiveView::GameProfiles));
+    }
+    if matches_filter(s.tr(TextKey::NavGameOverlay), "🖥️") {
+        g3_items.push(nav_button("nav_game_overlay", "🖥️", s.tr(TextKey::NavGameOverlay), s.active_view == ActiveView::GameOverlay, p, style, false, 0, ActiveView::GameOverlay));
+    }
+    if matches_filter(s.tr(TextKey::NavGameSuitability), "🎯") {
+        g3_items.push(nav_button("nav_game_suitability", "🎯", s.tr(TextKey::NavGameSuitability), s.active_view == ActiveView::GameSuitability, p, style, false, 0, ActiveView::GameSuitability));
+    }
+    if matches_filter(s.tr(TextKey::NavCleanApps), "🗑️") {
+        g3_items.push(nav_button("nav_clean_apps", "🗑️", s.tr(TextKey::NavCleanApps), s.active_view == ActiveView::CleanAndApps, p, style, false, 0, ActiveView::CleanAndApps));
+    }
+    if matches_filter(s.tr(TextKey::NavStartupTasks), "⚙️") {
+        g3_items.push(nav_button("nav_startup_tasks", "⚙️", s.tr(TextKey::NavStartupTasks), s.active_view == ActiveView::StartupAndTasks, p, style, false, 0, ActiveView::StartupAndTasks));
+    }
+    if matches_filter(s.tr(TextKey::NavWindowsRepair), "🔧") {
+        g3_items.push(nav_button("nav_win_repair", "🔧", s.tr(TextKey::NavWindowsRepair), s.active_view == ActiveView::WindowsRepair, p, style, false, 0, ActiveView::WindowsRepair));
+    }
+    if matches_filter(s.tr(TextKey::NavBackupReport), "📄") {
+        g3_items.push(nav_button("nav_backup", "📄", s.tr(TextKey::NavBackupReport), s.active_view == ActiveView::BackupCenter, p, style, false, 0, ActiveView::BackupCenter));
+    }
+    if matches_filter(s.tr(TextKey::NavGpuMsiHags), "🎛️") {
+        g3_items.push(nav_button("nav_gpu", "🎛️", s.tr(TextKey::NavGpuMsiHags), s.active_view == ActiveView::GpuTuning, p, style, false, 0, ActiveView::GpuTuning));
+    }
+    if matches_filter(s.tr(TextKey::NavPrivacyShield), "🛡️") {
+        g3_items.push(nav_button("nav_privacy", "🛡️", s.tr(TextKey::NavPrivacyShield), s.active_view == ActiveView::PrivacyShield, p, style, false, 0, ActiveView::PrivacyShield));
+    }
+    if !g3_items.is_empty() {
+        nav_items = nav_items.child(nav_section_header(g3_label, p)).children(g3_items);
+    }
+
+    // Group 4: Account / Support
+    let g4_label = s.tr(TextKey::NavGroupAccount);
+    let mut g4_items = Vec::new();
+    if matches_filter(s.tr(TextKey::NavSupportAbout), "✉") {
+        g4_items.push(nav_button("nav_support", "✉", s.tr(TextKey::NavSupportAbout), s.active_view == ActiveView::SupportAbout, p, style, false, 0, ActiveView::SupportAbout));
+    }
+    if !g4_items.is_empty() {
+        nav_items = nav_items.child(nav_section_header(g4_label, p)).children(g4_items);
+    }
 
     if tier == LayoutTier::Compact {
         nav_items = nav_items
@@ -278,7 +401,9 @@ fn build_sidebar(s: &AppState, p: &ThemePalette, tier: LayoutTier) -> El {
                                 ColorScheme::CyberIndigo => ColorScheme::MidnightStealth,
                                 ColorScheme::MidnightStealth => ColorScheme::EmeraldMint,
                                 ColorScheme::EmeraldMint => ColorScheme::CrimsonSunset,
-                                ColorScheme::CrimsonSunset => ColorScheme::CyberIndigo,
+                                ColorScheme::CrimsonSunset => ColorScheme::SolarAmber,
+                                ColorScheme::SolarAmber => ColorScheme::ArcticAurora,
+                                ColorScheme::ArcticAurora => ColorScheme::CyberIndigo,
                             };
                             s.set_color_scheme(next);
                         },
@@ -312,6 +437,7 @@ fn build_sidebar(s: &AppState, p: &ThemePalette, tier: LayoutTier) -> El {
         .fill(p.bg_sidebar)
         .border(p.border_width, p.border)
         .gap(8.0)
+        .child(nav_search)
         .child(
             col()
                 .key("nav_sidebar_scroll")
@@ -329,6 +455,22 @@ fn build_sidebar(s: &AppState, p: &ThemePalette, tier: LayoutTier) -> El {
                 .gap(6.0)
                 .w_full()
                 .pt(6.0)
+                .child(
+                    row()
+                        .w_full()
+                        .min_w(0.0)
+                        .gap(4.0)
+                        .justify_between()
+                        .items_center()
+                        .child(
+                            action_button("◀ Prev", p.bg_card, p.text_secondary, p, |s: &mut AppState| s.nav_prev_view())
+                                .grow(1.0),
+                        )
+                        .child(
+                            action_button("Next ▶", p.bg_card, p.text_secondary, p, |s: &mut AppState| s.nav_next_view())
+                                .grow(1.0),
+                        ),
+                )
                 .child(
                     action_button_guarded(
                         if s.is_scanning {
@@ -536,7 +678,9 @@ pub fn view(s: &AppState, cx: &mut Cx<AppState>) -> El {
                             ColorScheme::CyberIndigo => ColorScheme::MidnightStealth,
                             ColorScheme::MidnightStealth => ColorScheme::EmeraldMint,
                             ColorScheme::EmeraldMint => ColorScheme::CrimsonSunset,
-                            ColorScheme::CrimsonSunset => ColorScheme::CyberIndigo,
+                            ColorScheme::CrimsonSunset => ColorScheme::SolarAmber,
+                            ColorScheme::SolarAmber => ColorScheme::ArcticAurora,
+                            ColorScheme::ArcticAurora => ColorScheme::CyberIndigo,
                         };
                         s.set_color_scheme(next);
                     })
@@ -754,6 +898,8 @@ pub fn view(s: &AppState, cx: &mut Cx<AppState>) -> El {
         ActiveView::GameSuitability => views::game_suitability::view(s, tier),
         ActiveView::WindowsRepair => views::windows_repair::view(s, tier),
         ActiveView::SupportAbout => views::support_about::view(s, tier),
+        ActiveView::GamePrerequisites => views::game_prereqs::view(s, tier),
+        ActiveView::AutomationCenter => views::automation_center::view(s, tier),
     };
 
     // Centered max-reading-width container on 4K/ultrawide while 100% fluid on normal sizes
@@ -849,21 +995,9 @@ pub fn view(s: &AppState, cx: &mut Cx<AppState>) -> El {
                 .truncate(),
         )
         .child(
-            row()
+            widgets::progress_bar::progress_bar_styled(progress_val, progress_color, p, 7.0, true)
                 .grow(1.0)
-                .min_w(80.0)
-                .h(6.0)
-                .radius(3.0)
-                .fill(p.bg_primary)
-                .border(1.0, p.border)
-                .child(
-                    el()
-                        .w_frac(progress_val.clamp(0.01, 1.0))
-                        .h_full()
-                        .radius(3.0)
-                        .fill(progress_color)
-                        .motion(rune::tok::motion::SNAPPY),
-                ),
+                .min_w(80.0),
         )
         .child(
             row()

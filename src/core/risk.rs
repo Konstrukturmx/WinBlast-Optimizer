@@ -417,6 +417,8 @@ const EMBEDDED_CATALOG_TELEMETRY_OS: &str = include_str!("../../assets/rules/tel
 const EMBEDDED_CATALOG_AI_PRIVACY_EXT: &str = include_str!("../../assets/rules/ai_privacy_ext.toml");
 const EMBEDDED_CATALOG_PERF_POWER_EXT: &str = include_str!("../../assets/rules/perf_power_ext.toml");
 const EMBEDDED_CATALOG_UX_CUSTOMIZATION: &str = include_str!("../../assets/rules/ux_customization.toml");
+const EMBEDDED_CATALOG_SYSTEM_DEEP_OPT: &str = include_str!("../../assets/rules/system_deep_opt.toml");
+const EMBEDDED_CATALOG_GAMING_LATENCY_ULTRA: &str = include_str!("../../assets/rules/gaming_latency_ultra.toml");
 
 pub const EMBEDDED_CATALOGS: &[&str] = &[
     EMBEDDED_CATALOG_APPX,
@@ -429,6 +431,8 @@ pub const EMBEDDED_CATALOGS: &[&str] = &[
     EMBEDDED_CATALOG_AI_PRIVACY_EXT,
     EMBEDDED_CATALOG_PERF_POWER_EXT,
     EMBEDDED_CATALOG_UX_CUSTOMIZATION,
+    EMBEDDED_CATALOG_SYSTEM_DEEP_OPT,
+    EMBEDDED_CATALOG_GAMING_LATENCY_ULTRA,
 ];
 
 /// Load all embedded rule catalogs compiled directly into the binary.

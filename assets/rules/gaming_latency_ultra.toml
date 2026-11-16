@@ -1,0 +1,283 @@
+# =============================================================================
+# WinBlast0 — Gaming Latency Ultra Tweaks
+# =============================================================================
+# 10 ultra-low-latency tweaks targeting hardware interrupts, network stack,
+# USB power saving, and background OS service overhead.
+
+[[tweaks]]
+id = "disable_driver_search_order_probing"
+title = "Disable Windows Update Driver Search Probing"
+category = "OS Settings"
+description = "Prevents Windows Update from automatically querying Windows Update servers in the background when searching for driver software. Eliminates device install latency and background network polling during device insertion."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 2
+privacy_gain = 1
+reversibility = "Instant"
+broken_features = ["Automatic online driver search via Windows Update will not run on new device connection"]
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\DriverSearching"
+name = "SearchOrderConfig"
+optimized_value = 0
+default_value = 1
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "optimize_usb_selective_suspend_hub"
+title = "Disable Global USB Hub Selective Suspend"
+category = "Hardware Tuning"
+description = "Disables USB selective suspend at the root USB driver stack level. Prevents USB controllers and hubs from powering down idle gaming mice, keyboards, and DACs, eliminating input wake-up latency and dropped polling packets."
+easy_mode_included = false
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Low"
+performance_gain = 3
+privacy_gain = 0
+reversibility = "RequiresReboot"
+broken_features = ["Slightly higher idle power draw on USB bus", "Reduced laptop battery life"]
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SYSTEM\\CurrentControlSet\\Services\\USB"
+name = "DisableSelectiveSuspend"
+optimized_value = 1
+default_value = 0
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "disable_fast_user_switching"
+title = "Disable Fast User Switching"
+category = "OS Settings"
+description = "Disables Fast User Switching to prevent inactive user sessions and their background tasks from remaining loaded in physical RAM. Frees memory bandwidth, reduces scheduler contention, and prevents background session CPU usage."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 2
+privacy_gain = 1
+reversibility = "Instant"
+broken_features = ["Multiple simultaneous local user sessions cannot remain signed in simultaneously"]
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System"
+name = "HideFastUserSwitching"
+optimized_value = 1
+default_value = 0
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "disable_netsh_teredo_tunneling"
+title = "Disable Teredo IPv6 Transition Tunneling"
+category = "Network Stack Optimization"
+description = "Disables the Teredo tunneling pseudo-interface by setting IPv6 DisabledComponents to 0x20 (32). Teredo encapsulates IPv6 in IPv4 UDP packets, introducing NAT traversal latency and packet overhead in network stacks without native IPv6."
+easy_mode_included = false
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Low"
+performance_gain = 2
+privacy_gain = 1
+reversibility = "RequiresReboot"
+broken_features = ["Legacy Xbox Live peer-to-peer multiplayer games that depend strictly on Teredo NAT traversal"]
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SYSTEM\\CurrentControlSet\\Services\\Tcpip6\\Parameters"
+name = "DisabledComponents"
+optimized_value = 32
+default_value = 0
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "disable_remote_desktop_udp"
+title = "Disable Remote Desktop Client UDP Transport"
+category = "Network Stack Optimization"
+description = "Forces the Remote Desktop (RDP) client to use reliable TCP framing instead of UDP transport. Eliminates UDP socket buffer starvation and prevents RDP background traffic from competing with UDP gaming packet queues."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 1
+privacy_gain = 0
+reversibility = "Instant"
+broken_features = ["Remote Desktop sessions over high-latency WAN connections will use TCP instead of UDP"]
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SOFTWARE\\Policies\\Microsoft\\Windows NT\\Terminal Services\\Client"
+name = "fClientDisableUDP"
+optimized_value = 1
+default_value = 0
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "optimize_kerberos_ticket_cache"
+title = "Optimize Kerberos Max Token Size Buffer"
+category = "OS Settings"
+description = "Sets the Kerberos authentication MaxTokenSize buffer to 65535 bytes, preventing authentication buffer overflows and repeated round-trip ticket renegotiations in domains or environments with complex security group memberships."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 1
+privacy_gain = 0
+reversibility = "Instant"
+broken_features = []
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SYSTEM\\CurrentControlSet\\Control\\Lsa\\Kerberos\\Parameters"
+name = "MaxTokenSize"
+optimized_value = 65535
+default_value = 48000
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "optimize_tcp_syn_attack_protection"
+title = "Enable TCP SYN Attack Protection"
+category = "Network Stack Optimization"
+description = "Enables TCP SYN flood defense in the TCP/IP stack. Under SYN flood or micro-burst connection floods, Windows accelerates TCP handshake timeouts and reduces SYN-ACK retransmission counts, protecting network gaming sockets from starvation."
+easy_mode_included = false
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Low"
+performance_gain = 2
+privacy_gain = 0
+reversibility = "RequiresReboot"
+broken_features = []
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SYSTEM\\CurrentControlSet\\Services\\Tcpip\\Parameters"
+name = "SynAttackProtect"
+optimized_value = 1
+default_value = 0
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "disable_ip_source_routing"
+title = "Disable IP Source Routing"
+category = "Network Stack Optimization"
+description = "Sets DisableIPSourceRouting=2 (highest protection) to discard all incoming source-routed IP packets. Prevents packet spoofing, path hijacking, and network stack processing overhead associated with loose/strict source-routed packets."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 1
+privacy_gain = 2
+reversibility = "Instant"
+broken_features = ["Source-routed network diagnostic tools (rare) will be rejected"]
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SYSTEM\\CurrentControlSet\\Services\\Tcpip\\Parameters"
+name = "DisableIPSourceRouting"
+optimized_value = 2
+default_value = 1
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "disable_network_adapter_power_saving"
+title = "Disable NDIS Network Adapter PnP Power Saving"
+category = "Network Stack Optimization"
+description = "Sets NDIS PnPCapabilities to 24 (disabling power management wake/sleep capabilities on network interfaces). Prevents network cards from entering low-power D-states during gameplay pauses, eliminating packet serialization delays."
+easy_mode_included = false
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Low"
+performance_gain = 3
+privacy_gain = 0
+reversibility = "RequiresReboot"
+broken_features = ["Network interface Wake-on-LAN and sleep power savings will be disabled"]
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SYSTEM\\CurrentControlSet\\Services\\NDIS\\Parameters"
+name = "PnPCapabilities"
+optimized_value = 24
+default_value = 0
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "disable_smart_card_service"
+title = "Disable Smart Card Service (SCardSvr)"
+category = "OS Settings"
+description = "Disables the Smart Card Service (SCardSvr) by setting its startup type to Disabled (4). Prevents background polling for smart card readers and cryptographic token devices, reducing system service overhead on consumer gaming PCs."
+easy_mode_included = false
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Low"
+performance_gain = 2
+privacy_gain = 0
+reversibility = "Instant"
+broken_features = ["Physical smart card authentication and smart card reader hardware will not function"]
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SYSTEM\\CurrentControlSet\\Services\\SCardSvr"
+name = "Start"
+optimized_value = 4
+default_value = 3

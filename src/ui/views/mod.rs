@@ -1,6 +1,7 @@
 //! View screens for each navigation tab.
 
 pub mod advanced_matrix;
+pub mod automation_center;
 pub mod backup_center;
 pub mod clean_apps;
 pub mod cpu_parking;
@@ -10,6 +11,7 @@ pub mod easy_dashboard;
 pub mod fault_diagnostics;
 pub mod fps_benchmark;
 pub mod game_overlay;
+pub mod game_prereqs;
 pub mod game_profiles;
 pub mod game_suitability;
 pub mod gaming_stats;

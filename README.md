@@ -9,14 +9,14 @@
 [![License](https://img.shields.io/badge/License-MIT-blueviolet?style=for-the-badge)](LICENSE)
 [![Platform](https://img.shields.io/badge/Platform-Windows%2010%20%7C%2011%20(x64)-0078D6?style=for-the-badge&logo=windows)](https://github.com/Konstrukturmx/WinBlast-Optimizer)
 [![Rust](https://img.shields.io/badge/Rust-2021%20Edition-DEA584?style=for-the-badge&logo=rust)](https://www.rust-lang.org/)
-[![Tests](https://img.shields.io/badge/Tests-127%20Passed%20(100%25)-success?style=for-the-badge)](tests/)
-[![Languages](https://img.shields.io/badge/i18n-8%20Languages-orange?style=for-the-badge)](src/core/tweak_i18n/)
+[![Tests](https://img.shields.io/badge/Tests-154%20Passed%20(100%25)-success?style=for-the-badge)](tests/)
+[![Languages](https://img.shields.io/badge/i18n-8%20Languages%20(510%20Keys)-orange?style=for-the-badge)](src/core/i18n.rs)
 
 <p align="center">
   <b>WinBlast Optimizer</b> is a standalone, lightweight, zero-dependency Windows optimization suite designed for performance enthusiasts, competitive gamers, power users, and system administrators. Built in pure Rust with direct Win32/NT kernel bindings, it replaces bloated PowerShell scripts and black-box tweakers with an auditable, transactional, and fully reversible optimization engine.
 </p>
 
-[**Download Latest Release (v1.2.0)**](https://github.com/Konstrukturmx/WinBlast-Optimizer/releases/latest) • [**Changelog**](CHANGELOG.md) • [**Architecture Guide**](DEVELOPMENT.md) • [**VirusTotal Report**](https://www.virustotal.com/gui/file/19895c54d3699391aebedb5c3e384aeb7ac5a73f8d1bee9ff7da4cd623d2fa00) • [**Knowledge Graph**](graphify-out/graph.html)
+[**Download Latest Release (v1.5.0)**](https://github.com/Konstrukturmx/WinBlast-Optimizer/releases/latest) • [**Changelog**](CHANGELOG.md) • [**Architecture Guide**](DEVELOPMENT.md) • [**VirusTotal Report**](https://www.virustotal.com/gui/file/19895c54d3699391aebedb5c3e384aeb7ac5a73f8d1bee9ff7da4cd623d2fa00) • [**Knowledge Graph**](graphify-out/graph.html)
 
 ---
 
@@ -31,7 +31,7 @@
 
 <br/><br/>
 
-### 🎛️ Advanced Optimization Matrix (168 Curated Tweaks)
+### 🎛️ Advanced Optimization Matrix (208 Curated Tweaks)
 <img src="assets/screenshots/advanced_matrix.png" alt="Advanced Matrix" width="900" />
 
 <br/><br/>
@@ -61,19 +61,21 @@ Derived from the formal [**WinBlast0 Technical Knowledge Base**](WinBlast0/00%20
   * **⚡ Compact (High Density)**: Micro-padding (8px), 4px corners, 180px sidebar, maximized information per square inch.
   * **🎨 Materialistic (Material Design 3)**: Soft 18px rounded cards, 24px pill buttons, tonal surfaces, and smooth decelerated spring motion.
 * **4 WCAG AA Color Schemes**: *Cyber Indigo*, *Midnight Stealth*, *Emerald Mint*, and *Crimson Sunset* with Dark and Light mode support.
-* **Permanent High-Resolution Icon**: Embedded `winblast.ico` with full PE Version Information (`Konstrukturmx`, `WinBlast Optimizer`, version `1.2.0.0`).
-* **Themed Always-On Scroll Bars**: Every overflowing viewport renders a custom palette-driven scroll bar (6 pt muted thumb at rest, 9 pt theme-accent thumb on hover/drag).
+* **Permanent High-Resolution Icon**: Embedded `winblast.ico` with full PE Version Information (`Konstrukturmx`, `WinBlast Optimizer`, version `1.5.0.0`).
+* **Themed Always-On Scroll Bars**: Every overflowing viewport renders a custom palette-driven scroll bar (6 pt muted thumb at rest, 9 pt theme-accent thumb on hover/drag) with dedicated `14.0pt` to `16.0pt` right gutters preventing thumb-button collisions.
 
-### 2. 🔍 Comprehensive Testing, Diagnostics & Windows Repair (v1.2)
-* **Sürücü ve BIOS Teşhisi (Driver & BIOS Diagnostics)**: Direct SMBIOS queries for Motherboard vendor/model, UEFI firmware, Secure Boot status, and installed GPU display drivers with online driver update checking.
-* **Arıza Teşhisi (Fault Diagnostics)**: Scans `%SystemRoot%\Minidump` for BSOD kernel crash dumps, detects Windows Component-Based Servicing (CBS) and Windows Update pending reboot locks, and surfaces accurate status notification badges.
-* **Sıcaklık ve Fanlar (Thermal & Fan Monitor)**: Genuine ACPI ThermalZone queries for real-time CPU & GPU junction temperatures, fan RPM readings, and PROCHOT throttling limit indicators with transparent OEM driver requirements.
-* **Diskler (Disk Health & SMART)**: Win32 IOCTL physical disk interrogation for real device models, bus types (NVMe/SATA), SSD wear leveling, TBW lifetime writes, and one-click TRIM execution.
-* **Oyun İçi İzleme & FPS Karşılaştırma (Gaming Telemetry & Benchmark)**: Real-time frame pacing stability ratings, active game process detection, and measured Before/After FPS comparison matrices across top titles (*Counter-Strike 2*, *Valorant*, *Apex Legends*, *Call of Duty: Warzone*, *Cyberpunk 2077*).
-* **İnternet ve Ağ (Network & Latency)**: Active adapter MTU inspection, dynamic local IP resolution, TCP ACK frequency and TCP NoDelay gaming optimization, and live socket round-trip DNS ping probes to Cloudflare (1.1.1.1), Google (8.8.8.8), and Quad9.
-* **Özel Oyun Profilleri (Game Profiles Engine)**: Pre-tuned optimization profiles applying real Windows Image File Execution Options (IFEO) registry priority and high I/O flags.
-* **Windows Onarımı (Windows Component Repair Suite)**: Integrated one-click repair suite for SFC Scannow, DISM Component Store RestoreHealth, Winsock & TCP/IP stack resets, and DNS cache flush with real system tool execution.
-* **Çoklu Dil Desteği (Full-Stack 8-Language Localization)**: Complete zero-allocation translation engine (`view_i18n.rs`) covering all 11 subviews in English, Turkish, German, French, Spanish, Russian, Chinese, and Japanese.
+### 2. ⚡ Autonomous Self-Updater & Game Platform Engine (v1.5)
+* **GitHub Releases Self-Updater**: Zero-dependency HTTPS release checker querying official releases with semver comparison. Performs atomic in-place executable replacement (`.old` swap) and automatic restart without external updaters.
+* **Administrator Elevation Guard**: Pre-flight Win32 `TokenElevation` audit with non-intrusive warning banners and one-click UAC relaunch via `ShellExecuteW("runas")`.
+* **Game Prerequisites & Runtimes Cascade Engine**: Audits, verifies, and installs essential gaming runtimes (DirectX, Visual C++ 2005–2022 All-in-One, Vulkan, .NET Desktop Runtime 8.0/9.0, OpenAL, XNA) via a resilient 3-tier cascade: WinGet silent install ➔ Chocolatey CLI fallback ➔ Direct vendor portal launch.
+* **Unified Gaming & Performance Hub**: Consolidated 5-tab high-density workspace integrating Live Frametime/Jitter Monitor, FPS Benchmark, IFEO Game Profiles, In-Game HUD toggles, and Esports Hardware Suitability into a unified cockpit.
+* **Multi-Axis Sorting Engine**: Dynamic 1-click sorting across the Advanced Matrix, Clean & Apps, Startup & Tasks, Driver Lifecycle, and Game Prerequisites.
+* **Driver & SMBIOS Diagnostics**: Direct SMBIOS queries for Motherboard vendor/model, UEFI firmware, Secure Boot status, and installed GPU display drivers with online driver update checking.
+* **Fault Diagnostics & CBS Telemetry**: Scans `%SystemRoot%\Minidump` for BSOD kernel crash dumps, detects Windows Component-Based Servicing (CBS) and Windows Update pending reboot locks.
+* **Temperatures & Fans**: Genuine ACPI ThermalZone queries for real-time CPU & GPU junction temperatures, fan RPM readings, and PROCHOT throttling limit indicators.
+* **Storage Disks**: Win32 IOCTL physical disk interrogation for real device models, bus types (NVMe/SATA), SSD wear leveling, TBW lifetime writes, and one-click TRIM execution.
+* **Windows Component Repair Suite**: Integrated one-click repair suite for SFC Scannow, DISM Component Store RestoreHealth, Winsock & TCP/IP stack resets, and DNS cache flush.
+* **Zero-Allocation 8-Language Localization**: Complete 510-key zero-allocation translation engine (`i18n.rs` & `view_i18n.rs`) covering all views in English, Turkish, German, French, Spanish, Russian, Chinese, and Japanese.
 
 ### 3. 🛡️ Dual-Layer Transactional Rollback & Safety
 * **SQLite WAL Transaction Ledger**: Every change made by the optimizer is atomically written to a local SQLite Write-Ahead Logging (`winblast0_ledger.db`) database recording previous registry values, service configurations, and power settings.
@@ -115,13 +117,15 @@ WinBlast features zero hardcoded strings. Every title, description, category, se
 
 ## 📚 Declarative Tweak Catalogs (168 Audited Tweaks)
 
-The optimizer features **168 validated declarative optimizations** indexed across 10 TOML catalogs with multi-axis risk assessments (`Safe`, `Low`, `Moderate`, `High`):
+The optimizer features **208 validated declarative optimizations** indexed across 12 TOML catalogs with multi-axis risk assessments (`Safe`, `Low`, `Moderate`, `High`):
 
 | Catalog | Focus & Description |
 | :--- | :--- |
 | **`bloatware_appx.toml`** | Deprovisioning of non-essential preinstalled UWP packages (Bing News, Weather, Clipchamp, Cortana, Solitaire, etc.) using clean 4-store registry indexing without slow PowerShell overhead. |
 | **`privacy.toml`** | Telemetry elimination: advertising IDs, activity histories, timeline tracking, diagnostic data collection, Windows Customer Experience Improvement Program (CEIP), and location tracking. |
 | **`registry_lag.toml`** | Kernel scheduler and I/O optimizations: `Win32PrioritySeparation`, `NetworkThrottlingIndex`, `SystemResponsiveness`, NTFS 8.3 name generation disablement, NTFS last access timestamps, and 1:1 mouse smoothing. |
+| **`gaming_latency_ultra.toml`** | Ultra-low-latency competitive gaming tweaks: MMCSS thread scheduler reservations, GPU pre-rendered frames, CSRSS high-priority process isolation, and DPC latency mitigation. |
+| **`system_deep_opt.toml`** | Deep Windows 11 kernel optimizations: kernel executive non-paging buffer locks, speculative execution mitigation overrides for gaming rigs, and memory management fine-tuning. |
 | **`hardware_tuning.toml`** | PCIe Message Signaled Interrupts (MSI), GPU interrupt prioritization, High-Precision Event Timer (HPET) tuning, and compositor settings. |
 | **`os_settings.toml`** | Windows 11 AI deactivation: Recall AI screen analysis indexer, Copilot flyouts, Bing Start Menu web searches, Consumer Cloud Content, and lockscreen Spotlight advertisements. |
 | **`perf_power_ext.toml`** | Power throttling override, dynamic tick disablement, paging executive enforcement in RAM, and Ultimate Performance power scheme initialization. |
@@ -136,12 +140,12 @@ The optimizer features **168 validated declarative optimizations** indexed acros
 
 Because WinBlast Optimizer adjusts low-level system settings, Windows Registry parameters, and hardware power states, transparency and security are paramount.
 
-* **Target Binary**: `winblast0.exe` (v1.2.0)
+* **Target Binary**: `winblast0.exe` (v1.5.0)
 * **Digital Signature**: Microsoft Authenticode signed by `Konstrukturmx` with DigiCert RFC 3161 SHA-256 timestamping
-* **File Size**: `30,037,848` bytes (28.6 MB)
+* **File Size**: `31,533,608` bytes (30.0 MB)
 * **SHA-256 Checksum**:
   ```text
-  048a88d80411a673db88911941bfd5c3322385cd6a988689af1e9b879e4566ec
+  b26c4b9d1757d001544ec12f868b6ee04fa14868aca14f0527ec6ba654eb819d
   ```
 * **Microsoft Defender Heuristics**: Clean PE metadata, authentic Win32 API calls, embedded UAC manifest, and permanent application icon `winblast.ico`.
 * **VirusTotal Scan Result**: [**View Official VirusTotal Report**](https://www.virustotal.com/gui/file/19895c54d3699391aebedb5c3e384aeb7ac5a73f8d1bee9ff7da4cd623d2fa00)
@@ -166,7 +170,7 @@ cd WinBlast-Optimizer
 # Check codebase and dependencies
 cargo check --all-targets
 
-# Run the complete test suite (105 tests)
+# Run the complete test suite (154 tests)
 cargo test
 
 # Compile optimized release binary
@@ -186,12 +190,12 @@ WinBlast Optimizer includes an exhaustive test suite verifying safety across rea
 
 | Test Suite | Coverage & Validation Focus | Results |
 | :--- | :--- | :---: |
-| **`cargo test --lib`** | Core i18n tables (8 languages), NT timer resolution, CPU topology classification, power range unlock, Dijkstra & A* & Raven graph engines, multi-strategy fallbacks, scanner logic, and risk valuation. | **82 / 82 PASS** |
-| **`tweak_sandbox_e2e`** | Isolated mock registry & file trees, worker panic recovery, partial mutation failure rollback, epoch scan fencing, and concurrent transactions. | **18 / 18 PASS** |
-| **`ui_responsive_e2e`** | Headless DOM tree verification, multi-resolution viewport sweeps (720p to 4K), theme switching, and multi-locale layout stress testing. | **8 / 8 PASS** |
-| **`ui_scrollbar_test`** | Headless E2E scroll-bar geometry, hover-widening, and drag/wheel-scroll interaction across all 9 main views (including Goal Planner) and the sidebar. | **4 / 4 PASS** |
+| **`cargo test --lib`** | Core i18n tables (8 languages, 510 keys), NT timer resolution, CPU topology classification, power range unlock, Dijkstra & A* & Raven graph engines, multi-strategy fallbacks, scanner logic, and risk valuation. | **109 / 109 PASS** |
+| **`tweak_sandbox_e2e`** | Isolated mock registry & file trees, worker panic recovery, partial mutation failure rollback, epoch scan fencing, and concurrent transactions. | **24 / 24 PASS** |
+| **`ui_responsive_e2e`** | Headless DOM tree verification, multi-resolution viewport sweeps (720p to 4K, 2,160 frame sweep), theme switching, and multi-locale layout stress testing. | **13 / 13 PASS** |
+| **`ui_scrollbar_test`** | Headless E2E scroll-bar geometry, hover-widening, right gutter collision safety, and drag/wheel-scroll interaction across all views and sidebar. | **5 / 5 PASS** |
 | **`real_windows_env`** | Live host read-only audit, Win32 registry type round-trips, and safe NTFS junction cleanups. | **3 / 3 PASS** |
-| **Total Automated Tests** | **Zero failures, zero panics, zero warnings** | **115 / 115 PASS** |
+| **Total Automated Tests** | **Zero failures, zero panics, zero warnings** | **154 / 154 PASS** |
 
 ---
 

@@ -19,6 +19,7 @@ fn before_after_comparison_card(
     s: &AppState,
 ) -> El {
     let p = s.palette();
+    let _style = s.theme_style;
 
     let dpc_color = if after.dpc.peak_jitter_us <= before.dpc.peak_jitter_us {
         p.success
@@ -168,6 +169,7 @@ fn before_after_comparison_card(
 /// Renders the responsive System & Network Latency Benchmark view.
 pub fn view(s: &AppState, tier: LayoutTier) -> El {
     let p = s.palette();
+    let _style = s.theme_style;
 
     let header_card = col()
         .w_full()
@@ -344,7 +346,7 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
                 .fill(p.bg_card)
                 .border(1.0, p.border)
                 .hover(p.bg_card_hover)
-                .motion(rune::tok::motion::SNAPPY)
+                .motion(p.motion)
                 .flex_wrap()
                 .items_center()
                 .gaps(8.0, 14.0)
@@ -450,6 +452,7 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
         .min_w(0.0)
         .min_h(0.0)
         .padding(pad)
+        .pr(14.0)
         .gap(12.0)
         .scroll(ScrollSpec { stick_bottom: false })
         .child(header_card)

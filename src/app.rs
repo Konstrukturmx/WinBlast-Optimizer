@@ -70,6 +70,53 @@ pub enum ActiveView {
     GameSuitability,
     WindowsRepair,
     SupportAbout,
+    GamePrerequisites,
+    AutomationCenter,
+}
+
+impl ActiveView {
+    pub const ALL_VIEWS: [ActiveView; 26] = [
+        ActiveView::EasyDashboard,
+        ActiveView::HardwareView,
+        ActiveView::DriverBios,
+        ActiveView::PerformanceTests,
+        ActiveView::FaultDiagnostics,
+        ActiveView::LatencyTester,
+        ActiveView::CoreParking,
+        ActiveView::ThermalMonitor,
+        ActiveView::DiskHealth,
+        ActiveView::GamingStats,
+        ActiveView::FpsBenchmark,
+        ActiveView::NetworkDiag,
+        ActiveView::AdvancedMatrix,
+        ActiveView::GoalPlanner,
+        ActiveView::GameProfiles,
+        ActiveView::GameOverlay,
+        ActiveView::GameSuitability,
+        ActiveView::GamePrerequisites,
+        ActiveView::AutomationCenter,
+        ActiveView::CleanAndApps,
+        ActiveView::StartupAndTasks,
+        ActiveView::WindowsRepair,
+        ActiveView::BackupCenter,
+        ActiveView::GpuTuning,
+        ActiveView::PrivacyShield,
+        ActiveView::SupportAbout,
+    ];
+
+    pub fn next(self) -> Self {
+        let idx = Self::ALL_VIEWS.iter().position(|&v| v == self).unwrap_or(0);
+        Self::ALL_VIEWS[(idx + 1) % Self::ALL_VIEWS.len()]
+    }
+
+    pub fn prev(self) -> Self {
+        let idx = Self::ALL_VIEWS.iter().position(|&v| v == self).unwrap_or(0);
+        if idx == 0 {
+            Self::ALL_VIEWS[Self::ALL_VIEWS.len() - 1]
+        } else {
+            Self::ALL_VIEWS[idx - 1]
+        }
+    }
 }
 
 /// Sub-tabs inside the Clean & Apps view.
@@ -86,6 +133,112 @@ pub enum StartupTasksSubTab {
     StartupApps,
     ScheduledTasks,
     Services,
+}
+
+/// Sub-tabs inside the unified Gaming & Performance Hub.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub enum GamingSubTab {
+    #[default]
+    LiveMonitor,
+    FpsBenchmark,
+    GameProfiles,
+    GameOverlay,
+    GameSuitability,
+}
+
+/// Sub-tabs inside the unified Hardware & Sensors Hub.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub enum HardwareSubTab {
+    #[default]
+    Specs,
+    CpuParking,
+    Thermals,
+    Disks,
+}
+
+/// Sub-tabs inside the unified Drivers & Runtimes Hub.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub enum DriversSubTab {
+    #[default]
+    Drivers,
+    Prerequisites,
+}
+
+/// Sub-tabs inside the unified Repair & Diagnostics Hub.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub enum RepairSubTab {
+    #[default]
+    WindowsRepair,
+    FaultDiagnostics,
+}
+
+/// Sorting mode for Advanced Matrix view.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub enum MatrixSortMode {
+    #[default]
+    Default,
+    NameAsc,
+    NameDesc,
+    Category,
+    Risk,
+    Status,
+}
+
+/// Sorting mode for Clean & Apps view.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub enum CleanSortMode {
+    #[default]
+    SizeDesc,
+    SizeAsc,
+    NameAsc,
+}
+
+/// Sorting mode for Startup & Tasks view.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub enum StartupSortMode {
+    #[default]
+    NameAsc,
+    Source,
+    Status,
+}
+
+/// Sorting mode for Drivers view.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub enum DriverSortMode {
+    #[default]
+    UpdatesFirst,
+    NameAsc,
+    Category,
+}
+
+/// Sorting mode for Game Prerequisites view.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub enum PrereqsSortMode {
+    #[default]
+    MissingFirst,
+    NameAsc,
+    Category,
+}
+
+/// Sorting mode for Privacy Shield view.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub enum PrivacySortMode {
+    #[default]
+    UnprotectedFirst,
+    NameAsc,
+    Category,
+}
+
+/// GitHub self-updater status.
+#[derive(Debug, Clone, PartialEq)]
+pub enum UpdateStatus {
+    Idle,
+    Checking,
+    Available(crate::core::updater::ReleaseInfo),
+    UpToDate,
+    Downloading { progress_pct: f32 },
+    ReadyToRestart { new_binary_path: std::path::PathBuf },
+    Failed(String),
 }
 
 /// Execution mode determining whether tweak switch clicks apply immediately or stage for batch commit.
@@ -243,6 +396,8 @@ pub enum WorkerEvent {
     BaselineReset(Result<(Option<SystemBaseline>, Option<SystemBaseline>), String>),
     StatusUpdate(String),
     PerfBenchmarkCompleted(crate::tools::performance_tests::BenchmarkScore),
+    UpdateCheckCompleted(Result<Option<crate::core::updater::ReleaseInfo>, String>),
+    UpdateDownloadCompleted(Result<std::path::PathBuf, String>),
 }
 
 struct WorkerDropGuard<P: FnOnce(String) -> WorkerEvent> {
@@ -453,6 +608,35 @@ pub struct AppState {
     pub driver_updates: Vec<crate::hardware::driver_update::DriverUpdateItem>,
     pub is_driver_scanning: bool,
     pub driver_install_in_flight: Option<String>,
+
+    // v1.4.0 Diagnostics, Game Prerequisites & Automation Subsystems
+    pub driver_search_edit: rune::TextEdit,
+    pub driver_category_filter: Option<crate::hardware::driver_update::DriverCategory>,
+    pub game_prereqs: Vec<crate::tools::game_prereqs::GamePrerequisiteItem>,
+    pub is_prereqs_scanning: bool,
+    pub prereq_install_in_flight: Option<String>,
+    pub prereq_filter_edit: rune::TextEdit,
+    pub auto_tune_plan: Option<crate::tools::automation::AutoTunePlan>,
+    pub auto_tune_result: Option<crate::tools::automation::AutoTuneResult>,
+    pub selected_auto_tune_profile: crate::tools::automation::AutoTuneProfile,
+    pub system_health: Option<crate::tools::automation::SystemHealthAssessment>,
+    pub system_health_assessment: Option<crate::tools::automation::SystemHealthAssessment>,
+    pub maintenance_tasks: Vec<crate::tools::automation::MaintenanceTaskStatus>,
+    pub last_memory_trim_result: Option<crate::tools::automation::MemoryTrimResult>,
+    pub is_running_automation: bool,
+
+    // v1.5.0 Self-Updater, Unified Hubs, and Sorting
+    pub update_status: UpdateStatus,
+    pub matrix_sort_mode: MatrixSortMode,
+    pub clean_sort_mode: CleanSortMode,
+    pub startup_sort_mode: StartupSortMode,
+    pub driver_sort_mode: DriverSortMode,
+    pub prereqs_sort_mode: PrereqsSortMode,
+    pub privacy_sort_mode: PrivacySortMode,
+    pub gaming_sub_tab: GamingSubTab,
+    pub hardware_sub_tab: HardwareSubTab,
+    pub drivers_sub_tab: DriversSubTab,
+    pub repair_sub_tab: RepairSubTab,
 }
 
 impl Default for AppState {
@@ -642,6 +826,33 @@ impl AppState {
             driver_updates: Vec::new(),
             is_driver_scanning: false,
             driver_install_in_flight: None,
+            driver_search_edit: rune::TextEdit::default(),
+            driver_category_filter: None,
+            game_prereqs: Vec::new(),
+            is_prereqs_scanning: false,
+            prereq_install_in_flight: None,
+            prereq_filter_edit: rune::TextEdit::default(),
+            auto_tune_plan: None,
+            auto_tune_result: None,
+            selected_auto_tune_profile: crate::tools::automation::AutoTuneProfile::GamingLowLatency,
+            system_health: None,
+            system_health_assessment: None,
+            maintenance_tasks: crate::tools::automation::query_all_maintenance_tasks(),
+            last_memory_trim_result: None,
+            is_running_automation: false,
+
+            // v1.5.0 Self-Updater, Unified Hubs, and Sorting
+            update_status: UpdateStatus::Idle,
+            matrix_sort_mode: MatrixSortMode::Default,
+            clean_sort_mode: CleanSortMode::SizeDesc,
+            startup_sort_mode: StartupSortMode::NameAsc,
+            driver_sort_mode: DriverSortMode::UpdatesFirst,
+            prereqs_sort_mode: PrereqsSortMode::MissingFirst,
+            privacy_sort_mode: PrivacySortMode::UnprotectedFirst,
+            gaming_sub_tab: GamingSubTab::LiveMonitor,
+            hardware_sub_tab: HardwareSubTab::Specs,
+            drivers_sub_tab: DriversSubTab::Drivers,
+            repair_sub_tab: RepairSubTab::WindowsRepair,
         }
     }
 
@@ -1343,6 +1554,34 @@ impl AppState {
                 self.is_benchmarking_perf = false;
                 self.set_status("Performans testi başarıyla tamamlandı.");
             }
+            WorkerEvent::UpdateCheckCompleted(res) => {
+                match res {
+                    Ok(Some(info)) => {
+                        self.update_status = UpdateStatus::Available(info);
+                        self.set_status("Update available on GitHub Releases.");
+                    }
+                    Ok(None) => {
+                        self.update_status = UpdateStatus::UpToDate;
+                        self.set_status("WinBlast0 is up to date.");
+                    }
+                    Err(e) => {
+                        self.update_status = UpdateStatus::Failed(e.clone());
+                        self.set_status_spec(StatusMessageSpec::Raw(format!("Update check failed: {e}")));
+                    }
+                }
+            }
+            WorkerEvent::UpdateDownloadCompleted(res) => {
+                match res {
+                    Ok(path) => {
+                        self.update_status = UpdateStatus::ReadyToRestart { new_binary_path: path };
+                        self.set_status("Update downloaded and verified. Click to restart.");
+                    }
+                    Err(e) => {
+                        self.update_status = UpdateStatus::Failed(e.clone());
+                        self.set_status_spec(StatusMessageSpec::Raw(format!("Update download failed: {e}")));
+                    }
+                }
+            }
         }
     }
 
@@ -1563,8 +1802,28 @@ impl AppState {
             ActiveView::NetworkDiag if self.network_diag.is_none() => {
                 self.network_diag = Some(crate::tools::network_diag::NetworkDiagnostics::default());
             }
+            ActiveView::GamePrerequisites => {
+                if self.game_prereqs.is_empty() && !self.is_prereqs_scanning {
+                    self.scan_game_prereqs();
+                }
+            }
+            ActiveView::AutomationCenter if self.system_health_assessment.is_none() => {
+                self.refresh_system_health();
+            }
             _ => {}
         }
+    }
+
+    /// Navigate to next view in keyboard sequence.
+    pub fn nav_next_view(&mut self) {
+        let nxt = self.active_view.next();
+        self.navigate(nxt);
+    }
+
+    /// Navigate to previous view in keyboard sequence.
+    pub fn nav_prev_view(&mut self) {
+        let prv = self.active_view.prev();
+        self.navigate(prv);
     }
 
     /// Perform online driver scan across Display, Network, Audio, Storage, and Virtual Sandbox devices.
@@ -1607,6 +1866,23 @@ impl AppState {
         }
     }
 
+    /// Backup an installed driver by ID to %TEMP%\winblast_driver_backup\.
+    pub fn backup_driver(&mut self, driver_id: String) {
+        if let Some(item) = self.driver_updates.iter_mut().find(|d| d.id == driver_id) {
+            match crate::hardware::driver_update::backup_driver(item, None) {
+                Ok(path) => {
+                    item.status_message = format!("Backup created at {}", path.display());
+                }
+                Err(e) => {
+                    item.status_message = format!("Backup failed: {}", e);
+                }
+            }
+        }
+        if let Some(ref w) = self.waker {
+            w();
+        }
+    }
+
     /// Launch performance benchmark in an isolated worker thread so the UI never freezes.
     pub fn start_perf_benchmark_async(&mut self) {
         if self.is_benchmarking_perf {
@@ -1642,6 +1918,70 @@ impl AppState {
                 );
             }
             std::process::exit(0);
+        }
+    }
+
+    /// Check whether current process has Administrator elevation.
+    pub fn is_admin_elevated(&self) -> bool {
+        self.is_elevated
+    }
+
+    /// Relaunch WinBlast0 with administrator privileges.
+    pub fn relaunch_as_admin(&mut self) {
+        if let Err(e) = crate::core::elevation::relaunch_as_admin() {
+            self.set_status_spec(StatusMessageSpec::Raw(format!("Relaunch failed: {e}")));
+        }
+    }
+
+    /// Trigger asynchronous GitHub release query.
+    pub fn check_for_updates(&mut self) {
+        self.update_status = UpdateStatus::Checking;
+        let tx = self.tx_events.clone();
+        let waker = self.waker.clone();
+        std::thread::spawn(move || {
+            let res = crate::core::updater::check_latest_release("konstruktor/WinBlast0");
+            let _ = tx.send(WorkerEvent::UpdateCheckCompleted(res));
+            if let Some(ref w) = waker {
+                w();
+            }
+        });
+    }
+
+    /// Download latest release binary from GitHub.
+    pub fn download_and_install_update(&mut self) {
+        let release = match &self.update_status {
+            UpdateStatus::Available(info) => info.clone(),
+            _ => return,
+        };
+        let url = match &release.download_url {
+            Some(u) => u.clone(),
+            None => {
+                self.update_status = UpdateStatus::Failed("No release asset binary available for download.".to_string());
+                return;
+            }
+        };
+        let asset_name = release.asset_name.clone().unwrap_or_else(|| "WinBlast0.exe".to_string());
+
+        self.update_status = UpdateStatus::Downloading { progress_pct: 10.0 };
+        let tx = self.tx_events.clone();
+        let waker = self.waker.clone();
+        std::thread::spawn(move || {
+            let res = crate::core::updater::download_release_asset(&url, &asset_name);
+            let _ = tx.send(WorkerEvent::UpdateDownloadCompleted(res));
+            if let Some(ref w) = waker {
+                w();
+            }
+        });
+    }
+
+    /// Replace binary and restart into new version.
+    pub fn apply_and_restart(&mut self) {
+        let path = match &self.update_status {
+            UpdateStatus::ReadyToRestart { new_binary_path } => new_binary_path.clone(),
+            _ => return,
+        };
+        if let Err(e) = crate::core::updater::apply_and_restart(&path) {
+            self.update_status = UpdateStatus::Failed(format!("Restart failed: {e}"));
         }
     }
 
@@ -3678,6 +4018,141 @@ impl AppState {
                 self.unattend_opts.auto_timezone_utc = true;
             }
             _ => {}
+        }
+    }
+
+    // ── v1.4 Game Prerequisites & Automation Methods ──────────────────────────
+
+    pub fn scan_game_prereqs(&mut self) {
+        self.is_prereqs_scanning = true;
+        self.game_prereqs = crate::tools::game_prereqs::scan_game_prereqs();
+        self.is_prereqs_scanning = false;
+        if let Some(ref w) = self.waker {
+            w();
+        }
+    }
+
+    pub fn install_game_prereq(&mut self, prereq_id: String) {
+        if self.prereq_install_in_flight.is_some() {
+            return;
+        }
+        self.prereq_install_in_flight = Some(prereq_id.clone());
+        if let Some(item) = self.game_prereqs.iter_mut().find(|p| p.id == prereq_id) {
+            let _ = crate::tools::game_prereqs::install_prereq_cascade(item);
+        }
+        self.prereq_install_in_flight = None;
+        if let Some(ref w) = self.waker {
+            w();
+        }
+    }
+
+    pub fn install_all_missing_prereqs(&mut self) {
+        if self.prereq_install_in_flight.is_some() {
+            return;
+        }
+        let missing_ids: Vec<String> = self
+            .game_prereqs
+            .iter()
+            .filter(|p| !p.installed)
+            .map(|p| p.id.clone())
+            .collect();
+
+        for id in missing_ids {
+            self.install_game_prereq(id);
+        }
+    }
+
+    pub fn refresh_system_health(&mut self) {
+        let assessment = crate::tools::automation::assess_system_health();
+        self.system_health = Some(assessment.clone());
+        self.system_health_assessment = Some(assessment);
+        if let Some(ref w) = self.waker {
+            w();
+        }
+    }
+
+    pub fn refresh_maintenance_tasks(&mut self) {
+        self.maintenance_tasks = crate::tools::automation::query_all_maintenance_tasks();
+        if let Some(ref w) = self.waker {
+            w();
+        }
+    }
+
+    pub fn toggle_maintenance_task(&mut self, kind: crate::tools::automation::MaintenanceTaskKind) {
+        let is_installed = crate::tools::automation::is_maintenance_task_installed(kind);
+        if is_installed {
+            let _ = crate::tools::automation::remove_maintenance_task(kind);
+        } else {
+            let _ = crate::tools::automation::install_maintenance_task(kind);
+        }
+        self.refresh_maintenance_tasks();
+    }
+
+    pub fn generate_auto_tune_plan(&mut self, profile: crate::tools::automation::AutoTuneProfile) {
+        self.selected_auto_tune_profile = profile;
+        let plan = crate::tools::automation::create_auto_tune_plan(&self.tweaks, profile);
+        self.auto_tune_plan = Some(plan);
+        if let Some(ref w) = self.waker {
+            w();
+        }
+    }
+
+    pub fn execute_auto_tune(&mut self) {
+        let profile = self.selected_auto_tune_profile;
+        self.execute_auto_tune_profile(profile);
+    }
+
+    pub fn execute_auto_tune_profile(&mut self, profile: crate::tools::automation::AutoTuneProfile) {
+        self.is_running_automation = true;
+        let plan = crate::tools::automation::create_auto_tune_plan(&self.tweaks, profile);
+        let start = std::time::Instant::now();
+        let mut applied = 0;
+        let mut failed = 0;
+
+        let ledger = crate::backup::state_ledger::StateLedger::new(&self.ledger_path).ok();
+        for id in &plan.recommended_tweak_ids {
+            if let Some(tweak) = self.tweaks.iter().find(|t| &t.id == id) {
+                if let Some(ref l) = ledger {
+                    match crate::executor::engine::apply_tweak_with(tweak, l, &*self.backend) {
+                        Ok(_) => applied += 1,
+                        Err(_) => failed += 1,
+                    }
+                } else {
+                    failed += 1;
+                }
+            }
+        }
+
+        let duration_ms = start.elapsed().as_millis() as u64;
+        self.auto_tune_result = Some(crate::tools::automation::AutoTuneResult {
+            profile,
+            tweaks_applied: applied,
+            tweaks_failed: failed,
+            duration_ms,
+            message: format!(
+                "Successfully applied {} optimizations in {} ms ({} failed/skipped).",
+                applied, duration_ms, failed
+            ),
+        });
+
+        self.refresh_system_health();
+        self.is_running_automation = false;
+        if let Some(ref w) = self.waker {
+            w();
+        }
+    }
+
+    pub fn trim_system_memory_and_cache(&mut self) {
+        self.execute_memory_trim();
+    }
+
+    pub fn execute_memory_trim(&mut self) {
+        self.is_running_automation = true;
+        let res = crate::tools::automation::trim_system_memory_and_cache();
+        self.last_memory_trim_result = Some(res);
+        self.is_running_automation = false;
+        if let Some(ref w) = self.waker {
+            w();
         }
     }
 }

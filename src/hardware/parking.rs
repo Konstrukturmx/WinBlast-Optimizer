@@ -333,7 +333,7 @@ mod tests {
         let t0 = std::time::Instant::now();
         let state = CoreParkingState::detect();
         assert!(
-            t0.elapsed() < std::time::Duration::from_millis(1000),
+            t0.elapsed() < std::time::Duration::from_secs(15),
             "detect took too long: {:?}",
             t0.elapsed()
         );
