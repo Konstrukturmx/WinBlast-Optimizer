@@ -13,6 +13,7 @@ use crate::ui::LayoutTier;
 /// Renders the responsive, fully localized Backup Center view.
 pub fn view(s: &AppState, tier: LayoutTier) -> El {
     let p = s.palette();
+    let _style = s.theme_style;
 
     let header = col()
         .w_full()
@@ -479,7 +480,7 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
         u_col
     };
 
-    let pad = if tier == LayoutTier::Compact { 10.0 } else { 14.0 };
+    let pad = if tier == LayoutTier::Compact { 10.0 } else { p.card_padding };
     col()
         .key("backup_center_viewport")
         .w_full()
@@ -487,6 +488,7 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
         .min_w(0.0)
         .min_h(0.0)
         .padding(pad)
+        .pr(14.0)
         .gap(12.0)
         .scroll(ScrollSpec { stick_bottom: false })
         .child(header)

@@ -67,7 +67,7 @@ pub fn action_button(
 }
 
 /// Contrast-safe animated action button that switches to a muted, non-interactive
-/// disabled presentation when `enabled == false` (e.g. during async `in_flight` ops).
+/// disabled presentation with reduced opacity when `enabled == false` (e.g. during async `in_flight` ops).
 pub fn action_button_guarded(
     label: impl Into<String>,
     bg: Color,
@@ -85,17 +85,139 @@ pub fn action_button_guarded(
             .px(11.0)
             .py(7.0)
             .radius(p.btn_radius)
-            .fill(p.btn_secondary.alpha(0.65))
-            .border(p.border_width, p.border.alpha(0.65))
+            .fill(p.btn_secondary.alpha(0.50))
+            .border(p.border_width, p.border.alpha(0.50))
             .center()
             .child(
                 text(label.into())
                     .font(rune::tok::type_::LABEL)
-                    .color(p.text_muted)
+                    .color(p.text_muted.alpha(0.70))
                     .shrink()
                     .wrap(),
             )
     }
+}
+
+/// Action button with loading spinner state for async in-flight background operations.
+pub fn action_button_loading(
+    label: impl Into<String>,
+    is_loading: bool,
+    bg: Color,
+    text_color: Color,
+    p: &ThemePalette,
+    on_click: impl Fn(&mut AppState) + 'static,
+) -> El {
+    if is_loading {
+        row()
+            .min_w(0.0)
+            .shrink()
+            .px(11.0)
+            .py(7.0)
+            .radius(p.btn_radius)
+            .fill(bg.alpha(0.55))
+            .border(p.border_width, p.border.alpha(0.60))
+            .gap(6.0)
+            .center()
+            .child(
+                text("⟳")
+                    .font(rune::tok::type_::LABEL)
+                    .color(text_color)
+                    .motion(rune_motion::Spring::BOUNCY),
+            )
+            .child(
+                text(label.into())
+                    .font(rune::tok::type_::LABEL)
+                    .color(text_color.alpha(0.80))
+                    .shrink()
+                    .wrap(),
+            )
+    } else {
+        action_button(label, bg, text_color, p, on_click)
+    }
+}
+
+/// Compact icon-only button variant formatted cleanly across all 5 styles.
+pub fn action_button_icon_only(
+    icon: impl Into<String>,
+    bg: Color,
+    text_color: Color,
+    p: &ThemePalette,
+    on_click: impl Fn(&mut AppState) + 'static,
+) -> El {
+    let hover_bg = if bg == p.accent {
+        p.accent_hover
+    } else if bg == p.bg_card {
+        p.bg_card_hover
+    } else {
+        bg.alpha(0.85)
+    };
+
+    row()
+        .min_w(0.0)
+        .shrink()
+        .size(28.0, 28.0)
+        .radius(if p.theme_style == crate::ui::theme::UiThemeStyle::Materialistic { 14.0 } else { p.btn_radius })
+        .fill(bg)
+        .hover(hover_bg)
+        .press(p.accent_press)
+        .border(p.border_width, p.border)
+        .motion(p.motion)
+        .center()
+        .on_press(on_click)
+        .child(
+            text(icon.into())
+                .font(rune::tok::type_::LABEL)
+                .color(text_color)
+                .center(),
+        )
+}
+
+/// Action button with hover tooltip badge displaying auxiliary information.
+pub fn action_button_with_tooltip(
+    label: impl Into<String>,
+    tooltip: impl Into<String>,
+    bg: Color,
+    text_color: Color,
+    p: &ThemePalette,
+    on_click: impl Fn(&mut AppState) + 'static,
+) -> El {
+    let hover_bg = if bg == p.accent {
+        p.accent_hover
+    } else if bg == p.bg_card {
+        p.bg_card_hover
+    } else {
+        bg.alpha(0.84)
+    };
+
+    let tip = tooltip.into();
+    row()
+        .min_w(0.0)
+        .shrink()
+        .px(11.0)
+        .py(7.0)
+        .radius(p.btn_radius)
+        .fill(bg)
+        .hover(hover_bg)
+        .press(p.accent_press)
+        .border(p.border_width, p.border)
+        .motion(p.motion)
+        .items_center()
+        .gap(6.0)
+        .on_press(on_click)
+        .child(
+            text(label.into())
+                .font(rune::tok::type_::LABEL)
+                .color(text_color)
+                .shrink()
+                .wrap(),
+        )
+        .child(
+            text(format!("ℹ {}", tip))
+                .font(rune::tok::type_::LABEL)
+                .color(p.text_muted)
+                .shrink()
+                .truncate(),
+        )
 }
 
 /// Shared spring-animated visual switch core (track + sliding knob), without click binding.

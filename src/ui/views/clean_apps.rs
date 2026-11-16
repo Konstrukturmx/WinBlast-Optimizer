@@ -244,7 +244,7 @@ fn build_disk_cleaner_body(s: &AppState, p: &ThemePalette, tier: LayoutTier) -> 
                 .fill(if t.selected { p.bg_card_hover } else { p.bg_card })
                 .border(1.0, if t.selected { p.accent.alpha(0.35) } else { p.border })
                 .hover(p.bg_card_hover)
-                .motion(rune::tok::motion::SNAPPY)
+                .motion(p.motion)
                 .flex_wrap()
                 .items_center()
                 .justify_between()
@@ -295,6 +295,7 @@ fn build_disk_cleaner_body(s: &AppState, p: &ThemePalette, tier: LayoutTier) -> 
             .grow(1.0)
             .min_w(0.0)
             .min_h(100.0)
+            .pr(14.0)
             .scroll(ScrollSpec { stick_bottom: false })
             .child(list_col)
             .winblast_scroll(p)
@@ -473,6 +474,7 @@ fn build_appx_features_body(s: &AppState, p: &ThemePalette, tier: LayoutTier) ->
             .key("appx_scroll")
             .w_full()
             .min_w(0.0)
+            .pr(14.0)
             .scroll(ScrollSpec { stick_bottom: false });
         sc = if tier == LayoutTier::Compact {
             sc.h(220.0)
@@ -718,6 +720,7 @@ fn build_appx_features_body(s: &AppState, p: &ThemePalette, tier: LayoutTier) ->
             .w_full()
             .max_h(170.0)
             .min_w(0.0)
+            .pr(14.0)
             .scroll(ScrollSpec { stick_bottom: false })
             .child(feat_col)
             .winblast_scroll(p)
@@ -839,62 +842,58 @@ fn build_winget_body(s: &AppState, p: &ThemePalette, tier: LayoutTier) -> El {
             let app_id = app.id.to_string();
             let row_key = format!("wg_{}", app.id);
             let sw_key = format!("wg_sw_{}", app.id);
+            let app_desc = crate::core::tweak_i18n::localize_winget(
+                s.language,
+                app.id,
+            )
+            .map(|(_, d)| d)
+            .unwrap_or(app.description);
+            let loc_cat = crate::core::tweak_i18n::localize_winget(s.language, app.id)
+                .map(|(c, _)| c)
+                .unwrap_or(app.category);
+
             cards = cards.child(
-                row()
+                col()
                     .key(row_key)
                     .grow(1.0)
-                    .min_w(200.0)
+                    .min_w(220.0)
                     .padding(10.0)
                     .radius(6.0)
                     .fill(if sel { p.bg_card_hover } else { p.bg_card })
                     .border(1.0, if sel { p.accent.alpha(0.4) } else { p.border })
                     .hover(p.bg_card_hover)
-                    .motion(rune::tok::motion::SNAPPY)
-                    .flex_wrap()
-                    .items_center()
-                    .justify_between()
-                    .gaps(6.0, 8.0)
+                    .motion(p.motion)
+                    .gap(6.0)
                     .on_press(move |s: &mut AppState| s.toggle_winget_selection(app_id.clone()))
                     .child(
                         row()
-                            .min_w(0.0)
-                            .grow(1.0)
+                            .w_full()
+                            .justify_between()
                             .items_center()
                             .gap(8.0)
-                            .child(switch_indicator(sel, s.clean_apps_busy, sw_key, p))
                             .child(
-                                col()
-                                    .grow(1.0)
-                                    .min_w(120.0)
-                                    .gap(2.0)
+                                row()
+                                    .min_w(0.0)
+                                    .items_center()
+                                    .gap(8.0)
+                                    .child(switch_indicator(sel, s.clean_apps_busy, sw_key, p))
                                     .child(
                                         text(app.name)
                                             .font(rune::tok::type_::SECTION)
                                             .color(p.text_primary)
                                             .shrink()
                                             .wrap(),
-                                    )
-                                    .child({
-                                        let app_desc = crate::core::tweak_i18n::localize_winget(
-                                            s.language,
-                                            app.id,
-                                        )
-                                        .map(|(_, d)| d)
-                                        .unwrap_or(app.description);
-                                        text(app_desc)
-                                            .font(rune::tok::type_::LABEL)
-                                            .color(p.text_muted)
-                                            .shrink()
-                                            .wrap()
-                                    }),
-                            ),
+                                    ),
+                            )
+                            .child(pill_badge(loc_cat, p.accent, p)),
                     )
-                    .child({
-                        let loc_cat = crate::core::tweak_i18n::localize_winget(s.language, app.id)
-                            .map(|(c, _)| c)
-                            .unwrap_or(app.category);
-                        pill_badge(loc_cat, p.accent, p)
-                    }),
+                    .child(
+                        text(app_desc)
+                            .font(rune::tok::type_::LABEL)
+                            .color(p.text_muted)
+                            .shrink()
+                            .wrap(),
+                    ),
             );
         }
 
@@ -907,6 +906,7 @@ fn build_winget_body(s: &AppState, p: &ThemePalette, tier: LayoutTier) -> El {
                 .grow(1.0)
                 .min_w(0.0)
                 .min_h(100.0)
+                .pr(14.0)
                 .scroll(ScrollSpec { stick_bottom: false })
                 .child(cards)
                 .winblast_scroll(p)
@@ -929,7 +929,8 @@ fn build_winget_body(s: &AppState, p: &ThemePalette, tier: LayoutTier) -> El {
 /// Renders the Clean & Apps view cleanly with 3 sub-tabs and responsive viewport geometry.
 pub fn view(s: &AppState, tier: LayoutTier) -> El {
     let p = s.palette();
-    let pad = if tier == LayoutTier::Compact { 10.0 } else { 14.0 };
+    let _style = s.theme_style;
+    let pad = if tier == LayoutTier::Compact { 10.0 } else { p.card_padding };
 
     let mut header_title_row = row()
         .w_full()

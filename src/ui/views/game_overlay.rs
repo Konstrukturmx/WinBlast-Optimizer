@@ -20,6 +20,7 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
         .w_full()
         .min_w(0.0)
         .padding(style.card_padding())
+        .pr(16.0)
         .gap(12.0)
         // Header
         .child(
@@ -41,10 +42,13 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
         .child(
             col()
                 .w_full()
+                .min_w(0.0)
                 .padding(style.card_padding())
                 .radius(style.card_radius())
                 .fill(p.card_fill_styled(style))
                 .border(style.border_width(), p.border_styled(style))
+                .hover(p.bg_card_hover)
+                .motion(p.motion)
                 .gap(10.0)
                 .child(
                     // Game Bar Toggle

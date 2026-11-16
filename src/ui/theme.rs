@@ -144,7 +144,41 @@ impl UiThemeStyle {
             UiThemeStyle::Materialistic => rune_motion::Spring::SMOOTH,
         }
     }
+
+    /// Smooth transition spring easing constant.
+    pub const fn easing_spring(self) -> rune_motion::Spring {
+        self.motion()
+    }
+
+    /// Easing duration in milliseconds for style transitions.
+    pub const fn easing_duration_ms(self) -> u32 {
+        match self {
+            UiThemeStyle::Minimalistic => 0,
+            UiThemeStyle::Classic => 100,
+            UiThemeStyle::Compact => 140,
+            UiThemeStyle::Glassy => 240,
+            UiThemeStyle::Materialistic => 300,
+        }
+    }
+
+    /// Standard CSS transition timing curve identifier.
+    pub const fn easing_curve(self) -> &'static str {
+        match self {
+            UiThemeStyle::Minimalistic => "linear",
+            UiThemeStyle::Classic => "ease-in-out",
+            UiThemeStyle::Compact => "cubic-bezier(0.2, 0.0, 0.0, 1.0)",
+            UiThemeStyle::Glassy => "cubic-bezier(0.34, 1.56, 0.64, 1.0)",
+            UiThemeStyle::Materialistic => "cubic-bezier(0.4, 0.0, 0.2, 1.0)",
+        }
+    }
 }
+
+/// Global transition easing spring constants.
+pub const EASING_GLASSY: rune_motion::Spring = rune_motion::Spring::BOUNCY;
+pub const EASING_MINIMALISTIC: rune_motion::Spring = rune_motion::Spring::NONE;
+pub const EASING_CLASSIC: rune_motion::Spring = rune_motion::Spring::new(0.15, 0.0);
+pub const EASING_COMPACT: rune_motion::Spring = rune_motion::Spring::SNAPPY;
+pub const EASING_MATERIALISTIC: rune_motion::Spring = rune_motion::Spring::SMOOTH;
 
 /// Mode determining baseline dark vs light tone.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize, Default)]
@@ -171,15 +205,19 @@ pub enum ColorScheme {
     MidnightStealth,
     EmeraldMint,
     CrimsonSunset,
+    SolarAmber,
+    ArcticAurora,
 }
 
 impl ColorScheme {
     #[allow(dead_code)]
-    pub const ALL: [ColorScheme; 4] = [
+    pub const ALL: [ColorScheme; 6] = [
         ColorScheme::CyberIndigo,
         ColorScheme::MidnightStealth,
         ColorScheme::EmeraldMint,
         ColorScheme::CrimsonSunset,
+        ColorScheme::SolarAmber,
+        ColorScheme::ArcticAurora,
     ];
 
     pub const fn text_key(self) -> crate::core::i18n::TextKey {
@@ -188,6 +226,8 @@ impl ColorScheme {
             ColorScheme::MidnightStealth => crate::core::i18n::TextKey::ColorSchemeMidnight,
             ColorScheme::EmeraldMint => crate::core::i18n::TextKey::ColorSchemeEmerald,
             ColorScheme::CrimsonSunset => crate::core::i18n::TextKey::ColorSchemeCrimson,
+            ColorScheme::SolarAmber => crate::core::i18n::TextKey::ColorSchemeSolar,
+            ColorScheme::ArcticAurora => crate::core::i18n::TextKey::ColorSchemeArctic,
         }
     }
 
@@ -197,6 +237,8 @@ impl ColorScheme {
             ColorScheme::MidnightStealth => "⚫ Midnight Stealth",
             ColorScheme::EmeraldMint => "🟢 Emerald Mint",
             ColorScheme::CrimsonSunset => "🔴 Crimson Sunset",
+            ColorScheme::SolarAmber => "🟡 Solar Amber",
+            ColorScheme::ArcticAurora => "❄️ Arctic Aurora",
         }
     }
 }
@@ -277,7 +319,7 @@ impl ThemePalette {
             }
             UiThemeStyle::Compact => {
                 if self.is_dark {
-                    rgb(0.030, 0.036, 0.052)
+                    rgb(0.032, 0.040, 0.058)
                 } else {
                     rgb(1.0, 1.0, 1.0)
                 }
@@ -353,6 +395,16 @@ impl ThemePalette {
                 rgb(0.92, 0.22, 0.35),
                 rgb(0.68, 0.10, 0.21),
             ),
+            ColorScheme::SolarAmber => (
+                rgb(0.96, 0.62, 0.04), // Amber 500 #F59E0B
+                rgb(0.98, 0.72, 0.15),
+                rgb(0.82, 0.50, 0.02),
+            ),
+            ColorScheme::ArcticAurora => (
+                rgb(0.00, 0.831, 0.667), // #00d4aa
+                rgb(0.12, 0.92, 0.76),
+                rgb(0.00, 0.68, 0.54),
+            ),
         };
 
         let (
@@ -406,14 +458,14 @@ impl ThemePalette {
             UiThemeStyle::Compact => (
                 rgb(0.016, 0.019, 0.028),
                 rgb(0.022, 0.026, 0.038),
-                rgb(0.030, 0.036, 0.052),
-                rgb(0.046, 0.055, 0.078),
-                rgba(1.0, 1.0, 1.0, 0.10),
-                rgba(1.0, 1.0, 1.0, 0.25),
-                accent.alpha(0.50),
-                rgb(0.055, 0.068, 0.098),
-                rgb(0.085, 0.105, 0.150),
-                rgb(0.040, 0.050, 0.072),
+                rgb(0.032, 0.040, 0.058),
+                rgb(0.052, 0.062, 0.088),
+                rgba(1.0, 1.0, 1.0, 0.18),
+                rgba(1.0, 1.0, 1.0, 0.35),
+                accent.alpha(0.60),
+                rgb(0.065, 0.078, 0.110),
+                rgb(0.095, 0.115, 0.165),
+                rgb(0.048, 0.058, 0.082),
             ),
             UiThemeStyle::Materialistic => (
                 rgb(0.024, 0.027, 0.038),
@@ -427,6 +479,38 @@ impl ThemePalette {
                 rgb(0.10, 0.12, 0.17),
                 rgb(0.05, 0.06, 0.09),
             ),
+        };
+
+        let (bg_primary, bg_card, bg_sidebar, bg_card_hover) = if scheme == ColorScheme::ArcticAurora {
+            (
+                rgb(0.039, 0.086, 0.157), // #0a1628
+                rgb(0.071, 0.122, 0.200), // #121f33
+                rgba(0.051, 0.102, 0.180, 0.90),
+                rgb(0.102, 0.165, 0.260),
+            )
+        } else {
+            (bg_primary, bg_card, bg_sidebar, bg_card_hover)
+        };
+
+        let (text_primary, text_secondary, text_muted) = if scheme == ColorScheme::ArcticAurora {
+            (
+                rgb(0.878, 0.941, 1.0), // #e0f0ff
+                rgb(0.70, 0.82, 0.92),
+                rgb(0.48, 0.60, 0.72),
+            )
+        } else if style == UiThemeStyle::Compact {
+            // Enhanced contrast for Compact high-density mode
+            (
+                rgb(0.98, 0.99, 1.00),
+                rgb(0.82, 0.85, 0.90),
+                rgb(0.62, 0.65, 0.72),
+            )
+        } else {
+            (
+                rgb(0.95, 0.96, 0.98),
+                rgb(0.70, 0.72, 0.76),
+                rgb(0.48, 0.50, 0.55),
+            )
         };
 
         Self {
@@ -456,13 +540,13 @@ impl ThemePalette {
             btn_secondary_hover,
             btn_secondary_press,
 
-            sparkline_cpu: rgb(0.20, 0.70, 0.95),
-            sparkline_ram: rgb(0.85, 0.45, 0.95),
+            sparkline_cpu: if scheme == ColorScheme::ArcticAurora { rgb(0.00, 0.831, 0.667) } else { rgb(0.20, 0.70, 0.95) },
+            sparkline_ram: if scheme == ColorScheme::ArcticAurora { rgb(0.40, 0.85, 0.95) } else { rgb(0.85, 0.45, 0.95) },
             sparkline_bg: rgba(1.0, 1.0, 1.0, 0.04),
 
-            text_primary: rgb(0.95, 0.96, 0.98),
-            text_secondary: rgb(0.70, 0.72, 0.76),
-            text_muted: rgb(0.48, 0.50, 0.55),
+            text_primary,
+            text_secondary,
+            text_muted,
 
             success: rgb(0.09, 0.56, 0.30),
             warning: rgb(0.95, 0.65, 0.15),
@@ -494,6 +578,16 @@ impl ThemePalette {
                 rgb(0.75, 0.07, 0.24), // Rose 700 #BE123C (>6:1 contrast)
                 rgb(0.88, 0.12, 0.30),
                 rgb(0.58, 0.04, 0.18),
+            ),
+            ColorScheme::SolarAmber => (
+                rgb(0.85, 0.45, 0.02),
+                rgb(0.95, 0.55, 0.10),
+                rgb(0.70, 0.35, 0.01),
+            ),
+            ColorScheme::ArcticAurora => (
+                rgb(0.00, 0.659, 0.541), // #00a88a
+                rgb(0.05, 0.76, 0.62),
+                rgb(0.00, 0.52, 0.42),
             ),
         };
 
@@ -550,9 +644,9 @@ impl ThemePalette {
                 rgb(0.92, 0.94, 0.96),
                 rgb(1.0, 1.0, 1.0),
                 rgb(0.90, 0.93, 0.96),
-                rgba(0.0, 0.0, 0.0, 0.14),
-                rgba(0.0, 0.0, 0.0, 0.28),
-                accent.alpha(0.45),
+                rgba(0.0, 0.0, 0.0, 0.20),
+                rgba(0.0, 0.0, 0.0, 0.38),
+                accent.alpha(0.55),
                 rgb(0.89, 0.92, 0.95),
                 rgb(0.83, 0.86, 0.90),
                 rgb(0.76, 0.80, 0.85),
@@ -569,6 +663,37 @@ impl ThemePalette {
                 rgb(0.84, 0.87, 0.93),
                 rgb(0.77, 0.81, 0.88),
             ),
+        };
+
+        let (bg_primary, bg_card, bg_sidebar, bg_card_hover) = if scheme == ColorScheme::ArcticAurora {
+            (
+                rgb(0.941, 0.973, 1.0), // #f0f8ff
+                rgb(1.0, 1.0, 1.0),      // #ffffff
+                rgba(0.92, 0.96, 0.99, 0.92),
+                rgb(0.91, 0.95, 0.98),
+            )
+        } else {
+            (bg_primary, bg_card, bg_sidebar, bg_card_hover)
+        };
+
+        let (text_primary, text_secondary, text_muted) = if scheme == ColorScheme::ArcticAurora {
+            (
+                rgb(0.102, 0.165, 0.227), // #1a2a3a
+                rgb(0.20, 0.30, 0.40),
+                rgb(0.32, 0.42, 0.52),
+            )
+        } else if style == UiThemeStyle::Compact {
+            (
+                rgb(0.03, 0.05, 0.10),
+                rgb(0.12, 0.16, 0.22),
+                rgb(0.22, 0.26, 0.34),
+            )
+        } else {
+            (
+                rgb(0.06, 0.09, 0.16),
+                rgb(0.20, 0.25, 0.33),
+                rgb(0.31, 0.37, 0.46),
+            )
         };
 
         Self {
@@ -598,13 +723,13 @@ impl ThemePalette {
             btn_secondary_hover,
             btn_secondary_press,
 
-            sparkline_cpu: rgb(0.10, 0.55, 0.85),
-            sparkline_ram: rgb(0.65, 0.25, 0.80),
+            sparkline_cpu: if scheme == ColorScheme::ArcticAurora { rgb(0.00, 0.659, 0.541) } else { rgb(0.10, 0.55, 0.85) },
+            sparkline_ram: if scheme == ColorScheme::ArcticAurora { rgb(0.20, 0.60, 0.80) } else { rgb(0.65, 0.25, 0.80) },
             sparkline_bg: rgba(0.0, 0.0, 0.0, 0.04),
 
-            text_primary: rgb(0.06, 0.09, 0.16),   // Slate 900
-            text_secondary: rgb(0.20, 0.25, 0.33), // Slate 700
-            text_muted: rgb(0.31, 0.37, 0.46),     // Slate 600 (WCAG AA on Light surfaces)
+            text_primary,
+            text_secondary,
+            text_muted,
 
             success: rgb(0.02, 0.47, 0.34),
             warning: rgb(0.70, 0.33, 0.04), // Dark Amber #B45309

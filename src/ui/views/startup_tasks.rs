@@ -118,6 +118,7 @@ fn build_startup_apps_list(s: &AppState, p: &ThemePalette, tier: LayoutTier) -> 
         .key("startup_scroll")
         .w_full()
         .min_w(0.0)
+        .pr(14.0)
         .scroll(ScrollSpec { stick_bottom: false });
     sc = if tier == LayoutTier::Compact {
         sc.h(220.0)
@@ -280,6 +281,7 @@ fn build_tasks_list(s: &AppState, p: &ThemePalette, tier: LayoutTier) -> El {
         .key("tasks_scroll")
         .w_full()
         .min_w(0.0)
+        .pr(14.0)
         .scroll(ScrollSpec { stick_bottom: false });
     sc = if tier == LayoutTier::Compact {
         sc.h(220.0)
@@ -426,6 +428,7 @@ fn build_services_list(s: &AppState, p: &ThemePalette, tier: LayoutTier) -> El {
         .key("services_scroll")
         .w_full()
         .min_w(0.0)
+        .pr(14.0)
         .scroll(ScrollSpec { stick_bottom: false });
     sc = if tier == LayoutTier::Compact {
         sc.h(220.0)
@@ -551,7 +554,8 @@ fn build_services_list(s: &AppState, p: &ThemePalette, tier: LayoutTier) -> El {
 /// Renders Startup Apps, Scheduled Tasks & Services inside responsive virtualized lists.
 pub fn view(s: &AppState, tier: LayoutTier) -> El {
     let p = s.palette();
-    let pad = if tier == LayoutTier::Compact { 10.0 } else { 14.0 };
+    let _style = s.theme_style;
+    let pad = if tier == LayoutTier::Compact { 10.0 } else { p.card_padding };
 
     let mut title_row = row()
         .w_full()
@@ -588,9 +592,11 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
                 .w_full()
                 .min_w(0.0)
                 .padding(8.0)
-                .radius(8.0)
+                .radius(p.card_radius)
                 .fill(p.bg_card)
                 .border(1.0, p.border)
+                .hover(p.bg_card_hover)
+                .motion(p.motion)
                 .flex_wrap()
                 .items_center()
                 .justify_between()

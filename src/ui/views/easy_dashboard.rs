@@ -2,7 +2,7 @@
 //! Before/After impact metrics, system architecture summary, and quick launcher navigation cards.
 
 use rune::color::Color;
-use rune::{col, row, text, El, ScrollSpec};
+use rune::{col, el, row, text, El, ScrollSpec};
 
 use crate::app::{ActiveView, AppState, BeforeAfterImpact};
 use crate::core::i18n::TextKey;
@@ -36,6 +36,54 @@ fn health_color(score: u32, p: &ThemePalette) -> Color {
         40..=69 => p.warning,
         _ => p.success,
     }
+}
+
+/// Circular progress ring badge visualizing health score with high-contrast animated indicator.
+fn score_ring_badge(score: u32, color: Color, p: &ThemePalette, s: &AppState) -> El {
+    row()
+        .min_w(0.0)
+        .shrink()
+        .px(10.0)
+        .py(5.0)
+        .radius(p.card_radius.min(8.0))
+        .fill(color.alpha(0.14))
+        .border(p.border_width, color.alpha(0.50))
+        .items_center()
+        .gap(8.0)
+        .child(
+            el()
+                .size(34.0, 34.0)
+                .radius(17.0)
+                .fill(color.alpha(0.20))
+                .border(2.5, color)
+                .motion(rune_motion::Spring::BOUNCY)
+                .center()
+                .child(
+                    text(format!("{}%", score))
+                        .font(rune::tok::type_::LABEL)
+                        .color(color)
+                        .shrink(),
+                ),
+        )
+        .child(
+            col()
+                .min_w(0.0)
+                .gap(1.0)
+                .child(
+                    text(s.tr(TextKey::SystemHealth))
+                        .font(rune::tok::type_::LABEL)
+                        .color(p.text_primary)
+                        .shrink()
+                        .wrap(),
+                )
+                .child(
+                    text(s.tr(TextKey::OptimizedLabel))
+                        .font(rune::tok::type_::LABEL)
+                        .color(color)
+                        .shrink()
+                        .wrap(),
+                ),
+        )
 }
 
 /// Card visualizing Before vs After optimization resource consumption impact cleanly across all widths.
@@ -376,7 +424,7 @@ fn hardware_overview_card(s: &AppState, p: &ThemePalette) -> El {
                 .center()
                 .child(text("💻").font(rune::tok::type_::LABEL))
                 .child(
-                    text("Sistem Özellikleri & Donanım Özeti")
+                    text(s.tr(TextKey::DashboardHwSummaryTitle))
                         .font(rune::tok::type_::TITLE)
                         .color(p.text_primary),
                 ),
@@ -396,7 +444,7 @@ fn hardware_overview_card(s: &AppState, p: &ThemePalette) -> El {
                         .fill(p.bg_primary)
                         .border(1.0, p.border)
                         .gap(2.0)
-                        .child(text("İşlemci (CPU)").font(rune::tok::type_::LABEL).color(p.accent))
+                        .child(text(s.tr(TextKey::DashboardHwCpu)).font(rune::tok::type_::LABEL).color(p.accent))
                         .child(text(cpu_name).font(rune::tok::type_::TITLE).color(p.text_primary))
                         .child(text(cpu_topology).font(rune::tok::type_::BODY).color(p.text_muted)),
                 )
@@ -409,7 +457,7 @@ fn hardware_overview_card(s: &AppState, p: &ThemePalette) -> El {
                         .fill(p.bg_primary)
                         .border(1.0, p.border)
                         .gap(2.0)
-                        .child(text("Ekran Kartı (GPU)").font(rune::tok::type_::LABEL).color(p.accent))
+                        .child(text(s.tr(TextKey::DashboardHwGpu)).font(rune::tok::type_::LABEL).color(p.accent))
                         .child(text(gpu_name).font(rune::tok::type_::TITLE).color(p.text_primary))
                         .child(text(gpu_driver).font(rune::tok::type_::BODY).color(p.text_muted)),
                 )
@@ -422,7 +470,7 @@ fn hardware_overview_card(s: &AppState, p: &ThemePalette) -> El {
                         .fill(p.bg_primary)
                         .border(1.0, p.border)
                         .gap(2.0)
-                        .child(text("Bellek (RAM)").font(rune::tok::type_::LABEL).color(p.accent))
+                        .child(text(s.tr(TextKey::DashboardHwRam)).font(rune::tok::type_::LABEL).color(p.accent))
                         .child(text(ram_text).font(rune::tok::type_::TITLE).color(p.text_primary))
                         .child(text(motherboard).font(rune::tok::type_::BODY).color(p.text_muted)),
                 )
@@ -435,15 +483,15 @@ fn hardware_overview_card(s: &AppState, p: &ThemePalette) -> El {
                         .fill(p.bg_primary)
                         .border(1.0, p.border)
                         .gap(2.0)
-                        .child(text("Platform & Oturum").font(rune::tok::type_::LABEL).color(p.accent))
+                        .child(text(s.tr(TextKey::DashboardHwPlatform)).font(rune::tok::type_::LABEL).color(p.accent))
                         .child(text(uptime).font(rune::tok::type_::TITLE).color(p.text_primary))
-                        .child(text(format!("{} Optimizasyon Kuralı", s.scan_results.len())).font(rune::tok::type_::BODY).color(p.text_muted)),
+                        .child(text(format!("{} {}", s.scan_results.len(), s.tr(TextKey::DashboardHwOptimizationRules))).font(rune::tok::type_::BODY).color(p.text_muted)),
                 ),
         )
 }
 
-/// Quick navigation launcher cards to direct sections.
-fn quick_actions_card(_s: &AppState, p: &ThemePalette) -> El {
+/// Quick navigation launcher cards and 1-click optimization presets row.
+fn quick_actions_card(s: &AppState, p: &ThemePalette) -> El {
     col()
         .w_full()
         .min_w(0.0)
@@ -451,16 +499,55 @@ fn quick_actions_card(_s: &AppState, p: &ThemePalette) -> El {
         .radius(p.card_radius)
         .fill(p.bg_card)
         .border(p.border_width, p.border)
-        .gap(10.0)
+        .hover(p.bg_card_hover)
+        .motion(p.motion)
+        .gap(12.0)
         .child(
             row()
-                .gap(6.0)
-                .center()
-                .child(text("⚡").font(rune::tok::type_::LABEL))
+                .w_full()
+                .min_w(0.0)
+                .flex_wrap()
+                .justify_between()
+                .items_center()
+                .gaps(8.0, 10.0)
                 .child(
-                    text("Hızlı Modül ve Optimizasyon Başlatıcı")
-                        .font(rune::tok::type_::TITLE)
-                        .color(p.text_primary),
+                    row()
+                        .gap(6.0)
+                        .center()
+                        .child(text("⚡").font(rune::tok::type_::LABEL))
+                        .child(
+                            text(s.tr(TextKey::QuickActionsTitle))
+                                .font(rune::tok::type_::TITLE)
+                                .color(p.text_primary),
+                        ),
+                )
+                .child(
+                    row()
+                        .min_w(0.0)
+                        .shrink()
+                        .flex_wrap()
+                        .gaps(6.0, 6.0)
+                        .child(action_button(
+                            s.tr(TextKey::GamingPreset),
+                            p.accent,
+                            Color::WHITE,
+                            p,
+                            |s| s.apply_preset(crate::app::PresetKind::Gaming),
+                        ))
+                        .child(action_button(
+                            s.tr(TextKey::ProAudioPreset),
+                            p.btn_secondary,
+                            p.text_primary,
+                            p,
+                            |s| s.apply_preset(crate::app::PresetKind::ProAudio),
+                        ))
+                        .child(action_button(
+                            s.tr(TextKey::LaptopBatteryPreset),
+                            p.btn_secondary,
+                            p.text_primary,
+                            p,
+                            |s| s.apply_preset(crate::app::PresetKind::LaptopBattery),
+                        )),
                 ),
         )
         .child(
@@ -478,9 +565,9 @@ fn quick_actions_card(_s: &AppState, p: &ThemePalette) -> El {
                         .fill(p.bg_primary)
                         .border(1.0, p.border)
                         .gap(6.0)
-                        .child(text("⚡ FPS Optimizasyonu").font(rune::tok::type_::TITLE).color(p.text_primary))
-                        .child(text("Tüm sistem ve oyun tweak matrisi, 1-tık profiller ve canlı anahtarlar.").font(rune::tok::type_::BODY).color(p.text_muted))
-                        .child(action_button("Matrise Git", p.accent, Color::WHITE, p, |s| {
+                        .child(text(s.tr(TextKey::DashboardQaFpsTitle)).font(rune::tok::type_::TITLE).color(p.text_primary))
+                        .child(text(s.tr(TextKey::DashboardQaFpsDesc)).font(rune::tok::type_::BODY).color(p.text_muted))
+                        .child(action_button(s.tr(TextKey::DashboardQaFpsBtn), p.accent, Color::WHITE, p, |s| {
                             s.navigate(ActiveView::AdvancedMatrix);
                         })),
                 )
@@ -493,9 +580,9 @@ fn quick_actions_card(_s: &AppState, p: &ThemePalette) -> El {
                         .fill(p.bg_primary)
                         .border(1.0, p.border)
                         .gap(6.0)
-                        .child(text("🗑️ Temizlik & Başlangıç").font(rune::tok::type_::TITLE).color(p.text_primary))
-                        .child(text("Disk temizleyici, AppX bloatware silici ve başlangıç programları.").font(rune::tok::type_::BODY).color(p.text_muted))
-                        .child(action_button("Temizliğe Git", p.btn_secondary, p.text_primary, p, |s| {
+                        .child(text(s.tr(TextKey::DashboardQaCleanTitle)).font(rune::tok::type_::TITLE).color(p.text_primary))
+                        .child(text(s.tr(TextKey::DashboardQaCleanDesc)).font(rune::tok::type_::BODY).color(p.text_muted))
+                        .child(action_button(s.tr(TextKey::DashboardQaCleanBtn), p.btn_secondary, p.text_primary, p, |s| {
                             s.navigate(ActiveView::CleanAndApps);
                         })),
                 )
@@ -508,9 +595,9 @@ fn quick_actions_card(_s: &AppState, p: &ThemePalette) -> El {
                         .fill(p.bg_primary)
                         .border(1.0, p.border)
                         .gap(6.0)
-                        .child(text("🔲 İşlemci Analizi").font(rune::tok::type_::TITLE).color(p.text_primary))
-                        .child(text("Çekirdek parkını kaldır, mikrosaniyeler seviyesinde gecikmeyi azalt.").font(rune::tok::type_::BODY).color(p.text_muted))
-                        .child(action_button("İşlemciye Git", p.btn_secondary, p.text_primary, p, |s| {
+                        .child(text(s.tr(TextKey::DashboardQaCpuTitle)).font(rune::tok::type_::TITLE).color(p.text_primary))
+                        .child(text(s.tr(TextKey::DashboardQaCpuDesc)).font(rune::tok::type_::BODY).color(p.text_muted))
+                        .child(action_button(s.tr(TextKey::DashboardQaCpuBtn), p.btn_secondary, p.text_primary, p, |s| {
                             s.navigate(ActiveView::CoreParking);
                         })),
                 )
@@ -523,9 +610,9 @@ fn quick_actions_card(_s: &AppState, p: &ThemePalette) -> El {
                         .fill(p.bg_primary)
                         .border(1.0, p.border)
                         .gap(6.0)
-                        .child(text("💾 Sürücü ve BIOS").font(rune::tok::type_::TITLE).color(p.text_primary))
-                        .child(text("Donanım SMBIOS bilgisi ve çevrimiçi sürücü güncelleme motoru.").font(rune::tok::type_::BODY).color(p.text_muted))
-                        .child(action_button("Sürücülere Git", p.btn_secondary, p.text_primary, p, |s| {
+                        .child(text(s.tr(TextKey::DashboardQaDriverTitle)).font(rune::tok::type_::TITLE).color(p.text_primary))
+                        .child(text(s.tr(TextKey::DashboardQaDriverDesc)).font(rune::tok::type_::BODY).color(p.text_muted))
+                        .child(action_button(s.tr(TextKey::DashboardQaDriverBtn), p.btn_secondary, p.text_primary, p, |s| {
                             s.navigate(ActiveView::DriverBios);
                         })),
                 )
@@ -538,12 +625,385 @@ fn quick_actions_card(_s: &AppState, p: &ThemePalette) -> El {
                         .fill(p.bg_primary)
                         .border(1.0, p.border)
                         .gap(6.0)
-                        .child(text("🛡️ Arıza Teşhisi").font(rune::tok::type_::TITLE).color(p.text_primary))
-                        .child(text("BSOD minidump tarayıcı ve bekleyen CBS yeniden başlatma analizi.").font(rune::tok::type_::BODY).color(p.text_muted))
-                        .child(action_button("Arıza Teşhisi Aç", p.btn_secondary, p.text_primary, p, |s| {
+                        .child(text(s.tr(TextKey::DashboardQaFaultTitle)).font(rune::tok::type_::TITLE).color(p.text_primary))
+                        .child(text(s.tr(TextKey::DashboardQaFaultDesc)).font(rune::tok::type_::BODY).color(p.text_muted))
+                        .child(action_button(s.tr(TextKey::DashboardQaFaultBtn), p.btn_secondary, p.text_primary, p, |s| {
                             s.navigate(ActiveView::FaultDiagnostics);
                         })),
                 ),
+        )
+}
+
+/// Administrator Privileges Warning Banner with 1-click relaunch button.
+fn admin_warning_banner(s: &AppState, p: &ThemePalette) -> El {
+    if s.is_admin_elevated() {
+        return el();
+    }
+    col()
+        .w_full()
+        .min_w(0.0)
+        .padding(12.0)
+        .radius(p.card_radius)
+        .fill(p.warning.alpha(0.12))
+        .border(1.5, p.warning)
+        .child(
+            row()
+                .w_full()
+                .min_w(0.0)
+                .flex_wrap()
+                .justify_between()
+                .items_center()
+                .gaps(8.0, 10.0)
+                .child(
+                    row()
+                        .grow(1.0)
+                        .min_w(200.0)
+                        .gap(10.0)
+                        .items_center()
+                        .child(text("⚠️").font(rune::tok::type_::TITLE))
+                        .child(
+                            col()
+                                .grow(1.0)
+                                .gap(2.0)
+                                .child(
+                                    text(s.tr(TextKey::AdminRequiredTitle))
+                                        .font(rune::tok::type_::TITLE)
+                                        .color(p.warning)
+                                        .shrink()
+                                        .wrap(),
+                                )
+                                .child(
+                                    text(s.tr(TextKey::AdminRequiredDesc))
+                                        .font(rune::tok::type_::BODY)
+                                        .color(p.text_primary)
+                                        .shrink()
+                                        .wrap(),
+                                ),
+                        ),
+                )
+                .child(
+                    action_button(
+                        s.tr(TextKey::RelaunchAdminBtn),
+                        p.warning,
+                        Color::BLACK,
+                        p,
+                        |s| s.relaunch_as_admin(),
+                    ),
+                ),
+        )
+}
+
+/// GitHub Releases Self-Updater card.
+fn updater_status_card(s: &AppState, p: &ThemePalette) -> El {
+    use crate::app::UpdateStatus;
+    match &s.update_status {
+        UpdateStatus::Idle => {
+            row()
+                .w_full()
+                .min_w(0.0)
+                .flex_wrap()
+                .justify_between()
+                .items_center()
+                .padding(10.0)
+                .radius(6.0)
+                .fill(p.bg_card)
+                .border(1.0, p.border)
+                .gaps(8.0, 8.0)
+                .child(
+                    row()
+                        .gap(6.0)
+                        .items_center()
+                        .child(text("📦").font(rune::tok::type_::LABEL))
+                        .child(
+                            text(concat!("WinBlast0 v", env!("CARGO_PKG_VERSION"), " • Pure-Rust Rune Engine"))
+                                .font(rune::tok::type_::LABEL)
+                                .color(p.text_secondary),
+                        ),
+                )
+                .child(
+                    action_button(
+                        s.tr(TextKey::UpdateCheckBtn),
+                        p.btn_secondary,
+                        p.text_primary,
+                        p,
+                        |s| s.check_for_updates(),
+                    ),
+                )
+        }
+        UpdateStatus::Checking => {
+            row()
+                .w_full()
+                .min_w(0.0)
+                .justify_between()
+                .items_center()
+                .padding(10.0)
+                .radius(6.0)
+                .fill(p.accent.alpha(0.10))
+                .border(1.0, p.accent)
+                .child(
+                    row()
+                        .gap(6.0)
+                        .items_center()
+                        .child(text("⟳").font(rune::tok::type_::LABEL).color(p.accent))
+                        .child(
+                            text(s.tr(TextKey::UpdateChecking))
+                                .font(rune::tok::type_::LABEL)
+                                .color(p.accent),
+                        ),
+                )
+        }
+        UpdateStatus::Available(ref info) => {
+            row()
+                .w_full()
+                .min_w(0.0)
+                .flex_wrap()
+                .justify_between()
+                .items_center()
+                .padding(10.0)
+                .radius(6.0)
+                .fill(p.success.alpha(0.12))
+                .border(1.5, p.success)
+                .gaps(8.0, 8.0)
+                .child(
+                    row()
+                        .gap(8.0)
+                        .items_center()
+                        .child(text("🚀").font(rune::tok::type_::TITLE))
+                        .child(
+                            col()
+                                .gap(2.0)
+                                .child(
+                                    text(format!("{}: {}", s.tr(TextKey::UpdateAvailableBadge), info.tag_name))
+                                        .font(rune::tok::type_::TITLE)
+                                        .color(p.success),
+                                )
+                                .child(
+                                    text(format!("{} • {:.1} MB", info.name, info.download_size_mb.unwrap_or(12.5)))
+                                        .font(rune::tok::type_::BODY)
+                                        .color(p.text_muted),
+                                ),
+                        ),
+                )
+                .child(
+                    action_button(
+                        s.tr(TextKey::UpdateDownloadInstallBtn),
+                        p.success,
+                        Color::BLACK,
+                        p,
+                        |s| s.download_and_install_update(),
+                    ),
+                )
+        }
+        UpdateStatus::Downloading { progress_pct } => {
+            row()
+                .w_full()
+                .min_w(0.0)
+                .justify_between()
+                .items_center()
+                .padding(10.0)
+                .radius(6.0)
+                .fill(p.accent.alpha(0.12))
+                .border(1.0, p.accent)
+                .child(
+                    row()
+                        .gap(6.0)
+                        .items_center()
+                        .child(text("📥").font(rune::tok::type_::LABEL))
+                        .child(
+                            text(format!("{} ({:.0}%)", s.tr(TextKey::UpdateDownloading), progress_pct))
+                                .font(rune::tok::type_::LABEL)
+                                .color(p.accent),
+                        ),
+                )
+        }
+        UpdateStatus::ReadyToRestart { .. } => {
+            row()
+                .w_full()
+                .min_w(0.0)
+                .flex_wrap()
+                .justify_between()
+                .items_center()
+                .padding(10.0)
+                .radius(6.0)
+                .fill(p.accent.alpha(0.15))
+                .border(1.5, p.accent)
+                .gaps(8.0, 8.0)
+                .child(
+                    row()
+                        .gap(8.0)
+                        .items_center()
+                        .child(text("✔").font(rune::tok::type_::TITLE).color(p.accent))
+                        .child(
+                            text("Update Ready to Install — Ready to restart.")
+                                .font(rune::tok::type_::TITLE)
+                                .color(p.accent),
+                        ),
+                )
+                .child(
+                    action_button(
+                        s.tr(TextKey::UpdateReadyRestartBtn),
+                        p.accent,
+                        Color::WHITE,
+                        p,
+                        |s| s.apply_and_restart(),
+                    ),
+                )
+        }
+        UpdateStatus::UpToDate => {
+            row()
+                .w_full()
+                .min_w(0.0)
+                .justify_between()
+                .items_center()
+                .padding(10.0)
+                .radius(6.0)
+                .fill(p.bg_card)
+                .border(1.0, p.border)
+                .child(
+                    row()
+                        .gap(6.0)
+                        .items_center()
+                        .child(text("✔").font(rune::tok::type_::LABEL).color(p.success))
+                        .child(
+                            text(s.tr(TextKey::UpdateUpToDate))
+                                .font(rune::tok::type_::LABEL)
+                                .color(p.text_secondary),
+                        ),
+                )
+                .child(
+                    action_button(
+                        s.tr(TextKey::UpdateCheckBtn),
+                        p.btn_secondary,
+                        p.text_primary,
+                        p,
+                        |s| s.check_for_updates(),
+                    ),
+                )
+        }
+        UpdateStatus::Failed(ref err) => {
+            row()
+                .w_full()
+                .min_w(0.0)
+                .flex_wrap()
+                .justify_between()
+                .items_center()
+                .padding(10.0)
+                .radius(6.0)
+                .fill(p.danger.alpha(0.12))
+                .border(1.0, p.danger)
+                .gaps(8.0, 8.0)
+                .child(
+                    text(format!("{}: {}", s.tr(TextKey::UpdateFailedMsg), err))
+                        .font(rune::tok::type_::BODY)
+                        .color(p.danger)
+                        .wrap(),
+                )
+                .child(
+                    action_button(
+                        s.tr(TextKey::UpdateCheckBtn),
+                        p.btn_secondary,
+                        p.text_primary,
+                        p,
+                        |s| s.check_for_updates(),
+                    ),
+                )
+        }
+    }
+}
+
+/// System optimization categories breakdown with visual mini progress indicators.
+fn optimization_categories_summary(s: &AppState, p: &ThemePalette) -> El {
+    let mut gaming_opt = 0;
+    let mut gaming_total = 0;
+    let mut svc_opt = 0;
+    let mut svc_total = 0;
+    let mut priv_opt = 0;
+    let mut priv_total = 0;
+    let mut hw_opt = 0;
+    let mut hw_total = 0;
+
+    for r in &s.scan_results {
+        if r.current_state == TweakState::NotApplicable {
+            continue;
+        }
+        let is_opt = r.current_state == TweakState::AlreadyOptimized;
+        let cat = r.category.to_lowercase();
+        if cat.contains("game") || cat.contains("gpu") || cat.contains("input") {
+            gaming_total += 1;
+            if is_opt { gaming_opt += 1; }
+        } else if cat.contains("service") || cat.contains("startup") || cat.contains("task") {
+            svc_total += 1;
+            if is_opt { svc_opt += 1; }
+        } else if cat.contains("privacy") || cat.contains("telemetry") || cat.contains("security") {
+            priv_total += 1;
+            if is_opt { priv_opt += 1; }
+        } else {
+            hw_total += 1;
+            if is_opt { hw_opt += 1; }
+        }
+    }
+
+    let cat_col = |label: &str, opt: usize, tot: usize, bar_color: Color| {
+        let pct = if tot > 0 { (opt as f32 / tot as f32).clamp(0.0, 1.0) } else { 0.0 };
+        col()
+            .grow(1.0)
+            .min_w(160.0)
+            .padding(10.0)
+            .radius(6.0)
+            .fill(p.bg_primary)
+            .border(1.0, p.border)
+            .gap(4.0)
+            .child(
+                row()
+                    .justify_between()
+                    .child(text(label).font(rune::tok::type_::LABEL).color(p.text_primary))
+                    .child(text(format!("{}/{}", opt, tot)).font(rune::tok::type_::LABEL).color(p.text_muted)),
+            )
+            .child(
+                el()
+                    .w_full()
+                    .h(5.0)
+                    .radius(2.5)
+                    .fill(p.bg_card)
+                    .child(
+                        el()
+                            .w(150.0 * pct)
+                            .h(5.0)
+                            .radius(2.5)
+                            .fill(bar_color),
+                    ),
+            )
+    };
+
+    col()
+        .w_full()
+        .min_w(0.0)
+        .padding(p.card_padding)
+        .radius(p.card_radius)
+        .fill(p.bg_card)
+        .border(p.border_width, p.border)
+        .gap(10.0)
+        .child(
+            row()
+                .gap(6.0)
+                .items_center()
+                .child(text("📊").font(rune::tok::type_::LABEL))
+                .child(
+                    text("System Optimization Categories Breakdown")
+                        .font(rune::tok::type_::TITLE)
+                        .color(p.text_primary),
+                ),
+        )
+        .child(
+            row()
+                .w_full()
+                .min_w(0.0)
+                .flex_wrap()
+                .gaps(10.0, 10.0)
+                .child(cat_col("🎮 Gaming & GPU", gaming_opt, gaming_total, p.accent))
+                .child(cat_col("⚙ Services & Tasks", svc_opt, svc_total, p.success))
+                .child(cat_col("🛡 Privacy & Telemetry", priv_opt, priv_total, p.warning))
+                .child(cat_col("🖥 Hardware & Latency", hw_opt, hw_total, p.text_secondary)),
         )
 }
 
@@ -577,7 +1037,7 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
                             .wrap(),
                     )
                     .child(
-                        text("Canlı telemetri, çekirdek dalga formları ve sistem kaynak verimliliği göstergesi.")
+                        text(s.tr(TextKey::DashboardSubtitle))
                             .font(rune::tok::type_::BODY)
                             .color(p.text_muted)
                             .shrink()
@@ -591,29 +1051,7 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
                     .gap(8.0)
                     .flex_wrap()
                     .items_center()
-                    .child(
-                        row()
-                            .min_w(0.0)
-                            .shrink()
-                            .px(10.0)
-                            .py(6.0)
-                            .radius(p.badge_radius)
-                            .fill(color.alpha(0.18))
-                            .border(p.border_width, color.alpha(0.4))
-                            .center()
-                            .child(
-                                text(format!(
-                                    "{}: {}% {}",
-                                    s.tr(TextKey::SystemHealth),
-                                    score,
-                                    s.tr(TextKey::OptimizedLabel)
-                                ))
-                                .font(rune::tok::type_::LABEL)
-                                .color(color)
-                                .shrink()
-                                .wrap(),
-                            ),
-                    )
+                    .child(score_ring_badge(score, color, p, s))
                     .child(action_button_guarded(
                         if s.is_scanning {
                             s.tr(TextKey::Scanning)
@@ -654,7 +1092,7 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
                             .wrap(),
                     )
                     .child(
-                        text("Canlı telemetri, çekirdek dalga formları ve sistem kaynak verimliliği göstergesi.")
+                        text(s.tr(TextKey::DashboardSubtitle))
                             .font(rune::tok::type_::BODY)
                             .color(p.text_muted)
                             .shrink()
@@ -667,29 +1105,7 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
                     .gap(8.0)
                     .flex_wrap()
                     .center()
-                    .child(
-                        row()
-                            .min_w(0.0)
-                            .shrink()
-                            .px(12.0)
-                            .py(6.0)
-                            .radius(p.badge_radius)
-                            .fill(color.alpha(0.18))
-                            .border(p.border_width, color.alpha(0.4))
-                            .center()
-                            .child(
-                                text(format!(
-                                    "{}: {}% {}",
-                                    s.tr(TextKey::SystemHealth),
-                                    score,
-                                    s.tr(TextKey::OptimizedLabel)
-                                ))
-                                .font(rune::tok::type_::LABEL)
-                                .color(color)
-                                .shrink()
-                                .wrap(),
-                            ),
-                    )
+                    .child(score_ring_badge(score, color, p, s))
                     .child(action_button_guarded(
                         if s.is_scanning {
                             s.tr(TextKey::Scanning)
@@ -713,10 +1129,14 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
         .min_w(0.0)
         .min_h(0.0)
         .padding(pad)
+        .pr(14.0)
         .gap(12.0)
         .scroll(ScrollSpec { stick_bottom: false })
+        .child(admin_warning_banner(s, p))
+        .child(updater_status_card(s, p))
         .child(header_card)
-        .child(live_telemetry_card(s, p, tier));
+        .child(live_telemetry_card(s, p, tier))
+        .child(optimization_categories_summary(s, p));
 
     if let Some(impact) = s.calculate_before_after_impact() {
         main_col = main_col.child(before_after_card(&impact, p, s));

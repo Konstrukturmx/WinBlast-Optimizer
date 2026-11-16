@@ -41,6 +41,8 @@ const ALL_VIEWS: &[ActiveView] = &[
     ActiveView::LatencyTester,
     ActiveView::CleanAndApps,
     ActiveView::StartupAndTasks,
+    ActiveView::GamePrerequisites,
+    ActiveView::AutomationCenter,
 ];
 
 const VERBOSE_LOCALES: &[Language] = &[

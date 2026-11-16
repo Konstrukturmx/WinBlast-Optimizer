@@ -33,6 +33,7 @@ fn state_counts<'b>(results: impl Iterator<Item = &'b ScanResult>) -> (usize, us
 /// Renders the responsive, fully localized Privacy Shield view.
 pub fn view(s: &AppState, tier: LayoutTier) -> El {
     let p = s.palette();
+    let _style = s.theme_style;
     let is_privacy = |r: &&ScanResult| {
         crate::core::tweak_i18n::is_privacy_or_telemetry_category(&r.category)
     };
@@ -331,7 +332,7 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
                     if is_active { p.accent.alpha(0.35) } else { p.border },
                 )
                 .hover(p.bg_card_hover)
-                .motion(rune::tok::motion::SNAPPY)
+                .motion(p.motion)
                 .flex_wrap()
                 .items_center()
                 .gaps(8.0, 12.0)
@@ -393,6 +394,7 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
         .min_w(0.0)
         .min_h(0.0)
         .padding(pad)
+        .pr(14.0)
         .gap(12.0)
         .scroll(ScrollSpec { stick_bottom: false })
         .child(header)

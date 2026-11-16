@@ -21,6 +21,7 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
         .w_full()
         .min_w(0.0)
         .padding(style.card_padding())
+        .pr(16.0)
         .gap(12.0)
         // Header with Alert Badge
         .child(
@@ -126,6 +127,8 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                 .radius(style.card_radius())
                 .fill(p.card_fill_styled(style))
                 .border(style.border_width(), p.border_styled(style))
+                .hover(p.bg_card_hover)
+                .motion(p.motion)
                 .gap(8.0)
                 .child(
                     row()
@@ -177,19 +180,21 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                 .radius(style.card_radius())
                 .fill(p.card_fill_styled(style))
                 .border(style.border_width(), p.border_styled(style))
+                .hover(p.bg_card_hover)
+                .motion(p.motion)
                 .gap(6.0)
                 .child(
-                    text("Sistem Dosya Bütünlüğü & DISM Onarımı")
+                    text("System File Integrity & DISM Repair")
                         .font(rune::tok::type_::LABEL)
                         .color(p.text_primary),
                 )
                 .child(
-                    text("Windows bileşen deposunda veya sistem dosyalarında bozulma şüphesi varsa DISM RestoreHealth ve SFC araçlarını çalıştırabilirsiniz.")
+                    text("If component store or system file corruption is suspected, you can execute DISM RestoreHealth and SFC repair tools.")
                         .font(rune::tok::type_::BODY)
                         .color(p.text_secondary),
                 )
                 .child(
-                    action_button("Windows Onarım Aracını Aç", p.accent, Color::WHITE, p, |s| {
+                    action_button("Open Windows Repair Tool", p.accent, Color::WHITE, p, |s| {
                         s.navigate(ActiveView::WindowsRepair);
                     })
                     .radius(style.btn_radius()),

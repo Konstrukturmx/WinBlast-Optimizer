@@ -40,12 +40,12 @@ fn render_incompatible_card(
         .grow(1.0)
         .min_w(min_card_w)
         .max_w(540.0)
-        .padding(14.0)
-        .radius(8.0)
+        .padding(p.card_padding)
+        .radius(p.card_radius)
         .fill(p.bg_card.alpha(0.75))
         .border(1.0, p.border.alpha(0.7))
         .hover(p.bg_card_hover)
-        .motion(rune::tok::motion::SNAPPY)
+        .motion(p.motion)
         .gap(10.0)
         .child(
             row()
@@ -180,12 +180,12 @@ fn render_compatible_card(
         .grow(1.0)
         .min_w(min_card_w)
         .max_w(540.0)
-        .padding(14.0)
-        .radius(8.0)
+        .padding(p.card_padding)
+        .radius(p.card_radius)
         .fill(p.bg_card)
         .border(1.0, if is_active { p.accent.alpha(0.6) } else { p.border })
         .hover(p.bg_card_hover)
-        .motion(rune::tok::motion::SNAPPY)
+        .motion(p.motion)
         .gap(10.0)
         .child(
             text(tweak.id.clone())
@@ -303,6 +303,7 @@ fn render_compatible_card(
 /// Renders the responsive GPU Tuning view.
 pub fn view(s: &AppState, tier: LayoutTier) -> El {
     let p = s.palette();
+    let _style = s.theme_style;
     let compact = tier == LayoutTier::Compact;
     let detected_vendors = s.detected_gpu_vendors();
     let min_card_w = if compact { 240.0 } else { 300.0 };
@@ -762,6 +763,7 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
         .min_w(0.0)
         .min_h(0.0)
         .padding(pad)
+        .pr(14.0)
         .gap(14.0)
         .scroll(ScrollSpec { stick_bottom: false })
         .child(header)

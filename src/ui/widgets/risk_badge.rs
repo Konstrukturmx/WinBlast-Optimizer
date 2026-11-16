@@ -4,25 +4,44 @@ use rune::{row, text, El};
 use crate::core::risk::{RiskLevel, RiskValuation};
 use crate::ui::theme::{self, ThemePalette};
 
-/// Renders a localized multi-axis threat valuation badge using dynamic theme palette.
+/// Renders a localized multi-axis threat valuation badge with color-blind friendly symbols
+/// and animated pulse on Extreme risk.
 pub fn view_localized(risk: &RiskValuation, p: &ThemePalette, s: &crate::app::AppState) -> El {
-    let (label, bg_color, text_color) = match risk.stability_risk {
-        RiskLevel::Safe => (s.tr(crate::core::i18n::TextKey::RiskSafe), p.success.alpha(0.18), p.success),
-        RiskLevel::Low => (s.tr(crate::core::i18n::TextKey::RiskLow), p.accent.alpha(0.18), p.accent),
-        RiskLevel::Moderate => (s.tr(crate::core::i18n::TextKey::RiskCaution), p.warning.alpha(0.20), p.warning),
-        RiskLevel::High => (s.tr(crate::core::i18n::TextKey::RiskHigh), p.warning.alpha(0.28), p.warning),
-        RiskLevel::Extreme => (s.tr(crate::core::i18n::TextKey::RiskExtreme), p.danger.alpha(0.28), p.danger),
+    let (icon, label, bg_color, text_color, is_extreme) = match risk.stability_risk {
+        RiskLevel::Safe => ("✓", s.tr(crate::core::i18n::TextKey::RiskSafe), p.success.alpha(0.18), p.success, false),
+        RiskLevel::Low => ("●", s.tr(crate::core::i18n::TextKey::RiskLow), p.accent.alpha(0.18), p.accent, false),
+        RiskLevel::Moderate => ("▲", s.tr(crate::core::i18n::TextKey::RiskCaution), p.warning.alpha(0.20), p.warning, false),
+        RiskLevel::High => ("◆", s.tr(crate::core::i18n::TextKey::RiskHigh), p.warning.alpha(0.28), p.warning, false),
+        RiskLevel::Extreme => ("✖", s.tr(crate::core::i18n::TextKey::RiskExtreme), p.danger.alpha(0.32), p.danger, true),
     };
 
-    row()
+    let border_width = if is_extreme { 1.5 } else { p.border_width };
+    let border_color = if is_extreme { text_color.alpha(0.85) } else { text_color.alpha(0.40) };
+
+    let mut row_badge = row()
         .min_w(0.0)
         .shrink()
         .px(8.0)
         .py(3.0)
-        .radius(4.0)
+        .radius(p.badge_radius)
         .fill(bg_color)
-        .border(1.0, text_color.alpha(0.4))
+        .border(border_width, border_color)
         .center()
+        .gap(4.0);
+
+    if is_extreme {
+        row_badge = row_badge.motion(rune_motion::Spring::BOUNCY);
+    } else {
+        row_badge = row_badge.motion(p.motion);
+    }
+
+    row_badge
+        .child(
+            text(icon)
+                .font(rune::tok::type_::LABEL)
+                .color(text_color)
+                .shrink(),
+        )
         .child(
             text(label.to_string())
                 .font(rune::tok::type_::LABEL)
@@ -32,25 +51,43 @@ pub fn view_localized(risk: &RiskValuation, p: &ThemePalette, s: &crate::app::Ap
         )
 }
 
-/// Renders a multi-axis threat valuation badge using dynamic theme palette.
+/// Renders a multi-axis threat valuation badge with color-blind friendly symbols and dynamic palette.
 pub fn view_with_palette(risk: &RiskValuation, p: &ThemePalette) -> El {
-    let (label, bg_color, text_color) = match risk.stability_risk {
-        RiskLevel::Safe => ("SAFE", p.success.alpha(0.18), p.success),
-        RiskLevel::Low => ("LOW", p.accent.alpha(0.18), p.accent),
-        RiskLevel::Moderate => ("MODERATE", p.warning.alpha(0.20), p.warning),
-        RiskLevel::High => ("HIGH", p.warning.alpha(0.28), p.warning),
-        RiskLevel::Extreme => ("EXTREME", p.danger.alpha(0.28), p.danger),
+    let (icon, label, bg_color, text_color, is_extreme) = match risk.stability_risk {
+        RiskLevel::Safe => ("✓", "SAFE", p.success.alpha(0.18), p.success, false),
+        RiskLevel::Low => ("●", "LOW", p.accent.alpha(0.18), p.accent, false),
+        RiskLevel::Moderate => ("▲", "MODERATE", p.warning.alpha(0.20), p.warning, false),
+        RiskLevel::High => ("◆", "HIGH", p.warning.alpha(0.28), p.warning, false),
+        RiskLevel::Extreme => ("✖", "EXTREME", p.danger.alpha(0.32), p.danger, true),
     };
 
-    row()
+    let border_width = if is_extreme { 1.5 } else { p.border_width };
+    let border_color = if is_extreme { text_color.alpha(0.85) } else { text_color.alpha(0.40) };
+
+    let mut row_badge = row()
         .min_w(0.0)
         .shrink()
         .px(8.0)
         .py(3.0)
-        .radius(4.0)
+        .radius(p.badge_radius)
         .fill(bg_color)
-        .border(1.0, text_color.alpha(0.4))
+        .border(border_width, border_color)
         .center()
+        .gap(4.0);
+
+    if is_extreme {
+        row_badge = row_badge.motion(rune_motion::Spring::BOUNCY);
+    } else {
+        row_badge = row_badge.motion(p.motion);
+    }
+
+    row_badge
+        .child(
+            text(icon)
+                .font(rune::tok::type_::LABEL)
+                .color(text_color)
+                .shrink(),
+        )
         .child(
             text(label)
                 .font(rune::tok::type_::LABEL)

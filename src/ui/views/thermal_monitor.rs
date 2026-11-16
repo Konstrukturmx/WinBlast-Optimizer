@@ -37,6 +37,7 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
         .w_full()
         .min_w(0.0)
         .padding(style.card_padding())
+        .pr(16.0)
         .gap(12.0)
         // Header
         .child(
@@ -102,6 +103,8 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                         .radius(style.card_radius())
                         .fill(p.card_fill_styled(style))
                         .border(style.border_width(), cpu_color.alpha(0.4))
+                        .hover(p.bg_card_hover)
+                        .motion(p.motion)
                         .gap(4.0)
                         .child(
                             row()
@@ -135,6 +138,8 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                         .radius(style.card_radius())
                         .fill(p.card_fill_styled(style))
                         .border(style.border_width(), gpu_color.alpha(0.4))
+                        .hover(p.bg_card_hover)
+                        .motion(p.motion)
                         .gap(4.0)
                         .child(
                             row()
@@ -163,6 +168,8 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                         .radius(style.card_radius())
                         .fill(p.card_fill_styled(style))
                         .border(style.border_width(), p.border_styled(style))
+                        .hover(p.bg_card_hover)
+                        .motion(p.motion)
                         .gap(4.0)
                         .child(
                             row()
@@ -177,7 +184,7 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                                 .color(p.accent),
                         )
                         .child(
-                            text("Akıllı Fan Eğrisi Aktif • Sessiz / Performans Modu")
+                            text("Smart Fan Curve Active • Quiet / Performance Mode")
                                 .font(rune::tok::type_::BODY)
                                 .color(p.text_muted),
                         ),
@@ -191,6 +198,8 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                 .radius(style.card_radius())
                 .fill(p.card_fill_styled(style))
                 .border(style.border_width(), p.border_styled(style))
+                .hover(p.bg_card_hover)
+                .motion(p.motion)
                 .gap(8.0)
                 .child(
                     text(s.tr_v(ViewTextKey::ThermalComponentsTitle))
@@ -217,7 +226,7 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                                 .min_w(180.0)
                                 .child(text(&c.name).font(rune::tok::type_::LABEL).color(p.text_primary))
                                 .child(
-                                    text(format!("Güvenlik Eşiği: {:.0}°C", c.max_temp_c))
+                                    text(format!("Thermal Threshold: {:.0}°C", c.max_temp_c))
                                         .font(rune::tok::type_::BODY)
                                         .color(p.text_muted),
                                 ),

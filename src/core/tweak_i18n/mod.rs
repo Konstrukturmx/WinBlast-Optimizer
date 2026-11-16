@@ -94,6 +94,103 @@ pub fn localize_tweak(lang: Language, tweak_id: &str) -> Option<LocalizedTweakTe
     }
 }
 
+/// Localized tweak title (English base catalog).
+#[allow(dead_code)]
+pub fn tweak_title(id: &str) -> Option<&'static str> {
+    match id {
+        "disable_driver_search_order_probing" => Some("Disable Windows Update Driver Search Probing"),
+        "disable_fast_user_switching" => Some("Disable Fast User Switching"),
+        "disable_ip_source_routing" => Some("Disable IP Source Routing"),
+        "disable_netsh_teredo_tunneling" => Some("Disable Teredo IPv6 Transition Tunneling"),
+        "disable_network_adapter_power_saving" => Some("Disable NDIS Network Adapter PnP Power Saving"),
+        "disable_remote_desktop_udp" => Some("Disable Remote Desktop Client UDP Transport"),
+        "disable_smart_card_service" => Some("Disable Smart Card Service (SCardSvr)"),
+        "optimize_kerberos_ticket_cache" => Some("Optimize Kerberos Max Token Size Buffer"),
+        "optimize_tcp_syn_attack_protection" => Some("Enable TCP SYN Attack Protection"),
+        "optimize_usb_selective_suspend_hub" => Some("Disable Global USB Hub Selective Suspend"),
+        "disable_dwm_animations_per_process" => Some("Disable DWM Per-Process Transition Animations"),
+        "disable_dwm_composition_throttle" => Some("Disable Desktop Window Manager Composition Throttle"),
+        "disable_kernel_mitigations_audit" => Some("Disable Kernel Mitigations Audit Mode"),
+        "disable_llmnr_protocol" => Some("Disable LLMNR Name Resolution Protocol"),
+        "disable_memory_compression" => Some("Disable Memory Compression Engine"),
+        "disable_netbios_over_tcp" => Some("Disable NetBIOS over TCP/IP"),
+        "disable_ntfs_encryption_driver" => Some("Disable NTFS Filesystem Encryption (EFS) Driver"),
+        "disable_page_file_encryption" => Some("Disable Page File Encryption & Clear-on-Shutdown"),
+        "disable_processor_idle_demote_threshold" => Some("Disable Processor Idle State Demotion"),
+        "disable_rss_base_cpu" => Some("Set RSS Base CPU for Network Load Distribution"),
+        "disable_spectre_meltdown_mitigations" => Some("Disable Spectre/Meltdown CPU Vulnerability Mitigations"),
+        "disable_threaded_dpc_optimization" => Some("Disable Threaded DPC for Lower Interrupt Latency"),
+        "disable_windows_search_indexer" => Some("Disable Windows Search Indexer Service"),
+        "enable_hardware_task_offload" => Some("Enable TCP/IP Hardware Task Offloading"),
+        "enable_large_ntfs_frs" => Some("Enable Large NTFS File Record Segments"),
+        "enable_ultimate_performance_plan" => Some("Activate Ultimate Performance Power Plan"),
+        "increase_gpu_tdr_timeout" => Some("Increase GPU Timeout Detection and Recovery Delay"),
+        "increase_irp_stack_size" => Some("Increase IRP Stack Size for Network/Disk IO"),
+        "increase_max_connections_per_server" => Some("Increase Maximum HTTP Connections Per Server"),
+        "increase_nonpaged_pool_quota" => Some("Increase Non-Paged Pool Quota for Driver Stability"),
+        "optimize_additional_critical_worker_threads" => Some("Increase Additional Kernel Worker Threads"),
+        "optimize_default_ttl" => Some("Set Optimal Default IP Packet TTL"),
+        "optimize_disk_io_page_lock_limit" => Some("Increase IO Page Lock Limit for Larger Transfers"),
+        "optimize_dns_cache_parameters" => Some("Optimize DNS Client Cache Size and TTL"),
+        "optimize_gpu_preemption_level" => Some("Set GPU Scheduler to Compute-Only Preemption"),
+        "optimize_interrupt_steering" => Some("Optimize Interrupt Affinity and Steering Policy"),
+        "optimize_mmcss_proaudio_scheduling" => Some("MMCSS Pro Audio — Maximum Scheduling Priority"),
+        "optimize_ntfs_memory_usage" => Some("Aggressive NTFS Paged-Pool Caching"),
+        "optimize_object_manager_quota" => Some("Increase Kernel Object Manager Handle Quota"),
+        "optimize_timer_resolution_requests" => Some("Allow Applications to Request High Timer Resolution"),
+        _ => None,
+    }
+}
+
+/// Localized tweak description (English base catalog).
+#[allow(dead_code)]
+pub fn tweak_description(id: &str) -> Option<&'static str> {
+    match id {
+        "disable_driver_search_order_probing" => Some("Prevents Windows Update from automatically querying Windows Update servers in the background when searching for driver software. Eliminates device install latency and background network polling during device insertion."),
+        "disable_fast_user_switching" => Some("Disables Fast User Switching to prevent inactive user sessions and their background tasks from remaining loaded in physical RAM. Frees memory bandwidth, reduces scheduler contention, and prevents background session CPU usage."),
+        "disable_ip_source_routing" => Some("Sets DisableIPSourceRouting=2 (highest protection) to discard all incoming source-routed IP packets. Prevents packet spoofing, path hijacking, and network stack processing overhead associated with loose/strict source-routed packets."),
+        "disable_netsh_teredo_tunneling" => Some("Disables the Teredo tunneling pseudo-interface by setting IPv6 DisabledComponents to 0x20 (32). Teredo encapsulates IPv6 in IPv4 UDP packets, introducing NAT traversal latency and packet overhead in network stacks without native IPv6."),
+        "disable_network_adapter_power_saving" => Some("Sets NDIS PnPCapabilities to 24 (disabling power management wake/sleep capabilities on network interfaces). Prevents network cards from entering low-power D-states during gameplay pauses, eliminating packet serialization delays."),
+        "disable_remote_desktop_udp" => Some("Forces the Remote Desktop (RDP) client to use reliable TCP framing instead of UDP transport. Eliminates UDP socket buffer starvation and prevents RDP background traffic from competing with UDP gaming packet queues."),
+        "disable_smart_card_service" => Some("Disables the Smart Card Service (SCardSvr) by setting its startup type to Disabled (4). Prevents background polling for smart card readers and cryptographic token devices, reducing system service overhead on consumer gaming PCs."),
+        "optimize_kerberos_ticket_cache" => Some("Sets the Kerberos authentication MaxTokenSize buffer to 65535 bytes, preventing authentication buffer overflows and repeated round-trip ticket renegotiations in domains or environments with complex security group memberships."),
+        "optimize_tcp_syn_attack_protection" => Some("Enables TCP SYN flood defense in the TCP/IP stack. Under SYN flood or micro-burst connection floods, Windows accelerates TCP handshake timeouts and reduces SYN-ACK retransmission counts, protecting network gaming sockets from starvation."),
+        "optimize_usb_selective_suspend_hub" => Some("Disables USB selective suspend at the root USB driver stack level. Prevents USB controllers and hubs from powering down idle gaming mice, keyboards, and DACs, eliminating input wake-up latency and dropped polling packets."),
+        "disable_dwm_animations_per_process" => Some("Disables the per-process DWM transition animations by setting DisallowAnimations=1 and AnimationsShiftKey=1 under the DWM key. This eliminates the fade and slide transitions when windows are minimized, maximized, or switched, reducing GPU compositor overhead and making window management feel instantaneous."),
+        "disable_dwm_composition_throttle" => Some("Sets DesktopCompositionThrottle=0 under the DWM (Desktop Window Manager) key, preventing the compositor from throttling rendering when frames are being dropped. This allows DWM to maintain maximum composition throughput even under GPU load, reducing perceived desktop lag when switching between a fullscreen game and windowed applications."),
+        "disable_kernel_mitigations_audit" => Some("Disables the kernel mitigation options audit logging by setting MitigationAuditOptions to all zeros. The kernel audit for exploit mitigations generates ETW events for every mitigation trigger, adding overhead to process creation and exception handling. Disabling the audit reduces kernel logging noise in performance-critical environments."),
+        "disable_llmnr_protocol" => Some("Disables Link-Local Multicast Name Resolution (LLMNR) by setting EnableMulticast=0 in DNS client parameters. LLMNR broadcasts name queries on the local subnet when DNS fails, which is both a security risk (LLMNR poisoning/relay attacks) and a source of unnecessary multicast traffic on managed networks."),
+        "disable_memory_compression" => Some("Disables the Windows Memory Manager compression store by setting DisableCompression=1. Windows 10+ compresses infrequently-used memory pages instead of paging them out; this saves disk IO but adds CPU overhead. On systems with 16 GB+ RAM, disabling compression reduces CPU usage spikes from the System process memory compression thread."),
+        "disable_netbios_over_tcp" => Some("Disables NetBIOS over TCP/IP protocol by setting NetbiosOptions=2 and disabling the LMHosts lookup. NetBIOS is a legacy LAN protocol that broadcasts name resolution queries, exposing the system to unnecessary network noise and potential NBNS poisoning attacks. Disabling it reduces attack surface and network overhead on modern networks using DNS."),
+        "disable_ntfs_encryption_driver" => Some("Sets NtfsDisableEncryption=1 under the FileSystem key, preventing the NTFS Encrypting File System filter driver from intercepting file IO operations. On systems that do not use per-file EFS encryption (most consumer and gaming PCs), this removes an unnecessary filter driver from the IO path, reducing file access latency."),
+        "disable_page_file_encryption" => Some("Prevents Windows from encrypting the page file contents and disables clearing the page file at shutdown. Page file encryption imposes CPU overhead on every page-out operation, and clearing adds seconds to shutdown time. Disabling both improves paging throughput and shutdown speed, but leaves paged-out memory readable on the raw disk."),
+        "disable_processor_idle_demote_threshold" => Some("Sets IdleDemoteThreshold=100 and IdlePromoteThreshold=100 in the processor power management parameters, preventing the kernel power manager from demoting processor performance states during brief idle periods. This keeps the CPU at its current performance level even during short idle gaps between work bursts, eliminating latency spikes from frequency ramp-up delays in bursty workloads like gaming and real-time processing."),
+        "disable_rss_base_cpu" => Some("Sets RssBaseCpu=1 in the NDIS parameters, directing Receive Side Scaling to start distributing network interrupt processing from CPU 1 instead of CPU 0. This offloads network interrupt processing from the boot CPU, freeing CPU 0 for foreground application threads and reducing gaming micro-stutters caused by NIC interrupt contention."),
+        "disable_spectre_meltdown_mitigations" => Some("Disables hardware-level Spectre and Meltdown CPU vulnerability mitigations by setting FeatureSettingsOverride=3 and FeatureSettingsOverrideMask=3. This removes the performance penalty imposed by speculative execution side-channel attack mitigations, yielding significant CPU throughput gains in compute-heavy workloads at the cost of leaving the system vulnerable to these hardware-level exploits."),
+        "disable_threaded_dpc_optimization" => Some("Sets ThreadDpcEnable=0 in the Session Manager kernel key, forcing Deferred Procedure Calls to execute at DISPATCH_LEVEL instead of in a dedicated thread at PASSIVE_LEVEL. Threaded DPCs add scheduling overhead; disabling them reduces DPC latency at the cost of potentially blocking other PASSIVE_LEVEL work. Ideal for real-time audio production and competitive gaming where sub-millisecond interrupt handling is critical."),
+        "disable_windows_search_indexer" => Some("Disables the WSearch (Windows Search) service, stopping the background indexer from continuously crawling and indexing file contents on all volumes. On SSD/NVMe systems, file search is fast enough without an index, and eliminating the indexer removes significant background disk IO, CPU usage, and memory consumption from the SearchIndexer.exe process."),
+        "enable_hardware_task_offload" => Some("Sets DisableTaskOffload=0 in the TCP/IP parameters, ensuring the OS offloads checksum calculation, TCP segmentation, and large send operations to the NIC hardware. Modern NICs handle these operations faster than the CPU, reducing network processing overhead and freeing CPU cycles for application workloads."),
+        "enable_large_ntfs_frs" => Some("Sets NtfsAllowExtendedCharacterIn8dot3Name=0, disabling extended character support in 8.3 short names and allowing the NTFS driver to allocate larger, more efficient File Record Segments. Combined with the existing 8.3 name disable, this further reduces MFT fragmentation and directory enumeration overhead on volumes with millions of files."),
+        "enable_ultimate_performance_plan" => Some("Activates the hidden Ultimate Performance power scheme (e9a42b02-d5df-448d-aa00-03f14749eb61) via PowerCfgSetting. This plan eliminates micro-latencies from power management policies: no core parking, no frequency scaling delays, no USB selective suspend, and no hard disk spindown. Designed for workstation-class workloads demanding the lowest possible latency."),
+        "increase_gpu_tdr_timeout" => Some("Raises the TdrDelay from the default 2 seconds to 10 seconds, giving the GPU more time to complete long-running shaders before the Windows Display Driver Model (WDDM) considers the GPU hung and resets the driver. This prevents false TDR resets during heavy compute or ray-tracing workloads that legitimately require extended GPU execution time."),
+        "increase_irp_stack_size" => Some("Raises the I/O Request Packet stack size from the default 15 to 32 entries, giving the SMB server and layered filter drivers more stack frames for complex IO operations. Helps avoid STATUS_INSUFFICIENT_RESOURCES errors and improves throughput on systems running antivirus, backup agents, or deep storage filter stacks."),
+        "increase_max_connections_per_server" => Some("Raises MaxConnectionsPerServer and MaxConnectionsPer1_0Server from the default 2-4 to 16, allowing WinINet-based applications (Edge, Explorer, Windows Update, Store) to open more simultaneous HTTP connections to a single host. This accelerates parallel downloads, large file transfers, and web application loading."),
+        "increase_nonpaged_pool_quota" => Some("Raises NonPagedPoolQuota to 0 (unlimited/system-managed maximum) allowing the kernel memory manager to use all available physical memory for non-paged allocations. Prevents pool exhaustion on systems running many kernel-mode drivers, heavy network IO, or virtualization stacks."),
+        "optimize_additional_critical_worker_threads" => Some("Sets AdditionalCriticalWorkerThreads to 2 and AdditionalDelayedWorkerThreads to 2, provisioning extra kernel-mode worker threads for handling critical and delayed work items. This reduces work-item queue stalls on systems with heavy IO and many concurrent processes."),
+        "optimize_default_ttl" => Some("Sets the default IP Time-To-Live value to 64 hops, matching the Linux/macOS standard. The Windows default of 128 is unnecessarily high for most internet paths and can confuse network fingerprinting-based optimizations. A TTL of 64 is sufficient for virtually all internet routing topologies."),
+        "optimize_disk_io_page_lock_limit" => Some("Sets IoPageLockLimit to 983040 bytes (960 KB), increasing the number of bytes the IO manager can lock for direct IO transfers. The default limit is too conservative for modern NVMe drives capable of multi-gigabyte-per-second throughput; raising it allows larger scatter-gather DMA transfers and reduces the number of IO operations needed for large file copies."),
+        "optimize_dns_cache_parameters" => Some("Increases the DNS client cache maximum entry count and negative cache TTL floor. By setting MaxCacheEntryTtlLimit=86400 and MaxNegativeCacheTtl=5, the resolver caches successful lookups longer (reducing repeated DNS round-trips) while quickly retrying failed lookups. This improves web browsing responsiveness and reduces DNS query volume."),
+        "optimize_gpu_preemption_level" => Some("Sets GpuPreemptionLevel=0 in the Graphics Drivers Scheduler, forcing compute-only GPU preemption. This prevents the GPU scheduler from preempting long-running shader workloads mid-execution, reducing GPU context-switch overhead and micro-stutters in graphically intensive games at the cost of potentially longer GPU hangs if a shader stalls."),
+        "optimize_interrupt_steering" => Some("Configures the kernel interrupt steering policy to IrqPolicySpreadMessagesAcrossAllProcessors by setting InterruptSteeringDisabled=0 and DistributeTimers=1 under the Session Manager kernel key. This distributes hardware interrupts and deferred timer callbacks across all available cores rather than concentrating them on CPU 0, reducing single-core bottlenecks from interrupt storms."),
+        "optimize_mmcss_proaudio_scheduling" => Some("Sets the Pro Audio MMCSS task SchedulingCategory to 'High' and SFIO Priority to 'High', ensuring real-time audio threads receive the highest available multimedia scheduling priority. This minimizes audio glitches, buffer underruns, and latency in DAWs, music production software, and VoIP applications during heavy system load."),
+        "optimize_ntfs_memory_usage" => Some("Sets NtfsMemoryUsage to 2, instructing the NTFS driver to use a larger paged-pool allocation for directory and metadata caching. This reduces repeated disk reads on volumes with many small files, improving file enumeration and build system performance on systems with ample RAM."),
+        "optimize_object_manager_quota" => Some("Raises the Session Manager ObjectDirectories additional kernel object quota threshold, and increases the handle table size limit via SessionPoolSize=48. This prevents handle table exhaustion on systems running many concurrent processes with heavy file handle usage (build systems, IDEs, game launchers with many child processes)."),
+        "optimize_timer_resolution_requests" => Some("Sets GlobalTimerResolutionRequests=1 in the Session Manager kernel key, allowing applications to request the maximum platform timer resolution (0.5 ms) system-wide. Without this, Windows may ignore high-resolution timer requests from non-foreground processes, causing timing jitter in background audio engines, game servers, and real-time applications."),
+        _ => None,
+    }
+}
+
+
 static CATEGORY_TABLE: &[(&str, [&str; 7])] = &[
     (
         "Bloatware",
@@ -189,6 +286,66 @@ static CATEGORY_TABLE: &[(&str, [&str; 7])] = &[
             "Телеметрия (ОС)",
             "遥测 (Windows 系统)",
             "テレメトリ (OS)",
+        ],
+    ),
+    (
+        "Kernel & Memory Optimization",
+        [
+            "Çekirdek ve Bellek Optimizasyonu",
+            "Kernel- & Speicheroptimierung",
+            "Optimisation du noyau et de la mémoire",
+            "Optimización de kernel y memoria",
+            "Оптимизация ядра и памяти",
+            "内核与内存优化",
+            "カーネルとメモリの最適化",
+        ],
+    ),
+    (
+        "Network Stack Optimization",
+        [
+            "Ağ Yığını Optimizasyonu",
+            "Netzwerk-Stack-Optimierung",
+            "Optimisation de la pile réseau",
+            "Optimización de la pila de red",
+            "Оптимизация сетевого стека",
+            "网络协议栈优化",
+            "ネットワークスタックの最適化",
+        ],
+    ),
+    (
+        "GPU & Display Pipeline",
+        [
+            "GPU ve Ekran İşlem Hattı",
+            "GPU- & Anzeige-Pipeline",
+            "Pipeline GPU et affichage",
+            "Canalización de GPU y pantalla",
+            "Конвейер GPU и отображения",
+            "GPU 与显示管线",
+            "GPU・ディスプレイパイプライン",
+        ],
+    ),
+    (
+        "Storage & IO Optimization",
+        [
+            "Depolama ve G/Ç Optimizasyonu",
+            "Speicher- & E/A-Optimierung",
+            "Optimisation du stockage et des E/S",
+            "Optimización de almacenamiento y E/S",
+            "Оптимизация хранилища и ввода-вывода",
+            "存储与 I/O 优化",
+            "ストレージ・IO 最適化",
+        ],
+    ),
+    (
+        "Scheduler & Latency",
+        [
+            "Zamanlayıcı ve Gecikme",
+            "Scheduler & Latenz",
+            "Planificateur et latence",
+            "Planificador y latencia",
+            "Планировщик и задержки",
+            "调度器与延迟优化",
+            "スケジューラ・レイテンシ",
         ],
     ),
 ];
@@ -993,9 +1150,9 @@ mod tests {
     ];
 
     #[test]
-    fn test_all_168_tweaks_localized_all_7_languages() {
+    fn test_all_208_tweaks_localized_all_7_languages() {
         let tweaks = load_embedded_rules();
-        assert_eq!(tweaks.len(), 168, "Expected 168 embedded catalog tweaks");
+        assert_eq!(tweaks.len(), 208, "Expected 208 embedded catalog tweaks");
 
         for tweak in &tweaks {
             assert!(
@@ -1050,6 +1207,11 @@ mod tests {
             "Registry Lag",
             "Telemetry (Apps)",
             "Telemetry (OS)",
+            "Kernel & Memory Optimization",
+            "Network Stack Optimization",
+            "GPU & Display Pipeline",
+            "Storage & IO Optimization",
+            "Scheduler & Latency",
         ];
         let sub_categories = [
             "Power",
@@ -1179,4 +1341,104 @@ mod tests {
             assert_eq!(localize_ledger_token(lang, "2|delayed=1"), "2|delayed=1");
         }
     }
+
+    #[test]
+    fn test_all_30_deep_opt_tweaks_localized_all_7_languages() {
+        let deep_opt_toml = include_str!("../../../assets/rules/system_deep_opt.toml");
+        let catalog = toml::from_str::<crate::core::risk::TweakCatalog>(deep_opt_toml)
+            .expect("system_deep_opt.toml should parse cleanly");
+        assert_eq!(catalog.tweaks.len(), 30, "Expected 30 deep optimization tweaks");
+
+        for tweak in &catalog.tweaks {
+            // English base lookup
+            let en_title = tweak_title(&tweak.id);
+            assert!(en_title.is_some(), "Missing English tweak_title for {}", tweak.id);
+            let en_desc = tweak_description(&tweak.id);
+            assert!(en_desc.is_some(), "Missing English tweak_description for {}", tweak.id);
+
+            for lang in NON_ENGLISH_LANGS {
+                let loc = localize_tweak(lang, &tweak.id).unwrap_or_else(|| {
+                    panic!("Missing localization for tweak '{}' in {:?}", tweak.id, lang)
+                });
+                assert!(
+                    !loc.title.trim().is_empty(),
+                    "Empty localized title for '{}' in {:?}",
+                    tweak.id,
+                    lang
+                );
+                assert!(
+                    !loc.description.trim().is_empty(),
+                    "Empty localized description for '{}' in {:?}",
+                    tweak.id,
+                    lang
+                );
+                assert_eq!(
+                    loc.broken_features.len(),
+                    tweak.valuation.broken_features.len(),
+                    "broken_features count mismatch for '{}' in {:?}",
+                    tweak.id,
+                    lang
+                );
+                for bf in loc.broken_features {
+                    assert!(
+                        !bf.trim().is_empty(),
+                        "Empty broken_features entry for '{}' in {:?}",
+                        tweak.id,
+                        lang
+                    );
+                }
+            }
+        }
+    }
+
+
+    #[test]
+    fn test_all_10_gaming_latency_ultra_tweaks_localized_all_7_languages() {
+        let ultra_toml = include_str!("../../../assets/rules/gaming_latency_ultra.toml");
+        let catalog = toml::from_str::<crate::core::risk::TweakCatalog>(ultra_toml)
+            .expect("gaming_latency_ultra.toml should parse cleanly");
+        assert_eq!(catalog.tweaks.len(), 10, "Expected 10 gaming latency ultra tweaks");
+
+        for tweak in &catalog.tweaks {
+            // English base lookup
+            let en_title = tweak_title(&tweak.id);
+            assert!(en_title.is_some(), "Missing English tweak_title for {}", tweak.id);
+            let en_desc = tweak_description(&tweak.id);
+            assert!(en_desc.is_some(), "Missing English tweak_description for {}", tweak.id);
+
+            for lang in NON_ENGLISH_LANGS {
+                let loc = localize_tweak(lang, &tweak.id).unwrap_or_else(|| {
+                    panic!("Missing localization for tweak '{}' in {:?}", tweak.id, lang)
+                });
+                assert!(
+                    !loc.title.trim().is_empty(),
+                    "Empty localized title for '{}' in {:?}",
+                    tweak.id,
+                    lang
+                );
+                assert!(
+                    !loc.description.trim().is_empty(),
+                    "Empty localized description for '{}' in {:?}",
+                    tweak.id,
+                    lang
+                );
+                assert_eq!(
+                    loc.broken_features.len(),
+                    tweak.valuation.broken_features.len(),
+                    "broken_features count mismatch for '{}' in {:?}",
+                    tweak.id,
+                    lang
+                );
+                for bf in loc.broken_features {
+                    assert!(
+                        !bf.trim().is_empty(),
+                        "Empty broken_features entry for '{}' in {:?}",
+                        tweak.id,
+                        lang
+                    );
+                }
+            }
+        }
+    }
+
 }

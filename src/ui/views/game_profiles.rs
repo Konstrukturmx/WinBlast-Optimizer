@@ -19,6 +19,7 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
         .w_full()
         .min_w(0.0)
         .padding(style.card_padding())
+        .pr(16.0)
         .gap(12.0)
         // Header
         .child(
@@ -37,15 +38,40 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                 ),
         )
         // Game Profiles Grid
-        .children(s.game_profiles.iter().enumerate().map(|(idx, profile)| {
-            let is_active = profile.is_applied;
+        .child(if s.game_profiles.is_empty() {
             col()
                 .w_full()
-                .padding(14.0)
+                .min_w(0.0)
+                .padding(p.card_padding)
                 .radius(style.card_radius())
                 .fill(p.card_fill_styled(style))
-                .border(style.border_width(), if is_active { p.accent } else { p.border_styled(style) })
+                .border(style.border_width(), p.border_styled(style))
+                .center()
                 .gap(8.0)
+                .child(text("🎮").font(rune::tok::type_::TITLE))
+                .child(
+                    text("No Game Profiles Configured")
+                        .font(rune::tok::type_::SECTION)
+                        .color(p.text_primary),
+                )
+                .child(
+                    text("Custom gaming profiles will appear here once added.")
+                        .font(rune::tok::type_::BODY)
+                        .color(p.text_muted),
+                )
+        } else {
+            col().w_full().min_w(0.0).gap(10.0).children(s.game_profiles.iter().enumerate().map(|(idx, profile)| {
+                let is_active = profile.is_applied;
+                col()
+                    .w_full()
+                    .min_w(0.0)
+                    .padding(p.card_padding)
+                    .radius(style.card_radius())
+                    .fill(p.card_fill_styled(style))
+                    .border(style.border_width(), if is_active { p.accent } else { p.border_styled(style) })
+                    .hover(p.bg_card_hover)
+                    .motion(p.motion)
+                    .gap(8.0)
                 .child(
                     row()
                         .w_full()
@@ -121,6 +147,7 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                                 .color(if profile.unpark_cores { p.success } else { p.text_muted }),
                         ),
                 )
-        }))
+            }))
+        })
         .scroll(ScrollSpec { stick_bottom: false }).winblast_scroll(p)
 }

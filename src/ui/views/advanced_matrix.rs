@@ -291,6 +291,31 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
         ));
     }
 
+    let sort_label = match s.matrix_sort_mode {
+        crate::app::MatrixSortMode::Default => s.tr(TextKey::SortOrderLabel),
+        crate::app::MatrixSortMode::NameAsc => s.tr(TextKey::SortNameAsc),
+        crate::app::MatrixSortMode::NameDesc => s.tr(TextKey::SortNameDesc),
+        crate::app::MatrixSortMode::Category => s.tr(TextKey::SortCategory),
+        crate::app::MatrixSortMode::Risk => s.tr(TextKey::SortRisk),
+        crate::app::MatrixSortMode::Status => s.tr(TextKey::SortStatus),
+    };
+    filter_chips = filter_chips.child(action_button(
+        format!("↕ {}", sort_label),
+        p.btn_secondary,
+        p.accent,
+        p,
+        |s| {
+            s.matrix_sort_mode = match s.matrix_sort_mode {
+                crate::app::MatrixSortMode::Default => crate::app::MatrixSortMode::NameAsc,
+                crate::app::MatrixSortMode::NameAsc => crate::app::MatrixSortMode::NameDesc,
+                crate::app::MatrixSortMode::NameDesc => crate::app::MatrixSortMode::Category,
+                crate::app::MatrixSortMode::Category => crate::app::MatrixSortMode::Risk,
+                crate::app::MatrixSortMode::Risk => crate::app::MatrixSortMode::Status,
+                crate::app::MatrixSortMode::Status => crate::app::MatrixSortMode::Default,
+            };
+        },
+    ));
+
     let filter_card = col()
         .w_full()
         .min_w(0.0)
@@ -300,7 +325,106 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
         .border(p.border_width, p.border)
         .gap(8.0)
         .child(search_box)
-        .child(filter_chips);
+        .child(filter_chips)
+        .child(
+            row()
+                .w_full()
+                .min_w(0.0)
+                .flex_wrap()
+                .gap(6.0)
+                .items_center()
+                .child(
+                    text("Risk:")
+                        .font(rune::tok::type_::LABEL)
+                        .color(p.text_muted)
+                        .shrink(),
+                )
+                .child(action_button(s.tr(TextKey::RiskSafe), p.success.alpha(0.18), p.success, p, |s| {
+                    s.search_edit.text = "safe".to_string();
+                }))
+                .child(action_button(s.tr(TextKey::RiskLow), p.accent.alpha(0.18), p.accent, p, |s| {
+                    s.search_edit.text = "low".to_string();
+                }))
+                .child(action_button(s.tr(TextKey::RiskCaution), p.warning.alpha(0.20), p.warning, p, |s| {
+                    s.search_edit.text = "moderate".to_string();
+                }))
+                .child(action_button(s.tr(TextKey::RiskHigh), p.warning.alpha(0.28), p.warning, p, |s| {
+                    s.search_edit.text = "high".to_string();
+                }))
+                .child(action_button(s.tr(TextKey::RiskExtreme), p.danger.alpha(0.28), p.danger, p, |s| {
+                    s.search_edit.text = "extreme".to_string();
+                })),
+        );
+
+    // Batch Action Toolbar
+    let batch_toolbar = row()
+        .w_full()
+        .min_w(0.0)
+        .padding(p.card_padding.min(10.0))
+        .radius(p.card_radius)
+        .fill(p.bg_card)
+        .border(p.border_width, p.border)
+        .flex_wrap()
+        .justify_between()
+        .items_center()
+        .gaps(8.0, 10.0)
+        .child(
+            row()
+                .gap(6.0)
+                .items_center()
+                .child(text("⚡").font(rune::tok::type_::LABEL))
+                .child(
+                    text(format!("Toplu İşlemler ({} Seçili)", s.selected_tweaks.len()))
+                        .font(rune::tok::type_::LABEL)
+                        .color(p.text_primary),
+                ),
+        )
+        .child(
+            row()
+                .min_w(0.0)
+                .shrink()
+                .flex_wrap()
+                .gaps(6.0, 6.0)
+                .child(action_button_guarded(
+                    if s.is_applying {
+                        s.tr(TextKey::BusyWorking).to_string()
+                    } else if s.selected_tweaks.is_empty() {
+                        s.tr(TextKey::ApplySelected).to_string()
+                    } else {
+                        format!("{} ({})", s.tr(TextKey::ApplySelected), s.selected_tweaks.len())
+                    },
+                    p.success,
+                    Color::WHITE,
+                    !s.is_applying && !s.is_rolling_back && !s.selected_tweaks.is_empty(),
+                    p,
+                    |s| s.apply_selected(),
+                ))
+                .child(action_button_guarded(
+                    s.tr(TextKey::RevertSelected),
+                    p.warning.alpha(0.20),
+                    p.warning,
+                    !s.selected_tweaks.is_empty() && !s.is_applying,
+                    p,
+                    |s| {
+                        let to_revert: Vec<String> = s.selected_tweaks.iter().cloned().collect();
+                        for id in to_revert {
+                            if s.is_switch_active(&id) {
+                                s.handle_switch_click(id);
+                            }
+                        }
+                    },
+                ))
+                .child(action_button(
+                    s.tr(TextKey::ExportSelected),
+                    p.btn_secondary,
+                    p.text_primary,
+                    p,
+                    |s| {
+                        let count = s.selected_tweaks.len();
+                        s.status_message = format!("Exported {} tweaks configuration", count);
+                    },
+                )),
+        );
 
     let mut matrix_col = col().w_full().min_w(0.0).gap(14.0);
 
@@ -309,21 +433,74 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
             continue;
         }
 
+        let cat_tweaks: Vec<String> = cat_items.iter().map(|r| r.tweak_id.clone()).collect();
+        let cat_tweaks_copy = cat_tweaks.clone();
+        let all_selected_in_cat = cat_tweaks.iter().all(|id| s.selected_tweaks.contains(id));
+
         let cat_header = row()
             .w_full()
             .min_w(0.0)
             .py(4.0)
+            .flex_wrap()
+            .justify_between()
+            .items_center()
+            .gap(8.0)
             .child(
-                text(format!("📂  {} ({})", s.tweak_category(cat), cat_items.len()))
-                    .font(rune::tok::type_::TITLE)
-                    .color(p.accent)
-                    .shrink()
-                    .wrap(),
+                row()
+                    .items_center()
+                    .gap(6.0)
+                    .child(
+                        text("▾")
+                            .font(rune::tok::type_::LABEL)
+                            .color(p.accent),
+                    )
+                    .child(
+                        text(format!("📂  {} ({})", s.tweak_category(cat), cat_items.len()))
+                            .font(rune::tok::type_::TITLE)
+                            .color(p.accent)
+                            .shrink()
+                            .wrap(),
+                    ),
+            )
+            .child(
+                action_button(
+                    if all_selected_in_cat { "Deselect Category" } else { s.tr(TextKey::SelectAllCategory) },
+                    p.bg_card,
+                    if all_selected_in_cat { p.warning } else { p.accent },
+                    p,
+                    move |s| {
+                        if all_selected_in_cat {
+                            for id in &cat_tweaks_copy {
+                                s.selected_tweaks.remove(id);
+                            }
+                        } else {
+                            for id in &cat_tweaks_copy {
+                                s.selected_tweaks.insert(id.clone());
+                            }
+                        }
+                    },
+                ),
             );
 
         let mut items_col = col().w_full().min_w(0.0).gap(6.0);
+        let mut sorted_items = cat_items.clone();
+        match s.matrix_sort_mode {
+            crate::app::MatrixSortMode::NameAsc => {
+                sorted_items.sort_by_key(|a| a.title.to_lowercase());
+            }
+            crate::app::MatrixSortMode::NameDesc => {
+                sorted_items.sort_by_key(|a| std::cmp::Reverse(a.title.to_lowercase()));
+            }
+            crate::app::MatrixSortMode::Risk => {
+                sorted_items.sort_by_key(|a| a.risk.stability_risk as u8);
+            }
+            crate::app::MatrixSortMode::Status => {
+                sorted_items.sort_by_key(|a| a.current_state.clone() as u8);
+            }
+            _ => {}
+        }
 
-        for sr in cat_items {
+        for sr in &sorted_items {
             let is_active = s.is_switch_active(&sr.tweak_id);
             let in_flight = s.in_flight_tweaks.contains(&sr.tweak_id);
             let (state_text, state_color) = tweak_state_meta(&sr.current_state, s);
@@ -479,10 +656,12 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
         .min_w(0.0)
         .min_h(0.0)
         .padding(pad)
+        .pr(14.0)
         .gap(12.0)
         .scroll(ScrollSpec { stick_bottom: false })
         .child(header_card)
         .child(presets_card)
+        .child(batch_toolbar)
         .child(filter_card)
         .child(matrix_col)
         .winblast_scroll(p)
