@@ -9,7 +9,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `da4fd638`
+- Built from commit: `a27055ac`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -644,7 +644,7 @@ Nodes (3): RepairSubTab, FaultDiagnostics, WindowsRepair
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `TextKey` connect `Core UI Internationalization & Text Catalog` to `path`, `Project Documentation, Architecture & Licensing`, `spawn_guarded_worker`, `Reversibility Instant Requireslogoff`, `Integration Suite: Tweak Sandbox E2E`, `Core UI Internationalization & Text Catalog`, `Integration Suite: Tweak Sandbox E2E`, `.Create Restore Point()`, `theme.rs`, `automation.rs`, `test_wave1_compound_actions_deep_edge_cases`, `PresetKey`, `Hardware Diagnostics & GPU Silicon Tuning`, `latency_bench.rs`, `ThermalHealth`?**
-  _High betweenness centrality (0.305) - this node is a cross-community bridge._
+  _High betweenness centrality (0.304) - this node is a cross-community bridge._
 - **Are the 18 inferred relationships involving `AppState` (e.g. with `OptimizationPlan` and `ExecutionOrder`) actually correct?**
   _`AppState` has 18 INFERRED edges - model-reasoned connections that need verification._
 - **What connects `ActiveChanges`, `ActiveOptimizations`, `ActiveRailAc` to the rest of the system?**
@@ -652,8 +652,8 @@ _Questions this graph is uniquely positioned to answer:_
 - **Should `Core UI Internationalization & Text Catalog` be split into smaller, more focused modules?**
   _Cohesion score 0.00390625 - nodes in this community are weakly interconnected._
 - **Why does `AppState` connect `automation.rs` to `Privacy, Telemetry & AI Hardening Catalog`, `AppState`, `.Toggle .Set .Apply`, `Disk Cleaning & Temporary File Purger`, `Windows OS Settings & UX Customization`, `BlastResult`, `theme.rs`, `SlowScanBackend`, `View() Color Scrollspec`, `full_telemetry_audit_with`, `Bloatware & AppX Deprovisioning Rules`, `Process Token Information`, `Hardware Diagnostics & GPU Silicon Tuning`, `Multi-Language Tweak Localization Tables`, `System Architecture Changelog`, `.Reg State() Vendor()`, `Core UI Internationalization & Text Catalog`, `spawn_guarded_worker`, `startup.rs`, `Integration Suite: Tweak Sandbox E2E`, `AppX Package & Modern App Scanner`, `.Create Restore Point()`, `WinBlast0 Architectural Specifications`, `FailAtMutationBackend`, `Hardware Diagnostics & GPU Silicon Tuning`, `test_wave1_ledger_rollback_and_concurrency_regressions`, `localize_tweak`, `Project History & Release Version Ledger`, `Hardware Diagnostics & GPU Silicon Tuning`, `task_scanner.rs`, `Hardware Diagnostics & GPU Silicon Tuning`, `Restore Points() .List`, `path`, `Project Documentation, Architecture & Licensing`, `Startup Tasks & Auto-Run Explorer`, `Reversibility Instant Requireslogoff`, `Hardware Diagnostics & GPU Silicon Tuning`, `LayoutTier`, `backend.rs`, `Project Documentation, Architecture & Licensing`, `app.rs`, `.setup`, `Hardware Diagnostics & GPU Silicon Tuning`, `test_wave1_compound_actions_deep_edge_cases`, `.sync_clean_apps_busy`, `normalize_guid_str`, `enums`, `Runtime`, `UiThemeStyle`, `SilentCommand`, `ThemePalette`, `ThermalHealth`, `diff_modal.rs`, `Hardware Diagnostics & GPU Silicon Tuning`, `scan_class_registry`, `Core UI Internationalization & Text Catalog`, `Features() .List Optional`, `.List Live Services()`, `Command Osstr Process.Rs`, `Integration Suite: Tweak Sandbox E2E`, `WindowsInfo`, `settle_frames`, `DriverError`, `PdhParkingCollector`, `PowerSchemeInfo`, `tools/game_overlay.rs`, `LiveScheduledTaskInfo`, `goal_planner.rs`, `DriverProgress`, `PresetKey`, `Spring`, `RegTreeSnapshot`, `UpdateStatus`, `DriverUpdateState`, `PrivacySortMode`, `make_ico.ps1`, `sign_binary.ps1`, `UpdateState`, `StartupSource`?**
-  _High betweenness centrality (0.269) - this node is a cross-community bridge._
+  _High betweenness centrality (0.266) - this node is a cross-community bridge._
 - **Should `action_button_guarded` be split into smaller, more focused modules?**
   _Cohesion score 0.016129032258064516 - nodes in this community are weakly interconnected._
 - **Why does `SystemBackend` connect `Disk Cleaning & Temporary File Purger` to `AppState`, `SlowScanBackend`, `automation.rs`, `Hardware Diagnostics & GPU Silicon Tuning`, `full_telemetry_audit_with`, `Bloatware & AppX Deprovisioning Rules`, `Core UI Internationalization & Text Catalog`, `Integration Suite: Tweak Sandbox E2E`, `System Architecture Changelog`, `.Reg State() Vendor()`, `Appx Package() Prefixes`, `RealBackend`, `Hardware Diagnostics & GPU Silicon Tuning`, `AppX Package & Modern App Scanner`, `svc_mutator.rs`, `ui_scrollbar_test.rs`, `State Ledger & Restore Point Engine`, `State Ledger & Restore Point Engine`, `restore_point.rs`, `Hardware Diagnostics & GPU Silicon Tuning`, `Error.Rs Winblasterror Appx`, `WinBlast0 Architectural Specifications`, `backend.rs`, `.Create Metrics Sampler()`, `app.rs`, `.setup`, `Hardware Diagnostics & GPU Silicon Tuning`, `test_wave1_compound_actions_deep_edge_cases`, `normalize_guid_str`, `UiThemeStyle`, `SilentCommand`, `.List Live Services()`, `Low-Level NT Core & Kernel Architecture`, `WindowsInfo`, `settle_frames`, `DriverError`, `PowerSchemeInfo`, `DriverProgress`?**
-  _High betweenness centrality (0.079) - this node is a cross-community bridge._
+  _High betweenness centrality (0.087) - this node is a cross-community bridge._

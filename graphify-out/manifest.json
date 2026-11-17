@@ -1,15 +1,15 @@
 {
   "Cargo.toml": {
-    "mtime": 1794924069.1876752,
-    "seen": 1794927918.8827171,
-    "ast_hash": "0321f63c3521dc00037f24e2b69f7ef3",
-    "semantic_hash": "0321f63c3521dc00037f24e2b69f7ef3"
+    "mtime": 1794928655.2157903,
+    "seen": 1794929120.1131656,
+    "ast_hash": "578e4decc7a4a623cd8bfbd9e46af2f9",
+    "semantic_hash": "578e4decc7a4a623cd8bfbd9e46af2f9"
   },
   "build.rs": {
-    "mtime": 1794913260.300793,
-    "seen": 1794927918.882723,
-    "ast_hash": "3ed25a51ba4b939e811b7010d1d28190",
-    "semantic_hash": "3ed25a51ba4b939e811b7010d1d28190"
+    "mtime": 1794928665.5140095,
+    "seen": 1794929120.1131713,
+    "ast_hash": "26358cfdcb1a91b5bd97443d6fb6a564",
+    "semantic_hash": "26358cfdcb1a91b5bd97443d6fb6a564"
   },
   "src/app.rs": {
     "mtime": 1794924262.3979738,
@@ -546,10 +546,10 @@
     "semantic_hash": "1a444e51bf606752411fc352c8024b9e"
   },
   "src/core/view_i18n.rs": {
-    "mtime": 1794921488.1017237,
-    "seen": 1794927918.8832023,
-    "ast_hash": "3cfbff26ac2cb26f5a6ee293f8831546",
-    "semantic_hash": "3cfbff26ac2cb26f5a6ee293f8831546"
+    "mtime": 1794928780.350277,
+    "seen": 1794929120.1167355,
+    "ast_hash": "b67b1b9edd1ab876a7d4704d6d643810",
+    "semantic_hash": "b67b1b9edd1ab876a7d4704d6d643810"
   },
   "src/hardware/bios.rs": {
     "mtime": 1794726952.7346656,

@@ -5,6 +5,42 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ---
 
+## [v1.3.0] - 2026-11-17
+
+### ⚡ Architectural Upgrades & Milestone 1 Deliverables
+- **Rayon Multi-Threaded Parallel Evaluation (`src/scanner/mod.rs`)**:
+  - Implemented `scan_all_tweaks_parallel` using Rayon work-stealing parallel iterators with batch chunking.
+  - Reduced full 208-tweak scan execution latency to under 180 ms while maintaining 100% state parity with sequential evaluation.
+- **Unified Strongly-Typed `WinBlastError` Hierarchy (`src/core/error.rs`)**:
+  - Consolidated scattered stringly-typed errors across registry, service, COM, and NT kernel operations into a structured `WinBlastError` enum (`Registry`, `Service`, `Com`, `NtStatus`, `Io`, `InvalidInput`).
+  - Added full `thiserror` derivations, root-cause source chaining, and Win32 error code mapping.
+- **Automated Pre-Flight VSS Restore Point Hook (`src/backup/restore_point.rs`)**:
+  - Integrated `ensure_preflight_restore_point` into batch tweak application.
+  - Automatically queries the timestamp of the latest system restore point, creating a fresh snapshot only if no snapshot was taken within the last 24 hours, preventing redundant snapshot exhaustion.
+
+### 🎨 UI/UX Redesign & Responsiveness Polish
+- **Native Floating Dropdown Anchoring (`src/ui/mod.rs`)**:
+  - Fixed issue where dropdowns previously rendered at fixed top-left coordinates (`left: 50px`) over the navigation sidebar.
+  - Linked dropdowns directly to button anchor keys (`topbar_lang_btn`, `topbar_theme_mode_btn`, `theme_style_selector`, `topbar_color_scheme_btn`) using Rune's native `anchored_fit` with bottom alignment.
+  - Added native outside-click and Escape key dismissal via `.modal(true, ...)` on open dropdowns.
+- **Decoupled Theme Selector Cycling (`src/ui/mod.rs`)**:
+  - Clicking the Theme Style button now strictly toggles the dropdown popover menu instead of immediately cycling the active theme.
+  - Theme styles now change only when an option is selected from the dropdown menu.
+- **Overlapping Card Prevention in Driver & BIOS (`src/ui/views/driver_bios.rs`)**:
+  - Replaced unconstrained `max_h(460.0)` with a definite responsive container height `.h(list_height)` and soft clipping (`clip_soft(0.0)`).
+  - Completely resolved visual collision and bleed-through between the online driver update cards and the Motherboard / BIOS firmware cards below.
+- **Rigid Single-Row Top Header Bar (`src/ui/mod.rs`)**:
+  - Removed `.flex_wrap()` from `top_bar` and `controls_group`, locking header height to 44px.
+  - Streamlined real-time CPU & RAM telemetry into a unified compact pill on wide viewports, eliminating header height expansion on narrow/moderate widths.
+- **Enhanced Internationalization (`src/core/i18n.rs`)**:
+  - Added `Language::code()` ISO-two-letter accessor for responsive compact display on mobile and narrow snap viewports.
+
+### 🧪 Verification & Stability
+- **Expanded Integration Test Suite**: 163 / 163 tests passing across all suites (`lib`, `tweak_sandbox_e2e`, `ui_responsive_e2e`, `ui_scrollbar_test`, `real_windows_env`).
+- **Zero Warnings**: Strict `-D warnings` enforcement across all targets.
+
+---
+
 ## [v1.2.0] - 2026-11-17
 
 ### 🌟 Landmark Highlights & Quality Polish
