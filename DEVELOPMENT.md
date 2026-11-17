@@ -48,16 +48,16 @@ pub trait SystemBackend: Send + Sync {
 
 ### Running Tests:
 ```powershell
-# Run all unit tests
+# Run all unit tests (109 tests)
 cargo test --lib
 
-# Run isolated sandbox regression tests (18 tests)
+# Run isolated sandbox regression tests (25 tests)
 cargo test --test tweak_sandbox_e2e
 
-# Run headless UI responsive matrix & multi-locale sweeps (8 tests)
+# Run headless UI responsive matrix & multi-locale sweeps (13 tests)
 cargo test --test ui_responsive_e2e
 
-# Run headless scroll-bar geometry, hover & drag interaction E2E tests (4 tests)
+# Run headless scroll-bar geometry, hover & drag interaction E2E tests (5 tests)
 cargo test --test ui_scrollbar_test
 
 # Run live Windows environment read-only audit (3 tests)

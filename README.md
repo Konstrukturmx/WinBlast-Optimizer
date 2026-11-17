@@ -50,7 +50,7 @@
 
 ## 🌟 Key Architecture & Capabilities
 
-Derived from the formal [**WinBlast0 Technical Knowledge Base**](WinBlast0/00%20-%20Index%20(MOC).md), WinBlast Optimizer is engineered with four fundamental pillars:
+Derived from the formal [**WinBlast0 Architecture Guide**](DEVELOPMENT.md), WinBlast Optimizer is engineered with four fundamental pillars:
 
 ### 1. 🦀 Pure-Rust Rune Engine & 5 Full UI Themes
 * **GPU-Accelerated Rendering**: Custom immediate-mode Rune GUI with hardware V-Sync synchronization and fluid 60 FPS spring animations.
@@ -60,7 +60,7 @@ Derived from the formal [**WinBlast0 Technical Knowledge Base**](WinBlast0/00%20
   * **🖥️ Classic (Win2000 Retro)**: Workstation aesthetic with 2px beveled borders, tactile snap animations, and high functional density.
   * **⚡ Compact (High Density)**: Micro-padding (8px), 4px corners, 180px sidebar, maximized information per square inch.
   * **🎨 Materialistic (Material Design 3)**: Soft 18px rounded cards, 24px pill buttons, tonal surfaces, and smooth decelerated spring motion.
-* **4 WCAG AA Color Schemes**: *Cyber Indigo*, *Midnight Stealth*, *Emerald Mint*, and *Crimson Sunset* with Dark and Light mode support.
+* **6 WCAG AA Color Schemes**: *Cyber Indigo*, *Midnight Stealth*, *Emerald Mint*, *Crimson Sunset*, *Solar Amber*, and *Arctic Aurora* with Dark and Light mode support.
 * **Permanent High-Resolution Icon**: Embedded `winblast.ico` with full PE Version Information (`Konstrukturmx`, `WinBlast Optimizer`, version `1.2.0.0`).
 * **Themed Always-On Scroll Bars**: Every overflowing viewport renders a custom palette-driven scroll bar (6 pt muted thumb at rest, 9 pt theme-accent thumb on hover/drag) with dedicated `14.0pt` to `16.0pt` right gutters preventing thumb-button collisions.
 
