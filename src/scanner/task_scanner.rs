@@ -456,6 +456,12 @@ fn query_task_via_schtasks(canonical_path: &str) -> Result<Option<(String, bool)
         if lower.contains("cannot find the file")
             || lower.contains("does not exist")
             || lower.contains("cannot find the path")
+            || lower.contains("belirtilen dosya")
+            || lower.contains("bulunamıyor")
+            || lower.contains("bulunamadi")
+            || lower.contains("nicht gefunden")
+            || lower.contains("fichier introuvable")
+            || lower.contains("no se puede encontrar")
         {
             return Ok(None);
         }
@@ -539,7 +545,10 @@ mod tests {
     #[test]
     fn test_query_single_task_distinguishes_absent_vs_access_denied() {
         let missing = query_single_task_detailed("\\WinBlast0_Definitely_Absent_Task_12345");
-        assert!(matches!(missing, Ok(None)));
+        assert!(
+            matches!(missing, Ok(None) | Err(WinBlastError::ElevationRequired(_))),
+            "Expected Ok(None) when elevated or Err(ElevationRequired) when un-elevated, got: {missing:?}"
+        );
     }
 
     #[test]

@@ -16,7 +16,7 @@
   <b>WinBlast Optimizer</b> is a standalone, lightweight, zero-dependency Windows optimization suite designed for performance enthusiasts, competitive gamers, power users, and system administrators. Built in pure Rust with direct Win32/NT kernel bindings, it replaces bloated PowerShell scripts and black-box tweakers with an auditable, transactional, and fully reversible optimization engine.
 </p>
 
-[**Download Latest Release (v1.5.1)**](https://github.com/Konstrukturmx/WinBlast-Optimizer/releases/latest) • [**Changelog**](CHANGELOG.md) • [**Architecture Guide**](DEVELOPMENT.md) • [**VirusTotal Report**](https://www.virustotal.com/gui/file/19895c54d3699391aebedb5c3e384aeb7ac5a73f8d1bee9ff7da4cd623d2fa00) • [**Knowledge Graph**](graphify-out/graph.html)
+[**Download Latest Release (v1.2.0)**](https://github.com/Konstrukturmx/WinBlast-Optimizer/releases/latest) • [**Changelog**](CHANGELOG.md) • [**Architecture Guide**](DEVELOPMENT.md) • [**VirusTotal Report**](https://www.virustotal.com/gui/file/19895c54d3699391aebedb5c3e384aeb7ac5a73f8d1bee9ff7da4cd623d2fa00) • [**Knowledge Graph**](graphify-out/graph.html)
 
 ---
 
@@ -61,10 +61,10 @@ Derived from the formal [**WinBlast0 Technical Knowledge Base**](WinBlast0/00%20
   * **⚡ Compact (High Density)**: Micro-padding (8px), 4px corners, 180px sidebar, maximized information per square inch.
   * **🎨 Materialistic (Material Design 3)**: Soft 18px rounded cards, 24px pill buttons, tonal surfaces, and smooth decelerated spring motion.
 * **4 WCAG AA Color Schemes**: *Cyber Indigo*, *Midnight Stealth*, *Emerald Mint*, and *Crimson Sunset* with Dark and Light mode support.
-* **Permanent High-Resolution Icon**: Embedded `winblast.ico` with full PE Version Information (`Konstrukturmx`, `WinBlast Optimizer`, version `1.5.0.0`).
+* **Permanent High-Resolution Icon**: Embedded `winblast.ico` with full PE Version Information (`Konstrukturmx`, `WinBlast Optimizer`, version `1.2.0.0`).
 * **Themed Always-On Scroll Bars**: Every overflowing viewport renders a custom palette-driven scroll bar (6 pt muted thumb at rest, 9 pt theme-accent thumb on hover/drag) with dedicated `14.0pt` to `16.0pt` right gutters preventing thumb-button collisions.
 
-### 2. ⚡ Autonomous Self-Updater & Game Platform Engine (v1.5)
+### 2. ⚡ Autonomous Self-Updater & Game Platform Engine (v1.2)
 * **GitHub Releases Self-Updater**: Zero-dependency HTTPS release checker querying official releases with semver comparison. Performs atomic in-place executable replacement (`.old` swap) and automatic restart without external updaters.
 * **Administrator Elevation Guard**: Pre-flight Win32 `TokenElevation` audit with non-intrusive warning banners and one-click UAC relaunch via `ShellExecuteW("runas")`.
 * **Game Prerequisites & Runtimes Cascade Engine**: Audits, verifies, and installs essential gaming runtimes (DirectX, Visual C++ 2005–2022 All-in-One, Vulkan, .NET Desktop Runtime 8.0/9.0, OpenAL, XNA) via a resilient 3-tier cascade: WinGet silent install ➔ Chocolatey CLI fallback ➔ Direct vendor portal launch.
@@ -140,12 +140,12 @@ The optimizer features **208 validated declarative optimizations** indexed acros
 
 Because WinBlast Optimizer adjusts low-level system settings, Windows Registry parameters, and hardware power states, transparency and security are paramount.
 
-* **Target Binary**: `winblast0.exe` (v1.5.1)
+* **Target Binary**: `winblast0.exe` (v1.2.0)
 * **Digital Signature**: Microsoft Authenticode signed by `Konstrukturmx` with DigiCert RFC 3161 SHA-256 timestamping
-* **File Size**: `31,965,736` bytes (30.5 MB)
+* **File Size**: `31,966,240` bytes (30.5 MB)
 * **SHA-256 Checksum**:
   ```text
-  a99b1033241da894fd3f0323cbb359f4dde8ae1fe51de3ddac4faa6468169699
+  be98c799fb7e680681dde9d5b8f4d6bea91ea9de66fd169daf813e4528a18c6b
   ```
 * **Microsoft Defender Heuristics**: Clean PE metadata, authentic Win32 API calls, embedded UAC manifest, and permanent application icon `winblast.ico`.
 * **VirusTotal Scan Result**: [**View Official VirusTotal Report**](https://www.virustotal.com/gui/file/19895c54d3699391aebedb5c3e384aeb7ac5a73f8d1bee9ff7da4cd623d2fa00)
