@@ -84,19 +84,57 @@ fn build_startup_apps_list(s: &AppState, p: &ThemePalette, tier: LayoutTier) -> 
         I18n::fold_search_str(q_raw)
     };
     let hide_ms = s.hide_microsoft_tasks;
-    let idxs: Rc<Vec<usize>> = Rc::new(
-        s.startup_entries
-            .iter()
-            .enumerate()
-            .filter(|(_, e)| {
-                (!hide_ms || !e.is_microsoft)
-                    && (q.is_empty()
-                        || I18n::fold_search_str(&e.name).contains(&q)
-                        || I18n::fold_search_str(&e.command).contains(&q))
-            })
-            .map(|(i, _)| i)
-            .collect(),
-    );
+    let filter = s.startup_status_filter;
+    let mut matching_idxs: Vec<usize> = s.startup_entries
+        .iter()
+        .enumerate()
+        .filter(|(_, e)| {
+            if hide_ms && e.is_microsoft {
+                return false;
+            }
+            let status_ok = match filter {
+                crate::app::StartupStatusFilter::All => true,
+                crate::app::StartupStatusFilter::ActiveOnly => e.enabled,
+                crate::app::StartupStatusFilter::InactiveOnly => !e.enabled,
+            };
+            status_ok
+                && (q.is_empty()
+                    || I18n::fold_search_str(&e.name).contains(&q)
+                    || I18n::fold_search_str(&e.command).contains(&q))
+        })
+        .map(|(i, _)| i)
+        .collect();
+
+    match s.startup_sort_mode {
+        crate::app::StartupSortMode::NameAsc => {
+            matching_idxs.sort_by(|&a, &b| s.startup_entries[a].name.to_lowercase().cmp(&s.startup_entries[b].name.to_lowercase()));
+        }
+        crate::app::StartupSortMode::NameDesc => {
+            matching_idxs.sort_by(|&a, &b| s.startup_entries[b].name.to_lowercase().cmp(&s.startup_entries[a].name.to_lowercase()));
+        }
+        crate::app::StartupSortMode::StatusActiveFirst => {
+            matching_idxs.sort_by(|&a, &b| {
+                let ea = &s.startup_entries[a];
+                let eb = &s.startup_entries[b];
+                eb.enabled.cmp(&ea.enabled).then_with(|| ea.name.to_lowercase().cmp(&eb.name.to_lowercase()))
+            });
+        }
+        crate::app::StartupSortMode::StatusInactiveFirst => {
+            matching_idxs.sort_by(|&a, &b| {
+                let ea = &s.startup_entries[a];
+                let eb = &s.startup_entries[b];
+                ea.enabled.cmp(&eb.enabled).then_with(|| ea.name.to_lowercase().cmp(&eb.name.to_lowercase()))
+            });
+        }
+        crate::app::StartupSortMode::Source => {
+            matching_idxs.sort_by(|&a, &b| {
+                let sa = format!("{:?}", s.startup_entries[a].source);
+                let sb = format!("{:?}", s.startup_entries[b].source);
+                sa.cmp(&sb).then_with(|| s.startup_entries[a].name.to_lowercase().cmp(&s.startup_entries[b].name.to_lowercase()))
+            });
+        }
+    }
+    let idxs: Rc<Vec<usize>> = Rc::new(matching_idxs);
 
     let count = idxs.len();
     if count == 0 {
@@ -247,19 +285,53 @@ fn build_tasks_list(s: &AppState, p: &ThemePalette, tier: LayoutTier) -> El {
         I18n::fold_search_str(q_raw)
     };
     let hide_ms = s.hide_microsoft_tasks;
-    let idxs: Rc<Vec<usize>> = Rc::new(
-        s.scheduled_tasks
-            .iter()
-            .enumerate()
-            .filter(|(_, t)| {
-                (!hide_ms || !t.is_microsoft)
-                    && (q.is_empty()
-                        || I18n::fold_search_str(&t.task_name).contains(&q)
-                        || I18n::fold_search_str(&t.task_path).contains(&q))
-            })
-            .map(|(i, _)| i)
-            .collect(),
-    );
+    let filter = s.startup_status_filter;
+    let mut matching_idxs: Vec<usize> = s.scheduled_tasks
+        .iter()
+        .enumerate()
+        .filter(|(_, t)| {
+            if hide_ms && t.is_microsoft {
+                return false;
+            }
+            let status_ok = match filter {
+                crate::app::StartupStatusFilter::All => true,
+                crate::app::StartupStatusFilter::ActiveOnly => t.enabled,
+                crate::app::StartupStatusFilter::InactiveOnly => !t.enabled,
+            };
+            status_ok
+                && (q.is_empty()
+                    || I18n::fold_search_str(&t.task_name).contains(&q)
+                    || I18n::fold_search_str(&t.task_path).contains(&q))
+        })
+        .map(|(i, _)| i)
+        .collect();
+
+    match s.startup_sort_mode {
+        crate::app::StartupSortMode::NameAsc => {
+            matching_idxs.sort_by(|&a, &b| s.scheduled_tasks[a].task_name.to_lowercase().cmp(&s.scheduled_tasks[b].task_name.to_lowercase()));
+        }
+        crate::app::StartupSortMode::NameDesc => {
+            matching_idxs.sort_by(|&a, &b| s.scheduled_tasks[b].task_name.to_lowercase().cmp(&s.scheduled_tasks[a].task_name.to_lowercase()));
+        }
+        crate::app::StartupSortMode::StatusActiveFirst => {
+            matching_idxs.sort_by(|&a, &b| {
+                let ta = &s.scheduled_tasks[a];
+                let tb = &s.scheduled_tasks[b];
+                tb.enabled.cmp(&ta.enabled).then_with(|| ta.task_name.to_lowercase().cmp(&tb.task_name.to_lowercase()))
+            });
+        }
+        crate::app::StartupSortMode::StatusInactiveFirst => {
+            matching_idxs.sort_by(|&a, &b| {
+                let ta = &s.scheduled_tasks[a];
+                let tb = &s.scheduled_tasks[b];
+                ta.enabled.cmp(&tb.enabled).then_with(|| ta.task_name.to_lowercase().cmp(&tb.task_name.to_lowercase()))
+            });
+        }
+        crate::app::StartupSortMode::Source => {
+            matching_idxs.sort_by(|&a, &b| s.scheduled_tasks[a].folder.cmp(&s.scheduled_tasks[b].folder));
+        }
+    }
+    let idxs: Rc<Vec<usize>> = Rc::new(matching_idxs);
 
     let count = idxs.len();
     if count == 0 {
@@ -394,19 +466,53 @@ fn build_services_list(s: &AppState, p: &ThemePalette, tier: LayoutTier) -> El {
         I18n::fold_search_str(q_raw)
     };
     let hide_ms = s.hide_microsoft_tasks;
-    let idxs: Rc<Vec<usize>> = Rc::new(
-        s.live_services
-            .iter()
-            .enumerate()
-            .filter(|(_, svc)| {
-                (!hide_ms || !svc.is_microsoft)
-                    && (q.is_empty()
-                        || I18n::fold_search_str(&svc.service_name).contains(&q)
-                        || I18n::fold_search_str(&svc.display_name).contains(&q))
-            })
-            .map(|(i, _)| i)
-            .collect(),
-    );
+    let filter = s.startup_status_filter;
+    let mut matching_idxs: Vec<usize> = s.live_services
+        .iter()
+        .enumerate()
+        .filter(|(_, svc)| {
+            if hide_ms && svc.is_microsoft {
+                return false;
+            }
+            let status_ok = match filter {
+                crate::app::StartupStatusFilter::All => true,
+                crate::app::StartupStatusFilter::ActiveOnly => svc.is_running,
+                crate::app::StartupStatusFilter::InactiveOnly => !svc.is_running,
+            };
+            status_ok
+                && (q.is_empty()
+                    || I18n::fold_search_str(&svc.service_name).contains(&q)
+                    || I18n::fold_search_str(&svc.display_name).contains(&q))
+        })
+        .map(|(i, _)| i)
+        .collect();
+
+    match s.startup_sort_mode {
+        crate::app::StartupSortMode::NameAsc => {
+            matching_idxs.sort_by(|&a, &b| s.live_services[a].display_name.to_lowercase().cmp(&s.live_services[b].display_name.to_lowercase()));
+        }
+        crate::app::StartupSortMode::NameDesc => {
+            matching_idxs.sort_by(|&a, &b| s.live_services[b].display_name.to_lowercase().cmp(&s.live_services[a].display_name.to_lowercase()));
+        }
+        crate::app::StartupSortMode::StatusActiveFirst => {
+            matching_idxs.sort_by(|&a, &b| {
+                let sa = &s.live_services[a];
+                let sb = &s.live_services[b];
+                sb.is_running.cmp(&sa.is_running).then_with(|| sa.display_name.to_lowercase().cmp(&sb.display_name.to_lowercase()))
+            });
+        }
+        crate::app::StartupSortMode::StatusInactiveFirst => {
+            matching_idxs.sort_by(|&a, &b| {
+                let sa = &s.live_services[a];
+                let sb = &s.live_services[b];
+                sa.is_running.cmp(&sb.is_running).then_with(|| sa.display_name.to_lowercase().cmp(&sb.display_name.to_lowercase()))
+            });
+        }
+        crate::app::StartupSortMode::Source => {
+            matching_idxs.sort_by(|&a, &b| s.live_services[a].service_name.cmp(&s.live_services[b].service_name));
+        }
+    }
+    let idxs: Rc<Vec<usize>> = Rc::new(matching_idxs);
 
     let count = idxs.len();
     if count == 0 {
@@ -660,22 +766,87 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
             row()
                 .w_full()
                 .min_w(0.0)
-                .min_h(34.0)
-                .px(8.0)
-                .py(5.0)
-                .radius(6.0)
-                .fill(p.bg_card)
-                .border(1.0, p.border)
+                .flex_wrap()
+                .gaps(8.0, 8.0)
                 .items_center()
                 .child(
-                    text_input(&s.startup_filter_edit, rune::tok::type_::BODY)
-                        .key("startup_search_input")
-                        .single_line()
-                        .placeholder(s.tr(TextKey::SearchPlaceholder), p.text_muted)
-                        .color(p.text_primary)
-                        .on_edit(|s: &mut AppState| &mut s.startup_filter_edit)
+                    row()
                         .grow(1.0)
-                        .min_w(0.0),
+                        .min_w(180.0)
+                        .min_h(34.0)
+                        .px(8.0)
+                        .py(5.0)
+                        .radius(6.0)
+                        .fill(p.bg_card)
+                        .border(1.0, p.border)
+                        .items_center()
+                        .child(
+                            text_input(&s.startup_filter_edit, rune::tok::type_::BODY)
+                                .key("startup_search_input")
+                                .single_line()
+                                .placeholder(s.tr(TextKey::SearchPlaceholder), p.text_muted)
+                                .color(p.text_primary)
+                                .on_edit(|s: &mut AppState| &mut s.startup_filter_edit)
+                                .grow(1.0)
+                                .min_w(0.0),
+                        ),
+                )
+                .child(
+                    row()
+                        .min_w(0.0)
+                        .shrink()
+                        .gap(4.0)
+                        .items_center()
+                        .child(
+                            action_button(
+                                "All",
+                                if s.startup_status_filter == crate::app::StartupStatusFilter::All { p.accent } else { p.bg_card },
+                                if s.startup_status_filter == crate::app::StartupStatusFilter::All { Color::WHITE } else { p.text_secondary },
+                                p,
+                                |s| s.startup_status_filter = crate::app::StartupStatusFilter::All,
+                            ),
+                        )
+                        .child(
+                            action_button(
+                                "Active",
+                                if s.startup_status_filter == crate::app::StartupStatusFilter::ActiveOnly { p.success } else { p.bg_card },
+                                if s.startup_status_filter == crate::app::StartupStatusFilter::ActiveOnly { Color::BLACK } else { p.text_secondary },
+                                p,
+                                |s| s.startup_status_filter = crate::app::StartupStatusFilter::ActiveOnly,
+                            ),
+                        )
+                        .child(
+                            action_button(
+                                "Inactive",
+                                if s.startup_status_filter == crate::app::StartupStatusFilter::InactiveOnly { p.warning } else { p.bg_card },
+                                if s.startup_status_filter == crate::app::StartupStatusFilter::InactiveOnly { Color::BLACK } else { p.text_secondary },
+                                p,
+                                |s| s.startup_status_filter = crate::app::StartupStatusFilter::InactiveOnly,
+                            ),
+                        ),
+                )
+                .child(
+                    action_button(
+                        match s.startup_sort_mode {
+                            crate::app::StartupSortMode::NameAsc => "↕ Sort: Name (A-Z)",
+                            crate::app::StartupSortMode::NameDesc => "↕ Sort: Name (Z-A)",
+                            crate::app::StartupSortMode::StatusActiveFirst => "↕ Sort: Active First",
+                            crate::app::StartupSortMode::StatusInactiveFirst => "↕ Sort: Inactive First",
+                            crate::app::StartupSortMode::Source => "↕ Sort: Source / Folder",
+                        },
+                        p.btn_secondary,
+                        p.text_primary,
+                        p,
+                        |s| {
+                            s.startup_sort_mode = match s.startup_sort_mode {
+                                crate::app::StartupSortMode::NameAsc => crate::app::StartupSortMode::NameDesc,
+                                crate::app::StartupSortMode::NameDesc => crate::app::StartupSortMode::StatusActiveFirst,
+                                crate::app::StartupSortMode::StatusActiveFirst => crate::app::StartupSortMode::StatusInactiveFirst,
+                                crate::app::StartupSortMode::StatusInactiveFirst => crate::app::StartupSortMode::Source,
+                                crate::app::StartupSortMode::Source => crate::app::StartupSortMode::NameAsc,
+                            };
+                        },
+                    ),
                 ),
         );
 

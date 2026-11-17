@@ -32,8 +32,9 @@ pub enum UpdateState {
     Failed(String),
 }
 
-/// GitHub repository target for updates.
-pub const GITHUB_REPO: &str = "konstruktor/WinBlast0";
+/// Primary and fallback GitHub repository targets for updates.
+pub const GITHUB_REPO: &str = "Konstrukturmx/WinBlast-Optimizer";
+pub const FALLBACK_REPO: &str = "Devinance/WinBlast-Optimizer";
 
 /// Check if a remote version tag is newer than the current application version.
 pub fn is_version_newer(remote_tag: &str, current_version: &str) -> bool {
@@ -59,29 +60,44 @@ pub fn is_version_newer(remote_tag: &str, current_version: &str) -> bool {
     remote_parts.len() > current_parts.len()
 }
 
-/// Query GitHub Releases API for the latest published release.
-pub fn check_latest_release(repo: &str) -> Result<Option<ReleaseInfo>, String> {
-    let url = format!("https://api.github.com/repos/{}/releases/latest", repo);
+#[derive(Deserialize)]
+struct GhAsset {
+    name: String,
+    size: u64,
+    browser_download_url: String,
+}
 
-    // Using PowerShell to query GitHub REST API with custom User-Agent
+#[derive(Deserialize)]
+struct GhRelease {
+    tag_name: String,
+    name: Option<String>,
+    body: Option<String>,
+    html_url: Option<String>,
+    published_at: Option<String>,
+    assets: Option<Vec<GhAsset>>,
+}
+
+/// Helper to fetch URL content via curl.exe or PowerShell.
+fn fetch_url_json(url: &str) -> Result<String, String> {
+    // 1. Try native curl.exe first (fast, built-in on Win10/Win11)
+    if let Ok(output) = SilentCommand::new("curl.exe")
+        .args(["-s", "-f", "-H", "User-Agent: WinBlast0-Updater", url])
+        .output()
+    {
+        if output.status.success() {
+            let s = String::from_utf8_lossy(&output.stdout).trim().to_string();
+            if !s.is_empty() && (s.starts_with('{') || s.starts_with('[')) {
+                return Ok(s);
+            }
+        }
+    }
+
+    // 2. Fallback to PowerShell Invoke-RestMethod
     let ps_cmd = format!(
         r#"[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12;
 try {{
-    $r = Invoke-RestMethod -Uri '{}' -Headers @{{'User-Agent'='WinBlast0-Updater'}} -TimeoutSec 10;
-    $asset = $r.assets | Where-Object {{ $_.name -like '*.exe' -or $_.name -like '*.zip' }} | Select-Object -First 1;
-    $dl = if ($asset) {{ $asset.browser_download_url }} else {{ $null }};
-    $sz = if ($asset) {{ [math]::Round($asset.size / 1MB, 2) }} else {{ 0 }};
-    $as_name = if ($asset) {{ $asset.name }} else {{ $null }};
-    [PSCustomObject]@{{
-        tag_name = $r.tag_name;
-        name = if ($r.name) {{ $r.name }} else {{ $r.tag_name }};
-        body = if ($r.body) {{ $r.body }} else {{ '' }};
-        html_url = $r.html_url;
-        published_at = if ($r.published_at) {{ $r.published_at }} else {{ '' }};
-        download_url = $dl;
-        asset_name = $as_name;
-        download_size_mb = $sz;
-    }} | ConvertTo-Json -Compress
+    $r = Invoke-WebRequest -Uri '{}' -Headers @{{'User-Agent'='WinBlast0-Updater'}} -UseBasicParsing -TimeoutSec 15;
+    Write-Output $r.Content
 }} catch {{
     Write-Output "ERROR: $($_.Exception.Message)"
 }}"#,
@@ -94,54 +110,97 @@ try {{
         .map_err(|e| format!("Failed to spawn PowerShell: {}", e))?;
 
     let out_str = String::from_utf8_lossy(&output.stdout).trim().to_string();
-
     if out_str.starts_with("ERROR:") || out_str.is_empty() {
-        // Fallback for sandboxed / offline / unreleased testing
         return Err(if out_str.is_empty() {
             "Empty response from update server".to_string()
         } else {
             out_str
         });
     }
+    Ok(out_str)
+}
 
-    #[derive(Deserialize)]
-    struct RawRelease {
-        tag_name: Option<String>,
-        name: Option<String>,
-        body: Option<String>,
-        html_url: Option<String>,
-        published_at: Option<String>,
-        download_url: Option<String>,
-        asset_name: Option<String>,
-        download_size_mb: Option<f64>,
+/// Query GitHub Releases API for the latest published release.
+pub fn check_latest_release(repo: &str) -> Result<Option<ReleaseInfo>, String> {
+    let repos_to_try = [repo, GITHUB_REPO, FALLBACK_REPO];
+
+    let mut last_err = String::new();
+
+    for r in repos_to_try {
+        let latest_url = format!("https://api.github.com/repos/{}/releases/latest", r);
+        let all_url = format!("https://api.github.com/repos/{}/releases", r);
+
+        // Try /releases/latest first
+        let json_res = fetch_url_json(&latest_url)
+            .or_else(|_| fetch_url_json(&all_url));
+
+        let json_str = match json_res {
+            Ok(s) => s,
+            Err(e) => {
+                last_err = e;
+                continue;
+            }
+        };
+
+        // Try parsing single release object or array of releases
+        let release: Option<GhRelease> = if json_str.starts_with('[') {
+            if let Ok(releases) = serde_json::from_str::<Vec<GhRelease>>(&json_str) {
+                releases.into_iter().next()
+            } else {
+                None
+            }
+        } else {
+            serde_json::from_str::<GhRelease>(&json_str).ok()
+        };
+
+        if let Some(rel) = release {
+            let tag = rel.tag_name;
+            if tag.is_empty() {
+                continue;
+            }
+
+            let current_ver = env!("CARGO_PKG_VERSION");
+            let is_newer = is_version_newer(&tag, current_ver);
+
+            // Find executable asset
+            let mut download_url = None;
+            let mut asset_name = None;
+            let mut download_size_mb = None;
+
+            if let Some(assets) = rel.assets {
+                for a in assets {
+                    if a.name.ends_with(".exe") || a.name.ends_with(".zip") {
+                        download_url = Some(a.browser_download_url);
+                        download_size_mb = Some((a.size as f64) / (1024.0 * 1024.0));
+                        asset_name = Some(a.name);
+                        break;
+                    }
+                }
+            }
+
+            let info = ReleaseInfo {
+                tag_name: tag,
+                name: rel.name.unwrap_or_else(|| "WinBlast0 Update".to_string()),
+                body: rel.body.unwrap_or_default(),
+                html_url: rel.html_url.unwrap_or_default(),
+                published_at: rel.published_at.unwrap_or_default(),
+                download_url,
+                asset_name,
+                download_size_mb,
+            };
+
+            if is_newer {
+                return Ok(Some(info));
+            } else {
+                return Ok(None);
+            }
+        }
     }
 
-    let parsed: RawRelease = serde_json::from_str(&out_str)
-        .map_err(|e| format!("Failed to parse release JSON: {} (raw: {})", e, out_str))?;
-
-    let tag = parsed.tag_name.unwrap_or_default();
-    if tag.is_empty() {
-        return Ok(None);
-    }
-
-    let current_ver = env!("CARGO_PKG_VERSION");
-    let is_newer = is_version_newer(&tag, current_ver);
-
-    let info = ReleaseInfo {
-        tag_name: tag,
-        name: parsed.name.unwrap_or_else(|| "WinBlast0 Update".to_string()),
-        body: parsed.body.unwrap_or_default(),
-        html_url: parsed.html_url.unwrap_or_default(),
-        published_at: parsed.published_at.unwrap_or_default(),
-        download_url: parsed.download_url,
-        asset_name: parsed.asset_name,
-        download_size_mb: parsed.download_size_mb,
-    };
-
-    if is_newer {
-        Ok(Some(info))
+    if last_err.is_empty() {
+        Err("Unable to contact GitHub Releases API".to_string())
     } else {
-        Ok(None)
+        Err(last_err)
     }
 }
 
@@ -153,10 +212,26 @@ pub fn download_release_asset(download_url: &str, asset_name: &str) -> Result<Pa
 
     let target_path_str = target_file.to_string_lossy().to_string();
 
+    // 1. Try curl.exe -L first (handles GitHub redirects seamlessly)
+    let curl_res = SilentCommand::new("curl.exe")
+        .args(["-L", "-s", "-f", "-H", "User-Agent: WinBlast0-Updater", "-o", &target_path_str, download_url])
+        .output();
+
+    if let Ok(c_out) = curl_res {
+        if c_out.status.success() && target_file.is_file() {
+            if let Ok(meta) = target_file.metadata() {
+                if meta.len() > 1_000_000 {
+                    return Ok(target_file);
+                }
+            }
+        }
+    }
+
+    // 2. Fallback to PowerShell Invoke-WebRequest with redirect support
     let ps_cmd = format!(
         r#"[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12;
 try {{
-    Invoke-WebRequest -Uri '{}' -OutFile '{}' -Headers @{{'User-Agent'='WinBlast0-Updater'}} -UseBasicParsing -TimeoutSec 120;
+    Invoke-WebRequest -Uri '{}' -OutFile '{}' -Headers @{{'User-Agent'='WinBlast0-Updater'}} -UseBasicParsing -TimeoutSec 180;
     if (Test-Path '{}') {{
         Write-Output "SUCCESS"
     }} else {{
@@ -206,15 +281,15 @@ pub fn apply_and_restart(new_binary: &Path) -> Result<(), String> {
         return Err(format!("Failed to install new binary: {}", e));
     }
 
-    // 3. Launch the new executable and exit
+    // 3. Launch the new executable detached and exit cleanly
     let current_exe_str = current_exe.to_string_lossy().to_string();
-    let ps_restart = format!(
-        r#"Start-Sleep -Milliseconds 800; Start-Process -FilePath '{}'"#,
+    let cmd_restart = format!(
+        r#"timeout /t 1 /nobreak >nul & start "" "{}""#,
         current_exe_str
     );
 
-    let _ = SilentCommand::new("powershell")
-        .args(["-WindowStyle", "Hidden", "-Command", &ps_restart])
+    let _ = SilentCommand::new("cmd.exe")
+        .args(["/C", &cmd_restart])
         .spawn();
 
     std::process::exit(0);
@@ -226,27 +301,27 @@ mod tests {
 
     #[test]
     fn test_version_comparison_logic() {
-        assert!(is_version_newer("v1.3.0", "1.2.0"));
-        assert!(is_version_newer("1.2.1", "1.2.0"));
+        assert!(is_version_newer("v1.6.0", "1.5.0"));
+        assert!(is_version_newer("1.5.1", "1.5.0"));
         assert!(is_version_newer("2.0.0", "1.9.9"));
-        assert!(!is_version_newer("v1.2.0", "1.2.0"));
-        assert!(!is_version_newer("1.1.9", "1.2.0"));
-        assert!(!is_version_newer("v1.0.0", "1.2.0"));
+        assert!(!is_version_newer("v1.5.0", "1.5.0"));
+        assert!(!is_version_newer("1.4.9", "1.5.0"));
+        assert!(!is_version_newer("v1.0.0", "1.5.0"));
     }
 
     #[test]
     fn test_release_info_structure() {
         let r = ReleaseInfo {
-            tag_name: "v1.3.0".to_string(),
-            name: "WinBlast0 v1.3.0".to_string(),
+            tag_name: "v1.6.0".to_string(),
+            name: "WinBlast0 v1.6.0".to_string(),
             body: "Performance release".to_string(),
-            html_url: "https://github.com/konstruktor/WinBlast0".to_string(),
-            published_at: "2026-11-16".to_string(),
+            html_url: "https://github.com/Konstrukturmx/WinBlast-Optimizer".to_string(),
+            published_at: "2026-11-17".to_string(),
             download_url: Some("https://example.com/winblast0.exe".to_string()),
             asset_name: Some("winblast0.exe".to_string()),
-            download_size_mb: Some(15.4),
+            download_size_mb: Some(30.0),
         };
-        assert_eq!(r.tag_name, "v1.3.0");
-        assert!(is_version_newer(&r.tag_name, "1.2.0"));
+        assert_eq!(r.tag_name, "v1.6.0");
+        assert!(is_version_newer(&r.tag_name, "1.5.0"));
     }
 }

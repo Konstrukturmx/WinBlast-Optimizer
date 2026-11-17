@@ -27,7 +27,9 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
 
     col()
         .w_full()
+        .grow(1.0)
         .min_w(0.0)
+        .min_h(0.0)
         .padding(style.card_padding())
         .pr(16.0)
         .gap(12.0)
@@ -461,7 +463,11 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                         col()
                             .w_full()
                             .min_w(0.0)
+                            .max_h(460.0)
                             .padding(2.0)
+                            .pr(8.0)
+                            .scroll(ScrollSpec { stick_bottom: false })
+                            .winblast_scroll(p)
                             .child(driver_list)
                     },
                 ),

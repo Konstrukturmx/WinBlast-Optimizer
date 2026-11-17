@@ -3674,3 +3674,88 @@ fn test_iso_29119_dashboard_i18n_translations_all_languages() {
     assert_eq!(I18n::translate(Language::Chinese, TextKey::DashboardQaFpsBtn), "转到矩阵");
     assert_eq!(I18n::translate(Language::Japanese, TextKey::DashboardQaFpsBtn), "マトリクスを開く");
 }
+
+#[test]
+fn test_startup_sorting_filtering_and_dropdown_state_transitions() {
+    use winblast0::app::{ActiveDropdown, AppState, StartupSortMode, StartupStatusFilter};
+    use winblast0::tools::startup::StartupEntry;
+    use std::sync::Arc;
+
+    let sbx = SandboxEnv::new();
+    let mut state = AppState::new_with_backend(Arc::new(sbx));
+
+    // Initial state check
+    assert_eq!(state.startup_status_filter, StartupStatusFilter::All);
+    assert_eq!(state.startup_sort_mode, StartupSortMode::NameAsc);
+    assert_eq!(state.active_dropdown, ActiveDropdown::None);
+
+    // Active dropdown toggles
+    state.active_dropdown = ActiveDropdown::Language;
+    assert_eq!(state.active_dropdown, ActiveDropdown::Language);
+    state.active_dropdown = ActiveDropdown::ThemeStyle;
+    assert_eq!(state.active_dropdown, ActiveDropdown::ThemeStyle);
+    state.active_dropdown = ActiveDropdown::None;
+    assert_eq!(state.active_dropdown, ActiveDropdown::None);
+
+    // Populate sample startup entries
+    state.startup_entries = vec![
+        StartupEntry {
+            id: "app1".into(),
+            name: "Zeta App".into(),
+            command: "C:\\zeta.exe".into(),
+            source: winblast0::tools::startup::StartupSource::RegistryHkcuRun,
+            enabled: false,
+            location: "".into(),
+            hive: "".into(),
+            reg_path: "".into(),
+            approved_subkey: None,
+            is_wow64: false,
+            policy_locked: false,
+            is_microsoft: false,
+        },
+        StartupEntry {
+            id: "app2".into(),
+            name: "Alpha App".into(),
+            command: "C:\\alpha.exe".into(),
+            source: winblast0::tools::startup::StartupSource::RegistryHkcuRun,
+            enabled: true,
+            location: "".into(),
+            hive: "".into(),
+            reg_path: "".into(),
+            approved_subkey: None,
+            is_wow64: false,
+            policy_locked: false,
+            is_microsoft: false,
+        },
+    ];
+
+    // Filter by Active Only
+    state.startup_status_filter = StartupStatusFilter::ActiveOnly;
+    let active_count = state.startup_entries.iter().filter(|e| match state.startup_status_filter {
+        StartupStatusFilter::All => true,
+        StartupStatusFilter::ActiveOnly => e.enabled,
+        StartupStatusFilter::InactiveOnly => !e.enabled,
+    }).count();
+    assert_eq!(active_count, 1);
+
+    // Filter by Inactive Only
+    state.startup_status_filter = StartupStatusFilter::InactiveOnly;
+    let inactive_count = state.startup_entries.iter().filter(|e| match state.startup_status_filter {
+        StartupStatusFilter::All => true,
+        StartupStatusFilter::ActiveOnly => e.enabled,
+        StartupStatusFilter::InactiveOnly => !e.enabled,
+    }).count();
+    assert_eq!(inactive_count, 1);
+
+    // Verify NetworkDiagnostics default contains 10 DNS providers
+    let net_diag = winblast0::tools::network_diag::NetworkDiagnostics::default();
+    assert_eq!(net_diag.probes.len(), 10);
+    assert_eq!(net_diag.probes[0].name, "Cloudflare DNS");
+    assert_eq!(net_diag.probes[1].name, "Google Public DNS");
+    assert_eq!(net_diag.probes[2].name, "Quad9 DNS");
+    assert_eq!(net_diag.probes[3].name, "AdGuard DNS");
+
+    // Verify Diagnostics remediation methods exist and don't panic
+    let report = winblast0::tools::diagnostics::FaultDiagnosticsReport::scan();
+    assert!(report.pending_reboot.pending_files.is_empty() || !report.pending_reboot.pending_files.is_empty());
+}

@@ -555,81 +555,102 @@ fn quick_actions_card(s: &AppState, p: &ThemePalette) -> El {
                 .w_full()
                 .min_w(0.0)
                 .flex_wrap()
-                .gaps(10.0, 10.0)
+                .gaps(8.0, 8.0)
+                .child(quick_action_card(
+                    s.tr(TextKey::DashboardQaFpsTitle),
+                    s.tr(TextKey::DashboardQaFpsDesc),
+                    s.tr(TextKey::DashboardQaFpsBtn),
+                    true,
+                    p,
+                    ActiveView::AdvancedMatrix,
+                ))
+                .child(quick_action_card(
+                    s.tr(TextKey::DashboardQaCleanTitle),
+                    s.tr(TextKey::DashboardQaCleanDesc),
+                    s.tr(TextKey::DashboardQaCleanBtn),
+                    false,
+                    p,
+                    ActiveView::CleanAndApps,
+                ))
+                .child(quick_action_card(
+                    s.tr(TextKey::DashboardQaCpuTitle),
+                    s.tr(TextKey::DashboardQaCpuDesc),
+                    s.tr(TextKey::DashboardQaCpuBtn),
+                    false,
+                    p,
+                    ActiveView::CoreParking,
+                ))
+                .child(quick_action_card(
+                    s.tr(TextKey::DashboardQaDriverTitle),
+                    s.tr(TextKey::DashboardQaDriverDesc),
+                    s.tr(TextKey::DashboardQaDriverBtn),
+                    false,
+                    p,
+                    ActiveView::DriverBios,
+                ))
+                .child(quick_action_card(
+                    s.tr(TextKey::DashboardQaFaultTitle),
+                    s.tr(TextKey::DashboardQaFaultDesc),
+                    s.tr(TextKey::DashboardQaFaultBtn),
+                    false,
+                    p,
+                    ActiveView::FaultDiagnostics,
+                )),
+        )
+}
+
+/// Helper rendering a responsive Quick Action card with guaranteed text wrapping and bottom-pinned button.
+fn quick_action_card(
+    title: &str,
+    desc: &str,
+    btn_text: &str,
+    btn_accent: bool,
+    p: &ThemePalette,
+    target: ActiveView,
+) -> El {
+    col()
+        .grow(1.0)
+        .min_w(175.0)
+        .min_h(125.0)
+        .padding(10.0)
+        .radius(6.0)
+        .fill(p.bg_primary)
+        .border(1.0, p.border)
+        .hover(p.bg_card_hover)
+        .motion(p.motion)
+        .justify_between()
+        .child(
+            col()
+                .w_full()
+                .gap(4.0)
                 .child(
-                    col()
-                        .grow(1.0)
-                        .min_w(200.0)
-                        .padding(12.0)
-                        .radius(6.0)
-                        .fill(p.bg_primary)
-                        .border(1.0, p.border)
-                        .gap(6.0)
-                        .child(text(s.tr(TextKey::DashboardQaFpsTitle)).font(rune::tok::type_::TITLE).color(p.text_primary))
-                        .child(text(s.tr(TextKey::DashboardQaFpsDesc)).font(rune::tok::type_::BODY).color(p.text_muted))
-                        .child(action_button(s.tr(TextKey::DashboardQaFpsBtn), p.accent, Color::WHITE, p, |s| {
-                            s.navigate(ActiveView::AdvancedMatrix);
-                        })),
+                    text(title)
+                        .font(rune::tok::type_::TITLE)
+                        .color(p.text_primary)
+                        .shrink()
+                        .wrap(),
                 )
                 .child(
-                    col()
-                        .grow(1.0)
-                        .min_w(200.0)
-                        .padding(12.0)
-                        .radius(6.0)
-                        .fill(p.bg_primary)
-                        .border(1.0, p.border)
-                        .gap(6.0)
-                        .child(text(s.tr(TextKey::DashboardQaCleanTitle)).font(rune::tok::type_::TITLE).color(p.text_primary))
-                        .child(text(s.tr(TextKey::DashboardQaCleanDesc)).font(rune::tok::type_::BODY).color(p.text_muted))
-                        .child(action_button(s.tr(TextKey::DashboardQaCleanBtn), p.btn_secondary, p.text_primary, p, |s| {
-                            s.navigate(ActiveView::CleanAndApps);
-                        })),
-                )
+                    text(desc)
+                        .font(rune::tok::type_::BODY)
+                        .color(p.text_muted)
+                        .shrink()
+                        .wrap(),
+                ),
+        )
+        .child(
+            col()
+                .w_full()
+                .pt(8.0)
                 .child(
-                    col()
-                        .grow(1.0)
-                        .min_w(200.0)
-                        .padding(12.0)
-                        .radius(6.0)
-                        .fill(p.bg_primary)
-                        .border(1.0, p.border)
-                        .gap(6.0)
-                        .child(text(s.tr(TextKey::DashboardQaCpuTitle)).font(rune::tok::type_::TITLE).color(p.text_primary))
-                        .child(text(s.tr(TextKey::DashboardQaCpuDesc)).font(rune::tok::type_::BODY).color(p.text_muted))
-                        .child(action_button(s.tr(TextKey::DashboardQaCpuBtn), p.btn_secondary, p.text_primary, p, |s| {
-                            s.navigate(ActiveView::CoreParking);
-                        })),
-                )
-                .child(
-                    col()
-                        .grow(1.0)
-                        .min_w(200.0)
-                        .padding(12.0)
-                        .radius(6.0)
-                        .fill(p.bg_primary)
-                        .border(1.0, p.border)
-                        .gap(6.0)
-                        .child(text(s.tr(TextKey::DashboardQaDriverTitle)).font(rune::tok::type_::TITLE).color(p.text_primary))
-                        .child(text(s.tr(TextKey::DashboardQaDriverDesc)).font(rune::tok::type_::BODY).color(p.text_muted))
-                        .child(action_button(s.tr(TextKey::DashboardQaDriverBtn), p.btn_secondary, p.text_primary, p, |s| {
-                            s.navigate(ActiveView::DriverBios);
-                        })),
-                )
-                .child(
-                    col()
-                        .grow(1.0)
-                        .min_w(200.0)
-                        .padding(12.0)
-                        .radius(6.0)
-                        .fill(p.bg_primary)
-                        .border(1.0, p.border)
-                        .gap(6.0)
-                        .child(text(s.tr(TextKey::DashboardQaFaultTitle)).font(rune::tok::type_::TITLE).color(p.text_primary))
-                        .child(text(s.tr(TextKey::DashboardQaFaultDesc)).font(rune::tok::type_::BODY).color(p.text_muted))
-                        .child(action_button(s.tr(TextKey::DashboardQaFaultBtn), p.btn_secondary, p.text_primary, p, |s| {
-                            s.navigate(ActiveView::FaultDiagnostics);
-                        })),
+                    action_button(
+                        btn_text,
+                        if btn_accent { p.accent } else { p.btn_secondary },
+                        if btn_accent { Color::WHITE } else { p.text_primary },
+                        p,
+                        move |s| s.navigate(target),
+                    )
+                    .w_full(),
                 ),
         )
 }
