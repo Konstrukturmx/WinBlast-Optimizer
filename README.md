@@ -142,10 +142,10 @@ Because WinBlast Optimizer adjusts low-level system settings, Windows Registry p
 
 * **Target Binary**: `winblast0.exe` (v1.5.1)
 * **Digital Signature**: Microsoft Authenticode signed by `Konstrukturmx` with DigiCert RFC 3161 SHA-256 timestamping
-* **File Size**: `31,958,016` bytes (30.5 MB)
+* **File Size**: `31,965,736` bytes (30.5 MB)
 * **SHA-256 Checksum**:
   ```text
-  622cd52b7800151e155572bc5a5f118f2f00833f7ad5a58bb5f23167dd3a59c2
+  a99b1033241da894fd3f0323cbb359f4dde8ae1fe51de3ddac4faa6468169699
   ```
 * **Microsoft Defender Heuristics**: Clean PE metadata, authentic Win32 API calls, embedded UAC manifest, and permanent application icon `winblast.ico`.
 * **VirusTotal Scan Result**: [**View Official VirusTotal Report**](https://www.virustotal.com/gui/file/19895c54d3699391aebedb5c3e384aeb7ac5a73f8d1bee9ff7da4cd623d2fa00)
