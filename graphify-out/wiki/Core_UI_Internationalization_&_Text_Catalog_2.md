@@ -1,78 +1,60 @@
 # Core UI Internationalization & Text Catalog
 
-> 137 nodes · cohesion 0.06
+> 37 nodes · cohesion 0.10
 
 ## Key Concepts
 
-- **ThemePalette** (57 connections) — `src/ui/theme.rs`
-- **action_button()** (36 connections) — `src/ui/widgets/button.rs`
-- **action_button_guarded()** (36 connections) — `src/ui/widgets/button.rs`
-- **LayoutTier** (35 connections) — `src/ui/mod.rs`
-- **clean_apps.rs** (32 connections) — `src/ui/views/clean_apps.rs`
-- **startup_tasks.rs** (28 connections) — `src/ui/views/startup_tasks.rs`
-- **easy_dashboard.rs** (27 connections) — `src/ui/views/easy_dashboard.rs`
-- **ui/mod.rs** (26 connections) — `src/ui/mod.rs`
-- **gpu_tuning.rs** (26 connections) — `src/ui/views/gpu_tuning.rs`
-- **advanced_matrix.rs** (23 connections) — `src/ui/views/advanced_matrix.rs`
-- **privacy_shield.rs** (22 connections) — `src/ui/views/privacy_shield.rs`
-- **pill_badge()** (22 connections) — `src/ui/widgets/button.rs`
-- **button.rs** (20 connections) — `src/ui/widgets/button.rs`
-- **diff_modal.rs** (20 connections) — `src/ui/widgets/diff_modal.rs`
-- **TweakState** (17 connections) — `src/scanner/mod.rs`
-- **hardware_view.rs** (17 connections) — `src/ui/views/hardware_view.rs`
-- **row** (16 connections)
-- **WinBlastScrollable** (16 connections) — `src/ui/widgets/scrollbar.rs`
-- **text** (16 connections)
-- **col** (15 connections)
-- **latency_bench.rs** (15 connections) — `src/ui/views/latency_bench.rs`
-- **view()** (14 connections) — `src/ui/views/easy_dashboard.rs`
-- **risk_badge.rs** (14 connections) — `src/ui/widgets/risk_badge.rs`
-- **backup_center.rs** (13 connections) — `src/ui/views/backup_center.rs`
-- **build_appx_features_body()** (13 connections) — `src/ui/views/clean_apps.rs`
-- *... and 112 more nodes in this community*
+- **registry_scanner.rs** (37 connections) — `src/scanner/registry_scanner.rs`
+- **open_subkey_read_64()** (13 connections) — `src/scanner/registry_scanner.rs`
+- **get_string_for_vendor()** (8 connections) — `src/scanner/registry_scanner.rs`
+- **RegKey** (8 connections)
+- **get_dword_for_vendor()** (7 connections) — `src/scanner/registry_scanner.rs`
+- **get_raw()** (7 connections) — `src/scanner/registry_scanner.rs`
+- **get_binary()** (6 connections) — `src/scanner/registry_scanner.rs`
+- **snapshot_key_recursive()** (6 connections) — `src/scanner/registry_scanner.rs`
+- **snapshot_tree()** (6 connections) — `src/scanner/registry_scanner.rs`
+- **get_dword()** (5 connections) — `src/scanner/registry_scanner.rs`
+- **resolve_net_interface_paths()** (5 connections) — `src/scanner/registry_scanner.rs`
+- **evaluate_dword()** (4 connections) — `src/scanner/registry_scanner.rs`
+- **evaluate_dword_value()** (4 connections) — `src/scanner/registry_scanner.rs`
+- **evaluate_dword_value_with_kind()** (4 connections) — `src/scanner/registry_scanner.rs`
+- **key_exists()** (4 connections) — `src/scanner/registry_scanner.rs`
+- **read_dword_from_key()** (4 connections) — `src/scanner/registry_scanner.rs`
+- **reg_type_to_u32()** (4 connections) — `src/scanner/registry_scanner.rs`
+- **resolve_target_paths()** (4 connections) — `src/scanner/registry_scanner.rs`
+- **test_strict_reg_type_dispatch_and_negative_numeric_sz()** (4 connections) — `src/scanner/registry_scanner.rs`
+- **.reg_get_raw()** (3 connections) — `src/core/backend.rs`
+- **.reg_get_string()** (3 connections) — `src/core/backend.rs`
+- **.reg_snapshot_tree()** (3 connections) — `src/core/backend.rs`
+- **has_active_ip()** (3 connections) — `src/scanner/registry_scanner.rs`
+- **replace_placeholder_ci()** (3 connections) — `src/scanner/registry_scanner.rs`
+- **ScratchCleanup** (3 connections) — `src/scanner/registry_scanner.rs`
+- *... and 12 more nodes in this community*
 
 ## Relationships
 
-- [Async() .Toggle .Refresh](Async_.Toggle_.Refresh.md) (57 shared connections)
-- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (22 shared connections)
-- [Core UI Internationalization & Text Catalog](Core_UI_Internationalization_&_Text_Catalog.md) (14 shared connections)
-- [Integration Suite: Tweak Sandbox E2E](Integration_Suite-_Tweak_Sandbox_E2E.md) (10 shared connections)
-- [View() Card() Switch](View_Card_Switch.md) (9 shared connections)
-- [Appx Package() Prefixes](Appx_Package_Prefixes.md) (4 shared connections)
-- [Multi-Language Tweak Localization Tables](Multi-Language_Tweak_Localization_Tables.md) (4 shared connections)
-- [Dynamicdwordformula Logicalcorecount Totalraminkb](Dynamicdwordformula_Logicalcorecount_Totalraminkb.md) (4 shared connections)
-- [View() Color Scrollspec](View_Color_Scrollspec.md) (3 shared connections)
-- [.Create Metrics Sampler()](Create_Metrics_Sampler.md) (3 shared connections)
-- [.Toggle .Set .Apply](Toggle_.Set_.Apply.md) (2 shared connections)
-- [AppX Package & Modern App Scanner](AppX_Package_&_Modern_App_Scanner.md) (2 shared connections)
+- [Integration Suite: Ui Responsive E2E](Integration_Suite-_Ui_Responsive_E2E.md) (10 shared connections)
+- [RealBackend](RealBackend.md) (7 shared connections)
+- [Project History & Release Version Ledger](Project_History_&_Release_Version_Ledger.md) (4 shared connections)
+- [RegTreeSnapshot](RegTreeSnapshot.md) (3 shared connections)
+- [svc_mutator.rs](svc_mutator.rs.md) (3 shared connections)
+- [RegRawSnapshot](RegRawSnapshot.md) (2 shared connections)
+- [test_wave1_compound_actions_deep_edge_cases](test_wave1_compound_actions_deep_edge_cases.md) (2 shared connections)
+- [State Ledger & Restore Point Engine](State_Ledger_&_Restore_Point_Engine.md) (2 shared connections)
+- [Disabled() Delete .Set](Disabled_Delete_.Set.md) (2 shared connections)
+- [WinBlast0 Architectural Specifications](WinBlast0_Architectural_Specifications.md) (2 shared connections)
+- [enums](enums.md) (1 shared connections)
+- [super](super.md) (1 shared connections)
 
 ## Source Files
 
-- `src/app.rs`
-- `src/core/i18n.rs`
-- `src/core/status_i18n.rs`
-- `src/scanner/mod.rs`
-- `src/ui/mod.rs`
-- `src/ui/theme.rs`
-- `src/ui/views/advanced_matrix.rs`
-- `src/ui/views/backup_center.rs`
-- `src/ui/views/clean_apps.rs`
-- `src/ui/views/cpu_parking.rs`
-- `src/ui/views/easy_dashboard.rs`
-- `src/ui/views/goal_planner.rs`
-- `src/ui/views/gpu_tuning.rs`
-- `src/ui/views/hardware_view.rs`
-- `src/ui/views/latency_bench.rs`
-- `src/ui/views/privacy_shield.rs`
-- `src/ui/views/startup_tasks.rs`
-- `src/ui/widgets/button.rs`
-- `src/ui/widgets/diff_modal.rs`
-- `src/ui/widgets/risk_badge.rs`
+- `src/core/backend.rs`
+- `src/scanner/registry_scanner.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 592 (90%)
-- INFERRED: 66 (10%)
+- EXTRACTED: 100 (91%)
+- INFERRED: 10 (9%)
 - AMBIGUOUS: 0 (0%)
 
 ---

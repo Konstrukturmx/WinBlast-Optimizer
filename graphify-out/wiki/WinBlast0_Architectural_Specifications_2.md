@@ -1,47 +1,38 @@
 # WinBlast0 Architectural Specifications
 
-> 12 nodes · cohesion 0.21
+> 11 nodes · cohesion 0.31
 
 ## Key Concepts
 
-- **deserialize** (17 connections)
-- **serialize** (16 connections)
-- **profile_io.rs** (8 connections) — `src/backup/profile_io.rs`
-- **path** (6 connections)
-- **restore_point.rs** (5 connections) — `src/backup/restore_point.rs`
-- **export_profile()** (4 connections) — `src/backup/profile_io.rs`
-- **import_profile()** (3 connections) — `src/backup/profile_io.rs`
-- **test_profile_export_import()** (3 connections) — `src/backup/profile_io.rs`
-- **create_restore_point()** (3 connections) — `src/backup/restore_point.rs`
-- **TweakProfile** (2 connections) — `src/backup/profile_io.rs`
-- **.new()** (2 connections) — `src/backup/profile_io.rs`
-- **.create_restore_point()** (2 connections) — `src/core/backend.rs`
+- **service_scanner.rs** (12 connections) — `src/scanner/service_scanner.rs`
+- **evaluate_service_value_with_kind()** (5 connections) — `src/scanner/service_scanner.rs`
+- **evaluate_service()** (4 connections) — `src/scanner/service_scanner.rs`
+- **evaluate_service_value()** (4 connections) — `src/scanner/service_scanner.rs`
+- **get_service_start_type()** (4 connections) — `src/scanner/service_scanner.rs`
+- **.get_service_start_type()** (2 connections) — `src/core/backend.rs`
+- **check_service_start_type()** (2 connections) — `src/scanner/service_scanner.rs`
+- **start_type_name()** (2 connections) — `src/scanner/service_scanner.rs`
+- **test_evaluate_absent_optional_service()** (2 connections) — `src/scanner/service_scanner.rs`
+- **test_evaluate_service_value_with_kind_all_branches()** (2 connections) — `src/scanner/service_scanner.rs`
+- **hkey_local_machine** (1 connections)
 
 ## Relationships
 
-- [Integration Suite: Tweak Sandbox E2E](Integration_Suite-_Tweak_Sandbox_E2E.md) (7 shared connections)
-- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (6 shared connections)
-- [Project History & Release Version Ledger](Project_History_&_Release_Version_Ledger.md) (4 shared connections)
-- [.Create Metrics Sampler()](Create_Metrics_Sampler.md) (3 shared connections)
-- [GPU Silicon & Hardware Tuning Policies](GPU_Silicon_&_Hardware_Tuning_Policies.md) (3 shared connections)
-- [.Toggle .Set .Apply](Toggle_.Set_.Apply.md) (3 shared connections)
-- [Task Scheduler Inspection Subsystem](Task_Scheduler_Inspection_Subsystem.md) (2 shared connections)
-- [AppX Package & Modern App Scanner](AppX_Package_&_Modern_App_Scanner.md) (2 shared connections)
-- [Embedded Catalog Test](Embedded_Catalog_Test.md) (2 shared connections)
 - [Core UI Internationalization & Text Catalog](Core_UI_Internationalization_&_Text_Catalog.md) (2 shared connections)
-- [.Reg State() Vendor()](Reg_State_Vendor.md) (2 shared connections)
-- [View() Card() Switch](View_Card_Switch.md) (2 shared connections)
+- [RealBackend](RealBackend.md) (1 shared connections)
+- [enums](enums.md) (1 shared connections)
+- [super](super.md) (1 shared connections)
+- [Windows OS Settings & UX Customization](Windows_OS_Settings_&_UX_Customization.md) (1 shared connections)
 
 ## Source Files
 
-- `src/backup/profile_io.rs`
-- `src/backup/restore_point.rs`
 - `src/core/backend.rs`
+- `src/scanner/service_scanner.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 57 (100%)
-- INFERRED: 0 (0%)
+- EXTRACTED: 18 (78%)
+- INFERRED: 5 (22%)
 - AMBIGUOUS: 0 (0%)
 
 ---

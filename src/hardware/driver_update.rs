@@ -753,7 +753,9 @@ pub fn backup_driver(
                 driver.hardware_id,
                 String::from_utf8_lossy(&o.stdout)
             );
-            let _ = fs::write(backup_dir.join("backup_info.txt"), meta);
+            if let Err(e) = fs::write(backup_dir.join("backup_info.txt"), meta) {
+                tracing::warn!("Failed to write driver backup metadata: {}", e);
+            }
         }
         Err(e) => {
             // Non-fatal fallback
@@ -761,7 +763,9 @@ pub fn backup_driver(
                 "Driver: {}\nVersion: {}\nProvider: {}\nINF: {}\nHardware ID: {}\nBackup Note: PnPUtil unavailable: {}\n",
                 driver.name, driver.current_version, driver.provider, driver.inf_path, driver.hardware_id, e
             );
-            let _ = fs::write(backup_dir.join("backup_info.txt"), meta);
+            if let Err(e) = fs::write(backup_dir.join("backup_info.txt"), meta) {
+                tracing::warn!("Failed to write driver backup fallback metadata: {}", e);
+            }
         }
     }
 
@@ -1064,7 +1068,11 @@ pub fn test_driver_sandbox_lifecycle() -> Result<String, String> {
     let temp_sandbox = std::env::temp_dir().join("winblast_driver_sandbox_test");
     let result = download_and_install_driver(&mut item, &temp_sandbox)
         .map_err(|e| e.to_string())?;
-    let _ = fs::remove_dir_all(&temp_sandbox);
+    if let Err(e) = fs::remove_dir_all(&temp_sandbox) {
+        if e.kind() != std::io::ErrorKind::NotFound {
+            tracing::warn!("Failed to clean up driver temp sandbox {:?}: {}", temp_sandbox, e);
+        }
+    }
     Ok(result)
 }
 

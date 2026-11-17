@@ -1,47 +1,32 @@
 # Hardware Diagnostics & GPU Silicon Tuning
 
-> 13 nodes · cohesion 0.19
+> 10 nodes · cohesion 0.20
 
 ## Key Concepts
 
-- **InstalledAppxPackage** (15 connections) — `src/tools/features_apps.rs`
-- **AppxSafetyTier** (10 connections) — `src/tools/features_apps.rs`
-- **list_installed_appx_from_cache()** (5 connections) — `src/tools/features_apps.rs`
-- **.list_installed_appx_detailed()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.list_installed_appx_detailed()** (3 connections) — `src/core/backend.rs`
-- **.list_installed_appx_detailed()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.list_installed_appx_detailed()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.list_installed_appx_detailed()** (2 connections) — `src/core/backend.rs`
-- **AiBloat** (1 connections) — `src/tools/features_apps.rs`
-- **.as_label()** (1 connections) — `src/tools/features_apps.rs`
-- **Caution** (1 connections) — `src/tools/features_apps.rs`
-- **ProtectedCore** (1 connections) — `src/tools/features_apps.rs`
-- **SafeBloat** (1 connections) — `src/tools/features_apps.rs`
+- **assets/rules/registry_lag.toml** (11 connections) — `Project WinBlast0 Project Structure.md`
+- **1\. Domain Model & Risk Valuation Engine**** (1 connections) — `Project WinBlast0 Project Structure.md`
+- **2\. Declarative Rule Format**** (1 connections) — `Project WinBlast0 Project Structure.md`
+- **3\. Hardware GPU MSI Mode & Priority Optimizer Logic**** (1 connections) — `Project WinBlast0 Project Structure.md`
+- **4\. Auto-Elevation Manifest Setup**** (1 connections) — `Project WinBlast0 Project Structure.md`
+- **Architectural Enhancements**** (1 connections) — `Project WinBlast0 Project Structure.md`
+- **Core Architecture & Code Blueprint**** (1 connections) — `Project WinBlast0 Project Structure.md`
+- **Project Directory Structure**** (1 connections) — `Project WinBlast0 Project Structure.md`
+- **Project WinBlast0**** (1 connections) — `Project WinBlast0 Project Structure.md`
+- **Recommended Rust Tech Stack**** (1 connections) — `Project WinBlast0 Project Structure.md`
 
 ## Relationships
 
-- [.Reg State() Vendor()](Reg_State_Vendor.md) (6 shared connections)
-- [Disabled() Delete .Set](Disabled_Delete_.Set.md) (2 shared connections)
-- [System Architecture Changelog](System_Architecture_Changelog.md) (2 shared connections)
-- [.Set Enabled() .Remove](Set_Enabled_.Remove.md) (2 shared connections)
-- [Scan Test Single](Scan_Test_Single.md) (1 shared connections)
-- [Disk Cleaning & Temporary File Purger](Disk_Cleaning_&_Temporary_File_Purger.md) (1 shared connections)
-- [Core UI Internationalization & Text Catalog](Core_UI_Internationalization_&_Text_Catalog.md) (1 shared connections)
-- [Async() .Toggle .Refresh](Async_.Toggle_.Refresh.md) (1 shared connections)
-- [Test Composite With()](Test_Composite_With.md) (1 shared connections)
-- [Integration Suite: Tweak Sandbox E2E](Integration_Suite-_Tweak_Sandbox_E2E.md) (1 shared connections)
-- [Scandetailkind Appxinstalled Appxinstalledps](Scandetailkind_Appxinstalled_Appxinstalledps.md) (1 shared connections)
-- [Windows Unattend Deployment Generator](Windows_Unattend_Deployment_Generator.md) (1 shared connections)
+- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (1 shared connections)
+- [startup.rs](startup.rs.md) (1 shared connections)
 
 ## Source Files
 
-- `src/core/backend.rs`
-- `src/tools/features_apps.rs`
-- `tests/tweak_sandbox_e2e.rs`
+- `Project WinBlast0 Project Structure.md`
 
 ## Audit Trail
 
-- EXTRACTED: 35 (100%)
+- EXTRACTED: 11 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

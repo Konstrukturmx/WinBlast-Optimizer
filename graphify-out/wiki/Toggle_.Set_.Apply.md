@@ -1,6 +1,6 @@
 # .Toggle .Set .Apply
 
-> 62 nodes · cohesion 0.06
+> 60 nodes · cohesion 0.06
 
 ## Key Concepts
 
@@ -17,8 +17,6 @@
 - **empty_recycle_bin()** (5 connections) — `src/tools/cleaner.rs`
 - **.execute_clean_targets()** (5 connections) — `tests/tweak_sandbox_e2e.rs`
 - **.execute_clean_targets()** (5 connections) — `tests/tweak_sandbox_e2e.rs`
-- **pcwstr** (4 connections)
-- **.execute_clean_targets()** (4 connections) — `src/core/backend.rs`
 - **.execute_clean_targets()** (4 connections) — `src/core/backend.rs`
 - **init_com_sta()** (4 connections) — `src/tools/cleaner.rs`
 - **query_recycle_bin()** (4 connections) — `src/tools/cleaner.rs`
@@ -29,22 +27,24 @@
 - **.execute_clean_targets()** (3 connections) — `src/core/backend.rs`
 - **ComStaGuard** (3 connections) — `src/tools/cleaner.rs`
 - **dir_meta_if_real()** (3 connections) — `src/tools/cleaner.rs`
-- *... and 37 more nodes in this community*
+- **is_reparse_point()** (3 connections) — `src/tools/cleaner.rs`
+- **record_dir_io_error()** (3 connections) — `src/tools/cleaner.rs`
+- *... and 35 more nodes in this community*
 
 ## Relationships
 
-- [Disabled() Delete .Set](Disabled_Delete_.Set.md) (7 shared connections)
-- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (5 shared connections)
-- [.Set Enabled() .Remove](Set_Enabled_.Remove.md) (4 shared connections)
-- [Async() .Toggle .Refresh](Async_.Toggle_.Refresh.md) (3 shared connections)
-- [WinBlast0 Architectural Specifications](WinBlast0_Architectural_Specifications.md) (3 shared connections)
-- [Integration Suite: Tweak Sandbox E2E](Integration_Suite-_Tweak_Sandbox_E2E.md) (3 shared connections)
+- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (4 shared connections)
+- [backend.rs](backend.rs.md) (4 shared connections)
+- [SlowScanBackend](SlowScanBackend.md) (4 shared connections)
+- [AppState](AppState.md) (3 shared connections)
+- [app.rs](app.rs.md) (3 shared connections)
 - [Scandetailkind Appxinstalled Appxinstalledps](Scandetailkind_Appxinstalled_Appxinstalledps.md) (3 shared connections)
-- [Kernel Scheduling & Latency Optimization](Kernel_Scheduling_&_Latency_Optimization.md) (3 shared connections)
-- [Scan Test Single](Scan_Test_Single.md) (2 shared connections)
+- [BlastResult](BlastResult.md) (3 shared connections)
+- [RealBackend](RealBackend.md) (2 shared connections)
 - [Disk Cleaning & Temporary File Purger](Disk_Cleaning_&_Temporary_File_Purger.md) (2 shared connections)
-- [State Ledger & Restore Point Engine](State_Ledger_&_Restore_Point_Engine.md) (2 shared connections)
-- [Test Composite With()](Test_Composite_With.md) (2 shared connections)
+- [path](path.md) (2 shared connections)
+- [deserialize](deserialize.md) (2 shared connections)
+- [Disabled() Delete .Set](Disabled_Delete_.Set.md) (2 shared connections)
 
 ## Source Files
 
@@ -55,7 +55,7 @@
 
 ## Audit Trail
 
-- EXTRACTED: 153 (100%)
+- EXTRACTED: 148 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

@@ -1,57 +1,60 @@
 # Hardware Diagnostics & GPU Silicon Tuning
 
-> 27 nodes · cohesion 0.07
+> 24 nodes · cohesion 0.19
 
 ## Key Concepts
 
-- **sys_inventory.rs** (50 connections) — `src/hardware/sys_inventory.rs`
-- **createfilew** (1 connections)
-- **device_seek_penalty_descriptor** (1 connections)
-- **deviceiocontrol** (1 connections)
-- **file_share_read** (1 connections)
-- **file_share_write** (1 connections)
-- **firmwaretypebios** (1 connections)
-- **firmwaretypeuefi** (1 connections)
-- **getdiskfreespaceexw** (1 connections)
-- **getdrivetypew** (1 connections)
-- **getfirmwaretype** (1 connections)
-- **getlogicaldrives** (1 connections)
-- **getsystemfirmwaretable** (1 connections)
-- **gettickcount64** (1 connections)
-- **getvolumeinformationw** (1 connections)
-- **globalmemorystatusex** (1 connections)
-- **ioctl_storage_query_property** (1 connections)
-- **memorystatusex** (1 connections)
-- **open_existing** (1 connections)
-- **propertystandardquery** (1 connections)
-- **rsmb** (1 connections)
-- **SystemCodeIntegrityInfo** (1 connections) — `src/hardware/sys_inventory.rs`
-- **storage_descriptor_header** (1 connections)
-- **storage_device_descriptor** (1 connections)
-- **storage_property_query** (1 connections)
-- *... and 2 more nodes in this community*
+- **TweakDefinition** (46 connections) — `src/core/risk.rs`
+- **scanner/mod.rs** (30 connections) — `src/scanner/mod.rs`
+- **ScanResult** (23 connections) — `src/scanner/mod.rs`
+- **scan_single_tweak_with()** (16 connections) — `src/scanner/mod.rs`
+- **run_full_scan_with()** (12 connections) — `src/scanner/mod.rs`
+- **CachedScanBackend** (10 connections) — `src/core/backend.rs`
+- **evaluate_single_action()** (8 connections) — `src/scanner/mod.rs`
+- **evaluate_tweak()** (8 connections) — `src/scanner/mod.rs`
+- **ActionEval** (6 connections) — `src/scanner/mod.rs`
+- **make_scan_result()** (6 connections) — `src/scanner/mod.rs`
+- **resolve_dynamic_dword()** (6 connections) — `src/scanner/mod.rs`
+- **mk_test_tweak()** (4 connections) — `src/scanner/mod.rs`
+- **run_full_scan()** (4 connections) — `src/scanner/mod.rs`
+- **scan_single_tweak()** (4 connections) — `src/scanner/mod.rs`
+- **test_foreign_gpu_and_non_elevated_feature_and_partial_power_scan()** (4 connections) — `src/scanner/mod.rs`
+- **test_full_scan_execution_in_sandbox()** (3 connections) — `src/scanner/mod.rs`
+- **test_run_full_scan_populates_detail_kind_and_sub_category()** (3 connections) — `src/scanner/mod.rs`
+- **test_scan_single_tweak_detail_kind_every_action_and_na_branch()** (3 connections) — `src/scanner/mod.rs`
+- **test_scan_single_tweak_in_sandbox()** (3 connections) — `src/scanner/mod.rs`
+- **OnceLock** (2 connections)
+- **.scan_detail_text()** (2 connections) — `src/app.rs`
+- **FeatureAuthRequired** (2 connections) — `src/scanner/mod.rs`
+- **Evaluated** (1 connections) — `src/scanner/mod.rs`
+- **SkippedPower** (1 connections) — `src/scanner/mod.rs`
 
 ## Relationships
 
-- [Error.Rs Winblasterror Appx](Error.Rs_Winblasterror_Appx.md) (6 shared connections)
-- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (5 shared connections)
-- [Integration Suite: Ui Responsive E2E](Integration_Suite-_Ui_Responsive_E2E.md) (4 shared connections)
-- [WinBlast0 Architectural Specifications](WinBlast0_Architectural_Specifications.md) (2 shared connections)
-- [Telemetry Full Blocked](Telemetry_Full_Blocked.md) (2 shared connections)
-- [Disabled() Delete .Set](Disabled_Delete_.Set.md) (1 shared connections)
-- [.Toggle .Set .Apply](Toggle_.Set_.Apply.md) (1 shared connections)
-- [Reversibility Instant Requireslogoff](Reversibility_Instant_Requireslogoff.md) (1 shared connections)
-- [.Create Metrics Sampler()](Create_Metrics_Sampler.md) (1 shared connections)
-- [Startup Tasks & Auto-Run Explorer](Startup_Tasks_&_Auto-Run_Explorer.md) (1 shared connections)
+- [engine.rs](engine.rs.md) (12 shared connections)
+- [Scandetailkind Appxinstalled Appxinstalledps](Scandetailkind_Appxinstalled_Appxinstalledps.md) (11 shared connections)
+- [action_button](action_button.md) (9 shared connections)
+- [AppState](AppState.md) (8 shared connections)
+- [GPU Silicon & Hardware Tuning Policies](GPU_Silicon_&_Hardware_Tuning_Policies.md) (7 shared connections)
+- [Disk Cleaning & Temporary File Purger](Disk_Cleaning_&_Temporary_File_Purger.md) (5 shared connections)
+- [Dynamicdwordformula Logicalcorecount Totalraminkb](Dynamicdwordformula_Logicalcorecount_Totalraminkb.md) (5 shared connections)
+- [privacy_shield.rs](privacy_shield.rs.md) (5 shared connections)
+- [app.rs](app.rs.md) (4 shared connections)
+- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (4 shared connections)
+- [Windows OS Settings & UX Customization](Windows_OS_Settings_&_UX_Customization.md) (4 shared connections)
+- [backend.rs](backend.rs.md) (3 shared connections)
 
 ## Source Files
 
-- `src/hardware/sys_inventory.rs`
+- `src/app.rs`
+- `src/core/backend.rs`
+- `src/core/risk.rs`
+- `src/scanner/mod.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 50 (100%)
-- INFERRED: 0 (0%)
+- EXTRACTED: 140 (91%)
+- INFERRED: 14 (9%)
 - AMBIGUOUS: 0 (0%)
 
 ---

@@ -33,14 +33,14 @@
 - status_i18n.rs `EXTRACTED`
 
 ### imports_from
-- app.rs `EXTRACTED`
+- [app.rs](app.rs.md) `EXTRACTED`
 
 ### references
 - [AppState](AppState.md) `EXTRACTED`
 - Language `EXTRACTED`
 - .set_status_spec() `EXTRACTED`
 - localize_status() `EXTRACTED`
-- PresetKey `EXTRACTED`
+- [PresetKey](PresetKey.md) `EXTRACTED`
 
 ---
 

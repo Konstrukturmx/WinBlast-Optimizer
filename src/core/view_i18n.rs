@@ -1267,16 +1267,24 @@ mod tests {
     #[test]
     fn test_view_translations_all_8_languages_complete() {
         for lang in Language::ALL {
-            for key_idx in 0..ViewTextKey::TOTAL_KEYS {
-                let key: ViewTextKey = unsafe { std::mem::transmute(key_idx) };
-                let text = tr_view(lang, key);
+            let lang_idx = lang as usize;
+            for (key_idx, &text) in VIEW_TRANSLATIONS[lang_idx].iter().enumerate() {
                 assert!(
                     !text.trim().is_empty(),
-                    "Empty view translation for language {:?} at key {:?}",
+                    "Empty view translation for language {:?} at key index {}",
                     lang,
-                    key
+                    key_idx
                 );
             }
+        }
+        // Verify tr_view helper works safely across representative keys
+        for lang in Language::ALL {
+            assert!(!tr_view(lang, ViewTextKey::AboutTitle).trim().is_empty());
+            assert!(!tr_view(lang, ViewTextKey::FaultTitle).trim().is_empty());
+            assert!(!tr_view(lang, ViewTextKey::PerfTitle).trim().is_empty());
+            assert!(!tr_view(lang, ViewTextKey::RepairTitle).trim().is_empty());
+            assert!(!tr_view(lang, ViewTextKey::GamingStatsTitle).trim().is_empty());
+            assert!(!tr_view(lang, ViewTextKey::NetDiagTitle).trim().is_empty());
         }
     }
 }

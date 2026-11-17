@@ -1,10 +1,10 @@
 # Core UI Internationalization & Text Catalog
 
-> 387 nodes · cohesion 0.01
+> 512 nodes · cohesion 0.00
 
 ## Key Concepts
 
-- **TextKey** (408 connections) — `src/core/i18n.rs`
+- **TextKey** (537 connections) — `src/core/i18n.rs`
 - **ActiveChanges** (1 connections) — `src/core/i18n.rs`
 - **ActiveOptimizations** (1 connections) — `src/core/i18n.rs`
 - **ActiveRailAc** (1 connections) — `src/core/i18n.rs`
@@ -14,6 +14,8 @@
 - **AdapterName** (1 connections) — `src/core/i18n.rs`
 - **AdminBadge** (1 connections) — `src/core/i18n.rs`
 - **AdminElevated** (1 connections) — `src/core/i18n.rs`
+- **AdminRequiredDesc** (1 connections) — `src/core/i18n.rs`
+- **AdminRequiredTitle** (1 connections) — `src/core/i18n.rs`
 - **AdminStandard** (1 connections) — `src/core/i18n.rs`
 - **AdvancedMatrix** (1 connections) — `src/core/i18n.rs`
 - **AfterTest** (1 connections) — `src/core/i18n.rs`
@@ -23,23 +25,26 @@
 - **AppTitle** (1 connections) — `src/core/i18n.rs`
 - **AppWindowTitle** (1 connections) — `src/core/i18n.rs`
 - **AuditActiveWord** (1 connections) — `src/core/i18n.rs`
-- **AvgLabel** (1 connections) — `src/core/i18n.rs`
-- **AvgPingDns** (1 connections) — `src/core/i18n.rs`
-- **AvgPingJitter** (1 connections) — `src/core/i18n.rs`
-- **BackgroundProcesses** (1 connections) — `src/core/i18n.rs`
-- **BackupCenter** (1 connections) — `src/core/i18n.rs`
-- **BackupSub** (1 connections) — `src/core/i18n.rs`
-- *... and 362 more nodes in this community*
+- **AutomationHealthCheck** (1 connections) — `src/core/i18n.rs`
+- **AutomationOneClick** (1 connections) — `src/core/i18n.rs`
+- **AutomationSub** (1 connections) — `src/core/i18n.rs`
+- **AutomationTitle** (1 connections) — `src/core/i18n.rs`
+- *... and 487 more nodes in this community*
 
 ## Relationships
 
-- [Core UI Internationalization & Text Catalog](Core_UI_Internationalization_&_Text_Catalog.md) (14 shared connections)
+- [LayoutTier](LayoutTier.md) (6 shared connections)
+- [action_button](action_button.md) (4 shared connections)
 - [.Create Metrics Sampler()](Create_Metrics_Sampler.md) (3 shared connections)
-- [Integration Suite: Tweak Sandbox E2E](Integration_Suite-_Tweak_Sandbox_E2E.md) (1 shared connections)
+- [action_button_guarded](action_button_guarded.md) (2 shared connections)
+- [diff_modal.rs](diff_modal.rs.md) (2 shared connections)
+- [app.rs](app.rs.md) (1 shared connections)
 - [Process Token Information](Process_Token_Information.md) (1 shared connections)
+- [view](view.md) (1 shared connections)
+- [ThemePalette](ThemePalette.md) (1 shared connections)
+- [WinBlastScrollable](WinBlastScrollable.md) (1 shared connections)
+- [privacy_shield.rs](privacy_shield.rs.md) (1 shared connections)
 - [View() Color Scrollspec](View_Color_Scrollspec.md) (1 shared connections)
-- [Async() .Toggle .Refresh](Async_.Toggle_.Refresh.md) (1 shared connections)
-- [View() Card() Switch](View_Card_Switch.md) (1 shared connections)
 
 ## Source Files
 
@@ -47,7 +52,7 @@
 
 ## Audit Trail
 
-- EXTRACTED: 407 (100%)
+- EXTRACTED: 536 (100%)
 - INFERRED: 1 (0%)
 - AMBIGUOUS: 0 (0%)
 

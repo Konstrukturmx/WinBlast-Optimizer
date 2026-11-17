@@ -153,6 +153,15 @@ impl NetworkDiagnostics {
 
     /// Apply DNS servers to the active network adapter using netsh.
     pub fn apply_dns_servers(primary: &str, secondary: &str) -> Result<String, String> {
+        let p_clean = primary.trim();
+        let s_clean = secondary.trim();
+        let p_ip: std::net::IpAddr = p_clean
+            .parse()
+            .map_err(|e| format!("Invalid primary DNS IP address '{}': {}", p_clean, e))?;
+        let s_ip: std::net::IpAddr = s_clean
+            .parse()
+            .map_err(|e| format!("Invalid secondary DNS IP address '{}': {}", s_clean, e))?;
+
         // Query active adapter name from netsh interface ipv4 show interfaces
         let ps_cmd = format!(
             r#"$adapter = Get-NetAdapter | Where-Object {{ $_.Status -eq 'Up' -and $_.InterfaceMetric -ne $null }} | Select-Object -First 1;
@@ -164,7 +173,7 @@ if ($adapter) {{
     netsh interface ipv4 add dnsservers name="Ethernet" address="{}" index=2;
     Write-Output "SUCCESS"
 }}"#,
-            primary, secondary, primary, secondary
+            p_ip, s_ip, p_ip, s_ip
         );
 
         let out = SilentCommand::new("powershell")

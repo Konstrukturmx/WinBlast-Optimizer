@@ -16,12 +16,14 @@
 - **.sample()** (3 connections) — `src/hardware/monitor.rs`
 - **NtQuerySystemInformation()** (3 connections) — `src/hardware/monitor.rs`
 - **query_processor_group_bases()** (3 connections) — `src/hardware/monitor.rs`
-- **c_void** (1 connections)
+- **c_void** (2 connections)
 
 ## Relationships
 
-- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (10 shared connections)
+- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (8 shared connections)
 - [WinBlast0 Architectural Specifications](WinBlast0_Architectural_Specifications.md) (4 shared connections)
+- [PdhParkingCollector](PdhParkingCollector.md) (2 shared connections)
+- [Bloatware & AppX Deprovisioning Rules](Bloatware_&_AppX_Deprovisioning_Rules.md) (1 shared connections)
 - [State Ledger & Restore Point Engine](State_Ledger_&_Restore_Point_Engine.md) (1 shared connections)
 
 ## Source Files
@@ -30,7 +32,7 @@
 
 ## Audit Trail
 
-- EXTRACTED: 34 (97%)
+- EXTRACTED: 35 (97%)
 - INFERRED: 1 (3%)
 - AMBIGUOUS: 0 (0%)
 

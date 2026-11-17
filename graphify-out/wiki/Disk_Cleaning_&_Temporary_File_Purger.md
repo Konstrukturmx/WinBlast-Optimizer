@@ -1,6 +1,6 @@
 # Disk Cleaning & Temporary File Purger
 
-> 52 nodes · cohesion 0.04
+> 53 nodes · cohesion 0.04
 
 ## Key Concepts
 
@@ -11,6 +11,7 @@
 - **.reg_delete_value_for_vendor()** (2 connections) — `src/core/backend.rs`
 - **.reg_get_dword_for_vendor()** (2 connections) — `src/core/backend.rs`
 - **.reg_set_dword_for_vendor()** (2 connections) — `src/core/backend.rs`
+- **.set_usb_power_saving_enabled()** (2 connections) — `src/core/backend.rs`
 - **.block_telemetry_hosts()** (1 connections) — `src/core/backend.rs`
 - **.broadcast_shell_settings_changed()** (1 connections) — `src/core/backend.rs`
 - **.check_onedrive_kfm_active()** (1 connections) — `src/core/backend.rs`
@@ -28,23 +29,22 @@
 - **.read_hosts_file()** (1 connections) — `src/core/backend.rs`
 - **.read_power_setting_index()** (1 connections) — `src/core/backend.rs`
 - **.reg_delete_tree()** (1 connections) — `src/core/backend.rs`
-- **.reg_delete_value()** (1 connections) — `src/core/backend.rs`
-- *... and 27 more nodes in this community*
+- *... and 28 more nodes in this community*
 
 ## Relationships
 
-- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (10 shared connections)
-- [Integration Suite: Tweak Sandbox E2E](Integration_Suite-_Tweak_Sandbox_E2E.md) (7 shared connections)
-- [Project History & Release Version Ledger](Project_History_&_Release_Version_Ledger.md) (7 shared connections)
-- [Task Scheduler Inspection Subsystem](Task_Scheduler_Inspection_Subsystem.md) (6 shared connections)
-- [Startup Tasks & Auto-Run Explorer](Startup_Tasks_&_Auto-Run_Explorer.md) (4 shared connections)
-- [Themed Interactive Scrollbar Widget](Themed_Interactive_Scrollbar_Widget.md) (2 shared connections)
+- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (13 shared connections)
+- [engine.rs](engine.rs.md) (8 shared connections)
+- [Integration Suite: Tweak Sandbox E2E](Integration_Suite-_Tweak_Sandbox_E2E.md) (3 shared connections)
+- [LiveScheduledTaskInfo](LiveScheduledTaskInfo.md) (2 shared connections)
 - [System Architecture Changelog](System_Architecture_Changelog.md) (2 shared connections)
-- [Startup Entries() .List](Startup_Entries_.List.md) (2 shared connections)
-- [Async() .Toggle .Refresh](Async_.Toggle_.Refresh.md) (2 shared connections)
-- [.Set Enabled() .Remove](Set_Enabled_.Remove.md) (2 shared connections)
-- [State Ledger & Restore Point Engine](State_Ledger_&_Restore_Point_Engine.md) (2 shared connections)
-- [.Toggle .Set .Apply](Toggle_.Set_.Apply.md) (2 shared connections)
+- [WinBlast0 Architectural Specifications](WinBlast0_Architectural_Specifications.md) (2 shared connections)
+- [AppState](AppState.md) (2 shared connections)
+- [app.rs](app.rs.md) (2 shared connections)
+- [full_telemetry_audit_with](full_telemetry_audit_with.md) (2 shared connections)
+- [backend.rs](backend.rs.md) (2 shared connections)
+- [SlowScanBackend](SlowScanBackend.md) (2 shared connections)
+- [Startup Tasks & Auto-Run Explorer](Startup_Tasks_&_Auto-Run_Explorer.md) (2 shared connections)
 
 ## Source Files
 
@@ -52,7 +52,7 @@
 
 ## Audit Trail
 
-- EXTRACTED: 118 (99%)
+- EXTRACTED: 119 (99%)
 - INFERRED: 1 (1%)
 - AMBIGUOUS: 0 (0%)
 

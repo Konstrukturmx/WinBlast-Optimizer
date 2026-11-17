@@ -1,11 +1,10 @@
 # Bloatware & AppX Deprovisioning Rules
 
-> 34 nodes · cohesion 0.06
+> 33 nodes · cohesion 0.06
 
 ## Key Concepts
 
 - **explorer_ctrl.rs** (49 connections) — `src/tools/explorer_ctrl.rs`
-- **c_void** (1 connections)
 - **create_unicode_environment** (1 connections)
 - **createenvironmentblock** (1 connections)
 - **createprocesswithtokenw** (1 connections)
@@ -29,15 +28,18 @@
 - **shcnf_flush** (1 connections)
 - **smto_abortifhung** (1 connections)
 - **startupinfow** (1 connections)
-- *... and 9 more nodes in this community*
+- **terminateprocess** (1 connections)
+- *... and 8 more nodes in this community*
 
 ## Relationships
 
 - [Project Documentation, Architecture & Licensing](Project_Documentation,_Architecture_&_Licensing.md) (6 shared connections)
-- [Reversibility Instant Requireslogoff](Reversibility_Instant_Requireslogoff.md) (4 shared connections)
-- [Disabled() Delete .Set](Disabled_Delete_.Set.md) (3 shared connections)
-- [Elevated() Token Closehandle](Elevated_Token_Closehandle.md) (1 shared connections)
-- [.Toggle .Set .Apply](Toggle_.Set_.Apply.md) (1 shared connections)
+- [Reversibility Instant Requireslogoff](Reversibility_Instant_Requireslogoff.md) (3 shared connections)
+- [Disabled() Delete .Set](Disabled_Delete_.Set.md) (2 shared connections)
+- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (2 shared connections)
+- [backend.rs](backend.rs.md) (1 shared connections)
+- [SilentCommand](SilentCommand.md) (1 shared connections)
+- [Restore Points() .List](Restore_Points_.List.md) (1 shared connections)
 - [.Default() .New() Sandboxtempdir](Default_.New_Sandboxtempdir.md) (1 shared connections)
 
 ## Source Files

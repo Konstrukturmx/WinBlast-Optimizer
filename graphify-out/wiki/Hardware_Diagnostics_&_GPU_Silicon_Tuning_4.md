@@ -1,56 +1,60 @@
 # Hardware Diagnostics & GPU Silicon Tuning
 
-> 28 nodes · cohesion 0.07
+> 45 nodes · cohesion 0.07
 
 ## Key Concepts
 
-- **test_wave1_ledger_rollback_and_concurrency_regressions()** (19 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.list_startup_entries()** (7 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.set_hibernation_enabled()** (6 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.set_startup_entry_enabled()** (6 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.create_and_activate_performance_plan()** (5 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.get_active_power_scheme()** (5 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.set_scheduled_task_enabled()** (5 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.list_startup_entries()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.set_hibernation_enabled()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.set_scheduled_task_enabled()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.set_startup_entry_enabled()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.list_startup_entries()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.set_hibernation_enabled()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.set_startup_entry_enabled()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.default_ledger_path()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.read_hosts_file()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.set_gpu_msi_mode()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.create_and_activate_performance_plan()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.get_active_power_scheme()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.create_and_activate_performance_plan()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.get_active_power_scheme()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.set_scheduled_task_enabled()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.default_ledger_path()** (2 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.read_hosts_file()** (2 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.set_gpu_msi_mode()** (2 connections) — `tests/tweak_sandbox_e2e.rs`
-- *... and 3 more nodes in this community*
+- **sys_inventory.rs** (50 connections) — `src/hardware/sys_inventory.rs`
+- **disks.rs** (29 connections) — `src/hardware/disks.rs`
+- **RamDimmInfo** (7 connections) — `src/hardware/sys_inventory.rs`
+- **DiskSubsystemReport** (6 connections) — `src/hardware/disks.rs`
+- **pcwstr** (5 connections)
+- **probe_physical_drive()** (5 connections) — `src/hardware/disks.rs`
+- **query_ram_dimms()** (5 connections) — `src/hardware/sys_inventory.rs`
+- **closehandle** (4 connections)
+- **HandleGuard** (4 connections) — `src/hardware/disks.rs`
+- **PhysicalDriveHealth** (4 connections) — `src/hardware/disks.rs`
+- **HANDLE** (3 connections)
+- **.probe()** (3 connections) — `src/hardware/disks.rs`
+- **probe_volume_fallback()** (3 connections) — `src/hardware/disks.rs`
+- **createfilew** (2 connections)
+- **device_seek_penalty_descriptor** (2 connections)
+- **deviceiocontrol** (2 connections)
+- **file_share_read** (2 connections)
+- **file_share_write** (2 connections)
+- **getdiskfreespaceexw** (2 connections)
+- **getlogicaldrives** (2 connections)
+- **getvolumeinformationw** (2 connections)
+- **ioctl_storage_query_property** (2 connections)
+- **open_existing** (2 connections)
+- **propertystandardquery** (2 connections)
+- **extract_null_terminated_str()** (2 connections) — `src/hardware/disks.rs`
+- *... and 20 more nodes in this community*
 
 ## Relationships
 
-- [Kernel Scheduling & Latency Optimization](Kernel_Scheduling_&_Latency_Optimization.md) (19 shared connections)
-- [.Set Enabled() .Remove](Set_Enabled_.Remove.md) (18 shared connections)
-- [Windows Unattend Deployment Generator](Windows_Unattend_Deployment_Generator.md) (9 shared connections)
-- [.Create Restore Point()](Create_Restore_Point.md) (6 shared connections)
-- [Scandetailkind Appxinstalled Appxinstalledps](Scandetailkind_Appxinstalled_Appxinstalledps.md) (5 shared connections)
-- [Startup Tasks & Auto-Run Explorer](Startup_Tasks_&_Auto-Run_Explorer.md) (3 shared connections)
-- [Integration Suite: Real Windows Env](Integration_Suite-_Real_Windows_Env.md) (3 shared connections)
-- [Task Scheduler Inspection Subsystem](Task_Scheduler_Inspection_Subsystem.md) (2 shared connections)
-- [Integration Suite: Tweak Sandbox E2E](Integration_Suite-_Tweak_Sandbox_E2E.md) (1 shared connections)
+- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (9 shared connections)
+- [Error.Rs Winblasterror Appx](Error.Rs_Winblasterror_Appx.md) (6 shared connections)
+- [deserialize](deserialize.md) (4 shared connections)
+- [Reversibility Instant Requireslogoff](Reversibility_Instant_Requireslogoff.md) (2 shared connections)
+- [Bloatware & AppX Deprovisioning Rules](Bloatware_&_AppX_Deprovisioning_Rules.md) (2 shared connections)
+- [AppState](AppState.md) (2 shared connections)
+- [backend.rs](backend.rs.md) (2 shared connections)
+- [enums](enums.md) (2 shared connections)
+- [.Toggle .Set .Apply](Toggle_.Set_.Apply.md) (1 shared connections)
+- [SilentCommand](SilentCommand.md) (1 shared connections)
+- [LayoutTier](LayoutTier.md) (1 shared connections)
+- [super](super.md) (1 shared connections)
 
 ## Source Files
 
-- `tests/tweak_sandbox_e2e.rs`
+- `src/hardware/disks.rs`
+- `src/hardware/sys_inventory.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 90 (97%)
-- INFERRED: 3 (3%)
+- EXTRACTED: 107 (100%)
+- INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 
 ---

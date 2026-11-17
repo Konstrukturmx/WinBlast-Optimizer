@@ -1,6 +1,6 @@
 # Project Documentation, Architecture & Licensing
 
-> 21 nodes · cohesion 0.16
+> 23 nodes · cohesion 0.14
 
 ## Key Concepts
 
@@ -11,12 +11,14 @@
 - **query_task_via_schtasks()** (5 connections) — `src/scanner/task_scanner.rs`
 - **.load()** (5 connections) — `src/scanner/task_scanner.rs`
 - **is_disabled_status()** (4 connections) — `src/scanner/task_scanner.rs`
+- **create_restore_point()** (3 connections) — `src/backup/restore_point.rs`
 - **ComGuard** (3 connections) — `src/scanner/task_scanner.rs`
 - **get_task_enabled()** (3 connections) — `src/scanner/task_scanner.rs`
 - **parse_csv_line()** (3 connections) — `src/scanner/task_scanner.rs`
 - **query_task_via_com()** (3 connections) — `src/scanner/task_scanner.rs`
 - **remove_edge_preserve_webview2()** (3 connections) — `src/tools/features_apps.rs`
 - **run_scheduled_task()** (3 connections) — `src/tools/startup.rs`
+- **.create_restore_point()** (2 connections) — `src/core/backend.rs`
 - **.get_task_enabled()** (2 connections) — `src/core/backend.rs`
 - **.remove_edge_preserve_webview2()** (2 connections) — `src/core/backend.rs`
 - **.run_scheduled_task()** (2 connections) — `src/core/backend.rs`
@@ -28,21 +30,22 @@
 
 ## Relationships
 
-- [Hosts Telemetry Block](Hosts_Telemetry_Block.md) (6 shared connections)
-- [Scan Test Single](Scan_Test_Single.md) (4 shared connections)
-- [WinBlast0 Architectural Specifications](WinBlast0_Architectural_Specifications.md) (4 shared connections)
-- [Integration Suite: Tweak Sandbox E2E](Integration_Suite-_Tweak_Sandbox_E2E.md) (3 shared connections)
-- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (3 shared connections)
+- [TaskCache](TaskCache.md) (6 shared connections)
+- [RealBackend](RealBackend.md) (5 shared connections)
+- [WinBlast0 Architectural Specifications](WinBlast0_Architectural_Specifications.md) (3 shared connections)
 - [.Reg State() Vendor()](Reg_State_Vendor.md) (3 shared connections)
+- [backend.rs](backend.rs.md) (2 shared connections)
 - [Disabled() Delete .Set](Disabled_Delete_.Set.md) (2 shared connections)
-- [Telemetry Full Blocked](Telemetry_Full_Blocked.md) (2 shared connections)
+- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (2 shared connections)
+- [svc_mutator.rs](svc_mutator.rs.md) (2 shared connections)
 - [.Create Restore Point()](Create_Restore_Point.md) (1 shared connections)
 - [Optional Dism Feature()](Optional_Dism_Feature.md) (1 shared connections)
-- [.Create Metrics Sampler()](Create_Metrics_Sampler.md) (1 shared connections)
-- [Bloatware & AppX Deprovisioning Rules](Bloatware_&_AppX_Deprovisioning_Rules.md) (1 shared connections)
+- [super](super.md) (1 shared connections)
+- [Integration Suite: Tweak Sandbox E2E](Integration_Suite-_Tweak_Sandbox_E2E.md) (1 shared connections)
 
 ## Source Files
 
+- `src/backup/restore_point.rs`
 - `src/core/backend.rs`
 - `src/executor/ps_runner.rs`
 - `src/scanner/task_scanner.rs`
@@ -51,8 +54,8 @@
 
 ## Audit Trail
 
-- EXTRACTED: 62 (95%)
-- INFERRED: 3 (5%)
+- EXTRACTED: 65 (96%)
+- INFERRED: 3 (4%)
 - AMBIGUOUS: 0 (0%)
 
 ---

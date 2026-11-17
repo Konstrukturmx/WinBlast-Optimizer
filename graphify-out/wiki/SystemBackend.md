@@ -7,7 +7,7 @@
 ## Connections by Relation
 
 ### contains
-- backend.rs `EXTRACTED`
+- [backend.rs](backend.rs.md) `EXTRACTED`
 
 ### implements
 - [SandboxEnv](SandboxEnv.md) `EXTRACTED`
@@ -18,8 +18,8 @@
 
 ### imports_from
 - tweak_sandbox_e2e.rs `EXTRACTED`
-- app.rs `EXTRACTED`
-- engine.rs `EXTRACTED`
+- [app.rs](app.rs.md) `EXTRACTED`
+- [engine.rs](engine.rs.md) `EXTRACTED`
 - scanner/mod.rs `EXTRACTED`
 - telemetry_scanner.rs `EXTRACTED`
 
@@ -49,8 +49,8 @@
 ### references
 - [AppState](AppState.md) `EXTRACTED`
 - rollback_entry_with() `EXTRACTED`
-- Changelog `EXTRACTED`
 - revert_tweak_with() `EXTRACTED`
+- Changelog `EXTRACTED`
 - apply_tweak_with() `EXTRACTED`
 - apply_action_slice_with() `EXTRACTED`
 - scan_single_tweak_with() `EXTRACTED`
@@ -60,8 +60,8 @@
 - full_telemetry_audit_with() `EXTRACTED`
 - apply_tweaks_by_id_with() `EXTRACTED`
 - revert_tweaks_by_id_with() `EXTRACTED`
-- resolve_dynamic_dword() `EXTRACTED`
 - rollback_recorded_ids() `EXTRACTED`
+- resolve_dynamic_dword() `EXTRACTED`
 - .new_with_backend() `EXTRACTED`
 - ensure_tweak_compatible() `EXTRACTED`
 - unblock_telemetry_hosts_with() `INFERRED`

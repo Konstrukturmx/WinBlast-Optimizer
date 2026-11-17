@@ -1435,7 +1435,9 @@ pub fn rollback_entry_with(
                 })?;
                 if was_delayed && original_start == 2 {
                     let svc_path = format!("SYSTEM\\CurrentControlSet\\Services\\{}", service_name.trim());
-                    let _ = backend.reg_set_dword("HKLM", &svc_path, "DelayedAutostart", 1);
+                    if let Err(e) = backend.reg_set_dword("HKLM", &svc_path, "DelayedAutostart", 1) {
+                        tracing::warn!("Failed to restore DelayedAutostart for {}: {}", service_name, e);
+                    }
                 }
                 backend.set_service_start_type(service_name, original_start)?;
             }

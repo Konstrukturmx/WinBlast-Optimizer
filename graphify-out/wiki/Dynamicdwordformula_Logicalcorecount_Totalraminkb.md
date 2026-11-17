@@ -1,16 +1,20 @@
 # Dynamicdwordformula Logicalcorecount Totalraminkb
 
-> 22 nodes · cohesion 0.09
+> 26 nodes · cohesion 0.08
 
 ## Key Concepts
 
-- **TweakAction** (34 connections) — `src/core/risk.rs`
+- **TweakAction** (33 connections) — `src/core/risk.rs`
+- **OptionalFeatureKind** (21 connections) — `src/core/risk.rs`
 - **PowerTargetScope** (8 connections) — `src/core/risk.rs`
-- **DynamicDwordFormula** (7 connections) — `src/core/risk.rs`
-- **resolve_dynamic_dword()** (7 connections) — `src/scanner/mod.rs`
+- **DynamicDwordFormula** (6 connections) — `src/core/risk.rs`
+- **.set_optional_feature()** (3 connections) — `src/core/backend.rs`
+- **parse_feature_kind()** (3 connections) — `src/executor/engine.rs`
 - **LogicalCoreCount** (1 connections) — `src/core/risk.rs`
 - **TotalRamInKb** (1 connections) — `src/core/risk.rs`
 - **TotalRamInKbPlusMargin** (1 connections) — `src/core/risk.rs`
+- **Capability** (1 connections) — `src/core/risk.rs`
+- **OptionalFeature** (1 connections) — `src/core/risk.rs`
 - **AcAndDc** (1 connections) — `src/core/risk.rs`
 - **AcOnly** (1 connections) — `src/core/risk.rs`
 - **DcOnly** (1 connections) — `src/core/risk.rs`
@@ -25,32 +29,33 @@
 - **RegistryString** (1 connections) — `src/core/risk.rs`
 - **ScheduledTask** (1 connections) — `src/core/risk.rs`
 - **ServiceState** (1 connections) — `src/core/risk.rs`
-- **WindowsFeature** (1 connections) — `src/core/risk.rs`
+- *... and 1 more nodes in this community*
 
 ## Relationships
 
-- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (6 shared connections)
+- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (7 shared connections)
+- [engine.rs](engine.rs.md) (7 shared connections)
+- [WinBlast0 Architectural Specifications](WinBlast0_Architectural_Specifications.md) (4 shared connections)
+- [GPU Silicon & Hardware Tuning Policies](GPU_Silicon_&_Hardware_Tuning_Policies.md) (4 shared connections)
 - [Scandetailkind Appxinstalled Appxinstalledps](Scandetailkind_Appxinstalled_Appxinstalledps.md) (4 shared connections)
-- [Project History & Release Version Ledger](Project_History_&_Release_Version_Ledger.md) (4 shared connections)
-- [Core UI Internationalization & Text Catalog](Core_UI_Internationalization_&_Text_Catalog.md) (4 shared connections)
-- [GPU Silicon & Hardware Tuning Policies](GPU_Silicon_&_Hardware_Tuning_Policies.md) (3 shared connections)
-- [Task Scheduler Inspection Subsystem](Task_Scheduler_Inspection_Subsystem.md) (2 shared connections)
-- [Win32 Registry Scanner & Mutator](Win32_Registry_Scanner_&_Mutator.md) (2 shared connections)
-- [Async() .Toggle .Refresh](Async_.Toggle_.Refresh.md) (1 shared connections)
-- [WinBlast0 Architectural Specifications](WinBlast0_Architectural_Specifications.md) (1 shared connections)
+- [backend.rs](backend.rs.md) (3 shared connections)
+- [diff_modal.rs](diff_modal.rs.md) (3 shared connections)
+- [app.rs](app.rs.md) (2 shared connections)
+- [test_wave1_compound_actions_deep_edge_cases](test_wave1_compound_actions_deep_edge_cases.md) (2 shared connections)
+- [Disk Cleaning & Temporary File Purger](Disk_Cleaning_&_Temporary_File_Purger.md) (1 shared connections)
 - [Integration Suite: Tweak Sandbox E2E](Integration_Suite-_Tweak_Sandbox_E2E.md) (1 shared connections)
-- [Disabled() Delete .Set](Disabled_Delete_.Set.md) (1 shared connections)
-- [State Ledger & Restore Point Engine](State_Ledger_&_Restore_Point_Engine.md) (1 shared connections)
+- [.Reg State() Vendor()](Reg_State_Vendor.md) (1 shared connections)
 
 ## Source Files
 
+- `src/core/backend.rs`
 - `src/core/risk.rs`
-- `src/scanner/mod.rs`
+- `src/executor/engine.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 50 (94%)
-- INFERRED: 3 (6%)
+- EXTRACTED: 68 (99%)
+- INFERRED: 1 (1%)
 - AMBIGUOUS: 0 (0%)
 
 ---

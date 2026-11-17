@@ -93,6 +93,7 @@ fn fetch_url_json(url: &str) -> Result<String, String> {
     }
 
     // 2. Fallback to PowerShell Invoke-RestMethod
+    let escaped_url = url.replace('\'', "''");
     let ps_cmd = format!(
         r#"[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12;
 try {{
@@ -101,7 +102,7 @@ try {{
 }} catch {{
     Write-Output "ERROR: $($_.Exception.Message)"
 }}"#,
-        url
+        escaped_url
     );
 
     let output = SilentCommand::new("powershell")
@@ -228,6 +229,8 @@ pub fn download_release_asset(download_url: &str, asset_name: &str) -> Result<Pa
     }
 
     // 2. Fallback to PowerShell Invoke-WebRequest with redirect support
+    let escaped_url = download_url.replace('\'', "''");
+    let escaped_target = target_path_str.replace('\'', "''");
     let ps_cmd = format!(
         r#"[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12;
 try {{
@@ -240,7 +243,7 @@ try {{
 }} catch {{
     Write-Output "ERROR: $($_.Exception.Message)"
 }}"#,
-        download_url, target_path_str, target_path_str
+        escaped_url, escaped_target, escaped_target
     );
 
     let output = SilentCommand::new("powershell")
@@ -268,7 +271,11 @@ pub fn apply_and_restart(new_binary: &Path) -> Result<(), String> {
     let backup_exe = current_exe.with_extension("exe.old");
 
     // Clean any prior backup
-    let _ = std::fs::remove_file(&backup_exe);
+    if let Err(e) = std::fs::remove_file(&backup_exe) {
+        if e.kind() != std::io::ErrorKind::NotFound {
+            tracing::warn!("Failed to remove old backup executable {:?}: {}", backup_exe, e);
+        }
+    }
 
     // 1. Rename running exe to .old
     std::fs::rename(&current_exe, &backup_exe)
@@ -282,10 +289,11 @@ pub fn apply_and_restart(new_binary: &Path) -> Result<(), String> {
     }
 
     // 3. Launch the new executable detached and exit cleanly
-    let current_exe_str = current_exe.to_string_lossy().to_string();
+    let current_exe_str = current_exe.to_string_lossy();
+    let safe_exe_str = current_exe_str.replace('"', "");
     let cmd_restart = format!(
         r#"timeout /t 1 /nobreak >nul & start "" "{}""#,
-        current_exe_str
+        safe_exe_str
     );
 
     let _ = SilentCommand::new("cmd.exe")
