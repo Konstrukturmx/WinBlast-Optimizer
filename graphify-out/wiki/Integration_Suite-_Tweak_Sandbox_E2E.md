@@ -1,11 +1,12 @@
 # Integration Suite: Tweak Sandbox E2E
 
-> 45 nodes · cohesion 0.08
+> 46 nodes · cohesion 0.08
 
 ## Key Concepts
 
 - **dijkstra.rs** (14 connections) — `src/graph/dijkstra.rs`
 - **astar.rs** (11 connections) — `src/graph/astar.rs`
+- **hashset** (9 connections)
 - **graph/mod.rs** (9 connections) — `src/graph/mod.rs`
 - **hashmap** (8 connections)
 - **OptimizationGoal** (8 connections) — `src/graph/astar.rs`
@@ -28,20 +29,21 @@
 - **ExecutionStep** (3 connections) — `src/graph/dijkstra.rs`
 - **NodeCost** (3 connections) — `src/graph/dijkstra.rs`
 - **test_dijkstra_cycle_resolution()** (3 connections) — `src/graph/dijkstra.rs`
-- **test_dijkstra_dependency_order()** (3 connections) — `src/graph/dijkstra.rs`
-- *... and 20 more nodes in this community*
+- *... and 21 more nodes in this community*
 
 ## Relationships
 
-- [Async() .Toggle .Refresh](Async_.Toggle_.Refresh.md) (4 shared connections)
-- [.Create Metrics Sampler()](Create_Metrics_Sampler.md) (3 shared connections)
-- [System Architecture Changelog](System_Architecture_Changelog.md) (3 shared connections)
-- [Integration Suite: Tweak Sandbox E2E](Integration_Suite-_Tweak_Sandbox_E2E.md) (2 shared connections)
-- [Disabled() Delete .Set](Disabled_Delete_.Set.md) (2 shared connections)
+- [AppState](AppState.md) (4 shared connections)
+- [backend.rs](backend.rs.md) (3 shared connections)
+- [super](super.md) (3 shared connections)
+- [app.rs](app.rs.md) (2 shared connections)
+- [.Reg State() Vendor()](Reg_State_Vendor.md) (2 shared connections)
+- [Scandetailkind Appxinstalled Appxinstalledps](Scandetailkind_Appxinstalled_Appxinstalledps.md) (2 shared connections)
 - [Project Documentation, Architecture & Licensing](Project_Documentation,_Architecture_&_Licensing.md) (1 shared connections)
-- [.Reg State() Vendor()](Reg_State_Vendor.md) (1 shared connections)
-- [Scandetailkind Appxinstalled Appxinstalledps](Scandetailkind_Appxinstalled_Appxinstalledps.md) (1 shared connections)
-- [Core UI Internationalization & Text Catalog](Core_UI_Internationalization_&_Text_Catalog.md) (1 shared connections)
+- [startup.rs](startup.rs.md) (1 shared connections)
+- [appx_scanner.rs](appx_scanner.rs.md) (1 shared connections)
+- [View() Color Scrollspec](View_Color_Scrollspec.md) (1 shared connections)
+- [goal_planner.rs](goal_planner.rs.md) (1 shared connections)
 - [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (1 shared connections)
 
 ## Source Files
@@ -53,8 +55,8 @@
 
 ## Audit Trail
 
-- EXTRACTED: 103 (100%)
-- INFERRED: 0 (0%)
+- EXTRACTED: 106 (97%)
+- INFERRED: 3 (3%)
 - AMBIGUOUS: 0 (0%)
 
 ---

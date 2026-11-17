@@ -403,10 +403,10 @@ pub fn query_nt_timer_resolution() -> u64 {
 
 /// Query accurate system-wide process and execution thread counts directly via Windows NT performance info.
 pub fn query_system_process_and_thread_counts() -> Option<(usize, usize)> {
-    let mut info = std::mem::MaybeUninit::<PerformanceInformation>::uninit();
+    let mut info = std::mem::MaybeUninit::<PerformanceInformation>::zeroed();
     let cb = std::mem::size_of::<PerformanceInformation>() as u32;
     unsafe {
-        (*info.as_mut_ptr()).cb = cb;
+        std::ptr::addr_of_mut!((*info.as_mut_ptr()).cb).write(cb);
         if GetPerformanceInfo(info.as_mut_ptr(), cb) != 0 {
             let perf = info.assume_init();
             Some((perf.process_count as usize, perf.thread_count as usize))

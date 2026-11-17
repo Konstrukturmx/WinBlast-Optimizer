@@ -52,6 +52,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   - Integrated one-click repair actions for `sfc /scannow`, `dism /Online /Cleanup-Image /RestoreHealth`, `ipconfig /flushdns`, and Winsock resets.
 - **Expanded Declarative Tweak Catalogs (208 Total Tweaks)**:
   - Added `assets/rules/gaming_latency_ultra.toml` and `assets/rules/system_deep_opt.toml`, expanding catalog to 208 vetted optimizations.
+- **Comprehensive Security Hardening & Audit Remediations**:
+  - **Elevation Command Escaping (`src/core/elevation.rs`)**: Fixed single-quote escaping on executable file paths passed to PowerShell `Start-Process -FilePath '...' -Verb RunAs`.
+  - **Updater Parameter Sanitization (`src/core/updater.rs`)**: Hardened URL and temporary staging paths against shell argument injection.
+  - **DNS Server IP Validation (`src/tools/network_diag.rs`)**: Enforced strict `IpAddr` format parsing before applying primary and secondary DNS settings via PowerShell.
+  - **Safe Win32 Memory & Enum Dispatch (`src/hardware/monitor.rs`, `src/core/view_i18n.rs`)**: Replaced uninitialized struct field manipulation with `MaybeUninit::zeroed()` and eliminated unsound enum transmutation in test helpers.
+  - **Graceful UAC Cancellation (`src/app.rs`)**: Checked `ShellExecuteW` instance handle return code (> 32), preventing abrupt application exit when user declines UAC consent.
+- **Dependency & Version Resolution (21 Crate Upgrades)**:
+  - Safely bumped 21 semver-compatible dependencies in `Cargo.lock` (`uuid` 1.29.3, `syn` 3.0.10, `cc` 1.11.2, `wgpu`/`naga` 30.0.2, `zbus` 6.3.0, `zruntime` 0.2.3, `mio` 1.2.5, `pollster` 1.0.2, `fixedbitset` 0.5.9, `crc32fast` 1.5.5, `bumpalo` 3.20.4, `errno` 0.3.15, `itoa` 1.0.19).
+  - Maintained strict `windows = "0.62"` and `windows-core = "0.62"` alignment ensuring 100% binary FFI compatibility with the local GPU Rune framework.
+- **Knowledge Graph Synchronization**:
+  - Full codebase knowledge graph resynchronized with `graphify` (3,373 nodes, 7,095 edges across 137 functional community clusters).
+- **File & Folder Integrity Alignment**:
+  - Resolved `RELEASE_NOTES_V1_5.md` deletion drift and removed orphaned empty directories (`dist/`, `examples/`).
+  - Fixed dead links and documentation counters across `README.md`, `CHANGELOG.md`, and `DEVELOPMENT.md`.
 - **Zero-Defect Quality Assurance**:
   - 155 / 155 automated tests passing across 5 test suites (`cargo test --lib`, `tweak_sandbox_e2e`, `ui_responsive_e2e`, `ui_scrollbar_test`, and `real_windows_env`) with 100% pass rate.
   - 0 compiler errors, 0 clippy warnings (`cargo clippy --all-targets -- -D warnings`).

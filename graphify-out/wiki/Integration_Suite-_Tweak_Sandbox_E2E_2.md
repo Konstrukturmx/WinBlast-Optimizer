@@ -1,62 +1,62 @@
 # Integration Suite: Tweak Sandbox E2E
 
-> 34 nodes · cohesion 0.07
+> 42 nodes · cohesion 0.08
 
 ## Key Concepts
 
-- **app.rs** (74 connections) — `src/app.rs`
-- **full_telemetry_audit_with()** (10 connections) — `src/scanner/telemetry_scanner.rs`
-- **telemetry_scanner.rs** (9 connections) — `src/scanner/telemetry_scanner.rs`
-- **AppMode** (6 connections) — `src/app.rs`
-- **EngineMode** (6 connections) — `src/app.rs`
-- **PresetKey** (6 connections) — `src/core/status_i18n.rs`
-- **TelemetryAuditResult** (6 connections) — `src/scanner/telemetry_scanner.rs`
-- **PowerActionKind** (5 connections) — `src/app.rs`
-- **StagedTransition** (5 connections) — `src/app.rs`
-- **main.rs** (5 connections) — `src/main.rs`
-- **full_telemetry_audit()** (4 connections) — `src/scanner/telemetry_scanner.rs`
-- **parse_blocked_hosts_from_content()** (4 connections) — `src/scanner/telemetry_scanner.rs`
-- **panic_payload_to_string()** (3 connections) — `src/app.rs`
-- **KNOWN_TELEMETRY_SERVICES** (3 connections) — `src/scanner/telemetry_scanner.rs`
-- **ui** (3 connections)
-- **get_blocked_hosts()** (2 connections) — `src/scanner/telemetry_scanner.rs`
-- **scan_telemetry_agents()** (2 connections) — `src/scanner/telemetry_scanner.rs`
-- **TELEMETRY_HOSTS** (2 connections) — `src/scanner/telemetry_scanner.rs`
-- **Any** (1 connections)
-- **appspec** (1 connections)
-- **core** (1 connections)
-- **Advanced** (1 connections) — `src/app.rs`
-- **Easy** (1 connections) — `src/app.rs`
-- **Instant** (1 connections) — `src/app.rs`
-- **Normal** (1 connections) — `src/app.rs`
-- *... and 9 more nodes in this community*
+- **gpu.rs** (27 connections) — `src/hardware/gpu.rs`
+- **GpuVendor** (19 connections) — `src/hardware/gpu.rs`
+- **DetectedGpu** (17 connections) — `src/hardware/gpu.rs`
+- **detect_gpus()** (8 connections) — `src/hardware/gpu.rs`
+- **detect_vendor()** (7 connections) — `src/hardware/gpu.rs`
+- **resolve_gpu_class_path_for_vendor()** (6 connections) — `src/hardware/gpu.rs`
+- **parse_target_vendor()** (5 connections) — `src/hardware/gpu.rs`
+- **.detect_gpus()** (5 connections) — `tests/tweak_sandbox_e2e.rs`
+- **DevInfoGuard** (4 connections) — `src/hardware/gpu.rs`
+- **.as_str()** (4 connections) — `src/hardware/gpu.rs`
+- **present_display_class_subkeys()** (4 connections) — `src/hardware/gpu.rs`
+- **.gpu_vendors()** (3 connections) — `src/core/backend.rs`
+- **.detect_gpus()** (3 connections) — `src/core/backend.rs`
+- **.detect_gpus()** (3 connections) — `src/core/backend.rs`
+- **primary_vendor()** (3 connections) — `src/hardware/gpu.rs`
+- **.detect_gpus()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.detect_gpus()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.is_hags_enabled()** (2 connections) — `src/core/backend.rs`
+- **.is_mpo_disabled()** (2 connections) — `src/core/backend.rs`
+- **.set_gpu_msi_mode()** (2 connections) — `src/core/backend.rs`
+- **.set_hags()** (2 connections) — `src/core/backend.rs`
+- **.set_mpo_disabled()** (2 connections) — `src/core/backend.rs`
+- **.detect_gpus()** (2 connections) — `src/core/backend.rs`
+- **test_gpu_vendor_compatibility()** (2 connections) — `src/core/risk.rs`
+- **.is_gpu_vendor_compatible()** (2 connections) — `src/core/risk.rs`
+- *... and 17 more nodes in this community*
 
 ## Relationships
 
-- [Core UI Internationalization & Text Catalog](Core_UI_Internationalization_&_Text_Catalog.md) (9 shared connections)
-- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (8 shared connections)
-- [Async() .Toggle .Refresh](Async_.Toggle_.Refresh.md) (6 shared connections)
-- [Integration Suite: Tweak Sandbox E2E](Integration_Suite-_Tweak_Sandbox_E2E.md) (5 shared connections)
-- [View() Color Scrollspec](View_Color_Scrollspec.md) (5 shared connections)
-- [WinBlast0 Architectural Specifications](WinBlast0_Architectural_Specifications.md) (4 shared connections)
-- [Test Composite With()](Test_Composite_With.md) (4 shared connections)
-- [Task Scheduler Inspection Subsystem](Task_Scheduler_Inspection_Subsystem.md) (3 shared connections)
-- [Disk Cleaning & Temporary File Purger](Disk_Cleaning_&_Temporary_File_Purger.md) (3 shared connections)
-- [.Toggle .Set .Apply](Toggle_.Set_.Apply.md) (3 shared connections)
-- [Accent Hover Secondary](Accent_Hover_Secondary.md) (3 shared connections)
-- [Process Token Information](Process_Token_Information.md) (2 shared connections)
+- [RealBackend](RealBackend.md) (6 shared connections)
+- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (3 shared connections)
+- [backend.rs](backend.rs.md) (3 shared connections)
+- [app.rs](app.rs.md) (3 shared connections)
+- [Disk Cleaning & Temporary File Purger](Disk_Cleaning_&_Temporary_File_Purger.md) (2 shared connections)
+- [deserialize](deserialize.md) (2 shared connections)
+- [enums](enums.md) (2 shared connections)
+- [State Ledger & Restore Point Engine](State_Ledger_&_Restore_Point_Engine.md) (2 shared connections)
+- [AppState](AppState.md) (2 shared connections)
+- [Win32 Registry Scanner & Mutator](Win32_Registry_Scanner_&_Mutator.md) (2 shared connections)
+- [SlowScanBackend](SlowScanBackend.md) (2 shared connections)
+- [GPU Silicon & Hardware Tuning Policies](GPU_Silicon_&_Hardware_Tuning_Policies.md) (1 shared connections)
 
 ## Source Files
 
-- `src/app.rs`
-- `src/core/status_i18n.rs`
-- `src/main.rs`
-- `src/scanner/telemetry_scanner.rs`
+- `src/core/backend.rs`
+- `src/core/risk.rs`
+- `src/hardware/gpu.rs`
+- `tests/tweak_sandbox_e2e.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 126 (98%)
-- INFERRED: 3 (2%)
+- EXTRACTED: 99 (97%)
+- INFERRED: 3 (3%)
 - AMBIGUOUS: 0 (0%)
 
 ---

@@ -1940,7 +1940,7 @@ impl AppState {
         if let Ok(exe) = std::env::current_exe() {
             let file_w: Vec<u16> = exe.to_string_lossy().encode_utf16().chain(std::iter::once(0)).collect();
             let op_w: Vec<u16> = "runas".encode_utf16().chain(std::iter::once(0)).collect();
-            unsafe {
+            let hinst = unsafe {
                 windows::Win32::UI::Shell::ShellExecuteW(
                     None,
                     windows::core::PCWSTR(op_w.as_ptr()),
@@ -1948,9 +1948,16 @@ impl AppState {
                     None,
                     None,
                     windows::Win32::UI::WindowsAndMessaging::SW_SHOW,
+                )
+            };
+            if (hinst.0 as isize) > 32 {
+                std::process::exit(0);
+            } else {
+                tracing::warn!(
+                    "UAC elevation relaunch was canceled or failed (code: {})",
+                    hinst.0 as isize
                 );
             }
-            std::process::exit(0);
         }
     }
 

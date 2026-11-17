@@ -87,7 +87,9 @@ impl RepairTask {
                 if !local_app_data.is_empty() {
                     let cache = std::path::Path::new(&local_app_data).join("IconCache.db");
                     if cache.is_file() {
-                        let _ = std::fs::remove_file(cache);
+                        if let Err(e) = std::fs::remove_file(&cache) {
+                            tracing::warn!("Failed to remove IconCache.db {:?}: {}", cache, e);
+                        }
                     }
                 }
                 let _ = crate::tools::explorer_ctrl::restart_explorer_safely();
@@ -127,8 +129,12 @@ impl RepairTask {
                 let windir = std::env::var("WINDIR").unwrap_or_else(|_| "C:\\Windows".to_string());
                 let download_cache = std::path::Path::new(&windir).join("SoftwareDistribution").join("Download");
                 if download_cache.is_dir() {
-                    let _ = std::fs::remove_dir_all(&download_cache);
-                    let _ = std::fs::create_dir_all(&download_cache);
+                    if let Err(e) = std::fs::remove_dir_all(&download_cache) {
+                        tracing::warn!("Failed to clear SoftwareDistribution download cache {:?}: {}", download_cache, e);
+                    }
+                    if let Err(e) = std::fs::create_dir_all(&download_cache) {
+                        tracing::warn!("Failed to recreate SoftwareDistribution download cache {:?}: {}", download_cache, e);
+                    }
                 }
                 let _ = SilentCommand::new("net").args(["start", "wuauserv"]).output();
                 let _ = SilentCommand::new("net").args(["start", "bits"]).output();

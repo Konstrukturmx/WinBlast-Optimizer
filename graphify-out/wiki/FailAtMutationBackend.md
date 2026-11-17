@@ -1,43 +1,51 @@
 # FailAtMutationBackend
 
-> God node · 79 connections · `tests/tweak_sandbox_e2e.rs`
+> 17 nodes · cohesion 0.19
 
-**Community:** [Windows Unattend Deployment Generator](Windows_Unattend_Deployment_Generator.md)
+## Key Concepts
 
-## Connections by Relation
+- **FailAtMutationBackend** (79 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.maybe_arm_error()** (12 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.set_optional_feature()** (6 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.reg_delete_tree()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.reg_delete_value()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.reg_set_binary()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.reg_set_dword()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.reg_set_string()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.remove_appx_package()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.set_scheduled_task_enabled()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.set_service_start_type()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.write_power_setting_index()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.reg_set_dword()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.remove_appx_package()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.reg_set_dword()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.remove_appx_package()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
+- **AtomicUsize** (1 connections)
 
-### contains
-- tweak_sandbox_e2e.rs `EXTRACTED`
+## Relationships
 
-### implements
-- [SystemBackend](SystemBackend.md) `EXTRACTED`
+- [BlastResult](BlastResult.md) (30 shared connections)
+- [SlowScanBackend](SlowScanBackend.md) (22 shared connections)
+- [test_wave1_ledger_rollback_and_concurrency_regressions](test_wave1_ledger_rollback_and_concurrency_regressions.md) (9 shared connections)
+- [test_wave1_compound_actions_deep_edge_cases](test_wave1_compound_actions_deep_edge_cases.md) (5 shared connections)
+- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (4 shared connections)
+- [RegRawSnapshot](RegRawSnapshot.md) (3 shared connections)
+- [Scandetailkind Appxinstalled Appxinstalledps](Scandetailkind_Appxinstalled_Appxinstalledps.md) (2 shared connections)
+- [RegTreeSnapshot](RegTreeSnapshot.md) (2 shared connections)
+- [Integration Suite: Tweak Sandbox E2E](Integration_Suite-_Tweak_Sandbox_E2E.md) (2 shared connections)
+- [.Toggle .Set .Apply](Toggle_.Set_.Apply.md) (2 shared connections)
+- [Disk Cleaning & Temporary File Purger](Disk_Cleaning_&_Temporary_File_Purger.md) (1 shared connections)
+- [app.rs](app.rs.md) (1 shared connections)
 
-### method
-- .maybe_arm_error() `EXTRACTED`
-- .set_optional_feature() `EXTRACTED`
-- .reg_set_raw() `EXTRACTED`
-- .execute_clean_targets() `EXTRACTED`
-- .detect_os() `EXTRACTED`
-- .reg_set_dword() `EXTRACTED`
-- .reg_delete_value() `EXTRACTED`
-- .reg_set_string() `EXTRACTED`
-- .reg_set_binary() `EXTRACTED`
-- .reg_snapshot_tree() `EXTRACTED`
-- .reg_delete_tree() `EXTRACTED`
-- .reg_restore_tree() `EXTRACTED`
-- .write_power_setting_index() `EXTRACTED`
-- .set_hibernation_enabled() `EXTRACTED`
-- .set_service_start_type() `EXTRACTED`
-- .set_scheduled_task_enabled() `EXTRACTED`
-- .remove_appx_package() `EXTRACTED`
-- .list_restore_points() `EXTRACTED`
-- .list_optional_features() `EXTRACTED`
-- .list_startup_entries() `EXTRACTED`
-- *…and 55 more `method` connection(s) not listed (lowest-degree first to go)*
+## Source Files
 
-### references
-- [SandboxEnv](SandboxEnv.md) `EXTRACTED`
-- AtomicUsize `EXTRACTED`
+- `tests/tweak_sandbox_e2e.rs`
+
+## Audit Trail
+
+- EXTRACTED: 122 (100%)
+- INFERRED: 0 (0%)
+- AMBIGUOUS: 0 (0%)
 
 ---
 

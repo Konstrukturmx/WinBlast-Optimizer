@@ -82,13 +82,13 @@ Derived from the formal [**WinBlast0 Architecture Guide**](DEVELOPMENT.md), WinB
 * **1-Click Deep Revert**: Undo any single tweak or restore complete system baselines with one click.
 * **VSS System Restore Point Integration**: Automatic creation of native Windows Volume Shadow Copy restore points before applying high-impact configuration waves.
 
-### 3. ⏱️ NT Kernel Telemetry & Microsecond Latency Suite
+### 4. ⏱️ NT Kernel Telemetry & Microsecond Latency Suite
 * **Native Kernel Telemetry**: Replaces high-overhead WMI queries with direct `NtQuerySystemInformation(SystemProcessorPerformanceInformation)` deltas, providing accurate per-core active vs. idle percentages with zero CPU overhead.
 * **High-Precision Timer Resolution**: Direct `NtQueryTimerResolution` / `NtSetTimerResolution` FFI kernel interfacing to monitor sub-millisecond OS tick jitter (down to 0.500 ms).
 * **DPC / ISR Micro-Jitter Probe**: Real-time measurement of Deferred Procedure Call interrupt jitter using `QueryPerformanceCounter` (QPC).
 * **Anycast DNS Latency Tester**: Concurrent multi-threaded TCP/ICMP ping tester comparing latency against Tier-1 global resolvers (Cloudflare, Google, Quad9).
 
-### 4. 🧠 Intelligent Hardware & CPU Core Parking Engine
+### 5. 🧠 Intelligent Hardware & CPU Core Parking Engine
 * **Dynamic Core Unparker**: Dynamically unlocks clamped Windows power profile ranges (`CPMINCORES` / `CPMAXCORES`) before modifying values, resolving `Win32 error 0x0000000D (13)`.
 * **Hybrid P-Core / E-Core Awareness**: Reads `GetLogicalProcessorInformationEx` processor topology to classify Performance cores and Efficiency cores on modern Intel (12th-14th Gen) and AMD Ryzen processors.
 * **GPU Vendor Gating**: Auto-probes active graphics adapters via `SetupDiGetDeviceInstanceIdW` and DXGI, safely locking vendor-exclusive tweaks (e.g., AMD ULPS/ASPM vs NVIDIA Dynamic P-States) to prevent driver crashes.
@@ -115,7 +115,7 @@ WinBlast features zero hardcoded strings. Every title, description, category, se
 
 ---
 
-## 📚 Declarative Tweak Catalogs (168 Audited Tweaks)
+## 📚 Declarative Tweak Catalogs (208 Audited Tweaks)
 
 The optimizer features **208 validated declarative optimizations** indexed across 12 TOML catalogs with multi-axis risk assessments (`Safe`, `Low`, `Moderate`, `High`):
 
@@ -148,6 +148,11 @@ Because WinBlast Optimizer adjusts low-level system settings, Windows Registry p
   be98c799fb7e680681dde9d5b8f4d6bea91ea9de66fd169daf813e4528a18c6b
   ```
 * **Microsoft Defender Heuristics**: Clean PE metadata, authentic Win32 API calls, embedded UAC manifest, and permanent application icon `winblast.ico`.
+* **Static Analysis & Security Hardening**:
+  * **Command Injection Guarding**: Strict single-quote escaping on executable file paths passed to PowerShell `Start-Process -Verb RunAs` and updater scripts.
+  * **Network Address Validation**: DNS server switches enforce strict IPv4/IPv6 `IpAddr` format parsing before applying adapters to prevent command injection.
+  * **Safe Memory Management**: All OS handles (`HANDLE`, `SC_HANDLE`, COM pointers) utilize RAII drop guards; struct uninitialized access replaced with safe zeroed memory.
+  * **UAC Cancellation Resilience**: Gracefully handles cancelled UAC prompts without abrupt process termination.
 * **VirusTotal Scan Result**: [**View Official VirusTotal Report**](https://www.virustotal.com/gui/file/19895c54d3699391aebedb5c3e384aeb7ac5a73f8d1bee9ff7da4cd623d2fa00)
   * **Detection Score**: 69 / 75 engines confirmed completely undetected/clean.
   * **Note on Heuristics**: The sole generic detection (`Wacatac.B!ml`) is Microsoft Defender's automated machine-learning (`!ml`) heuristic flag typical for newly compiled, unsigned Rust binaries modifying Windows service/registry endpoints. The full source code is provided in this repository for independent verification.

@@ -1,45 +1,51 @@
 # RealBackend
 
-> God node · 84 connections · `src/core/backend.rs`
+> 15 nodes · cohesion 0.14
 
-**Community:** [Scan Test Single](Scan_Test_Single.md)
+## Key Concepts
 
-## Connections by Relation
+- **RealBackend** (84 connections) — `src/core/backend.rs`
+- **resolve_persistent_app_dir()** (3 connections) — `src/core/backend.rs`
+- **remove_appx_package()** (3 connections) — `src/executor/ps_runner.rs`
+- **set_usb_root_hub_power_saving()** (3 connections) — `src/hardware/power.rs`
+- **.create_and_activate_performance_plan()** (2 connections) — `src/core/backend.rs`
+- **.default_ledger_path()** (2 connections) — `src/core/backend.rs`
+- **.default_profile_path()** (2 connections) — `src/core/backend.rs`
+- **.get_active_power_scheme()** (2 connections) — `src/core/backend.rs`
+- **.read_power_setting_index()** (2 connections) — `src/core/backend.rs`
+- **.remove_appx_package()** (2 connections) — `src/core/backend.rs`
+- **.set_active_power_scheme()** (2 connections) — `src/core/backend.rs`
+- **.set_usb_root_hub_power_saving()** (2 connections) — `src/core/backend.rs`
+- **.write_power_setting_index()** (2 connections) — `src/core/backend.rs`
+- **.logical_core_count()** (1 connections) — `src/core/backend.rs`
+- **.read_hosts_file()** (1 connections) — `src/core/backend.rs`
 
-### contains
-- backend.rs `EXTRACTED`
+## Relationships
 
-### implements
-- [SystemBackend](SystemBackend.md) `EXTRACTED`
+- [Integration Suite: Ui Responsive E2E](Integration_Suite-_Ui_Responsive_E2E.md) (9 shared connections)
+- [Core UI Internationalization & Text Catalog](Core_UI_Internationalization_&_Text_Catalog.md) (8 shared connections)
+- [Project Documentation, Architecture & Licensing](Project_Documentation,_Architecture_&_Licensing.md) (8 shared connections)
+- [normalize_guid_str](normalize_guid_str.md) (7 shared connections)
+- [Integration Suite: Tweak Sandbox E2E](Integration_Suite-_Tweak_Sandbox_E2E.md) (7 shared connections)
+- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (5 shared connections)
+- [State Ledger & Restore Point Engine](State_Ledger_&_Restore_Point_Engine.md) (3 shared connections)
+- [backend.rs](backend.rs.md) (3 shared connections)
+- [WinBlast0 Architectural Specifications](WinBlast0_Architectural_Specifications.md) (3 shared connections)
+- [Optional Dism Feature()](Optional_Dism_Feature.md) (3 shared connections)
+- [Embedded Catalog Test](Embedded_Catalog_Test.md) (3 shared connections)
+- [.Reg State() Vendor()](Reg_State_Vendor.md) (3 shared connections)
 
-### imports_from
-- app.rs `EXTRACTED`
-- engine.rs `EXTRACTED`
-- real_windows_env.rs `EXTRACTED`
-- scanner/mod.rs `EXTRACTED`
+## Source Files
 
-### method
-- .execute_clean_targets() `EXTRACTED`
-- .list_optional_features() `EXTRACTED`
-- .set_optional_feature() `EXTRACTED`
-- .is_elevated() `EXTRACTED`
-- .reg_get_string() `EXTRACTED`
-- .reg_get_raw() `EXTRACTED`
-- .reg_set_raw() `EXTRACTED`
-- .reg_snapshot_tree() `EXTRACTED`
-- .reg_restore_tree() `EXTRACTED`
-- .detect_platform_security() `EXTRACTED`
-- .list_power_schemes() `EXTRACTED`
-- .query_hibernation_status() `EXTRACTED`
-- .set_hibernation_enabled() `EXTRACTED`
-- .list_restore_points() `EXTRACTED`
-- .detect_gpus() `EXTRACTED`
-- .apply_parking_snapshot() `EXTRACTED`
-- .run_latency_benchmark() `EXTRACTED`
-- .scan_clean_targets() `EXTRACTED`
-- .list_installed_appx_detailed() `EXTRACTED`
-- .list_startup_entries() `EXTRACTED`
-- *…and 58 more `method` connection(s) not listed (lowest-degree first to go)*
+- `src/core/backend.rs`
+- `src/executor/ps_runner.rs`
+- `src/hardware/power.rs`
+
+## Audit Trail
+
+- EXTRACTED: 98 (100%)
+- INFERRED: 0 (0%)
+- AMBIGUOUS: 0 (0%)
 
 ---
 

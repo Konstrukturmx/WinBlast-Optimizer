@@ -1,6 +1,6 @@
 # TextKey
 
-> God node · 408 connections · `src/core/i18n.rs`
+> God node · 537 connections · `src/core/i18n.rs`
 
 **Community:** [Core UI Internationalization & Text Catalog](Core_UI_Internationalization_&_Text_Catalog.md)
 
@@ -27,27 +27,31 @@
 - Hide `EXTRACTED`
 - NavOptimizationModes `EXTRACTED`
 - NavHardwareEngines `EXTRACTED`
-- *…and 365 more `case_of` connection(s) not listed (lowest-degree first to go)*
+- *…and 490 more `case_of` connection(s) not listed (lowest-degree first to go)*
 
 ### contains
 - i18n.rs `EXTRACTED`
 - .COUNT `EXTRACTED`
 
 ### imports_from
-- app.rs `EXTRACTED`
+- [app.rs](app.rs.md) `EXTRACTED`
 - status_i18n.rs `EXTRACTED`
 - ui_responsive_e2e.rs `EXTRACTED`
 - clean_apps.rs `EXTRACTED`
-- startup_tasks.rs `EXTRACTED`
 - easy_dashboard.rs `EXTRACTED`
 - ui/mod.rs `EXTRACTED`
+- startup_tasks.rs `EXTRACTED`
 - gpu_tuning.rs `EXTRACTED`
 - advanced_matrix.rs `EXTRACTED`
-- privacy_shield.rs `EXTRACTED`
 - button.rs `EXTRACTED`
-- diff_modal.rs `EXTRACTED`
+- [privacy_shield.rs](privacy_shield.rs.md) `EXTRACTED`
+- [diff_modal.rs](diff_modal.rs.md) `EXTRACTED`
+- driver_bios.rs `EXTRACTED`
 - hardware_view.rs `EXTRACTED`
+- views/gaming_stats.rs `EXTRACTED`
 - latency_bench.rs `EXTRACTED`
+- automation_center.rs `EXTRACTED`
+- views/game_prereqs.rs `EXTRACTED`
 - backup_center.rs `EXTRACTED`
 - cpu_parking.rs `EXTRACTED`
 

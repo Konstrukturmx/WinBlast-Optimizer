@@ -102,6 +102,10 @@ default_data = 0
 ## 🛡️ Coding & Safety Guidelines
 
 - **No Console Flashing**: Never spawn naked `std::process::Command` calls. Always use `SilentCommand` with `CREATE_NO_WINDOW` (`0x08000000`).
+- **Command Injection Prevention**: Always escape and quote parameters passed to PowerShell or shell commands. Never interpolate unvalidated user or network inputs into execution strings; parse network targets with `std::net::IpAddr` before dispatching.
+- **Strict Pointer Provenance & Safe Win32 FFI**: Use `MaybeUninit::zeroed()` for C structs; avoid uninitialized field mutations or unsound enum transmutes. Always wrap OS handles (`HANDLE`, `SC_HANDLE`, COM pointers) with RAII drop guards.
+- **Graceful UAC Cancellation**: When calling `ShellExecuteW(..., "runas", ...)`, verify return codes (> 32); never terminate the application abruptly if the user cancels UAC consent.
 - **Transactional Rollback**: Ensure every action implements a valid revert path recorded in `StateLedger`.
+- **Windows FFI Bindings Lock**: Keep `windows = "0.62"` and `windows-core = "0.62"` locked to match the vendored `rune-framework` Win32 bindings.
 - **String Hygiene**: Avoid hardcoding UI strings. Use `TextKey` and `s.tr()` or `s.tweak_title()`.
 - **Thread Safety**: Never block the main Rune UI thread with heavy I/O or network calls. Dispatch via `spawn_guarded_worker`.

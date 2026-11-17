@@ -1,32 +1,48 @@
 # Hardware Diagnostics & GPU Silicon Tuning
 
-> 10 nodes · cohesion 0.20
+> 14 nodes · cohesion 0.19
 
 ## Key Concepts
 
-- **assets/rules/registry_lag.toml** (11 connections) — `Project WinBlast0 Project Structure.md`
-- **1\. Domain Model & Risk Valuation Engine**** (1 connections) — `Project WinBlast0 Project Structure.md`
-- **2\. Declarative Rule Format**** (1 connections) — `Project WinBlast0 Project Structure.md`
-- **3\. Hardware GPU MSI Mode & Priority Optimizer Logic**** (1 connections) — `Project WinBlast0 Project Structure.md`
-- **4\. Auto-Elevation Manifest Setup**** (1 connections) — `Project WinBlast0 Project Structure.md`
-- **Architectural Enhancements**** (1 connections) — `Project WinBlast0 Project Structure.md`
-- **Core Architecture & Code Blueprint**** (1 connections) — `Project WinBlast0 Project Structure.md`
-- **Project Directory Structure**** (1 connections) — `Project WinBlast0 Project Structure.md`
-- **Project WinBlast0**** (1 connections) — `Project WinBlast0 Project Structure.md`
-- **Recommended Rust Tech Stack**** (1 connections) — `Project WinBlast0 Project Structure.md`
+- **PlatformSecurityInfo** (16 connections) — `src/hardware/sys_inventory.rs`
+- **detect_platform_security_info()** (8 connections) — `src/hardware/sys_inventory.rs`
+- **total_physical_ram_kb()** (4 connections) — `src/hardware/sys_inventory.rs`
+- **.detect_platform_security()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.detect_platform_security()** (3 connections) — `src/core/backend.rs`
+- **NtQuerySystemInformation()** (3 connections) — `src/hardware/sys_inventory.rs`
+- **query_live_code_integrity_options()** (3 connections) — `src/hardware/sys_inventory.rs`
+- **test_ram_and_platform_inventory_nonblocking()** (3 connections) — `src/hardware/sys_inventory.rs`
+- **.detect_platform_security()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.detect_platform_security()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.total_physical_ram_kb()** (2 connections) — `src/core/backend.rs`
+- **.detect_platform_security()** (2 connections) — `src/core/backend.rs`
+- **.detect_platform_security()** (2 connections) — `src/core/backend.rs`
+- **c_void** (1 connections)
 
 ## Relationships
 
-- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (1 shared connections)
-- [Integration Suite: Tweak Sandbox E2E](Integration_Suite-_Tweak_Sandbox_E2E.md) (1 shared connections)
+- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (9 shared connections)
+- [RealBackend](RealBackend.md) (2 shared connections)
+- [Error.Rs Winblasterror Appx](Error.Rs_Winblasterror_Appx.md) (2 shared connections)
+- [SlowScanBackend](SlowScanBackend.md) (2 shared connections)
+- [Disk Cleaning & Temporary File Purger](Disk_Cleaning_&_Temporary_File_Purger.md) (1 shared connections)
+- [Test Composite With()](Test_Composite_With.md) (1 shared connections)
+- [Win32 Registry Scanner & Mutator](Win32_Registry_Scanner_&_Mutator.md) (1 shared connections)
+- [AppState](AppState.md) (1 shared connections)
+- [app.rs](app.rs.md) (1 shared connections)
+- [backend.rs](backend.rs.md) (1 shared connections)
+- [Scandetailkind Appxinstalled Appxinstalledps](Scandetailkind_Appxinstalled_Appxinstalledps.md) (1 shared connections)
+- [FailAtMutationBackend](FailAtMutationBackend.md) (1 shared connections)
 
 ## Source Files
 
-- `Project WinBlast0 Project Structure.md`
+- `src/core/backend.rs`
+- `src/hardware/sys_inventory.rs`
+- `tests/tweak_sandbox_e2e.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 11 (100%)
+- EXTRACTED: 40 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 
