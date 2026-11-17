@@ -4167,6 +4167,7 @@ dependencies = [
  "crossbeam-channel",
  "embed-manifest",
  "raw-cpuid",
+ "rayon",
  "rune",
  "rune-kit",
  "rune-motion",

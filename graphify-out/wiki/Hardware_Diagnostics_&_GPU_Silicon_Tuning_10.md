@@ -1,15 +1,11 @@
 # Hardware Diagnostics & GPU Silicon Tuning
 
-> 6 nodes · cohesion 0.33
+> 2 nodes · cohesion 1.00
 
 ## Key Concepts
 
-- **build.rs** (5 connections) — `build.rs`
-- **asinvoker** (1 connections)
-- **main()** (1 connections) — `build.rs`
-- **embed_manifest** (1 connections)
-- **highestavailable** (1 connections)
-- **new_manifest** (1 connections)
+- **WorkerDropGuard<P>** (1 connections) — `src/app.rs`
+- **.drop()** (1 connections) — `src/app.rs`
 
 ## Relationships
 
@@ -17,11 +13,11 @@
 
 ## Source Files
 
-- `build.rs`
+- `src/app.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 5 (100%)
+- EXTRACTED: 1 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

@@ -1,10 +1,11 @@
 # ViewTextKey
 
-> 124 nodes · cohesion 0.02
+> 125 nodes · cohesion 0.02
 
 ## Key Concepts
 
 - **ViewTextKey** (137 connections) — `src/core/view_i18n.rs`
+- **.tr_v()** (2 connections) — `src/app.rs`
 - **AboutActiveBadge** (1 connections) — `src/core/view_i18n.rs`
 - **AboutBullet1** (1 connections) — `src/core/view_i18n.rs`
 - **AboutBullet2** (1 connections) — `src/core/view_i18n.rs`
@@ -28,22 +29,23 @@
 - **DiskGlobalTrimDisabled** (1 connections) — `src/core/view_i18n.rs`
 - **DiskHealthStatus** (1 connections) — `src/core/view_i18n.rs`
 - **DiskLifetimeWrites** (1 connections) — `src/core/view_i18n.rs`
-- **DiskPowerOnHours** (1 connections) — `src/core/view_i18n.rs`
-- *... and 99 more nodes in this community*
+- *... and 100 more nodes in this community*
 
 ## Relationships
 
 - [LayoutTier](LayoutTier.md) (11 shared connections)
-- [super](super.md) (3 shared connections)
+- [.Create Metrics Sampler()](Create_Metrics_Sampler.md) (2 shared connections)
+- [AppState](AppState.md) (1 shared connections)
 
 ## Source Files
 
+- `src/app.rs`
 - `src/core/view_i18n.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 137 (100%)
-- INFERRED: 0 (0%)
+- EXTRACTED: 137 (99%)
+- INFERRED: 1 (1%)
 - AMBIGUOUS: 0 (0%)
 
 ---

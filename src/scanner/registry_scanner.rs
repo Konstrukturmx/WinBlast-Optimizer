@@ -416,11 +416,9 @@ fn snapshot_key_recursive(
     depth: usize,
 ) -> Result<crate::core::reg_helpers::RegTreeSnapshot> {
     if depth > 32 {
-        return Err(WinBlastError::Registry(
-            std::io::Error::new(
-                std::io::ErrorKind::InvalidData,
-                "Exceeded maximum registry tree snapshot depth (32)",
-            ),
+        return Err(WinBlastError::registry(
+            87,
+            "Exceeded maximum registry tree snapshot depth (32)",
         ));
     }
     let mut values = Vec::new();
@@ -455,7 +453,7 @@ pub fn snapshot_tree(
     let key = match open_subkey_read_64(&root, path) {
         Ok(k) => k,
         Err(e) if e.kind() == std::io::ErrorKind::NotFound => return Ok(None),
-        Err(e) => return Err(WinBlastError::Registry(e)),
+        Err(e) => return Err(WinBlastError::from_reg_err(e)),
     };
     Ok(Some(snapshot_key_recursive(&key, "", 0)?))
 }

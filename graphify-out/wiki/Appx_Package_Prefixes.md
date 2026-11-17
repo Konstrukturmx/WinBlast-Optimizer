@@ -35,16 +35,16 @@
 
 - [Process Token Information](Process_Token_Information.md) (16 shared connections)
 - [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (12 shared connections)
-- [.Create Metrics Sampler()](Create_Metrics_Sampler.md) (3 shared connections)
+- [.Create Metrics Sampler()](Create_Metrics_Sampler.md) (5 shared connections)
 - [AppState](AppState.md) (2 shared connections)
 - [Privacy, Telemetry & AI Hardening Catalog](Privacy,_Telemetry_&_AI_Hardening_Catalog.md) (2 shared connections)
-- [super](super.md) (2 shared connections)
 - [View() Color Scrollspec](View_Color_Scrollspec.md) (2 shared connections)
 - [Installed Appx .List](Installed_Appx_.List.md) (2 shared connections)
 - [app.rs](app.rs.md) (1 shared connections)
-- [view](view.md) (1 shared connections)
+- [LayoutTier](LayoutTier.md) (1 shared connections)
 - [localize_tweak](localize_tweak.md) (1 shared connections)
 - [WinBlast0 Architectural Specifications](WinBlast0_Architectural_Specifications.md) (1 shared connections)
+- [Windows OS Settings & UX Customization](Windows_OS_Settings_&_UX_Customization.md) (1 shared connections)
 
 ## Source Files
 

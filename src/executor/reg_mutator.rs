@@ -56,14 +56,14 @@ fn write_dword_or_numeric_sz(
                 vtype: REG_EXPAND_SZ,
             };
             key.set_raw_value(norm_name, &raw)
-                .map_err(WinBlastError::Registry)?;
+                .map_err(WinBlastError::from_reg_err)?;
         } else {
             key.set_value(norm_name, &str_val)
-                .map_err(WinBlastError::Registry)?;
+                .map_err(WinBlastError::from_reg_err)?;
         }
     } else {
         key.set_value(norm_name, &value)
-            .map_err(WinBlastError::Registry)?;
+            .map_err(WinBlastError::from_reg_err)?;
     }
     Ok(())
 }
@@ -98,7 +98,7 @@ pub fn set_string_for_vendor(
         ));
     }
     for resolved_path in resolved_paths {
-        let key = create_subkey_64(&root, &resolved_path).map_err(WinBlastError::Registry)?;
+        let key = create_subkey_64(&root, &resolved_path).map_err(WinBlastError::from_reg_err)?;
 
         if expand_sz {
             let mut bytes: Vec<u8> = value
@@ -114,10 +114,10 @@ pub fn set_string_for_vendor(
                 vtype: REG_EXPAND_SZ,
             };
             key.set_raw_value(norm_name, &raw)
-                .map_err(WinBlastError::Registry)?;
+                .map_err(WinBlastError::from_reg_err)?;
         } else {
             key.set_value(norm_name, &value)
-                .map_err(WinBlastError::Registry)?;
+                .map_err(WinBlastError::from_reg_err)?;
         }
     }
     Ok(())
@@ -140,7 +140,7 @@ pub fn set_dword_for_vendor(
         ));
     }
     for resolved_path in resolved_paths {
-        let key = create_subkey_64(&root, &resolved_path).map_err(WinBlastError::Registry)?;
+        let key = create_subkey_64(&root, &resolved_path).map_err(WinBlastError::from_reg_err)?;
         write_dword_or_numeric_sz(&key, &resolved_path, name, value)?;
     }
     Ok(())
@@ -166,12 +166,12 @@ pub fn delete_value_for_vendor(
         let key = match open_subkey_flags_64(&root, &resolved_path, KEY_SET_VALUE) {
             Ok(k) => k,
             Err(e) if e.kind() == std::io::ErrorKind::NotFound => continue,
-            Err(e) => return Err(WinBlastError::Registry(e)),
+            Err(e) => return Err(WinBlastError::from_reg_err(e)),
         };
         match key.delete_value(norm_name) {
             Ok(()) => {}
             Err(e) if e.kind() == std::io::ErrorKind::NotFound => {}
-            Err(e) => return Err(WinBlastError::Registry(e)),
+            Err(e) => return Err(WinBlastError::from_reg_err(e)),
         }
     }
     Ok(())
@@ -182,13 +182,13 @@ pub fn set_binary(hive: &str, path: &str, name: &str, bytes: &[u8]) -> Result<()
     crate::core::reg_helpers::validate_registry_mutation_path(hive, path, false)?;
     let root = resolve_hive(hive)?;
     let norm_name = crate::core::risk::normalize_reg_value_name(name);
-    let key = create_subkey_64(&root, path).map_err(WinBlastError::Registry)?;
+    let key = create_subkey_64(&root, path).map_err(WinBlastError::from_reg_err)?;
     let raw = winreg::RegValue {
         bytes: bytes.to_vec(),
         vtype: REG_BINARY,
     };
     key.set_raw_value(norm_name, &raw)
-        .map_err(WinBlastError::Registry)?;
+        .map_err(WinBlastError::from_reg_err)?;
     Ok(())
 }
 
@@ -221,14 +221,14 @@ pub fn set_raw(
     crate::core::reg_helpers::validate_registry_mutation_path(hive, path, false)?;
     let root = resolve_hive(hive)?;
     let norm_name = crate::core::risk::normalize_reg_value_name(name);
-    let key = create_subkey_64(&root, path).map_err(WinBlastError::Registry)?;
+    let key = create_subkey_64(&root, path).map_err(WinBlastError::from_reg_err)?;
     let bytes = crate::core::reg_helpers::decode_hex(&snap.hex_bytes)?;
     let raw = winreg::RegValue {
         bytes,
         vtype: u32_to_reg_type(snap.reg_type),
     };
     key.set_raw_value(norm_name, &raw)
-        .map_err(WinBlastError::Registry)?;
+        .map_err(WinBlastError::from_reg_err)?;
     Ok(())
 }
 
@@ -248,7 +248,7 @@ pub fn delete_tree(hive: &str, path: &str) -> Result<()> {
     ) {
         Ok(k) => k,
         Err(e) if e.kind() == std::io::ErrorKind::NotFound => return Ok(()),
-        Err(e) => return Err(WinBlastError::Registry(e)),
+        Err(e) => return Err(WinBlastError::from_reg_err(e)),
     };
 
     let leaf_w: Vec<u16> = leaf_name.encode_utf16().chain(std::iter::once(0)).collect();
@@ -261,8 +261,9 @@ pub fn delete_tree(hive: &str, path: &str) -> Result<()> {
     if status.0 == 0 || status.0 == 2 || status.0 == 3 {
         Ok(())
     } else {
-        Err(WinBlastError::Registry(
-            std::io::Error::from_raw_os_error(status.0 as i32),
+        Err(WinBlastError::registry(
+            status.0 as i32,
+            format!("RegDeleteTreeW failed with Win32 error {}", status.0),
         ))
     }
 }
@@ -272,7 +273,7 @@ fn restore_tree_node(
     path: &str,
     node: &crate::core::reg_helpers::RegTreeSnapshot,
 ) -> Result<()> {
-    let k = create_subkey_64(parent_key, path).map_err(WinBlastError::Registry)?;
+    let k = create_subkey_64(parent_key, path).map_err(WinBlastError::from_reg_err)?;
     for (vname, snap) in &node.values {
         let bytes = crate::core::reg_helpers::decode_hex(&snap.hex_bytes)?;
         let raw = winreg::RegValue {
@@ -280,7 +281,7 @@ fn restore_tree_node(
             vtype: u32_to_reg_type(snap.reg_type),
         };
         k.set_raw_value(vname, &raw)
-            .map_err(WinBlastError::Registry)?;
+            .map_err(WinBlastError::from_reg_err)?;
     }
     for child in &node.children {
         restore_tree_node(&k, &child.subkey, child)?;

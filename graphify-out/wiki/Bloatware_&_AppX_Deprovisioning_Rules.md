@@ -33,14 +33,15 @@
 
 ## Relationships
 
-- [Project Documentation, Architecture & Licensing](Project_Documentation,_Architecture_&_Licensing.md) (6 shared connections)
+- [Project Documentation, Architecture & Licensing](Project_Documentation,_Architecture_&_Licensing.md) (5 shared connections)
 - [Reversibility Instant Requireslogoff](Reversibility_Instant_Requireslogoff.md) (3 shared connections)
-- [Disabled() Delete .Set](Disabled_Delete_.Set.md) (2 shared connections)
+- [WinBlast0 Architectural Specifications](WinBlast0_Architectural_Specifications.md) (2 shared connections)
 - [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (2 shared connections)
 - [backend.rs](backend.rs.md) (1 shared connections)
-- [SilentCommand](SilentCommand.md) (1 shared connections)
+- [svc_mutator.rs](svc_mutator.rs.md) (1 shared connections)
+- [Disabled() Delete .Set](Disabled_Delete_.Set.md) (1 shared connections)
+- [deserialize](deserialize.md) (1 shared connections)
 - [Restore Points() .List](Restore_Points_.List.md) (1 shared connections)
-- [.Default() .New() Sandboxtempdir](Default_.New_Sandboxtempdir.md) (1 shared connections)
 
 ## Source Files
 

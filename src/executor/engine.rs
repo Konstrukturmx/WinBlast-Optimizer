@@ -240,14 +240,14 @@ fn apply_action_slice_with(
                                 if let Some(hex_tpl) = default_full_hex {
                                     let decoded = decode_hex(hex_tpl)?;
                                     if decoded.len() < req {
-                                        return Err(WinBlastError::TweakFailed(
-                                            "default_full_hex shorter than min_length".to_string(),
+                                        return Err(WinBlastError::invalid_input(
+                                            "default_full_hex shorter than min_length",
                                         ));
                                     }
                                     (ABSENT_SENTINEL.to_string(), decoded)
                                 } else {
-                                    return Err(WinBlastError::TweakFailed(
-                                        "Missing default_full_hex template for absent binary value".to_string(),
+                                    return Err(WinBlastError::invalid_input(
+                                        "Missing default_full_hex template for absent binary value",
                                     ));
                                 }
                             } else {
@@ -599,6 +599,11 @@ pub fn apply_tweaks_by_id_with(
         return Ok(0);
     }
 
+    // Automated pre-flight VSS restore point check (within last 24 hours)
+    if let Err(e) = backend.ensure_preflight_restore_point("WinBlast Pre-Optimization Checkpoint") {
+        tracing::warn!("Pre-flight system restore point check/creation skipped or failed: {}", e);
+    }
+
     // 1. Check for mutual conflicts via Raven engine
     let raven = crate::graph::raven::RavenEngine::default();
     let candidates: Vec<crate::graph::raven::TweakCriteria> = all_tweaks
@@ -801,14 +806,14 @@ pub fn revert_tweak_with(
                                 if let Some(hex_tpl) = default_full_hex {
                                     let decoded = decode_hex(hex_tpl)?;
                                     if decoded.len() < req {
-                                        return Err(WinBlastError::TweakFailed(
-                                            "default_full_hex shorter than min_length".to_string(),
+                                        return Err(WinBlastError::invalid_input(
+                                            "default_full_hex shorter than min_length",
                                         ));
                                     }
                                     (ABSENT_SENTINEL.to_string(), decoded)
                                 } else {
-                                    return Err(WinBlastError::TweakFailed(
-                                        "Missing default_full_hex template for absent binary value".to_string(),
+                                    return Err(WinBlastError::invalid_input(
+                                        "Missing default_full_hex template for absent binary value",
                                     ));
                                 }
                             } else {
@@ -1117,6 +1122,11 @@ pub fn revert_tweaks_by_id_with(
         return Ok(0);
     }
 
+    // Automated pre-flight VSS restore point check (within last 24 hours)
+    if let Err(e) = backend.ensure_preflight_restore_point("WinBlast Pre-Optimization Checkpoint") {
+        tracing::warn!("Pre-flight system restore point check/creation skipped or failed: {}", e);
+    }
+
     let scheduler = crate::graph::dijkstra::DijkstraScheduler::new();
     let tweak_tuples = all_tweaks.iter().map(|t| {
         let requires_reboot = t.valuation.reversibility == crate::core::risk::Reversibility::RequiresReboot;
@@ -1163,7 +1173,7 @@ pub fn rollback_entry_with(
     let raw_action = entry.action_type.strip_prefix("Revert:").unwrap_or(&entry.action_type);
     let parts: Vec<&str> = raw_action.splitn(2, ':').collect();
     if parts.is_empty() {
-        return Err(WinBlastError::TweakFailed("Empty action_type in ledger entry".into()));
+        return Err(WinBlastError::invalid_input("Empty action_type in ledger entry"));
     }
 
     let kind = parts[0];
@@ -1180,10 +1190,10 @@ pub fn rollback_entry_with(
                 parse_pipe_reg_target(raw_tgt)?
             } else {
                 let first_slash = raw_tgt.find('\\').ok_or_else(|| {
-                    WinBlastError::TweakFailed(format!("Invalid registry target: {}", raw_tgt))
+                    WinBlastError::invalid_input(format!("Invalid registry target: {}", raw_tgt))
                 })?;
                 let last_slash = raw_tgt.rfind('\\').ok_or_else(|| {
-                    WinBlastError::TweakFailed(format!("Invalid registry target: {}", raw_tgt))
+                    WinBlastError::invalid_input(format!("Invalid registry target: {}", raw_tgt))
                 })?;
                 if first_slash == last_slash {
                     (
@@ -1204,7 +1214,7 @@ pub fn rollback_entry_with(
                 backend.reg_delete_value_for_vendor(&hive, &path, &name, vendor_ref)?;
             } else {
                 let original_val: u32 = entry.original_value.parse().map_err(|_| {
-                    WinBlastError::TweakFailed(format!("Invalid original value: {}", entry.original_value))
+                    WinBlastError::invalid_input(format!("Invalid original value: {}", entry.original_value))
                 })?;
                 backend.reg_set_dword_for_vendor(&hive, &path, &name, original_val, vendor_ref)?;
             }
@@ -1237,7 +1247,7 @@ pub fn rollback_entry_with(
         }
         "RegistryDeleteTree" => {
             let (hive, esc_path) = target.split_once('\\').ok_or_else(|| {
-                WinBlastError::TweakFailed(format!("Invalid tree target: {}", target))
+                WinBlastError::invalid_input(format!("Invalid tree target: {}", target))
             })?;
             let path = unescape_pipe(esc_path);
             if entry.action_type.starts_with("Revert:") && entry.original_value == ABSENT_SENTINEL {
@@ -1253,7 +1263,7 @@ pub fn rollback_entry_with(
                 let base = format!("{}|{}", segs[0], segs[1]);
                 let (hive, path, name) = parse_pipe_reg_target(&base)?;
                 let byte_index: usize = segs[2].parse().map_err(|_| {
-                    WinBlastError::TweakFailed(format!("Invalid byte_index in RegistryBinaryBit target: {}", target))
+                    WinBlastError::invalid_input(format!("Invalid byte_index in RegistryBinaryBit target: {}", target))
                 })?;
                 if entry.original_value == ABSENT_SENTINEL {
                     backend.reg_delete_value(&hive, &path, &name)?;
@@ -1528,11 +1538,11 @@ pub fn rollback_entry_with(
                 }
                 "GpuHags" => {
                     let orig_hags = entry.original_value == "true";
-                    backend.set_hags(orig_hags).map_err(WinBlastError::Registry)?;
+                    backend.set_hags(orig_hags).map_err(WinBlastError::Io)?;
                 }
                 "GpuMpo" => {
                     let orig_mpo = entry.original_value == "true";
-                    backend.set_mpo_disabled(orig_mpo).map_err(WinBlastError::Registry)?;
+                    backend.set_mpo_disabled(orig_mpo).map_err(WinBlastError::Io)?;
                 }
                 "GpuMsi" => {
                     if target.is_empty() {
@@ -1550,7 +1560,7 @@ pub fn rollback_entry_with(
                             2,
                         )
                     };
-                    backend.set_gpu_msi_mode(target, msi, prio).map_err(WinBlastError::Registry)?;
+                    backend.set_gpu_msi_mode(target, msi, prio).map_err(WinBlastError::Io)?;
                 }
                 "CoreParking" => {
                     if let Some(snap) =

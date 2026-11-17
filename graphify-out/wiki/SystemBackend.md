@@ -1,6 +1,6 @@
 # SystemBackend
 
-> God node · 110 connections · `src/core/backend.rs`
+> God node · 117 connections · `src/core/backend.rs`
 
 **Community:** [Disk Cleaning & Temporary File Purger](Disk_Cleaning_&_Temporary_File_Purger.md)
 
@@ -21,9 +21,11 @@
 - [app.rs](app.rs.md) `EXTRACTED`
 - [engine.rs](engine.rs.md) `EXTRACTED`
 - scanner/mod.rs `EXTRACTED`
+- [restore_point.rs](restore_point.rs.md) `EXTRACTED`
 - telemetry_scanner.rs `EXTRACTED`
 
 ### method
+- .ensure_preflight_restore_point() `EXTRACTED`
 - .apply_parking_snapshot() `EXTRACTED`
 - .detect_core_parking_sampled() `EXTRACTED`
 - .execute_clean_targets() `EXTRACTED`
@@ -43,8 +45,7 @@
 - .scan_clean_targets() `EXTRACTED`
 - .list_installed_appx_detailed() `EXTRACTED`
 - .list_optional_features() `EXTRACTED`
-- .list_startup_entries() `EXTRACTED`
-- *…and 59 more `method` connection(s) not listed (lowest-degree first to go)*
+- *…and 60 more `method` connection(s) not listed (lowest-degree first to go)*
 
 ### references
 - [AppState](AppState.md) `EXTRACTED`
@@ -55,18 +56,19 @@
 - apply_action_slice_with() `EXTRACTED`
 - scan_single_tweak_with() `EXTRACTED`
 - WinBlast Optimizer — Developer & Architecture Guide `EXTRACTED`
-- run_full_scan_with() `EXTRACTED`
 - CachedScanBackend `EXTRACTED`
+- run_full_scan_with() `EXTRACTED`
+- scan_all_tweaks_parallel_with() `EXTRACTED`
 - full_telemetry_audit_with() `EXTRACTED`
 - apply_tweaks_by_id_with() `EXTRACTED`
 - revert_tweaks_by_id_with() `EXTRACTED`
-- rollback_recorded_ids() `EXTRACTED`
 - resolve_dynamic_dword() `EXTRACTED`
-- .new_with_backend() `EXTRACTED`
+- scan_tweaks_chunked_parallel_with() `EXTRACTED`
+- rollback_recorded_ids() `EXTRACTED`
+- evaluate_tweak_status() `EXTRACTED`
 - ensure_tweak_compatible() `EXTRACTED`
-- unblock_telemetry_hosts_with() `INFERRED`
-- .new() `EXTRACTED`
-- .inner() `EXTRACTED`
+- .new_with_backend() `EXTRACTED`
+- *…and 5 more `references` connection(s) not listed (lowest-degree first to go)*
 
 ---
 

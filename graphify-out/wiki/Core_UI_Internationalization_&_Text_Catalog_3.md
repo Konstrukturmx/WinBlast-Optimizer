@@ -1,11 +1,13 @@
 # Core UI Internationalization & Text Catalog
 
-> 28 nodes · cohesion 0.08
+> 30 nodes · cohesion 0.07
 
 ## Key Concepts
 
 - **power.rs** (60 connections) — `src/hardware/power.rs`
 - **fallback_scheme_name()** (6 connections) — `src/hardware/power.rs`
+- **set_usb_root_hub_power_saving()** (4 connections) — `src/hardware/power.rs`
+- **.set_usb_root_hub_power_saving()** (2 connections) — `src/core/backend.rs`
 - **resolve_indirect_string()** (2 connections) — `src/hardware/power.rs`
 - **strip_indirect_prefix()** (2 connections) — `src/hardware/power.rs`
 - **test_fallback_scheme_name_indirect_stripping()** (2 connections) — `src/hardware/power.rs`
@@ -27,32 +29,32 @@
 - **powerwritedcvalueindex** (1 connections)
 - **powerwritefriendlyname** (1 connections)
 - **powerwritevaluemax** (1 connections)
-- **powerwritevaluemin** (1 connections)
-- **system_power_capabilities** (1 connections)
-- *... and 3 more nodes in this community*
+- *... and 5 more nodes in this community*
 
 ## Relationships
 
-- [normalize_guid_str](normalize_guid_str.md) (20 shared connections)
+- [normalize_guid_str](normalize_guid_str.md) (18 shared connections)
+- [PowerSchemeInfo](PowerSchemeInfo.md) (4 shared connections)
 - [Startup Tasks & Auto-Run Explorer](Startup_Tasks_&_Auto-Run_Explorer.md) (3 shared connections)
 - [enums](enums.md) (2 shared connections)
-- [Disabled() Delete .Set](Disabled_Delete_.Set.md) (2 shared connections)
 - [deserialize](deserialize.md) (2 shared connections)
+- [RealBackend](RealBackend.md) (1 shared connections)
 - [backend.rs](backend.rs.md) (1 shared connections)
 - [Embedded Catalog Test](Embedded_Catalog_Test.md) (1 shared connections)
-- [super](super.md) (1 shared connections)
+- [svc_mutator.rs](svc_mutator.rs.md) (1 shared connections)
+- [Disabled() Delete .Set](Disabled_Delete_.Set.md) (1 shared connections)
+- [.Create Metrics Sampler()](Create_Metrics_Sampler.md) (1 shared connections)
 - [State Ledger & Restore Point Engine](State_Ledger_&_Restore_Point_Engine.md) (1 shared connections)
-- [app.rs](app.rs.md) (1 shared connections)
-- [RealBackend](RealBackend.md) (1 shared connections)
 
 ## Source Files
 
+- `src/core/backend.rs`
 - `src/hardware/power.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 64 (98%)
-- INFERRED: 1 (2%)
+- EXTRACTED: 68 (99%)
+- INFERRED: 1 (1%)
 - AMBIGUOUS: 0 (0%)
 
 ---

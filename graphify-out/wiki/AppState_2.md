@@ -1,6 +1,6 @@
 # AppState
 
-> God node · 333 connections · `src/app.rs`
+> God node · 334 connections · `src/app.rs`
 
 **Community:** [AppState](AppState.md)
 
@@ -17,15 +17,15 @@
 - ui/mod.rs `EXTRACTED`
 - startup_tasks.rs `EXTRACTED`
 - gpu_tuning.rs `EXTRACTED`
-- ui_scrollbar_test.rs `EXTRACTED`
+- [ui_scrollbar_test.rs](ui_scrollbar_test.rs.md) `EXTRACTED`
 - advanced_matrix.rs `EXTRACTED`
 - button.rs `EXTRACTED`
-- [privacy_shield.rs](privacy_shield.rs.md) `EXTRACTED`
+- privacy_shield.rs `EXTRACTED`
 - [diff_modal.rs](diff_modal.rs.md) `EXTRACTED`
 - driver_bios.rs `EXTRACTED`
 - hardware_view.rs `EXTRACTED`
 - views/gaming_stats.rs `EXTRACTED`
-- latency_bench.rs `EXTRACTED`
+- [latency_bench.rs](latency_bench.rs.md) `EXTRACTED`
 - automation_center.rs `EXTRACTED`
 - fault_diagnostics.rs `EXTRACTED`
 - views/game_prereqs.rs `EXTRACTED`
@@ -47,13 +47,13 @@
 - .refresh_restore_points() `EXTRACTED`
 - .is_tweak_compatible_and_applicable() `EXTRACTED`
 - .scan_clean_targets_async() `EXTRACTED`
-- .toggle_maintenance_task() `EXTRACTED`
-- .execute_auto_tune_profile() `EXTRACTED`
+- .set_live_service_start_async() `EXTRACTED`
 - .get_tweak_scan() `EXTRACTED`
 - .set_status() `EXTRACTED`
-- .download_and_install_update() `EXTRACTED`
 - .refresh_core_parking() `EXTRACTED`
-- *…and 111 more `method` connection(s) not listed (lowest-degree first to go)*
+- .rollback_entry() `EXTRACTED`
+- .refresh_latency() `EXTRACTED`
+- *…and 112 more `method` connection(s) not listed (lowest-degree first to go)*
 
 ### references
 - [SystemBackend](SystemBackend.md) `EXTRACTED`
@@ -61,17 +61,17 @@
 - [ThemePalette](ThemePalette.md) `EXTRACTED`
 - WorkerEvent `EXTRACTED`
 - action_button() `EXTRACTED`
-- Language `EXTRACTED`
 - TweakDefinition `EXTRACTED`
+- Language `EXTRACTED`
 - ActiveView `EXTRACTED`
 - action_button_guarded() `EXTRACTED`
 - view() `EXTRACTED`
 - TweakAction `EXTRACTED`
 - [UiThemeStyle](UiThemeStyle.md) `INFERRED`
-- StartupEntry `EXTRACTED`
 - ScanResult `EXTRACTED`
+- StartupEntry `EXTRACTED`
 - HibernationStatus `EXTRACTED`
-- [DriverCategory](DriverCategory.md) `EXTRACTED`
+- [DriverCategory](DriverCategory.md) `INFERRED`
 - CoreParkingState `EXTRACTED`
 - Changelog `EXTRACTED`
 - LatencyBenchmarkSnapshot `EXTRACTED`

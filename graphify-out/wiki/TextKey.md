@@ -44,12 +44,12 @@
 - gpu_tuning.rs `EXTRACTED`
 - advanced_matrix.rs `EXTRACTED`
 - button.rs `EXTRACTED`
-- [privacy_shield.rs](privacy_shield.rs.md) `EXTRACTED`
+- privacy_shield.rs `EXTRACTED`
 - [diff_modal.rs](diff_modal.rs.md) `EXTRACTED`
 - driver_bios.rs `EXTRACTED`
 - hardware_view.rs `EXTRACTED`
 - views/gaming_stats.rs `EXTRACTED`
-- latency_bench.rs `EXTRACTED`
+- [latency_bench.rs](latency_bench.rs.md) `EXTRACTED`
 - automation_center.rs `EXTRACTED`
 - views/game_prereqs.rs `EXTRACTED`
 - backup_center.rs `EXTRACTED`

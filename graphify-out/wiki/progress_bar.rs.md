@@ -22,9 +22,8 @@
 - [ThemePalette](ThemePalette.md) (8 shared connections)
 - [UiThemeStyle](UiThemeStyle.md) (7 shared connections)
 - [theme.rs](theme.rs.md) (6 shared connections)
-- [LayoutTier](LayoutTier.md) (4 shared connections)
+- [LayoutTier](LayoutTier.md) (5 shared connections)
 - [action_button](action_button.md) (2 shared connections)
-- [view](view.md) (1 shared connections)
 
 ## Source Files
 

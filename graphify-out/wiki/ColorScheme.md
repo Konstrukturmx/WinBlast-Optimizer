@@ -28,7 +28,7 @@
 - [UiThemeStyle](UiThemeStyle.md) (5 shared connections)
 - [AppState](AppState.md) (3 shared connections)
 - [app.rs](app.rs.md) (2 shared connections)
-- [view](view.md) (2 shared connections)
+- [LayoutTier](LayoutTier.md) (2 shared connections)
 - [theme.rs](theme.rs.md) (2 shared connections)
 - [View() Color Scrollspec](View_Color_Scrollspec.md) (2 shared connections)
 - [ThemePalette](ThemePalette.md) (2 shared connections)

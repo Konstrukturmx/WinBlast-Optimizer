@@ -37,7 +37,7 @@
 - [deserialize](deserialize.md) (2 shared connections)
 - [ColorScheme](ColorScheme.md) (2 shared connections)
 - [ThemePalette](ThemePalette.md) (2 shared connections)
-- [privacy_shield.rs](privacy_shield.rs.md) (1 shared connections)
+- [action_button](action_button.md) (1 shared connections)
 - [UiThemeStyle](UiThemeStyle.md) (1 shared connections)
 
 ## Source Files

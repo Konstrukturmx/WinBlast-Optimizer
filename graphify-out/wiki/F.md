@@ -1,18 +1,14 @@
-# Integration Suite: Tweak Sandbox E2E
+# F
 
 > 1 nodes · cohesion 1.00
 
 ## Key Concepts
 
-- **widgets/mod.rs** (0 connections) — `src/ui/widgets/mod.rs`
+- **F** (0 connections)
 
 ## Relationships
 
 - No strong cross-community connections detected
-
-## Source Files
-
-- `src/ui/widgets/mod.rs`
 
 ## Audit Trail
 

@@ -39,11 +39,11 @@ pub fn export_profile(
     if let Some(parent) = path.parent() {
         if !parent.as_os_str().is_empty() {
             std::fs::create_dir_all(parent)
-                .map_err(crate::core::error::WinBlastError::Registry)?;
+                .map_err(crate::core::error::WinBlastError::Io)?;
         }
     }
     let json = serde_json::to_string_pretty(&profile)?;
-    std::fs::write(path, json).map_err(crate::core::error::WinBlastError::Registry)?;
+    std::fs::write(path, json).map_err(crate::core::error::WinBlastError::Io)?;
     tracing::info!("Profile exported to {:?}", path);
     Ok(())
 }
@@ -52,7 +52,7 @@ pub fn export_profile(
 pub fn import_profile(
     path: &Path,
 ) -> crate::core::error::Result<Vec<String>> {
-    let content = std::fs::read_to_string(path).map_err(crate::core::error::WinBlastError::Registry)?;
+    let content = std::fs::read_to_string(path).map_err(crate::core::error::WinBlastError::Io)?;
     let profile: TweakProfile = serde_json::from_str(&content)?;
     tracing::info!("Profile imported from {:?}: {}", path, profile.name);
     Ok(profile.selected_tweak_ids)

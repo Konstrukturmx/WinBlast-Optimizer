@@ -34,17 +34,17 @@
 ## Relationships
 
 - [Restore Points() .List](Restore_Points_.List.md) (8 shared connections)
+- [WinBlast0 Architectural Specifications](WinBlast0_Architectural_Specifications.md) (6 shared connections)
 - [PdhParkingCollector](PdhParkingCollector.md) (5 shared connections)
-- [WinBlast0 Architectural Specifications](WinBlast0_Architectural_Specifications.md) (5 shared connections)
-- [Integration Suite: Tweak Sandbox E2E](Integration_Suite-_Tweak_Sandbox_E2E.md) (4 shared connections)
-- [Project Documentation, Architecture & Licensing](Project_Documentation,_Architecture_&_Licensing.md) (2 shared connections)
+- [restore_point.rs](restore_point.rs.md) (3 shared connections)
 - [AppX Package & Modern App Scanner](AppX_Package_&_Modern_App_Scanner.md) (2 shared connections)
+- [Project Documentation, Architecture & Licensing](Project_Documentation,_Architecture_&_Licensing.md) (1 shared connections)
 - [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (1 shared connections)
-- [super](super.md) (1 shared connections)
+- [.Create Metrics Sampler()](Create_Metrics_Sampler.md) (1 shared connections)
+- [Integration Suite: Tweak Sandbox E2E](Integration_Suite-_Tweak_Sandbox_E2E.md) (1 shared connections)
 - [SilentCommand](SilentCommand.md) (1 shared connections)
 - [deserialize](deserialize.md) (1 shared connections)
 - [Embedded Catalog Test](Embedded_Catalog_Test.md) (1 shared connections)
-- [.Reg .Set Power](Reg_.Set_Power.md) (1 shared connections)
 
 ## Source Files
 

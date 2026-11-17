@@ -31,12 +31,10 @@
 - [progress_bar.rs](progress_bar.rs.md) (7 shared connections)
 - [ColorScheme](ColorScheme.md) (5 shared connections)
 - [Spring](Spring.md) (4 shared connections)
-- [ThemePalette](ThemePalette.md) (3 shared connections)
+- [ThemePalette](ThemePalette.md) (4 shared connections)
 - [AppState](AppState.md) (2 shared connections)
-- [WinBlastScrollable](WinBlastScrollable.md) (1 shared connections)
+- [LayoutTier](LayoutTier.md) (2 shared connections)
 - [theme.rs](theme.rs.md) (1 shared connections)
-- [view](view.md) (1 shared connections)
-- [LayoutTier](LayoutTier.md) (1 shared connections)
 
 ## Source Files
 

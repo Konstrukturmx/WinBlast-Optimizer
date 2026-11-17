@@ -20,10 +20,11 @@
 
 ## Relationships
 
-- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (8 shared connections)
+- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (7 shared connections)
 - [backend.rs](backend.rs.md) (2 shared connections)
 - [AppState](AppState.md) (1 shared connections)
 - [Test Composite With()](Test_Composite_With.md) (1 shared connections)
+- [PlatformSecurityInfo](PlatformSecurityInfo.md) (1 shared connections)
 - [app.rs](app.rs.md) (1 shared connections)
 
 ## Source Files

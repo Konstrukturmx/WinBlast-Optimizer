@@ -476,9 +476,9 @@ pub fn set_startup_entry_enabled(entry: &StartupEntry, enable: bool) -> Result<(
             let hkcu = RegKey::predef(HKEY_CURRENT_USER);
             let (k, _) = hkcu
                 .create_subkey_with_flags(&entry.reg_path, KEY_READ | KEY_WRITE | KEY_WOW64_64KEY)
-                .map_err(WinBlastError::Registry)?;
+                .map_err(WinBlastError::from_reg_err)?;
             let state: u32 = if enable { 2 } else { 1 };
-            k.set_value("State", &state).map_err(WinBlastError::Registry)?;
+            k.set_value("State", &state).map_err(WinBlastError::from_reg_err)?;
             Ok(())
         }
         StartupSource::ScheduledTaskLogon => {
@@ -511,14 +511,14 @@ pub fn set_startup_entry_enabled(entry: &StartupEntry, enable: bool) -> Result<(
             );
             let (k, _) = root
                 .create_subkey_with_flags(&path, KEY_READ | KEY_WRITE | KEY_WOW64_64KEY)
-                .map_err(WinBlastError::Registry)?;
+                .map_err(WinBlastError::from_reg_err)?;
             let bytes = encode_startup_approved_bytes(enable);
             let val = RegValue {
                 bytes,
                 vtype: REG_BINARY,
             };
             k.set_raw_value(&entry.name, &val)
-                .map_err(WinBlastError::Registry)?;
+                .map_err(WinBlastError::from_reg_err)?;
             Ok(())
         }
     }
@@ -792,7 +792,7 @@ pub fn list_live_services() -> Result<Vec<LiveServiceInfo>> {
     let hklm = RegKey::predef(HKEY_LOCAL_MACHINE);
     let svc_root = hklm
         .open_subkey_with_flags("SYSTEM\\CurrentControlSet\\Services", KEY_READ | KEY_WOW64_64KEY)
-        .map_err(WinBlastError::Registry)?;
+        .map_err(WinBlastError::from_reg_err)?;
 
     let mut list = Vec::new();
     for name in svc_root.enum_keys().filter_map(|k| k.ok()) {

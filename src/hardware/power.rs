@@ -612,7 +612,7 @@ pub fn set_usb_root_hub_power_saving(disable_power_saving: bool) -> Result<usize
     let hklm = RegKey::predef(HKEY_LOCAL_MACHINE);
     let usb_root = hklm
         .open_subkey_with_flags("SYSTEM\\CurrentControlSet\\Enum\\USB", KEY_READ | KEY_WOW64_64KEY)
-        .map_err(WinBlastError::Registry)?;
+        .map_err(WinBlastError::from_reg_err)?;
 
     let mut updated = 0usize;
     let target_val: u32 = if disable_power_saving { 0 } else { 1 };
