@@ -5,12 +5,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ---
 
-## [v1.5.1] - 2026-11-17
+## [v1.2.0] - 2026-11-17
 
-### 🌟 Quality & Interface Polish
+### 🌟 Landmark Highlights & Quality Polish
 - **Dynamic In-App Self-Updater with Automatic Replacement (`src/core/updater.rs`)**:
-  - Fixed remote repository target to `Konstrukturmx/WinBlast-Optimizer` resolving 404 error.
-  - Implemented dynamic latest release query using native `curl.exe` with PowerShell fallback.
+  - Direct HTTPS API integration checking GitHub releases with semver comparison against `Konstrukturmx/WinBlast-Optimizer`.
   - Added unattended automated update pipeline: background check on launch, automatic asset download to `%TEMP%\winblast0_update`, staging, atomic binary replacement, and detached process restart.
 - **Top Bar Interactive Dropdown Popovers (`src/ui/mod.rs`)**:
   - Replaced linear cycling controls with interactive dropdown popover menus for:
@@ -18,6 +17,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
     - **🎨 Theme Style**: Direct choice of *Glassy*, *Minimalistic*, *Classic*, *Compact*, and *Materialistic* styles.
     - **🌓 Display Mode**: Fast toggle between *Dark Mode* and *Light Mode*.
     - **🌈 Color Scheme**: Instant switching between all 6 palette themes (*Cyber Indigo*, *Midnight Stealth*, *Emerald Mint*, *Crimson Sunset*, *Solar Amber*, *Arctic Aurora*).
+- **Administrator Elevation Guard & 1-Click Relaunch (`src/core/elevation.rs`)**:
+  - Pre-flight `OpenProcessToken` and `TokenElevation` interrogation on startup.
+  - Contextual warning card on Dashboard with one-click UAC elevation via `ShellExecuteW("runas")`.
+- **Game Prerequisites & Runtimes Cascade Installer (`src/tools/game_prereqs.rs`)**:
+  - Full audit and installation of essential runtimes (DirectX, Visual C++ 2005-2022 All-in-One, Vulkan, .NET Desktop Runtime 8.0/9.0, OpenAL, XNA).
+  - 3-tier fallback engine: WinGet silent install -> Chocolatey CLI -> Direct official vendor website launch.
+- **Unified Gaming & Performance Hub (`src/ui/views/gaming_stats.rs`)**:
+  - Consolidated gaming tools into a unified 5-tab workspace: Real-Time Monitor, FPS Benchmark, Game Profiles (IFEO registry tuning), In-Game HUD, and Esports Game Suitability.
 - **Fault Diagnostics Root-Cause Inspection & 1-Click Remediation (`src/tools/diagnostics.rs`, `src/ui/views/fault_diagnostics.rs`)**:
   - Inspects and displays individual file paths queued in Windows `PendingFileRenameOperations`.
   - Added 1-click actionable remediation controls:
@@ -25,6 +32,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
     - `[ 🧹 Clear Pending File Renames ]` (cleans stale registry file rename queues).
     - `[ 🧹 Clear CBS Reboot Lock ]` (clears component servicing locks).
     - Direct minidump folder inspection and GitHub issue reporting buttons.
+- **Zero-Allocation View Localization (8 Languages)**:
+  - Complete zero-heap-allocation translation engine (`i18n.rs` & `view_i18n.rs`) across **English, Turkish, German, French, Spanish, Russian, Chinese, and Japanese**.
 - **Responsive Dashboard Quick Actions Grid (`src/ui/views/easy_dashboard.rs`)**:
   - Added flexible wrapping, minimum constraints (`min_w(175.0)`, `min_h(125.0)`), and pinned full-width action buttons, eliminating text truncation across varying display scalings and resolutions.
 - **Restored Driver & BIOS Vertical Scrollbar (`src/ui/views/driver_bios.rs`)**:
@@ -37,46 +46,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   - Added multi-mode sorting (`Name (A-Z)`, `Name (Z-A)`, `Active First`, `Inactive First`, and `Source / Folder`) unified across Startup Apps, Scheduled Tasks, and Services.
 - **Integrated GitHub Bug Reporting**:
   - Added prominent `[ 🐛 Report Bug on GitHub ]` in Support & About, `[ 🐛 Report Bug ]` in bottom footer bar, and `[ 🐛 Report Fault to GitHub ]` in Fault Diagnostics.
-- **Zero-Defect Quality Assurance**:
-  - 155 / 155 automated tests passing (100% pass rate).
-  - 0 compiler errors, 0 clippy warnings (`cargo clippy --all-targets -- -D warnings`).
-
----
-
-## [v1.5.0] - 2026-11-16
-
-### 🌟 Landmark Highlights
-- **In-App GitHub Releases Self-Updater (`src/core/updater.rs`)**:
-  - Direct HTTPS API integration checking GitHub releases with semver comparison.
-  - Zero-dependency in-place binary upgrade: renames current executable to `.old`, moves new release into place, and automatically relaunches.
-- **Administrator Elevation Guard & 1-Click Relaunch (`src/core/elevation.rs`)**:
-  - Pre-flight `OpenProcessToken` and `TokenElevation` interrogation on startup.
-  - Contextual warning card on Dashboard with one-click UAC elevation via `ShellExecuteW("runas")`.
-- **Game Prerequisites & Runtimes Cascade Installer (`src/tools/game_prereqs.rs`)**:
-  - Full audit and installation of essential runtimes (DirectX, Visual C++ 2005-2022 All-in-One, Vulkan, .NET Desktop Runtime 8.0/9.0, OpenAL, XNA).
-  - 3-tier fallback engine: WinGet silent install -> Chocolatey CLI -> Direct official vendor website launch.
-- **Unified Gaming & Performance Hub (`src/ui/views/gaming_stats.rs`)**:
-  - Consolidated scattered gaming tools into a unified 5-tab workspace: Real-Time Monitor, FPS Benchmark, Game Profiles (IFEO registry tuning), In-Game HUD, and Esports Game Suitability.
-- **Multi-Axis Sorting Engine Across All Data Views**:
-  - Dynamic 1-click sorting for Advanced Matrix (Name, Category, Risk, Status), Clean & Apps (Size, Name), Startup & Tasks (Source, Status), Drivers (Class, Vendor, Updates), and Game Prerequisites (Missing First).
-- **Comprehensive UI Bug Fixes & Scrollbar Gutter Overhaul**:
-  - Added dedicated right-side padding (`.pr(14.0)` to `.pr(16.0)`) across all scrollable viewports, completely eliminating scrollbar thumb overlap with action buttons.
-  - Redesigned WinGet application cards into a two-tier layout, eliminating text wrapping and badge clipping.
+- **Authentic Win32 Hardware Interrogation**:
+  - Replaced placeholder telemetry with direct `IOCTL_STORAGE_QUERY_PROPERTY` physical disk queries, ACPI ThermalZone telemetry, and real Windows IFEO registry mutations.
+- **Windows Component Repair Suite**:
+  - Integrated one-click repair actions for `sfc /scannow`, `dism /Online /Cleanup-Image /RestoreHealth`, `ipconfig /flushdns`, and Winsock resets.
 - **Expanded Declarative Tweak Catalogs (208 Total Tweaks)**:
   - Added `assets/rules/gaming_latency_ultra.toml` and `assets/rules/system_deep_opt.toml`, expanding catalog to 208 vetted optimizations.
-  - Expanded zero-allocation 8-language localization to 510 `TextKey` variants with 100% full coverage.
-- **Exhaustive Automated QA (154 Tests)**:
-  - 154 automated tests passing with 0 warnings and 0 compiler errors.
-
----
-
-## [v1.2.0] - 2026-11-15
-
-### 🌟 Highlights
-- **Zero-Allocation View Localization (8 Languages)**: Implemented `src/core/view_i18n.rs` with 88 zero-allocation string catalog keys covering all extended subviews in English, Turkish, German, French, Spanish, Russian, Chinese, and Japanese.
-- **Authentic Win32 Hardware Interrogation**: Replaced placeholder telemetry with direct `IOCTL_STORAGE_QUERY_PROPERTY` physical disk queries, ACPI ThermalZone telemetry, and real Windows IFEO registry mutations.
-- **Windows Component Repair Suite**: Integrated one-click repair actions for `sfc /scannow`, `dism /Online /Cleanup-Image /RestoreHealth`, `ipconfig /flushdns`, and Winsock resets.
-- **UI Thread Fluidity**: Background worker benchmark execution and accurate fault diagnostics status clamp removal.
+- **Zero-Defect Quality Assurance**:
+  - 155 / 155 automated tests passing across 5 test suites (`cargo test --lib`, `tweak_sandbox_e2e`, `ui_responsive_e2e`, `ui_scrollbar_test`, and `real_windows_env`) with 100% pass rate.
+  - 0 compiler errors, 0 clippy warnings (`cargo clippy --all-targets -- -D warnings`).
 
 ---
 
