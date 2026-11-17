@@ -721,6 +721,7 @@ fn build_appx_features_body(s: &AppState, p: &ThemePalette, tier: LayoutTier) ->
             .max_h(170.0)
             .min_w(0.0)
             .pr(14.0)
+            .clip_soft(0.0)
             .scroll(ScrollSpec { stick_bottom: false })
             .child(feat_col)
             .winblast_scroll(p)

@@ -47,6 +47,20 @@ impl Language {
             Language::Japanese => "日本語",
         }
     }
+
+    /// Two-letter ISO language code.
+    pub const fn code(self) -> &'static str {
+        match self {
+            Language::English => "en",
+            Language::Turkish => "tr",
+            Language::German => "de",
+            Language::French => "fr",
+            Language::Spanish => "es",
+            Language::Russian => "ru",
+            Language::Chinese => "zh",
+            Language::Japanese => "ja",
+        }
+    }
 }
 
 /// Strongly-typed string catalog keys for complete UI coverage.

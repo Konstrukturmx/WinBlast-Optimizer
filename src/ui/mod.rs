@@ -558,11 +558,11 @@ pub fn view(s: &AppState, cx: &mut Cx<AppState>) -> El {
     let mut controls_group = row()
         .min_w(0.0)
         .shrink()
-        .flex_wrap()
         .items_center()
-        .gaps(6.0, 6.0)
+        .gap(6.0)
         .child(
             row()
+                .key("topbar_lang_btn")
                 .min_w(0.0)
                 .shrink()
                 .px(8.0)
@@ -581,15 +581,19 @@ pub fn view(s: &AppState, cx: &mut Cx<AppState>) -> El {
                     };
                 })
                 .child(
-                    text(format!("🌐 {} ▾", s.language.label()))
-                        .font(rune::tok::type_::LABEL)
-                        .color(p.text_primary)
-                        .shrink()
-                        .wrap(),
+                    text(format!("🌐 {} ▾", if tier == LayoutTier::Compact {
+                        s.language.code().to_uppercase()
+                    } else {
+                        s.language.label().to_string()
+                    }))
+                    .font(rune::tok::type_::LABEL)
+                    .color(p.text_primary)
+                    .shrink(),
                 ),
         )
         .child(
             row()
+                .key("topbar_theme_mode_btn")
                 .min_w(0.0)
                 .shrink()
                 .px(8.0)
@@ -615,16 +619,11 @@ pub fn view(s: &AppState, cx: &mut Cx<AppState>) -> El {
                     }))
                     .font(rune::tok::type_::LABEL)
                     .color(p.text_primary)
-                    .shrink()
-                    .wrap(),
+                    .shrink(),
                 ),
         );
 
-    let theme_btn_label = if tier == LayoutTier::Compact {
-        s.theme_style.short_label()
-    } else {
-        s.theme_style.label()
-    };
+    let theme_btn_label = s.theme_style.short_label();
 
     controls_group = controls_group.child(
         row()
@@ -634,21 +633,21 @@ pub fn view(s: &AppState, cx: &mut Cx<AppState>) -> El {
             .px(8.0)
             .py(4.0)
             .radius(p.btn_radius)
-            .fill(p.accent.alpha(0.18))
-            .border(p.border_width, p.accent.alpha(0.60))
+            .fill(if s.active_dropdown == crate::app::ActiveDropdown::ThemeStyle {
+                p.accent.alpha(0.20)
+            } else {
+                p.accent.alpha(0.18)
+            })
+            .border(p.border_width, if s.active_dropdown == crate::app::ActiveDropdown::ThemeStyle {
+                p.accent
+            } else {
+                p.accent.alpha(0.60)
+            })
             .hover(p.accent.alpha(0.30))
             .press(p.accent.alpha(0.45))
             .motion(p.motion)
             .center()
             .on_press(|s: &mut AppState| {
-                let next = match s.theme_style {
-                    crate::ui::theme::UiThemeStyle::Glassy => crate::ui::theme::UiThemeStyle::Minimalistic,
-                    crate::ui::theme::UiThemeStyle::Minimalistic => crate::ui::theme::UiThemeStyle::Classic,
-                    crate::ui::theme::UiThemeStyle::Classic => crate::ui::theme::UiThemeStyle::Compact,
-                    crate::ui::theme::UiThemeStyle::Compact => crate::ui::theme::UiThemeStyle::Materialistic,
-                    crate::ui::theme::UiThemeStyle::Materialistic => crate::ui::theme::UiThemeStyle::Glassy,
-                };
-                s.set_theme_style(next);
                 s.active_dropdown = if s.active_dropdown == crate::app::ActiveDropdown::ThemeStyle {
                     crate::app::ActiveDropdown::None
                 } else {
@@ -656,11 +655,10 @@ pub fn view(s: &AppState, cx: &mut Cx<AppState>) -> El {
                 };
             })
             .child(
-                text(format!("{} ▾", theme_btn_label))
+                text(format!("🎨 {} ▾", theme_btn_label))
                     .font(rune::tok::type_::LABEL)
                     .color(p.accent)
-                    .shrink()
-                    .wrap(),
+                    .shrink(),
             ),
     );
 
@@ -668,6 +666,7 @@ pub fn view(s: &AppState, cx: &mut Cx<AppState>) -> El {
         controls_group = controls_group
             .child(
                 row()
+                    .key("topbar_color_scheme_btn")
                     .min_w(0.0)
                     .shrink()
                     .px(8.0)
@@ -689,22 +688,20 @@ pub fn view(s: &AppState, cx: &mut Cx<AppState>) -> El {
                         text(format!("{} ▾", s.tr(s.color_scheme.text_key())))
                             .font(rune::tok::type_::LABEL)
                             .color(p.accent)
-                            .shrink()
-                            .wrap(),
+                            .shrink(),
                     ),
             )
             .child(
                 row()
                     .min_w(0.0)
                     .shrink()
-                    .flex_wrap()
                     .padding(2.0)
                     .radius(7.0)
                     .fill(p.bg_primary)
                     .border(1.0, p.border)
                     .gap(3.0)
                     .child(mode_tab(
-                        s.tr(TextKey::EasyMode),
+                        if tier == LayoutTier::Medium { "Dashboard" } else { s.tr(TextKey::EasyMode) },
                         s.mode == AppMode::Easy,
                         p,
                         |s| {
@@ -713,7 +710,7 @@ pub fn view(s: &AppState, cx: &mut Cx<AppState>) -> El {
                         },
                     ))
                     .child(mode_tab(
-                        s.tr(TextKey::AdvancedMatrix),
+                        if tier == LayoutTier::Medium { "Matrix" } else { s.tr(TextKey::AdvancedMatrix) },
                         s.mode == AppMode::Advanced,
                         p,
                         |s| {
@@ -726,14 +723,13 @@ pub fn view(s: &AppState, cx: &mut Cx<AppState>) -> El {
                 row()
                     .min_w(0.0)
                     .shrink()
-                    .flex_wrap()
                     .padding(2.0)
                     .radius(7.0)
                     .fill(p.bg_primary)
                     .border(1.0, p.border)
                     .gap(3.0)
                     .child(mode_tab(
-                        s.tr(TextKey::InstantMode),
+                        "Instant",
                         s.engine_mode == EngineMode::Instant,
                         p,
                         |s| {
@@ -743,7 +739,7 @@ pub fn view(s: &AppState, cx: &mut Cx<AppState>) -> El {
                         },
                     ))
                     .child(mode_tab(
-                        s.tr(TextKey::NormalMode),
+                        "Normal",
                         s.engine_mode == EngineMode::Normal,
                         p,
                         |s| {
@@ -755,120 +751,107 @@ pub fn view(s: &AppState, cx: &mut Cx<AppState>) -> El {
             );
     }
 
-    if tier != LayoutTier::Compact {
+    if tier == LayoutTier::Wide {
         if let Some(ref m) = s.realtime_metrics {
-            controls_group = controls_group
-                .child(
-                    row()
-                        .min_w(0.0)
-                        .shrink()
-                        .px(7.0)
-                        .py(3.0)
-                        .radius(4.0)
-                        .fill(p.bg_card)
-                        .border(1.0, p.border)
-                        .child(
-                            text(format!("CPU: {:.1}%", m.cpu_usage))
-                                .font(rune::tok::type_::LABEL)
-                                .color(p.sparkline_cpu)
-                                .shrink()
-                                .wrap(),
-                        ),
-                )
-                .child(
-                    row()
-                        .min_w(0.0)
-                        .shrink()
-                        .px(7.0)
-                        .py(3.0)
-                        .radius(4.0)
-                        .fill(p.bg_card)
-                        .border(1.0, p.border)
-                        .child(
-                            text(format!("RAM: {:.1}%", m.ram_percentage))
-                                .font(rune::tok::type_::LABEL)
-                                .color(p.sparkline_ram)
-                                .shrink()
-                                .wrap(),
-                        ),
-                );
-        }
-
-        controls_group = controls_group
-            .child(
+            controls_group = controls_group.child(
                 row()
                     .min_w(0.0)
                     .shrink()
-                    .px(8.0)
-                    .py(4.0)
-                    .radius(5.0)
+                    .px(7.0)
+                    .py(3.0)
+                    .radius(4.0)
                     .fill(p.bg_card)
                     .border(1.0, p.border)
                     .child(
-                        text(os_desc)
+                        text(format!("CPU: {:.0}% • RAM: {:.0}%", m.cpu_usage, m.ram_percentage))
                             .font(rune::tok::type_::LABEL)
                             .color(p.text_secondary)
-                            .shrink()
-                            .wrap(),
-                    ),
-            )
-            .child(
-                row()
-                    .min_w(0.0)
-                    .shrink()
-                    .px(8.0)
-                    .py(4.0)
-                    .radius(5.0)
-                    .fill(if is_elevated {
-                        p.success.alpha(0.18)
-                    } else {
-                        p.warning.alpha(0.25)
-                    })
-                    .hover(if is_elevated {
-                        p.success.alpha(0.25)
-                    } else {
-                        p.warning.alpha(0.4)
-                    })
-                    .border(
-                        1.0,
-                        if is_elevated {
-                            p.success.alpha(0.5)
-                        } else {
-                            p.warning.alpha(0.7)
-                        },
-                    )
-                    .on_press(move |s: &mut AppState| {
-                        if !is_elevated {
-                            s.relaunch_elevated();
-                        }
-                    })
-                    .child(
-                        text(if is_elevated {
-                            s.tr(TextKey::AdminElevated).to_string()
-                        } else {
-                            format!("{} (Yönetici Başlat ↗)", s.tr(TextKey::AdminStandard))
-                        })
-                        .font(rune::tok::type_::LABEL)
-                        .color(if is_elevated { p.success } else { p.warning })
-                        .shrink()
-                        .wrap(),
+                            .shrink(),
                     ),
             );
+        }
+
+        controls_group = controls_group.child(
+            row()
+                .min_w(0.0)
+                .shrink()
+                .px(8.0)
+                .py(4.0)
+                .radius(5.0)
+                .fill(p.bg_card)
+                .border(1.0, p.border)
+                .child(
+                    text(os_desc)
+                        .font(rune::tok::type_::LABEL)
+                        .color(p.text_secondary)
+                        .shrink(),
+                ),
+        );
     }
+
+    controls_group = controls_group.child(
+        row()
+            .key("topbar_admin_badge")
+            .min_w(0.0)
+            .shrink()
+            .px(8.0)
+            .py(4.0)
+            .radius(5.0)
+            .fill(if is_elevated {
+                p.success.alpha(0.18)
+            } else {
+                p.warning.alpha(0.25)
+            })
+            .hover(if is_elevated {
+                p.success.alpha(0.25)
+            } else {
+                p.warning.alpha(0.4)
+            })
+            .border(
+                1.0,
+                if is_elevated {
+                    p.success.alpha(0.5)
+                } else {
+                    p.warning.alpha(0.7)
+                },
+            )
+            .on_press(move |s: &mut AppState| {
+                if !is_elevated {
+                    s.relaunch_elevated();
+                }
+            })
+            .child(
+                text(if is_elevated {
+                    if tier == LayoutTier::Compact {
+                        "Elevated ✓".to_string()
+                    } else {
+                        s.tr(TextKey::AdminElevated).to_string()
+                    }
+                } else if tier == LayoutTier::Compact {
+                    "Admin ↗".to_string()
+                } else {
+                    format!("{} (↗)", s.tr(TextKey::AdminStandard))
+                })
+                .font(rune::tok::type_::LABEL)
+                .color(if is_elevated { p.success } else { p.warning })
+                .shrink(),
+            ),
+    );
 
     let top_bar = row()
         .key("top_bar")
         .w_full()
         .min_w(0.0)
+        .h(44.0)
         .min_h(44.0)
+        .max_h(44.0)
         .px(12.0)
-        .py(6.0)
+        .py(4.0)
         .fill(p.bg_sidebar)
         .border(1.0, p.border)
-        .flex_wrap()
         .justify_between()
         .items_center()
-        .gaps(6.0, 10.0)
+        .gap(8.0)
         .child(brand_group)
         .child(controls_group);
 
@@ -1318,9 +1301,9 @@ pub fn view(s: &AppState, cx: &mut Cx<AppState>) -> El {
 }
 
 /// Floating dropdown menu for top bar controls (Language, Theme Mode, Theme Style, Color Scheme).
-fn build_dropdown_overlay(s: &AppState, p: &ThemePalette, tier: LayoutTier) -> El {
+fn build_dropdown_overlay(s: &AppState, p: &ThemePalette, _tier: LayoutTier) -> El {
     use crate::app::ActiveDropdown;
-    let content = match s.active_dropdown {
+    let (anchor_key, content) = match s.active_dropdown {
         ActiveDropdown::None => return el(),
         ActiveDropdown::Language => {
             let languages = [
@@ -1365,32 +1348,35 @@ fn build_dropdown_overlay(s: &AppState, p: &ThemePalette, tier: LayoutTier) -> E
                         ),
                 );
             }
-            col()
-                .w(230.0)
-                .padding(8.0)
-                .radius(8.0)
-                .fill(p.bg_card)
-                .border(1.0, p.border)
-                .child(
-                    row()
-                        .w_full()
-                        .pb(6.0)
-                        .justify_between()
-                        .items_center()
-                        .child(text("🌐 Select Language").font(rune::tok::type_::LABEL).color(p.text_muted))
-                        .child(
-                            action_button("✕", Color::TRANSPARENT, p.text_muted, p, |s| s.active_dropdown = ActiveDropdown::None),
-                        ),
-                )
-                .child(list)
+            (
+                "topbar_lang_btn",
+                col()
+                    .w(230.0)
+                    .padding(8.0)
+                    .radius(8.0)
+                    .fill(p.bg_card)
+                    .border(1.0, p.border)
+                    .child(
+                        row()
+                            .w_full()
+                            .pb(6.0)
+                            .justify_between()
+                            .items_center()
+                            .child(text("🌐 Select Language").font(rune::tok::type_::LABEL).color(p.text_muted))
+                            .child(
+                                action_button("✕", Color::TRANSPARENT, p.text_muted, p, |s| s.active_dropdown = ActiveDropdown::None),
+                            ),
+                    )
+                    .child(list),
+            )
         }
         ActiveDropdown::ThemeStyle => {
             let styles = [
-                (crate::ui::theme::UiThemeStyle::Glassy, "✨ Glassy (Mica / Acrylic)"),
-                (crate::ui::theme::UiThemeStyle::Minimalistic, "◻ Minimalistic (Flat Edge)"),
-                (crate::ui::theme::UiThemeStyle::Classic, "🗔 Classic (Windows Native)"),
-                (crate::ui::theme::UiThemeStyle::Compact, "☰ Compact (High Density)"),
-                (crate::ui::theme::UiThemeStyle::Materialistic, "📐 Materialistic (Card Elevated)"),
+                (crate::ui::theme::UiThemeStyle::Glassy, "💎 Glassy (Mica / Acrylic)"),
+                (crate::ui::theme::UiThemeStyle::Minimalistic, "📐 Minimalistic (Flat Swiss)"),
+                (crate::ui::theme::UiThemeStyle::Classic, "🖥️ Classic (Win2000 Retro)"),
+                (crate::ui::theme::UiThemeStyle::Compact, "⚡ Compact (High Density)"),
+                (crate::ui::theme::UiThemeStyle::Materialistic, "🎨 Materialistic (MD3 Expressive)"),
             ];
             let mut list = col().gap(2.0).w_full();
             for (st, label) in styles {
@@ -1414,24 +1400,27 @@ fn build_dropdown_overlay(s: &AppState, p: &ThemePalette, tier: LayoutTier) -> E
                         .child(text(if is_sel { "✓" } else { "" }).font(rune::tok::type_::TITLE).color(p.accent)),
                 );
             }
-            col()
-                .w(250.0)
-                .padding(8.0)
-                .radius(8.0)
-                .fill(p.bg_card)
-                .border(1.0, p.border)
-                .child(
-                    row()
-                        .w_full()
-                        .pb(6.0)
-                        .justify_between()
-                        .items_center()
-                        .child(text("🎨 Theme Style").font(rune::tok::type_::LABEL).color(p.text_muted))
-                        .child(
-                            action_button("✕", Color::TRANSPARENT, p.text_muted, p, |s| s.active_dropdown = ActiveDropdown::None),
-                        ),
-                )
-                .child(list)
+            (
+                "theme_style_selector",
+                col()
+                    .w(260.0)
+                    .padding(8.0)
+                    .radius(8.0)
+                    .fill(p.bg_card)
+                    .border(1.0, p.border)
+                    .child(
+                        row()
+                            .w_full()
+                            .pb(6.0)
+                            .justify_between()
+                            .items_center()
+                            .child(text("🎨 Theme Style").font(rune::tok::type_::LABEL).color(p.text_muted))
+                            .child(
+                                action_button("✕", Color::TRANSPARENT, p.text_muted, p, |s| s.active_dropdown = ActiveDropdown::None),
+                            ),
+                    )
+                    .child(list),
+            )
         }
         ActiveDropdown::ThemeMode => {
             let modes = [
@@ -1443,6 +1432,7 @@ fn build_dropdown_overlay(s: &AppState, p: &ThemePalette, tier: LayoutTier) -> E
                 let is_sel = s.theme_mode == m;
                 list = list.child(
                     row()
+                        .key(format!("dropdown_mode_{:?}", m))
                         .w_full()
                         .px(10.0)
                         .py(6.0)
@@ -1459,24 +1449,27 @@ fn build_dropdown_overlay(s: &AppState, p: &ThemePalette, tier: LayoutTier) -> E
                         .child(text(if is_sel { "✓" } else { "" }).font(rune::tok::type_::TITLE).color(p.accent)),
                 );
             }
-            col()
-                .w(180.0)
-                .padding(8.0)
-                .radius(8.0)
-                .fill(p.bg_card)
-                .border(1.0, p.border)
-                .child(
-                    row()
-                        .w_full()
-                        .pb(6.0)
-                        .justify_between()
-                        .items_center()
-                        .child(text("🌓 Display Mode").font(rune::tok::type_::LABEL).color(p.text_muted))
-                        .child(
-                            action_button("✕", Color::TRANSPARENT, p.text_muted, p, |s| s.active_dropdown = ActiveDropdown::None),
-                        ),
-                )
-                .child(list)
+            (
+                "topbar_theme_mode_btn",
+                col()
+                    .w(180.0)
+                    .padding(8.0)
+                    .radius(8.0)
+                    .fill(p.bg_card)
+                    .border(1.0, p.border)
+                    .child(
+                        row()
+                            .w_full()
+                            .pb(6.0)
+                            .justify_between()
+                            .items_center()
+                            .child(text("🌓 Display Mode").font(rune::tok::type_::LABEL).color(p.text_muted))
+                            .child(
+                                action_button("✕", Color::TRANSPARENT, p.text_muted, p, |s| s.active_dropdown = ActiveDropdown::None),
+                            ),
+                    )
+                    .child(list),
+            )
         }
         ActiveDropdown::ColorScheme => {
             let schemes = [
@@ -1492,6 +1485,7 @@ fn build_dropdown_overlay(s: &AppState, p: &ThemePalette, tier: LayoutTier) -> E
                 let is_sel = s.color_scheme == cs;
                 list = list.child(
                     row()
+                        .key(format!("dropdown_scheme_{:?}", cs))
                         .w_full()
                         .px(10.0)
                         .py(6.0)
@@ -1508,34 +1502,33 @@ fn build_dropdown_overlay(s: &AppState, p: &ThemePalette, tier: LayoutTier) -> E
                         .child(text(if is_sel { "✓" } else { "" }).font(rune::tok::type_::TITLE).color(p.accent)),
                 );
             }
-            col()
-                .w(200.0)
-                .padding(8.0)
-                .radius(8.0)
-                .fill(p.bg_card)
-                .border(1.0, p.border)
-                .child(
-                    row()
-                        .w_full()
-                        .pb(6.0)
-                        .justify_between()
-                        .items_center()
-                        .child(text("🌈 Color Scheme").font(rune::tok::type_::LABEL).color(p.text_muted))
-                        .child(
-                            action_button("✕", Color::TRANSPARENT, p.text_muted, p, |s| s.active_dropdown = ActiveDropdown::None),
-                        ),
-                )
-                .child(list)
+            (
+                "topbar_color_scheme_btn",
+                col()
+                    .w(200.0)
+                    .padding(8.0)
+                    .radius(8.0)
+                    .fill(p.bg_card)
+                    .border(1.0, p.border)
+                    .child(
+                        row()
+                            .w_full()
+                            .pb(6.0)
+                            .justify_between()
+                            .items_center()
+                            .child(text("🌈 Color Scheme").font(rune::tok::type_::LABEL).color(p.text_muted))
+                            .child(
+                                action_button("✕", Color::TRANSPARENT, p.text_muted, p, |s| s.active_dropdown = ActiveDropdown::None),
+                            ),
+                    )
+                    .child(list),
+            )
         }
     };
 
     col()
         .key("topbar_dropdown_card")
-        .pin(
-            Some(50.0),
-            if tier == LayoutTier::Compact { Some(8.0) } else { Some(20.0) },
-            None,
-            None,
-        )
         .child(content)
+        .modal(true, |s: &mut AppState| s.active_dropdown = crate::app::ActiveDropdown::None)
+        .anchored_fit(anchor_key, rune::Side::Bottom, rune::Align::Start, 4.0)
 }
