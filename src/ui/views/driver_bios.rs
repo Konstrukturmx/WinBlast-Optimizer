@@ -15,9 +15,10 @@ use crate::ui::widgets::button::{action_button, action_button_guarded};
 use crate::ui::widgets::scrollbar::WinBlastScrollable;
 use crate::ui::LayoutTier;
 
-pub fn view(s: &AppState, _tier: LayoutTier) -> El {
+pub fn view(s: &AppState, tier: LayoutTier) -> El {
     let p = s.palette();
     let style = s.theme_style;
+    let is_compact = tier == LayoutTier::Compact;
     let bios = s.bios_info.clone().unwrap_or_else(BiosSystemInfo::probe);
 
     let sb_badge_color = if bios.secure_boot { p.success } else { p.warning };
@@ -321,7 +322,7 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                                     ),
                             );
                         } else {
-                            for item in filtered_drivers {
+                            for item in &filtered_drivers {
                                 let is_busy = s.driver_install_in_flight.as_deref() == Some(&item.id);
                                 let (badge_text, badge_color) = match item.state {
                                     DriverUpdateState::Installed => (s.tr(TextKey::DriverInstalledSuccess), p.success),
@@ -460,12 +461,23 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                             }
                         }
 
+                        let list_height = if filtered_drivers.len() <= 3 {
+                            (filtered_drivers.len() as f32 * 68.0).max(130.0)
+                        } else if is_compact {
+                            300.0
+                        } else {
+                            380.0
+                        };
+
                         col()
+                            .key("driver_updates_scroll")
                             .w_full()
                             .min_w(0.0)
-                            .max_h(460.0)
+                            .h(list_height)
+                            .min_h(120.0)
                             .padding(2.0)
                             .pr(8.0)
+                            .clip_soft(0.0)
                             .scroll(ScrollSpec { stick_bottom: false })
                             .winblast_scroll(p)
                             .child(driver_list)

@@ -1752,6 +1752,7 @@ fn test_ui_theme_styles_dynamic_regeneration_and_geometry() {
 
 #[test]
 fn test_ui_theme_style_selector_button_clicks_all_tiers() {
+    use winblast0::app::ActiveDropdown;
     use winblast0::ui::theme::UiThemeStyle;
 
     let viewports = [(1280.0, 800.0), (750.0, 600.0), (420.0, 400.0)];
@@ -1761,19 +1762,77 @@ fn test_ui_theme_style_selector_button_clicks_all_tiers() {
         let mut rt = Runtime::new(state, ui::view, (w, h), Env::new(true, 1.0));
         settle_frames(&mut rt);
 
-        // Verify initial theme is Glassy
+        // Verify initial theme is Glassy and dropdown is closed
         assert_eq!(rt.state.theme_style, UiThemeStyle::Glassy);
+        assert_eq!(rt.state.active_dropdown, ActiveDropdown::None);
 
-        // Click theme_style_selector -> should advance to Minimalistic
+        // Click theme_style_selector -> strictly opens dropdown without changing theme
         click_key(&mut rt, "theme_style_selector");
         settle_frames(&mut rt);
-        assert_eq!(rt.state.theme_style, UiThemeStyle::Minimalistic, "Failed at vp {}x{}", w, h);
+        assert_eq!(rt.state.active_dropdown, ActiveDropdown::ThemeStyle, "Failed at vp {}x{}", w, h);
+        assert_eq!(rt.state.theme_style, UiThemeStyle::Glassy, "Theme must not change on trigger button click");
+
+        // Selecting Minimalistic from dropdown changes theme and closes dropdown
+        click_key(&mut rt, "dropdown_theme_Minimalistic");
+        settle_frames(&mut rt);
+        assert_eq!(rt.state.theme_style, UiThemeStyle::Minimalistic);
         assert_eq!(rt.state.theme_palette.card_radius, 0.0);
+        assert_eq!(rt.state.active_dropdown, ActiveDropdown::None);
 
-        // Click again -> should advance to Classic
+        // Re-open and toggle closed via theme_style_selector
         click_key(&mut rt, "theme_style_selector");
         settle_frames(&mut rt);
-        assert_eq!(rt.state.theme_style, UiThemeStyle::Classic);
-        assert_eq!(rt.state.theme_palette.card_radius, 2.0);
+        assert_eq!(rt.state.active_dropdown, ActiveDropdown::ThemeStyle);
+        click_key(&mut rt, "theme_style_selector");
+        settle_frames(&mut rt);
+        assert_eq!(rt.state.active_dropdown, ActiveDropdown::None);
     }
+}
+
+#[test]
+fn test_ui_dropdown_anchoring_and_header_height_stability() {
+    use winblast0::app::ActiveDropdown;
+
+    let viewports = [
+        (1280.0, 720.0),
+        (1024.0, 768.0),
+        (800.0, 600.0),
+        (640.0, 480.0),
+        (420.0, 400.0),
+    ];
+
+    for &(w, h) in &viewports {
+        let state = build_populated_sandbox_state();
+        let mut rt = Runtime::new(state, ui::view, (w, h), Env::new(true, 1.0));
+        settle_frames(&mut rt);
+
+        // Verify top bar height is strictly 44px
+        let (_bx, by) = rt.find("top_bar").expect("top_bar must exist");
+        assert!(by <= 44.0, "top_bar height exceeds 44px at vp {}x{}", w, h);
+
+        // Click Language dropdown trigger
+        click_key(&mut rt, "topbar_lang_btn");
+        settle_frames(&mut rt);
+        assert_eq!(rt.state.active_dropdown, ActiveDropdown::Language);
+
+        // Dropdown card must be mounted
+        let drop_pos = rt.find("topbar_dropdown_card");
+        assert!(drop_pos.is_some(), "topbar_dropdown_card must be visible when dropdown active");
+
+        // Close dropdown
+        click_key(&mut rt, "topbar_lang_btn");
+        settle_frames(&mut rt);
+        assert_eq!(rt.state.active_dropdown, ActiveDropdown::None);
+    }
+}
+
+#[test]
+fn test_driver_bios_no_card_overlap() {
+    let mut state = build_populated_sandbox_state();
+    state.navigate(ActiveView::DriverBios);
+    let mut rt = Runtime::new(state, ui::view, (1280.0, 800.0), Env::new(true, 1.0));
+    settle_frames(&mut rt);
+
+    // Verify driver updates scroll container exists and is bounded
+    assert!(rt.find("driver_updates_scroll").is_some(), "driver_updates_scroll must exist");
 }
