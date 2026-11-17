@@ -77,3 +77,9 @@ lto = "thin"
 codegen-units = 1
 strip = true
 
+[patch.crates-io]
+parley_engine = { path = "C:/Hive/rune-framework/vendor/parley_engine" }
+wgpu-hal = { path = "C:/Hive/rune-framework/vendor/wgpu-hal" }
+winit = { path = "C:/Hive/rune-framework/vendor/winit" }
+accesskit_windows = { path = "C:/Hive/rune-framework/vendor/accesskit_windows" }
+
