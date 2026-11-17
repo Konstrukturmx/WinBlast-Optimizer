@@ -28,7 +28,9 @@ use crate::hardware::parking::CoreParkingState;
 use crate::hardware::power::{HibernationStatus, PowerSchemeInfo};
 use crate::hardware::sys_inventory::{PlatformSecurityInfo, RamDimmInfo, StorageVolumeInfo};
 use crate::scanner::telemetry_scanner::{full_telemetry_audit_with, TelemetryAuditResult, KNOWN_TELEMETRY_SERVICES, TELEMETRY_HOSTS};
-use crate::scanner::{run_full_scan_with, scan_single_tweak_with, ScanResult, TweakState};
+use crate::scanner::{
+    scan_all_tweaks_parallel_with, scan_single_tweak_with, ScanResult, TweakState,
+};
 use crate::tools::autounattend::{generate_autounattend_xml, UnattendOptions};
 use crate::tools::cleaner::{CleanExecutionReport, CleanTargetKind, CleanTargetScan};
 use crate::tools::features_apps::{InstalledAppxPackage, WindowsOptionalFeature};
@@ -2281,6 +2283,11 @@ impl AppState {
         self.run_scan_internal();
     }
 
+    /// Trigger a full multi-threaded parallel system scan in the background (Milestone 1).
+    pub fn trigger_full_scan(&mut self) {
+        self.start_scan();
+    }
+
     /// Force a fresh system scan, bumping the epoch so any older in-flight scan is discarded.
     pub fn force_scan(&mut self) {
         self.run_scan_internal();
@@ -2310,7 +2317,7 @@ impl AppState {
             self.waker.clone(),
             move |msg| WorkerEvent::ScanFailed { epoch, error: msg },
             move |tx| {
-                let results = run_full_scan_with(&*backend, &tweaks, build, &edition);
+                let results = scan_all_tweaks_parallel_with(&*backend, &tweaks, build, &edition);
                 let _ = tx.send(WorkerEvent::ScanCompleted { epoch, results });
             },
         );

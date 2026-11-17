@@ -1,13 +1,10 @@
 # DriverCategory
 
-> 17 nodes · cohesion 0.12
+> 14 nodes · cohesion 0.14
 
 ## Key Concepts
 
 - **DriverCategory** (22 connections) — `src/hardware/driver_update.rs`
-- **.all_physical()** (4 connections) — `src/hardware/driver_update.rs`
-- **test_all_categories_have_guid()** (2 connections) — `src/hardware/driver_update.rs`
-- **test_all_categories_have_icon_and_name()** (2 connections) — `src/hardware/driver_update.rs`
 - **Audio** (1 connections) — `src/hardware/driver_update.rs`
 - **Biometric** (1 connections) — `src/hardware/driver_update.rs`
 - **Bluetooth** (1 connections) — `src/hardware/driver_update.rs`
@@ -24,10 +21,11 @@
 
 ## Relationships
 
-- [driver_update.rs](driver_update.rs.md) (7 shared connections)
-- [DriverUpdateItem](DriverUpdateItem.md) (2 shared connections)
-- [AppState](AppState.md) (1 shared connections)
+- [scan_class_registry](scan_class_registry.md) (4 shared connections)
+- [driver_update.rs](driver_update.rs.md) (2 shared connections)
+- [DriverError](DriverError.md) (1 shared connections)
 - [LayoutTier](LayoutTier.md) (1 shared connections)
+- [AppState](AppState.md) (1 shared connections)
 
 ## Source Files
 
@@ -35,8 +33,8 @@
 
 ## Audit Trail
 
-- EXTRACTED: 27 (100%)
-- INFERRED: 0 (0%)
+- EXTRACTED: 21 (95%)
+- INFERRED: 1 (5%)
 - AMBIGUOUS: 0 (0%)
 
 ---

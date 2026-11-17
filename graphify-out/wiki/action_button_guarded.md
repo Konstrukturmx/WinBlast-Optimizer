@@ -1,6 +1,6 @@
 # action_button_guarded
 
-> 24 nodes · cohesion 0.26
+> 32 nodes · cohesion 0.17
 
 ## Key Concepts
 
@@ -16,6 +16,8 @@
 - **view()** (10 connections) — `src/ui/views/clean_apps.rs`
 - **build_services_list()** (9 connections) — `src/ui/views/startup_tasks.rs`
 - **build_tasks_list()** (9 connections) — `src/ui/views/startup_tasks.rs`
+- **CleanAppsSubTab** (8 connections) — `src/app.rs`
+- **StartupTasksSubTab** (8 connections) — `src/app.rs`
 - **switch_indicator()** (8 connections) — `src/ui/widgets/button.rs`
 - **El** (7 connections)
 - **El** (7 connections)
@@ -27,33 +29,34 @@
 - **startup_source_label()** (4 connections) — `src/ui/views/startup_tasks.rs`
 - **growthspec** (2 connections)
 - **rc** (2 connections)
-- **format_mb()** (2 connections) — `src/ui/views/clean_apps.rs`
+- *... and 7 more nodes in this community*
 
 ## Relationships
 
-- [LayoutTier](LayoutTier.md) (34 shared connections)
-- [action_button](action_button.md) (27 shared connections)
-- [ThemePalette](ThemePalette.md) (18 shared connections)
-- [AppState](AppState.md) (13 shared connections)
-- [WinBlastScrollable](WinBlastScrollable.md) (4 shared connections)
-- [view](view.md) (4 shared connections)
-- [privacy_shield.rs](privacy_shield.rs.md) (4 shared connections)
+- [LayoutTier](LayoutTier.md) (38 shared connections)
+- [action_button](action_button.md) (31 shared connections)
+- [ThemePalette](ThemePalette.md) (20 shared connections)
+- [AppState](AppState.md) (15 shared connections)
 - [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (3 shared connections)
+- [View() Color Scrollspec](View_Color_Scrollspec.md) (2 shared connections)
+- [app.rs](app.rs.md) (2 shared connections)
 - [.Create Metrics Sampler()](Create_Metrics_Sampler.md) (2 shared connections)
 - [Core UI Internationalization & Text Catalog](Core_UI_Internationalization_&_Text_Catalog.md) (2 shared connections)
 - [.Toggle .Set .Apply](Toggle_.Set_.Apply.md) (2 shared connections)
-- [app.rs](app.rs.md) (2 shared connections)
+- [StartupSource](StartupSource.md) (2 shared connections)
+- [goal_planner.rs](goal_planner.rs.md) (2 shared connections)
 
 ## Source Files
 
+- `src/app.rs`
 - `src/ui/views/clean_apps.rs`
 - `src/ui/views/startup_tasks.rs`
 - `src/ui/widgets/button.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 156 (80%)
-- INFERRED: 40 (20%)
+- EXTRACTED: 168 (81%)
+- INFERRED: 40 (19%)
 - AMBIGUOUS: 0 (0%)
 
 ---

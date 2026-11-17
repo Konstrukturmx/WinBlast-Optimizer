@@ -17,7 +17,7 @@
 
 ## Relationships
 
-- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (1 shared connections)
+- [engine.rs](engine.rs.md) (1 shared connections)
 - [startup.rs](startup.rs.md) (1 shared connections)
 
 ## Source Files

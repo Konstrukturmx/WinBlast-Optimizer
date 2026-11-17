@@ -126,6 +126,23 @@ pub trait SystemBackend: Send + Sync + 'static {
     // VSS System Restore Points
     fn list_restore_points(&self) -> Result<Vec<RestorePoint>>;
     fn create_restore_point(&self, description: &str) -> Result<()>;
+    fn ensure_preflight_restore_point(&self, description: &str) -> Result<bool> {
+        let points = self.list_restore_points()?;
+        if !points.is_empty() {
+            let now_utc = chrono::Utc::now();
+            let max_age_chrono = chrono::Duration::hours(24);
+            for point in &points {
+                if let Some(created_at) = restore_point::parse_restore_point_time(&point.creation_time) {
+                    let diff = now_utc.signed_duration_since(created_at);
+                    if diff >= -chrono::Duration::minutes(5) && diff <= max_age_chrono {
+                        return Ok(false);
+                    }
+                }
+            }
+        }
+        self.create_restore_point(description)?;
+        Ok(true)
+    }
 
     // Hardware & Telemetry
     fn detect_cpu(&self) -> CpuInfo;
@@ -2179,22 +2196,25 @@ impl SystemBackend for SandboxEnv {
         self.take_injected_error()?;
         let clean = service_name.trim();
         if clean.is_empty() || clean.contains(['\\', '/', '\0']) || clean == ".." {
-            return Err(WinBlastError::Service(format!(
+            return Err(WinBlastError::invalid_input(format!(
                 "Invalid Windows service name '{}'",
                 service_name
             )));
         }
         if start_type > 4 {
-            return Err(WinBlastError::Service(format!(
+            return Err(WinBlastError::invalid_input(format!(
                 "Unsupported service start type {}",
                 start_type
             )));
         }
         if start_type == 4 && startup::is_protected_core_service(clean) {
-            return Err(WinBlastError::Service(format!(
-                "Refused to disable protected OS critical service '{}'",
-                clean
-            )));
+            return Err(WinBlastError::service(
+                5,
+                format!(
+                    "Refused to disable protected OS critical service '{}'",
+                    clean
+                ),
+            ));
         }
         let key = clean.to_lowercase();
         let mut st = self.inner.write().unwrap();
@@ -2202,10 +2222,10 @@ impl SystemBackend for SandboxEnv {
             if start_type == 3 || start_type == 4 {
                 return Ok(());
             }
-            return Err(WinBlastError::Registry(std::io::Error::new(
-                std::io::ErrorKind::NotFound,
+            return Err(WinBlastError::registry(
+                2,
                 format!("Sandbox service absent: {}", clean),
-            )));
+            ));
         }
         st.services.insert(key, start_type);
         if let Some(ls) = st

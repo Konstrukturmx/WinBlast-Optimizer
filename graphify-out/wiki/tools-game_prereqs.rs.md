@@ -5,11 +5,11 @@
 ## Key Concepts
 
 - **tools/game_prereqs.rs** (26 connections) — `src/tools/game_prereqs.rs`
-- **scan_game_prereqs()** (15 connections) — `src/tools/game_prereqs.rs`
+- **scan_game_prereqs()** (14 connections) — `src/tools/game_prereqs.rs`
 - **test_iso_29119_runtime_detection_heuristics_execution()** (11 connections) — `src/tools/game_prereqs.rs`
 - **PrereqInstallState** (7 connections) — `src/tools/game_prereqs.rs`
 - **GamePrerequisiteItem** (6 connections) — `src/tools/game_prereqs.rs`
-- **install_prereq_cascade()** (5 connections) — `src/tools/game_prereqs.rs`
+- **install_prereq_cascade()** (4 connections) — `src/tools/game_prereqs.rs`
 - **detect_directx_legacy()** (3 connections) — `src/tools/game_prereqs.rs`
 - **detect_dotnet_desktop_8()** (3 connections) — `src/tools/game_prereqs.rs`
 - **detect_dotnet_desktop_9()** (3 connections) — `src/tools/game_prereqs.rs`
@@ -32,12 +32,11 @@
 
 ## Relationships
 
-- [AppState](AppState.md) (3 shared connections)
+- [deserialize](deserialize.md) (3 shared connections)
 - [enums](enums.md) (2 shared connections)
-- [deserialize](deserialize.md) (2 shared connections)
-- [super](super.md) (1 shared connections)
-- [SilentCommand](SilentCommand.md) (1 shared connections)
+- [.Create Metrics Sampler()](Create_Metrics_Sampler.md) (1 shared connections)
 - [path](path.md) (1 shared connections)
+- [AppState](AppState.md) (1 shared connections)
 - [LayoutTier](LayoutTier.md) (1 shared connections)
 
 ## Source Files
@@ -46,7 +45,7 @@
 
 ## Audit Trail
 
-- EXTRACTED: 61 (98%)
+- EXTRACTED: 59 (98%)
 - INFERRED: 1 (2%)
 - AMBIGUOUS: 0 (0%)
 

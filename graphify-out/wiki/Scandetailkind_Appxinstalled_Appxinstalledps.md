@@ -1,17 +1,15 @@
 # Scandetailkind Appxinstalled Appxinstalledps
 
-> 53 nodes · cohesion 0.06
+> 47 nodes · cohesion 0.07
 
 ## Key Concepts
 
 - **tweak_sandbox_e2e.rs** (107 connections) — `tests/tweak_sandbox_e2e.rs`
-- **load_embedded_rules()** (39 connections) — `src/core/risk.rs`
+- **load_embedded_rules()** (41 connections) — `src/core/risk.rs`
 - **drain_until()** (14 connections) — `tests/tweak_sandbox_e2e.rs`
 - **make_synth_tweak()** (8 connections) — `tests/tweak_sandbox_e2e.rs`
 - **test_atomic_partial_failure_rollback_and_partially_optimized_lifecycle()** (8 connections) — `tests/tweak_sandbox_e2e.rs`
 - **test_wave1_presets_policy_locked_winget_appx_and_autounattend_permutations()** (7 connections) — `tests/tweak_sandbox_e2e.rs`
-- **AppMode** (6 connections) — `src/app.rs`
-- **StagedTransition** (6 connections) — `src/app.rs`
 - **test_epoch_and_stale_scan_fencing_preserves_instant_mutation()** (6 connections) — `tests/tweak_sandbox_e2e.rs`
 - **test_app_state_hardware_and_privacy_ledger_recording()** (5 connections) — `tests/tweak_sandbox_e2e.rs`
 - **test_catalog_integrity_audit()** (5 connections) — `tests/tweak_sandbox_e2e.rs`
@@ -29,33 +27,34 @@
 - **test_sandbox_clean_apps_startup_features_power_and_autounattend()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
 - **tweaks_scope_overlap()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
 - **HkcuScratchGuard** (2 connections) — `tests/tweak_sandbox_e2e.rs`
-- *... and 28 more nodes in this community*
+- **.release_scan()** (2 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.wait_until_scan_paused()** (2 connections) — `tests/tweak_sandbox_e2e.rs`
+- *... and 22 more nodes in this community*
 
 ## Relationships
 
-- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (19 shared connections)
-- [GPU Silicon & Hardware Tuning Policies](GPU_Silicon_&_Hardware_Tuning_Policies.md) (9 shared connections)
-- [AppState](AppState.md) (6 shared connections)
+- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (16 shared connections)
+- [GPU Silicon & Hardware Tuning Policies](GPU_Silicon_&_Hardware_Tuning_Policies.md) (10 shared connections)
+- [engine.rs](engine.rs.md) (6 shared connections)
 - [test_wave1_ledger_rollback_and_concurrency_regressions](test_wave1_ledger_rollback_and_concurrency_regressions.md) (6 shared connections)
 - [SlowScanBackend](SlowScanBackend.md) (6 shared connections)
-- [app.rs](app.rs.md) (5 shared connections)
-- [test_wave1_compound_actions_deep_edge_cases](test_wave1_compound_actions_deep_edge_cases.md) (5 shared connections)
 - [State Ledger & Restore Point Engine](State_Ledger_&_Restore_Point_Engine.md) (4 shared connections)
 - [View() Color Scrollspec](View_Color_Scrollspec.md) (4 shared connections)
-- [Integration Suite: Tweak Sandbox E2E](Integration_Suite-_Tweak_Sandbox_E2E.md) (4 shared connections)
-- [Dynamicdwordformula Logicalcorecount Totalraminkb](Dynamicdwordformula_Logicalcorecount_Totalraminkb.md) (4 shared connections)
+- [AppState](AppState.md) (4 shared connections)
+- [test_wave1_compound_actions_deep_edge_cases](test_wave1_compound_actions_deep_edge_cases.md) (4 shared connections)
 - [Project History & Release Version Ledger](Project_History_&_Release_Version_Ledger.md) (4 shared connections)
+- [Dynamicdwordformula Logicalcorecount Totalraminkb](Dynamicdwordformula_Logicalcorecount_Totalraminkb.md) (3 shared connections)
+- [Integration Suite: Tweak Sandbox E2E](Integration_Suite-_Tweak_Sandbox_E2E.md) (3 shared connections)
 
 ## Source Files
 
-- `src/app.rs`
 - `src/core/risk.rs`
 - `tests/tweak_sandbox_e2e.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 172 (83%)
-- INFERRED: 34 (17%)
+- EXTRACTED: 162 (82%)
+- INFERRED: 36 (18%)
 - AMBIGUOUS: 0 (0%)
 
 ---

@@ -1,11 +1,11 @@
 # localize_tweak
 
-> 34 nodes · cohesion 0.11
+> 31 nodes · cohesion 0.12
 
 ## Key Concepts
 
-- **localize_tweak()** (16 connections) — `src/core/tweak_i18n/mod.rs`
 - **LocalizedTweakText** (16 connections) — `src/core/tweak_i18n/mod.rs`
+- **localize_tweak()** (13 connections) — `src/core/tweak_i18n/mod.rs`
 - **lookup()** (5 connections) — `src/core/tweak_i18n/de.rs`
 - **lookup()** (5 connections) — `src/core/tweak_i18n/es.rs`
 - **lookup()** (5 connections) — `src/core/tweak_i18n/fr.rs`
@@ -21,26 +21,24 @@
 - **tr.rs** (4 connections) — `src/core/tweak_i18n/tr.rs`
 - **zh.rs** (4 connections) — `src/core/tweak_i18n/zh.rs`
 - **test_all_208_tweaks_localized_all_7_languages()** (3 connections) — `src/core/tweak_i18n/mod.rs`
-- **.tweak_broken_features()** (2 connections) — `src/app.rs`
-- **.tweak_description()** (2 connections) — `src/app.rs`
-- **.tweak_title()** (2 connections) — `src/app.rs`
 - **tweak_description()** (2 connections) — `src/core/tweak_i18n/de.rs`
 - **tweak_title()** (2 connections) — `src/core/tweak_i18n/de.rs`
 - **tweak_description()** (2 connections) — `src/core/tweak_i18n/es.rs`
 - **tweak_title()** (2 connections) — `src/core/tweak_i18n/es.rs`
 - **tweak_description()** (2 connections) — `src/core/tweak_i18n/fr.rs`
-- *... and 9 more nodes in this community*
+- **tweak_title()** (2 connections) — `src/core/tweak_i18n/fr.rs`
+- **tweak_description()** (2 connections) — `src/core/tweak_i18n/ja.rs`
+- **tweak_title()** (2 connections) — `src/core/tweak_i18n/ja.rs`
+- *... and 6 more nodes in this community*
 
 ## Relationships
 
 - [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (5 shared connections)
-- [AppState](AppState.md) (3 shared connections)
 - [Appx Package() Prefixes](Appx_Package_Prefixes.md) (1 shared connections)
 - [Scandetailkind Appxinstalled Appxinstalledps](Scandetailkind_Appxinstalled_Appxinstalledps.md) (1 shared connections)
 
 ## Source Files
 
-- `src/app.rs`
 - `src/core/tweak_i18n/de.rs`
 - `src/core/tweak_i18n/es.rs`
 - `src/core/tweak_i18n/fr.rs`
@@ -52,8 +50,8 @@
 
 ## Audit Trail
 
-- EXTRACTED: 70 (99%)
-- INFERRED: 1 (1%)
+- EXTRACTED: 64 (98%)
+- INFERRED: 1 (2%)
 - AMBIGUOUS: 0 (0%)
 
 ---

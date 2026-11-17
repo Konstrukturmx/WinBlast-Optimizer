@@ -23,10 +23,10 @@ graph TD
 
 ### Key Subsystems:
 1. **`src/ui/`**: Pure-Rust Rune immediate-mode GUI engine with dynamic responsive tiering, 60 FPS spring animations, theme styling, and palette-driven scroll bars (`widgets/scrollbar.rs`).
-2. **`src/core/`**: Core definitions, OS version detection, elevation token verification, internationalization (`i18n.rs` & `tweak_i18n/`), and the `SystemBackend` abstraction.
-3. **`src/scanner/`**: Detection engines for 64-bit/32-bit Registry values, Win32 SCM services, scheduled tasks, and provisioned AppX packages.
-4. **`src/executor/`**: Transactional mutators for registry keys, Windows services, hosts blocking, and power scheme parameters.
-5. **`src/backup/`**: SQLite Write-Ahead Logging (`winblast0_ledger.db`) transaction engine and Windows VSS Restore Point manager.
+2. **`src/core/`**: Core definitions, OS version detection, elevation token verification, internationalization (`i18n.rs` & `tweak_i18n/`), unified `WinBlastError` hierarchy (`Registry`, `Service`, `Com`, `NtStatus`, `Io`, `InvalidInput`), and the `SystemBackend` abstraction.
+3. **`src/scanner/`**: Detection engines for 64-bit/32-bit Registry values, Win32 SCM services, scheduled tasks, provisioned AppX packages, and Rayon-powered multi-threaded parallel catalog evaluation (`scan_all_tweaks_parallel`).
+4. **`src/executor/`**: Transactional mutators for registry keys, Windows services, hosts blocking, and power scheme parameters with atomic intermediate rollback.
+5. **`src/backup/`**: SQLite Write-Ahead Logging (`winblast0_ledger.db`) transaction engine, automated pre-flight VSS restore point verification (`ensure_preflight_restore_point`), and Windows VSS Restore Point manager.
 6. **`src/hardware/`**: NT kernel timer resolution FFI, CPU core topology (`GetLogicalProcessorInformationEx`), core parking manager, and DXGI/SetupDi GPU vendor detection.
 7. **`src/tools/`**: System tools including the Junk File & Recycle Bin cleaner, AppX deprovisioner, WinGet integration, startup manager, and `autounattend.xml` generator.
 
@@ -48,7 +48,7 @@ pub trait SystemBackend: Send + Sync {
 
 ### Running Tests:
 ```powershell
-# Run all unit tests (109 tests)
+# Run all unit tests (115 tests)
 cargo test --lib
 
 # Run isolated sandbox regression tests (25 tests)

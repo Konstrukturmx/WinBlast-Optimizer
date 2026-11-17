@@ -9,7 +9,7 @@
 [![License](https://img.shields.io/badge/License-MIT-blueviolet?style=for-the-badge)](LICENSE)
 [![Platform](https://img.shields.io/badge/Platform-Windows%2010%20%7C%2011%20(x64)-0078D6?style=for-the-badge&logo=windows)](https://github.com/Konstrukturmx/WinBlast-Optimizer)
 [![Rust](https://img.shields.io/badge/Rust-2021%20Edition-DEA584?style=for-the-badge&logo=rust)](https://www.rust-lang.org/)
-[![Tests](https://img.shields.io/badge/Tests-155%20Passed%20(100%25)-success?style=for-the-badge)](tests/)
+[![Tests](https://img.shields.io/badge/Tests-161%20Passed%20(100%25)-success?style=for-the-badge)](tests/)
 [![Languages](https://img.shields.io/badge/i18n-8%20Languages%20(510%20Keys)-orange?style=for-the-badge)](src/core/i18n.rs)
 
 <p align="center">
@@ -80,9 +80,11 @@ Derived from the formal [**WinBlast0 Architecture Guide**](DEVELOPMENT.md), WinB
 ### 3. 🛡️ Dual-Layer Transactional Rollback & Safety
 * **SQLite WAL Transaction Ledger**: Every change made by the optimizer is atomically written to a local SQLite Write-Ahead Logging (`winblast0_ledger.db`) database recording previous registry values, service configurations, and power settings.
 * **1-Click Deep Revert**: Undo any single tweak or restore complete system baselines with one click.
-* **VSS System Restore Point Integration**: Automatic creation of native Windows Volume Shadow Copy restore points before applying high-impact configuration waves.
+* **Automated Pre-Flight VSS Restore Points**: Automatically inspects restore point creation timestamps (within 24 hours) via `ensure_preflight_restore_point` prior to batch execution, creating native Windows System Restore points automatically without spamming redundant snapshots.
+* **Unified Strongly-Typed `WinBlastError` Hierarchy**: Structured error handling replacing stringly-typed errors across registry, services, COM, and NT kernel layers (`WinBlastError::Registry`, `Service`, `Com`, `NtStatus`, `Io`, `InvalidInput`).
 
 ### 4. ⏱️ NT Kernel Telemetry & Microsecond Latency Suite
+* **Rayon Multi-Threaded Parallel Evaluation**: Multi-core declarative scan engine (`scan_all_tweaks_parallel`) using Rayon chunked work-stealing parallel iterators, accelerating full 208-tweak system scans to near-instantaneous speed.
 * **Native Kernel Telemetry**: Replaces high-overhead WMI queries with direct `NtQuerySystemInformation(SystemProcessorPerformanceInformation)` deltas, providing accurate per-core active vs. idle percentages with zero CPU overhead.
 * **High-Precision Timer Resolution**: Direct `NtQueryTimerResolution` / `NtSetTimerResolution` FFI kernel interfacing to monitor sub-millisecond OS tick jitter (down to 0.500 ms).
 * **DPC / ISR Micro-Jitter Probe**: Real-time measurement of Deferred Procedure Call interrupt jitter using `QueryPerformanceCounter` (QPC).
@@ -175,7 +177,7 @@ cd WinBlast-Optimizer
 # Check codebase and dependencies
 cargo check --all-targets
 
-# Run the complete test suite (155 tests)
+# Run the complete test suite (161 tests)
 cargo test
 
 # Compile optimized release binary
@@ -195,12 +197,12 @@ WinBlast Optimizer includes an exhaustive test suite verifying safety across rea
 
 | Test Suite | Coverage & Validation Focus | Results |
 | :--- | :--- | :---: |
-| **`cargo test --lib`** | Core i18n tables (8 languages, 510 keys), NT timer resolution, CPU topology classification, power range unlock, Dijkstra & A* & Raven graph engines, multi-strategy fallbacks, scanner logic, and risk valuation. | **109 / 109 PASS** |
+| **`cargo test --lib`** | Core i18n tables (8 languages, 510 keys), NT timer resolution, CPU topology classification, power range unlock, Dijkstra & A* & Raven graph engines, multi-strategy fallbacks, Rayon parallel scanner parity, unified WinBlastError hierarchy, preflight VSS restore points, and risk valuation. | **115 / 115 PASS** |
 | **`tweak_sandbox_e2e`** | Isolated mock registry & file trees, worker panic recovery, partial mutation failure rollback, epoch scan fencing, startup status filtering & sorting, and concurrent transactions. | **25 / 25 PASS** |
 | **`ui_responsive_e2e`** | Headless DOM tree verification, multi-resolution viewport sweeps (720p to 4K, 2,160 frame sweep), dropdown popovers, theme switching, and multi-locale layout stress testing. | **13 / 13 PASS** |
 | **`ui_scrollbar_test`** | Headless E2E scroll-bar geometry, hover-widening, right gutter collision safety, and drag/wheel-scroll interaction across all views and sidebar. | **5 / 5 PASS** |
 | **`real_windows_env`** | Live host read-only audit, Win32 registry type round-trips, and safe NTFS junction cleanups. | **3 / 3 PASS** |
-| **Total Automated Tests** | **Zero failures, zero panics, zero warnings** | **155 / 155 PASS** |
+| **Total Automated Tests** | **Zero failures, zero panics, zero warnings** | **161 / 161 PASS** |
 
 ---
 

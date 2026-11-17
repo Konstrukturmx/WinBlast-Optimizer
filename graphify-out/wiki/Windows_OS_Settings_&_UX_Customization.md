@@ -37,9 +37,9 @@
 - [WinBlast0 Architectural Specifications](WinBlast0_Architectural_Specifications.md) (2 shared connections)
 - [Appx Package() Prefixes](Appx_Package_Prefixes.md) (1 shared connections)
 - [Process Token Information](Process_Token_Information.md) (1 shared connections)
-- [appx_scanner.rs](appx_scanner.rs.md) (1 shared connections)
+- [System Architecture Changelog](System_Architecture_Changelog.md) (1 shared connections)
 - [Core UI Internationalization & Text Catalog](Core_UI_Internationalization_&_Text_Catalog.md) (1 shared connections)
-- [TaskCache](TaskCache.md) (1 shared connections)
+- [task_scanner.rs](task_scanner.rs.md) (1 shared connections)
 
 ## Source Files
 

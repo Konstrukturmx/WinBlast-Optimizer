@@ -68,7 +68,7 @@ pub fn set_scheduled_task_enabled(task_path: &str, enable: bool) -> crate::core:
     let output = crate::core::process::SilentCommand::new("schtasks")
         .args(["/Change", "/TN", &actual_path, verb])
         .output()
-        .map_err(crate::core::error::WinBlastError::Registry)?;
+        .map_err(crate::core::error::WinBlastError::Io)?;
 
     if !output.status.success() {
         let stderr = crate::scanner::task_scanner::decode_oem_bytes(&output.stderr);
@@ -206,9 +206,9 @@ pub fn write_hosts_file_raw(content: &str) -> crate::core::error::Result<()> {
         .write(true)
         .truncate(true)
         .open(hosts_path)
-        .map_err(crate::core::error::WinBlastError::Registry)?;
+        .map_err(crate::core::error::WinBlastError::Io)?;
     file.write_all(content.as_bytes())
-        .map_err(crate::core::error::WinBlastError::Registry)?;
+        .map_err(crate::core::error::WinBlastError::Io)?;
     Ok(())
 }
 
@@ -218,7 +218,7 @@ pub fn block_telemetry_hosts(hosts: &[&str]) -> crate::core::error::Result<usize
     let existing = match std::fs::read_to_string(hosts_path) {
         Ok(c) => c,
         Err(e) if e.kind() == std::io::ErrorKind::NotFound => String::new(),
-        Err(e) => return Err(crate::core::error::WinBlastError::Registry(e)),
+        Err(e) => return Err(crate::core::error::WinBlastError::Io(e)),
     };
 
     let (updated, added) = block_telemetry_hosts_in_content(&existing, hosts);

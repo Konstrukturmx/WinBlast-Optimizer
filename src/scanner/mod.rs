@@ -10,6 +10,7 @@ pub mod task_scanner;
 pub mod telemetry_scanner;
 
 use serde::{Deserialize, Serialize};
+use rayon::prelude::*;
 
 use crate::core::backend::{
     is_unsupported_power_guid_error, CachedScanBackend, RealBackend, SystemBackend,
@@ -649,6 +650,73 @@ fn evaluate_tweak(
     make_scan_result(tweak, current_state, status_detail, detail_kind)
 }
 
+/// Evaluate the optimization status of a single tweak definition against the provided backend.
+pub fn evaluate_tweak_status(
+    backend: &dyn SystemBackend,
+    tweak: &TweakDefinition,
+    build: u32,
+    edition: &str,
+) -> ScanResult {
+    scan_single_tweak_with(backend, tweak, build, edition)
+}
+
+/// Run a multi-threaded parallel system scan against the provided backend using Rayon.
+pub fn scan_all_tweaks_parallel_with(
+    backend: &dyn SystemBackend,
+    tweaks: &[TweakDefinition],
+    build: u32,
+    edition: &str,
+) -> Vec<ScanResult> {
+    let cached = CachedScanBackend::new(backend);
+    // Pre-warm GPU vendor detection to avoid initial contention across threads
+    let _ = cached.gpu_vendors();
+    tweaks
+        .par_iter()
+        .map(|t| evaluate_tweak(&cached, t, build, edition))
+        .collect()
+}
+
+/// Run a multi-threaded parallel system scan against the live Windows OS using Rayon.
+pub fn scan_all_tweaks_parallel(
+    tweaks: &[TweakDefinition],
+    build: u32,
+    edition: &str,
+) -> Vec<ScanResult> {
+    scan_all_tweaks_parallel_with(&RealBackend, tweaks, build, edition)
+}
+
+/// Run a chunked multi-threaded parallel system scan against the provided backend using Rayon.
+pub fn scan_tweaks_chunked_parallel_with(
+    backend: &dyn SystemBackend,
+    tweaks: &[TweakDefinition],
+    build: u32,
+    edition: &str,
+    chunk_size: usize,
+) -> Vec<ScanResult> {
+    let cached = CachedScanBackend::new(backend);
+    let _ = cached.gpu_vendors();
+    let size = chunk_size.max(1);
+    tweaks
+        .par_chunks(size)
+        .flat_map(|chunk| {
+            chunk
+                .iter()
+                .map(|t| evaluate_tweak(&cached, t, build, edition))
+                .collect::<Vec<_>>()
+        })
+        .collect()
+}
+
+/// Run a chunked multi-threaded parallel system scan against the live Windows OS using Rayon.
+pub fn scan_tweaks_chunked_parallel(
+    tweaks: &[TweakDefinition],
+    build: u32,
+    edition: &str,
+    chunk_size: usize,
+) -> Vec<ScanResult> {
+    scan_tweaks_chunked_parallel_with(&RealBackend, tweaks, build, edition, chunk_size)
+}
+
 /// Run a full system scan against the provided backend.
 pub fn run_full_scan_with(
     backend: &dyn SystemBackend,
@@ -656,11 +724,7 @@ pub fn run_full_scan_with(
     build: u32,
     edition: &str,
 ) -> Vec<ScanResult> {
-    let cached = CachedScanBackend::new(backend);
-    tweaks
-        .iter()
-        .map(|t| evaluate_tweak(&cached, t, build, edition))
-        .collect()
+    scan_all_tweaks_parallel_with(backend, tweaks, build, edition)
 }
 
 /// Run an instant, targeted scan on a single tweak against the provided backend.
@@ -718,6 +782,53 @@ mod tests {
             sbx.seed_tweak_defaults(&first.actions);
             let res = scan_single_tweak_with(&sbx, first, 26100, "Pro");
             assert_eq!(res.tweak_id, first.id);
+            assert_eq!(res.current_state, TweakState::NotOptimized);
+        }
+    }
+
+    #[test]
+    fn test_parallel_scan_parity_with_sequential() {
+        let tweaks = load_embedded_rules();
+        let sbx = SandboxEnv::new();
+        sbx.seed_all_tweaks(&tweaks);
+
+        // Sequential baseline
+        let cached = CachedScanBackend::new(&sbx);
+        let seq_results: Vec<ScanResult> = tweaks
+            .iter()
+            .map(|t| evaluate_tweak(&cached, t, 26100, "Pro"))
+            .collect();
+
+        // Multi-threaded parallel scan
+        let par_results = scan_all_tweaks_parallel_with(&sbx, &tweaks, 26100, "Pro");
+        assert_eq!(seq_results.len(), par_results.len());
+
+        for (seq, par) in seq_results.iter().zip(par_results.iter()) {
+            assert_eq!(seq.tweak_id, par.tweak_id);
+            assert_eq!(seq.current_state, par.current_state);
+            assert_eq!(seq.status_detail, par.status_detail);
+            assert_eq!(seq.detail_kind, par.detail_kind);
+        }
+
+        // Chunked parallel scan across multiple grain sizes
+        for chunk_size in [1, 7, 16, 64] {
+            let chunked = scan_tweaks_chunked_parallel_with(&sbx, &tweaks, 26100, "Pro", chunk_size);
+            assert_eq!(seq_results.len(), chunked.len());
+            for (seq, chk) in seq_results.iter().zip(chunked.iter()) {
+                assert_eq!(seq.tweak_id, chk.tweak_id);
+                assert_eq!(seq.current_state, chk.current_state);
+            }
+        }
+    }
+
+    #[test]
+    fn test_evaluate_tweak_status_single() {
+        let tweaks = load_embedded_rules();
+        let sbx = SandboxEnv::new();
+        if let Some(tweak) = tweaks.first() {
+            sbx.seed_tweak_defaults(&tweak.actions);
+            let res = evaluate_tweak_status(&sbx, tweak, 26100, "Pro");
+            assert_eq!(res.tweak_id, tweak.id);
             assert_eq!(res.current_state, TweakState::NotOptimized);
         }
     }

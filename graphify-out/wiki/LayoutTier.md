@@ -1,13 +1,15 @@
 # LayoutTier
 
-> 63 nodes · cohesion 0.09
+> 72 nodes · cohesion 0.09
 
 ## Key Concepts
 
 - **LayoutTier** (66 connections) — `src/ui/mod.rs`
+- **view()** (35 connections) — `src/ui/mod.rs`
 - **row** (32 connections)
 - **text** (32 connections)
 - **col** (31 connections)
+- **ui/mod.rs** (28 connections) — `src/ui/mod.rs`
 - **scrollspec** (27 connections)
 - **Color** (23 connections)
 - **driver_bios.rs** (17 connections) — `src/ui/views/driver_bios.rs`
@@ -26,25 +28,23 @@
 - **views/network_diag.rs** (12 connections) — `src/ui/views/network_diag.rs`
 - **views/performance_tests.rs** (12 connections) — `src/ui/views/performance_tests.rs`
 - **support_about.rs** (12 connections) — `src/ui/views/support_about.rs`
-- **fps_benchmark.rs** (10 connections) — `src/ui/views/fps_benchmark.rs`
-- **game_suitability.rs** (10 connections) — `src/ui/views/game_suitability.rs`
-- **view()** (8 connections) — `src/ui/views/backup_center.rs`
-- *... and 38 more nodes in this community*
+- **build_sidebar()** (11 connections) — `src/ui/mod.rs`
+- *... and 47 more nodes in this community*
 
 ## Relationships
 
-- [action_button](action_button.md) (52 shared connections)
-- [AppState](AppState.md) (35 shared connections)
-- [action_button_guarded](action_button_guarded.md) (34 shared connections)
-- [view](view.md) (26 shared connections)
-- [WinBlastScrollable](WinBlastScrollable.md) (24 shared connections)
-- [ThemePalette](ThemePalette.md) (13 shared connections)
+- [action_button](action_button.md) (69 shared connections)
+- [AppState](AppState.md) (40 shared connections)
+- [action_button_guarded](action_button_guarded.md) (38 shared connections)
+- [ThemePalette](ThemePalette.md) (38 shared connections)
 - [ViewTextKey](ViewTextKey.md) (11 shared connections)
-- [privacy_shield.rs](privacy_shield.rs.md) (9 shared connections)
-- [Core UI Internationalization & Text Catalog](Core_UI_Internationalization_&_Text_Catalog.md) (6 shared connections)
-- [goal_planner.rs](goal_planner.rs.md) (5 shared connections)
-- [diff_modal.rs](diff_modal.rs.md) (4 shared connections)
-- [progress_bar.rs](progress_bar.rs.md) (4 shared connections)
+- [latency_bench.rs](latency_bench.rs.md) (8 shared connections)
+- [Core UI Internationalization & Text Catalog](Core_UI_Internationalization_&_Text_Catalog.md) (7 shared connections)
+- [goal_planner.rs](goal_planner.rs.md) (6 shared connections)
+- [diff_modal.rs](diff_modal.rs.md) (5 shared connections)
+- [progress_bar.rs](progress_bar.rs.md) (5 shared connections)
+- [Multi-Language Tweak Localization Tables](Multi-Language_Tweak_Localization_Tables.md) (3 shared connections)
+- [app.rs](app.rs.md) (2 shared connections)
 
 ## Source Files
 
@@ -69,8 +69,8 @@
 
 ## Audit Trail
 
-- EXTRACTED: 397 (95%)
-- INFERRED: 23 (5%)
+- EXTRACTED: 451 (94%)
+- INFERRED: 28 (6%)
 - AMBIGUOUS: 0 (0%)
 
 ---

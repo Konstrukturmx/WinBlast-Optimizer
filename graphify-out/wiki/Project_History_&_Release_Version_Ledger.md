@@ -5,8 +5,8 @@
 ## Key Concepts
 
 - **autounattend.rs** (24 connections) — `src/tools/autounattend.rs`
-- **normalize_reg_value_name()** (21 connections) — `src/core/risk.rs`
 - **generate_autounattend_xml()** (17 connections) — `src/tools/autounattend.rs`
+- **normalize_reg_value_name()** (12 connections) — `src/core/risk.rs`
 - **UnattendOptions** (7 connections) — `src/tools/autounattend.rs`
 - **TargetArch** (6 connections) — `src/tools/autounattend.rs`
 - **display_reg_value_name()** (5 connections) — `src/core/risk.rs`
@@ -27,18 +27,17 @@
 
 ## Relationships
 
-- [GPU Silicon & Hardware Tuning Policies](GPU_Silicon_&_Hardware_Tuning_Policies.md) (5 shared connections)
-- [Integration Suite: Ui Responsive E2E](Integration_Suite-_Ui_Responsive_E2E.md) (5 shared connections)
-- [Core UI Internationalization & Text Catalog](Core_UI_Internationalization_&_Text_Catalog.md) (4 shared connections)
+- [GPU Silicon & Hardware Tuning Policies](GPU_Silicon_&_Hardware_Tuning_Policies.md) (6 shared connections)
+- [engine.rs](engine.rs.md) (5 shared connections)
 - [Scandetailkind Appxinstalled Appxinstalledps](Scandetailkind_Appxinstalled_Appxinstalledps.md) (4 shared connections)
-- [engine.rs](engine.rs.md) (2 shared connections)
 - [Win32 Registry Scanner & Mutator](Win32_Registry_Scanner_&_Mutator.md) (2 shared connections)
 - [deserialize](deserialize.md) (2 shared connections)
-- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (2 shared connections)
 - [.Reg .Set Power](Reg_.Set_Power.md) (2 shared connections)
 - [app.rs](app.rs.md) (2 shared connections)
 - [AppState](AppState.md) (2 shared connections)
 - [backend.rs](backend.rs.md) (1 shared connections)
+- [.Create Metrics Sampler()](Create_Metrics_Sampler.md) (1 shared connections)
+- [Dynamicdwordformula Logicalcorecount Totalraminkb](Dynamicdwordformula_Logicalcorecount_Totalraminkb.md) (1 shared connections)
 
 ## Source Files
 
@@ -47,8 +46,8 @@
 
 ## Audit Trail
 
-- EXTRACTED: 62 (81%)
-- INFERRED: 15 (19%)
+- EXTRACTED: 53 (78%)
+- INFERRED: 15 (22%)
 - AMBIGUOUS: 0 (0%)
 
 ---

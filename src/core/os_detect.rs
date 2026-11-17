@@ -30,8 +30,8 @@ impl WindowsInfo {
             Ok(k) => k,
             Err(e) if e.raw_os_error() == Some(87) => hklm
                 .open_subkey(subkey_path)
-                .map_err(crate::core::error::WinBlastError::Registry)?,
-            Err(e) => return Err(crate::core::error::WinBlastError::Registry(e)),
+                .map_err(crate::core::error::WinBlastError::from_reg_err)?,
+            Err(e) => return Err(crate::core::error::WinBlastError::from_reg_err(e)),
         };
 
         let build_str: String = nt_key

@@ -14,10 +14,10 @@
 
 ## Relationships
 
-- [driver_update.rs](driver_update.rs.md) (2 shared connections)
-- [DriverUpdateItem](DriverUpdateItem.md) (1 shared connections)
+- [DriverError](DriverError.md) (2 shared connections)
 - [LayoutTier](LayoutTier.md) (1 shared connections)
-- [DriverError](DriverError.md) (1 shared connections)
+- [scan_class_registry](scan_class_registry.md) (1 shared connections)
+- [driver_update.rs](driver_update.rs.md) (1 shared connections)
 
 ## Source Files
 

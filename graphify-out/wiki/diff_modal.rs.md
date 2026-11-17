@@ -17,15 +17,12 @@
 
 ## Relationships
 
+- [ThemePalette](ThemePalette.md) (7 shared connections)
 - [AppState](AppState.md) (6 shared connections)
-- [ThemePalette](ThemePalette.md) (6 shared connections)
-- [LayoutTier](LayoutTier.md) (4 shared connections)
-- [Dynamicdwordformula Logicalcorecount Totalraminkb](Dynamicdwordformula_Logicalcorecount_Totalraminkb.md) (3 shared connections)
+- [LayoutTier](LayoutTier.md) (5 shared connections)
+- [Dynamicdwordformula Logicalcorecount Totalraminkb](Dynamicdwordformula_Logicalcorecount_Totalraminkb.md) (4 shared connections)
 - [action_button](action_button.md) (2 shared connections)
 - [Core UI Internationalization & Text Catalog](Core_UI_Internationalization_&_Text_Catalog.md) (2 shared connections)
-- [view](view.md) (1 shared connections)
-- [WinBlastScrollable](WinBlastScrollable.md) (1 shared connections)
-- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (1 shared connections)
 
 ## Source Files
 
