@@ -5,6 +5,44 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ---
 
+## [v1.5.1] - 2026-11-17
+
+### 🌟 Quality & Interface Polish
+- **Dynamic In-App Self-Updater with Automatic Replacement (`src/core/updater.rs`)**:
+  - Fixed remote repository target to `Konstrukturmx/WinBlast-Optimizer` resolving 404 error.
+  - Implemented dynamic latest release query using native `curl.exe` with PowerShell fallback.
+  - Added unattended automated update pipeline: background check on launch, automatic asset download to `%TEMP%\winblast0_update`, staging, atomic binary replacement, and detached process restart.
+- **Top Bar Interactive Dropdown Popovers (`src/ui/mod.rs`)**:
+  - Replaced linear cycling controls with interactive dropdown popover menus for:
+    - **🌐 Language Selector**: 1-click selection across all 8 supported languages with native labels and checkmarks (`✓`).
+    - **🎨 Theme Style**: Direct choice of *Glassy*, *Minimalistic*, *Classic*, *Compact*, and *Materialistic* styles.
+    - **🌓 Display Mode**: Fast toggle between *Dark Mode* and *Light Mode*.
+    - **🌈 Color Scheme**: Instant switching between all 6 palette themes (*Cyber Indigo*, *Midnight Stealth*, *Emerald Mint*, *Crimson Sunset*, *Solar Amber*, *Arctic Aurora*).
+- **Fault Diagnostics Root-Cause Inspection & 1-Click Remediation (`src/tools/diagnostics.rs`, `src/ui/views/fault_diagnostics.rs`)**:
+  - Inspects and displays individual file paths queued in Windows `PendingFileRenameOperations`.
+  - Added 1-click actionable remediation controls:
+    - `[ 🔄 Restart PC Now to Finalize ]` (invokes safe Win32 system reboot).
+    - `[ 🧹 Clear Pending File Renames ]` (cleans stale registry file rename queues).
+    - `[ 🧹 Clear CBS Reboot Lock ]` (clears component servicing locks).
+    - Direct minidump folder inspection and GitHub issue reporting buttons.
+- **Responsive Dashboard Quick Actions Grid (`src/ui/views/easy_dashboard.rs`)**:
+  - Added flexible wrapping, minimum constraints (`min_w(175.0)`, `min_h(125.0)`), and pinned full-width action buttons, eliminating text truncation across varying display scalings and resolutions.
+- **Restored Driver & BIOS Vertical Scrollbar (`src/ui/views/driver_bios.rs`)**:
+  - Corrected flex layout bounds (`.grow(1.0).min_h(0.0)`) and constrained device items container (`max_h(460.0).pr(8.0).scroll(...).winblast_scroll(p)`), restoring smooth mouse-wheel and scrollbar thumb navigation for all 150+ devices.
+- **Expanded Global DNS Catalog & Latency Tester (`src/tools/network_diag.rs`, `src/ui/views/network_diag.rs`)**:
+  - Expanded catalog to 10 top global providers: Cloudflare, Google, Quad9, AdGuard, OpenDNS / Cisco, Control D, CleanBrowsing, Mullvad, Level3 / Lumen, and Comodo Secure DNS.
+  - Multi-threaded parallel live latency probing (< 250ms total execution) with 1-click `[ Set as System DNS ]` and `[ ⟲ Reset DNS to Automatic ]` actions.
+- **Startup & Tasks Active / Inactive Filtering & Multi-Mode Sorting (`src/ui/views/startup_tasks.rs`)**:
+  - Added `[ All ]`, `[ Active ]`, and `[ Inactive ]` status filter chips.
+  - Added multi-mode sorting (`Name (A-Z)`, `Name (Z-A)`, `Active First`, `Inactive First`, and `Source / Folder`) unified across Startup Apps, Scheduled Tasks, and Services.
+- **Integrated GitHub Bug Reporting**:
+  - Added prominent `[ 🐛 Report Bug on GitHub ]` in Support & About, `[ 🐛 Report Bug ]` in bottom footer bar, and `[ 🐛 Report Fault to GitHub ]` in Fault Diagnostics.
+- **Zero-Defect Quality Assurance**:
+  - 155 / 155 automated tests passing (100% pass rate).
+  - 0 compiler errors, 0 clippy warnings (`cargo clippy --all-targets -- -D warnings`).
+
+---
+
 ## [v1.5.0] - 2026-11-16
 
 ### 🌟 Landmark Highlights

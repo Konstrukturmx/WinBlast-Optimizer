@@ -18,7 +18,9 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
 
     col()
         .w_full()
+        .grow(1.0)
         .min_w(0.0)
+        .min_h(0.0)
         .padding(style.card_padding())
         .pr(16.0)
         .gap(12.0)
@@ -29,6 +31,7 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                 .center()
                 .gaps(12.0, 8.0)
                 .flex_wrap()
+                .justify_between()
                 .child(
                     col()
                         .grow(1.0)
@@ -46,7 +49,10 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                 )
                 .child(
                     row()
-                        .gap(8.0)
+                        .min_w(0.0)
+                        .shrink()
+                        .flex_wrap()
+                        .gaps(8.0, 8.0)
                         .child(
                             action_button(s.tr_v(ViewTextKey::NetDiagPingBtn), p.accent, Color::WHITE, p, |s| {
                                 s.network_diag = Some(crate::tools::network_diag::NetworkDiagnostics::probe_live());
@@ -54,8 +60,16 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                             .radius(style.btn_radius()),
                         )
                         .child(
-                            action_button(s.tr_v(ViewTextKey::NetDiagFlushDnsBtn), p.btn_secondary, p.text_primary, p, |_| {
+                            action_button("⟲ Reset DNS to Automatic", p.btn_secondary, p.text_primary, p, |s| {
+                                let _ = crate::tools::network_diag::NetworkDiagnostics::reset_dns_dhcp();
+                                s.set_status("DNS configuration restored to Automatic (DHCP).");
+                            })
+                            .radius(style.btn_radius()),
+                        )
+                        .child(
+                            action_button(s.tr_v(ViewTextKey::NetDiagFlushDnsBtn), p.btn_secondary, p.text_primary, p, |s| {
                                 let _ = crate::tools::network_diag::NetworkDiagnostics::flush_dns();
+                                s.set_status("Flushed Windows DNS Resolver Cache.");
                             })
                             .radius(style.btn_radius()),
                         ),
@@ -120,11 +134,28 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                 .border(style.border_width(), p.border_styled(style))
                 .hover(p.bg_card_hover)
                 .motion(p.motion)
-                .gap(8.0)
+                .gap(10.0)
                 .child(
-                    text(s.tr_v(ViewTextKey::NetDiagDnsProbesTitle))
-                        .font(rune::tok::type_::LABEL)
-                        .color(p.text_primary),
+                    row()
+                        .w_full()
+                        .justify_between()
+                        .items_center()
+                        .child(
+                            row()
+                                .gap(6.0)
+                                .items_center()
+                                .child(text("🌐").font(rune::tok::type_::TITLE))
+                                .child(
+                                    text("Global DNS Latency & Security Benchmark")
+                                        .font(rune::tok::type_::TITLE)
+                                        .color(p.text_primary),
+                                ),
+                        )
+                        .child(
+                            text(format!("{} DNS Providers Tracked", net.probes.len()))
+                                .font(rune::tok::type_::LABEL)
+                                .color(p.text_secondary),
+                        ),
                 )
                 .children(net.probes.iter().map(|probe| {
                     let ping_text = probe.ping_ms.map(|ms| format!("{} ms", ms)).unwrap_or_else(|| "Timeout".to_string());
@@ -134,26 +165,70 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                         _ => p.danger,
                     };
 
+                    let p_ip = probe.primary_ip.clone();
+                    let s_ip = probe.secondary_ip.clone();
+                    let prov_name = probe.name.clone();
+
                     row()
                         .w_full()
                         .padding(10.0)
                         .radius(style.card_radius().min(6.0))
                         .fill(p.bg_card_hover)
+                        .border(1.0, p.border)
                         .center()
                         .gaps(10.0, 6.0)
                         .flex_wrap()
                         .child(
                             col()
                                 .grow(1.0)
-                                .min_w(200.0)
-                                .child(text(&probe.name).font(rune::tok::type_::LABEL).color(p.text_primary))
-                                .child(text(&probe.host).font(rune::tok::type_::BODY).color(p.text_muted)),
+                                .min_w(220.0)
+                                .gap(2.0)
+                                .child(
+                                    row()
+                                        .gap(8.0)
+                                        .items_center()
+                                        .child(
+                                            text(&probe.name)
+                                                .font(rune::tok::type_::TITLE)
+                                                .color(p.text_primary),
+                                        )
+                                        .child(
+                                            row()
+                                                .px(6.0)
+                                                .py(1.0)
+                                                .radius(style.badge_radius())
+                                                .fill(p.accent.alpha(0.12))
+                                                .border(1.0, p.accent.alpha(0.35))
+                                                .child(
+                                                    text(&probe.category)
+                                                        .font(rune::tok::type_::LABEL)
+                                                        .color(p.accent),
+                                                ),
+                                        ),
+                                )
+                                .child(
+                                    text(format!("Primary: {} • Secondary: {}", probe.primary_ip, probe.secondary_ip))
+                                        .font(rune::tok::type_::BODY)
+                                        .color(p.text_muted),
+                                ),
                         )
                         .child(
-                            col()
+                            row()
                                 .min_w(130.0)
-                                .child(text(ping_text).font(rune::tok::type_::TITLE).color(ping_color))
-                                .child(text(&probe.status).font(rune::tok::type_::BODY).color(ping_color)),
+                                .gap(8.0)
+                                .items_center()
+                                .child(
+                                    col()
+                                        .child(text(ping_text).font(rune::tok::type_::TITLE).color(ping_color))
+                                        .child(text(&probe.status).font(rune::tok::type_::BODY).color(ping_color)),
+                                ),
+                        )
+                        .child(
+                            action_button("Set as System DNS", p.btn_secondary, p.text_primary, p, move |s| {
+                                let _ = crate::tools::network_diag::NetworkDiagnostics::apply_dns_servers(&p_ip, &s_ip);
+                                s.set_status(format!("Configured {} ({}) as active DNS.", prov_name, p_ip));
+                            })
+                            .radius(style.btn_radius()),
                         )
                 })),
         )

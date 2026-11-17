@@ -25,6 +25,7 @@ pub struct PendingRebootStatus {
     pub windows_update_reboot: bool,
     pub pending_file_rename: bool,
     pub pending_file_count: usize,
+    pub pending_files: Vec<String>,
 }
 
 /// Diagnostic health assessment summary.
@@ -122,21 +123,21 @@ impl FaultDiagnosticsReport {
         {
             let files: Result<Vec<String>, _> = sm_key.get_value("PendingFileRenameOperations");
             if let Ok(list) = files {
-                if !list.is_empty() {
+                let non_empty: Vec<String> = list.into_iter().filter(|s| !s.trim().is_empty()).collect();
+                if !non_empty.is_empty() {
                     report.pending_reboot.pending_file_rename = true;
-                    report.pending_reboot.pending_file_count = list.len();
+                    report.pending_reboot.pending_file_count = non_empty.len();
+                    report.pending_reboot.pending_files = non_empty;
                     report.pending_reboot.is_pending = true;
                 }
             }
         }
 
         // 3. Component Store / DISM check recommendation
-        // If pending reboot is true or minidump exists, recommend DISM & SFC
         report.dism_check_recommended =
             report.pending_reboot.is_pending || !report.minidumps.is_empty();
 
         // 4. Calculate badge count (Total critical faults)
-        // If there is any minidump or pending reboot or corruption, at least 1 fault is signaled!
         let mut faults = 0;
         if !report.minidumps.is_empty() {
             faults += report.minidumps.len();
@@ -148,10 +149,7 @@ impl FaultDiagnosticsReport {
             faults += 1;
         }
 
-        // Even on healthy development systems, if there is 0 crash but pending CBS update, fault is 1.
-        // If clean, fault is 0 (or simulated 1 if CBS check flags minor staging).
         report.total_critical_faults = faults;
-
         report
     }
 
@@ -159,10 +157,43 @@ impl FaultDiagnosticsReport {
     pub fn clear_minidumps(&self) -> Result<usize, String> {
         let mut count = 0;
         for dump in &self.minidumps {
-            if dump.path.is_file() && std::fs::remove_file(&dump.path).is_ok() {
+            if std::fs::remove_file(&dump.path).is_ok() {
                 count += 1;
             }
         }
         Ok(count)
+    }
+
+    /// Clear pending file rename operations in Windows registry (requires elevation).
+    pub fn clear_pending_renames() -> Result<(), String> {
+        let hklm = RegKey::predef(HKEY_LOCAL_MACHINE);
+        let sm_key = hklm.open_subkey_with_flags(
+            "SYSTEM\\CurrentControlSet\\Control\\Session Manager",
+            KEY_SET_VALUE,
+        ).map_err(|e| format!("Failed to open Session Manager key: {e}"))?;
+        sm_key.delete_value("PendingFileRenameOperations")
+            .map_err(|e| format!("Failed to clear PendingFileRenameOperations: {e}"))?;
+        Ok(())
+    }
+
+    /// Clear CBS / Windows Update reboot pending flags.
+    pub fn clear_cbs_reboot_flags() -> Result<(), String> {
+        let hklm = RegKey::predef(HKEY_LOCAL_MACHINE);
+        let _ = hklm.delete_subkey_all(
+            "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Component Based Servicing\\RebootPending",
+        );
+        let _ = hklm.delete_subkey_all(
+            "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\WindowsUpdate\\Auto Update\\RebootRequired",
+        );
+        Ok(())
+    }
+
+    /// Restart Windows to finalize pending installations.
+    pub fn restart_system() -> Result<(), String> {
+        crate::core::process::SilentCommand::new("shutdown.exe")
+            .args(["/r", "/t", "5", "/c", "WinBlast0: Rebooting to finalize updates"])
+            .spawn()
+            .map(|_| ())
+            .map_err(|e| format!("Failed to initiate restart: {e}"))
     }
 }

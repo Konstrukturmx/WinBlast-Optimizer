@@ -1,6 +1,7 @@
 //! Arıza teşhisi (Fault Diagnostics) View in Rune.
 //!
 //! Inspects BSOD kernel crash dumps, Windows CBS pending reboot locks, and component store integrity.
+//! Provides deep root-cause inspection, pending file rename breakdowns, and 1-click remediation actions.
 
 use rune::color::Color;
 use rune::{col, row, text, El, ScrollSpec};
@@ -19,11 +20,13 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
 
     col()
         .w_full()
+        .grow(1.0)
         .min_w(0.0)
+        .min_h(0.0)
         .padding(style.card_padding())
         .pr(16.0)
         .gap(12.0)
-        // Header with Alert Badge
+        // Header with Alert Badge & Action Buttons
         .child(
             row()
                 .w_full()
@@ -31,6 +34,7 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                 .center()
                 .gaps(12.0, 8.0)
                 .flex_wrap()
+                .justify_between()
                 .child(
                     row()
                         .gap(8.0)
@@ -59,7 +63,10 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                 )
                 .child(
                     row()
-                        .gap(8.0)
+                        .min_w(0.0)
+                        .shrink()
+                        .flex_wrap()
+                        .gaps(8.0, 8.0)
                         .child(
                             action_button(s.tr_v(ViewTextKey::FaultRescanBtn), p.accent, Color::WHITE, p, |s| {
                                 s.fault_report = Some(crate::tools::diagnostics::FaultDiagnosticsReport::scan());
@@ -74,23 +81,38 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                                 s.fault_report = Some(crate::tools::diagnostics::FaultDiagnosticsReport::scan());
                             })
                             .radius(style.btn_radius()),
+                        )
+                        .child(
+                            action_button("🐛 Report Fault to GitHub", p.btn_secondary, p.text_primary, p, |_| {
+                                let _ = crate::core::process::SilentCommand::new("rundll32")
+                                    .args(["url.dll,FileProtocolHandler", "https://github.com/Konstrukturmx/WinBlast-Optimizer/issues/new"])
+                                    .spawn();
+                            })
+                            .radius(style.btn_radius()),
                         ),
                 ),
         )
-        // Pending Reboot Warning Card
+        // Pending Reboot Deep Inspection & Remediation Card
         .child(
             if report.pending_reboot.is_pending {
-                col()
+                let mut pending_card = col()
                     .w_full()
+                    .min_w(0.0)
                     .padding(style.card_padding())
                     .radius(style.card_radius())
                     .fill(p.warning.alpha(0.15))
                     .border(1.0, p.warning)
-                    .gap(4.0)
+                    .gap(8.0)
                     .child(
-                        text(s.tr_v(ViewTextKey::FaultPendingRebootWarn))
-                            .font(rune::tok::type_::LABEL)
-                            .color(p.warning),
+                        row()
+                            .gap(6.0)
+                            .items_center()
+                            .child(text("⚠").font(rune::tok::type_::TITLE).color(p.warning))
+                            .child(
+                                text(s.tr_v(ViewTextKey::FaultPendingRebootWarn))
+                                    .font(rune::tok::type_::TITLE)
+                                    .color(p.warning),
+                            ),
                     )
                     .child(
                         text(format!(
@@ -102,19 +124,94 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                             s.tr_v(ViewTextKey::FaultPendingRebootRename),
                             report.pending_reboot.pending_file_count
                         ))
-                        .font(rune::tok::type_::BODY)
+                        .font(rune::tok::type_::LABEL)
                         .color(p.text_primary),
-                    )
+                    );
+
+                // Detailed explanation & context
+                if report.pending_reboot.pending_file_rename {
+                    pending_card = pending_card.child(
+                        text("Why this happens: An installer, driver update, or system component requested Windows to replace or delete in-use files upon next boot (Session Manager PendingFileRenameOperations).")
+                            .font(rune::tok::type_::BODY)
+                            .color(p.text_muted)
+                            .shrink()
+                            .wrap(),
+                    );
+
+                    // Show queued file paths if available
+                    if !report.pending_reboot.pending_files.is_empty() {
+                        let mut file_list = col().gap(3.0).padding(6.0).radius(4.0).fill(p.bg_primary.alpha(0.6));
+                        let display_files: Vec<_> = report.pending_reboot.pending_files.iter().take(6).collect();
+                        for f in display_files {
+                            file_list = file_list.child(
+                                text(format!("• {}", f))
+                                    .font(rune::tok::type_::BODY)
+                                    .color(p.text_secondary)
+                                    .truncate(),
+                            );
+                        }
+                        if report.pending_reboot.pending_files.len() > 6 {
+                            file_list = file_list.child(
+                                text(format!("... and {} more pending files", report.pending_reboot.pending_files.len() - 6))
+                                    .font(rune::tok::type_::LABEL)
+                                    .color(p.text_muted),
+                            );
+                        }
+                        pending_card = pending_card.child(file_list);
+                    }
+                }
+
+                if report.pending_reboot.cbs_reboot || report.pending_reboot.windows_update_reboot {
+                    pending_card = pending_card.child(
+                        text("Windows Component-Based Servicing (CBS) has staged updates that are locked until system restart.")
+                            .font(rune::tok::type_::BODY)
+                            .color(p.text_muted)
+                            .shrink()
+                            .wrap(),
+                    );
+                }
+
+                // Remediation Action Buttons
+                let mut fix_buttons = row().gap(8.0).flex_wrap().pt(4.0);
+
+                fix_buttons = fix_buttons.child(
+                    action_button("🔄 Restart PC Now to Finalize", p.accent, Color::WHITE, p, |_| {
+                        let _ = crate::tools::diagnostics::FaultDiagnosticsReport::restart_system();
+                    })
+                    .radius(style.btn_radius()),
+                );
+
+                if report.pending_reboot.pending_file_rename {
+                    fix_buttons = fix_buttons.child(
+                        action_button("🧹 Clear Pending File Renames", p.btn_secondary, p.text_primary, p, |s| {
+                            let _ = crate::tools::diagnostics::FaultDiagnosticsReport::clear_pending_renames();
+                            s.fault_report = Some(crate::tools::diagnostics::FaultDiagnosticsReport::scan());
+                        })
+                        .radius(style.btn_radius()),
+                    );
+                }
+
+                if report.pending_reboot.cbs_reboot || report.pending_reboot.windows_update_reboot {
+                    fix_buttons = fix_buttons.child(
+                        action_button("🧹 Clear CBS Reboot Lock", p.btn_secondary, p.text_primary, p, |s| {
+                            let _ = crate::tools::diagnostics::FaultDiagnosticsReport::clear_cbs_reboot_flags();
+                            s.fault_report = Some(crate::tools::diagnostics::FaultDiagnosticsReport::scan());
+                        })
+                        .radius(style.btn_radius()),
+                    );
+                }
+
+                pending_card.child(fix_buttons)
             } else {
                 col()
                     .w_full()
-                    .padding(10.0)
+                    .padding(12.0)
                     .radius(style.card_radius())
                     .fill(p.success.alpha(0.12))
                     .border(1.0, p.success)
                     .child(
                         text(s.tr_v(ViewTextKey::FaultPendingRebootClean))
-                            .font(rune::tok::type_::LABEL)
+                            .font(rune::tok::type_::TITLE)
                             .color(p.success),
                     )
             },
@@ -132,13 +229,27 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                 .gap(8.0)
                 .child(
                     row()
-                        .gap(6.0)
-                        .center()
-                        .child(text("🛡️").font(rune::tok::type_::LABEL))
+                        .w_full()
+                        .justify_between()
+                        .items_center()
                         .child(
-                            text(s.tr_v(ViewTextKey::FaultMinidumpSectionTitle))
-                                .font(rune::tok::type_::LABEL)
-                                .color(p.text_primary),
+                            row()
+                                .gap(6.0)
+                                .center()
+                                .child(text("🛡️").font(rune::tok::type_::LABEL))
+                                .child(
+                                    text(s.tr_v(ViewTextKey::FaultMinidumpSectionTitle))
+                                        .font(rune::tok::type_::LABEL)
+                                        .color(p.text_primary),
+                                ),
+                        )
+                        .child(
+                            action_button("📁 Open Minidump Folder", p.btn_secondary, p.text_primary, p, |_| {
+                                let _ = crate::core::process::SilentCommand::new("explorer.exe")
+                                    .args([r#"C:\Windows\Minidump"#])
+                                    .spawn();
+                            })
+                            .radius(style.btn_radius()),
                         ),
                 )
                 .child(if report.minidumps.is_empty() {

@@ -9,14 +9,14 @@
 [![License](https://img.shields.io/badge/License-MIT-blueviolet?style=for-the-badge)](LICENSE)
 [![Platform](https://img.shields.io/badge/Platform-Windows%2010%20%7C%2011%20(x64)-0078D6?style=for-the-badge&logo=windows)](https://github.com/Konstrukturmx/WinBlast-Optimizer)
 [![Rust](https://img.shields.io/badge/Rust-2021%20Edition-DEA584?style=for-the-badge&logo=rust)](https://www.rust-lang.org/)
-[![Tests](https://img.shields.io/badge/Tests-154%20Passed%20(100%25)-success?style=for-the-badge)](tests/)
+[![Tests](https://img.shields.io/badge/Tests-155%20Passed%20(100%25)-success?style=for-the-badge)](tests/)
 [![Languages](https://img.shields.io/badge/i18n-8%20Languages%20(510%20Keys)-orange?style=for-the-badge)](src/core/i18n.rs)
 
 <p align="center">
   <b>WinBlast Optimizer</b> is a standalone, lightweight, zero-dependency Windows optimization suite designed for performance enthusiasts, competitive gamers, power users, and system administrators. Built in pure Rust with direct Win32/NT kernel bindings, it replaces bloated PowerShell scripts and black-box tweakers with an auditable, transactional, and fully reversible optimization engine.
 </p>
 
-[**Download Latest Release (v1.5.0)**](https://github.com/Konstrukturmx/WinBlast-Optimizer/releases/latest) • [**Changelog**](CHANGELOG.md) • [**Architecture Guide**](DEVELOPMENT.md) • [**VirusTotal Report**](https://www.virustotal.com/gui/file/19895c54d3699391aebedb5c3e384aeb7ac5a73f8d1bee9ff7da4cd623d2fa00) • [**Knowledge Graph**](graphify-out/graph.html)
+[**Download Latest Release (v1.5.1)**](https://github.com/Konstrukturmx/WinBlast-Optimizer/releases/latest) • [**Changelog**](CHANGELOG.md) • [**Architecture Guide**](DEVELOPMENT.md) • [**VirusTotal Report**](https://www.virustotal.com/gui/file/19895c54d3699391aebedb5c3e384aeb7ac5a73f8d1bee9ff7da4cd623d2fa00) • [**Knowledge Graph**](graphify-out/graph.html)
 
 ---
 
@@ -140,12 +140,12 @@ The optimizer features **208 validated declarative optimizations** indexed acros
 
 Because WinBlast Optimizer adjusts low-level system settings, Windows Registry parameters, and hardware power states, transparency and security are paramount.
 
-* **Target Binary**: `winblast0.exe` (v1.5.0)
+* **Target Binary**: `winblast0.exe` (v1.5.1)
 * **Digital Signature**: Microsoft Authenticode signed by `Konstrukturmx` with DigiCert RFC 3161 SHA-256 timestamping
-* **File Size**: `31,533,608` bytes (30.0 MB)
+* **File Size**: `31,958,016` bytes (30.5 MB)
 * **SHA-256 Checksum**:
   ```text
-  b26c4b9d1757d001544ec12f868b6ee04fa14868aca14f0527ec6ba654eb819d
+  622cd52b7800151e155572bc5a5f118f2f00833f7ad5a58bb5f23167dd3a59c2
   ```
 * **Microsoft Defender Heuristics**: Clean PE metadata, authentic Win32 API calls, embedded UAC manifest, and permanent application icon `winblast.ico`.
 * **VirusTotal Scan Result**: [**View Official VirusTotal Report**](https://www.virustotal.com/gui/file/19895c54d3699391aebedb5c3e384aeb7ac5a73f8d1bee9ff7da4cd623d2fa00)
@@ -170,7 +170,7 @@ cd WinBlast-Optimizer
 # Check codebase and dependencies
 cargo check --all-targets
 
-# Run the complete test suite (154 tests)
+# Run the complete test suite (155 tests)
 cargo test
 
 # Compile optimized release binary
@@ -191,11 +191,11 @@ WinBlast Optimizer includes an exhaustive test suite verifying safety across rea
 | Test Suite | Coverage & Validation Focus | Results |
 | :--- | :--- | :---: |
 | **`cargo test --lib`** | Core i18n tables (8 languages, 510 keys), NT timer resolution, CPU topology classification, power range unlock, Dijkstra & A* & Raven graph engines, multi-strategy fallbacks, scanner logic, and risk valuation. | **109 / 109 PASS** |
-| **`tweak_sandbox_e2e`** | Isolated mock registry & file trees, worker panic recovery, partial mutation failure rollback, epoch scan fencing, and concurrent transactions. | **24 / 24 PASS** |
-| **`ui_responsive_e2e`** | Headless DOM tree verification, multi-resolution viewport sweeps (720p to 4K, 2,160 frame sweep), theme switching, and multi-locale layout stress testing. | **13 / 13 PASS** |
+| **`tweak_sandbox_e2e`** | Isolated mock registry & file trees, worker panic recovery, partial mutation failure rollback, epoch scan fencing, startup status filtering & sorting, and concurrent transactions. | **25 / 25 PASS** |
+| **`ui_responsive_e2e`** | Headless DOM tree verification, multi-resolution viewport sweeps (720p to 4K, 2,160 frame sweep), dropdown popovers, theme switching, and multi-locale layout stress testing. | **13 / 13 PASS** |
 | **`ui_scrollbar_test`** | Headless E2E scroll-bar geometry, hover-widening, right gutter collision safety, and drag/wheel-scroll interaction across all views and sidebar. | **5 / 5 PASS** |
 | **`real_windows_env`** | Live host read-only audit, Win32 registry type round-trips, and safe NTFS junction cleanups. | **3 / 3 PASS** |
-| **Total Automated Tests** | **Zero failures, zero panics, zero warnings** | **154 / 154 PASS** |
+| **Total Automated Tests** | **Zero failures, zero panics, zero warnings** | **155 / 155 PASS** |
 
 ---
 

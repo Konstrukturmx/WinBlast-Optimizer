@@ -76,12 +76,23 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                                 ),
                         )
                         .child(
-                            action_button(s.tr_v(ViewTextKey::AboutOpenGithub), p.accent, Color::WHITE, p, |_| {
-                                let _ = crate::core::process::SilentCommand::new("rundll32")
-                                    .args(["url.dll,FileProtocolHandler", "https://github.com/Konstrukturmx/WinBlast-Optimizer"])
-                                    .spawn();
-                            })
-                            .radius(style.btn_radius()),
+                            row()
+                                .gap(8.0)
+                                .items_center()
+                                .child(
+                                    action_button(s.tr_v(ViewTextKey::AboutOpenGithub), p.accent, Color::WHITE, p, |_| {
+                                        let _ = crate::core::process::SilentCommand::new("rundll32")
+                                            .args(["url.dll,FileProtocolHandler", "https://github.com/Konstrukturmx/WinBlast-Optimizer"])
+                                            .spawn();
+                                    })
+                                    .radius(style.btn_radius()),
+                                )
+                                .child(
+                                    action_button("🐛 Report Bug on GitHub", p.danger.alpha(0.85), Color::WHITE, p, |s| {
+                                        s.open_bug_report();
+                                    })
+                                    .radius(style.btn_radius()),
+                                ),
                         ),
                 )
                 .child(

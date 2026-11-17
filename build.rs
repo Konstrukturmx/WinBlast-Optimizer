@@ -13,12 +13,12 @@ fn main() {
         res.set_icon("assets/winblast.ico");
         res.set("CompanyName", "Konstrukturmx");
         res.set("FileDescription", "WinBlast Optimizer — Windows System Optimizer & Hardware Latency Engine");
-        res.set("FileVersion", "1.5.0.0");
+        res.set("FileVersion", "1.5.1.0");
         res.set("InternalName", "winblast0");
         res.set("LegalCopyright", "Copyright © 2026 Konstrukturmx. Licensed under the MIT License.");
         res.set("OriginalFilename", "winblast0.exe");
         res.set("ProductName", "WinBlast Optimizer");
-        res.set("ProductVersion", "1.5.0.0");
+        res.set("ProductVersion", "1.5.1.0");
         if let Err(e) = res.compile() {
             eprintln!("Warning: Failed to compile Windows resource: {e}");
         }

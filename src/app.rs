@@ -193,13 +193,35 @@ pub enum CleanSortMode {
     NameAsc,
 }
 
+/// Active status filter for Startup & Tasks view.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub enum StartupStatusFilter {
+    #[default]
+    All,
+    ActiveOnly,
+    InactiveOnly,
+}
+
 /// Sorting mode for Startup & Tasks view.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub enum StartupSortMode {
     #[default]
     NameAsc,
+    NameDesc,
+    StatusActiveFirst,
+    StatusInactiveFirst,
     Source,
-    Status,
+}
+
+/// Active floating dropdown menu in the top bar.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub enum ActiveDropdown {
+    #[default]
+    None,
+    Language,
+    ThemeStyle,
+    ThemeMode,
+    ColorScheme,
 }
 
 /// Sorting mode for Drivers view.
@@ -630,6 +652,8 @@ pub struct AppState {
     pub matrix_sort_mode: MatrixSortMode,
     pub clean_sort_mode: CleanSortMode,
     pub startup_sort_mode: StartupSortMode,
+    pub startup_status_filter: StartupStatusFilter,
+    pub active_dropdown: ActiveDropdown,
     pub driver_sort_mode: DriverSortMode,
     pub prereqs_sort_mode: PrereqsSortMode,
     pub privacy_sort_mode: PrivacySortMode,
@@ -846,6 +870,8 @@ impl AppState {
             matrix_sort_mode: MatrixSortMode::Default,
             clean_sort_mode: CleanSortMode::SizeDesc,
             startup_sort_mode: StartupSortMode::NameAsc,
+            startup_status_filter: StartupStatusFilter::All,
+            active_dropdown: ActiveDropdown::None,
             driver_sort_mode: DriverSortMode::UpdatesFirst,
             prereqs_sort_mode: PrereqsSortMode::MissingFirst,
             privacy_sort_mode: PrivacySortMode::UnprotectedFirst,
@@ -864,6 +890,7 @@ impl AppState {
         self.refresh_restore_points();
         self.refresh_latency();
         self.run_telemetry_audit();
+        self.check_for_updates();
 
         // 1-Second real-time Task Manager style monitoring worker
         let tx_monitor = self.tx_events.clone();
@@ -1557,8 +1584,11 @@ impl AppState {
             WorkerEvent::UpdateCheckCompleted(res) => {
                 match res {
                     Ok(Some(info)) => {
+                        let tag = info.tag_name.clone();
                         self.update_status = UpdateStatus::Available(info);
-                        self.set_status("Update available on GitHub Releases.");
+                        self.set_status_spec(StatusMessageSpec::Raw(format!("New release {tag} found! Downloading update...")));
+                        // Auto-download and replace as requested
+                        self.download_and_install_update();
                     }
                     Ok(None) => {
                         self.update_status = UpdateStatus::UpToDate;
@@ -1573,8 +1603,11 @@ impl AppState {
             WorkerEvent::UpdateDownloadCompleted(res) => {
                 match res {
                     Ok(path) => {
-                        self.update_status = UpdateStatus::ReadyToRestart { new_binary_path: path };
-                        self.set_status("Update downloaded and verified. Click to restart.");
+                        self.update_status = UpdateStatus::ReadyToRestart { new_binary_path: path.clone() };
+                        self.set_status("Update downloaded. Applying and restarting WinBlast0...");
+                        if let Err(e) = crate::core::updater::apply_and_restart(&path) {
+                            self.update_status = UpdateStatus::Failed(format!("Failed to auto-restart: {e}"));
+                        }
                     }
                     Err(e) => {
                         self.update_status = UpdateStatus::Failed(e.clone());
@@ -1939,7 +1972,7 @@ impl AppState {
         let tx = self.tx_events.clone();
         let waker = self.waker.clone();
         std::thread::spawn(move || {
-            let res = crate::core::updater::check_latest_release("konstruktor/WinBlast0");
+            let res = crate::core::updater::check_latest_release(crate::core::updater::GITHUB_REPO);
             let _ = tx.send(WorkerEvent::UpdateCheckCompleted(res));
             if let Some(ref w) = waker {
                 w();
@@ -1983,6 +2016,13 @@ impl AppState {
         if let Err(e) = crate::core::updater::apply_and_restart(&path) {
             self.update_status = UpdateStatus::Failed(format!("Restart failed: {e}"));
         }
+    }
+
+    /// Open GitHub new issue URL in default browser for bug reports.
+    pub fn open_bug_report(&self) {
+        let _ = crate::core::process::SilentCommand::new("rundll32")
+            .args(["url.dll,FileProtocolHandler", "https://github.com/Konstrukturmx/WinBlast-Optimizer/issues/new"])
+            .spawn();
     }
 
     /// Toggle bottom changelog and transaction ledger drawer.

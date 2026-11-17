@@ -568,26 +568,20 @@ pub fn view(s: &AppState, cx: &mut Cx<AppState>) -> El {
                 .px(8.0)
                 .py(4.0)
                 .radius(5.0)
-                .fill(p.bg_card)
-                .border(1.0, p.border)
+                .fill(if s.active_dropdown == crate::app::ActiveDropdown::Language { p.accent.alpha(0.20) } else { p.bg_card })
+                .border(1.0, if s.active_dropdown == crate::app::ActiveDropdown::Language { p.accent } else { p.border })
                 .hover(p.bg_card_hover)
                 .motion(rune::tok::motion::SNAPPY)
                 .center()
                 .on_press(|s: &mut AppState| {
-                    let next = match s.language {
-                        Language::English => Language::Turkish,
-                        Language::Turkish => Language::German,
-                        Language::German => Language::French,
-                        Language::French => Language::Spanish,
-                        Language::Spanish => Language::Russian,
-                        Language::Russian => Language::Chinese,
-                        Language::Chinese => Language::Japanese,
-                        Language::Japanese => Language::English,
+                    s.active_dropdown = if s.active_dropdown == crate::app::ActiveDropdown::Language {
+                        crate::app::ActiveDropdown::None
+                    } else {
+                        crate::app::ActiveDropdown::Language
                     };
-                    s.set_language(next);
                 })
                 .child(
-                    text(format!("🌐 {}", s.language.label()))
+                    text(format!("🌐 {} ▾", s.language.label()))
                         .font(rune::tok::type_::LABEL)
                         .color(p.text_primary)
                         .shrink()
@@ -601,18 +595,24 @@ pub fn view(s: &AppState, cx: &mut Cx<AppState>) -> El {
                 .px(8.0)
                 .py(4.0)
                 .radius(5.0)
-                .fill(p.bg_card)
-                .border(1.0, p.border)
+                .fill(if s.active_dropdown == crate::app::ActiveDropdown::ThemeMode { p.accent.alpha(0.20) } else { p.bg_card })
+                .border(1.0, if s.active_dropdown == crate::app::ActiveDropdown::ThemeMode { p.accent } else { p.border })
                 .hover(p.bg_card_hover)
                 .motion(rune::tok::motion::SNAPPY)
                 .center()
-                .on_press(|s: &mut AppState| s.toggle_theme_mode())
+                .on_press(|s: &mut AppState| {
+                    s.active_dropdown = if s.active_dropdown == crate::app::ActiveDropdown::ThemeMode {
+                        crate::app::ActiveDropdown::None
+                    } else {
+                        crate::app::ActiveDropdown::ThemeMode
+                    };
+                })
                 .child(
-                    text(if s.theme_mode == ThemeMode::Dark {
+                    text(format!("{} ▾", if s.theme_mode == ThemeMode::Dark {
                         s.tr(TextKey::ThemeDark)
                     } else {
                         s.tr(TextKey::ThemeLight)
-                    })
+                    }))
                     .font(rune::tok::type_::LABEL)
                     .color(p.text_primary)
                     .shrink()
@@ -649,9 +649,14 @@ pub fn view(s: &AppState, cx: &mut Cx<AppState>) -> El {
                     crate::ui::theme::UiThemeStyle::Materialistic => crate::ui::theme::UiThemeStyle::Glassy,
                 };
                 s.set_theme_style(next);
+                s.active_dropdown = if s.active_dropdown == crate::app::ActiveDropdown::ThemeStyle {
+                    crate::app::ActiveDropdown::None
+                } else {
+                    crate::app::ActiveDropdown::ThemeStyle
+                };
             })
             .child(
-                text(theme_btn_label)
+                text(format!("{} ▾", theme_btn_label))
                     .font(rune::tok::type_::LABEL)
                     .color(p.accent)
                     .shrink()
@@ -668,24 +673,20 @@ pub fn view(s: &AppState, cx: &mut Cx<AppState>) -> El {
                     .px(8.0)
                     .py(4.0)
                     .radius(p.btn_radius)
-                    .fill(p.bg_card)
-                    .border(p.border_width, p.border)
+                    .fill(if s.active_dropdown == crate::app::ActiveDropdown::ColorScheme { p.accent.alpha(0.20) } else { p.bg_card })
+                    .border(p.border_width, if s.active_dropdown == crate::app::ActiveDropdown::ColorScheme { p.accent } else { p.border })
                     .hover(p.bg_card_hover)
                     .motion(p.motion)
                     .center()
                     .on_press(|s: &mut AppState| {
-                        let next = match s.color_scheme {
-                            ColorScheme::CyberIndigo => ColorScheme::MidnightStealth,
-                            ColorScheme::MidnightStealth => ColorScheme::EmeraldMint,
-                            ColorScheme::EmeraldMint => ColorScheme::CrimsonSunset,
-                            ColorScheme::CrimsonSunset => ColorScheme::SolarAmber,
-                            ColorScheme::SolarAmber => ColorScheme::ArcticAurora,
-                            ColorScheme::ArcticAurora => ColorScheme::CyberIndigo,
+                        s.active_dropdown = if s.active_dropdown == crate::app::ActiveDropdown::ColorScheme {
+                            crate::app::ActiveDropdown::None
+                        } else {
+                            crate::app::ActiveDropdown::ColorScheme
                         };
-                        s.set_color_scheme(next);
                     })
                     .child(
-                        text(s.tr(s.color_scheme.text_key()))
+                        text(format!("{} ▾", s.tr(s.color_scheme.text_key())))
                             .font(rune::tok::type_::LABEL)
                             .color(p.accent)
                             .shrink()
@@ -1261,6 +1262,12 @@ pub fn view(s: &AppState, cx: &mut Cx<AppState>) -> El {
         );
     }
 
+    footer = footer.child(
+        action_button("🐛 Report Bug", Color::TRANSPARENT, p.accent, p, |s| {
+            s.open_bug_report();
+        }),
+    );
+
     // ── Root Frame & Window-Level Diff Preview Overlay ───────────────────────
     let mut root = col()
         .key("winblast_root")
@@ -1303,5 +1310,232 @@ pub fn view(s: &AppState, cx: &mut Cx<AppState>) -> El {
         );
     }
 
+    if s.active_dropdown != crate::app::ActiveDropdown::None {
+        root = root.child(build_dropdown_overlay(s, p, tier));
+    }
+
     root
+}
+
+/// Floating dropdown menu for top bar controls (Language, Theme Mode, Theme Style, Color Scheme).
+fn build_dropdown_overlay(s: &AppState, p: &ThemePalette, tier: LayoutTier) -> El {
+    use crate::app::ActiveDropdown;
+    let content = match s.active_dropdown {
+        ActiveDropdown::None => return el(),
+        ActiveDropdown::Language => {
+            let languages = [
+                (Language::English, "English", "English"),
+                (Language::Turkish, "Türkçe", "Turkish"),
+                (Language::German, "Deutsch", "German"),
+                (Language::French, "Français", "French"),
+                (Language::Spanish, "Español", "Spanish"),
+                (Language::Russian, "Русский", "Russian"),
+                (Language::Chinese, "中文", "Simplified Chinese"),
+                (Language::Japanese, "日本語", "Japanese"),
+            ];
+            let mut list = col().gap(2.0).w_full();
+            for (lang, native, en) in languages {
+                let is_sel = s.language == lang;
+                list = list.child(
+                    row()
+                        .key(format!("dropdown_lang_{:?}", lang))
+                        .w_full()
+                        .px(10.0)
+                        .py(6.0)
+                        .radius(4.0)
+                        .fill(if is_sel { p.accent.alpha(0.20) } else { Color::TRANSPARENT })
+                        .hover(p.bg_card_hover)
+                        .justify_between()
+                        .items_center()
+                        .on_press(move |s: &mut AppState| {
+                            s.set_language(lang);
+                            s.active_dropdown = ActiveDropdown::None;
+                        })
+                        .child(
+                            row()
+                                .gap(8.0)
+                                .items_center()
+                                .child(text(native).font(rune::tok::type_::BODY).color(if is_sel { p.accent } else { p.text_primary }))
+                                .child(text(format!("({})", en)).font(rune::tok::type_::LABEL).color(p.text_muted)),
+                        )
+                        .child(
+                            text(if is_sel { "✓" } else { "" })
+                                .font(rune::tok::type_::TITLE)
+                                .color(p.accent),
+                        ),
+                );
+            }
+            col()
+                .w(230.0)
+                .padding(8.0)
+                .radius(8.0)
+                .fill(p.bg_card)
+                .border(1.0, p.border)
+                .child(
+                    row()
+                        .w_full()
+                        .pb(6.0)
+                        .justify_between()
+                        .items_center()
+                        .child(text("🌐 Select Language").font(rune::tok::type_::LABEL).color(p.text_muted))
+                        .child(
+                            action_button("✕", Color::TRANSPARENT, p.text_muted, p, |s| s.active_dropdown = ActiveDropdown::None),
+                        ),
+                )
+                .child(list)
+        }
+        ActiveDropdown::ThemeStyle => {
+            let styles = [
+                (crate::ui::theme::UiThemeStyle::Glassy, "✨ Glassy (Mica / Acrylic)"),
+                (crate::ui::theme::UiThemeStyle::Minimalistic, "◻ Minimalistic (Flat Edge)"),
+                (crate::ui::theme::UiThemeStyle::Classic, "🗔 Classic (Windows Native)"),
+                (crate::ui::theme::UiThemeStyle::Compact, "☰ Compact (High Density)"),
+                (crate::ui::theme::UiThemeStyle::Materialistic, "📐 Materialistic (Card Elevated)"),
+            ];
+            let mut list = col().gap(2.0).w_full();
+            for (st, label) in styles {
+                let is_sel = s.theme_style == st;
+                list = list.child(
+                    row()
+                        .key(format!("dropdown_theme_{:?}", st))
+                        .w_full()
+                        .px(10.0)
+                        .py(6.0)
+                        .radius(4.0)
+                        .fill(if is_sel { p.accent.alpha(0.20) } else { Color::TRANSPARENT })
+                        .hover(p.bg_card_hover)
+                        .justify_between()
+                        .items_center()
+                        .on_press(move |s: &mut AppState| {
+                            s.set_theme_style(st);
+                            s.active_dropdown = ActiveDropdown::None;
+                        })
+                        .child(text(label).font(rune::tok::type_::BODY).color(if is_sel { p.accent } else { p.text_primary }))
+                        .child(text(if is_sel { "✓" } else { "" }).font(rune::tok::type_::TITLE).color(p.accent)),
+                );
+            }
+            col()
+                .w(250.0)
+                .padding(8.0)
+                .radius(8.0)
+                .fill(p.bg_card)
+                .border(1.0, p.border)
+                .child(
+                    row()
+                        .w_full()
+                        .pb(6.0)
+                        .justify_between()
+                        .items_center()
+                        .child(text("🎨 Theme Style").font(rune::tok::type_::LABEL).color(p.text_muted))
+                        .child(
+                            action_button("✕", Color::TRANSPARENT, p.text_muted, p, |s| s.active_dropdown = ActiveDropdown::None),
+                        ),
+                )
+                .child(list)
+        }
+        ActiveDropdown::ThemeMode => {
+            let modes = [
+                (ThemeMode::Dark, "🌙 Dark Mode"),
+                (ThemeMode::Light, "☀️ Light Mode"),
+            ];
+            let mut list = col().gap(2.0).w_full();
+            for (m, label) in modes {
+                let is_sel = s.theme_mode == m;
+                list = list.child(
+                    row()
+                        .w_full()
+                        .px(10.0)
+                        .py(6.0)
+                        .radius(4.0)
+                        .fill(if is_sel { p.accent.alpha(0.20) } else { Color::TRANSPARENT })
+                        .hover(p.bg_card_hover)
+                        .justify_between()
+                        .items_center()
+                        .on_press(move |s: &mut AppState| {
+                            s.theme_mode = m;
+                            s.active_dropdown = ActiveDropdown::None;
+                        })
+                        .child(text(label).font(rune::tok::type_::BODY).color(if is_sel { p.accent } else { p.text_primary }))
+                        .child(text(if is_sel { "✓" } else { "" }).font(rune::tok::type_::TITLE).color(p.accent)),
+                );
+            }
+            col()
+                .w(180.0)
+                .padding(8.0)
+                .radius(8.0)
+                .fill(p.bg_card)
+                .border(1.0, p.border)
+                .child(
+                    row()
+                        .w_full()
+                        .pb(6.0)
+                        .justify_between()
+                        .items_center()
+                        .child(text("🌓 Display Mode").font(rune::tok::type_::LABEL).color(p.text_muted))
+                        .child(
+                            action_button("✕", Color::TRANSPARENT, p.text_muted, p, |s| s.active_dropdown = ActiveDropdown::None),
+                        ),
+                )
+                .child(list)
+        }
+        ActiveDropdown::ColorScheme => {
+            let schemes = [
+                (ColorScheme::CyberIndigo, "Cyber Indigo"),
+                (ColorScheme::MidnightStealth, "Midnight Stealth"),
+                (ColorScheme::EmeraldMint, "Emerald Mint"),
+                (ColorScheme::CrimsonSunset, "Crimson Sunset"),
+                (ColorScheme::SolarAmber, "Solar Amber"),
+                (ColorScheme::ArcticAurora, "Arctic Aurora"),
+            ];
+            let mut list = col().gap(2.0).w_full();
+            for (cs, label) in schemes {
+                let is_sel = s.color_scheme == cs;
+                list = list.child(
+                    row()
+                        .w_full()
+                        .px(10.0)
+                        .py(6.0)
+                        .radius(4.0)
+                        .fill(if is_sel { p.accent.alpha(0.20) } else { Color::TRANSPARENT })
+                        .hover(p.bg_card_hover)
+                        .justify_between()
+                        .items_center()
+                        .on_press(move |s: &mut AppState| {
+                            s.set_color_scheme(cs);
+                            s.active_dropdown = ActiveDropdown::None;
+                        })
+                        .child(text(label).font(rune::tok::type_::BODY).color(if is_sel { p.accent } else { p.text_primary }))
+                        .child(text(if is_sel { "✓" } else { "" }).font(rune::tok::type_::TITLE).color(p.accent)),
+                );
+            }
+            col()
+                .w(200.0)
+                .padding(8.0)
+                .radius(8.0)
+                .fill(p.bg_card)
+                .border(1.0, p.border)
+                .child(
+                    row()
+                        .w_full()
+                        .pb(6.0)
+                        .justify_between()
+                        .items_center()
+                        .child(text("🌈 Color Scheme").font(rune::tok::type_::LABEL).color(p.text_muted))
+                        .child(
+                            action_button("✕", Color::TRANSPARENT, p.text_muted, p, |s| s.active_dropdown = ActiveDropdown::None),
+                        ),
+                )
+                .child(list)
+        }
+    };
+
+    col()
+        .key("topbar_dropdown_card")
+        .pin(
+            Some(50.0),
+            if tier == LayoutTier::Compact { Some(8.0) } else { Some(20.0) },
+            None,
+            None,
+        )
+        .child(content)
 }
