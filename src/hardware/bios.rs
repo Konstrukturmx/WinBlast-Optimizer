@@ -77,17 +77,22 @@ impl BiosSystemInfo {
             }
         }
 
-        // 3. Secure Boot State
+        // 3. Secure Boot State & Firmware Boot Type (UEFI vs Legacy)
+        let mut is_uefi = true;
+        if let Ok(ctrl_key) = hklm.open_subkey("SYSTEM\\CurrentControlSet\\Control") {
+            if let Ok(fw_type) = ctrl_key.get_value::<u32, _>("PEFirmwareType") {
+                is_uefi = fw_type == 2;
+            }
+        }
+        info.uefi_boot = is_uefi;
+
         if let Ok(sb_key) =
             hklm.open_subkey("SYSTEM\\CurrentControlSet\\Control\\SecureBoot\\State")
         {
             let sb_val: Result<u32, _> = sb_key.get_value("UEFISecureBootEnabled");
             info.secure_boot = sb_val.map(|v| v == 1).unwrap_or(false);
-            info.uefi_boot = true;
         } else {
-            // Check UEFI firmware type
             info.secure_boot = false;
-            info.uefi_boot = true;
         }
 
         // 4. Query Installed Graphics / Display Drivers from Win32 Class Registry
@@ -105,10 +110,18 @@ impl BiosSystemInfo {
                         let inf: Result<String, _> = dev_key.get_value("InfPath");
 
                         if let (Ok(name), Ok(version)) = (desc, ver) {
-                            // Filter out basic display mirror drivers
-                            if !name.to_lowercase().contains("remote")
-                                && !name.to_lowercase().contains("vnc")
-                            {
+                            let name_lower = name.to_lowercase();
+                            // Filter out virtual/mirror/remote display adapters
+                            let is_virtual = name_lower.contains("remote")
+                                || name_lower.contains("vnc")
+                                || name_lower.contains("spacedesk")
+                                || name_lower.contains("parsec")
+                                || name_lower.contains("miracast")
+                                || name_lower.contains("virtual display")
+                                || name_lower.contains("citrix")
+                                || name_lower.contains("indirect")
+                                || name_lower.contains("idd");
+                            if !is_virtual {
                                 info.display_drivers.push(DisplayDriverInfo {
                                     gpu_name: name,
                                     driver_version: version,
