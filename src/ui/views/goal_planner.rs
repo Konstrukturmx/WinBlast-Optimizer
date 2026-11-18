@@ -7,6 +7,7 @@ use rune::color::Color;
 use rune::{col, el, row, text, El};
 
 use crate::app::AppState;
+use crate::core::view_i18n::ViewTextKey;
 use crate::graph::astar::OptimizationGoal;
 use crate::ui::widgets::button::{action_button, action_button_guarded};
 use crate::ui::widgets::scrollbar::WinBlastScrollable;
@@ -36,14 +37,14 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
                 .min_w(200.0)
                 .gap(4.0)
                 .child(
-                    text("A* Goal Planner & Raven Optimizer")
+                    text(s.tr_v(ViewTextKey::GoalPlannerTitle))
                         .font(rune::tok::type_::TITLE)
                         .color(p.text_primary)
                         .shrink()
                         .wrap(),
                 )
                 .child(
-                    text("Heuristic goal-driven solver with Pareto conflict resolution and Dijkstra execution sequencing.")
+                    text(s.tr_v(ViewTextKey::GoalPlannerSubtitle))
                         .font(rune::tok::type_::BODY)
                         .color(p.text_muted)
                         .shrink()
@@ -99,7 +100,7 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
                         .color(if is_gaming { p.accent } else { p.text_primary }),
                 )
                 .child(
-                    text("Min Perf Gain: 25 | Max Risk: Moderate | Reboots Allowed")
+                    text(s.tr_v(ViewTextKey::GoalPlannerPresetMaxFps))
                         .font(rune::tok::type_::LABEL)
                         .color(p.text_muted),
                 )
@@ -132,7 +133,7 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
                         .color(if is_privacy { p.accent } else { p.text_primary }),
                 )
                 .child(
-                    text("Min Privacy Gain: 30 | Max Risk: Low | Zero Reboots")
+                    text(s.tr_v(ViewTextKey::GoalPlannerPresetMaxPrivacy))
                         .font(rune::tok::type_::LABEL)
                         .color(p.text_muted),
                 )
@@ -165,7 +166,7 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
                         .color(if is_balanced { p.accent } else { p.text_primary }),
                 )
                 .child(
-                    text("Min Gain: 15 / 15 | 100% Safe Only | Zero Reboots")
+                    text(s.tr_v(ViewTextKey::GoalPlannerPresetBalanced))
                         .font(rune::tok::type_::LABEL)
                         .color(p.text_muted),
                 )
@@ -220,7 +221,7 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
     if let Some(order) = &s.scheduled_order {
         if order.steps.is_empty() {
             schedule_col = schedule_col.child(
-                text("Click '⚡ Solve A* Path' to calculate the optimal execution sequence.")
+                text(s.tr_v(ViewTextKey::GoalPlannerSolvePrompt))
                     .font(rune::tok::type_::BODY)
                     .color(p.text_muted)
                     .py(20.0),
@@ -307,7 +308,7 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
         }
     } else {
         schedule_col = schedule_col.child(
-            text("Click '⚡ Solve A* Path' to calculate the optimal execution sequence.")
+            text(s.tr_v(ViewTextKey::GoalPlannerSolvePrompt))
                 .font(rune::tok::type_::BODY)
                 .color(p.text_muted)
                 .py(20.0),
@@ -322,7 +323,7 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
         .border(p.border_width, p.border)
         .gap(10.0)
         .child(
-            text("Topological Execution Schedule (Dijkstra Shortest Disruption Path)")
+            text(s.tr_v(ViewTextKey::GoalPlannerScheduleTitle))
                 .font(rune::tok::type_::TITLE)
                 .color(p.text_primary),
         )

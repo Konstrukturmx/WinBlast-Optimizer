@@ -334,7 +334,7 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
                 .gap(6.0)
                 .items_center()
                 .child(
-                    text("Risk:")
+                    text(format!("{}:", s.tr(TextKey::SortRisk)))
                         .font(rune::tok::type_::LABEL)
                         .color(p.text_muted)
                         .shrink(),

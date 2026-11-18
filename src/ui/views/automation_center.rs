@@ -8,6 +8,7 @@ use rune::{col, row, text, El, ScrollSpec};
 
 use crate::app::AppState;
 use crate::core::i18n::TextKey;
+use crate::core::view_i18n::ViewTextKey;
 use crate::tools::automation::AutoTuneProfile;
 use crate::ui::widgets::button::{action_button, action_button_guarded};
 use crate::ui::widgets::scrollbar::WinBlastScrollable;
@@ -104,13 +105,13 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                                 .center()
                                 .child(text("⚡").font(rune::tok::type_::LABEL))
                                 .child(
-                                    text("Auto-Tune Profiles")
+                                    text(s.tr_v(ViewTextKey::AutoCenterProfilesTitle))
                                         .font(rune::tok::type_::TITLE)
                                         .color(p.text_primary),
                                 ),
                         )
                         .child(
-                            text("Select an optimization profile tailored for your primary system workload:")
+                            text(s.tr_v(ViewTextKey::AutoCenterProfilesSubtitle))
                                 .font(rune::tok::type_::BODY)
                                 .color(p.text_muted),
                         )
@@ -176,7 +177,7 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                                 .center()
                                 .child(text("🩺").font(rune::tok::type_::LABEL))
                                 .child(
-                                    text("System Health Assessment")
+                                    text(s.tr_v(ViewTextKey::AutoCenterHealthAssessment))
                                         .font(rune::tok::type_::TITLE)
                                         .color(p.text_primary),
                                 ),
@@ -198,8 +199,8 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                             } else {
                                 col()
                                     .gap(4.0)
-                                    .child(text("Health audit pending...").font(rune::tok::type_::LABEL).color(p.text_muted))
-                                    .child(text("Run an audit or auto-tune to generate a system score.").font(rune::tok::type_::BODY).color(p.text_muted))
+                                    .child(text(s.tr_v(ViewTextKey::AutoCenterHealthPending)).font(rune::tok::type_::LABEL).color(p.text_muted))
+                                    .child(text(s.tr_v(ViewTextKey::AutoCenterHealthRunPrompt)).font(rune::tok::type_::BODY).color(p.text_muted))
                             },
                         ),
                 ),

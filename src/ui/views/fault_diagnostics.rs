@@ -83,7 +83,7 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                             .radius(style.btn_radius()),
                         )
                         .child(
-                            action_button("🐛 Report Fault to GitHub", p.btn_secondary, p.text_primary, p, |_| {
+                            action_button(s.tr_v(ViewTextKey::FaultReportToGithub), p.btn_secondary, p.text_primary, p, |_| {
                                 let _ = crate::core::process::SilentCommand::new("rundll32")
                                     .args(["url.dll,FileProtocolHandler", "https://github.com/Konstrukturmx/WinBlast-Optimizer/issues/new"])
                                     .spawn();
@@ -131,7 +131,7 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                 // Detailed explanation & context
                 if report.pending_reboot.pending_file_rename {
                     pending_card = pending_card.child(
-                        text("Why this happens: An installer, driver update, or system component requested Windows to replace or delete in-use files upon next boot (Session Manager PendingFileRenameOperations).")
+                        text(s.tr_v(ViewTextKey::FaultWhyPendingReboot))
                             .font(rune::tok::type_::BODY)
                             .color(p.text_muted)
                             .shrink()
@@ -151,8 +151,10 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                             );
                         }
                         if report.pending_reboot.pending_files.len() > 6 {
+                            let more_tmpl = s.tr_v(ViewTextKey::FaultMorePendingFiles);
+                            let more_text = more_tmpl.replace("{}", &(report.pending_reboot.pending_files.len() - 6).to_string());
                             file_list = file_list.child(
-                                text(format!("... and {} more pending files", report.pending_reboot.pending_files.len() - 6))
+                                text(more_text)
                                     .font(rune::tok::type_::LABEL)
                                     .color(p.text_muted),
                             );
@@ -163,7 +165,7 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
 
                 if report.pending_reboot.cbs_reboot || report.pending_reboot.windows_update_reboot {
                     pending_card = pending_card.child(
-                        text("Windows Component-Based Servicing (CBS) has staged updates that are locked until system restart.")
+                        text(s.tr_v(ViewTextKey::FaultCbsStagedDesc))
                             .font(rune::tok::type_::BODY)
                             .color(p.text_muted)
                             .shrink()
@@ -175,7 +177,7 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                 let mut fix_buttons = row().gap(8.0).flex_wrap().pt(4.0);
 
                 fix_buttons = fix_buttons.child(
-                    action_button("🔄 Restart PC Now to Finalize", p.accent, Color::WHITE, p, |_| {
+                    action_button(s.tr_v(ViewTextKey::FaultRestartPcNow), p.accent, Color::WHITE, p, |_| {
                         let _ = crate::tools::diagnostics::FaultDiagnosticsReport::restart_system();
                     })
                     .radius(style.btn_radius()),
@@ -183,7 +185,7 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
 
                 if report.pending_reboot.pending_file_rename {
                     fix_buttons = fix_buttons.child(
-                        action_button("🧹 Clear Pending File Renames", p.btn_secondary, p.text_primary, p, |s| {
+                        action_button(s.tr_v(ViewTextKey::FaultClearPendingRenames), p.btn_secondary, p.text_primary, p, |s| {
                             let _ = crate::tools::diagnostics::FaultDiagnosticsReport::clear_pending_renames();
                             s.fault_report = Some(crate::tools::diagnostics::FaultDiagnosticsReport::scan());
                         })
@@ -244,7 +246,7 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                                 ),
                         )
                         .child(
-                            action_button("📁 Open Minidump Folder", p.btn_secondary, p.text_primary, p, |_| {
+                            action_button(s.tr_v(ViewTextKey::FaultOpenMinidumpFolder), p.btn_secondary, p.text_primary, p, |_| {
                                 let _ = crate::core::process::SilentCommand::new("explorer.exe")
                                     .args([r#"C:\Windows\Minidump"#])
                                     .spawn();
@@ -295,17 +297,17 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                 .motion(p.motion)
                 .gap(6.0)
                 .child(
-                    text("System File Integrity & DISM Repair")
+                    text(s.tr_v(ViewTextKey::FaultDismSectionTitle))
                         .font(rune::tok::type_::LABEL)
                         .color(p.text_primary),
                 )
                 .child(
-                    text("If component store or system file corruption is suspected, you can execute DISM RestoreHealth and SFC repair tools.")
+                    text(s.tr_v(ViewTextKey::FaultDismSectionDesc))
                         .font(rune::tok::type_::BODY)
                         .color(p.text_secondary),
                 )
                 .child(
-                    action_button("Open Windows Repair Tool", p.accent, Color::WHITE, p, |s| {
+                    action_button(s.tr_v(ViewTextKey::FaultOpenRepairBtn), p.accent, Color::WHITE, p, |s| {
                         s.navigate(ActiveView::WindowsRepair);
                     })
                     .radius(style.btn_radius()),

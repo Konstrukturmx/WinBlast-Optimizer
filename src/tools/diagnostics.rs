@@ -121,15 +121,19 @@ impl FaultDiagnosticsReport {
         if let Ok(sm_key) =
             hklm.open_subkey("SYSTEM\\CurrentControlSet\\Control\\Session Manager")
         {
-            let files: Result<Vec<String>, _> = sm_key.get_value("PendingFileRenameOperations");
-            if let Ok(list) = files {
-                let non_empty: Vec<String> = list.into_iter().filter(|s| !s.trim().is_empty()).collect();
-                if !non_empty.is_empty() {
-                    report.pending_reboot.pending_file_rename = true;
-                    report.pending_reboot.pending_file_count = non_empty.len();
-                    report.pending_reboot.pending_files = non_empty;
-                    report.pending_reboot.is_pending = true;
-                }
+            let non_empty: Vec<String> = if let Ok(list) = sm_key.get_value::<Vec<String>, _>("PendingFileRenameOperations") {
+                list.into_iter().filter(|s| !s.trim().is_empty()).collect()
+            } else if let Ok(val) = sm_key.get_raw_value("PendingFileRenameOperations") {
+                parse_multi_sz_lossless(&val.bytes)
+            } else {
+                Vec::new()
+            };
+
+            if !non_empty.is_empty() {
+                report.pending_reboot.pending_file_rename = true;
+                report.pending_reboot.pending_file_count = non_empty.len();
+                report.pending_reboot.pending_files = non_empty;
+                report.pending_reboot.is_pending = true;
             }
         }
 
@@ -196,4 +200,45 @@ impl FaultDiagnosticsReport {
             .map(|_| ())
             .map_err(|e| format!("Failed to initiate restart: {e}"))
     }
+}
+
+/// Parse a REG_MULTI_SZ buffer safely even if corrupted, with odd byte length,
+/// missing terminal nulls, or lone surrogate characters.
+pub fn parse_multi_sz_lossless(raw: &[u8]) -> Vec<String> {
+    if raw.is_empty() {
+        return Vec::new();
+    }
+    // Truncate to even number of bytes if corrupted with odd length
+    let even_len = raw.len() - (raw.len() % 2);
+    let mut u16_chars = Vec::with_capacity(even_len / 2);
+    for i in (0..even_len).step_by(2) {
+        u16_chars.push(u16::from_le_bytes([raw[i], raw[i + 1]]));
+    }
+
+    let mut result = Vec::new();
+    let mut current = Vec::new();
+
+    for ch in u16_chars {
+        if ch == 0 {
+            if !current.is_empty() {
+                let s = String::from_utf16_lossy(&current);
+                let trimmed = s.trim();
+                if !trimmed.is_empty() {
+                    result.push(trimmed.to_string());
+                }
+                current.clear();
+            }
+        } else {
+            current.push(ch);
+        }
+    }
+    if !current.is_empty() {
+        let s = String::from_utf16_lossy(&current);
+        let trimmed = s.trim();
+        if !trimmed.is_empty() {
+            result.push(trimmed.to_string());
+        }
+    }
+
+    result
 }

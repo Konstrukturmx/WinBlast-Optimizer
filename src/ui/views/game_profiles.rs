@@ -50,12 +50,12 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                 .gap(8.0)
                 .child(text("🎮").font(rune::tok::type_::TITLE))
                 .child(
-                    text("No Game Profiles Configured")
+                    text(s.tr_v(ViewTextKey::GameProfilesEmptyTitle))
                         .font(rune::tok::type_::SECTION)
                         .color(p.text_primary),
                 )
                 .child(
-                    text("Custom gaming profiles will appear here once added.")
+                    text(s.tr_v(ViewTextKey::GameProfilesEmptyDesc))
                         .font(rune::tok::type_::BODY)
                         .color(p.text_muted),
                 )

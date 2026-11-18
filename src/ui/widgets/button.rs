@@ -46,6 +46,7 @@ pub fn action_button(
 
     row()
         .min_w(0.0)
+        .min_h(28.0)
         .shrink()
         .px(11.0)
         .py(7.0)
@@ -192,6 +193,7 @@ pub fn action_button_with_tooltip(
     let tip = tooltip.into();
     row()
         .min_w(0.0)
+        .min_h(28.0)
         .shrink()
         .px(11.0)
         .py(7.0)
@@ -352,8 +354,7 @@ pub fn section_card(title: impl Into<String>, body: El, p: &ThemePalette) -> El 
                 .font(rune::tok::type_::TITLE)
                 .color(p.accent)
                 .shrink()
-                .wrap()
-                .wrap_anywhere(),
+                .wrap(),
         )
         .child(body)
 }

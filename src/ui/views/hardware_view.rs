@@ -6,6 +6,7 @@ use rune::{col, el, row, text, El, ScrollSpec};
 
 use crate::app::{ActiveView, AppState};
 use crate::core::i18n::TextKey;
+use crate::core::view_i18n::ViewTextKey;
 use crate::ui::widgets::button::{action_button, action_button_guarded, kv_row, section_card};
 use crate::ui::widgets::scrollbar::WinBlastScrollable;
 use crate::ui::widgets::sparkline;
@@ -418,7 +419,7 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
     };
 
     let power_card = {
-        let mut scheme_row = row().w_full().min_w(0.0).flex_wrap().gaps(6.0, 6.0);
+        let mut scheme_row = row().w_full().min_w(0.0).min_h(32.0).flex_wrap().gaps(6.0, 6.0);
         if s.power_schemes.is_empty() {
             scheme_row = scheme_row.child(
                 text(s.tr(TextKey::Scanning))
@@ -430,8 +431,22 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
         }
         for sc in &s.power_schemes {
             let guid = sc.guid.clone();
+            let norm_guid = sc.guid.to_ascii_lowercase();
+            let display_name = match norm_guid.as_str() {
+                "381b4222-f694-41f0-9685-ff5bb260df2e" => s.tr_v(ViewTextKey::PowerPlanBalanced),
+                "8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c" => s.tr_v(ViewTextKey::PowerPlanHighPerf),
+                "a1841308-3541-4fab-bc81-f71556f20b4a" => s.tr_v(ViewTextKey::PowerPlanPowerSaver),
+                "e9a42b02-d5df-448d-aa00-03f14749eb61" => s.tr_v(ViewTextKey::PowerPlanUltimate),
+                _ => {
+                    if sc.friendly_name.contains("WinBlast") {
+                        s.tr_v(ViewTextKey::PowerPlanWinBlastUltimate)
+                    } else {
+                        &sc.friendly_name
+                    }
+                }
+            };
             scheme_row = scheme_row.child(action_button_guarded(
-                format!("{}{}", if sc.is_active { "✔ " } else { "" }, sc.friendly_name),
+                format!("{}{}", if sc.is_active { "✔ " } else { "" }, display_name),
                 if sc.is_active { p.accent } else { p.btn_secondary },
                 if sc.is_active { Color::WHITE } else { p.text_primary },
                 !s.power_scheme_inflight && !s.is_rolling_back,
@@ -452,8 +467,15 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
         let body = col()
             .w_full()
             .min_w(0.0)
-            .gap(8.0)
-            .child(scheme_row)
+            .gap(12.0)
+            .child(
+                col()
+                    .w_full()
+                    .min_w(0.0)
+                    .gap(8.0)
+                    .child(scheme_row),
+            )
+            .child(el().w_full().h(1.0).fill(p.border.alpha(0.5)))
             .child(kv_row(s.tr(TextKey::HibernationLabel), hib_note, compact, p))
             .child(
                 row()

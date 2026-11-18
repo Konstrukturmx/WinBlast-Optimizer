@@ -10,6 +10,7 @@ use rune::{col, el, row, text, Cx, El, ScrollSpec};
 
 use crate::app::{ActiveView, AppMode, AppState, EngineMode};
 use crate::core::i18n::{Language, TextKey};
+use crate::core::view_i18n::ViewTextKey;
 use crate::ui::theme::{ColorScheme, ThemeMode, ThemePalette};
 use crate::ui::widgets::button::{action_button, action_button_guarded};
 use crate::ui::widgets::diff_modal;
@@ -372,7 +373,7 @@ fn build_sidebar(s: &AppState, p: &ThemePalette, tier: LayoutTier) -> El {
                     .gap(4.0)
                     .pb(4.0)
                     .child(mode_tab(
-                        s.tr(TextKey::InstantMode),
+                        s.tr_v(ViewTextKey::HeaderInstant),
                         s.engine_mode == EngineMode::Instant,
                         p,
                         |s| {
@@ -382,7 +383,7 @@ fn build_sidebar(s: &AppState, p: &ThemePalette, tier: LayoutTier) -> El {
                         },
                     ))
                     .child(mode_tab(
-                        s.tr(TextKey::NormalMode),
+                        s.tr_v(ViewTextKey::HeaderNormal),
                         s.engine_mode == EngineMode::Normal,
                         p,
                         |s| {
@@ -729,7 +730,7 @@ pub fn view(s: &AppState, cx: &mut Cx<AppState>) -> El {
                     .border(1.0, p.border)
                     .gap(3.0)
                     .child(mode_tab(
-                        "Instant",
+                        s.tr_v(ViewTextKey::HeaderInstant),
                         s.engine_mode == EngineMode::Instant,
                         p,
                         |s| {
@@ -739,7 +740,7 @@ pub fn view(s: &AppState, cx: &mut Cx<AppState>) -> El {
                         },
                     ))
                     .child(mode_tab(
-                        "Normal",
+                        s.tr_v(ViewTextKey::HeaderNormal),
                         s.engine_mode == EngineMode::Normal,
                         p,
                         |s| {
@@ -1246,7 +1247,7 @@ pub fn view(s: &AppState, cx: &mut Cx<AppState>) -> El {
     }
 
     footer = footer.child(
-        action_button("🐛 Report Bug", Color::TRANSPARENT, p.accent, p, |s| {
+        action_button(s.tr_v(ViewTextKey::FooterReportBug), Color::TRANSPARENT, p.accent, p, |s| {
             s.open_bug_report();
         }),
     );

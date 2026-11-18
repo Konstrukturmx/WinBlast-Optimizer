@@ -11,6 +11,36 @@ use crate::ui::widgets::button::action_button;
 use crate::ui::widgets::scrollbar::WinBlastScrollable;
 use crate::ui::LayoutTier;
 
+fn localize_dns_category<'a>(s: &'a AppState, cat: &'a str) -> &'a str {
+    match cat {
+        "Ultra-Low Latency & Privacy" => s.tr_v(ViewTextKey::NetDiagCatUltraLowLatency),
+        "Global Anycast & Reliability" => s.tr_v(ViewTextKey::NetDiagCatAnycast),
+        "Malware Threat Shield & Zero Logs" => s.tr_v(ViewTextKey::NetDiagCatMalwareThreat),
+        "Ad & Tracker Blocking" => s.tr_v(ViewTextKey::NetDiagCatAdTracker),
+        "Enterprise Security & Phishing Filter" => s.tr_v(ViewTextKey::NetDiagCatEnterprisePhishing),
+        "High-Performance Anycast" => s.tr_v(ViewTextKey::NetDiagCatHighPerfAnycast),
+        "Tier-1 Backbone Routing" => s.tr_v(ViewTextKey::NetDiagCatTier1Routing),
+        "Real-Time Cyber Threat Filter" => s.tr_v(ViewTextKey::NetDiagCatCyberThreat),
+        "Security & Malware Filtering" => s.tr_v(ViewTextKey::NetDiagCatSecurityMalware),
+        "Zero-Log Strict Privacy" => s.tr_v(ViewTextKey::NetDiagCatZeroLogPrivacy),
+        _ => cat,
+    }
+}
+
+fn localize_dns_status<'a>(s: &'a AppState, status: &'a str) -> &'a str {
+    if status.starts_with("Fast") {
+        s.tr_v(ViewTextKey::NetDiagFastStatus)
+    } else if status.starts_with("Good") {
+        s.tr_v(ViewTextKey::NetDiagGoodStatus)
+    } else if status.starts_with("Moderate") {
+        s.tr_v(ViewTextKey::NetDiagModerateStatus)
+    } else if status.starts_with("Timeout") {
+        s.tr_v(ViewTextKey::NetDiagTimeoutStatus)
+    } else {
+        status
+    }
+}
+
 pub fn view(s: &AppState, _tier: LayoutTier) -> El {
     let p = s.palette();
     let style = s.theme_style;
@@ -60,7 +90,7 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                             .radius(style.btn_radius()),
                         )
                         .child(
-                            action_button("⟲ Reset DNS to Automatic", p.btn_secondary, p.text_primary, p, |s| {
+                            action_button(s.tr_v(ViewTextKey::NetDiagResetDnsBtn), p.btn_secondary, p.text_primary, p, |s| {
                                 let _ = crate::tools::network_diag::NetworkDiagnostics::reset_dns_dhcp();
                                 s.set_status("DNS configuration restored to Automatic (DHCP).");
                             })
@@ -113,9 +143,13 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                         .gap(4.0)
                         .child(text(s.tr_v(ViewTextKey::NetDiagTcpAckLabel)).font(rune::tok::type_::LABEL).color(p.text_secondary))
                         .child(
-                            text(if net.tcp_ack_frequency_optimized { "✔ (Low Latency)" } else { "Default" })
-                                .font(rune::tok::type_::TITLE)
-                                .color(p.success),
+                            text(if net.tcp_ack_frequency_optimized {
+                                format!("✔ ({})", s.tr_v(ViewTextKey::NetDiagLowLatencyBadge))
+                            } else {
+                                s.tr_v(ViewTextKey::NetDiagDefaultLatencyBadge).to_string()
+                            })
+                            .font(rune::tok::type_::TITLE)
+                            .color(p.success),
                         )
                         .child(
                             text(s.tr_v(ViewTextKey::NetDiagTcpNoDelayLabel))
@@ -146,16 +180,17 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                                 .items_center()
                                 .child(text("🌐").font(rune::tok::type_::TITLE))
                                 .child(
-                                    text("Global DNS Latency & Security Benchmark")
+                                    text(s.tr_v(ViewTextKey::NetDiagDnsBenchmarkTitle))
                                         .font(rune::tok::type_::TITLE)
                                         .color(p.text_primary),
                                 ),
                         )
-                        .child(
-                            text(format!("{} DNS Providers Tracked", net.probes.len()))
+                        .child({
+                            let tracked_tmpl = s.tr_v(ViewTextKey::NetDiagDnsTrackedLabel);
+                            text(tracked_tmpl.replace("{}", &net.probes.len().to_string()))
                                 .font(rune::tok::type_::LABEL)
-                                .color(p.text_secondary),
-                        ),
+                                .color(p.text_secondary)
+                        }),
                 )
                 .children(net.probes.iter().map(|probe| {
                     let ping_text = probe.ping_ms.map(|ms| format!("{} ms", ms)).unwrap_or_else(|| "Timeout".to_string());
@@ -168,6 +203,9 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                     let p_ip = probe.primary_ip.clone();
                     let s_ip = probe.secondary_ip.clone();
                     let prov_name = probe.name.clone();
+
+                    let cat_label = localize_dns_category(s, &probe.category);
+                    let status_label = localize_dns_status(s, &probe.status);
 
                     row()
                         .w_full()
@@ -200,7 +238,7 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                                                 .fill(p.accent.alpha(0.12))
                                                 .border(1.0, p.accent.alpha(0.35))
                                                 .child(
-                                                    text(&probe.category)
+                                                    text(cat_label)
                                                         .font(rune::tok::type_::LABEL)
                                                         .color(p.accent),
                                                 ),
@@ -220,11 +258,11 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                                 .child(
                                     col()
                                         .child(text(ping_text).font(rune::tok::type_::TITLE).color(ping_color))
-                                        .child(text(&probe.status).font(rune::tok::type_::BODY).color(ping_color)),
+                                        .child(text(status_label).font(rune::tok::type_::BODY).color(ping_color)),
                                 ),
                         )
                         .child(
-                            action_button("Set as System DNS", p.btn_secondary, p.text_primary, p, move |s| {
+                            action_button(s.tr_v(ViewTextKey::NetDiagSetDnsBtn), p.btn_secondary, p.text_primary, p, move |s| {
                                 let _ = crate::tools::network_diag::NetworkDiagnostics::apply_dns_servers(&p_ip, &s_ip);
                                 s.set_status(format!("Configured {} ({}) as active DNS.", prov_name, p_ip));
                             })

@@ -88,7 +88,7 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                                     .radius(style.btn_radius()),
                                 )
                                 .child(
-                                    action_button("🐛 Report Bug on GitHub", p.danger.alpha(0.85), Color::WHITE, p, |s| {
+                                    action_button(s.tr_v(ViewTextKey::FaultReportToGithub), p.danger.alpha(0.85), Color::WHITE, p, |s| {
                                         s.open_bug_report();
                                     })
                                     .radius(style.btn_radius()),
