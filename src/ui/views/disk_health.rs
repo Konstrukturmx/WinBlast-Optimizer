@@ -145,7 +145,7 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                                     col()
                                         .min_w(130.0)
                                         .child(
-                                            text(format!("{}: %{}", s.tr_v(ViewTextKey::DiskHealthStatus), drv.health_percentage))
+                                            text(format!("{}: {}%", s.tr_v(ViewTextKey::DiskHealthStatus), drv.health_percentage))
                                                 .font(rune::tok::type_::LABEL)
                                                 .color(health_color),
                                         )

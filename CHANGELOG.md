@@ -5,6 +5,34 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ---
 
+## [v1.3.2] - 2026-11-18
+
+### 🐛 Critical Bugfixes & Telemetry Enhancements
+- **Driver & BIOS Layout Collision Fix & Rule Enactment (`src/ui/views/driver_bios.rs`, `.agents/rules/ui-layout-collision.md`)**:
+  - Enforced mandatory Rune scroll wrapper ordering rule: `.child(driver_list)` is strictly attached *before* `.winblast_scroll(p)` so that elements are embedded inside the scrollable viewport rather than rendered outside as overflowing siblings.
+  - Added new project-wide agent rule `.agents/rules/ui-layout-collision.md` with an automated AST test ensuring zero layout collision regressions.
+- **Accurate Driver Scanner & Filter Matching (`src/hardware/driver_update.rs`, `src/hardware/bios.rs`)**:
+  - Enhanced version comparison logic: resolved driver store INF package identities (`published_name` vs `original_name`) to eliminate false updates (e.g. NVIDIA High Definition Audio falsely reporting updates to Virtual Audio Device 4.92.0.0).
+  - Expanded virtual/mirror driver exclusions (`Hyper-V Virtual Switch`, `Microsoft Streaming Tee/Sink-to-Sink Converter`, `Streaming Service Proxy`, `Kaspersky VPN`, `spacedesk`, `Parsec`).
+  - Added registry device deduplication by hardware ID and driver version.
+  - Filtered out virtual and mirror adapters from the "Installed GPU Display Drivers" list in BIOS telemetry.
+- **Physical Drive Capacity, SMART & NVMe DirectStorage Rewrite (`src/hardware/disks.rs`, `src/ui/views/disk_health.rs`)**:
+  - Fixed Win32 IOCTL code `IOCTL_DISK_GET_LENGTH_INFO` (corrected from `0x00074059` to `0x0007405C`), restoring accurate physical drive capacity (e.g. 953.9 GB / 465.8 GB) instead of `0.0 GB`.
+  - Corrected NVMe SMART Log Page 0x02 structure offsets: reading Data Units Written (TBW) at bytes `48..64` and Power-On Hours at bytes `128..136`.
+  - Hardened PowerShell Storage API fallback with silent error handling and direct `Get-PhysicalDisk` size mapping.
+  - Corrected health status label typo from `%99` to `99%`.
+- **Real-Time Dual User/Kernel Mode Thermal & Fan Telemetry (`src/hardware/thermal.rs`, `src/app.rs`, `src/ui/views/thermal_monitor.rs`)**:
+  - Implemented dual-mode temperature telemetry: WMI `MSAcpi_ThermalZoneTemperature` (Kelvin conversion), Windows Performance Counters (`Win32_PerfFormattedData_Counters_ThermalZoneInformation`), and native GPU telemetry via `nvidia-smi` / DXGI.
+  - Added live GPU Core, GPU Hotspot junction, and cooling fan speed telemetry (`RPM` and `% PWM`).
+  - Integrated physical storage drive temperatures into the hardware thermal sensors list.
+  - Added real-time 2-second background telemetry dispatch in `AppState` so temperature, fan, and thermal sensors update automatically without manual refresh.
+
+### 🧪 Verification
+- **166 / 166 Tests Passing**: All unit and end-to-end integration tests passing with 100% pass rate.
+- **Zero Warnings**: Strict `-D warnings` enforcement under `cargo check` and `cargo clippy`.
+
+---
+
 ## [v1.3.0] - 2026-11-17
 
 ### ⚡ Architectural Upgrades & Milestone 1 Deliverables

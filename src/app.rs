@@ -422,6 +422,7 @@ pub enum WorkerEvent {
     PerfBenchmarkCompleted(crate::tools::performance_tests::BenchmarkScore),
     UpdateCheckCompleted(Result<Option<crate::core::updater::ReleaseInfo>, String>),
     UpdateDownloadCompleted(Result<std::path::PathBuf, String>),
+    ThermalSnapshot(crate::hardware::thermal::SystemThermalSnapshot),
 }
 
 struct WorkerDropGuard<P: FnOnce(String) -> WorkerEvent> {
@@ -894,17 +895,24 @@ impl AppState {
         self.run_telemetry_audit();
         self.check_for_updates();
 
-        // 1-Second real-time Task Manager style monitoring worker
+        // 1-Second real-time Task Manager style monitoring worker with live thermal telemetry
         let tx_monitor = self.tx_events.clone();
         let waker_monitor = waker;
         let backend = Arc::clone(&self.backend);
         std::thread::spawn(move || {
             let _ = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
                 let mut monitor = backend.create_metrics_sampler(35);
+                let mut thermal_counter = 0u32;
                 loop {
                     let metrics = monitor.sample();
                     if tx_monitor.send(WorkerEvent::MetricsSnapshot(metrics)).is_err() {
                         break;
+                    }
+                    thermal_counter += 1;
+                    if thermal_counter >= 2 {
+                        thermal_counter = 0;
+                        let snapshot = crate::hardware::thermal::SystemThermalSnapshot::read();
+                        let _ = tx_monitor.send(WorkerEvent::ThermalSnapshot(snapshot));
                     }
                     waker_monitor();
                     std::thread::sleep(std::time::Duration::from_millis(1000));
@@ -1616,6 +1624,9 @@ impl AppState {
                         self.set_status_spec(StatusMessageSpec::Raw(format!("Update download failed: {e}")));
                     }
                 }
+            }
+            WorkerEvent::ThermalSnapshot(snapshot) => {
+                self.thermal_snapshot = Some(snapshot);
             }
         }
     }

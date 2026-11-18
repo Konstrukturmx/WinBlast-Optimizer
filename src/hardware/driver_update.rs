@@ -326,7 +326,8 @@ fn parse_pnputil_devices(output: &str) -> Vec<PnpDeviceInfo> {
 /// Information for an installed driver package parsed from `pnputil /enum-drivers`.
 #[derive(Debug, Clone)]
 struct PnpDriverPackage {
-    inf_file: String,
+    published_name: String,
+    original_name: String,
     class_guid: String,
     driver_version: String,
     provider: String,
@@ -337,7 +338,8 @@ struct PnpDriverPackage {
 fn parse_pnputil_drivers(output: &str) -> Vec<PnpDriverPackage> {
     let mut packages = Vec::new();
     let mut current = PnpDriverPackage {
-        inf_file: String::new(),
+        published_name: String::new(),
+        original_name: String::new(),
         class_guid: String::new(),
         driver_version: String::new(),
         provider: String::new(),
@@ -348,10 +350,11 @@ fn parse_pnputil_drivers(output: &str) -> Vec<PnpDriverPackage> {
     for line in output.lines() {
         let trimmed = line.trim();
         if trimmed.is_empty() {
-            if in_record && !current.inf_file.is_empty() {
+            if in_record && (!current.published_name.is_empty() || !current.original_name.is_empty()) {
                 packages.push(current.clone());
                 current = PnpDriverPackage {
-                    inf_file: String::new(),
+                    published_name: String::new(),
+                    original_name: String::new(),
                     class_guid: String::new(),
                     driver_version: String::new(),
                     provider: String::new(),
@@ -366,10 +369,10 @@ fn parse_pnputil_drivers(output: &str) -> Vec<PnpDriverPackage> {
             let value = value.trim().to_string();
             in_record = true;
 
-            if key.contains("published name") || key.contains("original name") || key.contains("inf") {
-                if current.inf_file.is_empty() || key.contains("original") {
-                    current.inf_file = value;
-                }
+            if key.contains("published name") {
+                current.published_name = value.to_lowercase();
+            } else if key.contains("original name") {
+                current.original_name = value.to_lowercase();
             } else if key.contains("class guid") {
                 current.class_guid = value.to_lowercase();
             } else if key.contains("driver version") {
@@ -387,7 +390,7 @@ fn parse_pnputil_drivers(output: &str) -> Vec<PnpDriverPackage> {
             }
         }
     }
-    if in_record && !current.inf_file.is_empty() {
+    if in_record && (!current.published_name.is_empty() || !current.original_name.is_empty()) {
         packages.push(current);
     }
     packages
@@ -437,6 +440,23 @@ const VIRTUAL_DEVICE_FILTERS: &[&str] = &[
     "teredo tunneling",
     "isatap",
     "6to4",
+    "spacedesk",
+    "parsec virtual",
+    "hyper-v",
+    "virtualbox",
+    "vmware",
+    "npcap",
+    "pcap",
+    "ndiscap",
+    "streaming service proxy",
+    "streaming tee",
+    "sink-to-sink",
+    "tap-windows",
+    "wireguard",
+    "wintun",
+    "kaspersky vpn",
+    "loopback",
+    "citrix",
 ];
 
 /// Scan a Windows device setup class in the registry.
@@ -458,6 +478,8 @@ fn scan_class_registry(
         Err(_) => return,
     };
 
+    let mut seen_keys = std::collections::HashSet::new();
+
     for sub in class_key.enum_keys().filter_map(|r| r.ok()) {
         // Accept any subkey that is numeric (not just 4-digit), or matches XXXX format
         let is_device_subkey = sub.chars().all(|c| c.is_ascii_digit()) && !sub.is_empty();
@@ -475,7 +497,9 @@ fn scan_class_registry(
         let date: Result<String, _> = dev_key.get_value("DriverDate");
         let prov: Result<String, _> = dev_key.get_value("ProviderName");
         let inf: Result<String, _> = dev_key.get_value("InfPath");
-        let hw_id: Result<String, _> = dev_key.get_value("MatchingDeviceId");
+        let hw_id: Result<String, _> = dev_key
+            .get_value("MatchingDeviceId")
+            .or_else(|_| dev_key.get_value("HardwareID"));
 
         let (name, version) = match (desc, ver) {
             (Ok(n), Ok(v)) => (n, v),
@@ -496,6 +520,11 @@ fn scan_class_registry(
         let driver_date = date.unwrap_or_else(|_| "Unknown".to_string());
         let inf_file = inf.unwrap_or_else(|_| format!("{}.inf", sub));
         let hardware_id = hw_id.unwrap_or_default();
+
+        let dedupe_key = (name_lower, hardware_id.to_lowercase(), version.clone());
+        if !seen_keys.insert(dedupe_key) {
+            continue;
+        }
 
         // Report progress
         *scanned += 1;
@@ -518,7 +547,7 @@ fn scan_class_registry(
 
         // Evaluate latest available version from driver store + PnPUtil
         let (latest_ver, state, size_mb, url) =
-            evaluate_version_from_store(&name, &provider, &version, category, driver_store);
+            evaluate_version_from_store(&name, &provider, &version, &inf_file, category, driver_store);
 
         items.push(DriverUpdateItem {
             id: format!("{}_{}", class_guid, sub),
@@ -557,36 +586,55 @@ fn scan_class_registry(
 
 /// Evaluate whether a driver has an update by comparing with driver store entries
 /// from `pnputil /enum-drivers` and vendor-specific heuristics.
-///
-/// Instead of hardcoded version strings, we compare the installed version against
-/// the latest version found in the Windows driver store for the same provider.
 fn evaluate_version_from_store(
     name: &str,
     provider: &str,
     current_ver: &str,
+    inf_file: &str,
     category: DriverCategory,
     driver_store: &[PnpDriverPackage],
 ) -> (String, DriverUpdateState, f32, String) {
     let class_guid = category.class_guid();
     let prov_lower = provider.to_lowercase();
     let name_upper = name.to_uppercase();
+    let inf_lower = inf_file.to_lowercase();
 
-    // Find the latest driver version in the store for this class + provider
+    // 1. Attempt to resolve original INF package identity
+    let target_original_inf = driver_store.iter().find(|p| {
+        p.class_guid == class_guid
+            && (p.published_name.eq_ignore_ascii_case(&inf_lower)
+                || p.original_name.eq_ignore_ascii_case(&inf_lower))
+    }).map(|p| p.original_name.clone());
+
+    // 2. Find the latest matching driver version in store for this device
     let mut best_store_version: Option<&str> = None;
     for pkg in driver_store {
         if pkg.class_guid != class_guid {
             continue;
         }
-        let pkg_prov_lower = pkg.provider.to_lowercase();
-        // Match by provider name similarity
-        if pkg_prov_lower.contains(&prov_lower)
-            || prov_lower.contains(&pkg_prov_lower)
-            || (prov_lower.contains("nvidia") && pkg_prov_lower.contains("nvidia"))
-            || (prov_lower.contains("amd") && pkg_prov_lower.contains("advanced micro"))
-            || (prov_lower.contains("advanced micro") && pkg_prov_lower.contains("amd"))
-            || (prov_lower.contains("intel") && pkg_prov_lower.contains("intel"))
-            || (prov_lower.contains("realtek") && pkg_prov_lower.contains("realtek"))
-        {
+
+        let is_same_model = if let Some(ref orig) = target_original_inf {
+            !orig.is_empty() && pkg.original_name.eq_ignore_ascii_case(orig)
+        } else {
+            let pkg_prov_lower = pkg.provider.to_lowercase();
+            let prov_match = pkg_prov_lower.contains(&prov_lower)
+                || prov_lower.contains(&pkg_prov_lower)
+                || (prov_lower.contains("nvidia") && pkg_prov_lower.contains("nvidia"))
+                || (prov_lower.contains("amd") && pkg_prov_lower.contains("advanced micro"))
+                || (prov_lower.contains("advanced micro") && pkg_prov_lower.contains("amd"))
+                || (prov_lower.contains("intel") && pkg_prov_lower.contains("intel"))
+                || (prov_lower.contains("realtek") && pkg_prov_lower.contains("realtek"));
+
+            if !prov_match {
+                false
+            } else {
+                let is_virtual_pkg = pkg.original_name.contains("vad") || pkg.original_name.contains("virt");
+                let is_virtual_dev = name_upper.contains("VIRTUAL") || name_upper.contains("VAD");
+                is_virtual_pkg == is_virtual_dev
+            }
+        };
+
+        if is_same_model {
             let ver = pkg.driver_version.as_str();
             if !ver.is_empty() {
                 match best_store_version {

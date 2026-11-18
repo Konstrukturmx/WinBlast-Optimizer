@@ -1,21 +1,21 @@
 {
   "Cargo.toml": {
-    "mtime": 1794928655.2157903,
-    "seen": 1794929120.1131656,
-    "ast_hash": "578e4decc7a4a623cd8bfbd9e46af2f9",
-    "semantic_hash": "578e4decc7a4a623cd8bfbd9e46af2f9"
+    "mtime": 1795016562.1750379,
+    "seen": 1795016729.3468058,
+    "ast_hash": "2e50aee3e26a5ccb9f93accd56c8420d",
+    "semantic_hash": "2e50aee3e26a5ccb9f93accd56c8420d"
   },
   "build.rs": {
-    "mtime": 1794928665.5140095,
-    "seen": 1794929120.1131713,
-    "ast_hash": "26358cfdcb1a91b5bd97443d6fb6a564",
-    "semantic_hash": "26358cfdcb1a91b5bd97443d6fb6a564"
+    "mtime": 1795016568.8347893,
+    "seen": 1795016729.3468113,
+    "ast_hash": "f47cbd3c46ced60c95e83ecf49b755e1",
+    "semantic_hash": "f47cbd3c46ced60c95e83ecf49b755e1"
   },
   "src/app.rs": {
-    "mtime": 1794924262.3979738,
-    "seen": 1794927918.8827305,
-    "ast_hash": "7b424d6d9fd5e852d0af4be1de000835",
-    "semantic_hash": "7b424d6d9fd5e852d0af4be1de000835"
+    "mtime": 1795016345.8112621,
+    "seen": 1795016729.3472018,
+    "ast_hash": "a3505f9b523e4f4c38c1e107f49072e6",
+    "semantic_hash": "a3505f9b523e4f4c38c1e107f49072e6"
   },
   "src/backup/mod.rs": {
     "mtime": 1794128690.122692,
@@ -444,10 +444,10 @@
     "semantic_hash": "631ffe29b944449528c9f3cada582ffc"
   },
   "tests/ui_responsive_e2e.rs": {
-    "mtime": 1794927425.8839965,
-    "seen": 1794927918.885509,
-    "ast_hash": "512c99386b10b9963662951c77308e43",
-    "semantic_hash": "512c99386b10b9963662951c77308e43"
+    "mtime": 1795016430.6874988,
+    "seen": 1795016729.361126,
+    "ast_hash": "43defcfa5da8cc97076ba0ddf83fec5b",
+    "semantic_hash": "43defcfa5da8cc97076ba0ddf83fec5b"
   },
   "tests/ui_scrollbar_test.rs": {
     "mtime": 1794772247.2854538,
@@ -546,34 +546,34 @@
     "semantic_hash": "1a444e51bf606752411fc352c8024b9e"
   },
   "src/core/view_i18n.rs": {
-    "mtime": 1794928780.350277,
-    "seen": 1794929120.1167355,
-    "ast_hash": "b67b1b9edd1ab876a7d4704d6d643810",
-    "semantic_hash": "b67b1b9edd1ab876a7d4704d6d643810"
+    "mtime": 1795016680.2045472,
+    "seen": 1795016729.3504133,
+    "ast_hash": "cb5c70a468069f575bf41cb186383af7",
+    "semantic_hash": "cb5c70a468069f575bf41cb186383af7"
   },
   "src/hardware/bios.rs": {
-    "mtime": 1794726952.7346656,
-    "seen": 1794927918.8837924,
-    "ast_hash": "c2c4045a989f894089dbb017fd188d87",
-    "semantic_hash": "c2c4045a989f894089dbb017fd188d87"
+    "mtime": 1795015922.0032587,
+    "seen": 1795016729.3515997,
+    "ast_hash": "182c2f5db9cd3f0647f9680ac518eae6",
+    "semantic_hash": "182c2f5db9cd3f0647f9680ac518eae6"
   },
   "src/hardware/disks.rs": {
-    "mtime": 1794741599.978017,
-    "seen": 1794927918.8839095,
-    "ast_hash": "b683af54945e98f2d71929cfb3f8c337",
-    "semantic_hash": "b683af54945e98f2d71929cfb3f8c337"
+    "mtime": 1795016135.850194,
+    "seen": 1795016729.3517315,
+    "ast_hash": "a7b2b4daccfad938441e14304d3aa75a",
+    "semantic_hash": "a7b2b4daccfad938441e14304d3aa75a"
   },
   "src/hardware/driver_update.rs": {
-    "mtime": 1794921452.608182,
-    "seen": 1794927918.8839111,
-    "ast_hash": "448d566d59e51e167f06bf59d3f51390",
-    "semantic_hash": "448d566d59e51e167f06bf59d3f51390"
+    "mtime": 1795015997.4758348,
+    "seen": 1795016729.3517332,
+    "ast_hash": "f6581e651f49e93e368e28b6dc6c40a4",
+    "semantic_hash": "f6581e651f49e93e368e28b6dc6c40a4"
   },
   "src/hardware/thermal.rs": {
-    "mtime": 1794741614.150242,
-    "seen": 1794927918.8843076,
-    "ast_hash": "1302c88c623e1c6f5cdf9eec21f8f00c",
-    "semantic_hash": "1302c88c623e1c6f5cdf9eec21f8f00c"
+    "mtime": 1795016406.772025,
+    "seen": 1795016729.3528395,
+    "ast_hash": "eea1716b46b04e078b8db123cacda813",
+    "semantic_hash": "eea1716b46b04e078b8db123cacda813"
   },
   "src/tools/diagnostics.rs": {
     "mtime": 1794907896.607102,
@@ -618,16 +618,16 @@
     "semantic_hash": "554a2c318efb9b79f3fe70e668342ae8"
   },
   "src/ui/views/disk_health.rs": {
-    "mtime": 1794835023.014783,
-    "seen": 1794927918.885345,
-    "ast_hash": "35dc01319c0eade8b2232893da799d53",
-    "semantic_hash": "35dc01319c0eade8b2232893da799d53"
+    "mtime": 1795015567.2302723,
+    "seen": 1795016729.35718,
+    "ast_hash": "a2213770287559349d563650bc3a9c21",
+    "semantic_hash": "a2213770287559349d563650bc3a9c21"
   },
   "src/ui/views/driver_bios.rs": {
-    "mtime": 1794927446.0061421,
-    "seen": 1794927918.8853464,
-    "ast_hash": "9e8c4a775d64b42313c0d9da4ec0e2f0",
-    "semantic_hash": "9e8c4a775d64b42313c0d9da4ec0e2f0"
+    "mtime": 1795015584.458925,
+    "seen": 1795016729.3571823,
+    "ast_hash": "a583a85ff4321ff66b4771ae79fc34f4",
+    "semantic_hash": "a583a85ff4321ff66b4771ae79fc34f4"
   },
   "src/ui/views/fault_diagnostics.rs": {
     "mtime": 1794908174.7889736,
@@ -684,10 +684,10 @@
     "semantic_hash": "0a20ad0bcfa2653df8f85bf5abad4340"
   },
   "src/ui/views/thermal_monitor.rs": {
-    "mtime": 1794835040.503926,
-    "seen": 1794927918.8853726,
-    "ast_hash": "ae5310ec0949f08c277c17394eabcc4d",
-    "semantic_hash": "ae5310ec0949f08c277c17394eabcc4d"
+    "mtime": 1795016358.4800427,
+    "seen": 1795016729.3597066,
+    "ast_hash": "85b49a779771698065dc03799c7bd577",
+    "semantic_hash": "85b49a779771698065dc03799c7bd577"
   },
   "src/ui/views/windows_repair.rs": {
     "mtime": 1794834922.7558143,

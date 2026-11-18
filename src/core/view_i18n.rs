@@ -170,11 +170,11 @@ static VIEW_TRANSLATIONS: [[&str; ViewTextKey::TOTAL_KEYS]; 8] = [
     // 0: English (EN)
     [
         "WinBlast Optimizer — Support & Contact",
-        "Version 1.3.0 • Open-source Windows optimization & low-latency core engine.",
+        "Version 1.3.2 • Open-source Windows optimization & low-latency core engine.",
         "Developer & GitHub Repository",
         "Open GitHub Page",
         "WinBlast0 is built with GPU-accelerated Rune UI framework and pure Rust Win32 FFI core. License: MIT License.",
-        "Version 1.3.0 Release Highlights",
+        "Version 1.3.2 Release Highlights",
         "• 5 Complete UI Themes: Minimalistic, Classic, Glassy, Compact, and Materialistic.",
         "• Driver & BIOS Diagnostics: SMBIOS motherboard, UEFI, and GPU display driver telemetry.",
         "• Fault Diagnostics: BSOD kernel crash dump inspector and CBS pending reboot detection engine.",
@@ -305,11 +305,11 @@ static VIEW_TRANSLATIONS: [[&str; ViewTextKey::TOTAL_KEYS]; 8] = [
     // 1: Turkish (TR)
     [
         "WinBlast Optimizer — Destek ve İletişim",
-        "Sürüm 1.3.0 • Açık kaynak Windows optimizasyon ve düşük gecikmeli çekirdek motoru.",
+        "Sürüm 1.3.2 • Açık kaynak Windows optimizasyon ve düşük gecikmeli çekirdek motoru.",
         "Geliştirici & GitHub Deposu",
         "GitHub Sayfasını Aç",
         "WinBlast0, GPU destekli Rune UI çerçevesi ve saf Rust Win32 FFI çekirdeği ile inşa edilmiştir. Lisans: MIT License.",
-        "Sürüm 1.3.0 Yenilikleri",
+        "Sürüm 1.3.2 Yenilikleri",
         "• 5 Tam UI Teması: Minimalistic, Classic, Glassy, Compact ve Materialistic.",
         "• Sürücü ve BIOS teşhisi: SMBIOS anakart, UEFI ve GPU display driver analizi.",
         "• Arıza teşhisi: BSOD minidump tarayıcı ve CBS bekleyen yeniden başlatma tespit motoru.",
@@ -440,11 +440,11 @@ static VIEW_TRANSLATIONS: [[&str; ViewTextKey::TOTAL_KEYS]; 8] = [
     // 2: German (DE)
     [
         "WinBlast Optimizer — Support & Kontakt",
-        "Version 1.3.0 • Open-Source Windows-Optimierung & Low-Latency Core Engine.",
+        "Version 1.3.2 • Open-Source Windows-Optimierung & Low-Latency Core Engine.",
         "Entwickler & GitHub Repository",
         "GitHub-Seite öffnen",
         "WinBlast0 basiert auf dem GPU-beschleunigten Rune UI-Framework und nativem Rust Win32 FFI-Kern. Lizenz: MIT License.",
-        "Neuerungen in Version 1.3.0",
+        "Neuerungen in Version 1.3.2",
         "• 5 vollständige UI-Designs: Minimalistic, Classic, Glassy, Compact und Materialistic.",
         "• Treiber- & BIOS-Diagnose: SMBIOS-Mainboard, UEFI und GPU-Grafiktreiber-Telemetrie.",
         "• Fehlerdiagnose: BSOD-Minidump-Inspector und CBS-Neustarterkennungs-Engine.",
@@ -575,11 +575,11 @@ static VIEW_TRANSLATIONS: [[&str; ViewTextKey::TOTAL_KEYS]; 8] = [
     // 3: French (FR)
     [
         "WinBlast Optimizer — Support et Contact",
-        "Version 1.3.0 • Optimisation Windows open-source et moteur à faible latence.",
+        "Version 1.3.2 • Optimisation Windows open-source et moteur à faible latence.",
         "Développeur et Dépôt GitHub",
         "Ouvrir la page GitHub",
         "WinBlast0 est conçu avec le framework Rune UI accéléré par GPU et un noyau Rust Win32 FFI pur. Licence: MIT License.",
-        "Nouveautés de la Version 1.3.0",
+        "Nouveautés de la Version 1.3.2",
         "• 5 thèmes d'interface complets: Minimalistic, Classic, Glassy, Compact et Materialistic.",
         "• Diagnostic Pilotes et BIOS: Carte mère SMBIOS, UEFI et pilotes d'affichage GPU.",
         "• Diagnostic des pannes: Inspecteur de crash dump BSOD et détection de redémarrage CBS.",
@@ -710,11 +710,11 @@ static VIEW_TRANSLATIONS: [[&str; ViewTextKey::TOTAL_KEYS]; 8] = [
     // 4: Spanish (ES)
     [
         "WinBlast Optimizer — Soporte y Contacto",
-        "Versión 1.3.0 • Motor de optimización de Windows y baja latencia de código abierto.",
+        "Versión 1.3.2 • Motor de optimización de Windows y baja latencia de código abierto.",
         "Desarrollador y Repositorio GitHub",
         "Abrir página de GitHub",
         "WinBlast0 está construido con el marco Rune UI acelerado por GPU y núcleo Rust Win32 FFI puro. Licencia: MIT License.",
-        "Novedades de la Versión 1.3.0",
+        "Novedades de la Versión 1.3.2",
         "• 5 temas de interfaz completos: Minimalistic, Classic, Glassy, Compact y Materialistic.",
         "• Diagnóstico de controladores y BIOS: Placa base SMBIOS, UEFI y controladores de pantalla de GPU.",
         "• Diagnóstico de fallos: Inspector de minidumps BSOD y detección de reinicio pendiente CBS.",
@@ -845,11 +845,11 @@ static VIEW_TRANSLATIONS: [[&str; ViewTextKey::TOTAL_KEYS]; 8] = [
     // 5: Russian (RU)
     [
         "WinBlast Optimizer — Поддержка и обратная связь",
-        "Версия 1.3.0 • Открытый исходный код, оптимизация Windows и низкая задержка.",
+        "Версия 1.3.2 • Открытый исходный код, оптимизация Windows и низкая задержка.",
         "Разработчик и репозиторий GitHub",
         "Открыть страницу GitHub",
         "WinBlast0 создан на базе GPU-ускоренного фреймворка Rune UI и чистого ядра Rust Win32 FFI. Лицензия: MIT License.",
-        "Что нового в версии 1.3.0",
+        "Что нового в версии 1.3.2",
         "• 5 полных тем оформления: Minimalistic, Classic, Glassy, Compact и Materialistic.",
         "• Диагностика драйверов и BIOS: SMBIOS платы, UEFI и анализ видеодрайверов GPU.",
         "• Диагностика сбоев: Анализатор BSOD минидампов и детектор ожидающих перезагрузок CBS.",
@@ -980,11 +980,11 @@ static VIEW_TRANSLATIONS: [[&str; ViewTextKey::TOTAL_KEYS]; 8] = [
     // 6: Chinese (ZH)
     [
         "WinBlast Optimizer — 支持与联系",
-        "版本 1.3.0 • 开源 Windows 优化与低延迟核心引擎。",
+        "版本 1.3.2 • 开源 Windows 优化与低延迟核心引擎。",
         "开发者与 GitHub 仓库",
         "打开 GitHub 页面",
         "WinBlast0 采用 GPU 加速的 Rune UI 框架和纯 Rust Win32 FFI 核心构建。许可证：MIT License。",
-        "版本 1.3.0 更新亮点",
+        "版本 1.3.2 更新亮点",
         "• 5 种完整 UI 主题：极简、经典、毛玻璃、紧凑和 Material 质感。",
         "• 驱动与 BIOS 诊断：SMBIOS 主板、UEFI 及 GPU 显示驱动分析。",
         "• 故障诊断：蓝屏 BSOD 核心转储检测器与 CBS 待重启检测引擎。",
@@ -1115,11 +1115,11 @@ static VIEW_TRANSLATIONS: [[&str; ViewTextKey::TOTAL_KEYS]; 8] = [
     // 7: Japanese (JA)
     [
         "WinBlast Optimizer — サポートと連絡先",
-        "バージョン 1.3.0 • オープンソース Windows 最適化および低遅延コアエンジン。",
+        "バージョン 1.3.2 • オープンソース Windows 最適化および低遅延コアエンジン。",
         "開発者および GitHub リポジトリ",
         "GitHub ページを開く",
         "WinBlast0 は GPU 加速 Rune UI フレームワークと純粋な Rust Win32 FFI コアで構築されています。ライセンス：MIT License。",
-        "バージョン 1.3.0 の新機能",
+        "バージョン 1.3.2 の新機能",
         "• 5 つの完全な UI テーマ: ミニマル、クラシック、ガラス、コンパクト、マテリアル。",
         "• ドライバーと BIOS 診断: SMBIOS マザーボード、UEFI、GPU ディスプレイドライバー分析。",
         "• 障害診断: BSOD カーネルクラッシュダンプ検査機能と CBS 再起動待機検出。",

@@ -179,14 +179,22 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                                 .child(text(s.tr_v(ViewTextKey::ThermalFanRpm)).font(rune::tok::type_::LABEL).color(p.text_secondary)),
                         )
                         .child(
-                            text(format!("{} RPM", thermals.fan_speed_rpm))
-                                .font(rune::tok::type_::TITLE)
-                                .color(p.accent),
+                            text(if thermals.fan_speed_rpm > 0 {
+                                format!("{} RPM", thermals.fan_speed_rpm)
+                            } else {
+                                "Auto PWM Active".to_string()
+                            })
+                            .font(rune::tok::type_::TITLE)
+                            .color(p.accent),
                         )
                         .child(
-                            text("Smart Fan Curve Active • Quiet / Performance Mode")
-                                .font(rune::tok::type_::BODY)
-                                .color(p.text_muted),
+                            text(if let Some(comp) = thermals.components.iter().find(|c| c.fan_speed_pct.is_some()) {
+                                format!("GPU Fan PWM: {:.0}% • Smart Fan Curve Active", comp.fan_speed_pct.unwrap_or(0.0))
+                            } else {
+                                "Smart Fan Curve Active • Quiet / Performance Mode".to_string()
+                            })
+                            .font(rune::tok::type_::BODY)
+                            .color(p.text_muted),
                         ),
                 ),
         )

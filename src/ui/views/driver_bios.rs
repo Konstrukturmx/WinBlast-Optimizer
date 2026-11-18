@@ -479,8 +479,8 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
                             .pr(8.0)
                             .clip_soft(0.0)
                             .scroll(ScrollSpec { stick_bottom: false })
-                            .winblast_scroll(p)
                             .child(driver_list)
+                            .winblast_scroll(p)
                     },
                 ),
         )
@@ -632,5 +632,6 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
                         )
                 })),
         )
-        .scroll(ScrollSpec { stick_bottom: false }).winblast_scroll(p)
+        .scroll(ScrollSpec { stick_bottom: false })
+        .winblast_scroll(p)
 }

@@ -1836,3 +1836,58 @@ fn test_driver_bios_no_card_overlap() {
     // Verify driver updates scroll container exists and is bounded
     assert!(rt.find("driver_updates_scroll").is_some(), "driver_updates_scroll must exist");
 }
+
+#[test]
+fn test_rule_no_child_after_winblast_scroll() {
+    // Mandated by .agents/rules/ui-layout-collision.md:
+    // Chaining .child(...) after .winblast_scroll(...) causes unconstrained layout overflow and card collision.
+    let src_dir = std::path::Path::new("src");
+    let mut violations = Vec::new();
+
+    fn scan_dir(dir: &std::path::Path, violations: &mut Vec<String>) {
+        if let Ok(entries) = std::fs::read_dir(dir) {
+            for entry in entries.flatten() {
+                let path = entry.path();
+                if path.is_dir() {
+                    scan_dir(&path, violations);
+                } else if path.extension().and_then(|s| s.to_str()) == Some("rs") {
+                    if let Ok(content) = std::fs::read_to_string(&path) {
+                        // Regex or pattern check for .winblast_scroll(...).child(...)
+                        let clean = content.replace(['\n', '\r'], " ");
+                        if clean.contains(".winblast_scroll(") && clean.contains(").child(") {
+                            // Find specific instances
+                            for (idx, line) in content.lines().enumerate() {
+                                if line.contains("winblast_scroll") {
+                                    // Check if next lines contain .child
+                                    let rest = &content.lines().skip(idx).take(4).collect::<Vec<_>>().join(" ");
+                                    if rest.contains("winblast_scroll") && rest.contains(".child(") {
+                                        violations.push(format!("{}:{}: {}", path.display(), idx + 1, line.trim()));
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    scan_dir(src_dir, &mut violations);
+    assert!(
+        violations.is_empty(),
+        "UI collision violations found where .child() is chained after .winblast_scroll(): {:?}",
+        violations
+    );
+}
+
+#[test]
+fn test_thermal_telemetry_sensors_probe() {
+    let snapshot = winblast0::hardware::thermal::SystemThermalSnapshot::read();
+    assert!(!snapshot.status_message.is_empty(), "Thermal status message must be populated");
+    // Ensure sensor readings are non-panicking and physically bounded
+    if snapshot.sensors_available {
+        assert!(snapshot.cpu_package_temp_c >= 0.0 && snapshot.cpu_package_temp_c < 125.0);
+        assert!(snapshot.gpu_core_temp_c >= 0.0 && snapshot.gpu_core_temp_c < 125.0);
+    }
+}
+
