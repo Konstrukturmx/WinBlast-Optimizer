@@ -161,7 +161,7 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                                 .color(p.warning),
                         )
                         .child(
-                            text("NVMe Burst Read")
+                            text(s.tr(crate::core::i18n::TextKey::StorageDrivesTitle))
                                 .font(rune::tok::type_::BODY)
                                 .color(p.text_muted),
                         ),

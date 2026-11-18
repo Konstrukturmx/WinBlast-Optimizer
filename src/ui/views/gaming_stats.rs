@@ -167,7 +167,7 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
                                         .color(p.text_primary),
                                 )
                                 .child(
-                                    text("Priority: High • Core Affinity: P-Cores Exclusive")
+                                    text(s.tr_v(ViewTextKey::GamingStatsPriorityHigh))
                                         .font(rune::tok::type_::LABEL)
                                         .color(p.success),
                                 ),
@@ -193,7 +193,7 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
                                 .fill(p.bg_card)
                                 .border(style.border_width(), p.border)
                                 .gap(4.0)
-                                .child(text("DirectX 12 Agility SDK Runtime").font(rune::tok::type_::LABEL).color(p.accent))
+                                .child(text(s.tr_v(ViewTextKey::GamingStatsDx12Agility)).font(rune::tok::type_::LABEL).color(p.accent))
                                 .child(text("D3D12Core.dll v1.614.0 active • Shader Model 6.8 enabled").font(rune::tok::type_::BODY).color(p.text_primary))
                                 .child(text("DirectStorage 1.2 GPU Decompression Active").font(rune::tok::type_::LABEL).color(p.success)),
                         )
@@ -206,7 +206,7 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
                                 .fill(p.bg_card)
                                 .border(style.border_width(), p.border)
                                 .gap(4.0)
-                                .child(text("WDDM Hardware GPU Scheduling").font(rune::tok::type_::LABEL).color(p.accent))
+                                .child(text(s.tr_v(ViewTextKey::GamingStatsWddmScheduling)).font(rune::tok::type_::LABEL).color(p.accent))
                                 .child(text("Hardware Accelerated GPU Scheduling (HAGS) active").font(rune::tok::type_::BODY).color(p.text_primary))
                                 .child(text("Variable Refresh Rate (VRR) & G-Sync Synchronized").font(rune::tok::type_::LABEL).color(p.success)),
                         ),
@@ -237,7 +237,7 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
                                 .color(p.text_primary),
                         )
                         .child(
-                            text("Frame pacing consistency, latency benchmarking, game profiles, and in-game HUD overlay.")
+                            text(s.tr_v(ViewTextKey::GamingStatsFooterDesc))
                                 .font(rune::tok::type_::BODY)
                                 .color(p.text_muted),
                         ),

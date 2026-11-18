@@ -9,6 +9,7 @@ use rune::{col, row, text, text_input, El, ScrollSpec};
 
 use crate::app::AppState;
 use crate::core::i18n::TextKey;
+use crate::core::view_i18n::ViewTextKey;
 use crate::hardware::bios::BiosSystemInfo;
 use crate::hardware::driver_update::{DriverCategory, DriverUpdateState};
 use crate::ui::widgets::button::{action_button, action_button_guarded};
@@ -52,7 +53,7 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
                                 .color(p.text_primary),
                         )
                         .child(
-                            text("Motherboard hardware layout, UEFI platform firmware, and online driver lifecycle manager.")
+                            text(s.tr_v(ViewTextKey::DriverBiosSubtitle))
                                 .font(rune::tok::type_::BODY)
                                 .color(p.text_muted),
                         ),
@@ -123,7 +124,7 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
                                 .center()
                                 .child(text("🌐").font(rune::tok::type_::LABEL))
                                 .child(
-                                    text("Online Driver Update & Verification")
+                                    text(s.tr_v(ViewTextKey::DriverBiosOnlineUpdateTitle))
                                         .font(rune::tok::type_::TITLE)
                                         .color(p.text_primary),
                                 ),
@@ -316,7 +317,7 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
                                     .padding(16.0)
                                     .center()
                                     .child(
-                                        text("No devices match the current category or search filter.")
+                                        text(s.tr_v(ViewTextKey::DriverBiosNoDevicesFound))
                                             .font(rune::tok::type_::BODY)
                                             .color(p.text_muted),
                                     ),
@@ -507,7 +508,7 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
                                 .center()
                                 .child(text("🎛").font(rune::tok::type_::LABEL))
                                 .child(
-                                    text("Motherboard")
+                                    text(s.tr_v(ViewTextKey::DriverBiosMotherboardSection))
                                         .font(rune::tok::type_::LABEL)
                                         .color(p.text_primary),
                                 ),
@@ -539,7 +540,7 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
                                 .center()
                                 .child(text("💾").font(rune::tok::type_::LABEL))
                                 .child(
-                                    text("BIOS & UEFI Firmware")
+                                    text(s.tr_v(ViewTextKey::DriverBiosFirmwareSection))
                                         .font(rune::tok::type_::LABEL)
                                         .color(p.text_primary),
                                 ),
@@ -585,7 +586,7 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
                         .center()
                         .child(text("🎮").font(rune::tok::type_::LABEL))
                         .child(
-                            text("Installed GPU Display Drivers")
+                            text(s.tr_v(ViewTextKey::DriverBiosGpuDriversSection))
                                 .font(rune::tok::type_::LABEL)
                                 .color(p.text_primary),
                         ),

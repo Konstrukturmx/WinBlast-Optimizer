@@ -5,6 +5,7 @@
 use rune::{col, row, text, El, ScrollSpec};
 
 use crate::app::AppState;
+use crate::core::view_i18n::ViewTextKey;
 use crate::tools::gaming_stats::get_standard_game_benchmarks;
 use crate::ui::widgets::scrollbar::WinBlastScrollable;
 use crate::ui::LayoutTier;
@@ -26,12 +27,12 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                 .w_full()
                 .gap(2.0)
                 .child(
-                    text("FPS Karşılaştırma & Performans Artışı")
+                    text(s.tr_v(ViewTextKey::FpsBenchTitle))
                         .font(rune::tok::type_::TITLE)
                         .color(p.text_primary),
                 )
                 .child(
-                    text("WinBlast optimizasyonları sonrasında popüler rekabetçi ve AAA oyunlarda ölçülen ortalama FPS ve %1 Low artışları.")
+                    text(s.tr_v(ViewTextKey::FpsBenchSubtitle))
                         .font(rune::tok::type_::BODY)
                         .color(p.text_muted),
                 ),
@@ -78,7 +79,7 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                                 .fill(p.success.alpha(0.18))
                                 .border(1.0, p.success)
                                 .child(
-                                    text(format!("+%{} Ortalama FPS Artışı", fps_gain))
+                                    text(format!("+{}% {}", fps_gain, s.tr_v(ViewTextKey::FpsBenchAvgFps)))
                                         .font(rune::tok::type_::LABEL)
                                         .color(p.success),
                                 ),
@@ -93,7 +94,7 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                             col()
                                 .grow(1.0)
                                 .min_w(160.0)
-                                .child(text("Ortalama FPS").font(rune::tok::type_::LABEL).color(p.text_secondary))
+                                .child(text(s.tr_v(ViewTextKey::FpsBenchAvgFps)).font(rune::tok::type_::LABEL).color(p.text_secondary))
                                 .child(
                                     text(format!("{} FPS → {} FPS", b.stock_avg_fps, b.optimized_avg_fps))
                                         .font(rune::tok::type_::TITLE)
@@ -104,9 +105,9 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                             col()
                                 .grow(1.0)
                                 .min_w(160.0)
-                                .child(text("%1 Low (Takılma Önleme)").font(rune::tok::type_::LABEL).color(p.text_secondary))
+                                .child(text("1% Low").font(rune::tok::type_::LABEL).color(p.text_secondary))
                                 .child(
-                                    text(format!("{} FPS → {} FPS (+%{})", b.stock_1pct_low, b.optimized_1pct_low, low_gain))
+                                    text(format!("{} FPS → {} FPS (+{}%)", b.stock_1pct_low, b.optimized_1pct_low, low_gain))
                                         .font(rune::tok::type_::TITLE)
                                         .color(p.accent),
                                 ),
@@ -115,9 +116,9 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                             col()
                                 .grow(1.0)
                                 .min_w(160.0)
-                                .child(text("Giriş Gecikmesi Azalması").font(rune::tok::type_::LABEL).color(p.text_secondary))
+                                .child(text(s.tr_v(ViewTextKey::FpsBenchInputLatencyReduction)).font(rune::tok::type_::LABEL).color(p.text_secondary))
                                 .child(
-                                    text(format!("-{:.1} ms Düşüş", b.latency_reduction_ms))
+                                    text(format!("-{:.1} ms", b.latency_reduction_ms))
                                         .font(rune::tok::type_::TITLE)
                                         .color(p.success),
                                 ),

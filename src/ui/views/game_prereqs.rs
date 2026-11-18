@@ -8,6 +8,7 @@ use rune::{col, row, text, text_input, El, ScrollSpec};
 
 use crate::app::AppState;
 use crate::core::i18n::TextKey;
+use crate::core::view_i18n::ViewTextKey;
 use crate::tools::game_prereqs::PrereqInstallState;
 use crate::ui::widgets::button::action_button_guarded;
 use crate::ui::widgets::scrollbar::WinBlastScrollable;
@@ -91,7 +92,7 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                 .radius(style.card_radius().min(8.0))
                 .fill(p.card_fill_styled(style))
                 .border(style.border_width(), p.border_styled(style))
-                .child(text("Total Tracked Runtimes").font(rune::tok::type_::LABEL).color(p.text_secondary))
+                .child(text(s.tr_v(ViewTextKey::GamePrereqsTotalTracked)).font(rune::tok::type_::LABEL).color(p.text_secondary))
                 .child(text(format!("{}", total)).font(rune::tok::type_::TITLE).color(p.text_primary)),
         )
         .child(
@@ -102,7 +103,7 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                 .radius(style.card_radius().min(8.0))
                 .fill(p.card_fill_styled(style))
                 .border(style.border_width(), p.border_styled(style))
-                .child(text("Installed & Verified").font(rune::tok::type_::LABEL).color(p.success))
+                .child(text(s.tr_v(ViewTextKey::GamePrereqsVerified)).font(rune::tok::type_::LABEL).color(p.success))
                 .child(text(format!("{}", installed_count)).font(rune::tok::type_::TITLE).color(p.success)),
         )
         .child(
@@ -113,7 +114,7 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                 .radius(style.card_radius().min(8.0))
                 .fill(p.card_fill_styled(style))
                 .border(style.border_width(), p.border_styled(style))
-                .child(text("Missing / Requires Action").font(rune::tok::type_::LABEL).color(if missing_count > 0 { p.warning } else { p.text_secondary }))
+                .child(text(s.tr_v(ViewTextKey::GamePrereqsMissing)).font(rune::tok::type_::LABEL).color(if missing_count > 0 { p.warning } else { p.text_secondary }))
                 .child(text(format!("{}", missing_count)).font(rune::tok::type_::TITLE).color(if missing_count > 0 { p.warning } else { p.text_secondary })),
         );
 

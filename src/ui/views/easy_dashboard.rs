@@ -6,6 +6,7 @@ use rune::{col, el, row, text, El, ScrollSpec};
 
 use crate::app::{ActiveView, AppState, BeforeAfterImpact};
 use crate::core::i18n::TextKey;
+use crate::core::view_i18n::ViewTextKey;
 use crate::scanner::{ScanResult, TweakState};
 use crate::ui::theme::ThemePalette;
 use crate::ui::widgets::button::{action_button, action_button_guarded};
@@ -855,7 +856,7 @@ fn updater_status_card(s: &AppState, p: &ThemePalette) -> El {
                         .items_center()
                         .child(text("✔").font(rune::tok::type_::TITLE).color(p.accent))
                         .child(
-                            text("Update Ready to Install — Ready to restart.")
+                            text(s.tr_v(ViewTextKey::DashboardUpdateReady))
                                 .font(rune::tok::type_::TITLE)
                                 .color(p.accent),
                         ),
@@ -968,7 +969,7 @@ fn optimization_categories_summary(s: &AppState, p: &ThemePalette) -> El {
         let pct = if tot > 0 { (opt as f32 / tot as f32).clamp(0.0, 1.0) } else { 0.0 };
         col()
             .grow(1.0)
-            .min_w(160.0)
+            .min_w(140.0)
             .padding(10.0)
             .radius(6.0)
             .fill(p.bg_primary)
@@ -976,9 +977,25 @@ fn optimization_categories_summary(s: &AppState, p: &ThemePalette) -> El {
             .gap(4.0)
             .child(
                 row()
+                    .w_full()
+                    .min_w(0.0)
+                    .flex_wrap()
                     .justify_between()
-                    .child(text(label).font(rune::tok::type_::LABEL).color(p.text_primary))
-                    .child(text(format!("{}/{}", opt, tot)).font(rune::tok::type_::LABEL).color(p.text_muted)),
+                    .items_center()
+                    .gaps(4.0, 2.0)
+                    .child(
+                        text(label)
+                            .font(rune::tok::type_::LABEL)
+                            .color(p.text_primary)
+                            .shrink()
+                            .wrap(),
+                    )
+                    .child(
+                        text(format!("{}/{}", opt, tot))
+                            .font(rune::tok::type_::LABEL)
+                            .color(p.text_muted)
+                            .shrink(),
+                    ),
             )
             .child(
                 el()
@@ -988,7 +1005,7 @@ fn optimization_categories_summary(s: &AppState, p: &ThemePalette) -> El {
                     .fill(p.bg_card)
                     .child(
                         el()
-                            .w(150.0 * pct)
+                            .w(100.0 * pct)
                             .h(5.0)
                             .radius(2.5)
                             .fill(bar_color),
@@ -1010,7 +1027,7 @@ fn optimization_categories_summary(s: &AppState, p: &ThemePalette) -> El {
                 .items_center()
                 .child(text("📊").font(rune::tok::type_::LABEL))
                 .child(
-                    text("System Optimization Categories Breakdown")
+                    text(s.tr_v(ViewTextKey::DashboardCatBreakdownTitle))
                         .font(rune::tok::type_::TITLE)
                         .color(p.text_primary),
                 ),
@@ -1021,10 +1038,10 @@ fn optimization_categories_summary(s: &AppState, p: &ThemePalette) -> El {
                 .min_w(0.0)
                 .flex_wrap()
                 .gaps(10.0, 10.0)
-                .child(cat_col("🎮 Gaming & GPU", gaming_opt, gaming_total, p.accent))
-                .child(cat_col("⚙ Services & Tasks", svc_opt, svc_total, p.success))
-                .child(cat_col("🛡 Privacy & Telemetry", priv_opt, priv_total, p.warning))
-                .child(cat_col("🖥 Hardware & Latency", hw_opt, hw_total, p.text_secondary)),
+                .child(cat_col(s.tr_v(ViewTextKey::DashboardCatGaming), gaming_opt, gaming_total, p.accent))
+                .child(cat_col(s.tr_v(ViewTextKey::DashboardCatServices), svc_opt, svc_total, p.success))
+                .child(cat_col(s.tr_v(ViewTextKey::DashboardCatPrivacy), priv_opt, priv_total, p.warning))
+                .child(cat_col(s.tr_v(ViewTextKey::DashboardCatHardware), hw_opt, hw_total, p.text_secondary)),
         )
 }
 
