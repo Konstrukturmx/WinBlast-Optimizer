@@ -4,6 +4,7 @@
 
 pub mod backend;
 pub mod error;
+pub mod generational_cache;
 pub mod os_detect;
 pub mod elevation;
 pub mod risk;

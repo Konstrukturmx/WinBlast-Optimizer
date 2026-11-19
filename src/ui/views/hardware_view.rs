@@ -419,7 +419,7 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
     };
 
     let power_card = {
-        let mut scheme_row = row().w_full().min_w(0.0).min_h(32.0).flex_wrap().gaps(6.0, 6.0);
+        let mut scheme_row = row().key("hw_scheme_row").w_full().min_w(0.0).min_h(32.0).flex_wrap().gaps(6.0, 6.0);
         if s.power_schemes.is_empty() {
             scheme_row = scheme_row.child(
                 text(s.tr(TextKey::Scanning))
@@ -476,7 +476,7 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
                     .child(scheme_row),
             )
             .child(el().w_full().h(1.0).fill(p.border.alpha(0.5)))
-            .child(kv_row(s.tr(TextKey::HibernationLabel), hib_note, compact, p))
+            .child(row().key("hw_hib_row").w_full().min_w(0.0).child(kv_row(s.tr(TextKey::HibernationLabel), hib_note, compact, p)))
             .child(
                 row()
                     .w_full()

@@ -352,6 +352,21 @@ fn live_telemetry_card(s: &AppState, p: &ThemePalette, tier: LayoutTier) -> El {
     };
     let min_card_w = if tier == LayoutTier::Compact { 240.0 } else { 300.0 };
 
+    let interval_sec = s.telemetry_interval_secs();
+    let cpu_title = if (interval_sec - 1.0).abs() < 0.05 {
+        s.tr(TextKey::CpuSparklineTitle).to_string()
+    } else {
+        let base = s.tr(TextKey::CpuSparklineTitle);
+        let sec_str = if interval_sec.fract() == 0.0 {
+            format!("{:.0}", interval_sec)
+        } else {
+            format!("{:.1}", interval_sec)
+        };
+        base.replace("1s", &format!("{}s", sec_str))
+            .replace("1sn", &format!("{}sn", sec_str))
+            .replace("1秒", &format!("{}秒", sec_str))
+    };
+
     row()
         .w_full()
         .min_w(0.0)
@@ -359,7 +374,7 @@ fn live_telemetry_card(s: &AppState, p: &ThemePalette, tier: LayoutTier) -> El {
         .gaps(12.0, 12.0)
         .child(
             sparkline::sparkline_with_palette(
-                s.tr(TextKey::CpuSparklineTitle),
+                &cpu_title,
                 &format!("{:.1}% ({} {})", m.cpu_usage, m.thread_count, s.tr(TextKey::ThreadsLabel)),
                 &s.cpu_sparkline,
                 p.sparkline_cpu,

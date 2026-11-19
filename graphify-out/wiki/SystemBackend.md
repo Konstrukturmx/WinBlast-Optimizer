@@ -1,8 +1,8 @@
 # SystemBackend
 
-> God node · 117 connections · `src/core/backend.rs`
+> God node · 118 connections · `src/core/backend.rs`
 
-**Community:** [Disk Cleaning & Temporary File Purger](Disk_Cleaning_&_Temporary_File_Purger.md)
+**Community:** [Integration Suite: Tweak Sandbox E2E](Integration_Suite-_Tweak_Sandbox_E2E.md)
 
 ## Connections by Relation
 
@@ -19,14 +19,15 @@
 ### imports_from
 - tweak_sandbox_e2e.rs `EXTRACTED`
 - [app.rs](app.rs.md) `EXTRACTED`
-- [engine.rs](engine.rs.md) `EXTRACTED`
+- engine.rs `EXTRACTED`
 - scanner/mod.rs `EXTRACTED`
+- [real_windows_env.rs](real_windows_env.rs.md) `EXTRACTED`
 - [restore_point.rs](restore_point.rs.md) `EXTRACTED`
 - telemetry_scanner.rs `EXTRACTED`
 
 ### method
-- .ensure_preflight_restore_point() `EXTRACTED`
 - .apply_parking_snapshot() `EXTRACTED`
+- .ensure_preflight_restore_point() `EXTRACTED`
 - .detect_core_parking_sampled() `EXTRACTED`
 - .execute_clean_targets() `EXTRACTED`
 - .set_optional_feature() `EXTRACTED`
@@ -50,20 +51,20 @@
 ### references
 - [AppState](AppState.md) `EXTRACTED`
 - rollback_entry_with() `EXTRACTED`
+- [Changelog](Changelog.md) `EXTRACTED`
 - revert_tweak_with() `EXTRACTED`
-- Changelog `EXTRACTED`
-- apply_tweak_with() `EXTRACTED`
 - apply_action_slice_with() `EXTRACTED`
 - scan_single_tweak_with() `EXTRACTED`
-- WinBlast Optimizer — Developer & Architecture Guide `EXTRACTED`
-- CachedScanBackend `EXTRACTED`
-- run_full_scan_with() `EXTRACTED`
+- apply_tweak_with() `EXTRACTED`
+- [WinBlast Optimizer — Developer & Architecture Guide](WinBlast_Optimizer_—_Developer_&_Architecture_Guide.md) `EXTRACTED`
 - scan_all_tweaks_parallel_with() `EXTRACTED`
+- CachedScanBackend `EXTRACTED`
 - full_telemetry_audit_with() `EXTRACTED`
-- apply_tweaks_by_id_with() `EXTRACTED`
-- revert_tweaks_by_id_with() `EXTRACTED`
+- run_full_scan_with() `EXTRACTED`
 - resolve_dynamic_dword() `EXTRACTED`
 - scan_tweaks_chunked_parallel_with() `EXTRACTED`
+- apply_tweaks_by_id_with() `EXTRACTED`
+- revert_tweaks_by_id_with() `EXTRACTED`
 - rollback_recorded_ids() `EXTRACTED`
 - evaluate_tweak_status() `EXTRACTED`
 - ensure_tweak_compatible() `EXTRACTED`

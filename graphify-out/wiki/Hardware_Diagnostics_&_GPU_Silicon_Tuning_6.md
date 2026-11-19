@@ -1,49 +1,31 @@
 # Hardware Diagnostics & GPU Silicon Tuning
 
-> 15 nodes · cohesion 0.21
+> 8 nodes · cohesion 0.29
 
 ## Key Concepts
 
-- **CpuInfo** (13 connections) — `src/hardware/cpu.rs`
-- **cpu.rs** (9 connections) — `src/hardware/cpu.rs`
-- **classify_efficiency_records()** (4 connections) — `src/hardware/cpu.rs`
-- **query_win32_core_topology()** (4 connections) — `src/hardware/cpu.rs`
-- **.detect_cpu()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.detect()** (3 connections) — `src/hardware/cpu.rs`
-- **Win32CoreTopology** (3 connections) — `src/hardware/cpu.rs`
-- **.detect_cpu()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.detect_cpu()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.detect_cpu()** (2 connections) — `src/core/backend.rs`
-- **.detect_cpu()** (2 connections) — `src/core/backend.rs`
-- **.detect_cpu()** (2 connections) — `src/core/backend.rs`
-- **test_classify_efficiency_records_hybrid_and_non_ht_and_uniform()** (2 connections) — `src/hardware/cpu.rs`
-- **test_cpu_detect_host_safe()** (2 connections) — `src/hardware/cpu.rs`
-- **cpuid** (1 connections)
+- **Spring** (8 connections)
+- **.motion()** (5 connections) — `src/ui/theme.rs`
+- **.easing_spring()** (3 connections) — `src/ui/theme.rs`
+- **EASING_CLASSIC** (2 connections) — `src/ui/theme.rs`
+- **EASING_COMPACT** (2 connections) — `src/ui/theme.rs`
+- **EASING_GLASSY** (2 connections) — `src/ui/theme.rs`
+- **EASING_MATERIALISTIC** (2 connections) — `src/ui/theme.rs`
+- **EASING_MINIMALISTIC** (2 connections) — `src/ui/theme.rs`
 
 ## Relationships
 
-- [SlowScanBackend](SlowScanBackend.md) (2 shared connections)
-- [RealBackend](RealBackend.md) (1 shared connections)
-- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (1 shared connections)
-- [Disk Cleaning & Temporary File Purger](Disk_Cleaning_&_Temporary_File_Purger.md) (1 shared connections)
-- [.Create Metrics Sampler()](Create_Metrics_Sampler.md) (1 shared connections)
-- [WinBlast0 Architectural Specifications](WinBlast0_Architectural_Specifications.md) (1 shared connections)
-- [Win32 Registry Scanner & Mutator](Win32_Registry_Scanner_&_Mutator.md) (1 shared connections)
-- [AppState](AppState.md) (1 shared connections)
-- [app.rs](app.rs.md) (1 shared connections)
-- [backend.rs](backend.rs.md) (1 shared connections)
-- [Scandetailkind Appxinstalled Appxinstalledps](Scandetailkind_Appxinstalled_Appxinstalledps.md) (1 shared connections)
-- [FailAtMutationBackend](FailAtMutationBackend.md) (1 shared connections)
+- [Dynamicdwordformula Logicalcorecount Totalraminkb](Dynamicdwordformula_Logicalcorecount_Totalraminkb.md) (5 shared connections)
+- [Project History & Release Version Ledger](Project_History_&_Release_Version_Ledger.md) (4 shared connections)
+- [Integration Suite: Ui Responsive E2E](Integration_Suite-_Ui_Responsive_E2E.md) (1 shared connections)
 
 ## Source Files
 
-- `src/core/backend.rs`
-- `src/hardware/cpu.rs`
-- `tests/tweak_sandbox_e2e.rs`
+- `src/ui/theme.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 35 (100%)
+- EXTRACTED: 18 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

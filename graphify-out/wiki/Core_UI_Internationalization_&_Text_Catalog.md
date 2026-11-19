@@ -33,18 +33,18 @@
 
 ## Relationships
 
-- [LayoutTier](LayoutTier.md) (7 shared connections)
-- [action_button](action_button.md) (5 shared connections)
-- [.Create Metrics Sampler()](Create_Metrics_Sampler.md) (3 shared connections)
-- [action_button_guarded](action_button_guarded.md) (2 shared connections)
+- [.Toggle .Set .Apply](Toggle_.Set_.Apply.md) (6 shared connections)
+- [action_button_guarded](action_button_guarded.md) (5 shared connections)
+- [enums](enums.md) (3 shared connections)
+- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (2 shared connections)
 - [diff_modal.rs](diff_modal.rs.md) (2 shared connections)
 - [app.rs](app.rs.md) (1 shared connections)
-- [Process Token Information](Process_Token_Information.md) (1 shared connections)
-- [ThemePalette](ThemePalette.md) (1 shared connections)
-- [latency_bench.rs](latency_bench.rs.md) (1 shared connections)
-- [View() Color Scrollspec](View_Color_Scrollspec.md) (1 shared connections)
-- [AppState](AppState.md) (1 shared connections)
-- [ColorScheme](ColorScheme.md) (1 shared connections)
+- [Appx Package() Prefixes](Appx_Package_Prefixes.md) (1 shared connections)
+- [ui/mod.rs](ui-mod.rs.md) (1 shared connections)
+- [Integration Suite: Ui Responsive E2E](Integration_Suite-_Ui_Responsive_E2E.md) (1 shared connections)
+- [Startup Tasks & Auto-Run Explorer](Startup_Tasks_&_Auto-Run_Explorer.md) (1 shared connections)
+- [GPU Silicon & Hardware Tuning Policies](GPU_Silicon_&_Hardware_Tuning_Policies.md) (1 shared connections)
+- [Privacy, Telemetry & AI Hardening Catalog](Privacy,_Telemetry_&_AI_Hardening_Catalog.md) (1 shared connections)
 
 ## Source Files
 

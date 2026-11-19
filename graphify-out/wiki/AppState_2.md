@@ -1,8 +1,8 @@
 # AppState
 
-> God node · 334 connections · `src/app.rs`
+> God node · 347 connections · `src/app.rs`
 
-**Community:** [AppState](AppState.md)
+**Community:** [Privacy, Telemetry & AI Hardening Catalog](Privacy,_Telemetry_&_AI_Hardening_Catalog.md)
 
 ## Connections by Relation
 
@@ -14,7 +14,7 @@
 - ui_responsive_e2e.rs `EXTRACTED`
 - clean_apps.rs `EXTRACTED`
 - easy_dashboard.rs `EXTRACTED`
-- ui/mod.rs `EXTRACTED`
+- [ui/mod.rs](ui-mod.rs.md) `EXTRACTED`
 - startup_tasks.rs `EXTRACTED`
 - gpu_tuning.rs `EXTRACTED`
 - [ui_scrollbar_test.rs](ui_scrollbar_test.rs.md) `EXTRACTED`
@@ -22,38 +22,38 @@
 - button.rs `EXTRACTED`
 - privacy_shield.rs `EXTRACTED`
 - [diff_modal.rs](diff_modal.rs.md) `EXTRACTED`
-- driver_bios.rs `EXTRACTED`
 - hardware_view.rs `EXTRACTED`
+- driver_bios.rs `EXTRACTED`
 - views/gaming_stats.rs `EXTRACTED`
-- [latency_bench.rs](latency_bench.rs.md) `EXTRACTED`
 - automation_center.rs `EXTRACTED`
-- fault_diagnostics.rs `EXTRACTED`
 - views/game_prereqs.rs `EXTRACTED`
-- thermal_monitor.rs `EXTRACTED`
+- [latency_bench.rs](latency_bench.rs.md) `EXTRACTED`
+- fault_diagnostics.rs `EXTRACTED`
+- [goal_planner.rs](goal_planner.rs.md) `EXTRACTED`
 - *…and 12 more `imports_from` connection(s) not listed (lowest-degree first to go)*
 
 ### method
 - .apply_worker_event() `EXTRACTED`
 - .set_status_spec() `EXTRACTED`
 - .navigate() `EXTRACTED`
-- .handle_switch_click() `EXTRACTED`
-- .refresh_pending_actions() `EXTRACTED`
-- .sync_clean_apps_busy() `EXTRACTED`
 - .setup() `EXTRACTED`
-- .run_scan_internal() `EXTRACTED`
-- .apply_selected() `EXTRACTED`
-- .run_telemetry_audit() `EXTRACTED`
+- .sync_clean_apps_busy() `EXTRACTED`
+- .refresh_pending_actions() `EXTRACTED`
+- .handle_switch_click() `EXTRACTED`
 - .sync_startup_tasks_busy() `EXTRACTED`
+- .run_scan_internal() `EXTRACTED`
+- .run_telemetry_audit() `EXTRACTED`
+- .get_tweak_scan() `EXTRACTED`
 - .refresh_restore_points() `EXTRACTED`
 - .is_tweak_compatible_and_applicable() `EXTRACTED`
 - .scan_clean_targets_async() `EXTRACTED`
-- .set_live_service_start_async() `EXTRACTED`
-- .get_tweak_scan() `EXTRACTED`
+- .poll() `EXTRACTED`
 - .set_status() `EXTRACTED`
 - .refresh_core_parking() `EXTRACTED`
-- .rollback_entry() `EXTRACTED`
+- .apply_selected() `EXTRACTED`
 - .refresh_latency() `EXTRACTED`
-- *…and 112 more `method` connection(s) not listed (lowest-degree first to go)*
+- .apply_preset() `EXTRACTED`
+- *…and 122 more `method` connection(s) not listed (lowest-degree first to go)*
 
 ### references
 - [SystemBackend](SystemBackend.md) `EXTRACTED`
@@ -61,22 +61,22 @@
 - [ThemePalette](ThemePalette.md) `EXTRACTED`
 - WorkerEvent `EXTRACTED`
 - action_button() `EXTRACTED`
-- TweakDefinition `EXTRACTED`
 - Language `EXTRACTED`
+- TweakDefinition `EXTRACTED`
 - ActiveView `EXTRACTED`
 - action_button_guarded() `EXTRACTED`
-- view() `EXTRACTED`
 - TweakAction `EXTRACTED`
 - [UiThemeStyle](UiThemeStyle.md) `INFERRED`
 - ScanResult `EXTRACTED`
-- StartupEntry `EXTRACTED`
-- HibernationStatus `EXTRACTED`
-- [DriverCategory](DriverCategory.md) `INFERRED`
+- [StartupEntry](StartupEntry.md) `EXTRACTED`
+- [HibernationStatus](HibernationStatus.md) `EXTRACTED`
+- DriverCategory `EXTRACTED`
 - CoreParkingState `EXTRACTED`
-- Changelog `EXTRACTED`
-- LatencyBenchmarkSnapshot `EXTRACTED`
+- [Changelog](Changelog.md) `EXTRACTED`
 - [ColorScheme](ColorScheme.md) `EXTRACTED`
-- *…and 149 more `references` connection(s) not listed (lowest-degree first to go)*
+- LatencyBenchmarkSnapshot `EXTRACTED`
+- DetectedGpu `EXTRACTED`
+- *…and 152 more `references` connection(s) not listed (lowest-degree first to go)*
 
 ---
 

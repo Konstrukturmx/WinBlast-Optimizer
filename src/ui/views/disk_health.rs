@@ -7,7 +7,6 @@ use rune::{col, row, text, El, ScrollSpec};
 
 use crate::app::AppState;
 use crate::core::view_i18n::ViewTextKey;
-use crate::hardware::disks::DiskSubsystemReport;
 use crate::ui::widgets::button::action_button;
 use crate::ui::widgets::scrollbar::WinBlastScrollable;
 use crate::ui::LayoutTier;
@@ -15,7 +14,7 @@ use crate::ui::LayoutTier;
 pub fn view(s: &AppState, _tier: LayoutTier) -> El {
     let p = s.palette();
     let style = s.theme_style;
-    let report = s.disk_report.clone().unwrap_or_else(DiskSubsystemReport::probe);
+    let report = s.disk_report.clone().unwrap_or_default();
 
     let trim_color = if report.global_trim_active { p.success } else { p.warning };
 
@@ -52,14 +51,14 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                         .gap(8.0)
                         .child(
                             action_button(s.tr_v(ViewTextKey::DiskRefreshBtn), p.btn_secondary, p.text_primary, p, |s| {
-                                s.disk_report = Some(crate::hardware::disks::DiskSubsystemReport::probe());
+                                s.scan_disk_health_async();
                             })
                             .radius(style.btn_radius()),
                         )
                         .child(
                             action_button(s.tr_v(ViewTextKey::DiskTrimAllBtn), p.accent, Color::WHITE, p, |s| {
                                 let _ = crate::hardware::disks::DiskSubsystemReport::run_trim_all();
-                                s.disk_report = Some(crate::hardware::disks::DiskSubsystemReport::probe());
+                                s.scan_disk_health_async();
                             })
                             .radius(style.btn_radius()),
                         ),

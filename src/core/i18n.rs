@@ -4770,7 +4770,13 @@ impl I18n {
     /// Zero-allocation, O(1) table indexed translation.
     #[inline(always)]
     pub fn translate(lang: Language, key: TextKey) -> &'static str {
-        TRANSLATIONS[lang as usize][key as usize]
+        let lang_idx = (lang as usize).min(TRANSLATIONS.len() - 1);
+        let key_idx = key as usize;
+        if key_idx < TRANSLATIONS[lang_idx].len() {
+            TRANSLATIONS[lang_idx][key_idx]
+        } else {
+            TRANSLATIONS[0].first().copied().unwrap_or("")
+        }
     }
 
     /// Locale-safe lowercase & diacritic search folding handling Turkish `İ`/`ı` -> `i`

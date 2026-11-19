@@ -1,28 +1,18 @@
 # ActiveDropdown
 
-> 6 nodes · cohesion 0.33
+> 1 nodes · cohesion 1.00
 
 ## Key Concepts
 
-- **ActiveDropdown** (7 connections) — `src/app.rs`
-- **ColorScheme** (1 connections) — `src/app.rs`
-- **Language** (1 connections) — `src/app.rs`
-- **None** (1 connections) — `src/app.rs`
-- **ThemeMode** (1 connections) — `src/app.rs`
-- **ThemeStyle** (1 connections) — `src/app.rs`
+- **c_void** (0 connections)
 
 ## Relationships
 
-- [AppState](AppState.md) (1 shared connections)
-- [app.rs](app.rs.md) (1 shared connections)
-
-## Source Files
-
-- `src/app.rs`
+- No strong cross-community connections detected
 
 ## Audit Trail
 
-- EXTRACTED: 7 (100%)
+- EXTRACTED: 0 (0%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

@@ -87,14 +87,13 @@ impl DijkstraScheduler {
             };
         }
 
-        // 1. Build lookup tables for nodes
-        let mut id_to_idx: HashMap<&str, usize> = HashMap::new();
-        let mut idx_to_id: Vec<&str> = Vec::new();
-        let mut prereqs_map: Vec<Vec<usize>> = Vec::new();
-        let mut reboot_flags: Vec<bool> = Vec::new();
-        let mut service_flags: Vec<bool> = Vec::new();
-
-        let mut raw_prereqs: HashMap<&str, Vec<&str>> = HashMap::new();
+        // 1. Build lookup tables for nodes with pre-allocated capacity
+        let staged_cap = staged_set.len();
+        let mut id_to_idx: HashMap<&str, usize> = HashMap::with_capacity(staged_cap);
+        let mut idx_to_id: Vec<&str> = Vec::with_capacity(staged_cap);
+        let mut reboot_flags: Vec<bool> = Vec::with_capacity(staged_cap);
+        let mut service_flags: Vec<bool> = Vec::with_capacity(staged_cap);
+        let mut raw_prereqs: Vec<&'a [String]> = Vec::with_capacity(staged_cap);
 
         for (id, prereqs, reboot, services) in all_tweaks {
             if staged_set.contains(id) {
@@ -103,33 +102,29 @@ impl DijkstraScheduler {
                 idx_to_id.push(id);
                 reboot_flags.push(reboot);
                 service_flags.push(services);
-                raw_prereqs.insert(id, prereqs.iter().map(|s| s.as_str()).collect());
+                raw_prereqs.push(prereqs);
             }
         }
 
         let n = idx_to_id.len();
-        prereqs_map.resize(n, Vec::new());
-
-        // Resolve prerequisites only among staged tweaks
+        let mut prereqs_map: Vec<Vec<usize>> = vec![Vec::new(); n];
         let mut in_degrees = vec![0usize; n];
         let mut adj_list: Vec<Vec<usize>> = vec![Vec::new(); n];
 
-        for (id, prereqs) in &raw_prereqs {
-            if let Some(&u) = id_to_idx.get(id) {
-                for p in prereqs {
-                    if let Some(&v) = id_to_idx.get(p) {
-                        // v is a prerequisite of u (v must be applied before u)
-                        adj_list[v].push(u);
-                        in_degrees[u] += 1;
-                        prereqs_map[u].push(v);
-                    }
+        for (u, prereqs) in raw_prereqs.iter().enumerate() {
+            for p in *prereqs {
+                if let Some(&v) = id_to_idx.get(p.as_str()) {
+                    // v is a prerequisite of u (v must be applied before u)
+                    adj_list[v].push(u);
+                    in_degrees[u] += 1;
+                    prereqs_map[u].push(v);
                 }
             }
         }
 
         // 2. Detect cycles using Kahn's algorithm
         let mut resolved_cycles = Vec::new();
-        let mut zero_in_degree: VecDeque<usize> = VecDeque::new();
+        let mut zero_in_degree: VecDeque<usize> = VecDeque::with_capacity(n);
         let mut temp_in_degrees = in_degrees.clone();
 
         for (i, &deg) in temp_in_degrees.iter().enumerate().take(n) {
@@ -169,9 +164,9 @@ impl DijkstraScheduler {
         // - Reboot requirement: 10
         // Lower cost tweaks with 0 unmet prerequisites are chosen first.
         let mut dist = vec![u32::MAX; n];
-        let mut heap = BinaryHeap::new();
+        let mut heap = BinaryHeap::with_capacity(n);
         let mut executed = vec![false; n];
-        let mut scheduled_steps = Vec::new();
+        let mut scheduled_steps = Vec::with_capacity(n);
         let mut current_cost = 0u32;
         let mut total_reboots = 0;
 

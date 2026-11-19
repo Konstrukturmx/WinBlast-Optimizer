@@ -1,60 +1,62 @@
 # Hardware Diagnostics & GPU Silicon Tuning
 
-> 44 nodes · cohesion 0.07
+> 32 nodes · cohesion 0.17
 
 ## Key Concepts
 
-- **SandboxEnv** (115 connections) — `src/core/backend.rs`
-- **.take_injected_error()** (36 connections) — `src/core/backend.rs`
-- **normalize_task_path()** (8 connections) — `src/scanner/task_scanner.rs`
-- **.sync_parking_in_state()** (7 connections) — `src/core/backend.rs`
-- **.write_power_setting_index()** (6 connections) — `src/core/backend.rs`
-- **.remove_appx_family_in_state()** (4 connections) — `src/core/backend.rs`
-- **.restore_stock_parking()** (4 connections) — `src/core/backend.rs`
-- **.seed_tweak_defaults_for_tweak()** (4 connections) — `src/core/backend.rs`
-- **.unpark_all_cores()** (4 connections) — `src/core/backend.rs`
-- **.apply_parking_snapshot()** (4 connections) — `src/core/backend.rs`
-- **.reg_delete_value()** (3 connections) — `src/core/backend.rs`
-- **.reg_get_raw()** (3 connections) — `src/core/backend.rs`
-- **.reg_set_dword()** (3 connections) — `src/core/backend.rs`
-- **.remove_appx_batch()** (3 connections) — `src/core/backend.rs`
-- **.remove_appx_package()** (3 connections) — `src/core/backend.rs`
-- **.run_scheduled_task()** (3 connections) — `src/core/backend.rs`
-- **.seed_all_tweaks()** (3 connections) — `src/core/backend.rs`
-- **.seed_tweak_defaults()** (3 connections) — `src/core/backend.rs`
-- **.set_scheduled_task_enabled()** (3 connections) — `src/core/backend.rs`
-- **.set_usb_root_hub_power_saving()** (3 connections) — `src/core/backend.rs`
-- **.create_and_activate_performance_plan()** (2 connections) — `src/core/backend.rs`
-- **.get_task_enabled()** (2 connections) — `src/core/backend.rs`
-- **.reg_get_binary()** (2 connections) — `src/core/backend.rs`
-- **.remove_edge_preserve_webview2()** (2 connections) — `src/core/backend.rs`
-- **.request_system_reboot()** (2 connections) — `src/core/backend.rs`
-- *... and 19 more nodes in this community*
+- **action_button_guarded()** (44 connections) — `src/ui/widgets/button.rs`
+- **clean_apps.rs** (32 connections) — `src/ui/views/clean_apps.rs`
+- **startup_tasks.rs** (28 connections) — `src/ui/views/startup_tasks.rs`
+- **pill_badge()** (20 connections) — `src/ui/widgets/button.rs`
+- **build_appx_features_body()** (12 connections) — `src/ui/views/clean_apps.rs`
+- **build_disk_cleaner_body()** (12 connections) — `src/ui/views/clean_apps.rs`
+- **build_winget_body()** (12 connections) — `src/ui/views/clean_apps.rs`
+- **build_startup_apps_list()** (11 connections) — `src/ui/views/startup_tasks.rs`
+- **view()** (11 connections) — `src/ui/views/startup_tasks.rs`
+- **view()** (9 connections) — `src/ui/views/clean_apps.rs`
+- **build_services_list()** (9 connections) — `src/ui/views/startup_tasks.rs`
+- **build_tasks_list()** (9 connections) — `src/ui/views/startup_tasks.rs`
+- **switch_indicator()** (8 connections) — `src/ui/widgets/button.rs`
+- **CleanAppsSubTab** (7 connections) — `src/app.rs`
+- **StartupTasksSubTab** (7 connections) — `src/app.rs`
+- **El** (7 connections)
+- **El** (7 connections)
+- **empty_card()** (6 connections) — `src/ui/views/clean_apps.rs`
+- **empty_card()** (6 connections) — `src/ui/views/startup_tasks.rs`
+- **sub_tab_btn()** (5 connections) — `src/ui/views/clean_apps.rs`
+- **sub_tab_btn()** (5 connections) — `src/ui/views/startup_tasks.rs`
+- **clean_target_label()** (4 connections) — `src/ui/views/clean_apps.rs`
+- **startup_source_label()** (4 connections) — `src/ui/views/startup_tasks.rs`
+- **growthspec** (2 connections)
+- **rc** (2 connections)
+- *... and 7 more nodes in this community*
 
 ## Relationships
 
-- [Win32 Registry Scanner & Mutator](Win32_Registry_Scanner_&_Mutator.md) (40 shared connections)
-- [Integration Suite: Tweak Sandbox E2E](Integration_Suite-_Tweak_Sandbox_E2E.md) (9 shared connections)
-- [backend.rs](backend.rs.md) (7 shared connections)
-- [Disk Cleaning & Temporary File Purger](Disk_Cleaning_&_Temporary_File_Purger.md) (5 shared connections)
-- [normalize_guid_str](normalize_guid_str.md) (5 shared connections)
-- [task_scanner.rs](task_scanner.rs.md) (5 shared connections)
-- [Embedded Catalog Test](Embedded_Catalog_Test.md) (5 shared connections)
-- [engine.rs](engine.rs.md) (4 shared connections)
-- [Scandetailkind Appxinstalled Appxinstalledps](Scandetailkind_Appxinstalled_Appxinstalledps.md) (4 shared connections)
-- [.new](new.md) (3 shared connections)
-- [Startup Tasks & Auto-Run Explorer](Startup_Tasks_&_Auto-Run_Explorer.md) (3 shared connections)
-- [.Toggle .Set .Apply](Toggle_.Set_.Apply.md) (3 shared connections)
+- [.Toggle .Set .Apply](Toggle_.Set_.Apply.md) (34 shared connections)
+- [action_button_guarded](action_button_guarded.md) (31 shared connections)
+- [Integration Suite: Ui Responsive E2E](Integration_Suite-_Ui_Responsive_E2E.md) (18 shared connections)
+- [Privacy, Telemetry & AI Hardening Catalog](Privacy,_Telemetry_&_AI_Hardening_Catalog.md) (15 shared connections)
+- [Startup Tasks & Auto-Run Explorer](Startup_Tasks_&_Auto-Run_Explorer.md) (4 shared connections)
+- [app.rs](app.rs.md) (2 shared connections)
+- [enums](enums.md) (2 shared connections)
+- [Core UI Internationalization & Text Catalog](Core_UI_Internationalization_&_Text_Catalog.md) (2 shared connections)
+- [Disk Cleaning & Temporary File Purger](Disk_Cleaning_&_Temporary_File_Purger.md) (2 shared connections)
+- [spawn_guarded_worker](spawn_guarded_worker.md) (2 shared connections)
+- [RealBackend](RealBackend.md) (2 shared connections)
+- [StartupSource](StartupSource.md) (2 shared connections)
 
 ## Source Files
 
-- `src/core/backend.rs`
-- `src/scanner/task_scanner.rs`
+- `src/app.rs`
+- `src/ui/views/clean_apps.rs`
+- `src/ui/views/startup_tasks.rs`
+- `src/ui/widgets/button.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 184 (97%)
-- INFERRED: 6 (3%)
+- EXTRACTED: 164 (80%)
+- INFERRED: 40 (20%)
 - AMBIGUOUS: 0 (0%)
 
 ---

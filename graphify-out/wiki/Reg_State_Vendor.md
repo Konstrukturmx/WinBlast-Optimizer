@@ -1,58 +1,58 @@
 # .Reg State() Vendor()
 
-> 30 nodes · cohesion 0.12
+> 52 nodes · cohesion 0.04
 
 ## Key Concepts
 
-- **features_apps.rs** (57 connections) — `src/tools/features_apps.rs`
-- **list_installed_appx_from_cache_with_provisioned()** (9 connections) — `src/tools/features_apps.rs`
-- **normalize_appx_family_name()** (9 connections) — `src/tools/features_apps.rs`
-- **classify_appx_package()** (7 connections) — `src/tools/features_apps.rs`
-- **CURATED_WINGET_APPS** (5 connections) — `src/tools/features_apps.rs`
-- **extract_appx_short_name()** (4 connections) — `src/tools/features_apps.rs`
-- **extract_winget_error_detail()** (4 connections) — `src/tools/features_apps.rs`
-- **list_installed_appx_from_cache()** (4 connections) — `src/tools/features_apps.rs`
-- **uninstall_onedrive_safe()** (4 connections) — `src/tools/features_apps.rs`
-- **winget_install_package()** (4 connections) — `src/tools/features_apps.rs`
-- **DISM_LOCK** (3 connections) — `src/tools/features_apps.rs`
-- **is_crockford_pub_id()** (3 connections) — `src/tools/features_apps.rs`
-- **query_provisioned_appx_families()** (3 connections) — `src/tools/features_apps.rs`
-- **remove_appx_batch()** (3 connections) — `src/tools/features_apps.rs`
-- **validate_appx_family()** (3 connections) — `src/tools/features_apps.rs`
-- **LazyLock** (2 connections)
-- **check_onedrive_kfm_active()** (2 connections) — `src/tools/features_apps.rs`
-- **find_onedrive_setup_exe()** (2 connections) — `src/tools/features_apps.rs`
-- **is_appx_arch()** (2 connections) — `src/tools/features_apps.rs`
-- **is_appx_version()** (2 connections) — `src/tools/features_apps.rs`
-- **is_microsoft_appx_publisher()** (2 connections) — `src/tools/features_apps.rs`
-- **is_progress_noise_char()** (2 connections) — `src/tools/features_apps.rs`
-- **Mutex** (2 connections)
-- **strip_ansi_sequences()** (2 connections) — `src/tools/features_apps.rs`
-- **test_protected_core_appx_never_classified_bloat()** (2 connections) — `src/tools/features_apps.rs`
-- *... and 5 more nodes in this community*
+- **RealBackend** (84 connections) — `src/core/backend.rs`
+- **resolve_persistent_app_dir()** (4 connections) — `src/core/backend.rs`
+- **.list_optional_features()** (3 connections) — `src/core/backend.rs`
+- **.default_ledger_path()** (2 connections) — `src/core/backend.rs`
+- **.default_profile_path()** (2 connections) — `src/core/backend.rs`
+- **.is_elevated()** (2 connections) — `src/core/backend.rs`
+- **.drop()** (2 connections) — `src/core/backend.rs`
+- **.block_telemetry_hosts()** (1 connections) — `src/core/backend.rs`
+- **.broadcast_shell_settings_changed()** (1 connections) — `src/core/backend.rs`
+- **.check_onedrive_kfm_active()** (1 connections) — `src/core/backend.rs`
+- **.create_and_activate_performance_plan()** (1 connections) — `src/core/backend.rs`
+- **.create_restore_point()** (1 connections) — `src/core/backend.rs`
+- **.get_active_power_scheme()** (1 connections) — `src/core/backend.rs`
+- **.get_service_start_type()** (1 connections) — `src/core/backend.rs`
+- **.get_task_enabled()** (1 connections) — `src/core/backend.rs`
+- **.is_hags_enabled()** (1 connections) — `src/core/backend.rs`
+- **.is_mpo_disabled()** (1 connections) — `src/core/backend.rs`
+- **.logical_core_count()** (1 connections) — `src/core/backend.rs`
+- **.read_hosts_file()** (1 connections) — `src/core/backend.rs`
+- **.read_power_setting_index()** (1 connections) — `src/core/backend.rs`
+- **.reg_delete_tree()** (1 connections) — `src/core/backend.rs`
+- **.reg_delete_value()** (1 connections) — `src/core/backend.rs`
+- **.reg_delete_value_for_vendor()** (1 connections) — `src/core/backend.rs`
+- **.reg_get_binary()** (1 connections) — `src/core/backend.rs`
+- **.reg_get_dword()** (1 connections) — `src/core/backend.rs`
+- *... and 27 more nodes in this community*
 
 ## Relationships
 
-- [WinBlast0 Architectural Specifications](WinBlast0_Architectural_Specifications.md) (15 shared connections)
-- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (6 shared connections)
-- [System Architecture Changelog](System_Architecture_Changelog.md) (5 shared connections)
-- [deserialize](deserialize.md) (3 shared connections)
-- [enums](enums.md) (2 shared connections)
-- [Integration Suite: Tweak Sandbox E2E](Integration_Suite-_Tweak_Sandbox_E2E.md) (2 shared connections)
-- [Scandetailkind Appxinstalled Appxinstalledps](Scandetailkind_Appxinstalled_Appxinstalledps.md) (2 shared connections)
-- [backend.rs](backend.rs.md) (1 shared connections)
-- [.Create Metrics Sampler()](Create_Metrics_Sampler.md) (1 shared connections)
-- [svc_mutator.rs](svc_mutator.rs.md) (1 shared connections)
-- [Disabled() Delete .Set](Disabled_Delete_.Set.md) (1 shared connections)
-- [WindowsOptionalFeature](WindowsOptionalFeature.md) (1 shared connections)
+- [backend.rs](backend.rs.md) (5 shared connections)
+- [HibernationStatus](HibernationStatus.md) (3 shared connections)
+- [power.rs](power.rs.md) (3 shared connections)
+- [app.rs](app.rs.md) (2 shared connections)
+- [latency_bench.rs](latency_bench.rs.md) (2 shared connections)
+- [RegTreeSnapshot](RegTreeSnapshot.md) (2 shared connections)
+- [Disk Cleaning & Temporary File Purger](Disk_Cleaning_&_Temporary_File_Purger.md) (2 shared connections)
+- [StartupEntry](StartupEntry.md) (2 shared connections)
+- [full_telemetry_audit_with](full_telemetry_audit_with.md) (1 shared connections)
+- [Embedded Catalog Test](Embedded_Catalog_Test.md) (1 shared connections)
+- [real_windows_env.rs](real_windows_env.rs.md) (1 shared connections)
+- [Integration Suite: Tweak Sandbox E2E](Integration_Suite-_Tweak_Sandbox_E2E.md) (1 shared connections)
 
 ## Source Files
 
-- `src/tools/features_apps.rs`
+- `src/core/backend.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 94 (99%)
+- EXTRACTED: 90 (99%)
 - INFERRED: 1 (1%)
 - AMBIGUOUS: 0 (0%)
 

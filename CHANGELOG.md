@@ -5,6 +5,53 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ---
 
+## [v1.4.0] - 2026-11-19
+
+### ⚡ Architectural & Performance Upgrades (Milestone 2)
+- **Graph Optimization Algorithms (A\*, Dijkstra & Raven)**:
+  - Integrated A* search algorithm with cost-heuristic balancing for minimum reboot dependencies and instant tweak execution.
+  - Implemented Dijkstra single-source shortest path optimization for dependency cycle detection and resolution.
+  - Deployed Raven multi-objective Pareto-dominance optimizer for conflicting tweak resolution and weighted gaming profiles.
+- **Microsecond Generational Caching Architecture (`src/core/generational_cache.rs`)**:
+  - Implemented thread-safe 4-way set-associative LRU generational cache with atomic epoch invalidation fences.
+  - Ahead-of-Time (AOT) pre-warming for zero-allocation borrowed reads across high-frequency system telemetry polls.
+- **Adaptive Telemetry Sampling (`src/hardware/monitor.rs`, `src/app.rs`)**:
+  - Replaced rigid 1-second monitoring loop with an adaptive interval sampler (250 ms to 10,000 ms) utilizing relaxed atomic synchronization.
+  - Drastically reduced idle CPU utilization during background polling.
+
+### 🎨 UI/UX Polish, Instant Theme Switch & Layout Reflow
+- **Instant Dark / Light Mode Toggle (`src/ui/mod.rs`)**:
+  - Replaced multi-click theme mode menu with an instant 1-click top-bar toggle button (`🌙 Dark Mode` ↔ `☀️ Light Mode`).
+  - Calls `s.toggle_theme_mode()` which immediately reconstructs `ThemePalette::new(...)` and triggers an immediate full-window repaint without requiring a theme style switch.
+- **Full Desktop Work Area Auto-Detection & Win32 `SW_MAXIMIZE` (`src/main.rs`, `src/ui/window_icon.rs`)**:
+  - Enforced DPI-aware logical geometry computation for `AppSpec::new`.
+  - Dispatched native Win32 `ShowWindow(target_hwnd, SW_MAXIMIZE)` directly on startup, guaranteeing the window launches to full desktop width and height while keeping standard window decorations and taskbar visible (avoiding exclusive gaming fullscreen).
+- **Centered "In Progress" Animation HUD Overlay (`src/ui/widgets/in_progress_hud.rs`, `src/ui/mod.rs`)**:
+  - Integrated full-screen centered modal backdrop featuring an 8-dot circular radar spinner with alpha-eased trailing decay, dynamic operation description, and indeterminate progress bar.
+  - Added "Run in Background" button allowing users to dismiss the modal while background operations continue.
+- **0ms Lazy-Loading for Diagnostic Views (`src/ui/views/`)**:
+  - Navigating to **"Thermals & Fans"**, **"Driver & BIOS"**, and **"Disk Health"** now opens the view instantly with animated loading skeleton states while asynchronous background threads probe hardware sensors without freezing the UI thread.
+- **Hardware Page Power Schemes Elastic Reflow (`src/ui/views/hardware_view.rs`)**:
+  - Enforced elastic `.flex_wrap()` with vertical gutter spacing on `hw_scheme_row`, eliminating text collision between power scheme cards and the hibernation toggles below across all display scales.
+- **Complete 8-Language Localization (`src/core/view_i18n.rs`, `src/ui/views/fault_diagnostics.rs`)**:
+  - Fully translated all remaining strings ("Instant" / "Normal", "Report Fault to GitHub", "Open Minidump Folder", DISM & SFC repair tools) across English, Turkish, German, French, Spanish, Russian, Chinese, and Japanese.
+
+### 🐛 Hardware Telemetry & Reliability Bugfixes
+- **Authentic Physical Disk SMART & Capacity Sizing (`src/hardware/disks.rs`)**:
+  - Enforced `CultureInfo::InvariantCulture` and decimal comma normalization in PowerShell subprocesses to prevent European/Turkish locale number parsing failure (`953,8 GB` -> `953.9 GB`).
+  - Integrated `IOCTL_DISK_GET_DRIVE_GEOMETRY_EX` (0x000700A0) fallback requiring only `FILE_ANY_ACCESS` (0) to reliably query disk capacity even without administrator elevation.
+- **Dual-Mode Thermal & Fan Sensing (`src/hardware/thermal.rs`)**:
+  - Probes live ACPI ThermalZone counters and `nvidia-smi` / DXGI GPU counters, displaying real hardware temperatures without synthetic fallbacks.
+- **Permanent Application Window Icon (`src/ui/window_icon.rs`)**:
+  - Embedded binary `.ico` extracted to `%TEMP%` and delivered via Win32 `WM_SETICON` (`ICON_BIG` & `ICON_SMALL`) directly to the top-level HWND.
+
+### 🧪 Verification
+- **193 / 193 Tests Passing**: 100% pass rate across all unit, integration, and unorthodox edge-case test suites.
+- **Zero Clippy Warnings**: Strict `-D warnings` enforcement under `cargo clippy --all-targets -- -D warnings`.
+- **Knowledge Graph Synchronization**: Fully re-clustered and synchronized with `/graphify` (3,735 nodes, 7,722 edges, 162 communities).
+
+---
+
 ## [v1.3.2] - 2026-11-18
 
 ### 🐛 Critical Bugfixes & Telemetry Enhancements

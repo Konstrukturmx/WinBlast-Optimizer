@@ -4,7 +4,7 @@
 
 ## Key Concepts
 
-- **StartupSource** (16 connections) — `src/tools/startup.rs`
+- **StartupSource** (15 connections) — `src/tools/startup.rs`
 - **.as_label()** (1 connections) — `src/tools/startup.rs`
 - **RegistryHkcuRun** (1 connections) — `src/tools/startup.rs`
 - **RegistryHklmRun** (1 connections) — `src/tools/startup.rs`
@@ -15,12 +15,11 @@
 
 ## Relationships
 
-- [.Create Restore Point()](Create_Restore_Point.md) (3 shared connections)
-- [action_button_guarded](action_button_guarded.md) (2 shared connections)
+- [startup.rs](startup.rs.md) (3 shared connections)
+- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (2 shared connections)
+- [StartupEntry](StartupEntry.md) (1 shared connections)
 - [backend.rs](backend.rs.md) (1 shared connections)
-- [Scandetailkind Appxinstalled Appxinstalledps](Scandetailkind_Appxinstalled_Appxinstalledps.md) (1 shared connections)
-- [View() Color Scrollspec](View_Color_Scrollspec.md) (1 shared connections)
-- [startup.rs](startup.rs.md) (1 shared connections)
+- [theme.rs](theme.rs.md) (1 shared connections)
 
 ## Source Files
 
@@ -28,7 +27,7 @@
 
 ## Audit Trail
 
-- EXTRACTED: 16 (100%)
+- EXTRACTED: 15 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

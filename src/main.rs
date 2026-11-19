@@ -18,13 +18,17 @@ fn main() {
         tracing::info!("Running with Administrator privileges");
     }
 
-    let title = core::i18n::I18n::translate(
-        core::i18n::Language::default(),
-        core::i18n::TextKey::AppWindowTitle,
+    let title = concat!(
+        "WinBlast0 v",
+        env!("CARGO_PKG_VERSION"),
+        " — Windows System Optimizer"
     );
+    let initial_size = detect_screen_workarea();
+    tracing::info!("Launching WinBlast0 with detected desktop work area: {}x{}", initial_size.0, initial_size.1);
+
     let mut spec = AppSpec::new(
         title,
-        (1150.0, 780.0),
+        initial_size,
         app::AppState::new,
         ui::view,
     );
@@ -54,5 +58,50 @@ fn main() {
         argv.push("--scroll-bars".to_string());
         argv.push("always".to_string());
     }
-    rune::App::new(spec).args(argv).run();
+    rune::App::new(spec)
+        .maximized(true)
+        .args(argv)
+        .run();
+}
+
+/// Automatically detect the primary display resolution and return the full desktop work area
+/// (full width and height minus taskbar, avoiding exclusive gaming fullscreen).
+#[cfg(windows)]
+fn detect_screen_workarea() -> (f32, f32) {
+    use windows::Win32::Foundation::RECT;
+    use windows::Win32::UI::WindowsAndMessaging::{
+        SystemParametersInfoW, SPI_GETWORKAREA, SYSTEM_PARAMETERS_INFO_UPDATE_FLAGS,
+        GetSystemMetrics, SM_CXSCREEN, SM_CYSCREEN,
+    };
+
+    let mut rect = RECT::default();
+    let success = unsafe {
+        SystemParametersInfoW(
+            SPI_GETWORKAREA,
+            0,
+            Some(&mut rect as *mut _ as *mut _),
+            SYSTEM_PARAMETERS_INFO_UPDATE_FLAGS(0),
+        )
+    };
+
+    if success.is_ok() {
+        let width = (rect.right - rect.left) as f32;
+        let height = (rect.bottom - rect.top) as f32;
+        if width >= 640.0 && height >= 480.0 {
+            return (width, height);
+        }
+    }
+
+    let cx = unsafe { GetSystemMetrics(SM_CXSCREEN) };
+    let cy = unsafe { GetSystemMetrics(SM_CYSCREEN) };
+    if cx > 0 && cy > 0 {
+        return (cx as f32, (cy as f32 - 48.0).max(480.0));
+    }
+
+    (1150.0, 780.0)
+}
+
+#[cfg(not(windows))]
+fn detect_screen_workarea() -> (f32, f32) {
+    (1150.0, 780.0)
 }

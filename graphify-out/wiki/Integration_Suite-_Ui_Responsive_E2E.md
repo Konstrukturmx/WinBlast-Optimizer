@@ -1,60 +1,58 @@
 # Integration Suite: Ui Responsive E2E
 
-> 24 nodes · cohesion 0.13
+> 22 nodes · cohesion 0.25
 
 ## Key Concepts
 
-- **reg_mutator.rs** (25 connections) — `src/executor/reg_mutator.rs`
-- **create_subkey_64()** (8 connections) — `src/scanner/registry_scanner.rs`
-- **set_dword_for_vendor()** (7 connections) — `src/executor/reg_mutator.rs`
-- **restore_tree_node()** (6 connections) — `src/executor/reg_mutator.rs`
-- **set_raw()** (6 connections) — `src/executor/reg_mutator.rs`
-- **set_string_for_vendor()** (6 connections) — `src/executor/reg_mutator.rs`
-- **is_known_numeric_reg_sz()** (5 connections) — `src/core/reg_helpers.rs`
-- **restore_tree()** (5 connections) — `src/executor/reg_mutator.rs`
-- **set_binary()** (5 connections) — `src/executor/reg_mutator.rs`
-- **set_dword()** (4 connections) — `src/executor/reg_mutator.rs`
-- **u32_to_reg_type()** (4 connections) — `src/executor/reg_mutator.rs`
-- **write_dword_or_numeric_sz()** (4 connections) — `src/executor/reg_mutator.rs`
-- **.reg_restore_tree()** (3 connections) — `src/core/backend.rs`
-- **RegKey** (3 connections)
-- **.reg_set_binary()** (2 connections) — `src/core/backend.rs`
-- **.reg_set_dword()** (2 connections) — `src/core/backend.rs`
-- **.reg_set_dword_for_vendor()** (2 connections) — `src/core/backend.rs`
-- **.reg_set_string()** (2 connections) — `src/core/backend.rs`
-- **test_known_numeric_reg_sz()** (2 connections) — `src/core/reg_helpers.rs`
-- **set_string()** (2 connections) — `src/executor/reg_mutator.rs`
-- **test_real_win32_registry_types_numeric_sz_binary_and_tree_roundtrip()** (2 connections) — `tests/real_windows_env.rs`
-- **resolve_target_paths** (1 connections)
-- **REG_DELETE_RIGHT** (1 connections) — `src/executor/reg_mutator.rs`
-- **RegType** (1 connections)
+- **ThemePalette** (87 connections) — `src/ui/theme.rs`
+- **easy_dashboard.rs** (31 connections) — `src/ui/views/easy_dashboard.rs`
+- **view()** (15 connections) — `src/ui/views/easy_dashboard.rs`
+- **El** (12 connections)
+- **sparkline.rs** (10 connections) — `src/ui/widgets/sparkline.rs`
+- **before_after_card()** (7 connections) — `src/ui/views/easy_dashboard.rs`
+- **quick_actions_card()** (7 connections) — `src/ui/views/easy_dashboard.rs`
+- **admin_warning_banner()** (6 connections) — `src/ui/views/easy_dashboard.rs`
+- **live_telemetry_card()** (6 connections) — `src/ui/views/easy_dashboard.rs`
+- **quick_action_card()** (6 connections) — `src/ui/views/easy_dashboard.rs`
+- **score_ring_badge()** (6 connections) — `src/ui/views/easy_dashboard.rs`
+- **updater_status_card()** (6 connections) — `src/ui/views/easy_dashboard.rs`
+- **hardware_overview_card()** (5 connections) — `src/ui/views/easy_dashboard.rs`
+- **optimization_categories_summary()** (5 connections) — `src/ui/views/easy_dashboard.rs`
+- **BeforeAfterImpact** (4 connections) — `src/app.rs`
+- **health_color()** (4 connections) — `src/ui/views/easy_dashboard.rs`
+- **sparkline_with_palette()** (4 connections) — `src/ui/widgets/sparkline.rs`
+- **health_score()** (3 connections) — `src/ui/views/easy_dashboard.rs`
+- **.calculate_before_after_impact()** (2 connections) — `src/app.rs`
+- **.palette()** (2 connections) — `src/app.rs`
+- **Color** (2 connections)
+- **El** (2 connections)
 
 ## Relationships
 
-- [Core UI Internationalization & Text Catalog](Core_UI_Internationalization_&_Text_Catalog.md) (12 shared connections)
-- [RealBackend](RealBackend.md) (5 shared connections)
-- [RegTreeSnapshot](RegTreeSnapshot.md) (3 shared connections)
-- [svc_mutator.rs](svc_mutator.rs.md) (3 shared connections)
-- [engine.rs](engine.rs.md) (2 shared connections)
-- [State Ledger & Restore Point Engine](State_Ledger_&_Restore_Point_Engine.md) (2 shared connections)
-- [delete_value_for_vendor](delete_value_for_vendor.md) (2 shared connections)
-- [RegRawSnapshot](RegRawSnapshot.md) (2 shared connections)
-- [enums](enums.md) (1 shared connections)
-- [Disabled() Delete .Set](Disabled_Delete_.Set.md) (1 shared connections)
-- [Scandetailkind Appxinstalled Appxinstalledps](Scandetailkind_Appxinstalled_Appxinstalledps.md) (1 shared connections)
+- [action_button_guarded](action_button_guarded.md) (24 shared connections)
+- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (19 shared connections)
+- [.Toggle .Set .Apply](Toggle_.Set_.Apply.md) (15 shared connections)
+- [Privacy, Telemetry & AI Hardening Catalog](Privacy,_Telemetry_&_AI_Hardening_Catalog.md) (13 shared connections)
+- [normalize_guid_str](normalize_guid_str.md) (8 shared connections)
+- [Startup Tasks & Auto-Run Explorer](Startup_Tasks_&_Auto-Run_Explorer.md) (7 shared connections)
+- [ui/mod.rs](ui-mod.rs.md) (6 shared connections)
+- [diff_modal.rs](diff_modal.rs.md) (6 shared connections)
+- [in_progress_hud.rs](in_progress_hud.rs.md) (4 shared connections)
+- [Project History & Release Version Ledger](Project_History_&_Release_Version_Ledger.md) (3 shared connections)
+- [app.rs](app.rs.md) (2 shared connections)
+- [Dynamicdwordformula Logicalcorecount Totalraminkb](Dynamicdwordformula_Logicalcorecount_Totalraminkb.md) (2 shared connections)
 
 ## Source Files
 
-- `src/core/backend.rs`
-- `src/core/reg_helpers.rs`
-- `src/executor/reg_mutator.rs`
-- `src/scanner/registry_scanner.rs`
-- `tests/real_windows_env.rs`
+- `src/app.rs`
+- `src/ui/theme.rs`
+- `src/ui/views/easy_dashboard.rs`
+- `src/ui/widgets/sparkline.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 53 (75%)
-- INFERRED: 18 (25%)
+- EXTRACTED: 167 (95%)
+- INFERRED: 8 (5%)
 - AMBIGUOUS: 0 (0%)
 
 ---

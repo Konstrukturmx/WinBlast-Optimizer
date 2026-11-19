@@ -1,22 +1,39 @@
 # Command Osstr Process.Rs
 
-> 1 nodes · cohesion 1.00
+> 5 nodes · cohesion 0.60
 
 ## Key Concepts
 
-- **views/mod.rs** (0 connections) — `src/ui/views/mod.rs`
+- **WindowsOptionalFeature** (18 connections) — `src/tools/features_apps.rs`
+- **.list_optional_features()** (5 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.list_optional_features()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.list_optional_features()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.list_optional_features()** (2 connections) — `src/core/backend.rs`
 
 ## Relationships
 
-- No strong cross-community connections detected
+- [BlastResult](BlastResult.md) (3 shared connections)
+- [RegRawSnapshot](RegRawSnapshot.md) (2 shared connections)
+- [SandboxEnv](SandboxEnv.md) (2 shared connections)
+- [PanickingBackend](PanickingBackend.md) (2 shared connections)
+- [Integration Suite: Tweak Sandbox E2E](Integration_Suite-_Tweak_Sandbox_E2E.md) (1 shared connections)
+- [Privacy, Telemetry & AI Hardening Catalog](Privacy,_Telemetry_&_AI_Hardening_Catalog.md) (1 shared connections)
+- [Core UI Internationalization & Text Catalog](Core_UI_Internationalization_&_Text_Catalog.md) (1 shared connections)
+- [Embedded Catalog Test](Embedded_Catalog_Test.md) (1 shared connections)
+- [.Reg State() Vendor()](Reg_State_Vendor.md) (1 shared connections)
+- [task_scanner.rs](task_scanner.rs.md) (1 shared connections)
+- [decode_oem_bytes](decode_oem_bytes.md) (1 shared connections)
+- [app.rs](app.rs.md) (1 shared connections)
 
 ## Source Files
 
-- `src/ui/views/mod.rs`
+- `src/core/backend.rs`
+- `src/tools/features_apps.rs`
+- `tests/tweak_sandbox_e2e.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 0 (0%)
+- EXTRACTED: 27 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

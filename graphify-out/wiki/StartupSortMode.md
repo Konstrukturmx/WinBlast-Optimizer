@@ -1,28 +1,22 @@
 # StartupSortMode
 
-> 6 nodes · cohesion 0.33
+> 1 nodes · cohesion 1.00
 
 ## Key Concepts
 
-- **StartupSortMode** (7 connections) — `src/app.rs`
-- **NameAsc** (1 connections) — `src/app.rs`
-- **NameDesc** (1 connections) — `src/app.rs`
-- **Source** (1 connections) — `src/app.rs`
-- **StatusActiveFirst** (1 connections) — `src/app.rs`
-- **StatusInactiveFirst** (1 connections) — `src/app.rs`
+- **lib.rs** (0 connections) — `src/lib.rs`
 
 ## Relationships
 
-- [AppState](AppState.md) (1 shared connections)
-- [app.rs](app.rs.md) (1 shared connections)
+- No strong cross-community connections detected
 
 ## Source Files
 
-- `src/app.rs`
+- `src/lib.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 7 (100%)
+- EXTRACTED: 0 (0%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

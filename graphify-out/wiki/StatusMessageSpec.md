@@ -2,7 +2,7 @@
 
 > God node · 105 connections · `src/core/status_i18n.rs`
 
-**Community:** [Privacy, Telemetry & AI Hardening Catalog](Privacy,_Telemetry_&_AI_Hardening_Catalog.md)
+**Community:** [AppState](AppState.md)
 
 ## Connections by Relation
 

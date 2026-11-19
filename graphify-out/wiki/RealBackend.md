@@ -1,59 +1,57 @@
 # RealBackend
 
-> 36 nodes · cohesion 0.06
+> 36 nodes · cohesion 0.09
 
 ## Key Concepts
 
-- **RealBackend** (84 connections) — `src/core/backend.rs`
-- **.list_optional_features()** (3 connections) — `src/core/backend.rs`
-- **.reg_snapshot_tree()** (3 connections) — `src/core/backend.rs`
-- **resolve_persistent_app_dir()** (3 connections) — `src/core/backend.rs`
-- **.create_and_activate_performance_plan()** (2 connections) — `src/core/backend.rs`
-- **.default_ledger_path()** (2 connections) — `src/core/backend.rs`
-- **.default_profile_path()** (2 connections) — `src/core/backend.rs`
-- **.get_active_power_scheme()** (2 connections) — `src/core/backend.rs`
-- **.is_elevated()** (2 connections) — `src/core/backend.rs`
-- **.read_power_setting_index()** (2 connections) — `src/core/backend.rs`
-- **.reg_get_binary()** (2 connections) — `src/core/backend.rs`
-- **.reg_get_dword()** (2 connections) — `src/core/backend.rs`
-- **.reg_get_dword_for_vendor()** (2 connections) — `src/core/backend.rs`
-- **.reg_key_exists()** (2 connections) — `src/core/backend.rs`
-- **.set_active_power_scheme()** (2 connections) — `src/core/backend.rs`
-- **.write_power_setting_index()** (2 connections) — `src/core/backend.rs`
-- **.broadcast_shell_settings_changed()** (1 connections) — `src/core/backend.rs`
-- **.check_onedrive_kfm_active()** (1 connections) — `src/core/backend.rs`
-- **.get_service_start_type()** (1 connections) — `src/core/backend.rs`
-- **.get_task_enabled()** (1 connections) — `src/core/backend.rs`
-- **.is_hags_enabled()** (1 connections) — `src/core/backend.rs`
-- **.is_mpo_disabled()** (1 connections) — `src/core/backend.rs`
-- **.logical_core_count()** (1 connections) — `src/core/backend.rs`
-- **.read_hosts_file()** (1 connections) — `src/core/backend.rs`
-- **.remove_appx_batch()** (1 connections) — `src/core/backend.rs`
+- **tweak_i18n/mod.rs** (42 connections) — `src/core/tweak_i18n/mod.rs`
+- **localize_tweak()** (6 connections) — `src/core/tweak_i18n/mod.rs`
+- **lookup_text_table()** (6 connections) — `src/core/tweak_i18n/mod.rs`
+- **localize_optional_feature()** (5 connections) — `src/core/tweak_i18n/mod.rs`
+- **localize_winget()** (5 connections) — `src/core/tweak_i18n/mod.rs`
+- **lookup_pair_table()** (5 connections) — `src/core/tweak_i18n/mod.rs`
+- **non_english_idx()** (5 connections) — `src/core/tweak_i18n/mod.rs`
+- **test_winget_optional_features_and_telemetry_services()** (5 connections) — `src/core/tweak_i18n/mod.rs`
+- **is_privacy_or_telemetry_category()** (4 connections) — `src/core/tweak_i18n/mod.rs`
+- **localize_category()** (4 connections) — `src/core/tweak_i18n/mod.rs`
+- **localize_ledger_token()** (4 connections) — `src/core/tweak_i18n/mod.rs`
+- **localize_power_scheme_name()** (4 connections) — `src/core/tweak_i18n/mod.rs`
+- **localize_sub_category()** (4 connections) — `src/core/tweak_i18n/mod.rs`
+- **localize_telemetry_service()** (4 connections) — `src/core/tweak_i18n/mod.rs`
+- **test_all_10_gaming_latency_ultra_tweaks_localized_all_7_languages()** (4 connections) — `src/core/tweak_i18n/mod.rs`
+- **test_all_30_deep_opt_tweaks_localized_all_7_languages()** (4 connections) — `src/core/tweak_i18n/mod.rs`
+- **test_categories_and_sub_categories()** (4 connections) — `src/core/tweak_i18n/mod.rs`
+- **test_all_208_tweaks_localized_all_7_languages()** (3 connections) — `src/core/tweak_i18n/mod.rs`
+- **test_power_schemes_and_ledger_tokens()** (3 connections) — `src/core/tweak_i18n/mod.rs`
+- **tweak_description()** (3 connections) — `src/core/tweak_i18n/mod.rs`
+- **tweak_title()** (3 connections) — `src/core/tweak_i18n/mod.rs`
+- **contains_ascii_ci()** (2 connections) — `src/core/tweak_i18n/mod.rs`
+- **NON_ENGLISH_LANGS** (2 connections) — `src/core/tweak_i18n/mod.rs`
+- **CAT_BROWSERS** (1 connections) — `src/core/tweak_i18n/mod.rs`
+- **CAT_DEVELOPMENT** (1 connections) — `src/core/tweak_i18n/mod.rs`
 - *... and 11 more nodes in this community*
 
 ## Relationships
 
-- [Core UI Internationalization & Text Catalog](Core_UI_Internationalization_&_Text_Catalog.md) (6 shared connections)
-- [Integration Suite: Ui Responsive E2E](Integration_Suite-_Ui_Responsive_E2E.md) (5 shared connections)
-- [normalize_guid_str](normalize_guid_str.md) (5 shared connections)
-- [Optional Dism Feature()](Optional_Dism_Feature.md) (4 shared connections)
-- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (3 shared connections)
-- [State Ledger & Restore Point Engine](State_Ledger_&_Restore_Point_Engine.md) (3 shared connections)
-- [backend.rs](backend.rs.md) (3 shared connections)
-- [.Create Restore Point()](Create_Restore_Point.md) (3 shared connections)
-- [delete_value_for_vendor](delete_value_for_vendor.md) (2 shared connections)
+- [Task Scheduler Inspection Subsystem](Task_Scheduler_Inspection_Subsystem.md) (13 shared connections)
+- [theme.rs](theme.rs.md) (2 shared connections)
 - [RegRawSnapshot](RegRawSnapshot.md) (2 shared connections)
-- [svc_mutator.rs](svc_mutator.rs.md) (2 shared connections)
-- [Startup Tasks & Auto-Run Explorer](Startup_Tasks_&_Auto-Run_Explorer.md) (2 shared connections)
+- [driver_update.rs](driver_update.rs.md) (2 shared connections)
+- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (2 shared connections)
+- [sys_inventory.rs](sys_inventory.rs.md) (1 shared connections)
+- [app.rs](app.rs.md) (1 shared connections)
+- [spawn_guarded_worker](spawn_guarded_worker.md) (1 shared connections)
+- [action_button_guarded](action_button_guarded.md) (1 shared connections)
+- [.Toggle .Set .Apply](Toggle_.Set_.Apply.md) (1 shared connections)
 
 ## Source Files
 
-- `src/core/backend.rs`
+- `src/core/tweak_i18n/mod.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 100 (100%)
-- INFERRED: 0 (0%)
+- EXTRACTED: 82 (96%)
+- INFERRED: 3 (4%)
 - AMBIGUOUS: 0 (0%)
 
 ---

@@ -3,10 +3,15 @@
 //! Queries temperature sensors and hardware limits via native ACPI thermal zones and GPU vendor APIs.
 //! Honestly reports sensor availability without displaying fabricated values.
 
+use std::sync::atomic::{AtomicU8, Ordering};
 use crate::core::process::SilentCommand;
 use serde::{Deserialize, Serialize};
 use winreg::enums::*;
 use winreg::RegKey;
+
+// Telemetry backend probing states: 0 = untested, 1 = available, 2 = not available
+static NVIDIA_SMI_STATUS: AtomicU8 = AtomicU8::new(0);
+static WMI_ACPI_STATUS: AtomicU8 = AtomicU8::new(0);
 
 /// Thermal status of a major system component.
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -211,6 +216,11 @@ impl SystemThermalSnapshot {
 
 /// Query WMI MSAcpi_ThermalZoneTemperature or Windows Performance Counter for ACPI temperatures.
 fn probe_acpi_wmi_and_perf() -> Option<(f32, bool)> {
+    let wmi_state = WMI_ACPI_STATUS.load(Ordering::Relaxed);
+    if wmi_state == 2 {
+        return None;
+    }
+
     // Try WMI MSAcpi_ThermalZoneTemperature first (tenths of Kelvin, e.g. 3082 = 35.0°C)
     let wmi_script = r#"$t=Get-CimInstance -Namespace root/wmi -ClassName MSAcpi_ThermalZoneTemperature -ErrorAction SilentlyContinue; if($t){$k=$t.CurrentTemperature; if($k -is [array]){$k=$k[0]}; if($k -gt 2732 -and $k -lt 3800){Write-Output "$k"}}"#;
     if let Ok(o) = SilentCommand::new("powershell.exe")
@@ -221,6 +231,9 @@ fn probe_acpi_wmi_and_perf() -> Option<(f32, bool)> {
             let text = String::from_utf8_lossy(&o.stdout);
             if let Ok(val) = text.trim().parse::<f32>() {
                 if val > 2732.0 && val < 3800.0 {
+                    if wmi_state == 0 {
+                        WMI_ACPI_STATUS.store(1, Ordering::Relaxed);
+                    }
                     let c = (val - 2732.0) / 10.0;
                     return Some((c, c > 85.0));
                 }
@@ -240,6 +253,9 @@ fn probe_acpi_wmi_and_perf() -> Option<(f32, bool)> {
             if let Some((hp_str, tr_str)) = line.split_once('|') {
                 if let Ok(hp) = hp_str.trim().parse::<f32>() {
                     if hp > 2732.0 && hp < 3800.0 {
+                        if wmi_state == 0 {
+                            WMI_ACPI_STATUS.store(1, Ordering::Relaxed);
+                        }
                         let c = (hp - 2732.0) / 10.0;
                         let throttle = tr_str.trim().parse::<u32>().map(|r| r > 1).unwrap_or(false);
                         return Some((c, throttle));
@@ -249,26 +265,37 @@ fn probe_acpi_wmi_and_perf() -> Option<(f32, bool)> {
         }
     }
 
+    if wmi_state == 0 {
+        WMI_ACPI_STATUS.store(2, Ordering::Relaxed);
+    }
     None
 }
 
 /// Query GPU core temperature, hotspot, and fan speed percentage.
 fn probe_gpu_thermals() -> Option<(f32, f32, Option<f32>)> {
-    // 1. Try nvidia-smi (NVIDIA GPUs)
-    if let Ok(o) = SilentCommand::new("nvidia-smi")
-        .args(["--query-gpu=temperature.gpu,fan.speed", "--format=csv,noheader,nounits"])
-        .output()
-    {
-        if o.status.success() {
-            let text = String::from_utf8_lossy(&o.stdout);
-            let line = text.trim();
-            if let Some((temp_str, fan_str)) = line.split_once(',') {
-                if let Ok(temp) = temp_str.trim().parse::<f32>() {
-                    let fan = fan_str.trim().parse::<f32>().ok();
-                    let hotspot = temp + 8.5; // Typical hotspot delta on modern GPUs
-                    return Some((temp, hotspot, fan));
+    // 1. Try nvidia-smi with cached presence detection (avoids failing child process spawns on AMD/Intel)
+    let status = NVIDIA_SMI_STATUS.load(Ordering::Relaxed);
+    if status != 2 {
+        if let Ok(o) = SilentCommand::new("nvidia-smi")
+            .args(["--query-gpu=temperature.gpu,fan.speed", "--format=csv,noheader,nounits"])
+            .output()
+        {
+            if o.status.success() {
+                NVIDIA_SMI_STATUS.store(1, Ordering::Relaxed);
+                let text = String::from_utf8_lossy(&o.stdout);
+                let line = text.trim();
+                if let Some((temp_str, fan_str)) = line.split_once(',') {
+                    if let Ok(temp) = temp_str.trim().parse::<f32>() {
+                        let fan = fan_str.trim().parse::<f32>().ok();
+                        let hotspot = temp + 8.5; // Typical hotspot delta on modern GPUs
+                        return Some((temp, hotspot, fan));
+                    }
                 }
+            } else {
+                NVIDIA_SMI_STATUS.store(2, Ordering::Relaxed);
             }
+        } else {
+            NVIDIA_SMI_STATUS.store(2, Ordering::Relaxed);
         }
     }
 

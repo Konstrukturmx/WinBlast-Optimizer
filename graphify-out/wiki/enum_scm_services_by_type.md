@@ -1,28 +1,22 @@
 # enum_scm_services_by_type
 
-> 7 nodes · cohesion 0.48
+> 1 nodes · cohesion 1.00
 
 ## Key Concepts
 
-- **enum_scm_services_by_type()** (5 connections) — `src/tools/startup.rs`
-- **query_scm_win32_services()** (5 connections) — `src/tools/startup.rs`
-- **SC_HANDLE** (4 connections)
-- **query_scm_service_config()** (4 connections) — `src/tools/startup.rs`
-- **ScHandleGuard** (4 connections) — `src/tools/startup.rs`
-- **ScmServiceRecord** (3 connections) — `src/tools/startup.rs`
-- **ENUM_SERVICE_TYPE** (2 connections)
+- **core/mod.rs** (0 connections) — `src/core/mod.rs`
 
 ## Relationships
 
-- [startup.rs](startup.rs.md) (7 shared connections)
+- No strong cross-community connections detected
 
 ## Source Files
 
-- `src/tools/startup.rs`
+- `src/core/mod.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 17 (100%)
+- EXTRACTED: 0 (0%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

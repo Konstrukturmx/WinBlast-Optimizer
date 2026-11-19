@@ -1,34 +1,30 @@
 # tools/game_overlay.rs
 
-> 10 nodes · cohesion 0.27
+> 6 nodes · cohesion 0.33
 
 ## Key Concepts
 
-- **tools/game_overlay.rs** (7 connections) — `src/tools/game_overlay.rs`
-- **GameOverlaySettings** (6 connections) — `src/tools/game_overlay.rs`
-- **GameSuitabilityReport** (5 connections) — `src/tools/game_overlay.rs`
-- **.default()** (2 connections) — `src/tools/game_overlay.rs`
-- **.read_live()** (2 connections) — `src/tools/game_overlay.rs`
-- **.default()** (2 connections) — `src/tools/game_overlay.rs`
-- **.evaluate()** (2 connections) — `src/tools/game_overlay.rs`
-- **SuitabilityCheck** (2 connections) — `src/tools/game_overlay.rs`
-- **.set_game_dvr_disabled()** (1 connections) — `src/tools/game_overlay.rs`
-- **.set_game_mode_enabled()** (1 connections) — `src/tools/game_overlay.rs`
+- **GamingSubTab** (8 connections) — `src/app.rs`
+- **FpsBenchmark** (1 connections) — `src/app.rs`
+- **GameOverlay** (1 connections) — `src/app.rs`
+- **GameProfiles** (1 connections) — `src/app.rs`
+- **GameSuitability** (1 connections) — `src/app.rs`
+- **LiveMonitor** (1 connections) — `src/app.rs`
 
 ## Relationships
 
-- [deserialize](deserialize.md) (2 shared connections)
-- [enums](enums.md) (2 shared connections)
-- [AppState](AppState.md) (2 shared connections)
+- [Privacy, Telemetry & AI Hardening Catalog](Privacy,_Telemetry_&_AI_Hardening_Catalog.md) (1 shared connections)
+- [.Toggle .Set .Apply](Toggle_.Set_.Apply.md) (1 shared connections)
+- [app.rs](app.rs.md) (1 shared connections)
 
 ## Source Files
 
-- `src/tools/game_overlay.rs`
+- `src/app.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 16 (89%)
-- INFERRED: 2 (11%)
+- EXTRACTED: 8 (100%)
+- INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 
 ---

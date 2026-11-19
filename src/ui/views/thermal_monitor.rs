@@ -7,7 +7,7 @@ use rune::{col, row, text, El, ScrollSpec};
 
 use crate::app::AppState;
 use crate::core::view_i18n::ViewTextKey;
-use crate::hardware::thermal::{SystemThermalSnapshot, ThermalHealth};
+use crate::hardware::thermal::ThermalHealth;
 use crate::ui::widgets::button::action_button;
 use crate::ui::widgets::scrollbar::WinBlastScrollable;
 use crate::ui::LayoutTier;
@@ -15,7 +15,7 @@ use crate::ui::LayoutTier;
 pub fn view(s: &AppState, _tier: LayoutTier) -> El {
     let p = s.palette();
     let style = s.theme_style;
-    let thermals = s.thermal_snapshot.clone().unwrap_or_else(SystemThermalSnapshot::read);
+    let thermals = s.thermal_snapshot.clone().unwrap_or_default();
 
     let cpu_color = if thermals.cpu_package_temp_c > 85.0 {
         p.danger
@@ -63,7 +63,7 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                 )
                 .child(
                     action_button(s.tr_v(ViewTextKey::ThermalRefreshBtn), p.accent, Color::WHITE, p, |s| {
-                        s.thermal_snapshot = Some(crate::hardware::thermal::SystemThermalSnapshot::read());
+                        s.scan_thermal_snapshot_async();
                     })
                     .radius(style.btn_radius()),
                 ),

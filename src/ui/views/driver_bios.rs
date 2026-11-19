@@ -10,7 +10,6 @@ use rune::{col, row, text, text_input, El, ScrollSpec};
 use crate::app::AppState;
 use crate::core::i18n::TextKey;
 use crate::core::view_i18n::ViewTextKey;
-use crate::hardware::bios::BiosSystemInfo;
 use crate::hardware::driver_update::{DriverCategory, DriverUpdateState};
 use crate::ui::widgets::button::{action_button, action_button_guarded};
 use crate::ui::widgets::scrollbar::WinBlastScrollable;
@@ -20,7 +19,7 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
     let p = s.palette();
     let style = s.theme_style;
     let is_compact = tier == LayoutTier::Compact;
-    let bios = s.bios_info.clone().unwrap_or_else(BiosSystemInfo::probe);
+    let bios = s.bios_info.clone().unwrap_or_default();
 
     let sb_badge_color = if bios.secure_boot { p.success } else { p.warning };
     let sb_text = if bios.secure_boot { "✔ Secure Boot Active" } else { "⚠ Secure Boot Disabled / Setup Mode" };
@@ -94,7 +93,7 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
                         )
                         .child(
                             action_button("Rescan BIOS", p.btn_secondary, p.text_primary, p, |s| {
-                                s.bios_info = Some(crate::hardware::bios::BiosSystemInfo::probe());
+                                s.scan_bios_info_async();
                             })
                             .motion(style.motion())
                             .radius(style.btn_radius()),
@@ -266,6 +265,7 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
                 .child(
                     if s.driver_updates.is_empty() {
                         col()
+                            .key("driver_updates_scroll")
                             .w_full()
                             .min_w(0.0)
                             .padding(p.card_padding)

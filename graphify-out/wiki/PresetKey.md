@@ -1,27 +1,30 @@
 # PresetKey
 
-> 4 nodes · cohesion 0.50
+> 6 nodes · cohesion 0.40
 
 ## Key Concepts
 
-- **PresetKey** (6 connections) — `src/core/status_i18n.rs`
-- **Gaming** (1 connections) — `src/core/status_i18n.rs`
-- **LaptopBattery** (1 connections) — `src/core/status_i18n.rs`
-- **ProAudio** (1 connections) — `src/core/status_i18n.rs`
+- **main.rs** (6 connections) — `src/main.rs`
+- **ui** (4 connections)
+- **detect_screen_workarea()** (2 connections) — `src/main.rs`
+- **main()** (2 connections) — `src/main.rs`
+- **appspec** (1 connections)
+- **core** (1 connections)
 
 ## Relationships
 
-- [Privacy, Telemetry & AI Hardening Catalog](Privacy,_Telemetry_&_AI_Hardening_Catalog.md) (1 shared connections)
 - [app.rs](app.rs.md) (1 shared connections)
-- [Process Token Information](Process_Token_Information.md) (1 shared connections)
+- [edge_cases_unorthodox.rs](edge_cases_unorthodox.rs.md) (1 shared connections)
+- [GPU Silicon & Hardware Tuning Policies](GPU_Silicon_&_Hardware_Tuning_Policies.md) (1 shared connections)
+- [backend.rs](backend.rs.md) (1 shared connections)
 
 ## Source Files
 
-- `src/core/status_i18n.rs`
+- `src/main.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 6 (100%)
+- EXTRACTED: 10 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

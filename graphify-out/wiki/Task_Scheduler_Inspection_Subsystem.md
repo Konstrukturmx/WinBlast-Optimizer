@@ -1,51 +1,59 @@
 # Task Scheduler Inspection Subsystem
 
-> 23 nodes · cohesion 0.18
+> 27 nodes · cohesion 0.14
 
 ## Key Concepts
 
-- **StateLedger** (30 connections) — `src/backup/state_ledger.rs`
-- **state_ledger.rs** (11 connections) — `src/backup/state_ledger.rs`
-- **LedgerEntry** (10 connections) — `src/backup/state_ledger.rs`
-- **SystemBaseline** (9 connections) — `src/backup/state_ledger.rs`
-- **test_ledger_crud()** (8 connections) — `src/backup/state_ledger.rs`
-- **.get_initial_baseline()** (4 connections) — `src/backup/state_ledger.rs`
-- **.init_conn()** (4 connections) — `src/backup/state_ledger.rs`
-- **.query_single_baseline()** (4 connections) — `src/backup/state_ledger.rs`
-- **rollback_entry()** (4 connections) — `src/executor/engine.rs`
-- **Connection** (3 connections)
-- **DateTime** (3 connections)
-- **Utc** (3 connections)
-- **.get_history()** (3 connections) — `src/backup/state_ledger.rs`
-- **.get_latest_baseline()** (3 connections) — `src/backup/state_ledger.rs`
-- **.new()** (3 connections) — `src/backup/state_ledger.rs`
-- **.reset_baseline()** (3 connections) — `src/backup/state_ledger.rs`
-- **.save_baseline()** (3 connections) — `src/backup/state_ledger.rs`
-- **.in_memory()** (2 connections) — `src/backup/state_ledger.rs`
-- **.record_change()** (2 connections) — `src/backup/state_ledger.rs`
-- **.rollback_entry()** (2 connections) — `src/backup/state_ledger.rs`
-- **params** (1 connections)
-- **.is_reversible()** (1 connections) — `src/backup/state_ledger.rs`
-- **.clear_history()** (1 connections) — `src/backup/state_ledger.rs`
+- **Language** (51 connections) — `src/core/i18n.rs`
+- **localize_scan_detail()** (12 connections) — `src/core/status_i18n.rs`
+- **localize_status()** (12 connections) — `src/core/status_i18n.rs`
+- **pick()** (12 connections) — `src/core/status_i18n.rs`
+- **localize_feature_install_state()** (6 connections) — `src/core/status_i18n.rs`
+- **fmt1()** (5 connections) — `src/core/status_i18n.rs`
+- **fmt2()** (5 connections) — `src/core/status_i18n.rs`
+- **fmt3()** (5 connections) — `src/core/status_i18n.rs`
+- **localize_error_text()** (5 connections) — `src/core/status_i18n.rs`
+- **localize_service_start_mode()** (5 connections) — `src/core/status_i18n.rs`
+- **localize_task_active_label()** (4 connections) — `src/core/status_i18n.rs`
+- **idx()** (3 connections) — `src/core/status_i18n.rs`
+- **localize_ledger_action()** (3 connections) — `src/core/status_i18n.rs`
+- **localize_kfm_detail()** (2 connections) — `src/core/status_i18n.rs`
+- **test_localize_error_text_prefixes()** (2 connections) — `src/core/status_i18n.rs`
+- **test_scan_detail_all_languages()** (2 connections) — `src/core/status_i18n.rs`
+- **.ALL** (1 connections) — `src/core/i18n.rs`
+- **Chinese** (1 connections) — `src/core/i18n.rs`
+- **.code()** (1 connections) — `src/core/i18n.rs`
+- **English** (1 connections) — `src/core/i18n.rs`
+- **French** (1 connections) — `src/core/i18n.rs`
+- **German** (1 connections) — `src/core/i18n.rs`
+- **Japanese** (1 connections) — `src/core/i18n.rs`
+- **.label()** (1 connections) — `src/core/i18n.rs`
+- **Russian** (1 connections) — `src/core/i18n.rs`
+- *... and 2 more nodes in this community*
 
 ## Relationships
 
-- [engine.rs](engine.rs.md) (17 shared connections)
-- [app.rs](app.rs.md) (3 shared connections)
-- [deserialize](deserialize.md) (2 shared connections)
+- [Appx Package() Prefixes](Appx_Package_Prefixes.md) (16 shared connections)
+- [RealBackend](RealBackend.md) (13 shared connections)
+- [enums](enums.md) (3 shared connections)
 - [AppState](AppState.md) (2 shared connections)
-- [.Create Metrics Sampler()](Create_Metrics_Sampler.md) (1 shared connections)
-- [Scandetailkind Appxinstalled Appxinstalledps](Scandetailkind_Appxinstalled_Appxinstalledps.md) (1 shared connections)
-- [Test Composite With()](Test_Composite_With.md) (1 shared connections)
+- [GPU Silicon & Hardware Tuning Policies](GPU_Silicon_&_Hardware_Tuning_Policies.md) (2 shared connections)
+- [view_i18n.rs](view_i18n.rs.md) (2 shared connections)
+- [Project History & Release Version Ledger](Project_History_&_Release_Version_Ledger.md) (2 shared connections)
+- [Privacy, Telemetry & AI Hardening Catalog](Privacy,_Telemetry_&_AI_Hardening_Catalog.md) (1 shared connections)
+- [app.rs](app.rs.md) (1 shared connections)
+- [ui/mod.rs](ui-mod.rs.md) (1 shared connections)
+- [edge_cases_unorthodox.rs](edge_cases_unorthodox.rs.md) (1 shared connections)
+- [.set_status_spec](set_status_spec.md) (1 shared connections)
 
 ## Source Files
 
-- `src/backup/state_ledger.rs`
-- `src/executor/engine.rs`
+- `src/core/i18n.rs`
+- `src/core/status_i18n.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 72 (100%)
+- EXTRACTED: 96 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

@@ -370,6 +370,7 @@ fn test_real_backend_readonly_live_host_audit() {
     );
 }
 
+
 #[test]
 fn test_real_win32_registry_types_numeric_sz_binary_and_tree_roundtrip() {
     let root_subkey = format!("Software\\WinBlast0_TestEnv_{}", Uuid::new_v4());
@@ -798,3 +799,15 @@ fn test_ntfs_junction_and_readonly_cleanup_sandbox() {
         b"keep-dotnet-singlefile"
     );
 }
+
+#[test]
+fn test_real_windows_disk_and_thermal_telemetry() {
+    let report = winblast0::hardware::disks::DiskSubsystemReport::probe();
+    println!("Found {} physical drives on host:", report.drives.len());
+    for drv in &report.drives {
+        println!("Drive {}: {} ({}) -> {:.1} GB, Health: {}%, Temp: {:.1}°C, TBW: {:.2} TB, POH: {} h",
+            drv.index, drv.model, drv.interface_type, drv.total_size_gb, drv.health_percentage, drv.temperature_c, drv.lifetime_writes_tb, drv.power_on_hours);
+        assert!(drv.total_size_gb > 0.0, "Physical drive {} size must not be 0.0 GB! Got {:.1} GB", drv.index, drv.total_size_gb);
+    }
+}
+

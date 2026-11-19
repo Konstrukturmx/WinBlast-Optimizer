@@ -98,11 +98,13 @@ fn query_processor_group_bases() -> (Vec<usize>, usize) {
     (bases, running.max(active_logical_core_count()))
 }
 
-/// Query per-logical-processor NT kernel performance counters (`SystemProcessorPerformanceInformation`).
-fn query_nt_processor_performance() -> Option<Vec<SystemProcessorPerformanceInformation>> {
+/// Query per-logical-processor NT kernel performance counters (`SystemProcessorPerformanceInformation`) into an existing buffer.
+fn query_nt_processor_performance_into(buf: &mut Vec<SystemProcessorPerformanceInformation>) -> bool {
     let elem_sz = std::mem::size_of::<SystemProcessorPerformanceInformation>();
-    let mut capacity = active_logical_core_count().max(1);
-    let mut buf = vec![SystemProcessorPerformanceInformation::default(); capacity];
+    if buf.is_empty() {
+        let capacity = active_logical_core_count().max(1);
+        buf.resize(capacity, SystemProcessorPerformanceInformation::default());
+    }
 
     for _ in 0..2 {
         let mut ret_len = 0u32;
@@ -118,35 +120,44 @@ fn query_nt_processor_performance() -> Option<Vec<SystemProcessorPerformanceInfo
         if status >= 0 {
             let count = ((ret_len as usize) / elem_sz).min(buf.len());
             if count == 0 {
-                return None;
+                return false;
             }
             buf.truncate(count);
-            return Some(buf);
+            return true;
         }
         if status == STATUS_INFO_LENGTH_MISMATCH || (ret_len as usize) > buf.len() * elem_sz {
-            capacity = ((ret_len as usize).div_ceil(elem_sz)).max(buf.len() * 2);
+            let capacity = ((ret_len as usize).div_ceil(elem_sz)).max(buf.len() * 2);
             buf.resize(capacity, SystemProcessorPerformanceInformation::default());
             continue;
         }
-        return None;
+        return false;
     }
-    None
+    false
 }
 
-/// Compute true OS scheduler CPU utilization deltas from consecutive NT performance snapshots.
-///
-/// Windows NT `KernelTime` includes `IdleTime`, so `busy = (d_kernel - d_idle) + d_user`
-/// remains accurate even when `IDLEDISABLE = 1` suppresses hardware C-states.
-fn compute_nt_cpu_deltas(
+/// Query per-logical-processor NT kernel performance counters (`SystemProcessorPerformanceInformation`).
+fn query_nt_processor_performance() -> Option<Vec<SystemProcessorPerformanceInformation>> {
+    let mut buf = Vec::new();
+    if query_nt_processor_performance_into(&mut buf) {
+        Some(buf)
+    } else {
+        None
+    }
+}
+
+/// Compute true OS scheduler CPU utilization deltas from consecutive NT performance snapshots into a reusable buffer.
+fn compute_nt_cpu_deltas_into(
     prev: &[SystemProcessorPerformanceInformation],
     cur: &[SystemProcessorPerformanceInformation],
-) -> Option<(f32, Vec<f32>)> {
+    cores: &mut Vec<f32>,
+) -> Option<f32> {
     if prev.is_empty() || prev.len() != cur.len() {
         return None;
     }
     let mut sum_busy = 0u128;
     let mut sum_total = 0u128;
-    let mut cores = Vec::with_capacity(cur.len());
+    cores.clear();
+    cores.reserve(cur.len());
 
     for (p, c) in prev.iter().zip(cur.iter()) {
         let d_idle = (c.idle_time.max(0) as u64).saturating_sub(p.idle_time.max(0) as u64);
@@ -167,13 +178,27 @@ fn compute_nt_cpu_deltas(
     if sum_total == 0 {
         return None;
     }
-    let global = ((100.0 * sum_busy as f64) / sum_total as f64).clamp(0.0, 100.0) as f32;
+    Some(((100.0 * sum_busy as f64) / sum_total as f64).clamp(0.0, 100.0) as f32)
+}
+
+/// Compute true OS scheduler CPU utilization deltas from consecutive NT performance snapshots.
+///
+/// Windows NT `KernelTime` includes `IdleTime`, so `busy = (d_kernel - d_idle) + d_user`
+/// remains accurate even when `IDLEDISABLE = 1` suppresses hardware C-states.
+#[cfg(test)]
+fn compute_nt_cpu_deltas(
+    prev: &[SystemProcessorPerformanceInformation],
+    cur: &[SystemProcessorPerformanceInformation],
+) -> Option<(f32, Vec<f32>)> {
+    let mut cores = Vec::with_capacity(cur.len());
+    let global = compute_nt_cpu_deltas_into(prev, cur, &mut cores)?;
     Some((global, cores))
 }
 
-/// True NT scheduler CPU sampler using `NtQuerySystemInformation(8)`.
+/// True NT scheduler CPU sampler using `NtQuerySystemInformation(8)` with zero heap allocations on hot path.
 struct NtCpuSampler {
     prev: Vec<SystemProcessorPerformanceInformation>,
+    cur: Vec<SystemProcessorPerformanceInformation>,
     last_sample_at: Option<Instant>,
     last_global: f32,
     last_cores: Vec<f32>,
@@ -185,6 +210,7 @@ impl NtCpuSampler {
         let n = prev.len().max(active_logical_core_count());
         Self {
             prev,
+            cur: Vec::with_capacity(n),
             last_sample_at: Some(Instant::now()),
             last_global: 0.0,
             last_cores: vec![0.0; n],
@@ -199,19 +225,20 @@ impl NtCpuSampler {
     }
 
     fn sample(&mut self) -> Option<(f32, Vec<f32>)> {
-        let cur = query_nt_processor_performance()?;
-        if self.prev.len() != cur.len() || self.prev.is_empty() {
-            self.prev = cur;
+        if !query_nt_processor_performance_into(&mut self.cur) {
+            return None;
+        }
+        if self.prev.len() != self.cur.len() || self.prev.is_empty() {
+            std::mem::swap(&mut self.prev, &mut self.cur);
             self.last_sample_at = Some(Instant::now());
             self.last_cores.resize(self.prev.len().max(1), 0.0);
             return None;
         }
-        let (global, cores) = compute_nt_cpu_deltas(&self.prev, &cur)?;
-        self.prev = cur;
+        let global = compute_nt_cpu_deltas_into(&self.prev, &self.cur, &mut self.last_cores)?;
+        std::mem::swap(&mut self.prev, &mut self.cur);
         self.last_sample_at = Some(Instant::now());
         self.last_global = global;
-        self.last_cores = cores.clone();
-        Some((global, cores))
+        Some((global, self.last_cores.clone()))
     }
 }
 
@@ -401,19 +428,23 @@ pub fn query_nt_timer_resolution() -> u64 {
     15_625_000 // Standard Windows fallback: 15.625 ms
 }
 
-/// Query accurate system-wide process and execution thread counts directly via Windows NT performance info.
-pub fn query_system_process_and_thread_counts() -> Option<(usize, usize)> {
+/// Query live Windows NT kernel performance metrics (`GetPerformanceInfo`) in a single syscall.
+fn query_system_perf_info() -> Option<PerformanceInformation> {
     let mut info = std::mem::MaybeUninit::<PerformanceInformation>::zeroed();
     let cb = std::mem::size_of::<PerformanceInformation>() as u32;
     unsafe {
         std::ptr::addr_of_mut!((*info.as_mut_ptr()).cb).write(cb);
         if GetPerformanceInfo(info.as_mut_ptr(), cb) != 0 {
-            let perf = info.assume_init();
-            Some((perf.process_count as usize, perf.thread_count as usize))
+            Some(info.assume_init())
         } else {
             None
         }
     }
+}
+
+/// Query accurate system-wide process and execution thread counts directly via Windows NT performance info.
+pub fn query_system_process_and_thread_counts() -> Option<(usize, usize)> {
+    query_system_perf_info().map(|perf| (perf.process_count as usize, perf.thread_count as usize))
 }
 
 /// Query accurate system-wide execution thread count directly via Windows NT performance info.
@@ -546,20 +577,34 @@ impl SystemMonitor {
             .map(|p| p.sample(core_usages.len()))
             .unwrap_or_else(|| vec![false; core_usages.len()]);
 
-        self.sys.refresh_memory();
-
-        let total_ram_mb = self.sys.total_memory() / (1024 * 1024);
-        let used_ram_mb = self.sys.used_memory() / (1024 * 1024);
-        let available_ram_mb = self.sys.available_memory() / (1024 * 1024);
+        let perf_info = query_system_perf_info();
+        let (total_ram_mb, used_ram_mb, available_ram_mb, process_count, thread_count) =
+            if let Some(perf) = perf_info {
+                let total_bytes = (perf.physical_total as u64).saturating_mul(perf.page_size as u64);
+                let avail_bytes = (perf.physical_available as u64).saturating_mul(perf.page_size as u64);
+                let used_bytes = total_bytes.saturating_sub(avail_bytes);
+                (
+                    total_bytes / (1024 * 1024),
+                    used_bytes / (1024 * 1024),
+                    avail_bytes / (1024 * 1024),
+                    perf.process_count as usize,
+                    perf.thread_count as usize,
+                )
+            } else {
+                self.sys.refresh_memory();
+                let total = self.sys.total_memory() / (1024 * 1024);
+                let used = self.sys.used_memory() / (1024 * 1024);
+                let avail = self.sys.available_memory() / (1024 * 1024);
+                let (p, t) = query_system_process_and_thread_counts()
+                    .unwrap_or_else(|| (0, core_usages.len().max(1) * 16));
+                (total, used, avail, p, t)
+            };
 
         let ram_percentage = if total_ram_mb > 0 {
             (used_ram_mb as f32 / total_ram_mb as f32) * 100.0
         } else {
             0.0
         };
-
-        let (process_count, thread_count) = query_system_process_and_thread_counts()
-            .unwrap_or_else(|| (0, core_usages.len().max(1) * 16));
 
         let timer_resolution_ns = query_nt_timer_resolution();
 

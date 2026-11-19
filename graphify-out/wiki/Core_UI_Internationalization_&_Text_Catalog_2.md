@@ -1,59 +1,59 @@
 # Core UI Internationalization & Text Catalog
 
-> 31 nodes · cohesion 0.15
+> 29 nodes · cohesion 0.09
 
 ## Key Concepts
 
-- **registry_scanner.rs** (37 connections) — `src/scanner/registry_scanner.rs`
-- **resolve_hive()** (16 connections) — `src/scanner/registry_scanner.rs`
-- **open_subkey_read_64()** (13 connections) — `src/scanner/registry_scanner.rs`
-- **RegKey** (8 connections)
-- **get_dword_for_vendor()** (7 connections) — `src/scanner/registry_scanner.rs`
-- **get_string_for_vendor()** (7 connections) — `src/scanner/registry_scanner.rs`
-- **resolve_target_paths()** (7 connections) — `src/scanner/registry_scanner.rs`
-- **get_raw()** (6 connections) — `src/scanner/registry_scanner.rs`
-- **snapshot_key_recursive()** (6 connections) — `src/scanner/registry_scanner.rs`
-- **snapshot_tree()** (6 connections) — `src/scanner/registry_scanner.rs`
-- **test_strict_reg_type_dispatch_and_negative_numeric_sz()** (6 connections) — `src/scanner/registry_scanner.rs`
-- **evaluate_dword_value_with_kind()** (5 connections) — `src/scanner/registry_scanner.rs`
-- **get_binary()** (5 connections) — `src/scanner/registry_scanner.rs`
-- **get_dword()** (5 connections) — `src/scanner/registry_scanner.rs`
-- **resolve_net_interface_paths()** (5 connections) — `src/scanner/registry_scanner.rs`
-- **evaluate_dword()** (4 connections) — `src/scanner/registry_scanner.rs`
-- **evaluate_dword_value()** (4 connections) — `src/scanner/registry_scanner.rs`
-- **key_exists()** (4 connections) — `src/scanner/registry_scanner.rs`
-- **reg_type_to_u32()** (4 connections) — `src/scanner/registry_scanner.rs`
-- **has_active_ip()** (3 connections) — `src/scanner/registry_scanner.rs`
-- **read_dword_from_key()** (3 connections) — `src/scanner/registry_scanner.rs`
-- **replace_placeholder_ci()** (3 connections) — `src/scanner/registry_scanner.rs`
-- **ScratchCleanup** (3 connections) — `src/scanner/registry_scanner.rs`
-- **test_evaluate_dword_value_with_kind_all_branches()** (3 connections) — `src/scanner/registry_scanner.rs`
-- **check_dword()** (2 connections) — `src/scanner/registry_scanner.rs`
-- *... and 6 more nodes in this community*
+- **WorkerEvent** (81 connections) — `src/app.rs`
+- **.apply_worker_event()** (30 connections) — `src/app.rs`
+- **.refresh_core_parking()** (5 connections) — `src/app.rs`
+- **.download_and_install_update()** (4 connections) — `src/app.rs`
+- **.neutralize_telemetry_services()** (3 connections) — `src/app.rs`
+- **TelemetryServicesNeutralized** (3 connections) — `src/app.rs`
+- **.optimization_progress()** (2 connections) — `src/app.rs`
+- **.rebuild_scan_index()** (2 connections) — `src/app.rs`
+- **.record_current_baseline()** (2 connections) — `src/app.rs`
+- **.refresh_ledger()** (2 connections) — `src/app.rs`
+- **CoreParkingUpdated** (2 connections) — `src/app.rs`
+- **HagsUpdated** (2 connections) — `src/app.rs`
+- **LatencyBenchmarkFailed** (2 connections) — `src/app.rs`
+- **MpoUpdated** (2 connections) — `src/app.rs`
+- **ScanCompleted** (2 connections) — `src/app.rs`
+- **ScanFailed** (2 connections) — `src/app.rs`
+- **StartupScanFailed** (2 connections) — `src/app.rs`
+- **UpdateDownloadCompleted** (2 connections) — `src/app.rs`
+- **AppxAndFeaturesLoaded** (1 connections) — `src/app.rs`
+- **AppxScanFailed** (1 connections) — `src/app.rs`
+- **CleanScanFailed** (1 connections) — `src/app.rs`
+- **CoreParkingActionCompleted** (1 connections) — `src/app.rs`
+- **FeatureToggled** (1 connections) — `src/app.rs`
+- **GpuMsiUpdated** (1 connections) — `src/app.rs`
+- **PlatformInventoryLoaded** (1 connections) — `src/app.rs`
+- *... and 4 more nodes in this community*
 
 ## Relationships
 
-- [Integration Suite: Ui Responsive E2E](Integration_Suite-_Ui_Responsive_E2E.md) (12 shared connections)
-- [svc_mutator.rs](svc_mutator.rs.md) (5 shared connections)
-- [RealBackend](RealBackend.md) (5 shared connections)
-- [State Ledger & Restore Point Engine](State_Ledger_&_Restore_Point_Engine.md) (2 shared connections)
-- [RegRawSnapshot](RegRawSnapshot.md) (2 shared connections)
-- [RegStringValue](RegStringValue.md) (2 shared connections)
-- [WinBlast0 Architectural Specifications](WinBlast0_Architectural_Specifications.md) (2 shared connections)
-- [delete_value_for_vendor](delete_value_for_vendor.md) (2 shared connections)
-- [RegTreeSnapshot](RegTreeSnapshot.md) (2 shared connections)
-- [enums](enums.md) (1 shared connections)
-- [.Create Metrics Sampler()](Create_Metrics_Sampler.md) (1 shared connections)
-- [Disabled() Delete .Set](Disabled_Delete_.Set.md) (1 shared connections)
+- [spawn_guarded_worker](spawn_guarded_worker.md) (17 shared connections)
+- [Privacy, Telemetry & AI Hardening Catalog](Privacy,_Telemetry_&_AI_Hardening_Catalog.md) (12 shared connections)
+- [Installed Appx .List](Installed_Appx_.List.md) (9 shared connections)
+- [.set_status_spec](set_status_spec.md) (6 shared connections)
+- [.navigate](navigate.md) (5 shared connections)
+- [.sync_startup_tasks_busy](sync_startup_tasks_busy.md) (4 shared connections)
+- [ColorScheme](ColorScheme.md) (3 shared connections)
+- [HibernationStatus](HibernationStatus.md) (3 shared connections)
+- [sys_inventory.rs](sys_inventory.rs.md) (3 shared connections)
+- [app.rs](app.rs.md) (2 shared connections)
+- [.poll](poll.md) (1 shared connections)
+- [Embedded Catalog Test](Embedded_Catalog_Test.md) (1 shared connections)
 
 ## Source Files
 
-- `src/scanner/registry_scanner.rs`
+- `src/app.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 90 (82%)
-- INFERRED: 20 (18%)
+- EXTRACTED: 118 (95%)
+- INFERRED: 6 (5%)
 - AMBIGUOUS: 0 (0%)
 
 ---

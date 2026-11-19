@@ -1,60 +1,61 @@
 # Scandetailkind Appxinstalled Appxinstalledps
 
-> 47 nodes · cohesion 0.07
+> 54 nodes · cohesion 0.06
 
 ## Key Concepts
 
-- **tweak_sandbox_e2e.rs** (107 connections) — `tests/tweak_sandbox_e2e.rs`
-- **load_embedded_rules()** (41 connections) — `src/core/risk.rs`
-- **drain_until()** (14 connections) — `tests/tweak_sandbox_e2e.rs`
-- **make_synth_tweak()** (8 connections) — `tests/tweak_sandbox_e2e.rs`
-- **test_atomic_partial_failure_rollback_and_partially_optimized_lifecycle()** (8 connections) — `tests/tweak_sandbox_e2e.rs`
-- **test_wave1_presets_policy_locked_winget_appx_and_autounattend_permutations()** (7 connections) — `tests/tweak_sandbox_e2e.rs`
-- **test_epoch_and_stale_scan_fencing_preserves_instant_mutation()** (6 connections) — `tests/tweak_sandbox_e2e.rs`
-- **test_app_state_hardware_and_privacy_ledger_recording()** (5 connections) — `tests/tweak_sandbox_e2e.rs`
-- **test_catalog_integrity_audit()** (5 connections) — `tests/tweak_sandbox_e2e.rs`
-- **test_tools_appx_hosts_and_autounattend_edge_cases()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
-- **test_worker_panic_recovery_releases_all_inflight_flags()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.new()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.drop()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **normalize_task_path()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.new()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.new()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **test_app_state_export_import_profile_staging_sync()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **test_app_state_instant_mode_error_unlocks_in_flight_tweaks()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **test_app_state_normal_mode_low_build_select_all_and_batch_apply()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **test_mode_transitions_select_all_and_diff_modal_separation()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **test_sandbox_clean_apps_startup_features_power_and_autounattend()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **tweaks_scope_overlap()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **HkcuScratchGuard** (2 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.release_scan()** (2 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.wait_until_scan_paused()** (2 connections) — `tests/tweak_sandbox_e2e.rs`
-- *... and 22 more nodes in this community*
+- **automation.rs** (32 connections) — `src/tools/automation.rs`
+- **AutoTuneProfile** (17 connections) — `src/tools/automation.rs`
+- **RiskLevel** (15 connections) — `src/core/risk.rs`
+- **MaintenanceTaskKind** (14 connections) — `src/tools/automation.rs`
+- **OverallHealthGrade** (7 connections) — `src/tools/automation.rs`
+- **create_auto_tune_plan()** (6 connections) — `src/tools/automation.rs`
+- **.task_name()** (6 connections) — `src/tools/automation.rs`
+- **HealthSeverity** (5 connections) — `src/tools/automation.rs`
+- **install_maintenance_task()** (5 connections) — `src/tools/automation.rs`
+- **query_all_maintenance_tasks()** (5 connections) — `src/tools/automation.rs`
+- **SystemHealthAssessment** (5 connections) — `src/tools/automation.rs`
+- **test_iso_29119_maintenance_tasks_specification()** (5 connections) — `src/tools/automation.rs`
+- **AutoTunePlan** (4 connections) — `src/tools/automation.rs`
+- **.target_risk_level()** (4 connections) — `src/tools/automation.rs`
+- **is_maintenance_task_installed()** (4 connections) — `src/tools/automation.rs`
+- **MaintenanceTaskStatus** (4 connections) — `src/tools/automation.rs`
+- **test_iso_29119_auto_tune_plan_generation_all_profiles()** (4 connections) — `src/tools/automation.rs`
+- **assess_system_health()** (3 connections) — `src/tools/automation.rs`
+- **AutoTuneResult** (3 connections) — `src/tools/automation.rs`
+- **.schedule_frequency()** (3 connections) — `src/tools/automation.rs`
+- **.trigger_time()** (3 connections) — `src/tools/automation.rs`
+- **MemoryTrimResult** (3 connections) — `src/tools/automation.rs`
+- **remove_maintenance_task()** (3 connections) — `src/tools/automation.rs`
+- **SystemHealthIssue** (3 connections) — `src/tools/automation.rs`
+- **.generate_auto_tune_plan()** (2 connections) — `src/app.rs`
+- *... and 29 more nodes in this community*
 
 ## Relationships
 
-- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (16 shared connections)
-- [GPU Silicon & Hardware Tuning Policies](GPU_Silicon_&_Hardware_Tuning_Policies.md) (10 shared connections)
-- [engine.rs](engine.rs.md) (6 shared connections)
-- [test_wave1_ledger_rollback_and_concurrency_regressions](test_wave1_ledger_rollback_and_concurrency_regressions.md) (6 shared connections)
-- [SlowScanBackend](SlowScanBackend.md) (6 shared connections)
-- [State Ledger & Restore Point Engine](State_Ledger_&_Restore_Point_Engine.md) (4 shared connections)
-- [View() Color Scrollspec](View_Color_Scrollspec.md) (4 shared connections)
-- [AppState](AppState.md) (4 shared connections)
-- [test_wave1_compound_actions_deep_edge_cases](test_wave1_compound_actions_deep_edge_cases.md) (4 shared connections)
-- [Project History & Release Version Ledger](Project_History_&_Release_Version_Ledger.md) (4 shared connections)
-- [Dynamicdwordformula Logicalcorecount Totalraminkb](Dynamicdwordformula_Logicalcorecount_Totalraminkb.md) (3 shared connections)
-- [Integration Suite: Tweak Sandbox E2E](Integration_Suite-_Tweak_Sandbox_E2E.md) (3 shared connections)
+- [Privacy, Telemetry & AI Hardening Catalog](Privacy,_Telemetry_&_AI_Hardening_Catalog.md) (9 shared connections)
+- [deserialize](deserialize.md) (4 shared connections)
+- [Embedded Catalog Test](Embedded_Catalog_Test.md) (3 shared connections)
+- [theme.rs](theme.rs.md) (3 shared connections)
+- [action_button_guarded](action_button_guarded.md) (2 shared connections)
+- [app.rs](app.rs.md) (1 shared connections)
+- [full_telemetry_audit_with](full_telemetry_audit_with.md) (1 shared connections)
+- [ui_scrollbar_test.rs](ui_scrollbar_test.rs.md) (1 shared connections)
+- [Win32 Registry Scanner & Mutator](Win32_Registry_Scanner_&_Mutator.md) (1 shared connections)
+- [path](path.md) (1 shared connections)
+- [instant](instant.md) (1 shared connections)
+- [sys_inventory.rs](sys_inventory.rs.md) (1 shared connections)
 
 ## Source Files
 
+- `src/app.rs`
 - `src/core/risk.rs`
-- `tests/tweak_sandbox_e2e.rs`
+- `src/tools/automation.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 162 (82%)
-- INFERRED: 36 (18%)
+- EXTRACTED: 103 (91%)
+- INFERRED: 10 (9%)
 - AMBIGUOUS: 0 (0%)
 
 ---

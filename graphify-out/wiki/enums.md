@@ -1,57 +1,40 @@
 # enums
 
-> 22 nodes · cohesion 0.12
+> 11 nodes · cohesion 0.25
 
 ## Key Concepts
 
-- **enums** (20 connections)
-- **RegKey** (18 connections)
-- **FaultDiagnosticsReport** (10 connections) — `src/tools/diagnostics.rs`
-- **diagnostics.rs** (9 connections) — `src/tools/diagnostics.rs`
-- **bios.rs** (6 connections) — `src/hardware/bios.rs`
-- **BiosSystemInfo** (6 connections) — `src/hardware/bios.rs`
-- **GameProfile** (6 connections) — `src/tools/game_profiles.rs`
-- **tools/game_profiles.rs** (5 connections) — `src/tools/game_profiles.rs`
-- **DisplayDriverInfo** (2 connections) — `src/hardware/bios.rs`
-- **MinidumpEntry** (2 connections) — `src/tools/diagnostics.rs`
-- **PendingRebootStatus** (2 connections) — `src/tools/diagnostics.rs`
-- **.all()** (2 connections) — `src/tools/game_profiles.rs`
-- **.check_applied()** (2 connections) — `src/tools/game_profiles.rs`
-- **.has_warning()** (1 connections) — `src/hardware/bios.rs`
-- **.probe()** (1 connections) — `src/hardware/bios.rs`
-- **.clear_cbs_reboot_flags()** (1 connections) — `src/tools/diagnostics.rs`
-- **.clear_minidumps()** (1 connections) — `src/tools/diagnostics.rs`
-- **.clear_pending_renames()** (1 connections) — `src/tools/diagnostics.rs`
-- **.restart_system()** (1 connections) — `src/tools/diagnostics.rs`
-- **.scan()** (1 connections) — `src/tools/diagnostics.rs`
-- **.apply()** (1 connections) — `src/tools/game_profiles.rs`
-- **.revert()** (1 connections) — `src/tools/game_profiles.rs`
+- **i18n.rs** (13 connections) — `src/core/i18n.rs`
+- **I18n** (8 connections) — `src/core/i18n.rs`
+- **.translate()** (7 connections) — `src/core/i18n.rs`
+- **.get()** (4 connections) — `src/core/i18n.rs`
+- **test_all_languages_and_all_keys_exhaustive()** (2 connections) — `src/core/i18n.rs`
+- **test_i18n_all_languages_populated()** (2 connections) — `src/core/i18n.rs`
+- **test_left_menu_translations_all_8_languages()** (2 connections) — `src/core/i18n.rs`
+- **.fold_search_str()** (1 connections) — `src/core/i18n.rs`
+- **test_fold_search_str_turkish_and_ascii()** (1 connections) — `src/core/i18n.rs`
+- **test_turkish_translation()** (1 connections) — `src/core/i18n.rs`
+- **TRANSLATIONS** (1 connections) — `src/core/i18n.rs`
 
 ## Relationships
 
-- [deserialize](deserialize.md) (6 shared connections)
+- [Task Scheduler Inspection Subsystem](Task_Scheduler_Inspection_Subsystem.md) (3 shared connections)
 - [Core UI Internationalization & Text Catalog](Core_UI_Internationalization_&_Text_Catalog.md) (3 shared connections)
-- [AppState](AppState.md) (3 shared connections)
-- [WindowsInfo](WindowsInfo.md) (2 shared connections)
-- [svc_mutator.rs](svc_mutator.rs.md) (2 shared connections)
-- [Integration Suite: Tweak Sandbox E2E](Integration_Suite-_Tweak_Sandbox_E2E.md) (2 shared connections)
+- [deserialize](deserialize.md) (2 shared connections)
 - [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (2 shared connections)
-- [ThermalHealth](ThermalHealth.md) (2 shared connections)
-- [System Architecture Changelog](System_Architecture_Changelog.md) (2 shared connections)
-- [automation.rs](automation.rs.md) (2 shared connections)
-- [.Reg State() Vendor()](Reg_State_Vendor.md) (2 shared connections)
-- [tools/game_overlay.rs](tools-game_overlay.rs.md) (2 shared connections)
+- [sys_inventory.rs](sys_inventory.rs.md) (1 shared connections)
+- [Appx Package() Prefixes](Appx_Package_Prefixes.md) (1 shared connections)
+- [app.rs](app.rs.md) (1 shared connections)
+- [action_button_guarded](action_button_guarded.md) (1 shared connections)
 
 ## Source Files
 
-- `src/hardware/bios.rs`
-- `src/tools/diagnostics.rs`
-- `src/tools/game_profiles.rs`
+- `src/core/i18n.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 69 (96%)
-- INFERRED: 3 (4%)
+- EXTRACTED: 28 (100%)
+- INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 
 ---

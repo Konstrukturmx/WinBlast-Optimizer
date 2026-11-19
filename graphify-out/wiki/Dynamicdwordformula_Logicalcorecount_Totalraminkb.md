@@ -1,56 +1,53 @@
 # Dynamicdwordformula Logicalcorecount Totalraminkb
 
-> 22 nodes · cohesion 0.09
+> 25 nodes · cohesion 0.16
 
 ## Key Concepts
 
-- **TweakAction** (33 connections) — `src/core/risk.rs`
-- **PowerTargetScope** (8 connections) — `src/core/risk.rs`
-- **resolve_dynamic_dword()** (7 connections) — `src/scanner/mod.rs`
-- **DynamicDwordFormula** (6 connections) — `src/core/risk.rs`
-- **LogicalCoreCount** (1 connections) — `src/core/risk.rs`
-- **TotalRamInKb** (1 connections) — `src/core/risk.rs`
-- **TotalRamInKbPlusMargin** (1 connections) — `src/core/risk.rs`
-- **AcAndDc** (1 connections) — `src/core/risk.rs`
-- **AcOnly** (1 connections) — `src/core/risk.rs`
-- **DcOnly** (1 connections) — `src/core/risk.rs`
-- **AppXPackage** (1 connections) — `src/core/risk.rs`
-- **CompositeStringKey** (1 connections) — `src/core/risk.rs`
-- **PowerCfgSetting** (1 connections) — `src/core/risk.rs`
-- **RegistryBinaryBit** (1 connections) — `src/core/risk.rs`
-- **RegistryDelete** (1 connections) — `src/core/risk.rs`
-- **RegistryDeleteTree** (1 connections) — `src/core/risk.rs`
-- **RegistryDword** (1 connections) — `src/core/risk.rs`
-- **RegistryDynamicDword** (1 connections) — `src/core/risk.rs`
-- **RegistryString** (1 connections) — `src/core/risk.rs`
-- **ScheduledTask** (1 connections) — `src/core/risk.rs`
-- **ServiceState** (1 connections) — `src/core/risk.rs`
-- **WindowsFeature** (1 connections) — `src/core/risk.rs`
+- **theme.rs** (38 connections) — `src/ui/theme.rs`
+- **Color** (29 connections)
+- **ACCENT** (2 connections) — `src/ui/theme.rs`
+- **ACCENT_HOVER** (2 connections) — `src/ui/theme.rs`
+- **ACCENT_PRESS** (2 connections) — `src/ui/theme.rs`
+- **BG_CARD** (2 connections) — `src/ui/theme.rs`
+- **BG_CARD_HOVER** (2 connections) — `src/ui/theme.rs`
+- **BG_PRIMARY** (2 connections) — `src/ui/theme.rs`
+- **BG_SIDEBAR** (2 connections) — `src/ui/theme.rs`
+- **BORDER** (2 connections) — `src/ui/theme.rs`
+- **BORDER_ACCENT** (2 connections) — `src/ui/theme.rs`
+- **BORDER_HOVER** (2 connections) — `src/ui/theme.rs`
+- **BTN_SECONDARY** (2 connections) — `src/ui/theme.rs`
+- **BTN_SECONDARY_HOVER** (2 connections) — `src/ui/theme.rs`
+- **BTN_SECONDARY_PRESS** (2 connections) — `src/ui/theme.rs`
+- **DANGER** (2 connections) — `src/ui/theme.rs`
+- **NEUTRAL_BADGE** (2 connections) — `src/ui/theme.rs`
+- **SPARKLINE_BG** (2 connections) — `src/ui/theme.rs`
+- **SPARKLINE_CPU** (2 connections) — `src/ui/theme.rs`
+- **SPARKLINE_RAM** (2 connections) — `src/ui/theme.rs`
+- **SUCCESS** (2 connections) — `src/ui/theme.rs`
+- **TEXT_MUTED** (2 connections) — `src/ui/theme.rs`
+- **TEXT_PRIMARY** (2 connections) — `src/ui/theme.rs`
+- **TEXT_SECONDARY** (2 connections) — `src/ui/theme.rs`
+- **WARNING** (2 connections) — `src/ui/theme.rs`
 
 ## Relationships
 
-- [engine.rs](engine.rs.md) (6 shared connections)
-- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (6 shared connections)
-- [diff_modal.rs](diff_modal.rs.md) (4 shared connections)
-- [GPU Silicon & Hardware Tuning Policies](GPU_Silicon_&_Hardware_Tuning_Policies.md) (3 shared connections)
-- [Scandetailkind Appxinstalled Appxinstalledps](Scandetailkind_Appxinstalled_Appxinstalledps.md) (3 shared connections)
-- [AppState](AppState.md) (1 shared connections)
-- [WinBlast0 Architectural Specifications](WinBlast0_Architectural_Specifications.md) (1 shared connections)
-- [app.rs](app.rs.md) (1 shared connections)
-- [backend.rs](backend.rs.md) (1 shared connections)
+- [normalize_guid_str](normalize_guid_str.md) (6 shared connections)
+- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (5 shared connections)
+- [deserialize](deserialize.md) (2 shared connections)
+- [Reversibility Instant Requireslogoff](Reversibility_Instant_Requireslogoff.md) (2 shared connections)
+- [Integration Suite: Ui Responsive E2E](Integration_Suite-_Ui_Responsive_E2E.md) (2 shared connections)
+- [action_button_guarded](action_button_guarded.md) (1 shared connections)
 - [Project History & Release Version Ledger](Project_History_&_Release_Version_Ledger.md) (1 shared connections)
-- [Win32 Registry Scanner & Mutator](Win32_Registry_Scanner_&_Mutator.md) (1 shared connections)
-- [Disk Cleaning & Temporary File Purger](Disk_Cleaning_&_Temporary_File_Purger.md) (1 shared connections)
 
 ## Source Files
 
-- `src/core/risk.rs`
-- `src/scanner/mod.rs`
+- `src/ui/theme.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 49 (96%)
-- INFERRED: 2 (4%)
+- EXTRACTED: 66 (100%)
+- INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 
 ---

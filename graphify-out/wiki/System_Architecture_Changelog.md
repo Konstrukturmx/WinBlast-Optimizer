@@ -1,60 +1,63 @@
 # System Architecture Changelog
 
-> 25 nodes · cohesion 0.14
+> 34 nodes · cohesion 0.06
 
 ## Key Concepts
 
-- **AppxCache** (20 connections) — `src/scanner/appx_scanner.rs`
-- **appx_scanner.rs** (13 connections) — `src/scanner/appx_scanner.rs`
-- **.evaluate_package_with_kind()** (7 connections) — `src/scanner/appx_scanner.rs`
-- **.from_packages()** (5 connections) — `src/scanner/appx_scanner.rs`
-- **.load_appx_cache()** (4 connections) — `src/core/backend.rs`
-- **appx_package_matches_family()** (4 connections) — `src/scanner/appx_scanner.rs`
-- **.evaluate_package()** (4 connections) — `src/scanner/appx_scanner.rs`
-- **split_appx_name_and_publisher()** (4 connections) — `src/scanner/appx_scanner.rs`
-- **.load_appx_cache()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.appx()** (3 connections) — `src/core/backend.rs`
-- **.list_installed_appx_detailed()** (3 connections) — `src/core/backend.rs`
-- **.is_package_removed()** (3 connections) — `src/scanner/appx_scanner.rs`
-- **check_package_removed()** (3 connections) — `src/scanner/appx_scanner.rs`
-- **test_appx_cache_loaded_empty_no_fallback()** (3 connections) — `src/scanner/appx_scanner.rs`
-- **test_split_appx_name_and_publisher_with_underscores_and_prefix()** (3 connections) — `src/scanner/appx_scanner.rs`
-- **.load_appx_cache()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.load_appx_cache()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.load_appx_cache()** (2 connections) — `src/core/backend.rs`
-- **.load_appx_cache()** (2 connections) — `src/core/backend.rs`
-- **.iter()** (2 connections) — `src/scanner/appx_scanner.rs`
-- **.load()** (2 connections) — `src/scanner/appx_scanner.rs`
-- **check_package_removed_ps()** (2 connections) — `src/scanner/appx_scanner.rs`
-- **test_appx_publisher_suffix_matching()** (2 connections) — `src/scanner/appx_scanner.rs`
-- **test_evaluate_package_with_kind_all_cache_branches()** (2 connections) — `src/scanner/appx_scanner.rs`
-- **Item** (1 connections)
+- **ActiveView** (45 connections) — `src/app.rs`
+- **AdvancedMatrix** (2 connections) — `src/app.rs`
+- **CoreParking** (2 connections) — `src/app.rs`
+- **EasyDashboard** (2 connections) — `src/app.rs`
+- **GpuTuning** (2 connections) — `src/app.rs`
+- **ALL_VIEWS** (2 connections) — `tests/ui_responsive_e2e.rs`
+- **Advanced Optimization Matrix UI** (1 connections) — `assets/screenshots/advanced_matrix.png`
+- **CPU Core Parking Topology Visualizer UI** (1 connections) — `assets/screenshots/cpu_parking.png`
+- **Easy Mode Telemetry Dashboard UI** (1 connections) — `assets/screenshots/dashboard.png`
+- **GPU Tuning & Vendor Gating UI** (1 connections) — `assets/screenshots/gpu_tuning.png`
+- **.ALL_VIEWS** (1 connections) — `src/app.rs`
+- **AutomationCenter** (1 connections) — `src/app.rs`
+- **BackupCenter** (1 connections) — `src/app.rs`
+- **CleanAndApps** (1 connections) — `src/app.rs`
+- **DiskHealth** (1 connections) — `src/app.rs`
+- **DriverBios** (1 connections) — `src/app.rs`
+- **FaultDiagnostics** (1 connections) — `src/app.rs`
+- **FpsBenchmark** (1 connections) — `src/app.rs`
+- **GameOverlay** (1 connections) — `src/app.rs`
+- **GamePrerequisites** (1 connections) — `src/app.rs`
+- **GameProfiles** (1 connections) — `src/app.rs`
+- **GameSuitability** (1 connections) — `src/app.rs`
+- **GamingStats** (1 connections) — `src/app.rs`
+- **GoalPlanner** (1 connections) — `src/app.rs`
+- **HardwareView** (1 connections) — `src/app.rs`
+- *... and 9 more nodes in this community*
 
 ## Relationships
 
-- [.Reg State() Vendor()](Reg_State_Vendor.md) (5 shared connections)
-- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (4 shared connections)
-- [Disk Cleaning & Temporary File Purger](Disk_Cleaning_&_Temporary_File_Purger.md) (2 shared connections)
-- [enums](enums.md) (2 shared connections)
-- [SlowScanBackend](SlowScanBackend.md) (2 shared connections)
-- [RealBackend](RealBackend.md) (1 shared connections)
-- [.Create Metrics Sampler()](Create_Metrics_Sampler.md) (1 shared connections)
-- [Integration Suite: Tweak Sandbox E2E](Integration_Suite-_Tweak_Sandbox_E2E.md) (1 shared connections)
-- [backend.rs](backend.rs.md) (1 shared connections)
-- [Scandetailkind Appxinstalled Appxinstalledps](Scandetailkind_Appxinstalled_Appxinstalledps.md) (1 shared connections)
-- [Windows OS Settings & UX Customization](Windows_OS_Settings_&_UX_Customization.md) (1 shared connections)
-- [FailAtMutationBackend](FailAtMutationBackend.md) (1 shared connections)
+- [backend.rs](backend.rs.md) (3 shared connections)
+- [ui/mod.rs](ui-mod.rs.md) (2 shared connections)
+- [Integration Suite: Ui Responsive E2E](Integration_Suite-_Ui_Responsive_E2E.md) (2 shared connections)
+- [GPU Silicon & Hardware Tuning Policies](GPU_Silicon_&_Hardware_Tuning_Policies.md) (2 shared connections)
+- [.navigate](navigate.md) (2 shared connections)
+- [Privacy, Telemetry & AI Hardening Catalog](Privacy,_Telemetry_&_AI_Hardening_Catalog.md) (1 shared connections)
+- [.Toggle .Set .Apply](Toggle_.Set_.Apply.md) (1 shared connections)
+- [action_button_guarded](action_button_guarded.md) (1 shared connections)
+- [edge_cases_unorthodox.rs](edge_cases_unorthodox.rs.md) (1 shared connections)
+- [theme.rs](theme.rs.md) (1 shared connections)
+- [app.rs](app.rs.md) (1 shared connections)
 
 ## Source Files
 
-- `src/core/backend.rs`
-- `src/scanner/appx_scanner.rs`
-- `tests/tweak_sandbox_e2e.rs`
+- `assets/screenshots/advanced_matrix.png`
+- `assets/screenshots/cpu_parking.png`
+- `assets/screenshots/dashboard.png`
+- `assets/screenshots/gpu_tuning.png`
+- `src/app.rs`
+- `tests/ui_responsive_e2e.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 61 (97%)
-- INFERRED: 2 (3%)
+- EXTRACTED: 50 (100%)
+- INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 
 ---

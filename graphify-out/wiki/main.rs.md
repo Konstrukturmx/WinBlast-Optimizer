@@ -1,28 +1,22 @@
 # main.rs
 
-> 5 nodes · cohesion 0.40
+> 1 nodes · cohesion 1.00
 
 ## Key Concepts
 
-- **main.rs** (5 connections) — `src/main.rs`
-- **ui** (3 connections)
-- **appspec** (1 connections)
-- **core** (1 connections)
-- **main()** (1 connections) — `src/main.rs`
+- **views/mod.rs** (0 connections) — `src/ui/views/mod.rs`
 
 ## Relationships
 
-- [app.rs](app.rs.md) (1 shared connections)
-- [View() Color Scrollspec](View_Color_Scrollspec.md) (1 shared connections)
-- [ui_scrollbar_test.rs](ui_scrollbar_test.rs.md) (1 shared connections)
+- No strong cross-community connections detected
 
 ## Source Files
 
-- `src/main.rs`
+- `src/ui/views/mod.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 7 (100%)
+- EXTRACTED: 0 (0%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 
