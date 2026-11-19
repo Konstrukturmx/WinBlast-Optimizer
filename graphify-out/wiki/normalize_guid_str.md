@@ -19,11 +19,11 @@
 
 ## Relationships
 
-- [Integration Suite: Ui Responsive E2E](Integration_Suite-_Ui_Responsive_E2E.md) (8 shared connections)
+- [ThemePalette](ThemePalette.md) (8 shared connections)
 - [Project History & Release Version Ledger](Project_History_&_Release_Version_Ledger.md) (7 shared connections)
 - [Dynamicdwordformula Logicalcorecount Totalraminkb](Dynamicdwordformula_Logicalcorecount_Totalraminkb.md) (6 shared connections)
 - [.Toggle .Set .Apply](Toggle_.Set_.Apply.md) (4 shared connections)
-- [action_button_guarded](action_button_guarded.md) (2 shared connections)
+- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (2 shared connections)
 
 ## Source Files
 

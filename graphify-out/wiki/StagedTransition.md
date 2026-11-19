@@ -10,8 +10,8 @@
 
 ## Relationships
 
-- [Privacy, Telemetry & AI Hardening Catalog](Privacy,_Telemetry_&_AI_Hardening_Catalog.md) (1 shared connections)
-- [action_button_guarded](action_button_guarded.md) (1 shared connections)
+- [AppState](AppState.md) (1 shared connections)
+- [.Toggle .Set .Apply](Toggle_.Set_.Apply.md) (1 shared connections)
 - [theme.rs](theme.rs.md) (1 shared connections)
 - [app.rs](app.rs.md) (1 shared connections)
 

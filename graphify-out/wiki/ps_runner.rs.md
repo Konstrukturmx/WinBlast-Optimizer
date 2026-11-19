@@ -22,8 +22,8 @@
 
 ## Relationships
 
-- [sys_inventory.rs](sys_inventory.rs.md) (1 shared connections)
-- [decode_oem_bytes](decode_oem_bytes.md) (1 shared connections)
+- [path](path.md) (1 shared connections)
+- [startup.rs](startup.rs.md) (1 shared connections)
 - [full_telemetry_audit_with](full_telemetry_audit_with.md) (1 shared connections)
 - [Integration Suite: Tweak Sandbox E2E](Integration_Suite-_Tweak_Sandbox_E2E.md) (1 shared connections)
 

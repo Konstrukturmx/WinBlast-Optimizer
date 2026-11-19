@@ -1,6 +1,6 @@
 # generational_cache.rs
 
-> 61 nodes · cohesion 0.07
+> 62 nodes · cohesion 0.07
 
 ## Key Concepts
 
@@ -22,23 +22,23 @@
 - **hash_key()** (7 connections) — `src/core/generational_cache.rs`
 - **CacheMetrics** (6 connections) — `src/core/generational_cache.rs`
 - **.get_copied()** (6 connections) — `src/core/generational_cache.rs`
+- **AtomicU64** (5 connections)
 - **Q** (5 connections)
 - **aot_prewarm_and_zero_alloc_borrowed_reads()** (5 connections) — `src/core/generational_cache.rs`
 - **concurrent_reads_writes_and_epoch_bumps()** (5 connections) — `src/core/generational_cache.rs`
 - **.invalidate_key()** (5 connections) — `src/core/generational_cache.rs`
 - **atomic_epoch_invalidation_fences_all_entries_in_o1()** (4 connections) — `src/core/generational_cache.rs`
 - **.new()** (4 connections) — `src/core/generational_cache.rs`
-- **.write()** (4 connections) — `src/core/generational_cache.rs`
-- *... and 36 more nodes in this community*
+- *... and 37 more nodes in this community*
 
 ## Relationships
 
-- [lazy_loader.rs](lazy_loader.rs.md) (2 shared connections)
-- [SlowScanBackend](SlowScanBackend.md) (2 shared connections)
-- [test_wave1_ledger_rollback_and_concurrency_regressions](test_wave1_ledger_rollback_and_concurrency_regressions.md) (1 shared connections)
-- [sys_inventory.rs](sys_inventory.rs.md) (1 shared connections)
-- [PlatformSecurityInfo](PlatformSecurityInfo.md) (1 shared connections)
-- [instant](instant.md) (1 shared connections)
+- [LazyLoader](LazyLoader.md) (2 shared connections)
+- [PlatformSecurityInfo](PlatformSecurityInfo.md) (2 shared connections)
+- [AppState](AppState.md) (1 shared connections)
+- [PanickingBackend](PanickingBackend.md) (1 shared connections)
+- [path](path.md) (1 shared connections)
+- [SlowScanBackend](SlowScanBackend.md) (1 shared connections)
 
 ## Source Files
 
@@ -46,7 +46,7 @@
 
 ## Audit Trail
 
-- EXTRACTED: 143 (100%)
+- EXTRACTED: 144 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

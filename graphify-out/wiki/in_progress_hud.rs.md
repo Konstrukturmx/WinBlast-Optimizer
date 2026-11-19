@@ -5,7 +5,7 @@
 ## Key Concepts
 
 - **in_progress_hud.rs** (33 connections) — `src/ui/widgets/in_progress_hud.rs`
-- **in_progress_hud()** (8 connections) — `src/ui/widgets/in_progress_hud.rs`
+- **in_progress_hud()** (9 connections) — `src/ui/widgets/in_progress_hud.rs`
 - **build_circular_radar()** (5 connections) — `src/ui/widgets/in_progress_hud.rs`
 - **build_mini_progress_bar()** (4 connections) — `src/ui/widgets/in_progress_hud.rs`
 - **El** (4 connections)
@@ -33,9 +33,9 @@
 
 ## Relationships
 
-- [.Toggle .Set .Apply](Toggle_.Set_.Apply.md) (4 shared connections)
-- [Integration Suite: Ui Responsive E2E](Integration_Suite-_Ui_Responsive_E2E.md) (4 shared connections)
-- [sys_inventory.rs](sys_inventory.rs.md) (1 shared connections)
+- [.Toggle .Set .Apply](Toggle_.Set_.Apply.md) (5 shared connections)
+- [ThemePalette](ThemePalette.md) (4 shared connections)
+- [path](path.md) (1 shared connections)
 - [ui/mod.rs](ui-mod.rs.md) (1 shared connections)
 
 ## Source Files
@@ -44,7 +44,7 @@
 
 ## Audit Trail
 
-- EXTRACTED: 47 (98%)
+- EXTRACTED: 48 (98%)
 - INFERRED: 1 (2%)
 - AMBIGUOUS: 0 (0%)
 

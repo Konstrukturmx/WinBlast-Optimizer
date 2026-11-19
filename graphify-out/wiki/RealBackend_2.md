@@ -1,6 +1,6 @@
 # RealBackend
 
-> God node · 84 connections · `src/core/backend.rs`
+> God node · 83 connections · `src/core/backend.rs`
 
 **Community:** [.Reg State() Vendor()](Reg_State_Vendor.md)
 
@@ -16,7 +16,6 @@
 - [app.rs](app.rs.md) `EXTRACTED`
 - engine.rs `EXTRACTED`
 - scanner/mod.rs `EXTRACTED`
-- [real_windows_env.rs](real_windows_env.rs.md) `EXTRACTED`
 
 ### method
 - .execute_clean_targets() `EXTRACTED`

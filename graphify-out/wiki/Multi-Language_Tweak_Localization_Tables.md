@@ -33,7 +33,7 @@
 - [deserialize](deserialize.md) (4 shared connections)
 - [Win32 Registry Scanner & Mutator](Win32_Registry_Scanner_&_Mutator.md) (1 shared connections)
 - [backend.rs](backend.rs.md) (1 shared connections)
-- [sys_inventory.rs](sys_inventory.rs.md) (1 shared connections)
+- [path](path.md) (1 shared connections)
 - [real_windows_env.rs](real_windows_env.rs.md) (1 shared connections)
 
 ## Source Files

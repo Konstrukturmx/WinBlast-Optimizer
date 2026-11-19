@@ -38,12 +38,12 @@
 - [PdhParkingCollector](PdhParkingCollector.md) (4 shared connections)
 - [SystemMetrics](SystemMetrics.md) (3 shared connections)
 - [deserialize](deserialize.md) (2 shared connections)
-- [sys_inventory.rs](sys_inventory.rs.md) (2 shared connections)
+- [PlatformSecurityInfo](PlatformSecurityInfo.md) (2 shared connections)
 - [Error.Rs Winblasterror Appx](Error.Rs_Winblasterror_Appx.md) (2 shared connections)
+- [sys_inventory.rs](sys_inventory.rs.md) (1 shared connections)
+- [path](path.md) (1 shared connections)
 - [SlowScanBackend](SlowScanBackend.md) (1 shared connections)
-- [PlatformSecurityInfo](PlatformSecurityInfo.md) (1 shared connections)
-- [instant](instant.md) (1 shared connections)
-- [power.rs](power.rs.md) (1 shared connections)
+- [parking.rs](parking.rs.md) (1 shared connections)
 - [WinBlast Optimizer](WinBlast_Optimizer.md) (1 shared connections)
 
 ## Source Files

@@ -33,13 +33,10 @@
 
 ## Relationships
 
-- [.Toggle .Set .Apply](Toggle_.Set_.Apply.md) (14 shared connections)
+- [.Toggle .Set .Apply](Toggle_.Set_.Apply.md) (16 shared connections)
 - [view_i18n.rs](view_i18n.rs.md) (3 shared connections)
-- [ui/mod.rs](ui-mod.rs.md) (1 shared connections)
-- [Integration Suite: Ui Responsive E2E](Integration_Suite-_Ui_Responsive_E2E.md) (1 shared connections)
-- [goal_planner.rs](goal_planner.rs.md) (1 shared connections)
-- [action_button_guarded](action_button_guarded.md) (1 shared connections)
-- [Privacy, Telemetry & AI Hardening Catalog](Privacy,_Telemetry_&_AI_Hardening_Catalog.md) (1 shared connections)
+- [ui/mod.rs](ui-mod.rs.md) (2 shared connections)
+- [ThemePalette](ThemePalette.md) (1 shared connections)
 
 ## Source Files
 

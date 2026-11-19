@@ -1,12 +1,11 @@
 # Scandetailkind Appxinstalled Appxinstalledps
 
-> 54 nodes · cohesion 0.06
+> 48 nodes · cohesion 0.07
 
 ## Key Concepts
 
 - **automation.rs** (32 connections) — `src/tools/automation.rs`
 - **AutoTuneProfile** (17 connections) — `src/tools/automation.rs`
-- **RiskLevel** (15 connections) — `src/core/risk.rs`
 - **MaintenanceTaskKind** (14 connections) — `src/tools/automation.rs`
 - **OverallHealthGrade** (7 connections) — `src/tools/automation.rs`
 - **create_auto_tune_plan()** (6 connections) — `src/tools/automation.rs`
@@ -29,33 +28,30 @@
 - **remove_maintenance_task()** (3 connections) — `src/tools/automation.rs`
 - **SystemHealthIssue** (3 connections) — `src/tools/automation.rs`
 - **.generate_auto_tune_plan()** (2 connections) — `src/app.rs`
-- *... and 29 more nodes in this community*
+- **test_iso_29119_health_assessment_scoring_and_grades()** (2 connections) — `src/tools/automation.rs`
+- *... and 23 more nodes in this community*
 
 ## Relationships
 
-- [Privacy, Telemetry & AI Hardening Catalog](Privacy,_Telemetry_&_AI_Hardening_Catalog.md) (9 shared connections)
+- [AppState](AppState.md) (9 shared connections)
 - [deserialize](deserialize.md) (4 shared connections)
-- [Embedded Catalog Test](Embedded_Catalog_Test.md) (3 shared connections)
-- [theme.rs](theme.rs.md) (3 shared connections)
-- [action_button_guarded](action_button_guarded.md) (2 shared connections)
-- [app.rs](app.rs.md) (1 shared connections)
-- [full_telemetry_audit_with](full_telemetry_audit_with.md) (1 shared connections)
-- [ui_scrollbar_test.rs](ui_scrollbar_test.rs.md) (1 shared connections)
-- [Win32 Registry Scanner & Mutator](Win32_Registry_Scanner_&_Mutator.md) (1 shared connections)
-- [path](path.md) (1 shared connections)
-- [instant](instant.md) (1 shared connections)
-- [sys_inventory.rs](sys_inventory.rs.md) (1 shared connections)
+- [RiskLevel](RiskLevel.md) (2 shared connections)
+- [Embedded Catalog Test](Embedded_Catalog_Test.md) (2 shared connections)
+- [path](path.md) (2 shared connections)
+- [theme.rs](theme.rs.md) (2 shared connections)
+- [PlatformSecurityInfo](PlatformSecurityInfo.md) (1 shared connections)
+- [SilentCommand](SilentCommand.md) (1 shared connections)
+- [.Toggle .Set .Apply](Toggle_.Set_.Apply.md) (1 shared connections)
 
 ## Source Files
 
 - `src/app.rs`
-- `src/core/risk.rs`
 - `src/tools/automation.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 103 (91%)
-- INFERRED: 10 (9%)
+- EXTRACTED: 90 (90%)
+- INFERRED: 10 (10%)
 - AMBIGUOUS: 0 (0%)
 
 ---

@@ -17,7 +17,7 @@
 
 - [Dynamicdwordformula Logicalcorecount Totalraminkb](Dynamicdwordformula_Logicalcorecount_Totalraminkb.md) (5 shared connections)
 - [Project History & Release Version Ledger](Project_History_&_Release_Version_Ledger.md) (4 shared connections)
-- [Integration Suite: Ui Responsive E2E](Integration_Suite-_Ui_Responsive_E2E.md) (1 shared connections)
+- [ThemePalette](ThemePalette.md) (1 shared connections)
 
 ## Source Files
 

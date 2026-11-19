@@ -1,6 +1,6 @@
 # FailAtMutationBackend
 
-> 23 nodes · cohesion 0.18
+> 26 nodes · cohesion 0.15
 
 ## Key Concepts
 
@@ -9,9 +9,12 @@
 - **LedgerEntry** (10 connections) — `src/backup/state_ledger.rs`
 - **SystemBaseline** (9 connections) — `src/backup/state_ledger.rs`
 - **test_ledger_crud()** (8 connections) — `src/backup/state_ledger.rs`
+- **revert_tweaks_by_id_with()** (6 connections) — `src/executor/engine.rs`
 - **.get_initial_baseline()** (4 connections) — `src/backup/state_ledger.rs`
 - **.init_conn()** (4 connections) — `src/backup/state_ledger.rs`
 - **.query_single_baseline()** (4 connections) — `src/backup/state_ledger.rs`
+- **revert_tweak()** (4 connections) — `src/executor/engine.rs`
+- **revert_tweaks_by_id()** (4 connections) — `src/executor/engine.rs`
 - **rollback_entry()** (4 connections) — `src/executor/engine.rs`
 - **Connection** (3 connections)
 - **DateTime** (3 connections)
@@ -26,17 +29,18 @@
 - **.rollback_entry()** (2 connections) — `src/backup/state_ledger.rs`
 - **params** (1 connections)
 - **.is_reversible()** (1 connections) — `src/backup/state_ledger.rs`
-- **.clear_history()** (1 connections) — `src/backup/state_ledger.rs`
+- *... and 1 more nodes in this community*
 
 ## Relationships
 
-- [full_telemetry_audit_with](full_telemetry_audit_with.md) (17 shared connections)
+- [full_telemetry_audit_with](full_telemetry_audit_with.md) (19 shared connections)
+- [AppState](AppState.md) (3 shared connections)
 - [app.rs](app.rs.md) (3 shared connections)
+- [Embedded Catalog Test](Embedded_Catalog_Test.md) (3 shared connections)
 - [deserialize](deserialize.md) (2 shared connections)
-- [Privacy, Telemetry & AI Hardening Catalog](Privacy,_Telemetry_&_AI_Hardening_Catalog.md) (2 shared connections)
-- [sys_inventory.rs](sys_inventory.rs.md) (1 shared connections)
+- [path](path.md) (1 shared connections)
 - [theme.rs](theme.rs.md) (1 shared connections)
-- [Core UI Internationalization & Text Catalog](Core_UI_Internationalization_&_Text_Catalog.md) (1 shared connections)
+- [Integration Suite: Tweak Sandbox E2E](Integration_Suite-_Tweak_Sandbox_E2E.md) (1 shared connections)
 
 ## Source Files
 
@@ -45,7 +49,7 @@
 
 ## Audit Trail
 
-- EXTRACTED: 72 (100%)
+- EXTRACTED: 82 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

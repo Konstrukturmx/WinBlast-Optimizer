@@ -1,82 +1,54 @@
 # AppState
 
-> God node · 347 connections · `src/app.rs`
+> 93 nodes · cohesion 0.02
 
-**Community:** [Privacy, Telemetry & AI Hardening Catalog](Privacy,_Telemetry_&_AI_Hardening_Catalog.md)
+## Key Concepts
 
-## Connections by Relation
+- **StatusMessageSpec** (105 connections) — `src/core/status_i18n.rs`
+- **ActionMessage** (1 connections) — `src/core/status_i18n.rs`
+- **AppxFeatureScanFailed** (1 connections) — `src/core/status_i18n.rs`
+- **AppxFeatureScanned** (1 connections) — `src/core/status_i18n.rs`
+- **AppxFeatureScanning** (1 connections) — `src/core/status_i18n.rs`
+- **AppxUninstalled** (1 connections) — `src/core/status_i18n.rs`
+- **AppxUninstallFailed** (1 connections) — `src/core/status_i18n.rs`
+- **BaselineResetCompleted** (1 connections) — `src/core/status_i18n.rs`
+- **BaselineResetFailed** (1 connections) — `src/core/status_i18n.rs`
+- **BaselineResetting** (1 connections) — `src/core/status_i18n.rs`
+- **BatchApplying** (1 connections) — `src/core/status_i18n.rs`
+- **BatchFailed** (1 connections) — `src/core/status_i18n.rs`
+- **ChangelogCleared** (1 connections) — `src/core/status_i18n.rs`
+- **CoreParkingFailed** (1 connections) — `src/core/status_i18n.rs`
+- **CoreParkingPanic** (1 connections) — `src/core/status_i18n.rs`
+- **CoreParkingRefreshing** (1 connections) — `src/core/status_i18n.rs`
+- **CoreParkingRestored** (1 connections) — `src/core/status_i18n.rs`
+- **CoreParkingRestoring** (1 connections) — `src/core/status_i18n.rs`
+- **CoreParkingUnparked** (1 connections) — `src/core/status_i18n.rs`
+- **CoreParkingUnparking** (1 connections) — `src/core/status_i18n.rs`
+- **DeselectedAll** (1 connections) — `src/core/status_i18n.rs`
+- **DiskCleaned** (1 connections) — `src/core/status_i18n.rs`
+- **DiskCleanFailed** (1 connections) — `src/core/status_i18n.rs`
+- **DiskScanFailed** (1 connections) — `src/core/status_i18n.rs`
+- **DiskScanned** (1 connections) — `src/core/status_i18n.rs`
+- *... and 68 more nodes in this community*
 
-### contains
-- [app.rs](app.rs.md) `EXTRACTED`
+## Relationships
 
-### imports_from
-- tweak_sandbox_e2e.rs `EXTRACTED`
-- ui_responsive_e2e.rs `EXTRACTED`
-- clean_apps.rs `EXTRACTED`
-- easy_dashboard.rs `EXTRACTED`
-- [ui/mod.rs](ui-mod.rs.md) `EXTRACTED`
-- startup_tasks.rs `EXTRACTED`
-- gpu_tuning.rs `EXTRACTED`
-- [ui_scrollbar_test.rs](ui_scrollbar_test.rs.md) `EXTRACTED`
-- advanced_matrix.rs `EXTRACTED`
-- button.rs `EXTRACTED`
-- privacy_shield.rs `EXTRACTED`
-- [diff_modal.rs](diff_modal.rs.md) `EXTRACTED`
-- hardware_view.rs `EXTRACTED`
-- driver_bios.rs `EXTRACTED`
-- views/gaming_stats.rs `EXTRACTED`
-- automation_center.rs `EXTRACTED`
-- views/game_prereqs.rs `EXTRACTED`
-- [latency_bench.rs](latency_bench.rs.md) `EXTRACTED`
-- fault_diagnostics.rs `EXTRACTED`
-- [goal_planner.rs](goal_planner.rs.md) `EXTRACTED`
-- *…and 12 more `imports_from` connection(s) not listed (lowest-degree first to go)*
+- [Project History & Release Version Ledger](Project_History_&_Release_Version_Ledger.md) (6 shared connections)
+- [AppState](AppState.md) (2 shared connections)
+- [Appx Package() Prefixes](Appx_Package_Prefixes.md) (2 shared connections)
+- [RealBackend](RealBackend.md) (1 shared connections)
+- [GamingSubTab](GamingSubTab.md) (1 shared connections)
+- [app.rs](app.rs.md) (1 shared connections)
 
-### method
-- .apply_worker_event() `EXTRACTED`
-- .set_status_spec() `EXTRACTED`
-- .navigate() `EXTRACTED`
-- .setup() `EXTRACTED`
-- .sync_clean_apps_busy() `EXTRACTED`
-- .refresh_pending_actions() `EXTRACTED`
-- .handle_switch_click() `EXTRACTED`
-- .sync_startup_tasks_busy() `EXTRACTED`
-- .run_scan_internal() `EXTRACTED`
-- .run_telemetry_audit() `EXTRACTED`
-- .get_tweak_scan() `EXTRACTED`
-- .refresh_restore_points() `EXTRACTED`
-- .is_tweak_compatible_and_applicable() `EXTRACTED`
-- .scan_clean_targets_async() `EXTRACTED`
-- .poll() `EXTRACTED`
-- .set_status() `EXTRACTED`
-- .refresh_core_parking() `EXTRACTED`
-- .apply_selected() `EXTRACTED`
-- .refresh_latency() `EXTRACTED`
-- .apply_preset() `EXTRACTED`
-- *…and 122 more `method` connection(s) not listed (lowest-degree first to go)*
+## Source Files
 
-### references
-- [SystemBackend](SystemBackend.md) `EXTRACTED`
-- [StatusMessageSpec](StatusMessageSpec.md) `EXTRACTED`
-- [ThemePalette](ThemePalette.md) `EXTRACTED`
-- WorkerEvent `EXTRACTED`
-- action_button() `EXTRACTED`
-- Language `EXTRACTED`
-- TweakDefinition `EXTRACTED`
-- ActiveView `EXTRACTED`
-- action_button_guarded() `EXTRACTED`
-- TweakAction `EXTRACTED`
-- [UiThemeStyle](UiThemeStyle.md) `INFERRED`
-- ScanResult `EXTRACTED`
-- [StartupEntry](StartupEntry.md) `EXTRACTED`
-- [HibernationStatus](HibernationStatus.md) `EXTRACTED`
-- DriverCategory `EXTRACTED`
-- CoreParkingState `EXTRACTED`
-- [Changelog](Changelog.md) `EXTRACTED`
-- [ColorScheme](ColorScheme.md) `EXTRACTED`
-- LatencyBenchmarkSnapshot `EXTRACTED`
-- DetectedGpu `EXTRACTED`
-- *…and 152 more `references` connection(s) not listed (lowest-degree first to go)*
+- `src/core/status_i18n.rs`
+
+## Audit Trail
+
+- EXTRACTED: 105 (100%)
+- INFERRED: 0 (0%)
+- AMBIGUOUS: 0 (0%)
 
 ---
 

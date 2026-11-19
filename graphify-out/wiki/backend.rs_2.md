@@ -19,21 +19,20 @@
 - **test_iso_29119_driver_section_scrollbar_bounds_and_filtering()** (4 connections) — `tests/ui_scrollbar_test.rs`
 - **test_scrollbars_render_across_all_main_views()** (4 connections) — `tests/ui_scrollbar_test.rs`
 - **test_themed_thumb_widens_under_the_pointer()** (4 connections) — `tests/ui_scrollbar_test.rs`
-- **env** (3 connections)
+- **sandboxenv** (3 connections)
 - **scrollbars** (1 connections)
 - **CONTENT_X** (1 connections) — `tests/ui_scrollbar_test.rs`
 
 ## Relationships
 
-- [Privacy, Telemetry & AI Hardening Catalog](Privacy,_Telemetry_&_AI_Hardening_Catalog.md) (8 shared connections)
+- [AppState](AppState.md) (8 shared connections)
 - [edge_cases_unorthodox.rs](edge_cases_unorthodox.rs.md) (3 shared connections)
 - [System Architecture Changelog](System_Architecture_Changelog.md) (3 shared connections)
 - [GPU Silicon & Hardware Tuning Policies](GPU_Silicon_&_Hardware_Tuning_Policies.md) (2 shared connections)
+- [Embedded Catalog Test](Embedded_Catalog_Test.md) (2 shared connections)
 - [real_windows_env.rs](real_windows_env.rs.md) (1 shared connections)
-- [Embedded Catalog Test](Embedded_Catalog_Test.md) (1 shared connections)
-- [action_button_guarded](action_button_guarded.md) (1 shared connections)
 - [PresetKey](PresetKey.md) (1 shared connections)
-- [lazy_loader.rs](lazy_loader.rs.md) (1 shared connections)
+- [LazyLoader](LazyLoader.md) (1 shared connections)
 - [theme.rs](theme.rs.md) (1 shared connections)
 
 ## Source Files

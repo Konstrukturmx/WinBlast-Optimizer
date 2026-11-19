@@ -1,64 +1,60 @@
 # registry_scanner.rs
 
-> 84 nodes · cohesion 0.05
+> 32 nodes · cohesion 0.13
 
 ## Key Concepts
 
-- **WinBlastError** (38 connections) — `src/core/error.rs`
 - **registry_scanner.rs** (37 connections) — `src/scanner/registry_scanner.rs`
-- **reg_mutator.rs** (25 connections) — `src/executor/reg_mutator.rs`
-- **normalize_reg_value_name()** (21 connections) — `src/core/risk.rs`
-- **validate_registry_mutation_path()** (17 connections) — `src/core/reg_helpers.rs`
-- **resolve_hive()** (16 connections) — `src/scanner/registry_scanner.rs`
-- **Result** (14 connections) — `src/core/error.rs`
 - **open_subkey_read_64()** (13 connections) — `src/scanner/registry_scanner.rs`
-- **set_raw()** (8 connections) — `src/executor/reg_mutator.rs`
-- **create_subkey_64()** (8 connections) — `src/scanner/registry_scanner.rs`
 - **open_subkey_flags_64()** (8 connections) — `src/scanner/registry_scanner.rs`
 - **RegKey** (8 connections)
-- **delete_value_for_vendor()** (7 connections) — `src/executor/reg_mutator.rs`
-- **restore_tree_node()** (7 connections) — `src/executor/reg_mutator.rs`
-- **set_dword_for_vendor()** (7 connections) — `src/executor/reg_mutator.rs`
-- **set_string_for_vendor()** (7 connections) — `src/executor/reg_mutator.rs`
 - **get_raw()** (7 connections) — `src/scanner/registry_scanner.rs`
 - **get_string_for_vendor()** (7 connections) — `src/scanner/registry_scanner.rs`
 - **resolve_target_paths()** (7 connections) — `src/scanner/registry_scanner.rs`
 - **snapshot_key_recursive()** (7 connections) — `src/scanner/registry_scanner.rs`
-- **test_error_formatting()** (6 connections) — `src/core/error.rs`
-- **set_binary()** (6 connections) — `src/executor/reg_mutator.rs`
 - **get_dword_for_vendor()** (6 connections) — `src/scanner/registry_scanner.rs`
 - **test_strict_reg_type_dispatch_and_negative_numeric_sz()** (6 connections) — `src/scanner/registry_scanner.rs`
-- **error.rs** (5 connections) — `src/core/error.rs`
-- *... and 59 more nodes in this community*
+- **evaluate_dword_value_with_kind()** (5 connections) — `src/scanner/registry_scanner.rs`
+- **get_binary()** (5 connections) — `src/scanner/registry_scanner.rs`
+- **resolve_net_interface_paths()** (5 connections) — `src/scanner/registry_scanner.rs`
+- **snapshot_tree()** (5 connections) — `src/scanner/registry_scanner.rs`
+- **encode_hex()** (4 connections) — `src/core/reg_helpers.rs`
+- **evaluate_dword()** (4 connections) — `src/scanner/registry_scanner.rs`
+- **evaluate_dword_value()** (4 connections) — `src/scanner/registry_scanner.rs`
+- **get_dword()** (4 connections) — `src/scanner/registry_scanner.rs`
+- **read_dword_from_key()** (4 connections) — `src/scanner/registry_scanner.rs`
+- **reg_type_to_u32()** (4 connections) — `src/scanner/registry_scanner.rs`
+- **has_active_ip()** (3 connections) — `src/scanner/registry_scanner.rs`
+- **key_exists()** (3 connections) — `src/scanner/registry_scanner.rs`
+- **ScratchCleanup** (3 connections) — `src/scanner/registry_scanner.rs`
+- **test_evaluate_dword_value_with_kind_all_branches()** (3 connections) — `src/scanner/registry_scanner.rs`
+- **check_dword()** (2 connections) — `src/scanner/registry_scanner.rs`
+- *... and 7 more nodes in this community*
 
 ## Relationships
 
-- [full_telemetry_audit_with](full_telemetry_audit_with.md) (14 shared connections)
-- [task_scanner.rs](task_scanner.rs.md) (9 shared connections)
-- [ui_scrollbar_test.rs](ui_scrollbar_test.rs.md) (5 shared connections)
-- [backend.rs](backend.rs.md) (4 shared connections)
-- [.setup](setup.md) (4 shared connections)
-- [power.rs](power.rs.md) (4 shared connections)
-- [real_windows_env.rs](real_windows_env.rs.md) (4 shared connections)
-- [RegTreeSnapshot](RegTreeSnapshot.md) (4 shared connections)
-- [theme.rs](theme.rs.md) (3 shared connections)
-- [latency_bench.rs](latency_bench.rs.md) (3 shared connections)
-- [sys_inventory.rs](sys_inventory.rs.md) (2 shared connections)
-- [Disk Cleaning & Temporary File Purger](Disk_Cleaning_&_Temporary_File_Purger.md) (2 shared connections)
+- [reg_mutator.rs](reg_mutator.rs.md) (22 shared connections)
+- [real_windows_env.rs](real_windows_env.rs.md) (2 shared connections)
+- [WinBlastError](WinBlastError.md) (2 shared connections)
+- [.setup](setup.md) (2 shared connections)
+- [Runtime](Runtime.md) (2 shared connections)
+- [RegTreeSnapshot](RegTreeSnapshot.md) (2 shared connections)
+- [full_telemetry_audit_with](full_telemetry_audit_with.md) (1 shared connections)
+- [edge_cases_unorthodox.rs](edge_cases_unorthodox.rs.md) (1 shared connections)
+- [deserialize](deserialize.md) (1 shared connections)
+- [path](path.md) (1 shared connections)
+- [theme.rs](theme.rs.md) (1 shared connections)
+- [AppX Package & Modern App Scanner](AppX_Package_&_Modern_App_Scanner.md) (1 shared connections)
 
 ## Source Files
 
-- `src/core/error.rs`
 - `src/core/reg_helpers.rs`
-- `src/core/risk.rs`
-- `src/executor/reg_mutator.rs`
 - `src/scanner/registry_scanner.rs`
-- `tests/real_windows_env.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 213 (81%)
-- INFERRED: 50 (19%)
+- EXTRACTED: 90 (84%)
+- INFERRED: 17 (16%)
 - AMBIGUOUS: 0 (0%)
 
 ---

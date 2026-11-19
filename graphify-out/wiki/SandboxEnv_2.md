@@ -46,7 +46,7 @@
 - [PanickingBackend](PanickingBackend.md) `EXTRACTED`
 - [FailAtMutationBackend](FailAtMutationBackend.md) `EXTRACTED`
 - SandboxState `EXTRACTED`
-- [WinBlast Optimizer — Developer & Architecture Guide](WinBlast_Optimizer_—_Developer_&_Architecture_Guide.md) `EXTRACTED`
+- WinBlast Optimizer — Developer & Architecture Guide `EXTRACTED`
 - SandboxTempDir `EXTRACTED`
 - [RwLock](RwLock.md) `EXTRACTED`
 - .new() `EXTRACTED`

@@ -20,7 +20,7 @@
 ## Relationships
 
 - [GPU Silicon & Hardware Tuning Policies](GPU_Silicon_&_Hardware_Tuning_Policies.md) (18 shared connections)
-- [Privacy, Telemetry & AI Hardening Catalog](Privacy,_Telemetry_&_AI_Hardening_Catalog.md) (6 shared connections)
+- [AppState](AppState.md) (6 shared connections)
 - [theme.rs](theme.rs.md) (1 shared connections)
 - [app.rs](app.rs.md) (1 shared connections)
 

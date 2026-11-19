@@ -33,10 +33,9 @@
 
 ## Relationships
 
+- [path](path.md) (2 shared connections)
 - [real_windows_env.rs](real_windows_env.rs.md) (1 shared connections)
-- [path](path.md) (1 shared connections)
 - [test_wave1_ledger_rollback_and_concurrency_regressions](test_wave1_ledger_rollback_and_concurrency_regressions.md) (1 shared connections)
-- [sys_inventory.rs](sys_inventory.rs.md) (1 shared connections)
 
 ## Source Files
 
