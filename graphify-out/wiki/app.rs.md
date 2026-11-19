@@ -35,7 +35,7 @@
 - [PanickingBackend](PanickingBackend.md) (2 shared connections)
 - [.Reg State() Vendor()](Reg_State_Vendor.md) (1 shared connections)
 - [Integration Suite: Tweak Sandbox E2E](Integration_Suite-_Tweak_Sandbox_E2E.md) (1 shared connections)
-- [sys_inventory.rs](sys_inventory.rs.md) (1 shared connections)
+- [path](path.md) (1 shared connections)
 - [SlowScanBackend](SlowScanBackend.md) (1 shared connections)
 - [Embedded Catalog Test](Embedded_Catalog_Test.md) (1 shared connections)
 - [backend.rs](backend.rs.md) (1 shared connections)

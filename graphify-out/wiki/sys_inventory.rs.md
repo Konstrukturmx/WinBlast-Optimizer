@@ -1,11 +1,10 @@
 # sys_inventory.rs
 
-> 63 nodes · cohesion 0.06
+> 62 nodes · cohesion 0.06
 
 ## Key Concepts
 
 - **sys_inventory.rs** (50 connections) — `src/hardware/sys_inventory.rs`
-- **super** (43 connections)
 - **disks.rs** (36 connections) — `src/hardware/disks.rs`
 - **DiskSubsystemReport** (8 connections) — `src/hardware/disks.rs`
 - **probe_physical_drive()** (8 connections) — `src/hardware/disks.rs`
@@ -29,22 +28,23 @@
 - **NtQuerySystemInformation()** (3 connections) — `src/hardware/sys_inventory.rs`
 - **query_live_code_integrity_options()** (3 connections) — `src/hardware/sys_inventory.rs`
 - **test_ram_and_platform_inventory_nonblocking()** (3 connections) — `src/hardware/sys_inventory.rs`
-- *... and 38 more nodes in this community*
+- **total_physical_ram_kb()** (3 connections) — `src/hardware/sys_inventory.rs`
+- *... and 37 more nodes in this community*
 
 ## Relationships
 
-- [deserialize](deserialize.md) (7 shared connections)
-- [backend.rs](backend.rs.md) (4 shared connections)
+- [deserialize](deserialize.md) (6 shared connections)
+- [AppState](AppState.md) (6 shared connections)
 - [PlatformSecurityInfo](PlatformSecurityInfo.md) (4 shared connections)
-- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (3 shared connections)
-- [startup.rs](startup.rs.md) (3 shared connections)
-- [Disk Cleaning & Temporary File Purger](Disk_Cleaning_&_Temporary_File_Purger.md) (3 shared connections)
-- [Core UI Internationalization & Text Catalog](Core_UI_Internationalization_&_Text_Catalog.md) (3 shared connections)
-- [Privacy, Telemetry & AI Hardening Catalog](Privacy,_Telemetry_&_AI_Hardening_Catalog.md) (3 shared connections)
+- [backend.rs](backend.rs.md) (3 shared connections)
 - [DriverError](DriverError.md) (3 shared connections)
-- [app.rs](app.rs.md) (3 shared connections)
-- [SlowScanBackend](SlowScanBackend.md) (3 shared connections)
 - [elevation.rs](elevation.rs.md) (2 shared connections)
+- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (2 shared connections)
+- [Disk Cleaning & Temporary File Purger](Disk_Cleaning_&_Temporary_File_Purger.md) (2 shared connections)
+- [path](path.md) (2 shared connections)
+- [LazyLoader](LazyLoader.md) (2 shared connections)
+- [app.rs](app.rs.md) (2 shared connections)
+- [startup.rs](startup.rs.md) (1 shared connections)
 
 ## Source Files
 
@@ -53,7 +53,7 @@
 
 ## Audit Trail
 
-- EXTRACTED: 183 (99%)
+- EXTRACTED: 142 (99%)
 - INFERRED: 2 (1%)
 - AMBIGUOUS: 0 (0%)
 

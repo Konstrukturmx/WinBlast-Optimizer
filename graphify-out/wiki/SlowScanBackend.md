@@ -1,6 +1,6 @@
 # SlowScanBackend
 
-> 50 nodes · cohesion 0.07
+> 49 nodes · cohesion 0.08
 
 ## Key Concepts
 
@@ -9,7 +9,6 @@
 - **hashset** (9 connections)
 - **.plan()** (9 connections) — `src/graph/astar.rs`
 - **graph/mod.rs** (9 connections) — `src/graph/mod.rs`
-- **hashmap** (8 connections)
 - **raven.rs** (8 connections) — `src/graph/raven.rs`
 - **.schedule_execution()** (7 connections) — `src/graph/dijkstra.rs`
 - **RavenEngine** (7 connections) — `src/graph/raven.rs`
@@ -29,22 +28,23 @@
 - **.partial_cmp()** (3 connections) — `src/graph/astar.rs`
 - **.new()** (3 connections) — `src/graph/astar.rs`
 - **.iter_set()** (3 connections) — `src/graph/astar.rs`
-- *... and 25 more nodes in this community*
+- **ExecutionStep** (3 connections) — `src/graph/dijkstra.rs`
+- *... and 24 more nodes in this community*
 
 ## Relationships
 
-- [goal_planner.rs](goal_planner.rs.md) (5 shared connections)
-- [app.rs](app.rs.md) (3 shared connections)
-- [backend.rs](backend.rs.md) (3 shared connections)
-- [sys_inventory.rs](sys_inventory.rs.md) (3 shared connections)
-- [Privacy, Telemetry & AI Hardening Catalog](Privacy,_Telemetry_&_AI_Hardening_Catalog.md) (3 shared connections)
-- [spawn_guarded_worker](spawn_guarded_worker.md) (2 shared connections)
-- [startup.rs](startup.rs.md) (2 shared connections)
-- [theme.rs](theme.rs.md) (2 shared connections)
-- [generational_cache.rs](generational_cache.rs.md) (2 shared connections)
-- [task_scanner.rs](task_scanner.rs.md) (1 shared connections)
+- [ui/mod.rs](ui-mod.rs.md) (5 shared connections)
+- [path](path.md) (3 shared connections)
+- [AppState](AppState.md) (3 shared connections)
+- [app.rs](app.rs.md) (2 shared connections)
+- [backend.rs](backend.rs.md) (2 shared connections)
+- [task_scanner.rs](task_scanner.rs.md) (2 shared connections)
+- [spawn_guarded_worker](spawn_guarded_worker.md) (1 shared connections)
+- [theme.rs](theme.rs.md) (1 shared connections)
 - [GPU Silicon & Hardware Tuning Policies](GPU_Silicon_&_Hardware_Tuning_Policies.md) (1 shared connections)
-- [lazy_loader.rs](lazy_loader.rs.md) (1 shared connections)
+- [generational_cache.rs](generational_cache.rs.md) (1 shared connections)
+- [LazyLoader](LazyLoader.md) (1 shared connections)
+- [State Ledger & Restore Point Engine](State_Ledger_&_Restore_Point_Engine.md) (1 shared connections)
 
 ## Source Files
 
@@ -55,8 +55,8 @@
 
 ## Audit Trail
 
-- EXTRACTED: 118 (98%)
-- INFERRED: 3 (2%)
+- EXTRACTED: 111 (97%)
+- INFERRED: 3 (3%)
 - AMBIGUOUS: 0 (0%)
 
 ---

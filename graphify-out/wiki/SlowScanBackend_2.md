@@ -2,7 +2,7 @@
 
 > God node · 85 connections · `tests/tweak_sandbox_e2e.rs`
 
-**Community:** [test_wave1_ledger_rollback_and_concurrency_regressions](test_wave1_ledger_rollback_and_concurrency_regressions.md)
+**Community:** [PanickingBackend](PanickingBackend.md)
 
 ## Connections by Relation
 

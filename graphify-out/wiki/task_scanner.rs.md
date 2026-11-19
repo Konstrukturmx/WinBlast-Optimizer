@@ -1,6 +1,6 @@
 # task_scanner.rs
 
-> 25 nodes · cohesion 0.20
+> 24 nodes · cohesion 0.21
 
 ## Key Concepts
 
@@ -25,25 +25,24 @@
 - **.reg_snapshot_tree()** (5 connections) — `src/core/backend.rs`
 - **.reg_key_exists()** (4 connections) — `src/core/backend.rs`
 - **.reg_delete_value()** (3 connections) — `src/core/backend.rs`
-- **.reg_get_dword()** (3 connections) — `src/core/backend.rs`
 - **.reg_set_dword()** (3 connections) — `src/core/backend.rs`
 - **.resolve_net_interface_paths_in_state()** (3 connections) — `src/core/backend.rs`
-- **.seed_tweak_defaults()** (3 connections) — `src/core/backend.rs`
+- **.reg_delete_value_for_vendor()** (2 connections) — `src/core/backend.rs`
 
 ## Relationships
 
-- [SandboxEnv](SandboxEnv.md) (34 shared connections)
+- [SandboxEnv](SandboxEnv.md) (32 shared connections)
 - [.take_injected_error](take_injected_error.md) (16 shared connections)
-- [registry_scanner.rs](registry_scanner.rs.md) (7 shared connections)
-- [backend.rs](backend.rs.md) (4 shared connections)
+- [reg_mutator.rs](reg_mutator.rs.md) (7 shared connections)
+- [backend.rs](backend.rs.md) (6 shared connections)
 - [Integration Suite: Tweak Sandbox E2E](Integration_Suite-_Tweak_Sandbox_E2E.md) (3 shared connections)
 - [RegTreeSnapshot](RegTreeSnapshot.md) (3 shared connections)
-- [latency_bench.rs](latency_bench.rs.md) (3 shared connections)
 - [test_wave1_compound_actions_deep_edge_cases](test_wave1_compound_actions_deep_edge_cases.md) (2 shared connections)
 - [AppX Package & Modern App Scanner](AppX_Package_&_Modern_App_Scanner.md) (2 shared connections)
-- [HibernationStatus](HibernationStatus.md) (2 shared connections)
+- [latency_bench.rs](latency_bench.rs.md) (2 shared connections)
 - [Error.Rs Winblasterror Appx](Error.Rs_Winblasterror_Appx.md) (1 shared connections)
-- [Core UI Internationalization & Text Catalog](Core_UI_Internationalization_&_Text_Catalog.md) (1 shared connections)
+- [HibernationStatus](HibernationStatus.md) (1 shared connections)
+- [PlatformSecurityInfo](PlatformSecurityInfo.md) (1 shared connections)
 
 ## Source Files
 
@@ -51,8 +50,8 @@
 
 ## Audit Trail
 
-- EXTRACTED: 140 (95%)
-- INFERRED: 8 (5%)
+- EXTRACTED: 137 (94%)
+- INFERRED: 8 (6%)
 - AMBIGUOUS: 0 (0%)
 
 ---

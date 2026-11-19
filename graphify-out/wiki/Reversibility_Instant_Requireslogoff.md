@@ -26,13 +26,13 @@
 ## Relationships
 
 - [Project History & Release Version Ledger](Project_History_&_Release_Version_Ledger.md) (5 shared connections)
-- [Privacy, Telemetry & AI Hardening Catalog](Privacy,_Telemetry_&_AI_Hardening_Catalog.md) (4 shared connections)
+- [AppState](AppState.md) (4 shared connections)
 - [app.rs](app.rs.md) (2 shared connections)
 - [ui/mod.rs](ui-mod.rs.md) (2 shared connections)
 - [edge_cases_unorthodox.rs](edge_cases_unorthodox.rs.md) (2 shared connections)
 - [Dynamicdwordformula Logicalcorecount Totalraminkb](Dynamicdwordformula_Logicalcorecount_Totalraminkb.md) (2 shared connections)
 - [GPU Silicon & Hardware Tuning Policies](GPU_Silicon_&_Hardware_Tuning_Policies.md) (2 shared connections)
-- [Integration Suite: Ui Responsive E2E](Integration_Suite-_Ui_Responsive_E2E.md) (2 shared connections)
+- [ThemePalette](ThemePalette.md) (2 shared connections)
 - [Core UI Internationalization & Text Catalog](Core_UI_Internationalization_&_Text_Catalog.md) (1 shared connections)
 
 ## Source Files

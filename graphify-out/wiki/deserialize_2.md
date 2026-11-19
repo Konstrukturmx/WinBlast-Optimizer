@@ -21,17 +21,17 @@
 ## Relationships
 
 - [SandboxEnv](SandboxEnv.md) (2 shared connections)
+- [AppState](AppState.md) (2 shared connections)
 - [startup.rs](startup.rs.md) (2 shared connections)
 - [PanickingBackend](PanickingBackend.md) (2 shared connections)
 - [.Reg State() Vendor()](Reg_State_Vendor.md) (1 shared connections)
 - [Integration Suite: Tweak Sandbox E2E](Integration_Suite-_Tweak_Sandbox_E2E.md) (1 shared connections)
-- [Core UI Internationalization & Text Catalog](Core_UI_Internationalization_&_Text_Catalog.md) (1 shared connections)
 - [task_scanner.rs](task_scanner.rs.md) (1 shared connections)
-- [Privacy, Telemetry & AI Hardening Catalog](Privacy,_Telemetry_&_AI_Hardening_Catalog.md) (1 shared connections)
 - [app.rs](app.rs.md) (1 shared connections)
 - [backend.rs](backend.rs.md) (1 shared connections)
 - [theme.rs](theme.rs.md) (1 shared connections)
 - [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (1 shared connections)
+- [Project Documentation, Architecture & Licensing](Project_Documentation,_Architecture_&_Licensing.md) (1 shared connections)
 
 ## Source Files
 

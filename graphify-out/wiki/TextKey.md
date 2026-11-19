@@ -45,7 +45,7 @@
 - advanced_matrix.rs `EXTRACTED`
 - button.rs `EXTRACTED`
 - privacy_shield.rs `EXTRACTED`
-- [diff_modal.rs](diff_modal.rs.md) `EXTRACTED`
+- diff_modal.rs `EXTRACTED`
 - hardware_view.rs `EXTRACTED`
 - driver_bios.rs `EXTRACTED`
 - views/gaming_stats.rs `EXTRACTED`

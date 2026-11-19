@@ -1,12 +1,14 @@
 # Integration Suite: Tweak Sandbox E2E
 
-> 51 nodes · cohesion 0.04
+> 53 nodes · cohesion 0.04
 
 ## Key Concepts
 
-- **SystemBackend** (118 connections) — `src/core/backend.rs`
-- **.apply_parking_snapshot()** (4 connections) — `src/core/backend.rs`
-- **.reg_delete_value_for_vendor()** (2 connections) — `src/core/backend.rs`
+- **SystemBackend** (117 connections) — `src/core/backend.rs`
+- **CachedScanBackend<'a>** (6 connections) — `src/core/backend.rs`
+- **.reg_get_dword()** (3 connections) — `src/core/backend.rs`
+- **.inner()** (2 connections) — `src/core/backend.rs`
+- **.new()** (2 connections) — `src/core/backend.rs`
 - **.reg_get_dword_for_vendor()** (2 connections) — `src/core/backend.rs`
 - **.reg_set_dword_for_vendor()** (2 connections) — `src/core/backend.rs`
 - **.set_usb_power_saving_enabled()** (2 connections) — `src/core/backend.rs`
@@ -27,24 +29,22 @@
 - **.read_hosts_file()** (1 connections) — `src/core/backend.rs`
 - **.read_power_setting_index()** (1 connections) — `src/core/backend.rs`
 - **.reg_delete_tree()** (1 connections) — `src/core/backend.rs`
-- **.reg_delete_value()** (1 connections) — `src/core/backend.rs`
-- **.reg_get_binary()** (1 connections) — `src/core/backend.rs`
-- *... and 26 more nodes in this community*
+- *... and 28 more nodes in this community*
 
 ## Relationships
 
-- [full_telemetry_audit_with](full_telemetry_audit_with.md) (10 shared connections)
+- [full_telemetry_audit_with](full_telemetry_audit_with.md) (8 shared connections)
 - [Embedded Catalog Test](Embedded_Catalog_Test.md) (7 shared connections)
-- [app.rs](app.rs.md) (4 shared connections)
 - [SandboxEnv](SandboxEnv.md) (4 shared connections)
-- [restore_point.rs](restore_point.rs.md) (3 shared connections)
-- [backend.rs](backend.rs.md) (3 shared connections)
-- [HibernationStatus](HibernationStatus.md) (3 shared connections)
+- [app.rs](app.rs.md) (4 shared connections)
+- [backend.rs](backend.rs.md) (4 shared connections)
+- [RegRawSnapshot](RegRawSnapshot.md) (3 shared connections)
 - [task_scanner.rs](task_scanner.rs.md) (3 shared connections)
-- [Privacy, Telemetry & AI Hardening Catalog](Privacy,_Telemetry_&_AI_Hardening_Catalog.md) (2 shared connections)
+- [restore_point.rs](restore_point.rs.md) (3 shared connections)
+- [GpuVendor](GpuVendor.md) (2 shared connections)
+- [AppState](AppState.md) (2 shared connections)
+- [FailAtMutationBackend](FailAtMutationBackend.md) (2 shared connections)
 - [PanickingBackend](PanickingBackend.md) (2 shared connections)
-- [power.rs](power.rs.md) (2 shared connections)
-- [Disk Cleaning & Temporary File Purger](Disk_Cleaning_&_Temporary_File_Purger.md) (2 shared connections)
 
 ## Source Files
 
@@ -52,8 +52,8 @@
 
 ## Audit Trail
 
-- EXTRACTED: 123 (98%)
-- INFERRED: 2 (2%)
+- EXTRACTED: 127 (99%)
+- INFERRED: 1 (1%)
 - AMBIGUOUS: 0 (0%)
 
 ---

@@ -15,8 +15,8 @@
 
 ## Relationships
 
-- [backend.rs](backend.rs.md) (2 shared connections)
-- [sys_inventory.rs](sys_inventory.rs.md) (1 shared connections)
+- [CpuInfo](CpuInfo.md) (2 shared connections)
+- [path](path.md) (1 shared connections)
 - [deserialize](deserialize.md) (1 shared connections)
 
 ## Source Files

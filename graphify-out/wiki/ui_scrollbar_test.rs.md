@@ -8,10 +8,10 @@
 - **generate_autounattend_xml()** (17 connections) — `src/tools/autounattend.rs`
 - **Reversibility** (10 connections) — `src/core/risk.rs`
 - **UnattendOptions** (7 connections) — `src/tools/autounattend.rs`
-- **display_reg_value_name()** (6 connections) — `src/core/risk.rs`
 - **TargetArch** (6 connections) — `src/tools/autounattend.rs`
 - **format_reg_add_cmd()** (5 connections) — `src/tools/autounattend.rs`
 - **format_reg_delete_cmd()** (5 connections) — `src/tools/autounattend.rs`
+- **.export_autounattend_xml()** (3 connections) — `src/app.rs`
 - **escape_win32_quoted_arg()** (3 connections) — `src/tools/autounattend.rs`
 - **map_hive()** (3 connections) — `src/tools/autounattend.rs`
 - **test_autounattend_generation_wellformed_and_escaped()** (3 connections) — `src/tools/autounattend.rs`
@@ -31,27 +31,28 @@
 ## Relationships
 
 - [theme.rs](theme.rs.md) (6 shared connections)
-- [registry_scanner.rs](registry_scanner.rs.md) (5 shared connections)
-- [Win32 Registry Scanner & Mutator](Win32_Registry_Scanner_&_Mutator.md) (4 shared connections)
 - [Embedded Catalog Test](Embedded_Catalog_Test.md) (4 shared connections)
-- [full_telemetry_audit_with](full_telemetry_audit_with.md) (2 shared connections)
+- [Win32 Registry Scanner & Mutator](Win32_Registry_Scanner_&_Mutator.md) (4 shared connections)
+- [reg_mutator.rs](reg_mutator.rs.md) (4 shared connections)
+- [AppState](AppState.md) (3 shared connections)
 - [deserialize](deserialize.md) (2 shared connections)
+- [WinBlast Optimizer](WinBlast_Optimizer.md) (2 shared connections)
 - [app.rs](app.rs.md) (2 shared connections)
-- [sys_inventory.rs](sys_inventory.rs.md) (1 shared connections)
-- [Scandetailkind Appxinstalled Appxinstalledps](Scandetailkind_Appxinstalled_Appxinstalledps.md) (1 shared connections)
+- [full_telemetry_audit_with](full_telemetry_audit_with.md) (1 shared connections)
+- [path](path.md) (1 shared connections)
+- [RiskLevel](RiskLevel.md) (1 shared connections)
 - [AppX Package & Modern App Scanner](AppX_Package_&_Modern_App_Scanner.md) (1 shared connections)
-- [Changelog](Changelog.md) (1 shared connections)
-- [WinBlast Optimizer — Developer & Architecture Guide](WinBlast_Optimizer_—_Developer_&_Architecture_Guide.md) (1 shared connections)
 
 ## Source Files
 
+- `src/app.rs`
 - `src/core/risk.rs`
 - `src/tools/autounattend.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 59 (84%)
-- INFERRED: 11 (16%)
+- EXTRACTED: 58 (85%)
+- INFERRED: 10 (15%)
 - AMBIGUOUS: 0 (0%)
 
 ---

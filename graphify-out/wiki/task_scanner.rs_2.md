@@ -1,10 +1,11 @@
 # task_scanner.rs
 
-> 18 nodes · cohesion 0.20
+> 19 nodes · cohesion 0.18
 
 ## Key Concepts
 
 - **task_scanner.rs** (20 connections) — `src/scanner/task_scanner.rs`
+- **hashmap** (8 connections)
 - **query_single_task_detailed()** (8 connections) — `src/scanner/task_scanner.rs`
 - **.evaluate_task_with_kind()** (7 connections) — `src/scanner/task_scanner.rs`
 - **query_task_via_schtasks()** (5 connections) — `src/scanner/task_scanner.rs`
@@ -27,10 +28,15 @@
 
 - [TaskCache](TaskCache.md) (5 shared connections)
 - [SandboxEnv](SandboxEnv.md) (4 shared connections)
-- [decode_oem_bytes](decode_oem_bytes.md) (4 shared connections)
-- [registry_scanner.rs](registry_scanner.rs.md) (2 shared connections)
-- [sys_inventory.rs](sys_inventory.rs.md) (1 shared connections)
-- [SlowScanBackend](SlowScanBackend.md) (1 shared connections)
+- [restore_point.rs](restore_point.rs.md) (3 shared connections)
+- [SlowScanBackend](SlowScanBackend.md) (2 shared connections)
+- [startup.rs](startup.rs.md) (2 shared connections)
+- [WinBlastError](WinBlastError.md) (2 shared connections)
+- [app.rs](app.rs.md) (1 shared connections)
+- [backend.rs](backend.rs.md) (1 shared connections)
+- [spawn_guarded_worker](spawn_guarded_worker.md) (1 shared connections)
+- [theme.rs](theme.rs.md) (1 shared connections)
+- [path](path.md) (1 shared connections)
 - [.Reg .Set Power](Reg_.Set_Power.md) (1 shared connections)
 
 ## Source Files
@@ -39,7 +45,7 @@
 
 ## Audit Trail
 
-- EXTRACTED: 46 (96%)
+- EXTRACTED: 53 (96%)
 - INFERRED: 2 (4%)
 - AMBIGUOUS: 0 (0%)
 

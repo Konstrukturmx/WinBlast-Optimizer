@@ -16,10 +16,7 @@
 
 ## Relationships
 
-- [Privacy, Telemetry & AI Hardening Catalog](Privacy,_Telemetry_&_AI_Hardening_Catalog.md) (5 shared connections)
-- [Core UI Internationalization & Text Catalog](Core_UI_Internationalization_&_Text_Catalog.md) (1 shared connections)
-- [.navigate](navigate.md) (1 shared connections)
-- [Installed Appx .List](Installed_Appx_.List.md) (1 shared connections)
+- [AppState](AppState.md) (8 shared connections)
 
 ## Source Files
 

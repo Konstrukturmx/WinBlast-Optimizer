@@ -1,10 +1,10 @@
-# Color
+# I
 
 > 1 nodes · cohesion 1.00
 
 ## Key Concepts
 
-- **Color** (0 connections)
+- **I** (0 connections)
 
 ## Relationships
 

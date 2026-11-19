@@ -16,9 +16,10 @@
 
 ## Relationships
 
-- [registry_scanner.rs](registry_scanner.rs.md) (4 shared connections)
 - [deserialize](deserialize.md) (2 shared connections)
-- [decode_oem_bytes](decode_oem_bytes.md) (2 shared connections)
+- [WinBlastError](WinBlastError.md) (2 shared connections)
+- [registry_scanner.rs](registry_scanner.rs.md) (2 shared connections)
+- [restore_point.rs](restore_point.rs.md) (2 shared connections)
 - [startup.rs](startup.rs.md) (2 shared connections)
 
 ## Source Files

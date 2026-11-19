@@ -1,6 +1,6 @@
 # full_telemetry_audit_with
 
-> 41 nodes · cohesion 0.12
+> 38 nodes · cohesion 0.14
 
 ## Key Concepts
 
@@ -18,7 +18,6 @@
 - **parse_pipe_reg_target()** (6 connections) — `src/core/reg_helpers.rs`
 - **apply_tweaks_by_id_with()** (6 connections) — `src/executor/engine.rs`
 - **format_composite_action_key()** (6 connections) — `src/executor/engine.rs`
-- **revert_tweaks_by_id_with()** (6 connections) — `src/executor/engine.rs`
 - **rollback_recorded_ids()** (6 connections) — `src/executor/engine.rs`
 - **ensure_tweak_compatible()** (5 connections) — `src/executor/engine.rs`
 - **format_dword_action_key()** (5 connections) — `src/executor/engine.rs`
@@ -27,35 +26,35 @@
 - **apply_tweak()** (4 connections) — `src/executor/engine.rs`
 - **apply_tweaks_by_id()** (4 connections) — `src/executor/engine.rs`
 - **format_power_indices()** (4 connections) — `src/executor/engine.rs`
-- **revert_tweak()** (4 connections) — `src/executor/engine.rs`
-- **revert_tweaks_by_id()** (4 connections) — `src/executor/engine.rs`
-- *... and 16 more nodes in this community*
+- **test_batch1_engine_edge_cases_and_atomic_revert()** (4 connections) — `src/executor/engine.rs`
+- **parse_composite_pairs()** (3 connections) — `src/core/reg_helpers.rs`
+- **test_composite_string_merge_preserves_siblings()** (3 connections) — `src/core/reg_helpers.rs`
+- *... and 13 more nodes in this community*
 
 ## Relationships
 
-- [FailAtMutationBackend](FailAtMutationBackend.md) (17 shared connections)
-- [Embedded Catalog Test](Embedded_Catalog_Test.md) (14 shared connections)
-- [registry_scanner.rs](registry_scanner.rs.md) (14 shared connections)
-- [Integration Suite: Tweak Sandbox E2E](Integration_Suite-_Tweak_Sandbox_E2E.md) (10 shared connections)
-- [power.rs](power.rs.md) (7 shared connections)
+- [FailAtMutationBackend](FailAtMutationBackend.md) (19 shared connections)
+- [Embedded Catalog Test](Embedded_Catalog_Test.md) (11 shared connections)
+- [Integration Suite: Tweak Sandbox E2E](Integration_Suite-_Tweak_Sandbox_E2E.md) (8 shared connections)
 - [AppX Package & Modern App Scanner](AppX_Package_&_Modern_App_Scanner.md) (7 shared connections)
-- [Win32 Registry Scanner & Mutator](Win32_Registry_Scanner_&_Mutator.md) (4 shared connections)
+- [reg_mutator.rs](reg_mutator.rs.md) (6 shared connections)
+- [WinBlastError](WinBlastError.md) (5 shared connections)
+- [Win32 Registry Scanner & Mutator](Win32_Registry_Scanner_&_Mutator.md) (5 shared connections)
+- [parse_guid](parse_guid.md) (4 shared connections)
+- [parking.rs](parking.rs.md) (3 shared connections)
 - [test_wave1_compound_actions_deep_edge_cases](test_wave1_compound_actions_deep_edge_cases.md) (3 shared connections)
-- [RegRawSnapshot](RegRawSnapshot.md) (3 shared connections)
-- [sys_inventory.rs](sys_inventory.rs.md) (2 shared connections)
+- [path](path.md) (2 shared connections)
 - [deserialize](deserialize.md) (2 shared connections)
-- [latency_bench.rs](latency_bench.rs.md) (2 shared connections)
 
 ## Source Files
 
 - `src/core/backend.rs`
 - `src/core/reg_helpers.rs`
 - `src/executor/engine.rs`
-- `src/hardware/power.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 165 (83%)
+- EXTRACTED: 156 (83%)
 - INFERRED: 33 (17%)
 - AMBIGUOUS: 0 (0%)
 

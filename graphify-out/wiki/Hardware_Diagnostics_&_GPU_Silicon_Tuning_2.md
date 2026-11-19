@@ -35,11 +35,11 @@
 
 - [restart_explorer_safely](restart_explorer_safely.md) (5 shared connections)
 - [elevation.rs](elevation.rs.md) (3 shared connections)
-- [registry_scanner.rs](registry_scanner.rs.md) (2 shared connections)
-- [decode_oem_bytes](decode_oem_bytes.md) (2 shared connections)
+- [WinBlastError](WinBlastError.md) (2 shared connections)
+- [restore_point.rs](restore_point.rs.md) (2 shared connections)
 - [sys_inventory.rs](sys_inventory.rs.md) (2 shared connections)
 - [backend.rs](backend.rs.md) (1 shared connections)
-- [real_windows_env.rs](real_windows_env.rs.md) (1 shared connections)
+- [SilentCommand](SilentCommand.md) (1 shared connections)
 - [query_nt_processor_performance_into](query_nt_processor_performance_into.md) (1 shared connections)
 
 ## Source Files

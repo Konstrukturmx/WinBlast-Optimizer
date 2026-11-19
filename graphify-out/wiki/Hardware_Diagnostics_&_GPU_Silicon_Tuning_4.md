@@ -22,7 +22,7 @@
 - [startup.rs](startup.rs.md) (10 shared connections)
 - [query_nt_processor_performance_into](query_nt_processor_performance_into.md) (4 shared connections)
 - [PdhParkingCollector](PdhParkingCollector.md) (2 shared connections)
-- [power.rs](power.rs.md) (1 shared connections)
+- [CoreParkingState](CoreParkingState.md) (1 shared connections)
 - [deserialize](deserialize.md) (1 shared connections)
 - [backend.rs](backend.rs.md) (1 shared connections)
 - [SystemMetrics](SystemMetrics.md) (1 shared connections)

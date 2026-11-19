@@ -30,17 +30,17 @@
 ## Relationships
 
 - [deserialize](deserialize.md) (3 shared connections)
-- [real_windows_env.rs](real_windows_env.rs.md) (2 shared connections)
+- [path](path.md) (2 shared connections)
+- [AppState](AppState.md) (2 shared connections)
 - [app.rs](app.rs.md) (1 shared connections)
 - [backend.rs](backend.rs.md) (1 shared connections)
-- [ViewTextKey](ViewTextKey.md) (1 shared connections)
+- [driver_update.rs](driver_update.rs.md) (1 shared connections)
 - [Disk Cleaning & Temporary File Purger](Disk_Cleaning_&_Temporary_File_Purger.md) (1 shared connections)
 - [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (1 shared connections)
 - [heuristic_scanner.rs](heuristic_scanner.rs.md) (1 shared connections)
 - [startup.rs](startup.rs.md) (1 shared connections)
-- [sys_inventory.rs](sys_inventory.rs.md) (1 shared connections)
-- [path](path.md) (1 shared connections)
-- [ColorScheme](ColorScheme.md) (1 shared connections)
+- [real_windows_env.rs](real_windows_env.rs.md) (1 shared connections)
+- [SilentCommand](SilentCommand.md) (1 shared connections)
 
 ## Source Files
 

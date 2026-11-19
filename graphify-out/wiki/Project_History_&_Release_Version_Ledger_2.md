@@ -16,8 +16,7 @@
 ## Relationships
 
 - [AppState](AppState.md) (6 shared connections)
-- [Task Scheduler Inspection Subsystem](Task_Scheduler_Inspection_Subsystem.md) (2 shared connections)
-- [Appx Package() Prefixes](Appx_Package_Prefixes.md) (2 shared connections)
+- [Appx Package() Prefixes](Appx_Package_Prefixes.md) (4 shared connections)
 
 ## Source Files
 

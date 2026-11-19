@@ -34,10 +34,9 @@
 
 - [normalize_guid_str](normalize_guid_str.md) (6 shared connections)
 - [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (5 shared connections)
+- [ThemePalette](ThemePalette.md) (3 shared connections)
 - [deserialize](deserialize.md) (2 shared connections)
 - [Reversibility Instant Requireslogoff](Reversibility_Instant_Requireslogoff.md) (2 shared connections)
-- [Integration Suite: Ui Responsive E2E](Integration_Suite-_Ui_Responsive_E2E.md) (2 shared connections)
-- [action_button_guarded](action_button_guarded.md) (1 shared connections)
 - [Project History & Release Version Ledger](Project_History_&_Release_Version_Ledger.md) (1 shared connections)
 
 ## Source Files

@@ -1,10 +1,24 @@
 # Appx Package() Prefixes
 
-> 34 nodes · cohesion 0.06
+> 48 nodes · cohesion 0.06
 
 ## Key Concepts
 
 - **status_i18n.rs** (59 connections) — `src/core/status_i18n.rs`
+- **localize_scan_detail()** (12 connections) — `src/core/status_i18n.rs`
+- **localize_status()** (12 connections) — `src/core/status_i18n.rs`
+- **pick()** (12 connections) — `src/core/status_i18n.rs`
+- **localize_feature_install_state()** (6 connections) — `src/core/status_i18n.rs`
+- **fmt1()** (5 connections) — `src/core/status_i18n.rs`
+- **fmt2()** (5 connections) — `src/core/status_i18n.rs`
+- **fmt3()** (5 connections) — `src/core/status_i18n.rs`
+- **localize_error_text()** (5 connections) — `src/core/status_i18n.rs`
+- **localize_service_start_mode()** (5 connections) — `src/core/status_i18n.rs`
+- **localize_task_active_label()** (4 connections) — `src/core/status_i18n.rs`
+- **idx()** (3 connections) — `src/core/status_i18n.rs`
+- **localize_ledger_action()** (3 connections) — `src/core/status_i18n.rs`
+- **test_localize_error_text_prefixes()** (2 connections) — `src/core/status_i18n.rs`
+- **test_scan_detail_all_languages()** (2 connections) — `src/core/status_i18n.rs`
 - **ADMIN_RUN_MSG** (1 connections) — `src/core/status_i18n.rs`
 - **ERROR_PREFIX_TABLE** (1 connections) — `src/core/status_i18n.rs`
 - **KFM_REDIRECT_MSG** (1 connections) — `src/core/status_i18n.rs`
@@ -15,34 +29,20 @@
 - **STATIC_CHANGELOG_CLEARED** (1 connections) — `src/core/status_i18n.rs`
 - **STATIC_DESELECTED_ALL** (1 connections) — `src/core/status_i18n.rs`
 - **STATIC_DISK_SCANNING** (1 connections) — `src/core/status_i18n.rs`
-- **STATIC_EDGE_REMOVED** (1 connections) — `src/core/status_i18n.rs`
-- **STATIC_EXPLORER_RESTARTED** (1 connections) — `src/core/status_i18n.rs`
-- **STATIC_GPU_MSI_OK** (1 connections) — `src/core/status_i18n.rs`
-- **STATIC_LATENCY_BASELINE_SAVED** (1 connections) — `src/core/status_i18n.rs`
-- **STATIC_LATENCY_DONE** (1 connections) — `src/core/status_i18n.rs`
-- **STATIC_LATENCY_RUN_FIRST** (1 connections) — `src/core/status_i18n.rs`
-- **STATIC_LATENCY_RUNNING** (1 connections) — `src/core/status_i18n.rs`
-- **STATIC_MODE_INSTANT** (1 connections) — `src/core/status_i18n.rs`
-- **STATIC_MODE_NORMAL** (1 connections) — `src/core/status_i18n.rs`
-- **STATIC_NO_CLEANUP_SELECTED** (1 connections) — `src/core/status_i18n.rs`
-- **STATIC_NOTHING_STAGED** (1 connections) — `src/core/status_i18n.rs`
-- **STATIC_ONEDRIVE_REMOVED** (1 connections) — `src/core/status_i18n.rs`
-- **STATIC_PARKING_REFRESHING** (1 connections) — `src/core/status_i18n.rs`
-- **STATIC_PARKING_RESTORED** (1 connections) — `src/core/status_i18n.rs`
-- *... and 9 more nodes in this community*
+- *... and 23 more nodes in this community*
 
 ## Relationships
 
-- [Task Scheduler Inspection Subsystem](Task_Scheduler_Inspection_Subsystem.md) (16 shared connections)
-- [Project History & Release Version Ledger](Project_History_&_Release_Version_Ledger.md) (2 shared connections)
+- [RealBackend](RealBackend.md) (14 shared connections)
+- [Project History & Release Version Ledger](Project_History_&_Release_Version_Ledger.md) (4 shared connections)
+- [RegRawSnapshot](RegRawSnapshot.md) (2 shared connections)
+- [.Reg .Set Power](Reg_.Set_Power.md) (2 shared connections)
+- [AppState](AppState.md) (2 shared connections)
 - [app.rs](app.rs.md) (1 shared connections)
-- [sys_inventory.rs](sys_inventory.rs.md) (1 shared connections)
+- [path](path.md) (1 shared connections)
 - [enums](enums.md) (1 shared connections)
 - [Core UI Internationalization & Text Catalog](Core_UI_Internationalization_&_Text_Catalog.md) (1 shared connections)
-- [RegRawSnapshot](RegRawSnapshot.md) (1 shared connections)
-- [.Reg .Set Power](Reg_.Set_Power.md) (1 shared connections)
 - [GamingSubTab](GamingSubTab.md) (1 shared connections)
-- [AppState](AppState.md) (1 shared connections)
 
 ## Source Files
 
@@ -50,7 +50,7 @@
 
 ## Audit Trail
 
-- EXTRACTED: 59 (100%)
+- EXTRACTED: 101 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

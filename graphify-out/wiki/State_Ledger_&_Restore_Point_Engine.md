@@ -6,7 +6,7 @@
 
 - **thermal.rs** (17 connections) — `src/hardware/thermal.rs`
 - **ThermalHealth** (9 connections) — `src/hardware/thermal.rs`
-- **SystemThermalSnapshot** (7 connections) — `src/hardware/thermal.rs`
+- **SystemThermalSnapshot** (8 connections) — `src/hardware/thermal.rs`
 - **.read()** (4 connections) — `src/hardware/thermal.rs`
 - **AtomicU8** (3 connections)
 - **ComponentThermal** (3 connections) — `src/hardware/thermal.rs`
@@ -25,15 +25,13 @@
 ## Relationships
 
 - [deserialize](deserialize.md) (4 shared connections)
-- [sys_inventory.rs](sys_inventory.rs.md) (1 shared connections)
+- [LazyLoader](LazyLoader.md) (2 shared connections)
+- [edge_cases_unorthodox.rs](edge_cases_unorthodox.rs.md) (2 shared connections)
+- [AppState](AppState.md) (2 shared connections)
+- [path](path.md) (1 shared connections)
 - [SlowScanBackend](SlowScanBackend.md) (1 shared connections)
-- [real_windows_env.rs](real_windows_env.rs.md) (1 shared connections)
-- [LazyLoader](LazyLoader.md) (1 shared connections)
-- [lazy_loader.rs](lazy_loader.rs.md) (1 shared connections)
-- [Core UI Internationalization & Text Catalog](Core_UI_Internationalization_&_Text_Catalog.md) (1 shared connections)
-- [Privacy, Telemetry & AI Hardening Catalog](Privacy,_Telemetry_&_AI_Hardening_Catalog.md) (1 shared connections)
+- [SilentCommand](SilentCommand.md) (1 shared connections)
 - [.Toggle .Set .Apply](Toggle_.Set_.Apply.md) (1 shared connections)
-- [edge_cases_unorthodox.rs](edge_cases_unorthodox.rs.md) (1 shared connections)
 
 ## Source Files
 
@@ -41,8 +39,8 @@
 
 ## Audit Trail
 
-- EXTRACTED: 34 (94%)
-- INFERRED: 2 (6%)
+- EXTRACTED: 35 (95%)
+- INFERRED: 2 (5%)
 - AMBIGUOUS: 0 (0%)
 
 ---

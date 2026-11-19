@@ -1,59 +1,62 @@
 # ViewTextKey
 
-> 73 nodes · cohesion 0.05
+> God node · 220 connections · `src/core/view_i18n.rs`
 
-## Key Concepts
+**Community:** [action_button_guarded](action_button_guarded.md)
 
-- **driver_update.rs** (50 connections) — `src/hardware/driver_update.rs`
-- **DriverCategory** (22 connections) — `src/hardware/driver_update.rs`
-- **DriverUpdateItem** (16 connections) — `src/hardware/driver_update.rs`
-- **DriverError** (13 connections) — `src/hardware/driver_update.rs`
-- **DriverUpdateState** (11 connections) — `src/hardware/driver_update.rs`
-- **download_and_install_driver_with_progress()** (10 connections) — `src/hardware/driver_update.rs`
-- **scan_class_registry()** (10 connections) — `src/hardware/driver_update.rs`
-- **evaluate_version_from_store()** (9 connections) — `src/hardware/driver_update.rs`
-- **install_sandbox_driver()** (8 connections) — `src/hardware/driver_update.rs`
-- **backup_driver()** (7 connections) — `src/hardware/driver_update.rs`
-- **scan_online_drivers_with_progress()** (7 connections) — `src/hardware/driver_update.rs`
-- **DriverProgressCallback** (6 connections) — `src/hardware/driver_update.rs`
-- **create_sandbox_test_item()** (5 connections) — `src/hardware/driver_update.rs`
-- **download_and_install_driver()** (5 connections) — `src/hardware/driver_update.rs`
-- **parse_pnputil_devices()** (5 connections) — `src/hardware/driver_update.rs`
-- **PnpDriverPackage** (5 connections) — `src/hardware/driver_update.rs`
-- **.all_physical()** (4 connections) — `src/hardware/driver_update.rs`
-- **parse_pnputil_drivers()** (4 connections) — `src/hardware/driver_update.rs`
-- **PnpDeviceInfo** (4 connections) — `src/hardware/driver_update.rs`
-- **test_driver_sandbox_lifecycle()** (4 connections) — `src/hardware/driver_update.rs`
-- **vendor_download_url()** (4 connections) — `src/hardware/driver_update.rs`
-- **backup_root()** (3 connections) — `src/hardware/driver_update.rs`
-- **compare_versions()** (3 connections) — `src/hardware/driver_update.rs`
-- **.class_guid()** (3 connections) — `src/hardware/driver_update.rs`
-- **StagingFailed** (3 connections) — `src/hardware/driver_update.rs`
-- *... and 48 more nodes in this community*
+## Connections by Relation
 
-## Relationships
+### case_of
+- ThermalThrottlingNone `EXTRACTED`
+- ThermalFanRpm `EXTRACTED`
+- ThermalComponentsTitle `EXTRACTED`
+- DiskTitle `EXTRACTED`
+- DiskSubtitle `EXTRACTED`
+- DiskRefreshBtn `EXTRACTED`
+- DiskTrimAllBtn `EXTRACTED`
+- DiskTrimSuccess `EXTRACTED`
+- DiskGlobalTrimActive `EXTRACTED`
+- DiskGlobalTrimDisabled `EXTRACTED`
+- DiskDirectStorageSupported `EXTRACTED`
+- DiskLifetimeWrites `EXTRACTED`
+- DiskPowerOnHours `EXTRACTED`
+- DiskHealthStatus `EXTRACTED`
+- SuitabilityTitle `EXTRACTED`
+- SuitabilitySubtitle `EXTRACTED`
+- SuitabilityHeroTitle `EXTRACTED`
+- SuitabilityRating `EXTRACTED`
+- SuitabilityReadyBadge `EXTRACTED`
+- SuitabilityLimitedBadge `EXTRACTED`
+- *…and 177 more `case_of` connection(s) not listed (lowest-degree first to go)*
 
-- [deserialize](deserialize.md) (5 shared connections)
-- [real_windows_env.rs](real_windows_env.rs.md) (2 shared connections)
-- [Privacy, Telemetry & AI Hardening Catalog](Privacy,_Telemetry_&_AI_Hardening_Catalog.md) (2 shared connections)
-- [.Toggle .Set .Apply](Toggle_.Set_.Apply.md) (2 shared connections)
-- [sys_inventory.rs](sys_inventory.rs.md) (1 shared connections)
-- [path](path.md) (1 shared connections)
-- [test_wave1_ledger_rollback_and_concurrency_regressions](test_wave1_ledger_rollback_and_concurrency_regressions.md) (1 shared connections)
-- [ThemePalette](ThemePalette.md) (1 shared connections)
-- [LazyLoader](LazyLoader.md) (1 shared connections)
-- [lazy_loader.rs](lazy_loader.rs.md) (1 shared connections)
-- [Core UI Internationalization & Text Catalog](Core_UI_Internationalization_&_Text_Catalog.md) (1 shared connections)
+### contains
+- [view_i18n.rs](view_i18n.rs.md) `EXTRACTED`
+- .TOTAL_KEYS `EXTRACTED`
 
-## Source Files
+### imports_from
+- easy_dashboard.rs `EXTRACTED`
+- [ui/mod.rs](ui-mod.rs.md) `EXTRACTED`
+- hardware_view.rs `EXTRACTED`
+- driver_bios.rs `EXTRACTED`
+- views/gaming_stats.rs `EXTRACTED`
+- automation_center.rs `EXTRACTED`
+- views/game_prereqs.rs `EXTRACTED`
+- fault_diagnostics.rs `EXTRACTED`
+- goal_planner.rs `EXTRACTED`
+- views/network_diag.rs `EXTRACTED`
+- thermal_monitor.rs `EXTRACTED`
+- views/windows_repair.rs `EXTRACTED`
+- disk_health.rs `EXTRACTED`
+- views/game_overlay.rs `EXTRACTED`
+- views/game_profiles.rs `EXTRACTED`
+- views/performance_tests.rs `EXTRACTED`
+- support_about.rs `EXTRACTED`
+- fps_benchmark.rs `EXTRACTED`
+- game_suitability.rs `EXTRACTED`
 
-- `src/hardware/driver_update.rs`
-
-## Audit Trail
-
-- EXTRACTED: 151 (97%)
-- INFERRED: 5 (3%)
-- AMBIGUOUS: 0 (0%)
+### references
+- tr_view() `EXTRACTED`
+- .tr_v() `EXTRACTED`
 
 ---
 
