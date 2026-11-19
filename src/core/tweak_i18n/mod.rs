@@ -1126,7 +1126,7 @@ pub fn localize_ledger_token(lang: Language, token: &str) -> String {
     let trimmed = token.trim();
     for (key, vals) in LEDGER_TOKEN_TABLE {
         if key.eq_ignore_ascii_case(trimmed) {
-            return vals[lang as usize].to_string();
+            return vals.get(lang as usize).copied().unwrap_or(vals[0]).to_string();
         }
     }
     token.to_string()

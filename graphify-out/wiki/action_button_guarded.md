@@ -1,62 +1,54 @@
 # action_button_guarded
 
-> 32 nodes · cohesion 0.17
+> 199 nodes · cohesion 0.01
 
 ## Key Concepts
 
-- **action_button_guarded()** (44 connections) — `src/ui/widgets/button.rs`
-- **clean_apps.rs** (32 connections) — `src/ui/views/clean_apps.rs`
-- **startup_tasks.rs** (28 connections) — `src/ui/views/startup_tasks.rs`
-- **pill_badge()** (20 connections) — `src/ui/widgets/button.rs`
-- **build_appx_features_body()** (12 connections) — `src/ui/views/clean_apps.rs`
-- **build_disk_cleaner_body()** (12 connections) — `src/ui/views/clean_apps.rs`
-- **build_winget_body()** (12 connections) — `src/ui/views/clean_apps.rs`
-- **view()** (12 connections) — `src/ui/views/startup_tasks.rs`
-- **build_startup_apps_list()** (11 connections) — `src/ui/views/startup_tasks.rs`
-- **view()** (10 connections) — `src/ui/views/clean_apps.rs`
-- **build_services_list()** (9 connections) — `src/ui/views/startup_tasks.rs`
-- **build_tasks_list()** (9 connections) — `src/ui/views/startup_tasks.rs`
-- **CleanAppsSubTab** (8 connections) — `src/app.rs`
-- **StartupTasksSubTab** (8 connections) — `src/app.rs`
-- **switch_indicator()** (8 connections) — `src/ui/widgets/button.rs`
-- **El** (7 connections)
-- **El** (7 connections)
-- **empty_card()** (6 connections) — `src/ui/views/clean_apps.rs`
-- **empty_card()** (6 connections) — `src/ui/views/startup_tasks.rs`
-- **sub_tab_btn()** (5 connections) — `src/ui/views/clean_apps.rs`
-- **sub_tab_btn()** (5 connections) — `src/ui/views/startup_tasks.rs`
-- **clean_target_label()** (4 connections) — `src/ui/views/clean_apps.rs`
-- **startup_source_label()** (4 connections) — `src/ui/views/startup_tasks.rs`
-- **growthspec** (2 connections)
-- **rc** (2 connections)
-- *... and 7 more nodes in this community*
+- **ViewTextKey** (220 connections) — `src/core/view_i18n.rs`
+- **AboutActiveBadge** (1 connections) — `src/core/view_i18n.rs`
+- **AboutBullet1** (1 connections) — `src/core/view_i18n.rs`
+- **AboutBullet2** (1 connections) — `src/core/view_i18n.rs`
+- **AboutBullet3** (1 connections) — `src/core/view_i18n.rs`
+- **AboutBullet4** (1 connections) — `src/core/view_i18n.rs`
+- **AboutBullet5** (1 connections) — `src/core/view_i18n.rs`
+- **AboutBullet6** (1 connections) — `src/core/view_i18n.rs`
+- **AboutBullet7** (1 connections) — `src/core/view_i18n.rs`
+- **AboutBullet8** (1 connections) — `src/core/view_i18n.rs`
+- **AboutLicense** (1 connections) — `src/core/view_i18n.rs`
+- **AboutOpenGithub** (1 connections) — `src/core/view_i18n.rs`
+- **AboutReleaseNotesTitle** (1 connections) — `src/core/view_i18n.rs`
+- **AboutRepoLabel** (1 connections) — `src/core/view_i18n.rs`
+- **AboutStudioSubtitle** (1 connections) — `src/core/view_i18n.rs`
+- **AboutStudioTitle** (1 connections) — `src/core/view_i18n.rs`
+- **AboutSubtitle** (1 connections) — `src/core/view_i18n.rs`
+- **AboutTitle** (1 connections) — `src/core/view_i18n.rs`
+- **AutoCenterHealthAssessment** (1 connections) — `src/core/view_i18n.rs`
+- **AutoCenterHealthPending** (1 connections) — `src/core/view_i18n.rs`
+- **AutoCenterHealthRunPrompt** (1 connections) — `src/core/view_i18n.rs`
+- **AutoCenterProfilesSubtitle** (1 connections) — `src/core/view_i18n.rs`
+- **AutoCenterProfilesTitle** (1 connections) — `src/core/view_i18n.rs`
+- **COUNT** (1 connections) — `src/core/view_i18n.rs`
+- **DashboardCatBreakdownTitle** (1 connections) — `src/core/view_i18n.rs`
+- *... and 174 more nodes in this community*
 
 ## Relationships
 
-- [LayoutTier](LayoutTier.md) (38 shared connections)
-- [action_button](action_button.md) (31 shared connections)
-- [ThemePalette](ThemePalette.md) (20 shared connections)
-- [AppState](AppState.md) (15 shared connections)
-- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (3 shared connections)
-- [View() Color Scrollspec](View_Color_Scrollspec.md) (2 shared connections)
-- [app.rs](app.rs.md) (2 shared connections)
-- [.Create Metrics Sampler()](Create_Metrics_Sampler.md) (2 shared connections)
-- [Core UI Internationalization & Text Catalog](Core_UI_Internationalization_&_Text_Catalog.md) (2 shared connections)
-- [.Toggle .Set .Apply](Toggle_.Set_.Apply.md) (2 shared connections)
-- [StartupSource](StartupSource.md) (2 shared connections)
-- [goal_planner.rs](goal_planner.rs.md) (2 shared connections)
+- [.Toggle .Set .Apply](Toggle_.Set_.Apply.md) (14 shared connections)
+- [view_i18n.rs](view_i18n.rs.md) (3 shared connections)
+- [ui/mod.rs](ui-mod.rs.md) (1 shared connections)
+- [Integration Suite: Ui Responsive E2E](Integration_Suite-_Ui_Responsive_E2E.md) (1 shared connections)
+- [goal_planner.rs](goal_planner.rs.md) (1 shared connections)
+- [action_button_guarded](action_button_guarded.md) (1 shared connections)
+- [Privacy, Telemetry & AI Hardening Catalog](Privacy,_Telemetry_&_AI_Hardening_Catalog.md) (1 shared connections)
 
 ## Source Files
 
-- `src/app.rs`
-- `src/ui/views/clean_apps.rs`
-- `src/ui/views/startup_tasks.rs`
-- `src/ui/widgets/button.rs`
+- `src/core/view_i18n.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 168 (81%)
-- INFERRED: 40 (19%)
+- EXTRACTED: 220 (100%)
+- INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 
 ---

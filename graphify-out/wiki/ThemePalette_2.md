@@ -1,8 +1,8 @@
 # ThemePalette
 
-> God node · 83 connections · `src/ui/theme.rs`
+> God node · 87 connections · `src/ui/theme.rs`
 
-**Community:** [ThemePalette](ThemePalette.md)
+**Community:** [Integration Suite: Ui Responsive E2E](Integration_Suite-_Ui_Responsive_E2E.md)
 
 ## Connections by Relation
 
@@ -11,9 +11,10 @@
 
 ### imports_from
 - [app.rs](app.rs.md) `EXTRACTED`
+- [in_progress_hud.rs](in_progress_hud.rs.md) `EXTRACTED`
 - clean_apps.rs `EXTRACTED`
 - easy_dashboard.rs `EXTRACTED`
-- ui/mod.rs `EXTRACTED`
+- [ui/mod.rs](ui-mod.rs.md) `EXTRACTED`
 - startup_tasks.rs `EXTRACTED`
 - gpu_tuning.rs `EXTRACTED`
 - button.rs `EXTRACTED`
@@ -36,7 +37,7 @@
 - action_button() `EXTRACTED`
 - action_button_guarded() `EXTRACTED`
 - [UiThemeStyle](UiThemeStyle.md) `EXTRACTED`
-- Color `EXTRACTED`
+- [Color](Color.md) `EXTRACTED`
 - pill_badge() `EXTRACTED`
 - view_items_with_palette() `EXTRACTED`
 - build_appx_features_body() `EXTRACTED`
@@ -48,11 +49,11 @@
 - switch_toggle() `EXTRACTED`
 - build_services_list() `EXTRACTED`
 - build_tasks_list() `EXTRACTED`
-- progress_bar_styled() `EXTRACTED`
-- [Spring](Spring.md) `EXTRACTED`
+- Spring `EXTRACTED`
 - switch_indicator() `EXTRACTED`
-- view_localized() `EXTRACTED`
-- *…and 44 more `references` connection(s) not listed (lowest-degree first to go)*
+- in_progress_hud() `EXTRACTED`
+- progress_bar_styled() `EXTRACTED`
+- *…and 47 more `references` connection(s) not listed (lowest-degree first to go)*
 
 ---
 

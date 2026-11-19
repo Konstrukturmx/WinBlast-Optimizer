@@ -1,50 +1,33 @@
 # UiThemeStyle
 
-> 21 nodes · cohesion 0.16
+> 10 nodes · cohesion 0.20
 
 ## Key Concepts
 
-- **UiThemeStyle** (32 connections) — `src/ui/theme.rs`
-- **.build_dark()** (14 connections) — `src/ui/theme.rs`
-- **.build_light()** (14 connections) — `src/ui/theme.rs`
-- **.badge_radius()** (3 connections) — `src/ui/theme.rs`
-- **.border_width()** (3 connections) — `src/ui/theme.rs`
-- **.btn_radius()** (3 connections) — `src/ui/theme.rs`
-- **.card_padding()** (3 connections) — `src/ui/theme.rs`
-- **.card_radius()** (3 connections) — `src/ui/theme.rs`
-- **.input_radius()** (3 connections) — `src/ui/theme.rs`
-- **.sidebar_width()** (3 connections) — `src/ui/theme.rs`
-- **.set_theme_style()** (2 connections) — `src/app.rs`
-- **.ALL** (1 connections) — `src/ui/theme.rs`
-- **Classic** (1 connections) — `src/ui/theme.rs`
-- **Compact** (1 connections) — `src/ui/theme.rs`
-- **.easing_curve()** (1 connections) — `src/ui/theme.rs`
-- **.easing_duration_ms()** (1 connections) — `src/ui/theme.rs`
-- **Glassy** (1 connections) — `src/ui/theme.rs`
-- **.label()** (1 connections) — `src/ui/theme.rs`
-- **Materialistic** (1 connections) — `src/ui/theme.rs`
-- **Minimalistic** (1 connections) — `src/ui/theme.rs`
-- **.short_label()** (1 connections) — `src/ui/theme.rs`
+- **assets/rules/registry_lag.toml** (11 connections) — `Project WinBlast0 Project Structure.md`
+- **1\. Domain Model & Risk Valuation Engine**** (1 connections) — `Project WinBlast0 Project Structure.md`
+- **2\. Declarative Rule Format**** (1 connections) — `Project WinBlast0 Project Structure.md`
+- **3\. Hardware GPU MSI Mode & Priority Optimizer Logic**** (1 connections) — `Project WinBlast0 Project Structure.md`
+- **4\. Auto-Elevation Manifest Setup**** (1 connections) — `Project WinBlast0 Project Structure.md`
+- **Architectural Enhancements**** (1 connections) — `Project WinBlast0 Project Structure.md`
+- **Core Architecture & Code Blueprint**** (1 connections) — `Project WinBlast0 Project Structure.md`
+- **Project Directory Structure**** (1 connections) — `Project WinBlast0 Project Structure.md`
+- **Project WinBlast0**** (1 connections) — `Project WinBlast0 Project Structure.md`
+- **Recommended Rust Tech Stack**** (1 connections) — `Project WinBlast0 Project Structure.md`
 
 ## Relationships
 
-- [progress_bar.rs](progress_bar.rs.md) (7 shared connections)
-- [ColorScheme](ColorScheme.md) (5 shared connections)
-- [Spring](Spring.md) (4 shared connections)
-- [ThemePalette](ThemePalette.md) (4 shared connections)
-- [AppState](AppState.md) (2 shared connections)
-- [LayoutTier](LayoutTier.md) (2 shared connections)
-- [theme.rs](theme.rs.md) (1 shared connections)
+- [Embedded Catalog Test](Embedded_Catalog_Test.md) (1 shared connections)
+- [startup.rs](startup.rs.md) (1 shared connections)
 
 ## Source Files
 
-- `src/app.rs`
-- `src/ui/theme.rs`
+- `Project WinBlast0 Project Structure.md`
 
 ## Audit Trail
 
-- EXTRACTED: 55 (93%)
-- INFERRED: 4 (7%)
+- EXTRACTED: 11 (100%)
+- INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 
 ---

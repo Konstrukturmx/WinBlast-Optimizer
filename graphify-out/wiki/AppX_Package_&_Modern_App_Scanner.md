@@ -1,54 +1,60 @@
 # AppX Package & Modern App Scanner
 
-> 19 nodes · cohesion 0.19
+> 27 nodes · cohesion 0.08
 
 ## Key Concepts
 
-- **net_latency.rs** (20 connections) — `src/hardware/net_latency.rs`
-- **LatencyBenchmarkSnapshot** (18 connections) — `src/hardware/net_latency.rs`
-- **measure_dpc_jitter()** (5 connections) — `src/hardware/net_latency.rs`
-- **probe_network_target()** (5 connections) — `src/hardware/net_latency.rs`
-- **DpcJitterResult** (4 connections) — `src/hardware/net_latency.rs`
-- **PingTarget** (4 connections) — `src/hardware/net_latency.rs`
-- **run_full_latency_benchmark()** (4 connections) — `src/hardware/net_latency.rs`
-- **TargetPingResult** (4 connections) — `src/hardware/net_latency.rs`
-- **.run_latency_benchmark()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
-- **SocketAddr** (3 connections)
-- **.run_latency_benchmark()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.run_latency_benchmark()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.run_latency_benchmark()** (2 connections) — `src/core/backend.rs`
-- **.run_latency_benchmark()** (2 connections) — `src/core/backend.rs`
-- **.run_latency_benchmark()** (2 connections) — `src/core/backend.rs`
-- **PING_TARGETS** (2 connections) — `src/hardware/net_latency.rs`
-- **test_dpc_jitter_measurement()** (2 connections) — `src/hardware/net_latency.rs`
-- **test_probe_network_zero_probes()** (2 connections) — `src/hardware/net_latency.rs`
-- **test_targets_structure()** (1 connections) — `src/hardware/net_latency.rs`
+- **TweakAction** (34 connections) — `src/core/risk.rs`
+- **evaluate_single_action()** (10 connections) — `src/scanner/mod.rs`
+- **PowerTargetScope** (8 connections) — `src/core/risk.rs`
+- **DynamicDwordFormula** (7 connections) — `src/core/risk.rs`
+- **resolve_dynamic_dword()** (7 connections) — `src/scanner/mod.rs`
+- **ActionEval** (6 connections) — `src/scanner/mod.rs`
+- **FeatureAuthRequired** (2 connections) — `src/scanner/mod.rs`
+- **LogicalCoreCount** (1 connections) — `src/core/risk.rs`
+- **TotalRamInKb** (1 connections) — `src/core/risk.rs`
+- **TotalRamInKbPlusMargin** (1 connections) — `src/core/risk.rs`
+- **AcAndDc** (1 connections) — `src/core/risk.rs`
+- **AcOnly** (1 connections) — `src/core/risk.rs`
+- **DcOnly** (1 connections) — `src/core/risk.rs`
+- **AppXPackage** (1 connections) — `src/core/risk.rs`
+- **CompositeStringKey** (1 connections) — `src/core/risk.rs`
+- **PowerCfgSetting** (1 connections) — `src/core/risk.rs`
+- **RegistryBinaryBit** (1 connections) — `src/core/risk.rs`
+- **RegistryDelete** (1 connections) — `src/core/risk.rs`
+- **RegistryDeleteTree** (1 connections) — `src/core/risk.rs`
+- **RegistryDword** (1 connections) — `src/core/risk.rs`
+- **RegistryDynamicDword** (1 connections) — `src/core/risk.rs`
+- **RegistryString** (1 connections) — `src/core/risk.rs`
+- **ScheduledTask** (1 connections) — `src/core/risk.rs`
+- **ServiceState** (1 connections) — `src/core/risk.rs`
+- **WindowsFeature** (1 connections) — `src/core/risk.rs`
+- *... and 2 more nodes in this community*
 
 ## Relationships
 
-- [backend.rs](backend.rs.md) (4 shared connections)
-- [SilentCommand](SilentCommand.md) (3 shared connections)
-- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (3 shared connections)
-- [deserialize](deserialize.md) (3 shared connections)
-- [latency_bench.rs](latency_bench.rs.md) (2 shared connections)
-- [SlowScanBackend](SlowScanBackend.md) (2 shared connections)
-- [RealBackend](RealBackend.md) (1 shared connections)
-- [Disk Cleaning & Temporary File Purger](Disk_Cleaning_&_Temporary_File_Purger.md) (1 shared connections)
-- [.Create Metrics Sampler()](Create_Metrics_Sampler.md) (1 shared connections)
-- [AppState](AppState.md) (1 shared connections)
-- [Win32 Registry Scanner & Mutator](Win32_Registry_Scanner_&_Mutator.md) (1 shared connections)
-- [Test Composite With()](Test_Composite_With.md) (1 shared connections)
+- [Embedded Catalog Test](Embedded_Catalog_Test.md) (8 shared connections)
+- [full_telemetry_audit_with](full_telemetry_audit_with.md) (7 shared connections)
+- [theme.rs](theme.rs.md) (4 shared connections)
+- [diff_modal.rs](diff_modal.rs.md) (4 shared connections)
+- [Win32 Registry Scanner & Mutator](Win32_Registry_Scanner_&_Mutator.md) (3 shared connections)
+- [task_scanner.rs](task_scanner.rs.md) (2 shared connections)
+- [Privacy, Telemetry & AI Hardening Catalog](Privacy,_Telemetry_&_AI_Hardening_Catalog.md) (1 shared connections)
+- [RegRawSnapshot](RegRawSnapshot.md) (1 shared connections)
+- [app.rs](app.rs.md) (1 shared connections)
+- [backend.rs](backend.rs.md) (1 shared connections)
+- [ui_scrollbar_test.rs](ui_scrollbar_test.rs.md) (1 shared connections)
+- [real_windows_env.rs](real_windows_env.rs.md) (1 shared connections)
 
 ## Source Files
 
-- `src/core/backend.rs`
-- `src/hardware/net_latency.rs`
-- `tests/tweak_sandbox_e2e.rs`
+- `src/core/risk.rs`
+- `src/scanner/mod.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 57 (98%)
-- INFERRED: 1 (2%)
+- EXTRACTED: 62 (94%)
+- INFERRED: 4 (6%)
 - AMBIGUOUS: 0 (0%)
 
 ---

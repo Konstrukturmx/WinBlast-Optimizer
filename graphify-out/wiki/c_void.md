@@ -4,11 +4,15 @@
 
 ## Key Concepts
 
-- **c_void** (0 connections)
+- **make_ico.ps1** (0 connections) — `scripts/make_ico.ps1`
 
 ## Relationships
 
 - No strong cross-community connections detected
+
+## Source Files
+
+- `scripts/make_ico.ps1`
 
 ## Audit Trail
 

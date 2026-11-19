@@ -1,60 +1,50 @@
 # Multi-Language Tweak Localization Tables
 
-> 34 nodes · cohesion 0.06
+> 22 nodes · cohesion 0.15
 
 ## Key Concepts
 
-- **ActiveView** (44 connections) — `src/app.rs`
-- **AdvancedMatrix** (2 connections) — `src/app.rs`
-- **CoreParking** (2 connections) — `src/app.rs`
-- **EasyDashboard** (2 connections) — `src/app.rs`
-- **GpuTuning** (2 connections) — `src/app.rs`
-- **ALL_VIEWS** (2 connections) — `tests/ui_responsive_e2e.rs`
-- **Advanced Optimization Matrix UI** (1 connections) — `assets/screenshots/advanced_matrix.png`
-- **CPU Core Parking Topology Visualizer UI** (1 connections) — `assets/screenshots/cpu_parking.png`
-- **Easy Mode Telemetry Dashboard UI** (1 connections) — `assets/screenshots/dashboard.png`
-- **GPU Tuning & Vendor Gating UI** (1 connections) — `assets/screenshots/gpu_tuning.png`
-- **.ALL_VIEWS** (1 connections) — `src/app.rs`
-- **AutomationCenter** (1 connections) — `src/app.rs`
-- **BackupCenter** (1 connections) — `src/app.rs`
-- **CleanAndApps** (1 connections) — `src/app.rs`
-- **DiskHealth** (1 connections) — `src/app.rs`
-- **DriverBios** (1 connections) — `src/app.rs`
-- **FaultDiagnostics** (1 connections) — `src/app.rs`
-- **FpsBenchmark** (1 connections) — `src/app.rs`
-- **GameOverlay** (1 connections) — `src/app.rs`
-- **GamePrerequisites** (1 connections) — `src/app.rs`
-- **GameProfiles** (1 connections) — `src/app.rs`
-- **GameSuitability** (1 connections) — `src/app.rs`
-- **GamingStats** (1 connections) — `src/app.rs`
-- **GoalPlanner** (1 connections) — `src/app.rs`
-- **HardwareView** (1 connections) — `src/app.rs`
-- *... and 9 more nodes in this community*
+- **gpu.rs** (27 connections) — `src/hardware/gpu.rs`
+- **detect_gpus()** (7 connections) — `src/hardware/gpu.rs`
+- **detect_vendor()** (7 connections) — `src/hardware/gpu.rs`
+- **resolve_gpu_class_path_for_vendor()** (6 connections) — `src/hardware/gpu.rs`
+- **DevInfoGuard** (4 connections) — `src/hardware/gpu.rs`
+- **.as_str()** (4 connections) — `src/hardware/gpu.rs`
+- **parse_target_vendor()** (4 connections) — `src/hardware/gpu.rs`
+- **present_display_class_subkeys()** (4 connections) — `src/hardware/gpu.rs`
+- **test_gpu_vendor_compatibility()** (2 connections) — `src/core/risk.rs`
+- **detect_dxgi_vram_table()** (2 connections) — `src/hardware/gpu.rs`
+- **has_ascii_token()** (2 connections) — `src/hardware/gpu.rs`
+- **parse_ven_dev()** (2 connections) — `src/hardware/gpu.rs`
+- **resolve_gpu_class_path()** (2 connections) — `src/hardware/gpu.rs`
+- **test_detect_vendor_no_false_positive_ati()** (2 connections) — `src/hardware/gpu.rs`
+- **HDEVINFO** (1 connections)
+- **.drop()** (1 connections) — `src/hardware/gpu.rs`
+- **DISPLAY_CLASS_PREFIX** (1 connections) — `src/hardware/gpu.rs`
+- **is_hags_enabled()** (1 connections) — `src/hardware/gpu.rs`
+- **is_mpo_disabled()** (1 connections) — `src/hardware/gpu.rs`
+- **set_gpu_msi_mode()** (1 connections) — `src/hardware/gpu.rs`
+- **set_hags()** (1 connections) — `src/hardware/gpu.rs`
+- **set_mpo_disabled()** (1 connections) — `src/hardware/gpu.rs`
 
 ## Relationships
 
-- [AppState](AppState.md) (3 shared connections)
-- [LayoutTier](LayoutTier.md) (3 shared connections)
-- [ui_scrollbar_test.rs](ui_scrollbar_test.rs.md) (3 shared connections)
-- [ThemePalette](ThemePalette.md) (2 shared connections)
-- [View() Color Scrollspec](View_Color_Scrollspec.md) (2 shared connections)
-- [action_button](action_button.md) (1 shared connections)
-- [Scandetailkind Appxinstalled Appxinstalledps](Scandetailkind_Appxinstalled_Appxinstalledps.md) (1 shared connections)
-- [app.rs](app.rs.md) (1 shared connections)
+- [GpuVendor](GpuVendor.md) (7 shared connections)
+- [deserialize](deserialize.md) (4 shared connections)
+- [Win32 Registry Scanner & Mutator](Win32_Registry_Scanner_&_Mutator.md) (1 shared connections)
+- [backend.rs](backend.rs.md) (1 shared connections)
+- [sys_inventory.rs](sys_inventory.rs.md) (1 shared connections)
+- [real_windows_env.rs](real_windows_env.rs.md) (1 shared connections)
 
 ## Source Files
 
-- `assets/screenshots/advanced_matrix.png`
-- `assets/screenshots/cpu_parking.png`
-- `assets/screenshots/dashboard.png`
-- `assets/screenshots/gpu_tuning.png`
-- `src/app.rs`
-- `tests/ui_responsive_e2e.rs`
+- `src/core/risk.rs`
+- `src/hardware/gpu.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 49 (100%)
-- INFERRED: 0 (0%)
+- EXTRACTED: 47 (96%)
+- INFERRED: 2 (4%)
 - AMBIGUOUS: 0 (0%)
 
 ---

@@ -1,44 +1,30 @@
 # DriverError
 
-> 18 nodes · cohesion 0.20
+> 7 nodes · cohesion 0.29
 
 ## Key Concepts
 
-- **DriverError** (13 connections) — `src/hardware/driver_update.rs`
-- **DriverUpdateItem** (13 connections) — `src/hardware/driver_update.rs`
-- **download_and_install_driver_with_progress()** (10 connections) — `src/hardware/driver_update.rs`
-- **install_sandbox_driver()** (8 connections) — `src/hardware/driver_update.rs`
-- **backup_driver()** (7 connections) — `src/hardware/driver_update.rs`
-- **DriverProgressCallback** (6 connections) — `src/hardware/driver_update.rs`
-- **download_and_install_driver()** (5 connections) — `src/hardware/driver_update.rs`
-- **StagingFailed** (3 connections) — `src/hardware/driver_update.rs`
-- **Failed** (3 connections) — `src/hardware/driver_update.rs`
-- **BackupFailed** (2 connections) — `src/hardware/driver_update.rs`
-- **DownloadFailed** (2 connections) — `src/hardware/driver_update.rs`
-- **.fmt()** (2 connections) — `src/hardware/driver_update.rs`
-- **InstallFailed** (2 connections) — `src/hardware/driver_update.rs`
-- **Formatter** (1 connections)
-- **Other** (1 connections) — `src/hardware/driver_update.rs`
-- **ScanFailed** (1 connections) — `src/hardware/driver_update.rs`
-- **VerificationFailed** (1 connections) — `src/hardware/driver_update.rs`
-- **.is_update_available()** (1 connections) — `src/hardware/driver_update.rs`
+- **DriveMediaKind** (10 connections) — `src/hardware/sys_inventory.rs`
+- **.as_label()** (1 connections) — `src/hardware/sys_inventory.rs`
+- **Hdd** (1 connections) — `src/hardware/sys_inventory.rs`
+- **Nvme** (1 connections) — `src/hardware/sys_inventory.rs`
+- **Removable** (1 connections) — `src/hardware/sys_inventory.rs`
+- **Ssd** (1 connections) — `src/hardware/sys_inventory.rs`
+- **Unknown** (1 connections) — `src/hardware/sys_inventory.rs`
 
 ## Relationships
 
-- [driver_update.rs](driver_update.rs.md) (13 shared connections)
-- [scan_class_registry](scan_class_registry.md) (2 shared connections)
-- [DriverUpdateState](DriverUpdateState.md) (2 shared connections)
-- [DriverCategory](DriverCategory.md) (1 shared connections)
-- [AppState](AppState.md) (1 shared connections)
+- [sys_inventory.rs](sys_inventory.rs.md) (3 shared connections)
+- [backend.rs](backend.rs.md) (1 shared connections)
 
 ## Source Files
 
-- `src/hardware/driver_update.rs`
+- `src/hardware/sys_inventory.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 49 (98%)
-- INFERRED: 1 (2%)
+- EXTRACTED: 10 (100%)
+- INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 
 ---

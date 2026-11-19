@@ -2,7 +2,7 @@
 
 > God node · 85 connections · `tests/tweak_sandbox_e2e.rs`
 
-**Community:** [SlowScanBackend](SlowScanBackend.md)
+**Community:** [test_wave1_ledger_rollback_and_concurrency_regressions](test_wave1_ledger_rollback_and_concurrency_regressions.md)
 
 ## Connections by Relation
 
@@ -38,8 +38,8 @@
 ### references
 - [SandboxEnv](SandboxEnv.md) `EXTRACTED`
 - AtomicBool `EXTRACTED`
-- Condvar `EXTRACTED`
 - Mutex `EXTRACTED`
+- Condvar `EXTRACTED`
 
 ---
 

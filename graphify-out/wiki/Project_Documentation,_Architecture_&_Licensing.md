@@ -1,46 +1,31 @@
 # Project Documentation, Architecture & Licensing
 
-> 12 nodes · cohesion 0.23
+> 8 nodes · cohesion 0.43
 
 ## Key Concepts
 
-- **LatencySnapshot** (18 connections) — `src/hardware/latency.rs`
-- **latency.rs** (4 connections) — `src/hardware/latency.rs`
-- **.capture_latency()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.capture_latency()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.capture_latency()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.capture_latency()** (2 connections) — `src/core/backend.rs`
-- **.capture_latency()** (2 connections) — `src/core/backend.rs`
-- **.capture_latency()** (2 connections) — `src/core/backend.rs`
-- **DateTime** (2 connections)
-- **Utc** (2 connections)
-- **.ram_display()** (1 connections) — `src/hardware/latency.rs`
-- **.timer_resolution_display()** (1 connections) — `src/hardware/latency.rs`
+- **cpu.rs** (9 connections) — `src/hardware/cpu.rs`
+- **classify_efficiency_records()** (4 connections) — `src/hardware/cpu.rs`
+- **query_win32_core_topology()** (4 connections) — `src/hardware/cpu.rs`
+- **.detect()** (3 connections) — `src/hardware/cpu.rs`
+- **Win32CoreTopology** (3 connections) — `src/hardware/cpu.rs`
+- **test_classify_efficiency_records_hybrid_and_non_ht_and_uniform()** (2 connections) — `src/hardware/cpu.rs`
+- **test_cpu_detect_host_safe()** (2 connections) — `src/hardware/cpu.rs`
+- **cpuid** (1 connections)
 
 ## Relationships
 
-- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (2 shared connections)
-- [SlowScanBackend](SlowScanBackend.md) (2 shared connections)
-- [RealBackend](RealBackend.md) (1 shared connections)
-- [Disk Cleaning & Temporary File Purger](Disk_Cleaning_&_Temporary_File_Purger.md) (1 shared connections)
-- [WinBlast0 Architectural Specifications](WinBlast0_Architectural_Specifications.md) (1 shared connections)
-- [Test Composite With()](Test_Composite_With.md) (1 shared connections)
-- [Win32 Registry Scanner & Mutator](Win32_Registry_Scanner_&_Mutator.md) (1 shared connections)
-- [AppState](AppState.md) (1 shared connections)
-- [app.rs](app.rs.md) (1 shared connections)
-- [backend.rs](backend.rs.md) (1 shared connections)
-- [Scandetailkind Appxinstalled Appxinstalledps](Scandetailkind_Appxinstalled_Appxinstalledps.md) (1 shared connections)
-- [FailAtMutationBackend](FailAtMutationBackend.md) (1 shared connections)
+- [backend.rs](backend.rs.md) (2 shared connections)
+- [sys_inventory.rs](sys_inventory.rs.md) (1 shared connections)
+- [deserialize](deserialize.md) (1 shared connections)
 
 ## Source Files
 
-- `src/core/backend.rs`
-- `src/hardware/latency.rs`
-- `tests/tweak_sandbox_e2e.rs`
+- `src/hardware/cpu.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 29 (100%)
+- EXTRACTED: 16 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

@@ -83,18 +83,20 @@ impl RavenEngine {
 
     /// Check if tweak A strictly Pareto-dominates tweak B
     /// (A is at least as good as B in all criteria, and strictly better in at least one).
+    /// Uses branchless bitwise evaluations for maximum instruction-level throughput.
+    #[inline(always)]
     pub fn dominates(&self, a: &TweakCriteria, b: &TweakCriteria) -> bool {
-        let ge_perf = a.performance_gain >= b.performance_gain;
-        let ge_priv = a.privacy_gain >= b.privacy_gain;
-        let ge_stab = a.stability_risk <= b.stability_risk; // lower risk is better
-        let ge_rev = a.reversibility_score >= b.reversibility_score;
+        let all_ge = (a.performance_gain >= b.performance_gain)
+            & (a.privacy_gain >= b.privacy_gain)
+            & (a.stability_risk <= b.stability_risk)
+            & (a.reversibility_score >= b.reversibility_score);
 
-        let strictly_better = a.performance_gain > b.performance_gain
-            || a.privacy_gain > b.privacy_gain
-            || a.stability_risk < b.stability_risk
-            || a.reversibility_score > b.reversibility_score;
+        let any_gt = (a.performance_gain > b.performance_gain)
+            | (a.privacy_gain > b.privacy_gain)
+            | (a.stability_risk < b.stability_risk)
+            | (a.reversibility_score > b.reversibility_score);
 
-        ge_perf && ge_priv && ge_stab && ge_rev && strictly_better
+        all_ge & any_gt
     }
 
     /// Detect and resolve all conflicts among a set of staged tweak IDs.
@@ -105,22 +107,26 @@ impl RavenEngine {
         &self,
         staged_tweaks: &[TweakCriteria],
     ) -> (Vec<String>, Vec<ConflictResolution>) {
-        let tweak_map: HashMap<String, &TweakCriteria> = staged_tweaks
-            .iter()
-            .map(|t| (t.id.clone(), t))
-            .collect();
+        let n = staged_tweaks.len();
+        let mut tweak_map: HashMap<&str, &TweakCriteria> = HashMap::with_capacity(n);
+        for t in staged_tweaks {
+            tweak_map.insert(t.id.as_str(), t);
+        }
 
-        let mut eliminated = HashSet::new();
-        let mut resolutions = Vec::new();
+        let mut eliminated: HashSet<&str> = HashSet::with_capacity(n / 4);
+        let mut resolutions: Vec<ConflictResolution> = Vec::new();
 
         for a in staged_tweaks {
-            if eliminated.contains(&a.id) {
+            let a_id = a.id.as_str();
+            if eliminated.contains(a_id) {
                 continue;
             }
 
             for conflict_id in &a.conflicts_with {
-                if let Some(&b) = tweak_map.get(conflict_id) {
-                    if eliminated.contains(&b.id) || a.id == b.id {
+                let conf_id = conflict_id.as_str();
+                if let Some(&b) = tweak_map.get(conf_id) {
+                    let b_id = b.id.as_str();
+                    if eliminated.contains(b_id) || a_id == b_id {
                         continue;
                     }
 
@@ -167,7 +173,8 @@ impl RavenEngine {
                         )
                     };
 
-                    eliminated.insert(loser);
+                    let loser_ref = if loser == a.id { a_id } else { b_id };
+                    eliminated.insert(loser_ref);
                     resolutions.push(ConflictResolution {
                         tweak_a: a.id.clone(),
                         tweak_b: b.id.clone(),
@@ -181,7 +188,7 @@ impl RavenEngine {
 
         let survivors = staged_tweaks
             .iter()
-            .filter(|t| !eliminated.contains(&t.id))
+            .filter(|t| !eliminated.contains(t.id.as_str()))
             .map(|t| t.id.clone())
             .collect();
 

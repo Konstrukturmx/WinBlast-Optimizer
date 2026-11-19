@@ -4,7 +4,7 @@
 
 ## Key Concepts
 
-- **Item** (0 connections)
+- **RegType** (0 connections)
 
 ## Relationships
 

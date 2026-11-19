@@ -94,7 +94,53 @@ pub struct OptimizationPlan {
     pub satisfied_goal: bool,
 }
 
-#[derive(Clone, Eq, PartialEq)]
+/// Compact 256-bit bitset supporting up to 256 candidate tweaks with zero heap allocation.
+#[derive(Copy, Clone, Eq, PartialEq, Default, Debug)]
+pub struct BitSet256 {
+    bits: [u64; 4],
+}
+
+impl BitSet256 {
+    #[inline(always)]
+    pub const fn new() -> Self {
+        Self { bits: [0; 4] }
+    }
+
+    #[inline(always)]
+    pub fn set(&mut self, idx: usize) {
+        if idx < 256 {
+            self.bits[idx / 64] |= 1u64 << (idx % 64);
+        }
+    }
+
+    #[inline(always)]
+    pub fn contains(&self, idx: usize) -> bool {
+        if idx < 256 {
+            (self.bits[idx / 64] & (1u64 << (idx % 64))) != 0
+        } else {
+            false
+        }
+    }
+
+    #[inline(always)]
+    pub fn iter_set(&self) -> impl Iterator<Item = usize> + '_ {
+        (0..4).flat_map(move |block_idx| {
+            let mut val = self.bits[block_idx];
+            let base = block_idx * 64;
+            std::iter::from_fn(move || {
+                if val == 0 {
+                    None
+                } else {
+                    let trailing = val.trailing_zeros() as usize;
+                    val &= val - 1; // Clear lowest set bit
+                    Some(base + trailing)
+                }
+            })
+        })
+    }
+}
+
+#[derive(Clone, Copy, Eq, PartialEq)]
 struct AStarNode {
     /// Cost so far: risk + reboot penalties
     g_cost: u32,
@@ -102,8 +148,8 @@ struct AStarNode {
     h_cost: u32,
     /// Index into tweak candidates
     candidate_idx: usize,
-    /// Bitset or list of selected tweak indices
-    selected: Vec<usize>,
+    /// Bitset of selected tweak indices (zero heap allocation)
+    selected: BitSet256,
     current_perf: u32,
     current_priv: u32,
     current_risk: u32,
@@ -153,7 +199,7 @@ impl AStarPlanner {
         }
 
         // Filter candidates by hard constraints: risk tolerance and reboot permission
-        let valid_candidates: Vec<&TweakCandidate> = candidates
+        let mut valid_candidates: Vec<&TweakCandidate> = candidates
             .iter()
             .filter(|c| {
                 if c.risk_weight > goal.max_risk_tolerance {
@@ -178,6 +224,17 @@ impl AStarPlanner {
             };
         }
 
+        // Pre-sort candidates using greedy value-to-cost heuristic to explore high-yield branches first
+        let perf_w = goal.min_perf_gain.max(1) as f32;
+        let priv_w = goal.min_privacy_gain.max(1) as f32;
+        valid_candidates.sort_by(|a, b| {
+            let cost_a = 1.0 + (a.risk_weight as f32 * 3.0) + if a.requires_reboot { 5.0 } else { 0.0 };
+            let cost_b = 1.0 + (b.risk_weight as f32 * 3.0) + if b.requires_reboot { 5.0 } else { 0.0 };
+            let val_a = (a.perf_gain as f32 * perf_w + a.privacy_gain as f32 * priv_w) / cost_a;
+            let val_b = (b.perf_gain as f32 * perf_w + b.privacy_gain as f32 * priv_w) / cost_b;
+            val_b.partial_cmp(&val_a).unwrap_or(Ordering::Equal)
+        });
+
         let max_perf_step = valid_candidates.iter().map(|c| c.perf_gain).max().unwrap_or(1).max(1);
         let max_priv_step = valid_candidates.iter().map(|c| c.privacy_gain).max().unwrap_or(1).max(1);
 
@@ -191,14 +248,14 @@ impl AStarPlanner {
             perf_steps.max(priv_steps) * 2
         };
 
-        let mut open_set = BinaryHeap::new();
+        let mut open_set = BinaryHeap::with_capacity(256);
         let initial_h = heuristic(0, 0);
 
         open_set.push(AStarNode {
             g_cost: 0,
             h_cost: initial_h,
             candidate_idx: 0,
-            selected: Vec::new(),
+            selected: BitSet256::new(),
             current_perf: 0,
             current_priv: 0,
             current_risk: 0,
@@ -206,9 +263,15 @@ impl AStarPlanner {
         });
 
         let mut best_plan: Option<AStarNode> = None;
-        let mut visited_states = HashSet::new();
+        let mut visited_states = HashSet::with_capacity(1024);
         let max_iterations = 2500; // Fast bounded A* exploration
         let mut iterations = 0;
+
+        // 64-bit packed state signature: (candidate_idx << 32) | ((perf & 0xFFFF) << 16) | (priv & 0xFFFF)
+        #[inline(always)]
+        fn pack_state(perf: u32, priv_score: u32, idx: usize) -> u64 {
+            ((idx as u64) << 32) | (((perf.min(0xFFFF)) as u64) << 16) | ((priv_score.min(0xFFFF)) as u64)
+        }
 
         while let Some(current) = open_set.pop() {
             iterations += 1;
@@ -223,11 +286,10 @@ impl AStarPlanner {
             }
 
             // Track state signature: (perf, priv, candidate_idx)
-            let state_sig = (current.current_perf, current.current_priv, current.candidate_idx);
-            if visited_states.contains(&state_sig) {
+            let state_sig = pack_state(current.current_perf, current.current_priv, current.candidate_idx);
+            if !visited_states.insert(state_sig) {
                 continue;
             }
-            visited_states.insert(state_sig);
 
             if current.candidate_idx >= valid_candidates.len() {
                 continue;
@@ -235,9 +297,9 @@ impl AStarPlanner {
 
             let candidate = valid_candidates[current.candidate_idx];
 
-            // Branch 1: INCLUDE candidate tweak
-            let mut incl_selected = current.selected.clone();
-            incl_selected.push(current.candidate_idx);
+            // Branch 1: INCLUDE candidate tweak (zero-allocation bitset update)
+            let mut incl_selected = current.selected;
+            incl_selected.set(current.candidate_idx);
             let next_perf = current.current_perf + candidate.perf_gain;
             let next_priv = current.current_priv + candidate.privacy_gain;
             let next_risk = current.current_risk + candidate.risk_weight;
@@ -276,8 +338,9 @@ impl AStarPlanner {
         if let Some(plan_node) = best_plan {
             let selected_ids = plan_node
                 .selected
-                .iter()
-                .map(|&idx| valid_candidates[idx].id.clone())
+                .iter_set()
+                .filter(|&idx| idx < valid_candidates.len())
+                .map(|idx| valid_candidates[idx].id.clone())
                 .collect();
 
             OptimizationPlan {

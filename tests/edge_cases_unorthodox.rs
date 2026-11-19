@@ -1,4 +1,4 @@
-//! Unorthodox Edge-Case Verification Suite for WinBlast0 (v1.3.2).
+//! Unorthodox Edge-Case Verification Suite for WinBlast0 (v1.4.0).
 //!
 //! Stresses the engine under extreme, non-standard real-world conditions:
 //! 1. Multi-SZ pending rename buffers with odd byte lengths, corrupt surrogates, and missing terminators.

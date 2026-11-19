@@ -1,27 +1,22 @@
 # HardwareSubTab
 
-> 5 nodes · cohesion 0.40
+> 1 nodes · cohesion 1.00
 
 ## Key Concepts
 
-- **HardwareSubTab** (6 connections) — `src/app.rs`
-- **CpuParking** (1 connections) — `src/app.rs`
-- **Disks** (1 connections) — `src/app.rs`
-- **Specs** (1 connections) — `src/app.rs`
-- **Thermals** (1 connections) — `src/app.rs`
+- **widgets/mod.rs** (0 connections) — `src/ui/widgets/mod.rs`
 
 ## Relationships
 
-- [AppState](AppState.md) (1 shared connections)
-- [app.rs](app.rs.md) (1 shared connections)
+- No strong cross-community connections detected
 
 ## Source Files
 
-- `src/app.rs`
+- `src/ui/widgets/mod.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 6 (100%)
+- EXTRACTED: 0 (0%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

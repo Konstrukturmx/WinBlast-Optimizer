@@ -11,7 +11,7 @@
 
 ## Relationships
 
-- [Test Composite With()](Test_Composite_With.md) (1 shared connections)
+- [Core UI Internationalization & Text Catalog](Core_UI_Internationalization_&_Text_Catalog.md) (1 shared connections)
 - [app.rs](app.rs.md) (1 shared connections)
 
 ## Source Files

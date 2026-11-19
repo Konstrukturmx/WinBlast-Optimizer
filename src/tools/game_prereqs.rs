@@ -5,8 +5,9 @@
 //! gaming runtimes, libraries, and frameworks required by modern PC titles.
 
 use crate::core::process::SilentCommand;
+use rayon::prelude::*;
 use serde::{Deserialize, Serialize};
-use std::path::Path;
+use std::path::{Path, PathBuf};
 use winreg::enums::*;
 use winreg::RegKey;
 
@@ -42,180 +43,202 @@ impl GamePrerequisiteItem {
     }
 }
 
-/// Scan all 10 essential gaming prerequisites against registry and system files.
-pub fn scan_game_prereqs() -> Vec<GamePrerequisiteItem> {
-    let mut items = Vec::with_capacity(10);
+struct PrereqDescriptor {
+    id: &'static str,
+    name: &'static str,
+    category: &'static str,
+    description: &'static str,
+    winget_id: Option<&'static str>,
+    choco_id: Option<&'static str>,
+    direct_url: &'static str,
+    detect: fn() -> (bool, Option<String>),
+    success_msg: &'static str,
+    missing_msg: &'static str,
+}
 
+const PREREQ_DESCRIPTORS: [PrereqDescriptor; 10] = [
     // 1. DirectX End-User Runtimes (June 2010)
-    let (dx_installed, dx_ver) = detect_directx_legacy();
-    items.push(GamePrerequisiteItem {
-        id: "directx_june2010".to_string(),
-        name: "DirectX End-User Runtimes (June 2010)".to_string(),
-        category: "Graphics Runtime".to_string(),
-        description: "Legacy D3DX9, D3DX10, and D3DX11 DLLs required by thousands of classic & Unreal/Unity games.".to_string(),
-        installed: dx_installed,
-        installed_version: dx_ver,
-        winget_id: Some("Microsoft.DirectX".to_string()),
-        choco_id: Some("directx".to_string()),
-        direct_url: "https://www.microsoft.com/en-us/download/details.aspx?id=35".to_string(),
-        state: if dx_installed { PrereqInstallState::Installed } else { PrereqInstallState::NotInstalled },
-        status_message: if dx_installed { "Installed & Verified".to_string() } else { "Missing legacy DirectX DLLs".to_string() },
-    });
-
+    PrereqDescriptor {
+        id: "directx_june2010",
+        name: "DirectX End-User Runtimes (June 2010)",
+        category: "Graphics Runtime",
+        description: "Legacy D3DX9, D3DX10, and D3DX11 DLLs required by thousands of classic & Unreal/Unity games.",
+        winget_id: Some("Microsoft.DirectX"),
+        choco_id: Some("directx"),
+        direct_url: "https://www.microsoft.com/en-us/download/details.aspx?id=35",
+        detect: detect_directx_legacy,
+        success_msg: "Installed & Verified",
+        missing_msg: "Missing legacy DirectX DLLs",
+    },
     // 2. Visual C++ 2015-2022 Redistributable (x64)
-    let (vc64_installed, vc64_ver) = detect_vcredist_2015_2022_x64();
-    items.push(GamePrerequisiteItem {
-        id: "vcredist_2015_2022_x64".to_string(),
-        name: "Visual C++ 2015-2022 Redistributable (x64)".to_string(),
-        category: "C++ Runtime".to_string(),
-        description: "Universal C runtime libraries for 64-bit modern PC gaming engines and launchers.".to_string(),
-        installed: vc64_installed,
-        installed_version: vc64_ver,
-        winget_id: Some("Microsoft.VCRedist.2015+.x64".to_string()),
-        choco_id: Some("vcredist140".to_string()),
-        direct_url: "https://aka.ms/vs/17/release/vc_redist.x64.exe".to_string(),
-        state: if vc64_installed { PrereqInstallState::Installed } else { PrereqInstallState::NotInstalled },
-        status_message: if vc64_installed { "Installed & Verified".to_string() } else { "64-bit VC++ 2015-2022 not found".to_string() },
-    });
-
+    PrereqDescriptor {
+        id: "vcredist_2015_2022_x64",
+        name: "Visual C++ 2015-2022 Redistributable (x64)",
+        category: "C++ Runtime",
+        description: "Universal C runtime libraries for 64-bit modern PC gaming engines and launchers.",
+        winget_id: Some("Microsoft.VCRedist.2015+.x64"),
+        choco_id: Some("vcredist140"),
+        direct_url: "https://aka.ms/vs/17/release/vc_redist.x64.exe",
+        detect: detect_vcredist_2015_2022_x64,
+        success_msg: "Installed & Verified",
+        missing_msg: "64-bit VC++ 2015-2022 not found",
+    },
     // 3. Visual C++ 2015-2022 Redistributable (x86)
-    let (vc86_installed, vc86_ver) = detect_vcredist_2015_2022_x86();
-    items.push(GamePrerequisiteItem {
-        id: "vcredist_2015_2022_x86".to_string(),
-        name: "Visual C++ 2015-2022 Redistributable (x86)".to_string(),
-        category: "C++ Runtime".to_string(),
-        description: "Universal 32-bit runtime required by older games, emulators, and 32-bit helper binaries.".to_string(),
-        installed: vc86_installed,
-        installed_version: vc86_ver,
-        winget_id: Some("Microsoft.VCRedist.2015+.x86".to_string()),
-        choco_id: Some("vcredist2015".to_string()),
-        direct_url: "https://aka.ms/vs/17/release/vc_redist.x86.exe".to_string(),
-        state: if vc86_installed { PrereqInstallState::Installed } else { PrereqInstallState::NotInstalled },
-        status_message: if vc86_installed { "Installed & Verified".to_string() } else { "32-bit VC++ 2015-2022 not found".to_string() },
-    });
-
+    PrereqDescriptor {
+        id: "vcredist_2015_2022_x86",
+        name: "Visual C++ 2015-2022 Redistributable (x86)",
+        category: "C++ Runtime",
+        description: "Universal 32-bit runtime required by older games, emulators, and 32-bit helper binaries.",
+        winget_id: Some("Microsoft.VCRedist.2015+.x86"),
+        choco_id: Some("vcredist2015"),
+        direct_url: "https://aka.ms/vs/17/release/vc_redist.x86.exe",
+        detect: detect_vcredist_2015_2022_x86,
+        success_msg: "Installed & Verified",
+        missing_msg: "32-bit VC++ 2015-2022 not found",
+    },
     // 4. Visual C++ All-in-One Redistributables (2005-2022)
-    let (vc_aio_installed, vc_aio_ver) = detect_vcredist_all_in_one();
-    items.push(GamePrerequisiteItem {
-        id: "vcredist_all_in_one".to_string(),
-        name: "Visual C++ All-in-One Package (2005-2022)".to_string(),
-        category: "C++ Runtime Suite".to_string(),
-        description: "Complete unified package containing VC++ 2005, 2008, 2010, 2012, 2013, and 2022 runtimes.".to_string(),
-        installed: vc_aio_installed,
-        installed_version: vc_aio_ver,
-        winget_id: Some("TechPowerUp.VisualCppRedistributable".to_string()),
-        choco_id: Some("vcredist-all".to_string()),
-        direct_url: "https://www.techpowerup.com/download/visual-c-redistributable-runtime-package-all-in-one/".to_string(),
-        state: if vc_aio_installed { PrereqInstallState::Installed } else { PrereqInstallState::NotInstalled },
-        status_message: if vc_aio_installed { "Full VC++ legacy suite detected".to_string() } else { "Incomplete legacy runtime stack".to_string() },
-    });
-
+    PrereqDescriptor {
+        id: "vcredist_all_in_one",
+        name: "Visual C++ All-in-One Package (2005-2022)",
+        category: "C++ Runtime Suite",
+        description: "Complete unified package containing VC++ 2005, 2008, 2010, 2012, 2013, and 2022 runtimes.",
+        winget_id: Some("TechPowerUp.VisualCppRedistributable"),
+        choco_id: Some("vcredist-all"),
+        direct_url: "https://www.techpowerup.com/download/visual-c-redistributable-runtime-package-all-in-one/",
+        detect: detect_vcredist_all_in_one,
+        success_msg: "Full VC++ legacy suite detected",
+        missing_msg: "Incomplete legacy runtime stack",
+    },
     // 5. Vulkan Runtime
-    let (vulkan_installed, vulkan_ver) = detect_vulkan_runtime();
-    items.push(GamePrerequisiteItem {
-        id: "vulkan_runtime".to_string(),
-        name: "Vulkan Runtime Libraries".to_string(),
-        category: "Graphics API".to_string(),
-        description: "Low-overhead cross-platform 3D graphics API loader for modern games (DOOM, Baldur's Gate 3, etc.).".to_string(),
-        installed: vulkan_installed,
-        installed_version: vulkan_ver,
-        winget_id: Some("LunarG.VulkanSDK".to_string()),
-        choco_id: Some("vulkan-runtime".to_string()),
-        direct_url: "https://vulkan.lunarg.com/sdk/home".to_string(),
-        state: if vulkan_installed { PrereqInstallState::Installed } else { PrereqInstallState::NotInstalled },
-        status_message: if vulkan_installed { "Installed & Verified".to_string() } else { "vulkan-1.dll not found in System32".to_string() },
-    });
-
+    PrereqDescriptor {
+        id: "vulkan_runtime",
+        name: "Vulkan Runtime Libraries",
+        category: "Graphics API",
+        description: "Low-overhead cross-platform 3D graphics API loader for modern games (DOOM, Baldur's Gate 3, etc.).",
+        winget_id: Some("LunarG.VulkanSDK"),
+        choco_id: Some("vulkan-runtime"),
+        direct_url: "https://vulkan.lunarg.com/sdk/home",
+        detect: detect_vulkan_runtime,
+        success_msg: "Installed & Verified",
+        missing_msg: "vulkan-1.dll not found in System32",
+    },
     // 6. .NET Desktop Runtime 8.0 (x64)
-    let (net8_installed, net8_ver) = detect_dotnet_desktop_8();
-    items.push(GamePrerequisiteItem {
-        id: "dotnet_desktop_8".to_string(),
-        name: ".NET Desktop Runtime 8.0 (LTS)".to_string(),
-        category: "Managed Framework".to_string(),
-        description: "Long-Term Support runtime for modern game mod managers, launchers, and system overlays.".to_string(),
-        installed: net8_installed,
-        installed_version: net8_ver,
-        winget_id: Some("Microsoft.DotNet.DesktopRuntime.8".to_string()),
-        choco_id: Some("dotnet-8.0-desktopruntime".to_string()),
-        direct_url: "https://dotnet.microsoft.com/download/dotnet/8.0".to_string(),
-        state: if net8_installed { PrereqInstallState::Installed } else { PrereqInstallState::NotInstalled },
-        status_message: if net8_installed { "Installed & Verified".to_string() } else { ".NET 8.0 Desktop Runtime missing".to_string() },
-    });
-
+    PrereqDescriptor {
+        id: "dotnet_desktop_8",
+        name: ".NET Desktop Runtime 8.0 (LTS)",
+        category: "Managed Framework",
+        description: "Long-Term Support runtime for modern game mod managers, launchers, and system overlays.",
+        winget_id: Some("Microsoft.DotNet.DesktopRuntime.8"),
+        choco_id: Some("dotnet-8.0-desktopruntime"),
+        direct_url: "https://dotnet.microsoft.com/download/dotnet/8.0",
+        detect: detect_dotnet_desktop_8,
+        success_msg: "Installed & Verified",
+        missing_msg: ".NET 8.0 Desktop Runtime missing",
+    },
     // 7. .NET Desktop Runtime 9.0 (x64)
-    let (net9_installed, net9_ver) = detect_dotnet_desktop_9();
-    items.push(GamePrerequisiteItem {
-        id: "dotnet_desktop_9".to_string(),
-        name: ".NET Desktop Runtime 9.0 (STS)".to_string(),
-        category: "Managed Framework".to_string(),
-        description: "Latest high-performance .NET runtime with advanced JIT optimizations for cutting-edge game utilities.".to_string(),
-        installed: net9_installed,
-        installed_version: net9_ver,
-        winget_id: Some("Microsoft.DotNet.DesktopRuntime.9".to_string()),
-        choco_id: Some("dotnet-9.0-desktopruntime".to_string()),
-        direct_url: "https://dotnet.microsoft.com/download/dotnet/9.0".to_string(),
-        state: if net9_installed { PrereqInstallState::Installed } else { PrereqInstallState::NotInstalled },
-        status_message: if net9_installed { "Installed & Verified".to_string() } else { ".NET 9.0 Desktop Runtime missing".to_string() },
-    });
-
+    PrereqDescriptor {
+        id: "dotnet_desktop_9",
+        name: ".NET Desktop Runtime 9.0 (STS)",
+        category: "Managed Framework",
+        description: "Latest high-performance .NET runtime with advanced JIT optimizations for cutting-edge game utilities.",
+        winget_id: Some("Microsoft.DotNet.DesktopRuntime.9"),
+        choco_id: Some("dotnet-9.0-desktopruntime"),
+        direct_url: "https://dotnet.microsoft.com/download/dotnet/9.0",
+        detect: detect_dotnet_desktop_9,
+        success_msg: "Installed & Verified",
+        missing_msg: ".NET 9.0 Desktop Runtime missing",
+    },
     // 8. .NET Framework 4.8.1
-    let (net481_installed, net481_ver) = detect_dotnet_framework_481();
-    items.push(GamePrerequisiteItem {
-        id: "dotnet_framework_481".to_string(),
-        name: ".NET Framework 4.8.1".to_string(),
-        category: "System Framework".to_string(),
-        description: "Core Windows application framework with ARM64 and accessibility enhancements.".to_string(),
-        installed: net481_installed,
-        installed_version: net481_ver,
-        winget_id: Some("Microsoft.DotNet.Framework.DeveloperPack_4".to_string()),
-        choco_id: Some("netfx-4.8.1".to_string()),
-        direct_url: "https://dotnet.microsoft.com/download/dotnet-framework/net481".to_string(),
-        state: if net481_installed { PrereqInstallState::Installed } else { PrereqInstallState::NotInstalled },
-        status_message: if net481_installed { "Installed & Verified".to_string() } else { ".NET Framework 4.8.1 not detected".to_string() },
-    });
-
+    PrereqDescriptor {
+        id: "dotnet_framework_481",
+        name: ".NET Framework 4.8.1",
+        category: "System Framework",
+        description: "Core Windows application framework with ARM64 and accessibility enhancements.",
+        winget_id: Some("Microsoft.DotNet.Framework.DeveloperPack_4"),
+        choco_id: Some("netfx-4.8.1"),
+        direct_url: "https://dotnet.microsoft.com/download/dotnet-framework/net481",
+        detect: detect_dotnet_framework_481,
+        success_msg: "Installed & Verified",
+        missing_msg: ".NET Framework 4.8.1 not detected",
+    },
     // 9. OpenAL (Open Audio Library)
-    let (oal_installed, oal_ver) = detect_openal();
-    items.push(GamePrerequisiteItem {
-        id: "openal".to_string(),
-        name: "OpenAL (Open Audio Library)".to_string(),
-        category: "Audio API".to_string(),
-        description: "3D positional audio API library required by Minecraft, source ports, and hundreds of 3D games.".to_string(),
-        installed: oal_installed,
-        installed_version: oal_ver,
-        winget_id: Some("OpenAL.OpenAL".to_string()),
-        choco_id: Some("openal".to_string()),
-        direct_url: "https://www.openal.org/downloads/".to_string(),
-        state: if oal_installed { PrereqInstallState::Installed } else { PrereqInstallState::NotInstalled },
-        status_message: if oal_installed { "Installed & Verified".to_string() } else { "OpenAL32.dll not detected in system PATH".to_string() },
-    });
-
+    PrereqDescriptor {
+        id: "openal",
+        name: "OpenAL (Open Audio Library)",
+        category: "Audio API",
+        description: "3D positional audio API library required by Minecraft, source ports, and hundreds of 3D games.",
+        winget_id: Some("OpenAL.OpenAL"),
+        choco_id: Some("openal"),
+        direct_url: "https://www.openal.org/downloads/",
+        detect: detect_openal,
+        success_msg: "Installed & Verified",
+        missing_msg: "OpenAL32.dll not detected in system PATH",
+    },
     // 10. Microsoft XNA Framework Redistributable 4.0
-    let (xna_installed, xna_ver) = detect_xna_framework_4();
-    items.push(GamePrerequisiteItem {
-        id: "xna_framework_4".to_string(),
-        name: "Microsoft XNA Framework 4.0 Refresh".to_string(),
-        category: "Gaming Runtime".to_string(),
-        description: "Essential runtime library for indie classics including Terraria, Bastion, Fez, and Stardew Valley legacy.".to_string(),
-        installed: xna_installed,
-        installed_version: xna_ver,
-        winget_id: Some("Microsoft.XNAFramework".to_string()),
-        choco_id: Some("xna".to_string()),
-        direct_url: "https://www.microsoft.com/en-us/download/details.aspx?id=20914".to_string(),
-        state: if xna_installed { PrereqInstallState::Installed } else { PrereqInstallState::NotInstalled },
-        status_message: if xna_installed { "Installed & Verified".to_string() } else { "XNA 4.0 runtime assembly missing".to_string() },
-    });
+    PrereqDescriptor {
+        id: "xna_framework_4",
+        name: "Microsoft XNA Framework 4.0 Refresh",
+        category: "Gaming Runtime",
+        description: "Essential runtime library for indie classics including Terraria, Bastion, Fez, and Stardew Valley legacy.",
+        winget_id: Some("Microsoft.XNAFramework"),
+        choco_id: Some("xna"),
+        direct_url: "https://www.microsoft.com/en-us/download/details.aspx?id=20914",
+        detect: detect_xna_framework_4,
+        success_msg: "Installed & Verified",
+        missing_msg: "XNA 4.0 runtime assembly missing",
+    },
+];
 
-    items
+/// Scan all 10 essential gaming prerequisites against registry and system files in parallel via Rayon.
+pub fn scan_game_prereqs() -> Vec<GamePrerequisiteItem> {
+    PREREQ_DESCRIPTORS
+        .into_par_iter()
+        .map(|desc| {
+            let (installed, ver) = (desc.detect)();
+            GamePrerequisiteItem {
+                id: desc.id.to_string(),
+                name: desc.name.to_string(),
+                category: desc.category.to_string(),
+                description: desc.description.to_string(),
+                installed,
+                installed_version: ver,
+                winget_id: desc.winget_id.map(ToString::to_string),
+                choco_id: desc.choco_id.map(ToString::to_string),
+                direct_url: desc.direct_url.to_string(),
+                state: if installed {
+                    PrereqInstallState::Installed
+                } else {
+                    PrereqInstallState::NotInstalled
+                },
+                status_message: if installed {
+                    desc.success_msg.to_string()
+                } else {
+                    desc.missing_msg.to_string()
+                },
+            }
+        })
+        .collect()
 }
 
 // ---------------------------------------------------------------------------
 // Detection Helpers
 // ---------------------------------------------------------------------------
 
+fn get_system32_path() -> PathBuf {
+    std::env::var("SystemRoot")
+        .map(|r| PathBuf::from(r).join("System32"))
+        .unwrap_or_else(|_| PathBuf::from("C:\\Windows\\System32"))
+}
+
+fn get_syswow64_path() -> PathBuf {
+    std::env::var("SystemRoot")
+        .map(|r| PathBuf::from(r).join("SysWOW64"))
+        .unwrap_or_else(|_| PathBuf::from("C:\\Windows\\SysWOW64"))
+}
+
 fn detect_directx_legacy() -> (bool, Option<String>) {
     // Check for d3dx9_43.dll, d3dx10_43.dll, d3dx11_43.dll in System32
-    let s32 = Path::new("C:\\Windows\\System32");
+    let s32 = get_system32_path();
     let has_d3dx9 = s32.join("d3dx9_43.dll").exists();
     let has_d3dx10 = s32.join("d3dx10_43.dll").exists();
     let has_d3dx11 = s32.join("d3dx11_43.dll").exists();
@@ -239,7 +262,7 @@ fn detect_vcredist_2015_2022_x64() -> (bool, Option<String>) {
         }
     }
     // Fallback file check
-    if Path::new("C:\\Windows\\System32\\vcruntime140.dll").exists() {
+    if get_system32_path().join("vcruntime140.dll").exists() {
         return (true, Some("14.x (Detected via System32)".to_string()));
     }
     (false, None)
@@ -260,16 +283,17 @@ fn detect_vcredist_2015_2022_x86() -> (bool, Option<String>) {
             }
         }
     }
-    if Path::new("C:\\Windows\\SysWOW64\\vcruntime140.dll").exists() {
+    if get_syswow64_path().join("vcruntime140.dll").exists() {
         return (true, Some("14.x (Detected via SysWOW64)".to_string()));
     }
     (false, None)
 }
 
 fn detect_vcredist_all_in_one() -> (bool, Option<String>) {
-    let s32 = Path::new("C:\\Windows\\System32");
+    let s32 = get_system32_path();
+    let winsxs = s32.parent().map(|p| p.join("WinSxS")).unwrap_or_else(|| PathBuf::from("C:\\Windows\\WinSxS"));
     // Check multiple legacy VC runtime DLLs
-    let has_2005 = s32.join("msvcr80.dll").exists() || Path::new("C:\\Windows\\WinSxS").exists();
+    let has_2005 = s32.join("msvcr80.dll").exists() || winsxs.exists();
     let has_2008 = s32.join("msvcr90.dll").exists();
     let has_2010 = s32.join("msvcr100.dll").exists();
     let has_2012 = s32.join("msvcr110.dll").exists();
@@ -289,7 +313,7 @@ fn detect_vcredist_all_in_one() -> (bool, Option<String>) {
 }
 
 fn detect_vulkan_runtime() -> (bool, Option<String>) {
-    if Path::new("C:\\Windows\\System32\\vulkan-1.dll").exists() {
+    if get_system32_path().join("vulkan-1.dll").exists() {
         return (true, Some("vulkan-1.dll active".to_string()));
     }
     let hklm = RegKey::predef(HKEY_LOCAL_MACHINE);
@@ -349,8 +373,8 @@ fn detect_dotnet_framework_481() -> (bool, Option<String>) {
 }
 
 fn detect_openal() -> (bool, Option<String>) {
-    if Path::new("C:\\Windows\\System32\\OpenAL32.dll").exists()
-        || Path::new("C:\\Windows\\SysWOW64\\OpenAL32.dll").exists()
+    if get_system32_path().join("OpenAL32.dll").exists()
+        || get_syswow64_path().join("OpenAL32.dll").exists()
     {
         return (true, Some("OpenAL 1.1 / Soft".to_string()));
     }

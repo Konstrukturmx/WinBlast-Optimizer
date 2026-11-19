@@ -1,53 +1,52 @@
 # Project History & Release Version Ledger
 
-> 20 nodes · cohesion 0.21
+> 21 nodes · cohesion 0.16
 
 ## Key Concepts
 
-- **autounattend.rs** (24 connections) — `src/tools/autounattend.rs`
-- **generate_autounattend_xml()** (17 connections) — `src/tools/autounattend.rs`
-- **normalize_reg_value_name()** (12 connections) — `src/core/risk.rs`
-- **UnattendOptions** (7 connections) — `src/tools/autounattend.rs`
-- **TargetArch** (6 connections) — `src/tools/autounattend.rs`
-- **display_reg_value_name()** (5 connections) — `src/core/risk.rs`
-- **format_reg_add_cmd()** (5 connections) — `src/tools/autounattend.rs`
-- **format_reg_delete_cmd()** (5 connections) — `src/tools/autounattend.rs`
-- **test_risk_valuation()** (3 connections) — `src/core/risk.rs`
-- **escape_win32_quoted_arg()** (3 connections) — `src/tools/autounattend.rs`
-- **map_hive()** (3 connections) — `src/tools/autounattend.rs`
-- **test_autounattend_generation_wellformed_and_escaped()** (3 connections) — `src/tools/autounattend.rs`
-- **.default()** (3 connections) — `src/tools/autounattend.rs`
-- **escape_xml()** (2 connections) — `src/tools/autounattend.rs`
-- **sanitize_computer_name()** (2 connections) — `src/tools/autounattend.rs`
-- **sanitize_local_user()** (2 connections) — `src/tools/autounattend.rs`
-- **.as_str()** (2 connections) — `src/tools/autounattend.rs`
-- **.detect_host()** (2 connections) — `src/tools/autounattend.rs`
-- **Amd64** (1 connections) — `src/tools/autounattend.rs`
-- **Arm64** (1 connections) — `src/tools/autounattend.rs`
+- **UiThemeStyle** (32 connections) — `src/ui/theme.rs`
+- **.build_dark()** (14 connections) — `src/ui/theme.rs`
+- **.build_light()** (14 connections) — `src/ui/theme.rs`
+- **.badge_radius()** (3 connections) — `src/ui/theme.rs`
+- **.border_width()** (3 connections) — `src/ui/theme.rs`
+- **.btn_radius()** (3 connections) — `src/ui/theme.rs`
+- **.card_padding()** (3 connections) — `src/ui/theme.rs`
+- **.card_radius()** (3 connections) — `src/ui/theme.rs`
+- **.input_radius()** (3 connections) — `src/ui/theme.rs`
+- **.sidebar_width()** (3 connections) — `src/ui/theme.rs`
+- **.set_theme_style()** (2 connections) — `src/app.rs`
+- **.ALL** (1 connections) — `src/ui/theme.rs`
+- **Classic** (1 connections) — `src/ui/theme.rs`
+- **Compact** (1 connections) — `src/ui/theme.rs`
+- **.easing_curve()** (1 connections) — `src/ui/theme.rs`
+- **.easing_duration_ms()** (1 connections) — `src/ui/theme.rs`
+- **Glassy** (1 connections) — `src/ui/theme.rs`
+- **.label()** (1 connections) — `src/ui/theme.rs`
+- **Materialistic** (1 connections) — `src/ui/theme.rs`
+- **Minimalistic** (1 connections) — `src/ui/theme.rs`
+- **.short_label()** (1 connections) — `src/ui/theme.rs`
 
 ## Relationships
 
-- [GPU Silicon & Hardware Tuning Policies](GPU_Silicon_&_Hardware_Tuning_Policies.md) (6 shared connections)
-- [engine.rs](engine.rs.md) (5 shared connections)
-- [Scandetailkind Appxinstalled Appxinstalledps](Scandetailkind_Appxinstalled_Appxinstalledps.md) (4 shared connections)
-- [Win32 Registry Scanner & Mutator](Win32_Registry_Scanner_&_Mutator.md) (2 shared connections)
-- [deserialize](deserialize.md) (2 shared connections)
-- [.Reg .Set Power](Reg_.Set_Power.md) (2 shared connections)
-- [app.rs](app.rs.md) (2 shared connections)
-- [AppState](AppState.md) (2 shared connections)
-- [backend.rs](backend.rs.md) (1 shared connections)
-- [.Create Metrics Sampler()](Create_Metrics_Sampler.md) (1 shared connections)
+- [normalize_guid_str](normalize_guid_str.md) (7 shared connections)
+- [Reversibility Instant Requireslogoff](Reversibility_Instant_Requireslogoff.md) (5 shared connections)
+- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (4 shared connections)
+- [Integration Suite: Ui Responsive E2E](Integration_Suite-_Ui_Responsive_E2E.md) (3 shared connections)
+- [Privacy, Telemetry & AI Hardening Catalog](Privacy,_Telemetry_&_AI_Hardening_Catalog.md) (2 shared connections)
+- [Startup Tasks & Auto-Run Explorer](Startup_Tasks_&_Auto-Run_Explorer.md) (1 shared connections)
 - [Dynamicdwordformula Logicalcorecount Totalraminkb](Dynamicdwordformula_Logicalcorecount_Totalraminkb.md) (1 shared connections)
+- [ui/mod.rs](ui-mod.rs.md) (1 shared connections)
+- [.Toggle .Set .Apply](Toggle_.Set_.Apply.md) (1 shared connections)
 
 ## Source Files
 
-- `src/core/risk.rs`
-- `src/tools/autounattend.rs`
+- `src/app.rs`
+- `src/ui/theme.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 53 (78%)
-- INFERRED: 15 (22%)
+- EXTRACTED: 55 (93%)
+- INFERRED: 4 (7%)
 - AMBIGUOUS: 0 (0%)
 
 ---

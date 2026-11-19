@@ -1,60 +1,59 @@
 # GPU Silicon & Hardware Tuning Policies
 
-> 40 nodes · cohesion 0.06
+> 31 nodes · cohesion 0.08
 
 ## Key Concepts
 
-- **risk.rs** (44 connections) — `src/core/risk.rs`
-- **RiskLevel** (15 connections) — `src/core/risk.rs`
-- **RiskValuation** (13 connections) — `src/core/risk.rs`
-- **Reversibility** (10 connections) — `src/core/risk.rs`
-- **load_rules_with_fallback()** (7 connections) — `src/core/risk.rs`
-- **test_all_embedded_tweaks_full_sandbox_lifecycle()** (7 connections) — `tests/tweak_sandbox_e2e.rs`
-- **load_rules_from_dir()** (5 connections) — `src/core/risk.rs`
-- **test_embedded_catalog_fallback()** (3 connections) — `src/core/risk.rs`
-- **matches_edition()** (2 connections) — `src/core/risk.rs`
-- **test_load_all_rules()** (2 connections) — `src/core/risk.rs`
-- **test_no_duplicate_tweak_ids()** (2 connections) — `src/core/risk.rs`
-- **TweakCatalog** (2 connections) — `src/core/risk.rs`
-- **.is_compatible()** (2 connections) — `src/core/risk.rs`
-- **default_equals()** (1 connections) — `src/core/risk.rs`
-- **default_semicolon()** (1 connections) — `src/core/risk.rs`
-- **default_true()** (1 connections) — `src/core/risk.rs`
-- **EMBEDDED_CATALOG_AI_PRIVACY_EXT** (1 connections) — `src/core/risk.rs`
-- **EMBEDDED_CATALOG_APPX** (1 connections) — `src/core/risk.rs`
-- **EMBEDDED_CATALOG_GAMING_LATENCY_ULTRA** (1 connections) — `src/core/risk.rs`
-- **EMBEDDED_CATALOG_HARDWARE** (1 connections) — `src/core/risk.rs`
-- **EMBEDDED_CATALOG_OS_SETTINGS** (1 connections) — `src/core/risk.rs`
-- **EMBEDDED_CATALOG_PERF_POWER_EXT** (1 connections) — `src/core/risk.rs`
-- **EMBEDDED_CATALOG_PRIVACY** (1 connections) — `src/core/risk.rs`
-- **EMBEDDED_CATALOG_REGISTRY_LAG** (1 connections) — `src/core/risk.rs`
-- **EMBEDDED_CATALOG_SYSTEM_DEEP_OPT** (1 connections) — `src/core/risk.rs`
-- *... and 15 more nodes in this community*
+- **ui_responsive_e2e.rs** (61 connections) — `tests/ui_responsive_e2e.rs`
+- **build_populated_sandbox_state()** (17 connections) — `tests/ui_responsive_e2e.rs`
+- **init_cpu_parking_state()** (3 connections) — `tests/ui_responsive_e2e.rs`
+- **init_dashboard_state()** (3 connections) — `tests/ui_responsive_e2e.rs`
+- **init_fault_diagnostics_state()** (3 connections) — `tests/ui_responsive_e2e.rs`
+- **init_gpu_state()** (3 connections) — `tests/ui_responsive_e2e.rs`
+- **init_matrix_state()** (3 connections) — `tests/ui_responsive_e2e.rs`
+- **init_minimalistic_theme_state()** (3 connections) — `tests/ui_responsive_e2e.rs`
+- **init_support_about_state()** (3 connections) — `tests/ui_responsive_e2e.rs`
+- **test_driver_bios_no_card_overlap()** (3 connections) — `tests/ui_responsive_e2e.rs`
+- **test_hardware_view_power_schemes_no_overlap()** (3 connections) — `tests/ui_responsive_e2e.rs`
+- **targetarch** (2 connections)
+- **VERBOSE_LOCALES** (2 connections) — `tests/ui_responsive_e2e.rs`
+- **cleanappssubtab** (1 connections)
+- **startupsource** (1 connections)
+- **startuptaskssubtab** (1 connections)
+- **_keep_el_import_used()** (1 connections) — `tests/ui_responsive_e2e.rs`
+- **SCALES** (1 connections) — `tests/ui_responsive_e2e.rs`
+- **snap_advanced_matrix_view()** (1 connections) — `tests/ui_responsive_e2e.rs`
+- **snap_cpu_parking_view()** (1 connections) — `tests/ui_responsive_e2e.rs`
+- **snap_dashboard_view()** (1 connections) — `tests/ui_responsive_e2e.rs`
+- **snap_fault_diagnostics_view()** (1 connections) — `tests/ui_responsive_e2e.rs`
+- **snap_gpu_tuning_view()** (1 connections) — `tests/ui_responsive_e2e.rs`
+- **snap_minimalistic_theme_view()** (1 connections) — `tests/ui_responsive_e2e.rs`
+- **snap_support_about_view()** (1 connections) — `tests/ui_responsive_e2e.rs`
+- *... and 6 more nodes in this community*
 
 ## Relationships
 
-- [engine.rs](engine.rs.md) (13 shared connections)
-- [Scandetailkind Appxinstalled Appxinstalledps](Scandetailkind_Appxinstalled_Appxinstalledps.md) (10 shared connections)
-- [Project History & Release Version Ledger](Project_History_&_Release_Version_Ledger.md) (6 shared connections)
-- [action_button](action_button.md) (6 shared connections)
-- [Dynamicdwordformula Logicalcorecount Totalraminkb](Dynamicdwordformula_Logicalcorecount_Totalraminkb.md) (3 shared connections)
-- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (3 shared connections)
-- [deserialize](deserialize.md) (2 shared connections)
-- [WinBlast0 Architectural Specifications](WinBlast0_Architectural_Specifications.md) (2 shared connections)
+- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (18 shared connections)
+- [Privacy, Telemetry & AI Hardening Catalog](Privacy,_Telemetry_&_AI_Hardening_Catalog.md) (9 shared connections)
+- [theme.rs](theme.rs.md) (2 shared connections)
+- [Task Scheduler Inspection Subsystem](Task_Scheduler_Inspection_Subsystem.md) (2 shared connections)
+- [backend.rs](backend.rs.md) (2 shared connections)
+- [GpuVendor](GpuVendor.md) (2 shared connections)
 - [app.rs](app.rs.md) (2 shared connections)
-- [automation.rs](automation.rs.md) (2 shared connections)
-- [.Create Metrics Sampler()](Create_Metrics_Sampler.md) (1 shared connections)
-- [path](path.md) (1 shared connections)
+- [Reversibility Instant Requireslogoff](Reversibility_Instant_Requireslogoff.md) (2 shared connections)
+- [System Architecture Changelog](System_Architecture_Changelog.md) (2 shared connections)
+- [edge_cases_unorthodox.rs](edge_cases_unorthodox.rs.md) (1 shared connections)
+- [Core UI Internationalization & Text Catalog](Core_UI_Internationalization_&_Text_Catalog.md) (1 shared connections)
+- [LiveServiceInfo](LiveServiceInfo.md) (1 shared connections)
 
 ## Source Files
 
-- `src/core/risk.rs`
-- `tests/tweak_sandbox_e2e.rs`
+- `tests/ui_responsive_e2e.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 90 (93%)
-- INFERRED: 7 (7%)
+- EXTRACTED: 86 (98%)
+- INFERRED: 2 (2%)
 - AMBIGUOUS: 0 (0%)
 
 ---

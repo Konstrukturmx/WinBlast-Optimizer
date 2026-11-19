@@ -1,22 +1,29 @@
 # Low-Level NT Core & Kernel Architecture
 
-> 1 nodes · cohesion 1.00
+> 7 nodes · cohesion 0.29
 
 ## Key Concepts
 
-- **lib.rs** (0 connections) — `src/lib.rs`
+- **MatrixSortMode** (8 connections) — `src/app.rs`
+- **Category** (1 connections) — `src/app.rs`
+- **Default** (1 connections) — `src/app.rs`
+- **NameAsc** (1 connections) — `src/app.rs`
+- **NameDesc** (1 connections) — `src/app.rs`
+- **Risk** (1 connections) — `src/app.rs`
+- **Status** (1 connections) — `src/app.rs`
 
 ## Relationships
 
-- No strong cross-community connections detected
+- [Privacy, Telemetry & AI Hardening Catalog](Privacy,_Telemetry_&_AI_Hardening_Catalog.md) (1 shared connections)
+- [app.rs](app.rs.md) (1 shared connections)
 
 ## Source Files
 
-- `src/lib.rs`
+- `src/app.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 0 (0%)
+- EXTRACTED: 8 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

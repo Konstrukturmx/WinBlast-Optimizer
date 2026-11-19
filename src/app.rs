@@ -423,6 +423,9 @@ pub enum WorkerEvent {
     UpdateCheckCompleted(Result<Option<crate::core::updater::ReleaseInfo>, String>),
     UpdateDownloadCompleted(Result<std::path::PathBuf, String>),
     ThermalSnapshot(crate::hardware::thermal::SystemThermalSnapshot),
+    BiosInfoLoaded(crate::hardware::bios::BiosSystemInfo),
+    DiskReportLoaded(crate::hardware::disks::DiskSubsystemReport),
+    DriverScanCompleted(Vec<crate::hardware::driver_update::DriverUpdateItem>),
 }
 
 struct WorkerDropGuard<P: FnOnce(String) -> WorkerEvent> {
@@ -603,12 +606,14 @@ pub struct AppState {
     pub unattend_opts: UnattendOptions,
     pub unattend_last_export: Option<String>,
 
-    // Real-time 1-second Task Manager style monitoring
+    // Real-time Task Manager style monitoring (v1.4.0 adaptive interval)
     pub realtime_metrics: Option<SystemMetrics>,
     pub cpu_sparkline: Vec<f32>,
     pub ram_sparkline: Vec<f32>,
     pub initial_baseline: Option<SystemBaseline>,
     pub latest_baseline: Option<SystemBaseline>,
+    pub telemetry_interval_ms: std::sync::Arc<std::sync::atomic::AtomicU64>,
+    pub window_icon_attached: bool,
 
     // Background worker communication channel
     pub rx_events: crossbeam_channel::Receiver<WorkerEvent>,
@@ -618,9 +623,12 @@ pub struct AppState {
     // v1.1.0 Advanced Themes & Diagnostics Subsystems
     pub theme_style: crate::ui::theme::UiThemeStyle,
     pub bios_info: Option<crate::hardware::bios::BiosSystemInfo>,
+    pub is_bios_scanning: bool,
     pub fault_report: Option<crate::tools::diagnostics::FaultDiagnosticsReport>,
     pub thermal_snapshot: Option<crate::hardware::thermal::SystemThermalSnapshot>,
+    pub is_thermal_scanning: bool,
     pub disk_report: Option<crate::hardware::disks::DiskSubsystemReport>,
+    pub is_disk_scanning: bool,
     pub perf_score: Option<crate::tools::performance_tests::BenchmarkScore>,
     pub is_benchmarking_perf: bool,
     pub game_telemetry: crate::tools::gaming_stats::LiveGameTelemetry,
@@ -664,6 +672,8 @@ pub struct AppState {
     pub hardware_sub_tab: HardwareSubTab,
     pub drivers_sub_tab: DriversSubTab,
     pub repair_sub_tab: RepairSubTab,
+    pub current_time_secs: f64,
+    pub dismiss_progress_hud: bool,
 }
 
 impl Default for AppState {
@@ -831,6 +841,8 @@ impl AppState {
             ram_sparkline,
             initial_baseline,
             latest_baseline,
+            telemetry_interval_ms: std::sync::Arc::new(std::sync::atomic::AtomicU64::new(2000)),
+            window_icon_attached: false,
             rx_events,
             tx_events,
             waker: None,
@@ -838,9 +850,12 @@ impl AppState {
             // v1.1.0 Subsystems
             theme_style,
             bios_info: None,
+            is_bios_scanning: false,
             fault_report: Some(crate::tools::diagnostics::FaultDiagnosticsReport::scan()),
-            thermal_snapshot: Some(crate::hardware::thermal::SystemThermalSnapshot::read()),
+            thermal_snapshot: None,
+            is_thermal_scanning: false,
             disk_report: None,
+            is_disk_scanning: false,
             perf_score: Some(crate::tools::performance_tests::BenchmarkScore::default()),
             is_benchmarking_perf: false,
             game_telemetry: crate::tools::gaming_stats::LiveGameTelemetry::default(),
@@ -882,6 +897,8 @@ impl AppState {
             hardware_sub_tab: HardwareSubTab::Specs,
             drivers_sub_tab: DriversSubTab::Drivers,
             repair_sub_tab: RepairSubTab::WindowsRepair,
+            current_time_secs: 0.0,
+            dismiss_progress_hud: false,
         }
     }
 
@@ -895,10 +912,11 @@ impl AppState {
         self.run_telemetry_audit();
         self.check_for_updates();
 
-        // 1-Second real-time Task Manager style monitoring worker with live thermal telemetry
+        // Adaptive Task Manager style monitoring worker with live thermal telemetry
         let tx_monitor = self.tx_events.clone();
         let waker_monitor = waker;
         let backend = Arc::clone(&self.backend);
+        let interval_holder = Arc::clone(&self.telemetry_interval_ms);
         std::thread::spawn(move || {
             let _ = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
                 let mut monitor = backend.create_metrics_sampler(35);
@@ -915,9 +933,19 @@ impl AppState {
                         let _ = tx_monitor.send(WorkerEvent::ThermalSnapshot(snapshot));
                     }
                     waker_monitor();
-                    std::thread::sleep(std::time::Duration::from_millis(1000));
+                    let sleep_ms = interval_holder.load(std::sync::atomic::Ordering::Relaxed).max(250);
+                    std::thread::sleep(std::time::Duration::from_millis(sleep_ms));
                 }
             }));
+        });
+
+        // Ensure native Windows title bar and taskbar inherit official WinBlast icon
+        #[cfg(windows)]
+        std::thread::spawn(|| {
+            for _ in 0..15 {
+                std::thread::sleep(std::time::Duration::from_millis(50));
+                crate::ui::window_icon::attach_window_icon();
+            }
         });
     }
 
@@ -941,10 +969,20 @@ impl AppState {
     }
 
     /// Rune framework lifecycle poll hook. Drains bounded worker events (max 64/frame) so bursts never stutter UI.
-    pub fn poll(&mut self, _now: f64, _tx: &mut rune::Tx) -> bool {
+    pub fn poll(&mut self, now: f64, _tx: &mut rune::Tx) -> bool {
+        self.current_time_secs = now;
+
+        #[cfg(windows)]
+        if !self.window_icon_attached {
+            crate::ui::window_icon::attach_window_icon();
+            self.window_icon_attached = true;
+        }
+
         self.sync_search_state();
         let processed = self.drain_worker_events_bounded(64);
-        if !self.rx_events.is_empty() {
+
+        let in_progress = self.is_in_progress();
+        if in_progress || !self.rx_events.is_empty() {
             if let Some(ref w) = self.waker {
                 w();
             }
@@ -984,6 +1022,69 @@ impl AppState {
     /// True if any Startup & Tasks scan or action worker is still running.
     pub fn is_startup_tasks_busy(&self) -> bool {
         self.startup_tasks_inflight > 0
+    }
+
+    /// True if any operation is actively executing in background and progress HUD is not dismissed.
+    pub fn is_in_progress(&self) -> bool {
+        if self.dismiss_progress_hud {
+            return false;
+        }
+        self.is_scanning
+            || self.is_applying
+            || self.is_rolling_back
+            || self.clean_apps_busy
+            || self.startup_tasks_busy
+            || self.driver_install_in_flight.is_some()
+            || self.prereq_install_in_flight.is_some()
+            || self.is_bios_scanning
+            || self.is_driver_scanning
+            || self.is_thermal_scanning
+            || self.is_disk_scanning
+            || self.is_benchmarking_latency
+    }
+
+    /// Dynamic status description for the centered in-progress HUD overlay.
+    pub fn in_progress_status(&self) -> String {
+        if self.is_scanning {
+            return "Scanning system optimization matrix...".to_string();
+        }
+        if self.is_applying {
+            if let Some(ref msg) = self.progress_message {
+                return msg.clone();
+            }
+            return "Applying selected system optimizations...".to_string();
+        }
+        if self.is_rolling_back {
+            return "Rolling back optimizations to baseline...".to_string();
+        }
+        if self.is_bios_scanning {
+            return "Probing SMBIOS motherboard tables & UEFI firmware...".to_string();
+        }
+        if self.is_driver_scanning {
+            return "Scanning online and local device driver store...".to_string();
+        }
+        if self.is_thermal_scanning {
+            return "Querying CPU/GPU junction temperatures & fan speeds...".to_string();
+        }
+        if self.is_disk_scanning {
+            return "Evaluating physical storage SMART health & TRIM telemetry...".to_string();
+        }
+        if self.clean_apps_busy {
+            return "Executing system cleanup and app management...".to_string();
+        }
+        if self.startup_tasks_busy {
+            return "Updating startup services and scheduled tasks...".to_string();
+        }
+        if let Some(ref d) = self.driver_install_in_flight {
+            return format!("Staging driver installation for {}...", d);
+        }
+        if let Some(ref p) = self.prereq_install_in_flight {
+            return format!("Installing gaming prerequisite: {}...", p);
+        }
+        if self.is_benchmarking_latency {
+            return "Benchmarking microsecond DPC and execution latency...".to_string();
+        }
+        "Executing background operation...".to_string()
     }
 
     fn sync_startup_tasks_busy(&mut self) {
@@ -1143,30 +1244,43 @@ impl AppState {
                 }
             }
             WorkerEvent::MetricsSnapshot(metrics) => {
-                while self.cpu_sparkline.len() >= 35 {
-                    self.cpu_sparkline.remove(0);
+                // O(1) in-place rolling sparkline update without memory reallocation
+                if self.cpu_sparkline.len() >= 35 {
+                    self.cpu_sparkline.rotate_left(1);
+                    if let Some(last) = self.cpu_sparkline.last_mut() {
+                        *last = metrics.cpu_usage;
+                    }
+                } else {
+                    self.cpu_sparkline.push(metrics.cpu_usage);
                 }
-                self.cpu_sparkline.push(metrics.cpu_usage);
 
-                while self.ram_sparkline.len() >= 35 {
-                    self.ram_sparkline.remove(0);
+                if self.ram_sparkline.len() >= 35 {
+                    self.ram_sparkline.rotate_left(1);
+                    if let Some(last) = self.ram_sparkline.last_mut() {
+                        *last = metrics.ram_percentage;
+                    }
+                } else {
+                    self.ram_sparkline.push(metrics.ram_percentage);
                 }
-                self.ram_sparkline.push(metrics.ram_percentage);
 
-                if self.core_parking.cores.len() == metrics.core_usages.len() {
-                    let has_parked = metrics.core_parked.len() == self.core_parking.cores.len();
+                if !self.core_parking.cores.is_empty() {
+                    let has_parked = !metrics.core_parked.is_empty();
                     for (i, core) in self.core_parking.cores.iter_mut().enumerate() {
-                        core.usage_pct = metrics.core_usages[i];
+                        if let Some(&usage) = metrics.core_usages.get(i) {
+                            core.usage_pct = usage;
+                        }
                         if self.core_parking.is_fully_unparked {
                             core.is_parked = false;
                         } else if has_parked {
-                            core.is_parked = metrics.core_parked[i];
+                            if let Some(&parked) = metrics.core_parked.get(i) {
+                                core.is_parked = parked;
+                            }
                         }
                     }
                     self.core_parking.parked_count =
                         self.core_parking.cores.iter().filter(|c| c.is_parked).count();
                     self.core_parking.unparked_count =
-                        self.core_parking.cores.len() - self.core_parking.parked_count;
+                        self.core_parking.cores.len().saturating_sub(self.core_parking.parked_count);
                 }
 
                 self.realtime_metrics = Some(metrics);
@@ -1627,6 +1741,19 @@ impl AppState {
             }
             WorkerEvent::ThermalSnapshot(snapshot) => {
                 self.thermal_snapshot = Some(snapshot);
+                self.is_thermal_scanning = false;
+            }
+            WorkerEvent::BiosInfoLoaded(info) => {
+                self.bios_info = Some(info);
+                self.is_bios_scanning = false;
+            }
+            WorkerEvent::DiskReportLoaded(report) => {
+                self.disk_report = Some(report);
+                self.is_disk_scanning = false;
+            }
+            WorkerEvent::DriverScanCompleted(updates) => {
+                self.driver_updates = updates;
+                self.is_driver_scanning = false;
             }
         }
     }
@@ -1777,10 +1904,16 @@ impl AppState {
 
     /// Toggle between Dark Mode and Light Mode.
     pub fn toggle_theme_mode(&mut self) {
-        self.theme_mode = match self.theme_mode {
+        let new_mode = match self.theme_mode {
             ThemeMode::Dark => ThemeMode::Light,
             ThemeMode::Light => ThemeMode::Dark,
         };
+        self.set_theme_mode(new_mode);
+    }
+
+    /// Set theme mode (Dark or Light) and immediately rebuild theme palette.
+    pub fn set_theme_mode(&mut self, mode: ThemeMode) {
+        self.theme_mode = mode;
         self.theme_palette = ThemePalette::new(self.theme_mode, self.color_scheme, self.theme_style);
     }
 
@@ -1799,6 +1932,33 @@ impl AppState {
     /// Toggle compact navigation drawer open/closed.
     pub fn toggle_sidebar(&mut self) {
         self.sidebar_open = !self.sidebar_open;
+    }
+
+    /// Read active telemetry update interval in milliseconds.
+    pub fn telemetry_interval_ms(&self) -> u64 {
+        self.telemetry_interval_ms.load(std::sync::atomic::Ordering::Relaxed)
+    }
+
+    /// Update telemetry interval in milliseconds (clamped to 250..10000 ms).
+    pub fn set_telemetry_interval_ms(&mut self, ms: u64) {
+        self.telemetry_interval_ms.store(ms.clamp(250, 10000), std::sync::atomic::Ordering::Relaxed);
+    }
+
+    /// Read active telemetry update interval in fractional seconds.
+    pub fn telemetry_interval_secs(&self) -> f32 {
+        self.telemetry_interval_ms() as f32 / 1000.0
+    }
+
+    /// Cycle telemetry update interval between 2.0s (default/increased) -> 4.0s (eco) -> 0.5s (fast) -> 1.0s (standard).
+    pub fn cycle_telemetry_interval(&mut self) {
+        let current = self.telemetry_interval_ms();
+        let next = match current {
+            0..=750 => 1000,
+            751..=1500 => 2000,
+            1501..=3000 => 4000,
+            _ => 500,
+        };
+        self.set_telemetry_interval_ms(next);
     }
 
     /// Navigate to a view tab and close compact drawer, syncing mode & lazily warming view-specific scans.
@@ -1829,8 +1989,8 @@ impl AppState {
                 self.refresh_platform_inventory();
             }
             ActiveView::DriverBios => {
-                if self.bios_info.is_none() {
-                    self.bios_info = Some(crate::hardware::bios::BiosSystemInfo::probe());
+                if self.bios_info.is_none() && !self.is_bios_scanning {
+                    self.scan_bios_info_async();
                 }
                 if self.driver_updates.is_empty() && !self.is_driver_scanning {
                     self.scan_online_drivers();
@@ -1840,10 +2000,14 @@ impl AppState {
                 self.fault_report = Some(crate::tools::diagnostics::FaultDiagnosticsReport::scan());
             }
             ActiveView::ThermalMonitor => {
-                self.thermal_snapshot = Some(crate::hardware::thermal::SystemThermalSnapshot::read());
+                if self.thermal_snapshot.is_none() && !self.is_thermal_scanning {
+                    self.scan_thermal_snapshot_async();
+                }
             }
             ActiveView::DiskHealth if self.disk_report.is_none() => {
-                self.disk_report = Some(crate::hardware::disks::DiskSubsystemReport::probe());
+                if !self.is_disk_scanning {
+                    self.scan_disk_health_async();
+                }
             }
             ActiveView::NetworkDiag if self.network_diag.is_none() => {
                 self.network_diag = Some(crate::tools::network_diag::NetworkDiagnostics::default());
@@ -1872,14 +2036,80 @@ impl AppState {
         self.navigate(prv);
     }
 
-    /// Perform online driver scan across Display, Network, Audio, Storage, and Virtual Sandbox devices.
+    /// Perform online driver scan across Display, Network, Audio, Storage, and Virtual Sandbox devices asynchronously.
     pub fn scan_online_drivers(&mut self) {
-        self.is_driver_scanning = true;
-        self.driver_updates = crate::hardware::driver_update::scan_online_drivers();
-        self.is_driver_scanning = false;
-        if let Some(ref w) = self.waker {
-            w();
+        if self.is_driver_scanning {
+            return;
         }
+        self.is_driver_scanning = true;
+        let tx = self.tx_events.clone();
+        let waker = self.waker.clone();
+        spawn_guarded_worker(
+            tx,
+            waker,
+            |_err| WorkerEvent::DriverScanCompleted(Vec::new()),
+            |tx| {
+                let updates = crate::hardware::driver_update::scan_online_drivers();
+                let _ = tx.send(WorkerEvent::DriverScanCompleted(updates));
+            },
+        );
+    }
+
+    /// Probe motherboard and BIOS telemetry asynchronously.
+    pub fn scan_bios_info_async(&mut self) {
+        if self.is_bios_scanning {
+            return;
+        }
+        self.is_bios_scanning = true;
+        let tx = self.tx_events.clone();
+        let waker = self.waker.clone();
+        spawn_guarded_worker(
+            tx,
+            waker,
+            |_err| WorkerEvent::BiosInfoLoaded(crate::hardware::bios::BiosSystemInfo::default()),
+            |tx| {
+                let info = crate::hardware::bios::BiosSystemInfo::probe();
+                let _ = tx.send(WorkerEvent::BiosInfoLoaded(info));
+            },
+        );
+    }
+
+    /// Probe disk subsystem and SMART telemetry asynchronously.
+    pub fn scan_disk_health_async(&mut self) {
+        if self.is_disk_scanning {
+            return;
+        }
+        self.is_disk_scanning = true;
+        let tx = self.tx_events.clone();
+        let waker = self.waker.clone();
+        spawn_guarded_worker(
+            tx,
+            waker,
+            |_err| WorkerEvent::DiskReportLoaded(crate::hardware::disks::DiskSubsystemReport::default()),
+            |tx| {
+                let report = crate::hardware::disks::DiskSubsystemReport::probe();
+                let _ = tx.send(WorkerEvent::DiskReportLoaded(report));
+            },
+        );
+    }
+
+    /// Probe system thermals and fan speed telemetry asynchronously.
+    pub fn scan_thermal_snapshot_async(&mut self) {
+        if self.is_thermal_scanning {
+            return;
+        }
+        self.is_thermal_scanning = true;
+        let tx = self.tx_events.clone();
+        let waker = self.waker.clone();
+        spawn_guarded_worker(
+            tx,
+            waker,
+            |_err| WorkerEvent::ThermalSnapshot(crate::hardware::thermal::SystemThermalSnapshot::default()),
+            |tx| {
+                let snap = crate::hardware::thermal::SystemThermalSnapshot::read();
+                let _ = tx.send(WorkerEvent::ThermalSnapshot(snap));
+            },
+        );
     }
 
     /// Download and stage driver update.

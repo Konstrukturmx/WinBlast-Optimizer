@@ -11,6 +11,7 @@ use std::os::windows::ffi::OsStrExt;
 use std::os::windows::fs::MetadataExt;
 use std::path::{Path, PathBuf};
 
+use rayon::prelude::*;
 use serde::{Deserialize, Serialize};
 use windows::core::PCWSTR;
 use windows::Win32::Storage::FileSystem::{
@@ -427,10 +428,10 @@ fn empty_recycle_bin() -> CleanTargetResult {
     r
 }
 
-/// Scan all 8 cleanup targets without deleting anything.
+/// Scan all 8 cleanup targets in parallel using Rayon without deleting anything.
 pub fn scan_all_clean_targets() -> Vec<CleanTargetScan> {
     CleanTargetKind::ALL
-        .iter()
+        .into_par_iter()
         .map(|&kind| {
             let paths = resolve_target_paths(kind);
             let path_strings: Vec<String> = paths.iter().map(|p| p.display().to_string()).collect();

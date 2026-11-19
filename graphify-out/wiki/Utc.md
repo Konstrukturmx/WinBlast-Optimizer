@@ -4,11 +4,15 @@
 
 ## Key Concepts
 
-- **Utc** (0 connections)
+- **backup/mod.rs** (0 connections) — `src/backup/mod.rs`
 
 ## Relationships
 
 - No strong cross-community connections detected
+
+## Source Files
+
+- `src/backup/mod.rs`
 
 ## Audit Trail
 

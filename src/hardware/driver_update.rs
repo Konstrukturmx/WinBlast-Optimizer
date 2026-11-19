@@ -844,8 +844,10 @@ pub fn scan_online_drivers_with_progress(
             total: 0,
         });
     }
-    let pnp_devices = enumerate_pnputil_devices();
-    let driver_store = enumerate_pnputil_driver_store();
+    let (pnp_devices, driver_store) = rayon::join(
+        enumerate_pnputil_devices,
+        enumerate_pnputil_driver_store,
+    );
 
     let categories = DriverCategory::all_physical();
     let total_categories = categories.len();

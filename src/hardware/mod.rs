@@ -8,6 +8,7 @@ pub mod disks;
 pub mod driver_update;
 pub mod gpu;
 pub mod latency;
+pub mod lazy_loader;
 pub mod monitor;
 pub mod net_latency;
 pub mod parking;

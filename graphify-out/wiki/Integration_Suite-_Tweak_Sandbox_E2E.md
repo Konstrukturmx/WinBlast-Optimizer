@@ -1,62 +1,59 @@
 # Integration Suite: Tweak Sandbox E2E
 
-> 44 nodes · cohesion 0.09
+> 51 nodes · cohesion 0.04
 
 ## Key Concepts
 
-- **dijkstra.rs** (14 connections) — `src/graph/dijkstra.rs`
-- **astar.rs** (11 connections) — `src/graph/astar.rs`
-- **hashset** (9 connections)
-- **graph/mod.rs** (9 connections) — `src/graph/mod.rs`
-- **hashmap** (8 connections)
-- **raven.rs** (8 connections) — `src/graph/raven.rs`
-- **.schedule_execution()** (7 connections) — `src/graph/dijkstra.rs`
-- **RavenEngine** (7 connections) — `src/graph/raven.rs`
-- **.resolve_conflicts()** (7 connections) — `src/graph/raven.rs`
-- **.plan()** (6 connections) — `src/graph/astar.rs`
-- **.new()** (5 connections) — `src/graph/dijkstra.rs`
-- **ExecutionOrder** (5 connections) — `src/graph/dijkstra.rs`
-- **TweakCriteria** (5 connections) — `src/graph/raven.rs`
-- **AStarPlanner** (4 connections) — `src/graph/astar.rs`
-- **OptimizationPlan** (4 connections) — `src/graph/astar.rs`
-- **test_astar_finds_optimal_gaming_path()** (4 connections) — `src/graph/astar.rs`
-- **test_astar_respects_reboot_constraint()** (4 connections) — `src/graph/astar.rs`
-- **DijkstraScheduler** (4 connections) — `src/graph/dijkstra.rs`
-- **ConflictResolution** (4 connections) — `src/graph/raven.rs`
-- **AStarNode** (3 connections) — `src/graph/astar.rs`
-- **.new()** (3 connections) — `src/graph/astar.rs`
-- **ExecutionStep** (3 connections) — `src/graph/dijkstra.rs`
-- **NodeCost** (3 connections) — `src/graph/dijkstra.rs`
-- **test_dijkstra_cycle_resolution()** (3 connections) — `src/graph/dijkstra.rs`
-- **test_dijkstra_dependency_order()** (3 connections) — `src/graph/dijkstra.rs`
-- *... and 19 more nodes in this community*
+- **SystemBackend** (118 connections) — `src/core/backend.rs`
+- **.apply_parking_snapshot()** (4 connections) — `src/core/backend.rs`
+- **.reg_delete_value_for_vendor()** (2 connections) — `src/core/backend.rs`
+- **.reg_get_dword_for_vendor()** (2 connections) — `src/core/backend.rs`
+- **.reg_set_dword_for_vendor()** (2 connections) — `src/core/backend.rs`
+- **.set_usb_power_saving_enabled()** (2 connections) — `src/core/backend.rs`
+- **.block_telemetry_hosts()** (1 connections) — `src/core/backend.rs`
+- **.broadcast_shell_settings_changed()** (1 connections) — `src/core/backend.rs`
+- **.check_onedrive_kfm_active()** (1 connections) — `src/core/backend.rs`
+- **.create_and_activate_performance_plan()** (1 connections) — `src/core/backend.rs`
+- **.create_restore_point()** (1 connections) — `src/core/backend.rs`
+- **.default_ledger_path()** (1 connections) — `src/core/backend.rs`
+- **.default_profile_path()** (1 connections) — `src/core/backend.rs`
+- **.get_active_power_scheme()** (1 connections) — `src/core/backend.rs`
+- **.get_service_start_type()** (1 connections) — `src/core/backend.rs`
+- **.get_task_enabled()** (1 connections) — `src/core/backend.rs`
+- **.is_elevated()** (1 connections) — `src/core/backend.rs`
+- **.is_hags_enabled()** (1 connections) — `src/core/backend.rs`
+- **.is_mpo_disabled()** (1 connections) — `src/core/backend.rs`
+- **.logical_core_count()** (1 connections) — `src/core/backend.rs`
+- **.read_hosts_file()** (1 connections) — `src/core/backend.rs`
+- **.read_power_setting_index()** (1 connections) — `src/core/backend.rs`
+- **.reg_delete_tree()** (1 connections) — `src/core/backend.rs`
+- **.reg_delete_value()** (1 connections) — `src/core/backend.rs`
+- **.reg_get_binary()** (1 connections) — `src/core/backend.rs`
+- *... and 26 more nodes in this community*
 
 ## Relationships
 
-- [goal_planner.rs](goal_planner.rs.md) (5 shared connections)
+- [full_telemetry_audit_with](full_telemetry_audit_with.md) (10 shared connections)
+- [Embedded Catalog Test](Embedded_Catalog_Test.md) (7 shared connections)
+- [app.rs](app.rs.md) (4 shared connections)
+- [SandboxEnv](SandboxEnv.md) (4 shared connections)
+- [restore_point.rs](restore_point.rs.md) (3 shared connections)
 - [backend.rs](backend.rs.md) (3 shared connections)
-- [.Create Metrics Sampler()](Create_Metrics_Sampler.md) (3 shared connections)
-- [AppState](AppState.md) (3 shared connections)
-- [app.rs](app.rs.md) (2 shared connections)
-- [.Reg State() Vendor()](Reg_State_Vendor.md) (2 shared connections)
-- [Scandetailkind Appxinstalled Appxinstalledps](Scandetailkind_Appxinstalled_Appxinstalledps.md) (2 shared connections)
-- [task_scanner.rs](task_scanner.rs.md) (1 shared connections)
-- [startup.rs](startup.rs.md) (1 shared connections)
-- [System Architecture Changelog](System_Architecture_Changelog.md) (1 shared connections)
-- [View() Color Scrollspec](View_Color_Scrollspec.md) (1 shared connections)
-- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (1 shared connections)
+- [HibernationStatus](HibernationStatus.md) (3 shared connections)
+- [task_scanner.rs](task_scanner.rs.md) (3 shared connections)
+- [Privacy, Telemetry & AI Hardening Catalog](Privacy,_Telemetry_&_AI_Hardening_Catalog.md) (2 shared connections)
+- [PanickingBackend](PanickingBackend.md) (2 shared connections)
+- [power.rs](power.rs.md) (2 shared connections)
+- [Disk Cleaning & Temporary File Purger](Disk_Cleaning_&_Temporary_File_Purger.md) (2 shared connections)
 
 ## Source Files
 
-- `src/graph/astar.rs`
-- `src/graph/dijkstra.rs`
-- `src/graph/mod.rs`
-- `src/graph/raven.rs`
+- `src/core/backend.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 103 (97%)
-- INFERRED: 3 (3%)
+- EXTRACTED: 123 (98%)
+- INFERRED: 2 (2%)
 - AMBIGUOUS: 0 (0%)
 
 ---

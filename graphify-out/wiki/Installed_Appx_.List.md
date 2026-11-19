@@ -1,32 +1,39 @@
 # Installed Appx .List
 
-> 8 nodes · cohesion 0.25
+> 12 nodes · cohesion 0.21
 
 ## Key Concepts
 
-- **test_status_i18n_all_languages_and_core_specs()** (8 connections) — `src/core/status_i18n.rs`
-- **LanguageChanged** (3 connections) — `src/core/status_i18n.rs`
-- **test_turkish_language_changed_status_message()** (3 connections) — `src/core/status_i18n.rs`
-- **BatchCompleted** (2 connections) — `src/core/status_i18n.rs`
-- **HagsUpdated** (2 connections) — `src/core/status_i18n.rs`
-- **MpoUpdated** (2 connections) — `src/core/status_i18n.rs`
-- **ScanCompleted** (2 connections) — `src/core/status_i18n.rs`
-- **ScanFailed** (2 connections) — `src/core/status_i18n.rs`
+- **.setup()** (11 connections) — `src/app.rs`
+- **.run_telemetry_audit()** (7 connections) — `src/app.rs`
+- **.refresh_restore_points()** (6 connections) — `src/app.rs`
+- **StatusUpdate** (6 connections) — `src/app.rs`
+- **.refresh_latency()** (5 connections) — `src/app.rs`
+- **.refresh_platform_inventory()** (5 connections) — `src/app.rs`
+- **.check_for_updates()** (3 connections) — `src/app.rs`
+- **LatencyUpdated** (2 connections) — `src/app.rs`
+- **MetricsSnapshot** (2 connections) — `src/app.rs`
+- **RestorePointsLoaded** (2 connections) — `src/app.rs`
+- **TelemetryAuditCompleted** (2 connections) — `src/app.rs`
+- **UpdateCheckCompleted** (2 connections) — `src/app.rs`
 
 ## Relationships
 
-- [Privacy, Telemetry & AI Hardening Catalog](Privacy,_Telemetry_&_AI_Hardening_Catalog.md) (6 shared connections)
-- [Appx Package() Prefixes](Appx_Package_Prefixes.md) (2 shared connections)
-- [Process Token Information](Process_Token_Information.md) (2 shared connections)
+- [Core UI Internationalization & Text Catalog](Core_UI_Internationalization_&_Text_Catalog.md) (9 shared connections)
+- [Privacy, Telemetry & AI Hardening Catalog](Privacy,_Telemetry_&_AI_Hardening_Catalog.md) (7 shared connections)
+- [spawn_guarded_worker](spawn_guarded_worker.md) (5 shared connections)
+- [.navigate](navigate.md) (2 shared connections)
+- [app.rs](app.rs.md) (1 shared connections)
+- [.poll](poll.md) (1 shared connections)
 
 ## Source Files
 
-- `src/core/status_i18n.rs`
+- `src/app.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 17 (100%)
-- INFERRED: 0 (0%)
+- EXTRACTED: 38 (97%)
+- INFERRED: 1 (3%)
 - AMBIGUOUS: 0 (0%)
 
 ---

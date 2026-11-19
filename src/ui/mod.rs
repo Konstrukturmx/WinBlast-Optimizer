@@ -4,6 +4,7 @@
 pub mod theme;
 pub mod views;
 pub mod widgets;
+pub mod window_icon;
 
 use rune::color::Color;
 use rune::{col, el, row, text, Cx, El, ScrollSpec};
@@ -600,20 +601,17 @@ pub fn view(s: &AppState, cx: &mut Cx<AppState>) -> El {
                 .px(8.0)
                 .py(4.0)
                 .radius(5.0)
-                .fill(if s.active_dropdown == crate::app::ActiveDropdown::ThemeMode { p.accent.alpha(0.20) } else { p.bg_card })
-                .border(1.0, if s.active_dropdown == crate::app::ActiveDropdown::ThemeMode { p.accent } else { p.border })
+                .fill(p.bg_card)
+                .border(1.0, p.border)
                 .hover(p.bg_card_hover)
                 .motion(rune::tok::motion::SNAPPY)
                 .center()
                 .on_press(|s: &mut AppState| {
-                    s.active_dropdown = if s.active_dropdown == crate::app::ActiveDropdown::ThemeMode {
-                        crate::app::ActiveDropdown::None
-                    } else {
-                        crate::app::ActiveDropdown::ThemeMode
-                    };
+                    s.toggle_theme_mode();
+                    s.active_dropdown = crate::app::ActiveDropdown::None;
                 })
                 .child(
-                    text(format!("{} ▾", if s.theme_mode == ThemeMode::Dark {
+                    text(format!("{} {}", if s.theme_mode == ThemeMode::Dark { "🌙" } else { "☀️" }, if s.theme_mode == ThemeMode::Dark {
                         s.tr(TextKey::ThemeDark)
                     } else {
                         s.tr(TextKey::ThemeLight)
@@ -1298,6 +1296,15 @@ pub fn view(s: &AppState, cx: &mut Cx<AppState>) -> El {
         root = root.child(build_dropdown_overlay(s, p, tier));
     }
 
+    if s.is_in_progress() {
+        let status = s.in_progress_status();
+        root = root.child(crate::ui::widgets::in_progress_hud::in_progress_hud(
+            s.current_time_secs,
+            &status,
+            p,
+        ));
+    }
+
     root
 }
 
@@ -1443,7 +1450,7 @@ fn build_dropdown_overlay(s: &AppState, p: &ThemePalette, _tier: LayoutTier) -> 
                         .justify_between()
                         .items_center()
                         .on_press(move |s: &mut AppState| {
-                            s.theme_mode = m;
+                            s.set_theme_mode(m);
                             s.active_dropdown = ActiveDropdown::None;
                         })
                         .child(text(label).font(rune::tok::type_::BODY).color(if is_sel { p.accent } else { p.text_primary }))

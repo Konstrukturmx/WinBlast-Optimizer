@@ -4,7 +4,7 @@
 
 ## Key Concepts
 
-- **path** (11 connections)
+- **path** (12 connections)
 - **profile_io.rs** (8 connections) — `src/backup/profile_io.rs`
 - **export_profile()** (4 connections) — `src/backup/profile_io.rs`
 - **import_profile()** (3 connections) — `src/backup/profile_io.rs`
@@ -14,18 +14,18 @@
 
 ## Relationships
 
-- [deserialize](deserialize.md) (2 shared connections)
+- [deserialize](deserialize.md) (3 shared connections)
 - [app.rs](app.rs.md) (2 shared connections)
-- [GPU Silicon & Hardware Tuning Policies](GPU_Silicon_&_Hardware_Tuning_Policies.md) (1 shared connections)
-- [updater.rs](updater.rs.md) (1 shared connections)
-- [driver_update.rs](driver_update.rs.md) (1 shared connections)
-- [automation.rs](automation.rs.md) (1 shared connections)
-- [.Toggle .Set .Apply](Toggle_.Set_.Apply.md) (1 shared connections)
-- [enums](enums.md) (1 shared connections)
-- [tools/game_prereqs.rs](tools-game_prereqs.rs.md) (1 shared connections)
-- [startup.rs](startup.rs.md) (1 shared connections)
-- [State Ledger & Restore Point Engine](State_Ledger_&_Restore_Point_Engine.md) (1 shared connections)
+- [Win32 Registry Scanner & Mutator](Win32_Registry_Scanner_&_Mutator.md) (1 shared connections)
+- [test_wave1_ledger_rollback_and_concurrency_regressions](test_wave1_ledger_rollback_and_concurrency_regressions.md) (1 shared connections)
+- [ViewTextKey](ViewTextKey.md) (1 shared connections)
 - [Scandetailkind Appxinstalled Appxinstalledps](Scandetailkind_Appxinstalled_Appxinstalledps.md) (1 shared connections)
+- [Disk Cleaning & Temporary File Purger](Disk_Cleaning_&_Temporary_File_Purger.md) (1 shared connections)
+- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (1 shared connections)
+- [heuristic_scanner.rs](heuristic_scanner.rs.md) (1 shared connections)
+- [startup.rs](startup.rs.md) (1 shared connections)
+- [real_windows_env.rs](real_windows_env.rs.md) (1 shared connections)
+- [theme.rs](theme.rs.md) (1 shared connections)
 
 ## Source Files
 
@@ -33,7 +33,7 @@
 
 ## Audit Trail
 
-- EXTRACTED: 24 (100%)
+- EXTRACTED: 25 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

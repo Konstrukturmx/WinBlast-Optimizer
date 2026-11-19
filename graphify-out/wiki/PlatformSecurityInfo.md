@@ -1,42 +1,43 @@
 # PlatformSecurityInfo
 
-> 7 nodes · cohesion 0.38
+> 13 nodes · cohesion 0.19
 
 ## Key Concepts
 
-- **PlatformSecurityInfo** (16 connections) — `src/hardware/sys_inventory.rs`
-- **.detect_platform_security()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.detect_platform_security()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.detect_platform_security()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.detect_platform_security()** (2 connections) — `src/core/backend.rs`
-- **.detect_platform_security()** (2 connections) — `src/core/backend.rs`
-- **.detect_platform_security()** (2 connections) — `src/core/backend.rs`
+- **tools/network_diag.rs** (12 connections) — `src/tools/network_diag.rs`
+- **NetworkDiagnostics** (8 connections) — `src/tools/network_diag.rs`
+- **duration** (6 connections)
+- **.default()** (3 connections) — `src/tools/network_diag.rs`
+- **DnsProbeResult** (2 connections) — `src/tools/network_diag.rs`
+- **.probe_live()** (2 connections) — `src/tools/network_diag.rs`
+- **query_local_ip()** (2 connections) — `src/tools/network_diag.rs`
+- **tcpstream** (2 connections)
+- **DNS_CATALOG** (1 connections) — `src/tools/network_diag.rs`
+- **.apply_dns_servers()** (1 connections) — `src/tools/network_diag.rs`
+- **.flush_dns()** (1 connections) — `src/tools/network_diag.rs`
+- **.reset_dns_dhcp()** (1 connections) — `src/tools/network_diag.rs`
+- **udpsocket** (1 connections)
 
 ## Relationships
 
-- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (4 shared connections)
-- [SlowScanBackend](SlowScanBackend.md) (2 shared connections)
-- [RealBackend](RealBackend.md) (1 shared connections)
-- [Disk Cleaning & Temporary File Purger](Disk_Cleaning_&_Temporary_File_Purger.md) (1 shared connections)
-- [Test Composite With()](Test_Composite_With.md) (1 shared connections)
-- [Win32 Registry Scanner & Mutator](Win32_Registry_Scanner_&_Mutator.md) (1 shared connections)
-- [AppState](AppState.md) (1 shared connections)
-- [Error.Rs Winblasterror Appx](Error.Rs_Winblasterror_Appx.md) (1 shared connections)
-- [app.rs](app.rs.md) (1 shared connections)
-- [backend.rs](backend.rs.md) (1 shared connections)
-- [Scandetailkind Appxinstalled Appxinstalledps](Scandetailkind_Appxinstalled_Appxinstalledps.md) (1 shared connections)
-- [FailAtMutationBackend](FailAtMutationBackend.md) (1 shared connections)
+- [Error.Rs Winblasterror Appx](Error.Rs_Winblasterror_Appx.md) (3 shared connections)
+- [deserialize](deserialize.md) (2 shared connections)
+- [generational_cache.rs](generational_cache.rs.md) (1 shared connections)
+- [lazy_loader.rs](lazy_loader.rs.md) (1 shared connections)
+- [startup.rs](startup.rs.md) (1 shared connections)
+- [theme.rs](theme.rs.md) (1 shared connections)
+- [instant](instant.md) (1 shared connections)
+- [real_windows_env.rs](real_windows_env.rs.md) (1 shared connections)
+- [Privacy, Telemetry & AI Hardening Catalog](Privacy,_Telemetry_&_AI_Hardening_Catalog.md) (1 shared connections)
 
 ## Source Files
 
-- `src/core/backend.rs`
-- `src/hardware/sys_inventory.rs`
-- `tests/tweak_sandbox_e2e.rs`
+- `src/tools/network_diag.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 24 (100%)
-- INFERRED: 0 (0%)
+- EXTRACTED: 26 (96%)
+- INFERRED: 1 (4%)
 - AMBIGUOUS: 0 (0%)
 
 ---

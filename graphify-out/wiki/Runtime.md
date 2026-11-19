@@ -1,19 +1,35 @@
 # Runtime
 
-> 1 nodes · cohesion 1.00
+> 10 nodes · cohesion 0.36
 
 ## Key Concepts
 
-- **Runtime** (0 connections)
+- **service_scanner.rs** (12 connections) — `src/scanner/service_scanner.rs`
+- **evaluate_service_value_with_kind()** (5 connections) — `src/scanner/service_scanner.rs`
+- **evaluate_service()** (4 connections) — `src/scanner/service_scanner.rs`
+- **evaluate_service_value()** (4 connections) — `src/scanner/service_scanner.rs`
+- **get_service_start_type()** (3 connections) — `src/scanner/service_scanner.rs`
+- **check_service_start_type()** (2 connections) — `src/scanner/service_scanner.rs`
+- **start_type_name()** (2 connections) — `src/scanner/service_scanner.rs`
+- **test_evaluate_absent_optional_service()** (2 connections) — `src/scanner/service_scanner.rs`
+- **test_evaluate_service_value_with_kind_all_branches()** (2 connections) — `src/scanner/service_scanner.rs`
+- **hkey_local_machine** (1 connections)
 
 ## Relationships
 
-- No strong cross-community connections detected
+- [registry_scanner.rs](registry_scanner.rs.md) (2 shared connections)
+- [deserialize](deserialize.md) (1 shared connections)
+- [sys_inventory.rs](sys_inventory.rs.md) (1 shared connections)
+- [.Reg .Set Power](Reg_.Set_Power.md) (1 shared connections)
+
+## Source Files
+
+- `src/scanner/service_scanner.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 0 (0%)
-- INFERRED: 0 (0%)
+- EXTRACTED: 16 (76%)
+- INFERRED: 5 (24%)
 - AMBIGUOUS: 0 (0%)
 
 ---

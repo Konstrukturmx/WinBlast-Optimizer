@@ -10,9 +10,9 @@
 
 ## Relationships
 
-- [AppState](AppState.md) (1 shared connections)
-- [action_button](action_button.md) (1 shared connections)
-- [Scandetailkind Appxinstalled Appxinstalledps](Scandetailkind_Appxinstalled_Appxinstalledps.md) (1 shared connections)
+- [Privacy, Telemetry & AI Hardening Catalog](Privacy,_Telemetry_&_AI_Hardening_Catalog.md) (1 shared connections)
+- [action_button_guarded](action_button_guarded.md) (1 shared connections)
+- [theme.rs](theme.rs.md) (1 shared connections)
 - [app.rs](app.rs.md) (1 shared connections)
 
 ## Source Files

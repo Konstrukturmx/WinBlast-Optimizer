@@ -1,60 +1,46 @@
 # Core UI Internationalization & Text Catalog
 
-> 30 nodes · cohesion 0.07
+> 11 nodes · cohesion 0.22
 
 ## Key Concepts
 
-- **power.rs** (60 connections) — `src/hardware/power.rs`
-- **fallback_scheme_name()** (6 connections) — `src/hardware/power.rs`
-- **set_usb_root_hub_power_saving()** (4 connections) — `src/hardware/power.rs`
-- **.set_usb_root_hub_power_saving()** (2 connections) — `src/core/backend.rs`
-- **resolve_indirect_string()** (2 connections) — `src/hardware/power.rs`
-- **strip_indirect_prefix()** (2 connections) — `src/hardware/power.rs`
-- **test_fallback_scheme_name_indirect_stripping()** (2 connections) — `src/hardware/power.rs`
-- **callntpowerinformation** (1 connections)
-- **getsystempowerstatus** (1 connections)
-- **hlocal** (1 connections)
-- **localfree** (1 connections)
-- **ntstatus** (1 connections)
-- **powerduplicatescheme** (1 connections)
-- **powergetactivescheme** (1 connections)
-- **powerreadacdefaultindex** (1 connections)
-- **powerreadacvalueindex** (1 connections)
-- **powerreaddcdefaultindex** (1 connections)
-- **powerreaddcvalueindex** (1 connections)
-- **powerreadvaluemax** (1 connections)
-- **powerreadvaluemin** (1 connections)
-- **powersetactivescheme** (1 connections)
-- **powerwriteacvalueindex** (1 connections)
-- **powerwritedcvalueindex** (1 connections)
-- **powerwritefriendlyname** (1 connections)
-- **powerwritevaluemax** (1 connections)
-- *... and 5 more nodes in this community*
+- **WindowsInfo** (16 connections) — `src/core/os_detect.rs`
+- **.detect_os()** (5 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.detect_os()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.detect_os()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.detect_os()** (3 connections) — `src/core/backend.rs`
+- **.detect_os()** (2 connections) — `src/core/backend.rs`
+- **.detect_os()** (2 connections) — `src/core/backend.rs`
+- **test_windows_info_detect_host()** (2 connections) — `src/core/os_detect.rs`
+- **.detect()** (2 connections) — `src/core/os_detect.rs`
+- **.has_recall()** (1 connections) — `src/core/os_detect.rs`
+- **.supports_hags()** (1 connections) — `src/core/os_detect.rs`
 
 ## Relationships
 
-- [normalize_guid_str](normalize_guid_str.md) (18 shared connections)
-- [PowerSchemeInfo](PowerSchemeInfo.md) (4 shared connections)
-- [Startup Tasks & Auto-Run Explorer](Startup_Tasks_&_Auto-Run_Explorer.md) (3 shared connections)
-- [enums](enums.md) (2 shared connections)
+- [BlastResult](BlastResult.md) (3 shared connections)
+- [SandboxEnv](SandboxEnv.md) (2 shared connections)
 - [deserialize](deserialize.md) (2 shared connections)
-- [RealBackend](RealBackend.md) (1 shared connections)
+- [PanickingBackend](PanickingBackend.md) (2 shared connections)
+- [.Reg State() Vendor()](Reg_State_Vendor.md) (1 shared connections)
+- [Integration Suite: Tweak Sandbox E2E](Integration_Suite-_Tweak_Sandbox_E2E.md) (1 shared connections)
+- [task_scanner.rs](task_scanner.rs.md) (1 shared connections)
+- [Privacy, Telemetry & AI Hardening Catalog](Privacy,_Telemetry_&_AI_Hardening_Catalog.md) (1 shared connections)
+- [app.rs](app.rs.md) (1 shared connections)
 - [backend.rs](backend.rs.md) (1 shared connections)
-- [Embedded Catalog Test](Embedded_Catalog_Test.md) (1 shared connections)
-- [svc_mutator.rs](svc_mutator.rs.md) (1 shared connections)
-- [Disabled() Delete .Set](Disabled_Delete_.Set.md) (1 shared connections)
-- [.Create Metrics Sampler()](Create_Metrics_Sampler.md) (1 shared connections)
-- [State Ledger & Restore Point Engine](State_Ledger_&_Restore_Point_Engine.md) (1 shared connections)
+- [real_windows_env.rs](real_windows_env.rs.md) (1 shared connections)
+- [theme.rs](theme.rs.md) (1 shared connections)
 
 ## Source Files
 
 - `src/core/backend.rs`
-- `src/hardware/power.rs`
+- `src/core/os_detect.rs`
+- `tests/tweak_sandbox_e2e.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 68 (99%)
-- INFERRED: 1 (1%)
+- EXTRACTED: 30 (100%)
+- INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 
 ---

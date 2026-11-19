@@ -249,7 +249,8 @@ fn resolve_persistent_app_dir() -> PathBuf {
         if std::fs::create_dir_all(&cand).is_ok() {
             // Verify directory write permission with an atomic probe
             let probe = cand.join(".write_probe");
-            if std::fs::write(&probe, b"").is_ok() {
+            if let Ok(_buf) = std::fs::File::create(&probe).map(std::io::BufWriter::new) {
+                drop(_buf);
                 let _ = std::fs::remove_file(&probe);
                 return cand;
             }
@@ -1060,6 +1061,16 @@ impl SandboxEnv {
         }
     }
 
+    #[inline]
+    pub fn state_read(&self) -> std::sync::RwLockReadGuard<'_, SandboxState> {
+        self.inner.read().unwrap_or_else(|e| e.into_inner())
+    }
+
+    #[inline]
+    pub fn state_write(&self) -> std::sync::RwLockWriteGuard<'_, SandboxState> {
+        self.inner.write().unwrap_or_else(|e| e.into_inner())
+    }
+
     pub fn normalize_hive(hive: &str) -> String {
         match hive.trim().to_ascii_uppercase().as_str() {
             "HKLM" | "HKEY_LOCAL_MACHINE" => "HKLM".to_string(),
@@ -1359,7 +1370,7 @@ impl SandboxEnv {
     }
 
     fn seed_actions_with_vendor(&self, actions: &[TweakAction], gpu_vendor: Option<&str>) {
-        let mut st = self.inner.write().unwrap();
+        let mut st = self.state_write();
         let active_scheme = st.active_power_scheme.clone();
         for action in actions {
             match action {
@@ -1608,11 +1619,11 @@ impl SandboxEnv {
 
     /// Inspect recorded operations in the sandbox.
     pub fn recorded_ops(&self) -> Vec<SandboxOp> {
-        self.inner.read().unwrap().ops.clone()
+        self.state_read().ops.clone()
     }
 
     fn take_injected_error(&self) -> Result<()> {
-        let mut st = self.inner.write().unwrap();
+        let mut st = self.state_write();
         if let Some(msg) = st.inject_next_error.take() {
             return Err(WinBlastError::TweakFailed(msg));
         }
@@ -1689,7 +1700,7 @@ struct SandboxMetricsSampler {
 
 impl MetricsSampler for SandboxMetricsSampler {
     fn sample(&mut self) -> SystemMetrics {
-        let mut st = self.inner.write().unwrap();
+        let mut st = self.inner.write().unwrap_or_else(|e| e.into_inner());
         if let Some(m) = st.metrics_samples.pop_front() {
             return m;
         }
@@ -1713,11 +1724,11 @@ impl MetricsSampler for SandboxMetricsSampler {
 
 impl SystemBackend for SandboxEnv {
     fn is_elevated(&self) -> bool {
-        self.inner.read().unwrap().elevated
+        self.state_read().elevated
     }
 
     fn detect_os(&self) -> Result<WindowsInfo> {
-        Ok(self.inner.read().unwrap().os_info.clone())
+        Ok(self.state_read().os_info.clone())
     }
 
     fn default_ledger_path(&self) -> PathBuf {
@@ -1741,7 +1752,7 @@ impl SystemBackend for SandboxEnv {
     }
 
     fn reg_get_dword_for_vendor(&self, hive: &str, path: &str, name: &str, gpu_vendor: Option<&str>) -> Option<u32> {
-        let st = self.inner.read().unwrap();
+        let st = self.state_read();
         let resolved = Self::resolve_target_paths_in_state(&st, hive, path, gpu_vendor).ok()?;
         if resolved.is_empty() {
             return None;
@@ -1786,7 +1797,7 @@ impl SystemBackend for SandboxEnv {
         self.take_injected_error()?;
         validate_registry_mutation_path(hive, path, false)?;
         let norm_hive = Self::normalize_hive(hive);
-        let mut st = self.inner.write().unwrap();
+        let mut st = self.state_write();
         let resolved = Self::resolve_target_paths_in_state(&st, hive, path, gpu_vendor)?;
         for rp in resolved {
             Self::write_dword_in_state(&mut st, &norm_hive, &rp, name, value);
@@ -1804,7 +1815,7 @@ impl SystemBackend for SandboxEnv {
         self.take_injected_error()?;
         validate_registry_mutation_path(hive, path, false)?;
         let norm_hive = Self::normalize_hive(hive);
-        let mut st = self.inner.write().unwrap();
+        let mut st = self.state_write();
         let resolved = Self::resolve_target_paths_in_state(&st, hive, path, gpu_vendor)?;
         for rp in resolved {
             let key = Self::reg_key(&norm_hive, &rp, name);
@@ -1819,7 +1830,7 @@ impl SystemBackend for SandboxEnv {
     }
 
     fn reg_get_string(&self, hive: &str, path: &str, name: &str, gpu_vendor: Option<&str>) -> Option<RegStringValue> {
-        let st = self.inner.read().unwrap();
+        let st = self.state_read();
         let resolved = Self::resolve_target_paths_in_state(&st, hive, path, gpu_vendor).ok()?;
         for rp in resolved {
             let key = Self::reg_key(hive, &rp, name);
@@ -1834,7 +1845,7 @@ impl SystemBackend for SandboxEnv {
         self.take_injected_error()?;
         validate_registry_mutation_path(hive, path, false)?;
         let norm_hive = Self::normalize_hive(hive);
-        let mut st = self.inner.write().unwrap();
+        let mut st = self.state_write();
         let resolved = Self::resolve_target_paths_in_state(&st, hive, path, gpu_vendor)?;
         for rp in resolved {
             let key = Self::reg_key(&norm_hive, &rp, name);
@@ -1860,7 +1871,7 @@ impl SystemBackend for SandboxEnv {
 
     fn reg_get_binary(&self, hive: &str, path: &str, name: &str) -> Option<Vec<u8>> {
         let key = Self::reg_key(hive, path, name);
-        self.inner.read().unwrap().reg_binaries.get(&key).cloned()
+        self.state_read().reg_binaries.get(&key).cloned()
     }
 
     fn reg_set_binary(&self, hive: &str, path: &str, name: &str, bytes: &[u8]) -> Result<()> {
@@ -1868,7 +1879,7 @@ impl SystemBackend for SandboxEnv {
         validate_registry_mutation_path(hive, path, false)?;
         let norm_hive = Self::normalize_hive(hive);
         let key = Self::reg_key(&norm_hive, path, name);
-        let mut st = self.inner.write().unwrap();
+        let mut st = self.state_write();
         Self::clear_reg_value_in_state(&mut st, &key);
         Self::ensure_tree_path_in_state(&mut st, &norm_hive, path);
         st.reg_binaries.insert(key, bytes.to_vec());
@@ -1883,7 +1894,7 @@ impl SystemBackend for SandboxEnv {
 
     fn reg_get_raw(&self, hive: &str, path: &str, name: &str) -> Option<RegRawSnapshot> {
         let key = Self::reg_key(hive, path, name);
-        let st = self.inner.read().unwrap();
+        let st = self.state_read();
         if let Some(raw) = st.reg_raw.get(&key) {
             return Some(raw.clone());
         }
@@ -1916,7 +1927,7 @@ impl SystemBackend for SandboxEnv {
     fn reg_set_raw(&self, hive: &str, path: &str, name: &str, raw: &RegRawSnapshot) -> Result<()> {
         self.take_injected_error()?;
         validate_registry_mutation_path(hive, path, false)?;
-        let mut st = self.inner.write().unwrap();
+        let mut st = self.state_write();
         Self::write_raw_in_state(&mut st, hive, path, name, raw)
     }
 
@@ -1924,7 +1935,7 @@ impl SystemBackend for SandboxEnv {
         let norm_hive = Self::normalize_hive(hive);
         let norm_path = Self::normalize_reg_path(path);
         let prefix = format!("{}\\", norm_path);
-        let st = self.inner.read().unwrap();
+        let st = self.state_read();
         if st.reg_trees.contains_key(&(norm_hive.clone(), norm_path.clone())) {
             return true;
         }
@@ -1938,7 +1949,7 @@ impl SystemBackend for SandboxEnv {
 
     fn reg_snapshot_tree(&self, hive: &str, path: &str) -> Result<Option<RegTreeSnapshot>> {
         let k = (Self::normalize_hive(hive), Self::normalize_reg_path(path));
-        Ok(self.inner.read().unwrap().reg_trees.get(&k).cloned())
+        Ok(self.state_read().reg_trees.get(&k).cloned())
     }
 
     fn reg_delete_tree(&self, hive: &str, path: &str) -> Result<()> {
@@ -1947,7 +1958,7 @@ impl SystemBackend for SandboxEnv {
         let norm_hive = Self::normalize_hive(hive);
         let norm_path = Self::normalize_reg_path(path);
         let prefix = format!("{}\\", norm_path);
-        let mut st = self.inner.write().unwrap();
+        let mut st = self.state_write();
         st.reg_trees
             .retain(|(h, p), _| !(h == &norm_hive && (p == &norm_path || p.starts_with(&prefix))));
         st.registry
@@ -1968,35 +1979,35 @@ impl SystemBackend for SandboxEnv {
     fn reg_restore_tree(&self, hive: &str, path: &str, snapshot: &RegTreeSnapshot) -> Result<()> {
         self.take_injected_error()?;
         validate_registry_mutation_path(hive, path, true)?;
-        let mut st = self.inner.write().unwrap();
+        let mut st = self.state_write();
         Self::restore_tree_into_state(&mut st, hive, path, snapshot)
     }
 
     fn total_physical_ram_kb(&self) -> u64 {
-        self.inner.read().unwrap().total_ram_kb
+        self.state_read().total_ram_kb
     }
 
     fn logical_core_count(&self) -> u32 {
-        self.inner.read().unwrap().logical_cores
+        self.state_read().logical_cores
     }
 
     fn detect_platform_security(&self) -> PlatformSecurityInfo {
-        self.inner.read().unwrap().platform_security.clone()
+        self.state_read().platform_security.clone()
     }
 
     fn get_active_power_scheme(&self) -> Result<String> {
-        Ok(self.inner.read().unwrap().active_power_scheme.clone())
+        Ok(self.state_read().active_power_scheme.clone())
     }
 
     fn list_power_schemes(&self) -> Vec<PowerSchemeInfo> {
-        self.inner.read().unwrap().power_schemes.clone()
+        self.state_read().power_schemes.clone()
     }
 
     fn set_active_power_scheme(&self, scheme_guid: &str) -> Result<()> {
         self.take_injected_error()?;
         let _ = power::parse_guid(scheme_guid)?;
         let norm = power::normalize_guid_str(scheme_guid);
-        let mut st = self.inner.write().unwrap();
+        let mut st = self.state_write();
         if !st
             .power_schemes
             .iter()
@@ -2017,7 +2028,7 @@ impl SystemBackend for SandboxEnv {
     fn create_and_activate_performance_plan(&self) -> Result<String> {
         self.take_injected_error()?;
         let guid = "e9a42b02-d5df-448d-aa00-03f14749eb61".to_string();
-        let mut st = self.inner.write().unwrap();
+        let mut st = self.state_write();
         if !st.power_schemes.iter().any(|p| p.guid == guid) {
             st.power_schemes.push(PowerSchemeInfo {
                 guid: guid.clone(),
@@ -2038,7 +2049,7 @@ impl SystemBackend for SandboxEnv {
         }
         let _ = power::parse_guid(subgroup_guid)?;
         let _ = power::parse_guid(setting_guid)?;
-        let st = self.inner.read().unwrap();
+        let st = self.state_read();
         let scheme = scheme_guid
             .map(power::normalize_guid_str)
             .unwrap_or_else(|| st.active_power_scheme.clone());
@@ -2059,7 +2070,7 @@ impl SystemBackend for SandboxEnv {
         }
         let _ = power::parse_guid(subgroup_guid)?;
         let _ = power::parse_guid(setting_guid)?;
-        let mut st = self.inner.write().unwrap();
+        let mut st = self.state_write();
         let scheme = scheme_guid
             .map(power::normalize_guid_str)
             .unwrap_or_else(|| st.active_power_scheme.clone());
@@ -2145,12 +2156,12 @@ impl SystemBackend for SandboxEnv {
     }
 
     fn query_hibernation_status(&self) -> HibernationStatus {
-        self.inner.read().unwrap().hibernation.clone()
+        self.state_read().hibernation.clone()
     }
 
     fn set_hibernation_enabled(&self, enable: bool) -> Result<HibernationStatus> {
         self.take_injected_error()?;
-        let mut st = self.inner.write().unwrap();
+        let mut st = self.state_write();
         st.hibernation.hibernation_enabled = enable;
         st.hibernation.hiberfile_present = enable;
         if !enable {
@@ -2163,7 +2174,7 @@ impl SystemBackend for SandboxEnv {
         self.take_injected_error()?;
         const USB_SUBGROUP: &str = "2a737441-1930-4402-8d77-b2bebba308a3";
         const USB_SELECTIVE_SUSPEND: &str = "48e6b7a6-50f5-4782-a5d4-53bb8f07e226";
-        let mut st = self.inner.write().unwrap();
+        let mut st = self.state_write();
         let scheme = st.active_power_scheme.clone();
         let key = (
             scheme.clone(),
@@ -2184,9 +2195,7 @@ impl SystemBackend for SandboxEnv {
     }
 
     fn get_service_start_type(&self, service_name: &str) -> Option<u32> {
-        self.inner
-            .read()
-            .unwrap()
+        self.state_read()
             .services
             .get(&service_name.trim().to_lowercase())
             .copied()
@@ -2217,7 +2226,7 @@ impl SystemBackend for SandboxEnv {
             ));
         }
         let key = clean.to_lowercase();
-        let mut st = self.inner.write().unwrap();
+        let mut st = self.state_write();
         if !st.services.contains_key(&key) {
             if start_type == 3 || start_type == 4 {
                 return Ok(());
@@ -2248,13 +2257,13 @@ impl SystemBackend for SandboxEnv {
     }
 
     fn load_task_cache(&self) -> TaskCache {
-        let tasks = self.inner.read().unwrap().tasks.clone();
+        let tasks = self.state_read().tasks.clone();
         TaskCache::from_map(tasks, true)
     }
 
     fn get_task_enabled(&self, task_path: &str) -> Option<bool> {
         let norm = normalize_task_path(task_path);
-        let st = self.inner.read().unwrap();
+        let st = self.state_read();
         if let Some(&en) = st.tasks.get(&norm) {
             return Some(en);
         }
@@ -2271,7 +2280,7 @@ impl SystemBackend for SandboxEnv {
     fn set_scheduled_task_enabled(&self, task_path: &str, enable: bool) -> Result<()> {
         self.take_injected_error()?;
         let norm = normalize_task_path(task_path);
-        let mut st = self.inner.write().unwrap();
+        let mut st = self.state_write();
         let target_key = if st.tasks.contains_key(&norm) {
             Some(norm)
         } else {
@@ -2303,7 +2312,7 @@ impl SystemBackend for SandboxEnv {
     }
 
     fn load_appx_cache(&self) -> AppxCache {
-        let pkgs = self.inner.read().unwrap().appx_packages.clone();
+        let pkgs = self.state_read().appx_packages.clone();
         AppxCache::from_packages(pkgs)
     }
 
@@ -2319,24 +2328,24 @@ impl SystemBackend for SandboxEnv {
                 package_family.trim()
             )));
         }
-        let mut st = self.inner.write().unwrap();
+        let mut st = self.state_write();
         Self::remove_appx_family_in_state(&mut st, &clean, package_family);
         Ok(())
     }
 
     fn read_hosts_file(&self) -> Option<String> {
-        Some(self.inner.read().unwrap().hosts_content.clone())
+        Some(self.state_read().hosts_content.clone())
     }
 
     fn write_hosts_file(&self, content: &str) -> Result<()> {
         self.take_injected_error()?;
-        self.inner.write().unwrap().hosts_content = content.to_string();
+        self.state_write().hosts_content = content.to_string();
         Ok(())
     }
 
     fn block_telemetry_hosts(&self, hosts: &[&str]) -> Result<usize> {
         self.take_injected_error()?;
-        let mut st = self.inner.write().unwrap();
+        let mut st = self.state_write();
         let (updated, added) =
             crate::executor::ps_runner::block_telemetry_hosts_in_content(&st.hosts_content, hosts);
         st.hosts_content = updated;
@@ -2345,12 +2354,12 @@ impl SystemBackend for SandboxEnv {
     }
 
     fn list_restore_points(&self) -> Result<Vec<RestorePoint>> {
-        Ok(self.inner.read().unwrap().restore_points.clone())
+        Ok(self.state_read().restore_points.clone())
     }
 
     fn create_restore_point(&self, description: &str) -> Result<()> {
         self.take_injected_error()?;
-        let mut st = self.inner.write().unwrap();
+        let mut st = self.state_write();
         let seq = st.restore_points.len() as u32 + 1;
         st.restore_points.push(RestorePoint {
             sequence_number: seq,
@@ -2363,18 +2372,18 @@ impl SystemBackend for SandboxEnv {
     }
 
     fn detect_cpu(&self) -> CpuInfo {
-        self.inner.read().unwrap().cpu_info.clone()
+        self.state_read().cpu_info.clone()
     }
 
     fn detect_gpus(&self) -> Vec<DetectedGpu> {
-        self.inner.read().unwrap().gpus.clone()
+        self.state_read().gpus.clone()
     }
 
     fn set_gpu_msi_mode(&self, pnp_instance_id: &str, enable: bool, priority: u32) -> std::io::Result<()> {
         if let Err(e) = self.take_injected_error() {
             return Err(std::io::Error::other(e.to_string()));
         }
-        let mut st = self.inner.write().unwrap();
+        let mut st = self.state_write();
         for g in &mut st.gpus {
             if g.pnp_instance_id == pnp_instance_id {
                 g.msi_enabled = enable;
@@ -2390,40 +2399,40 @@ impl SystemBackend for SandboxEnv {
     }
 
     fn is_hags_enabled(&self) -> bool {
-        self.inner.read().unwrap().hags_enabled
+        self.state_read().hags_enabled
     }
 
     fn set_hags(&self, enable: bool) -> std::io::Result<()> {
         if let Err(e) = self.take_injected_error() {
             return Err(std::io::Error::other(e.to_string()));
         }
-        let mut st = self.inner.write().unwrap();
+        let mut st = self.state_write();
         st.hags_enabled = enable;
         st.ops.push(SandboxOp::SetHags(enable));
         Ok(())
     }
 
     fn is_mpo_disabled(&self) -> bool {
-        self.inner.read().unwrap().mpo_disabled
+        self.state_read().mpo_disabled
     }
 
     fn set_mpo_disabled(&self, disable: bool) -> std::io::Result<()> {
         if let Err(e) = self.take_injected_error() {
             return Err(std::io::Error::other(e.to_string()));
         }
-        let mut st = self.inner.write().unwrap();
+        let mut st = self.state_write();
         st.mpo_disabled = disable;
         st.ops.push(SandboxOp::SetMpo(disable));
         Ok(())
     }
 
     fn detect_core_parking(&self) -> CoreParkingState {
-        self.inner.read().unwrap().core_parking.clone()
+        self.state_read().core_parking.clone()
     }
 
     fn unpark_all_cores(&self) -> Result<()> {
         self.take_injected_error()?;
-        let mut st = self.inner.write().unwrap();
+        let mut st = self.state_write();
         let snap = parking::ParkingSnapshot {
             min_ac: 100,
             min_dc: 100,
@@ -2439,7 +2448,7 @@ impl SystemBackend for SandboxEnv {
 
     fn restore_stock_parking(&self) -> Result<()> {
         self.take_injected_error()?;
-        let mut st = self.inner.write().unwrap();
+        let mut st = self.state_write();
         let snap = parking::ParkingSnapshot {
             min_ac: 10,
             min_dc: 5,
@@ -2455,17 +2464,17 @@ impl SystemBackend for SandboxEnv {
 
     fn apply_parking_snapshot(&self, snap: &parking::ParkingSnapshot) -> Result<()> {
         self.take_injected_error()?;
-        let mut st = self.inner.write().unwrap();
+        let mut st = self.state_write();
         Self::sync_parking_in_state(&mut st, snap);
         Ok(())
     }
 
     fn capture_latency(&self) -> LatencySnapshot {
-        self.inner.read().unwrap().latency_snapshot.clone()
+        self.state_read().latency_snapshot.clone()
     }
 
     fn run_latency_benchmark(&self, stage: &str) -> LatencyBenchmarkSnapshot {
-        let st = self.inner.read().unwrap();
+        let st = self.state_read();
         if stage.eq_ignore_ascii_case("AFTER") {
             st.latency_benchmark_after.clone()
         } else {
@@ -2481,12 +2490,12 @@ impl SystemBackend for SandboxEnv {
     }
 
     fn scan_clean_targets(&self) -> Vec<CleanTargetScan> {
-        self.inner.read().unwrap().clean_targets.clone()
+        self.state_read().clean_targets.clone()
     }
 
     fn execute_clean_targets(&self, kinds: &[CleanTargetKind]) -> Result<CleanExecutionReport> {
         self.take_injected_error()?;
-        let mut st = self.inner.write().unwrap();
+        let mut st = self.state_write();
         let mut report = CleanExecutionReport::default();
         for &kind in kinds {
             if let Some(target) = st.clean_targets.iter_mut().find(|t| t.kind == kind) {
@@ -2528,7 +2537,7 @@ impl SystemBackend for SandboxEnv {
             let clean = features_apps::validate_appx_family(f)?;
             validated.push(clean.to_string());
         }
-        let mut st = self.inner.write().unwrap();
+        let mut st = self.state_write();
         let mut removed = 0usize;
         for f in &validated {
             removed += Self::remove_appx_family_in_state(&mut st, &f.to_lowercase(), f);
@@ -2542,7 +2551,7 @@ impl SystemBackend for SandboxEnv {
     }
 
     fn list_optional_features(&self) -> Result<Vec<WindowsOptionalFeature>> {
-        let st = self.inner.read().unwrap();
+        let st = self.state_read();
         if !st.elevated {
             return Err(WinBlastError::ElevationRequired(
                 "Optional feature scan requires Administrator privileges".to_string(),
@@ -2554,7 +2563,7 @@ impl SystemBackend for SandboxEnv {
     fn set_optional_feature(&self, name: &str, kind: OptionalFeatureKind, enable: bool) -> Result<FeatureInstallState> {
         self.take_injected_error()?;
         let clean = features_apps::validate_feature_name(name)?;
-        let mut st = self.inner.write().unwrap();
+        let mut st = self.state_write();
         let new_state = if enable {
             FeatureInstallState::Enabled
         } else {
@@ -2585,12 +2594,12 @@ impl SystemBackend for SandboxEnv {
     }
 
     fn check_onedrive_kfm_active(&self) -> Option<String> {
-        self.inner.read().unwrap().onedrive_kfm_path.clone()
+        self.state_read().onedrive_kfm_path.clone()
     }
 
     fn uninstall_onedrive_safe(&self) -> Result<String> {
         self.take_injected_error()?;
-        if let Some(kfm) = self.inner.read().unwrap().onedrive_kfm_path.clone() {
+        if let Some(kfm) = self.state_read().onedrive_kfm_path.clone() {
             return Err(WinBlastError::TweakFailed(format!(
                 "Blocked OneDrive uninstall: Known Folder Move active ({})",
                 kfm
@@ -2611,7 +2620,7 @@ impl SystemBackend for SandboxEnv {
     }
 
     fn list_startup_entries(&self) -> Result<Vec<StartupEntry>> {
-        Ok(self.inner.read().unwrap().startup_entries.clone())
+        Ok(self.state_read().startup_entries.clone())
     }
 
     fn set_startup_entry_enabled(&self, entry: &StartupEntry, enable: bool) -> Result<()> {
@@ -2622,7 +2631,7 @@ impl SystemBackend for SandboxEnv {
                 entry.name
             )));
         }
-        let mut st = self.inner.write().unwrap();
+        let mut st = self.state_write();
         if let Some(s) = st.startup_entries.iter_mut().find(|e| e.id == entry.id) {
             if s.policy_locked {
                 return Err(WinBlastError::TweakFailed("Policy locked".to_string()));
@@ -2638,7 +2647,7 @@ impl SystemBackend for SandboxEnv {
 
     fn set_startup_entry_enabled_by_id(&self, id: &str, enable: bool) -> Result<()> {
         self.take_injected_error()?;
-        let mut st = self.inner.write().unwrap();
+        let mut st = self.state_write();
         let entry = st
             .startup_entries
             .iter_mut()
@@ -2656,7 +2665,7 @@ impl SystemBackend for SandboxEnv {
     }
 
     fn list_live_services(&self) -> Result<Vec<LiveServiceInfo>> {
-        Ok(self.inner.read().unwrap().live_services.clone())
+        Ok(self.state_read().live_services.clone())
     }
 
     fn list_live_tasks(&self) -> Vec<LiveScheduledTaskInfo> {
@@ -2667,7 +2676,7 @@ impl SystemBackend for SandboxEnv {
     fn run_scheduled_task(&self, task_path: &str) -> Result<()> {
         self.take_injected_error()?;
         let norm = normalize_task_path(task_path);
-        let st = self.inner.read().unwrap();
+        let st = self.state_read();
         let space_variant = format!("{} ", norm);
         let exists = st.tasks.contains_key(&norm)
             || st.tasks.keys().any(|k| k.starts_with(&space_variant));
@@ -2682,7 +2691,7 @@ impl SystemBackend for SandboxEnv {
 
     fn restart_explorer_safely(&self) -> Result<String> {
         self.take_injected_error()?;
-        self.inner.write().unwrap().ops.push(SandboxOp::ExplorerRestarted);
+        self.state_write().ops.push(SandboxOp::ExplorerRestarted);
         Ok("Explorer restarted safely in sandbox.".to_string())
     }
 
@@ -2690,7 +2699,7 @@ impl SystemBackend for SandboxEnv {
 
     fn request_system_reboot(&self) -> Result<()> {
         self.take_injected_error()?;
-        self.inner.write().unwrap().ops.push(SandboxOp::RebootRequested);
+        self.state_write().ops.push(SandboxOp::RebootRequested);
         Ok(())
     }
 }

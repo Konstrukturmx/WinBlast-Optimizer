@@ -1,61 +1,37 @@
 # Hardware Diagnostics & GPU Silicon Tuning
 
-> 29 nodes · cohesion 0.16
+> 12 nodes · cohesion 0.41
 
 ## Key Concepts
 
-- **scanner/mod.rs** (38 connections) — `src/scanner/mod.rs`
-- **ScanResult** (28 connections) — `src/scanner/mod.rs`
-- **scan_single_tweak_with()** (17 connections) — `src/scanner/mod.rs`
-- **CachedScanBackend** (10 connections) — `src/core/backend.rs`
-- **evaluate_tweak()** (10 connections) — `src/scanner/mod.rs`
-- **run_full_scan_with()** (10 connections) — `src/scanner/mod.rs`
-- **scan_all_tweaks_parallel_with()** (10 connections) — `src/scanner/mod.rs`
-- **evaluate_single_action()** (9 connections) — `src/scanner/mod.rs`
-- **scan_tweaks_chunked_parallel_with()** (7 connections) — `src/scanner/mod.rs`
-- **ActionEval** (6 connections) — `src/scanner/mod.rs`
-- **evaluate_tweak_status()** (6 connections) — `src/scanner/mod.rs`
-- **make_scan_result()** (6 connections) — `src/scanner/mod.rs`
-- **test_parallel_scan_parity_with_sequential()** (5 connections) — `src/scanner/mod.rs`
-- **mk_test_tweak()** (4 connections) — `src/scanner/mod.rs`
-- **run_full_scan()** (4 connections) — `src/scanner/mod.rs`
-- **scan_all_tweaks_parallel()** (4 connections) — `src/scanner/mod.rs`
-- **scan_single_tweak()** (4 connections) — `src/scanner/mod.rs`
-- **scan_tweaks_chunked_parallel()** (4 connections) — `src/scanner/mod.rs`
-- **test_foreign_gpu_and_non_elevated_feature_and_partial_power_scan()** (4 connections) — `src/scanner/mod.rs`
-- **test_evaluate_tweak_status_single()** (3 connections) — `src/scanner/mod.rs`
-- **test_full_scan_execution_in_sandbox()** (3 connections) — `src/scanner/mod.rs`
-- **test_run_full_scan_populates_detail_kind_and_sub_category()** (3 connections) — `src/scanner/mod.rs`
-- **test_scan_single_tweak_detail_kind_every_action_and_na_branch()** (3 connections) — `src/scanner/mod.rs`
-- **test_scan_single_tweak_in_sandbox()** (3 connections) — `src/scanner/mod.rs`
-- **.scan_detail_text()** (2 connections) — `src/app.rs`
-- *... and 4 more nodes in this community*
+- **settle_frames()** (13 connections) — `tests/ui_responsive_e2e.rs`
+- **click_key()** (8 connections) — `tests/ui_responsive_e2e.rs`
+- **test_ui_live_viewport_sweep_and_compact_nav_menu_interaction()** (8 connections) — `tests/ui_responsive_e2e.rs`
+- **test_ui_v08_not_applicable_diff_modal_privacy_cores_and_protected_appx()** (8 connections) — `tests/ui_responsive_e2e.rs`
+- **Runtime** (7 connections)
+- **assert_frame_clean()** (6 connections) — `tests/ui_responsive_e2e.rs`
+- **click_text()** (6 connections) — `tests/ui_responsive_e2e.rs`
+- **drain_state_workers()** (6 connections) — `tests/ui_responsive_e2e.rs`
+- **assert_clean_appx_compact_vertical_geometry()** (5 connections) — `tests/ui_responsive_e2e.rs`
+- **test_ui_responsive_matrix_all_viewports_views_themes_locales_scales()** (5 connections) — `tests/ui_responsive_e2e.rs`
+- **test_ui_dropdown_anchoring_and_header_height_stability()** (4 connections) — `tests/ui_responsive_e2e.rs`
+- **test_ui_theme_style_selector_button_clicks_all_tiers()** (4 connections) — `tests/ui_responsive_e2e.rs`
 
 ## Relationships
 
-- [engine.rs](engine.rs.md) (16 shared connections)
-- [Scandetailkind Appxinstalled Appxinstalledps](Scandetailkind_Appxinstalled_Appxinstalledps.md) (9 shared connections)
-- [action_button](action_button.md) (8 shared connections)
-- [Disk Cleaning & Temporary File Purger](Disk_Cleaning_&_Temporary_File_Purger.md) (7 shared connections)
-- [AppState](AppState.md) (6 shared connections)
-- [Dynamicdwordformula Logicalcorecount Totalraminkb](Dynamicdwordformula_Logicalcorecount_Totalraminkb.md) (5 shared connections)
-- [Windows OS Settings & UX Customization](Windows_OS_Settings_&_UX_Customization.md) (4 shared connections)
-- [GPU Silicon & Hardware Tuning Policies](GPU_Silicon_&_Hardware_Tuning_Policies.md) (3 shared connections)
-- [app.rs](app.rs.md) (3 shared connections)
-- [backend.rs](backend.rs.md) (2 shared connections)
-- [deserialize](deserialize.md) (2 shared connections)
-- [State Ledger & Restore Point Engine](State_Ledger_&_Restore_Point_Engine.md) (2 shared connections)
+- [GPU Silicon & Hardware Tuning Policies](GPU_Silicon_&_Hardware_Tuning_Policies.md) (18 shared connections)
+- [Privacy, Telemetry & AI Hardening Catalog](Privacy,_Telemetry_&_AI_Hardening_Catalog.md) (6 shared connections)
+- [theme.rs](theme.rs.md) (1 shared connections)
+- [app.rs](app.rs.md) (1 shared connections)
 
 ## Source Files
 
-- `src/app.rs`
-- `src/core/backend.rs`
-- `src/scanner/mod.rs`
+- `tests/ui_responsive_e2e.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 130 (90%)
-- INFERRED: 14 (10%)
+- EXTRACTED: 51 (96%)
+- INFERRED: 2 (4%)
 - AMBIGUOUS: 0 (0%)
 
 ---

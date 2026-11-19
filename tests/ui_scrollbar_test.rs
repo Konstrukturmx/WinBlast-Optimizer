@@ -41,6 +41,8 @@ fn create_test_state(view: ActiveView) -> AppState {
         })
         .collect();
 
+    state.is_scanning = false;
+    state.dismiss_progress_hud = true;
     state.game_prereqs = winblast0::tools::game_prereqs::scan_game_prereqs();
 
     state.driver_updates = vec![

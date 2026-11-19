@@ -12,6 +12,7 @@ pub mod game_overlay;
 pub mod game_prereqs;
 pub mod game_profiles;
 pub mod gaming_stats;
+pub mod heuristic_scanner;
 pub mod network_diag;
 pub mod performance_tests;
 pub mod startup;

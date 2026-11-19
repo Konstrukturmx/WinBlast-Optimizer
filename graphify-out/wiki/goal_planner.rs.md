@@ -4,9 +4,9 @@
 
 ## Key Concepts
 
-- **goal_planner.rs** (13 connections) — `src/ui/views/goal_planner.rs`
+- **goal_planner.rs** (14 connections) — `src/ui/views/goal_planner.rs`
 - **OptimizationGoal** (8 connections) — `src/graph/astar.rs`
-- **view()** (8 connections) — `src/ui/views/goal_planner.rs`
+- **view()** (7 connections) — `src/ui/views/goal_planner.rs`
 - **metric_pill()** (5 connections) — `src/ui/views/goal_planner.rs`
 - **El** (3 connections)
 - **Color** (2 connections)
@@ -14,12 +14,13 @@
 
 ## Relationships
 
-- [LayoutTier](LayoutTier.md) (6 shared connections)
-- [Integration Suite: Tweak Sandbox E2E](Integration_Suite-_Tweak_Sandbox_E2E.md) (5 shared connections)
-- [AppState](AppState.md) (3 shared connections)
-- [action_button](action_button.md) (2 shared connections)
-- [action_button_guarded](action_button_guarded.md) (2 shared connections)
-- [ThemePalette](ThemePalette.md) (2 shared connections)
+- [SlowScanBackend](SlowScanBackend.md) (5 shared connections)
+- [.Toggle .Set .Apply](Toggle_.Set_.Apply.md) (5 shared connections)
+- [Privacy, Telemetry & AI Hardening Catalog](Privacy,_Telemetry_&_AI_Hardening_Catalog.md) (3 shared connections)
+- [action_button_guarded](action_button_guarded.md) (3 shared connections)
+- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (2 shared connections)
+- [Startup Tasks & Auto-Run Explorer](Startup_Tasks_&_Auto-Run_Explorer.md) (1 shared connections)
+- [Integration Suite: Ui Responsive E2E](Integration_Suite-_Ui_Responsive_E2E.md) (1 shared connections)
 
 ## Source Files
 

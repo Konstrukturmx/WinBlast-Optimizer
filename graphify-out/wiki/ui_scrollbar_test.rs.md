@@ -1,44 +1,57 @@
 # ui_scrollbar_test.rs
 
-> 16 nodes · cohesion 0.34
+> 23 nodes · cohesion 0.15
 
 ## Key Concepts
 
-- **ui_scrollbar_test.rs** (24 connections) — `tests/ui_scrollbar_test.rs`
-- **runtime_for()** (9 connections) — `tests/ui_scrollbar_test.rs`
-- **thumb_rects()** (8 connections) — `tests/ui_scrollbar_test.rs`
-- **content_thumb()** (7 connections) — `tests/ui_scrollbar_test.rs`
-- **frames()** (7 connections) — `tests/ui_scrollbar_test.rs`
-- **Runtime** (7 connections)
-- **create_test_state()** (6 connections) — `tests/ui_scrollbar_test.rs`
-- **sidebar_thumb()** (5 connections) — `tests/ui_scrollbar_test.rs`
-- **test_advanced_matrix_scrollbar_structure_and_drag()** (5 connections) — `tests/ui_scrollbar_test.rs`
-- **test_wheel_scroll_moves_content_and_sidebar_thumbs()** (5 connections) — `tests/ui_scrollbar_test.rs`
-- **count_key()** (4 connections) — `tests/ui_scrollbar_test.rs`
-- **test_iso_29119_driver_section_scrollbar_bounds_and_filtering()** (4 connections) — `tests/ui_scrollbar_test.rs`
-- **test_scrollbars_render_across_all_main_views()** (4 connections) — `tests/ui_scrollbar_test.rs`
-- **test_themed_thumb_widens_under_the_pointer()** (4 connections) — `tests/ui_scrollbar_test.rs`
-- **scrollbars** (1 connections)
-- **CONTENT_X** (1 connections) — `tests/ui_scrollbar_test.rs`
+- **autounattend.rs** (24 connections) — `src/tools/autounattend.rs`
+- **generate_autounattend_xml()** (17 connections) — `src/tools/autounattend.rs`
+- **Reversibility** (10 connections) — `src/core/risk.rs`
+- **UnattendOptions** (7 connections) — `src/tools/autounattend.rs`
+- **display_reg_value_name()** (6 connections) — `src/core/risk.rs`
+- **TargetArch** (6 connections) — `src/tools/autounattend.rs`
+- **format_reg_add_cmd()** (5 connections) — `src/tools/autounattend.rs`
+- **format_reg_delete_cmd()** (5 connections) — `src/tools/autounattend.rs`
+- **escape_win32_quoted_arg()** (3 connections) — `src/tools/autounattend.rs`
+- **map_hive()** (3 connections) — `src/tools/autounattend.rs`
+- **test_autounattend_generation_wellformed_and_escaped()** (3 connections) — `src/tools/autounattend.rs`
+- **.default()** (3 connections) — `src/tools/autounattend.rs`
+- **escape_xml()** (2 connections) — `src/tools/autounattend.rs`
+- **sanitize_computer_name()** (2 connections) — `src/tools/autounattend.rs`
+- **sanitize_local_user()** (2 connections) — `src/tools/autounattend.rs`
+- **.as_str()** (2 connections) — `src/tools/autounattend.rs`
+- **.detect_host()** (2 connections) — `src/tools/autounattend.rs`
+- **Instant** (1 connections) — `src/core/risk.rs`
+- **RequiresLogoff** (1 connections) — `src/core/risk.rs`
+- **RequiresPackageReinstall** (1 connections) — `src/core/risk.rs`
+- **RequiresReboot** (1 connections) — `src/core/risk.rs`
+- **Amd64** (1 connections) — `src/tools/autounattend.rs`
+- **Arm64** (1 connections) — `src/tools/autounattend.rs`
 
 ## Relationships
 
-- [AppState](AppState.md) (8 shared connections)
-- [Multi-Language Tweak Localization Tables](Multi-Language_Tweak_Localization_Tables.md) (3 shared connections)
-- [Scandetailkind Appxinstalled Appxinstalledps](Scandetailkind_Appxinstalled_Appxinstalledps.md) (2 shared connections)
-- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (2 shared connections)
-- [View() Color Scrollspec](View_Color_Scrollspec.md) (2 shared connections)
-- [action_button](action_button.md) (1 shared connections)
-- [main.rs](main.rs.md) (1 shared connections)
+- [theme.rs](theme.rs.md) (6 shared connections)
+- [registry_scanner.rs](registry_scanner.rs.md) (5 shared connections)
+- [Win32 Registry Scanner & Mutator](Win32_Registry_Scanner_&_Mutator.md) (4 shared connections)
+- [Embedded Catalog Test](Embedded_Catalog_Test.md) (4 shared connections)
+- [full_telemetry_audit_with](full_telemetry_audit_with.md) (2 shared connections)
+- [deserialize](deserialize.md) (2 shared connections)
+- [app.rs](app.rs.md) (2 shared connections)
+- [sys_inventory.rs](sys_inventory.rs.md) (1 shared connections)
+- [Scandetailkind Appxinstalled Appxinstalledps](Scandetailkind_Appxinstalled_Appxinstalledps.md) (1 shared connections)
+- [AppX Package & Modern App Scanner](AppX_Package_&_Modern_App_Scanner.md) (1 shared connections)
+- [Changelog](Changelog.md) (1 shared connections)
+- [WinBlast Optimizer — Developer & Architecture Guide](WinBlast_Optimizer_—_Developer_&_Architecture_Guide.md) (1 shared connections)
 
 ## Source Files
 
-- `tests/ui_scrollbar_test.rs`
+- `src/core/risk.rs`
+- `src/tools/autounattend.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 57 (95%)
-- INFERRED: 3 (5%)
+- EXTRACTED: 59 (84%)
+- INFERRED: 11 (16%)
 - AMBIGUOUS: 0 (0%)
 
 ---

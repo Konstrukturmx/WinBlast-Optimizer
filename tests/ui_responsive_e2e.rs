@@ -1829,6 +1829,9 @@ fn test_ui_dropdown_anchoring_and_header_height_stability() {
 #[test]
 fn test_driver_bios_no_card_overlap() {
     let mut state = build_populated_sandbox_state();
+    if state.driver_updates.is_empty() {
+        state.driver_updates = winblast0::hardware::driver_update::scan_online_drivers();
+    }
     state.navigate(ActiveView::DriverBios);
     let mut rt = Runtime::new(state, ui::view, (1280.0, 800.0), Env::new(true, 1.0));
     settle_frames(&mut rt);
@@ -1890,4 +1893,37 @@ fn test_thermal_telemetry_sensors_probe() {
         assert!(snapshot.gpu_core_temp_c >= 0.0 && snapshot.gpu_core_temp_c < 125.0);
     }
 }
+
+
+#[test]
+fn test_hardware_view_power_schemes_no_overlap() {
+    let mut state = build_populated_sandbox_state();
+    state.navigate(ActiveView::HardwareView);
+    // Add 9 power schemes like on host
+    state.power_schemes = vec![
+        winblast0::hardware::power::PowerSchemeInfo { guid: "1".into(), friendly_name: "Balanced".into(), is_active: false },
+        winblast0::hardware::power::PowerSchemeInfo { guid: "2".into(), friendly_name: "High Performance Overlay".into(), is_active: false },
+        winblast0::hardware::power::PowerSchemeInfo { guid: "3".into(), friendly_name: "Revision - Ultra Performance".into(), is_active: false },
+        winblast0::hardware::power::PowerSchemeInfo { guid: "4".into(), friendly_name: "WinBlast0 Ultimate Performance".into(), is_active: true },
+        winblast0::hardware::power::PowerSchemeInfo { guid: "5".into(), friendly_name: "High Performance".into(), is_active: false },
+        winblast0::hardware::power::PowerSchemeInfo { guid: "6".into(), friendly_name: "Better Battery-life Overlay".into(), is_active: false },
+        winblast0::hardware::power::PowerSchemeInfo { guid: "7".into(), friendly_name: "Power Saver".into(), is_active: false },
+        winblast0::hardware::power::PowerSchemeInfo { guid: "8".into(), friendly_name: "Max Performance Overlay".into(), is_active: false },
+        winblast0::hardware::power::PowerSchemeInfo { guid: "9".into(), friendly_name: "Ultimate Performance".into(), is_active: false },
+    ];
+    let mut rt = Runtime::new(state, ui::view, (1280.0, 800.0), Env::new(true, 1.0));
+    settle_frames(&mut rt);
+
+    let scheme_pos = rt.find("hw_scheme_row").expect("hw_scheme_row must exist");
+    let hib_pos = rt.find("hw_hib_row").expect("hw_hib_row must exist");
+    println!("hw_scheme_row y={}", scheme_pos.1);
+    println!("hw_hib_row y={}", hib_pos.1);
+    assert!(
+        hib_pos.1 > scheme_pos.1 + 30.0,
+        "hw_hib_row must be positioned below hw_scheme_row! hib_y={} scheme_y={}",
+        hib_pos.1,
+        scheme_pos.1
+    );
+}
+
 

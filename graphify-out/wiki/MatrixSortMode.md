@@ -1,20 +1,17 @@
 # MatrixSortMode
 
-> 7 nodes · cohesion 0.29
+> 4 nodes · cohesion 0.50
 
 ## Key Concepts
 
-- **MatrixSortMode** (8 connections) — `src/app.rs`
-- **Category** (1 connections) — `src/app.rs`
-- **Default** (1 connections) — `src/app.rs`
+- **CleanSortMode** (5 connections) — `src/app.rs`
 - **NameAsc** (1 connections) — `src/app.rs`
-- **NameDesc** (1 connections) — `src/app.rs`
-- **Risk** (1 connections) — `src/app.rs`
-- **Status** (1 connections) — `src/app.rs`
+- **SizeAsc** (1 connections) — `src/app.rs`
+- **SizeDesc** (1 connections) — `src/app.rs`
 
 ## Relationships
 
-- [AppState](AppState.md) (1 shared connections)
+- [Privacy, Telemetry & AI Hardening Catalog](Privacy,_Telemetry_&_AI_Hardening_Catalog.md) (1 shared connections)
 - [app.rs](app.rs.md) (1 shared connections)
 
 ## Source Files
@@ -23,7 +20,7 @@
 
 ## Audit Trail
 
-- EXTRACTED: 8 (100%)
+- EXTRACTED: 5 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

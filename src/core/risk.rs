@@ -394,12 +394,19 @@ pub fn load_rules_from_dir(
             let entry = entry?;
             let path = entry.path();
             if path.extension().and_then(|e| e.to_str()) == Some("toml") {
-                match std::fs::read_to_string(&path) {
-                    Ok(content) => match toml::from_str::<TweakCatalog>(&content) {
-                        Ok(catalog) => all_tweaks.extend(catalog.tweaks),
-                        Err(e) => tracing::error!("Failed to parse rule file {:?}: {}", path, e),
-                    },
-                    Err(e) => tracing::error!("Failed to read rule file {:?}: {}", path, e),
+                if let Ok(mut reader) = std::fs::File::open(&path).map(std::io::BufReader::new) {
+                    let mut content = String::new();
+                    use std::io::Read;
+                    if reader.read_to_string(&mut content).is_ok() {
+                        match toml::from_str::<TweakCatalog>(&content) {
+                            Ok(catalog) => all_tweaks.extend(catalog.tweaks),
+                            Err(e) => tracing::error!("Failed to parse rule file {:?}: {}", path, e),
+                        }
+                    } else {
+                        tracing::error!("Failed to read rule file {:?}", path);
+                    }
+                } else {
+                    tracing::error!("Failed to open rule file {:?}", path);
                 }
             }
         }

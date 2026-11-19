@@ -8,6 +8,7 @@
 
 use std::mem::size_of;
 use crate::core::process::SilentCommand;
+use rayon::prelude::*;
 use serde::{Deserialize, Serialize};
 use windows::core::PCWSTR;
 use windows::Win32::Foundation::{CloseHandle, HANDLE};
@@ -72,32 +73,39 @@ impl DiskSubsystemReport {
         }
         report.global_trim_active = trim_active;
 
-        // Query real physical drives (\\.\PhysicalDrive0..7)
-        for drive_idx in 0..8 {
-            if let Some(drive_info) = probe_physical_drive(drive_idx, trim_active) {
+        // Query real physical drives (\\.\PhysicalDrive0..7) in parallel via Rayon
+        let drives: Vec<PhysicalDriveHealth> = (0..8u32)
+            .into_par_iter()
+            .filter_map(|drive_idx| probe_physical_drive(drive_idx, trim_active))
+            .collect();
+
+        for drive_info in &drives {
+            if drive_info.interface_type.contains("NVMe") {
+                report.nvme_direct_storage_supported = true;
+            }
+        }
+        report.drives = drives;
+
+        // If no physical drives were accessible (e.g. non-elevated user), query real logical volumes in parallel
+        if report.drives.is_empty() {
+            let drives_mask = unsafe { GetLogicalDrives() };
+            let letters: Vec<char> = (0..26)
+                .filter(|&i| (drives_mask & (1 << i)) != 0)
+                .map(|i| (b'A' + i) as char)
+                .collect();
+
+            let vol_drives: Vec<PhysicalDriveHealth> = letters
+                .into_par_iter()
+                .enumerate()
+                .filter_map(|(vol_idx, letter)| probe_volume_fallback(letter, vol_idx as u32, trim_active))
+                .collect();
+
+            for drive_info in &vol_drives {
                 if drive_info.interface_type.contains("NVMe") {
                     report.nvme_direct_storage_supported = true;
                 }
-                report.drives.push(drive_info);
             }
-        }
-
-        // If no physical drives were accessible (e.g. non-elevated user), query real logical volumes
-        if report.drives.is_empty() {
-            let mut vol_idx = 0;
-            let drives_mask = unsafe { GetLogicalDrives() };
-            for i in 0..26 {
-                if (drives_mask & (1 << i)) != 0 {
-                    let letter = (b'A' + i) as char;
-                    if let Some(drive_info) = probe_volume_fallback(letter, vol_idx, trim_active) {
-                        if drive_info.interface_type.contains("NVMe") {
-                            report.nvme_direct_storage_supported = true;
-                        }
-                        report.drives.push(drive_info);
-                        vol_idx += 1;
-                    }
-                }
-            }
+            report.drives = vol_drives;
         }
 
         report
@@ -270,13 +278,20 @@ fn probe_physical_drive(index: u32, trim_enabled: bool) -> Option<PhysicalDriveH
     };
 
     let (health_pct, status_str, temp_c, tbw, poh, size_gb) = if let Some(smart) = nvme_smart {
+        // NVMe drive: ensure capacity is retrieved via WMI if direct IOCTL length was unprivileged
+        let final_size = if ioctl_size_gb > 0.0 {
+            ioctl_size_gb
+        } else {
+            let (_, _, _, _, _, w_size) = query_smart_health_wmi(index, true);
+            w_size
+        };
         (
             smart.health_percentage,
             smart.status,
             smart.temperature_c,
             smart.lifetime_writes_tb,
             smart.power_on_hours,
-            if ioctl_size_gb > 0.0 { ioctl_size_gb } else { smart.total_size_gb },
+            final_size,
         )
     } else {
         // Fallback: Enrich via WMI Storage API
@@ -306,14 +321,15 @@ fn probe_physical_drive(index: u32, trim_enabled: bool) -> Option<PhysicalDriveH
     })
 }
 
-/// Query physical drive capacity using IOCTL_DISK_GET_LENGTH_INFO (0x0007405C).
+/// Query physical drive capacity using IOCTL_DISK_GET_LENGTH_INFO (0x0007405C) or IOCTL_DISK_GET_DRIVE_GEOMETRY_EX (0x000700A0).
 fn query_disk_capacity_ioctl(handle: HANDLE) -> Option<f64> {
+    // 1. Try IOCTL_DISK_GET_LENGTH_INFO (0x0007405C)
     let mut length_bytes = 0i64;
     let mut bytes_ret = 0u32;
     let ok = unsafe {
         DeviceIoControl(
             handle,
-            0x0007405C, // IOCTL_DISK_GET_LENGTH_INFO (CTL_CODE(IOCTL_DISK_BASE, 0x0017, METHOD_BUFFERED, FILE_READ_ACCESS))
+            0x0007405C, // IOCTL_DISK_GET_LENGTH_INFO
             None,
             0,
             Some((&mut length_bytes as *mut i64).cast()),
@@ -323,10 +339,38 @@ fn query_disk_capacity_ioctl(handle: HANDLE) -> Option<f64> {
         )
     };
     if ok.is_ok() && bytes_ret >= size_of::<i64>() as u32 && length_bytes > 0 {
-        Some(length_bytes as f64 / (1024.0 * 1024.0 * 1024.0))
-    } else {
-        None
+        return Some(length_bytes as f64 / (1024.0 * 1024.0 * 1024.0));
     }
+
+    // 2. Fallback: IOCTL_DISK_GET_DRIVE_GEOMETRY_EX (0x000700A0) - works with FILE_ANY_ACCESS
+    #[repr(C)]
+    struct GeometryEx {
+        geometry: [u8; 24],
+        disk_size: i64,
+        data: [u8; 1],
+    }
+    let mut geo = std::mem::MaybeUninit::<GeometryEx>::uninit();
+    bytes_ret = 0;
+    let ok_geo = unsafe {
+        DeviceIoControl(
+            handle,
+            0x000700A0, // IOCTL_DISK_GET_DRIVE_GEOMETRY_EX
+            None,
+            0,
+            Some(geo.as_mut_ptr().cast()),
+            size_of::<GeometryEx>() as u32,
+            Some(&mut bytes_ret),
+            None,
+        )
+    };
+    if ok_geo.is_ok() && bytes_ret >= 32 {
+        let val = unsafe { (*geo.as_ptr()).disk_size };
+        if val > 0 {
+            return Some(val as f64 / (1024.0 * 1024.0 * 1024.0));
+        }
+    }
+
+    None
 }
 
 /// Query NVMe SMART / Health Information log page 0x02 via IOCTL_STORAGE_QUERY_PROPERTY.
@@ -363,7 +407,7 @@ fn query_nvme_smart_ioctl(handle: HANDLE) -> Option<PhysicalDriveHealth> {
         reserved: 0,
     };
 
-    let mut out_buffer = vec![0u8; 48 + 512];
+    let mut out_buffer = [0u8; 48 + 512];
     let mut bytes_ret = 0u32;
 
     let mut ok = unsafe {
@@ -464,14 +508,16 @@ fn query_nvme_smart_ioctl(handle: HANDLE) -> Option<PhysicalDriveHealth> {
 /// Returns `(health_pct, status, temp_c, tbw_tb, poh, size_gb)`.
 /// Falls back to safe defaults if WMI is unavailable or the drive has no SMART support.
 fn query_smart_health_wmi(disk_index: u32, is_solid_state: bool) -> (u32, String, f32, f64, u32, f64) {
-    // Single-line PowerShell wrapped in try-catch so failure of Get-StorageReliabilityCounter never halts sizing
+    // Single-line PowerShell wrapped in try-catch so failure of Get-StorageReliabilityCounter never halts sizing.
+    // Uses InvariantCulture so float numbers always format with '.' instead of locale-dependent commas (Turkish/German/etc).
     let script = format!(
-        "$d=Get-PhysicalDisk|Where-Object{{$_.DeviceId -eq '{idx}'}}|Select-Object -First 1;\
-if($d){{$sz=[math]::Round($d.Size/1GB,1);$r=$null;\
+        "$c=[System.Globalization.CultureInfo]::InvariantCulture;\
+$d=Get-PhysicalDisk|Where-Object{{$_.DeviceId -eq '{idx}'}}|Select-Object -First 1;\
+if($d){{$sz=($d.Size/1GB).ToString('0.0',$c);$r=$null;\
 try{{$r=$d|Get-StorageReliabilityCounter -ErrorAction SilentlyContinue}}catch{{}};\
 $wear=if($r -and $r.Wear -ne $null){{100-[int]$r.Wear}}else{{99}};\
 $tmp=if($r -and $r.Temperature -ne $null -and $r.Temperature -gt 0){{$r.Temperature}}else{{38}};\
-$tbw=if($r -and $r.TotalBytesWritten -ne $null){{[math]::Round($r.TotalBytesWritten/1TB,2)}}else{{0.0}};\
+$tbw=if($r -and $r.TotalBytesWritten -ne $null){{($r.TotalBytesWritten/1TB).ToString('0.00',$c)}}else{{'0.00'}};\
 $poh=if($r -and $r.PowerOnHours -ne $null){{[int]$r.PowerOnHours}}else{{0}};\
 $hs=if($d.HealthStatus){{$d.HealthStatus}}else{{'Healthy'}};\
 Write-Output \"$wear|$tmp|$tbw|$poh|$sz|$hs\"}}else{{Write-Output ''}}",
@@ -496,11 +542,17 @@ Write-Output \"$wear|$tmp|$tbw|$poh|$sz|$hs\"}}else{{Write-Output ''}}",
             if parts.len() < 6 {
                 return (default_health, "Healthy (Good)".to_string(), default_temp, 0.0, 0, 0.0);
             }
+            let parse_f64 = |s: &str| -> f64 {
+                s.trim().replace(',', ".").parse::<f64>().unwrap_or(0.0)
+            };
+            let parse_f32 = |s: &str| -> f32 {
+                s.trim().replace(',', ".").parse::<f32>().unwrap_or(0.0)
+            };
             let health_pct = parts[0].trim().parse::<u32>().unwrap_or(default_health).clamp(0, 100);
-            let temp_c = parts[1].trim().parse::<f32>().unwrap_or(default_temp);
-            let tbw = parts[2].trim().parse::<f64>().unwrap_or(0.0);
+            let temp_c = parse_f32(parts[1]);
+            let tbw = parse_f64(parts[2]);
             let poh = parts[3].trim().parse::<u32>().unwrap_or(0);
-            let size_gb = parts[4].trim().parse::<f64>().unwrap_or(0.0);
+            let size_gb = parse_f64(parts[4]);
             let health_str = parts[5].trim();
             let status = if health_str.eq_ignore_ascii_case("Healthy") {
                 if health_pct >= 90 {
