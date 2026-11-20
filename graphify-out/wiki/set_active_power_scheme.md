@@ -1,17 +1,17 @@
-# .restart_explorer_safely
+# .set_active_power_scheme
 
 > 3 nodes · cohesion 0.67
 
 ## Key Concepts
 
-- **.restart_explorer_safely()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.restart_explorer_safely()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.restart_explorer_safely()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.set_active_power_scheme()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.set_active_power_scheme()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.set_active_power_scheme()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
 
 ## Relationships
 
 - [BlastResult](BlastResult.md) (3 shared connections)
-- [PanickingBackend](PanickingBackend.md) (2 shared connections)
+- [SlowScanBackend](SlowScanBackend.md) (2 shared connections)
 - [FailAtMutationBackend](FailAtMutationBackend.md) (1 shared connections)
 
 ## Source Files

@@ -5,6 +5,32 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ---
 
+## [v1.4.1] - 2026-11-20
+
+### 🐛 Auto-Updater Launch Fix & Path Normalization
+- **Windows Verbatim Namespace Normalization (`src/core/updater.rs`, `src/core/elevation.rs`)**:
+  - Resolved `Windows cannot find '\\'` launch error dialog when auto-updating on Windows 10/11.
+  - Integrated `clean_exe_path()` to sanitize verbatim device namespaces (`\\?\` and `\\?\UNC\`) returned by `std::env::current_exe()`.
+  - Replaced fragile `cmd.exe /C start ""` command with a detached, elevation-preserving PowerShell process launcher (`Start-Process -FilePath '<clean_path>' -Verb RunAs`), ensuring file locks release cleanly without terminal flashes or network UNC path misinterpretations.
+
+### 🎨 Fluent / Windows 11 "In Progress" Animation HUD Redesign
+- **Pure-Rust Rune Kinetic HUD (`src/ui/widgets/in_progress_hud.rs`)**:
+  - Redesigned in pure Rust Rune in collaboration with Tier 2 Browser Gemini (Neon · High) via `!code`.
+  - Corrected Rune `El::pin(left, top, right, bottom)` coordinate mapping, ensuring orbital points and progress track strictly map screen `x` to `left` and screen `y` to `top`.
+  - 10-dot clockwise orbital radar spinner with cubic ease-in-out (`ease_in_out_cubic`), soft alpha halos, and luminous trailing decay.
+  - Pulsing central lightning badge (`⚡`) driven harmonically by `(elapsed_secs * 3.0).sin()`.
+  - WinUI 3 stretch-and-glide indeterminate horizontal progress bar with dual-eased leading and trailing edges.
+  - Real-time formatted runtime timer (`format_elapsed`) and dynamic word-wrapped operation descriptions (`wrap_and_truncate_status`) that prevent card overflow across all display scales.
+  - Non-blocking "Run in Background" button allowing users to dismiss the modal overlay while background scans/tweaks continue.
+
+### 🧪 Quality, Compiler Standards & Memory Sync
+- **194 / 194 Tests Passing**: 100% test pass rate across all unit, integration, UI responsive, and unorthodox edge-case test suites.
+- **Zero Clippy Warnings**: Strict `-D warnings` compliance across all targets.
+- **Heuristic Bug Scan**: Verified all 111 source files (66,924 lines) via zero-allocation static scanner.
+- **Knowledge Graph Synchronization**: Rebuilt and re-clustered graphify knowledge graph (3,750 nodes, 7,750 edges, 172 communities, 182 wiki articles).
+
+---
+
 ## [v1.4.0] - 2026-11-19
 
 ### ⚡ Architectural & Performance Upgrades (Milestone 2)

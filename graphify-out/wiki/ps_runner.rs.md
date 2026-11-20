@@ -22,7 +22,7 @@
 
 ## Relationships
 
-- [path](path.md) (1 shared connections)
+- [super](super.md) (1 shared connections)
 - [startup.rs](startup.rs.md) (1 shared connections)
 - [full_telemetry_audit_with](full_telemetry_audit_with.md) (1 shared connections)
 - [Integration Suite: Tweak Sandbox E2E](Integration_Suite-_Tweak_Sandbox_E2E.md) (1 shared connections)

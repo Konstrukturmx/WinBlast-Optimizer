@@ -17,9 +17,8 @@
 
 ## Relationships
 
+- [super](super.md) (2 shared connections)
 - [registry_scanner.rs](registry_scanner.rs.md) (2 shared connections)
-- [deserialize](deserialize.md) (1 shared connections)
-- [path](path.md) (1 shared connections)
 - [.Reg .Set Power](Reg_.Set_Power.md) (1 shared connections)
 
 ## Source Files

@@ -33,16 +33,18 @@
 
 ## Relationships
 
-- [.Toggle .Set .Apply](Toggle_.Set_.Apply.md) (11 shared connections)
-- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (3 shared connections)
-- [ThemePalette](ThemePalette.md) (3 shared connections)
+- [.Toggle .Set .Apply](Toggle_.Set_.Apply.md) (6 shared connections)
+- [action_button](action_button.md) (3 shared connections)
 - [enums](enums.md) (3 shared connections)
+- [clean_apps.rs](clean_apps.rs.md) (2 shared connections)
+- [action_button_guarded](action_button_guarded.md) (2 shared connections)
+- [diff_modal.rs](diff_modal.rs.md) (2 shared connections)
 - [app.rs](app.rs.md) (1 shared connections)
 - [Appx Package() Prefixes](Appx_Package_Prefixes.md) (1 shared connections)
 - [ui/mod.rs](ui-mod.rs.md) (1 shared connections)
+- [ThemePalette](ThemePalette.md) (1 shared connections)
+- [privacy_shield.rs](privacy_shield.rs.md) (1 shared connections)
 - [GPU Silicon & Hardware Tuning Policies](GPU_Silicon_&_Hardware_Tuning_Policies.md) (1 shared connections)
-- [AppState](AppState.md) (1 shared connections)
-- [Reversibility Instant Requireslogoff](Reversibility_Instant_Requireslogoff.md) (1 shared connections)
 
 ## Source Files
 

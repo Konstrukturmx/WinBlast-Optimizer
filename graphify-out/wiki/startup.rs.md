@@ -32,17 +32,17 @@
 ## Relationships
 
 - [StartupEntry](StartupEntry.md) (11 shared connections)
-- [deserialize](deserialize.md) (4 shared connections)
+- [super](super.md) (5 shared connections)
 - [backend.rs](backend.rs.md) (3 shared connections)
-- [task_scanner.rs](task_scanner.rs.md) (2 shared connections)
-- [restore_point.rs](restore_point.rs.md) (2 shared connections)
+- [RegRawSnapshot](RegRawSnapshot.md) (2 shared connections)
+- [real_windows_env.rs](real_windows_env.rs.md) (2 shared connections)
 - [WinBlastError](WinBlastError.md) (2 shared connections)
 - [path](path.md) (2 shared connections)
 - [LiveScheduledTaskInfo](LiveScheduledTaskInfo.md) (2 shared connections)
-- [WinBlast Optimizer](WinBlast_Optimizer.md) (2 shared connections)
 - [.setup](setup.md) (2 shared connections)
+- [task_scanner.rs](task_scanner.rs.md) (1 shared connections)
 - [ps_runner.rs](ps_runner.rs.md) (1 shared connections)
-- [real_windows_env.rs](real_windows_env.rs.md) (1 shared connections)
+- [TaskCache](TaskCache.md) (1 shared connections)
 
 ## Source Files
 

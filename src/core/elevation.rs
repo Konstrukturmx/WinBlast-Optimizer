@@ -51,9 +51,10 @@ pub fn check_elevation() -> crate::core::error::Result<()> {
 /// Triggers Windows User Account Control (UAC) elevation prompt and cleanly exits current standard instance.
 pub fn relaunch_as_admin() -> Result<(), String> {
     let current_exe = std::env::current_exe().map_err(|e| format!("Failed to get current executable path: {}", e))?;
-    let exe_str = current_exe.to_str().ok_or_else(|| "Invalid UTF-8 executable path".to_string())?;
+    let raw_str = current_exe.to_string_lossy();
+    let clean_str = crate::core::updater::clean_exe_path(&raw_str);
 
-    let escaped_exe = exe_str.replace('\'', "''");
+    let escaped_exe = clean_str.replace('\'', "''");
     let cmd = format!("Start-Process -FilePath '{}' -Verb RunAs", escaped_exe);
     let status = std::process::Command::new("powershell")
         .args(["-WindowStyle", "Hidden", "-Command", &cmd])

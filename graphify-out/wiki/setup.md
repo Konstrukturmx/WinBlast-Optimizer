@@ -1,11 +1,12 @@
 # .setup
 
-> 9 nodes · cohesion 0.56
+> 10 nodes · cohesion 0.49
 
 ## Key Concepts
 
 - **svc_mutator.rs** (13 connections) — `src/executor/svc_mutator.rs`
 - **set_service_start_type()** (8 connections) — `src/executor/svc_mutator.rs`
+- **open_subkey_flags_64()** (8 connections) — `src/scanner/registry_scanner.rs`
 - **format_sc_output()** (6 connections) — `src/executor/svc_mutator.rs`
 - **stop_service()** (6 connections) — `src/executor/svc_mutator.rs`
 - **start_service()** (5 connections) — `src/executor/svc_mutator.rs`
@@ -16,20 +17,22 @@
 
 ## Relationships
 
-- [deserialize](deserialize.md) (2 shared connections)
+- [registry_scanner.rs](registry_scanner.rs.md) (3 shared connections)
+- [reg_mutator.rs](reg_mutator.rs.md) (3 shared connections)
+- [super](super.md) (2 shared connections)
 - [WinBlastError](WinBlastError.md) (2 shared connections)
-- [registry_scanner.rs](registry_scanner.rs.md) (2 shared connections)
-- [restore_point.rs](restore_point.rs.md) (2 shared connections)
+- [RegRawSnapshot](RegRawSnapshot.md) (2 shared connections)
 - [startup.rs](startup.rs.md) (2 shared connections)
 
 ## Source Files
 
 - `src/executor/svc_mutator.rs`
+- `src/scanner/registry_scanner.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 28 (93%)
-- INFERRED: 2 (7%)
+- EXTRACTED: 32 (89%)
+- INFERRED: 4 (11%)
 - AMBIGUOUS: 0 (0%)
 
 ---

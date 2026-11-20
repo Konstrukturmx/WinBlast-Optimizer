@@ -1,6 +1,6 @@
 # GPU Silicon & Hardware Tuning Policies
 
-> 35 nodes · cohesion 0.07
+> 34 nodes · cohesion 0.07
 
 ## Key Concepts
 
@@ -18,7 +18,6 @@
 - **targetarch** (2 connections)
 - **cleanappssubtab** (1 connections)
 - **detectedgpu** (1 connections)
-- **El** (1 connections)
 - **full_telemetry_audit_with** (1 connections)
 - **liveserviceinfo** (1 connections)
 - **startupentry** (1 connections)
@@ -29,22 +28,23 @@
 - **snap_advanced_matrix_view()** (1 connections) — `tests/ui_responsive_e2e.rs`
 - **snap_cpu_parking_view()** (1 connections) — `tests/ui_responsive_e2e.rs`
 - **snap_dashboard_view()** (1 connections) — `tests/ui_responsive_e2e.rs`
-- *... and 10 more nodes in this community*
+- **snap_fault_diagnostics_view()** (1 connections) — `tests/ui_responsive_e2e.rs`
+- *... and 9 more nodes in this community*
 
 ## Relationships
 
 - [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (18 shared connections)
 - [AppState](AppState.md) (9 shared connections)
 - [theme.rs](theme.rs.md) (2 shared connections)
+- [Language](Language.md) (2 shared connections)
 - [backend.rs](backend.rs.md) (2 shared connections)
-- [RealBackend](RealBackend.md) (2 shared connections)
 - [Reversibility Instant Requireslogoff](Reversibility_Instant_Requireslogoff.md) (2 shared connections)
 - [System Architecture Changelog](System_Architecture_Changelog.md) (2 shared connections)
+- [edge_cases_unorthodox.rs](edge_cases_unorthodox.rs.md) (1 shared connections)
 - [Core UI Internationalization & Text Catalog](Core_UI_Internationalization_&_Text_Catalog.md) (1 shared connections)
 - [PresetKey](PresetKey.md) (1 shared connections)
 - [SlowScanBackend](SlowScanBackend.md) (1 shared connections)
 - [LazyLoader](LazyLoader.md) (1 shared connections)
-- [edge_cases_unorthodox.rs](edge_cases_unorthodox.rs.md) (1 shared connections)
 
 ## Source Files
 

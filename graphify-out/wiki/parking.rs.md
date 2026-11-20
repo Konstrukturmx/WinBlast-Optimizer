@@ -28,15 +28,14 @@
 - [CoreParkingState](CoreParkingState.md) (4 shared connections)
 - [.take_injected_error](take_injected_error.md) (3 shared connections)
 - [full_telemetry_audit_with](full_telemetry_audit_with.md) (3 shared connections)
+- [super](super.md) (3 shared connections)
 - [parse_guid](parse_guid.md) (3 shared connections)
-- [deserialize](deserialize.md) (2 shared connections)
 - [.Reg State() Vendor()](Reg_State_Vendor.md) (1 shared connections)
 - [Integration Suite: Tweak Sandbox E2E](Integration_Suite-_Tweak_Sandbox_E2E.md) (1 shared connections)
 - [backend.rs](backend.rs.md) (1 shared connections)
 - [WinBlastError](WinBlastError.md) (1 shared connections)
 - [startup.rs](startup.rs.md) (1 shared connections)
 - [power.rs](power.rs.md) (1 shared connections)
-- [path](path.md) (1 shared connections)
 
 ## Source Files
 

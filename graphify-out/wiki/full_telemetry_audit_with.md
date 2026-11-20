@@ -1,6 +1,6 @@
 # full_telemetry_audit_with
 
-> 38 nodes · cohesion 0.14
+> 39 nodes · cohesion 0.13
 
 ## Key Concepts
 
@@ -26,25 +26,25 @@
 - **apply_tweak()** (4 connections) — `src/executor/engine.rs`
 - **apply_tweaks_by_id()** (4 connections) — `src/executor/engine.rs`
 - **format_power_indices()** (4 connections) — `src/executor/engine.rs`
+- **rollback_entry()** (4 connections) — `src/executor/engine.rs`
 - **test_batch1_engine_edge_cases_and_atomic_revert()** (4 connections) — `src/executor/engine.rs`
 - **parse_composite_pairs()** (3 connections) — `src/core/reg_helpers.rs`
-- **test_composite_string_merge_preserves_siblings()** (3 connections) — `src/core/reg_helpers.rs`
-- *... and 13 more nodes in this community*
+- *... and 14 more nodes in this community*
 
 ## Relationships
 
 - [FailAtMutationBackend](FailAtMutationBackend.md) (19 shared connections)
-- [Embedded Catalog Test](Embedded_Catalog_Test.md) (11 shared connections)
+- [Embedded Catalog Test](Embedded_Catalog_Test.md) (12 shared connections)
 - [Integration Suite: Tweak Sandbox E2E](Integration_Suite-_Tweak_Sandbox_E2E.md) (8 shared connections)
-- [AppX Package & Modern App Scanner](AppX_Package_&_Modern_App_Scanner.md) (7 shared connections)
 - [reg_mutator.rs](reg_mutator.rs.md) (6 shared connections)
 - [WinBlastError](WinBlastError.md) (5 shared connections)
-- [Win32 Registry Scanner & Mutator](Win32_Registry_Scanner_&_Mutator.md) (5 shared connections)
-- [parse_guid](parse_guid.md) (4 shared connections)
+- [AppX Package & Modern App Scanner](AppX_Package_&_Modern_App_Scanner.md) (5 shared connections)
+- [super](super.md) (4 shared connections)
+- [Win32 Registry Scanner & Mutator](Win32_Registry_Scanner_&_Mutator.md) (4 shared connections)
 - [parking.rs](parking.rs.md) (3 shared connections)
+- [parse_guid](parse_guid.md) (3 shared connections)
+- [ui_scrollbar_test.rs](ui_scrollbar_test.rs.md) (3 shared connections)
 - [test_wave1_compound_actions_deep_edge_cases](test_wave1_compound_actions_deep_edge_cases.md) (3 shared connections)
-- [path](path.md) (2 shared connections)
-- [deserialize](deserialize.md) (2 shared connections)
 
 ## Source Files
 
@@ -54,7 +54,7 @@
 
 ## Audit Trail
 
-- EXTRACTED: 156 (83%)
+- EXTRACTED: 158 (83%)
 - INFERRED: 33 (17%)
 - AMBIGUOUS: 0 (0%)
 

@@ -1,55 +1,58 @@
 # FailAtMutationBackend
 
-> 26 nodes · cohesion 0.15
+> 26 nodes · cohesion 0.08
 
 ## Key Concepts
 
-- **StateLedger** (30 connections) — `src/backup/state_ledger.rs`
-- **state_ledger.rs** (11 connections) — `src/backup/state_ledger.rs`
-- **LedgerEntry** (10 connections) — `src/backup/state_ledger.rs`
-- **SystemBaseline** (9 connections) — `src/backup/state_ledger.rs`
-- **test_ledger_crud()** (8 connections) — `src/backup/state_ledger.rs`
-- **revert_tweaks_by_id_with()** (6 connections) — `src/executor/engine.rs`
-- **.get_initial_baseline()** (4 connections) — `src/backup/state_ledger.rs`
-- **.init_conn()** (4 connections) — `src/backup/state_ledger.rs`
-- **.query_single_baseline()** (4 connections) — `src/backup/state_ledger.rs`
-- **revert_tweak()** (4 connections) — `src/executor/engine.rs`
-- **revert_tweaks_by_id()** (4 connections) — `src/executor/engine.rs`
-- **rollback_entry()** (4 connections) — `src/executor/engine.rs`
-- **Connection** (3 connections)
-- **DateTime** (3 connections)
-- **Utc** (3 connections)
-- **.get_history()** (3 connections) — `src/backup/state_ledger.rs`
-- **.get_latest_baseline()** (3 connections) — `src/backup/state_ledger.rs`
-- **.new()** (3 connections) — `src/backup/state_ledger.rs`
-- **.reset_baseline()** (3 connections) — `src/backup/state_ledger.rs`
-- **.save_baseline()** (3 connections) — `src/backup/state_ledger.rs`
-- **.in_memory()** (2 connections) — `src/backup/state_ledger.rs`
-- **.record_change()** (2 connections) — `src/backup/state_ledger.rs`
-- **.rollback_entry()** (2 connections) — `src/backup/state_ledger.rs`
-- **params** (1 connections)
-- **.is_reversible()** (1 connections) — `src/backup/state_ledger.rs`
+- **FailAtMutationBackend** (79 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.broadcast_shell_settings_changed()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.default_profile_path()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.get_service_start_type()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.is_elevated()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.is_hags_enabled()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.is_mpo_disabled()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.set_hags()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.total_physical_ram_kb()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.broadcast_shell_settings_changed()** (2 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.default_profile_path()** (2 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.get_service_start_type()** (2 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.is_elevated()** (2 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.is_hags_enabled()** (2 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.is_mpo_disabled()** (2 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.set_hags()** (2 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.total_physical_ram_kb()** (2 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.broadcast_shell_settings_changed()** (2 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.default_profile_path()** (2 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.get_service_start_type()** (2 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.is_elevated()** (2 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.is_hags_enabled()** (2 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.is_mpo_disabled()** (2 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.set_hags()** (2 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.total_physical_ram_kb()** (2 connections) — `tests/tweak_sandbox_e2e.rs`
 - *... and 1 more nodes in this community*
 
 ## Relationships
 
-- [full_telemetry_audit_with](full_telemetry_audit_with.md) (19 shared connections)
-- [AppState](AppState.md) (3 shared connections)
-- [app.rs](app.rs.md) (3 shared connections)
-- [Embedded Catalog Test](Embedded_Catalog_Test.md) (3 shared connections)
-- [deserialize](deserialize.md) (2 shared connections)
-- [path](path.md) (1 shared connections)
-- [theme.rs](theme.rs.md) (1 shared connections)
+- [SlowScanBackend](SlowScanBackend.md) (26 shared connections)
+- [BlastResult](BlastResult.md) (18 shared connections)
+- [test_wave1_ledger_rollback_and_concurrency_regressions](test_wave1_ledger_rollback_and_concurrency_regressions.md) (9 shared connections)
+- [test_wave1_compound_actions_deep_edge_cases](test_wave1_compound_actions_deep_edge_cases.md) (4 shared connections)
+- [theme.rs](theme.rs.md) (2 shared connections)
+- [latency_bench.rs](latency_bench.rs.md) (2 shared connections)
+- [RegTreeSnapshot](RegTreeSnapshot.md) (2 shared connections)
+- [.block_telemetry_hosts](block_telemetry_hosts.md) (2 shared connections)
+- [backend.rs](backend.rs.md) (2 shared connections)
+- [Disk Cleaning & Temporary File Purger](Disk_Cleaning_&_Temporary_File_Purger.md) (2 shared connections)
+- [SandboxEnv](SandboxEnv.md) (1 shared connections)
 - [Integration Suite: Tweak Sandbox E2E](Integration_Suite-_Tweak_Sandbox_E2E.md) (1 shared connections)
 
 ## Source Files
 
-- `src/backup/state_ledger.rs`
-- `src/executor/engine.rs`
+- `tests/tweak_sandbox_e2e.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 82 (100%)
+- EXTRACTED: 111 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

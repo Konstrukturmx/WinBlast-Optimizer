@@ -33,9 +33,9 @@
 
 ## Relationships
 
-- [Embedded Catalog Test](Embedded_Catalog_Test.md) (3 shared connections)
-- [Appx Package() Prefixes](Appx_Package_Prefixes.md) (2 shared connections)
-- [AppX Package & Modern App Scanner](AppX_Package_&_Modern_App_Scanner.md) (1 shared connections)
+- [Embedded Catalog Test](Embedded_Catalog_Test.md) (4 shared connections)
+- [Language](Language.md) (1 shared connections)
+- [Appx Package() Prefixes](Appx_Package_Prefixes.md) (1 shared connections)
 - [RegRawSnapshot](RegRawSnapshot.md) (1 shared connections)
 - [app.rs](app.rs.md) (1 shared connections)
 - [registry_scanner.rs](registry_scanner.rs.md) (1 shared connections)

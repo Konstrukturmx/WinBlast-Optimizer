@@ -16,7 +16,8 @@
 ## Relationships
 
 - [AppState](AppState.md) (6 shared connections)
-- [Appx Package() Prefixes](Appx_Package_Prefixes.md) (4 shared connections)
+- [Language](Language.md) (2 shared connections)
+- [Appx Package() Prefixes](Appx_Package_Prefixes.md) (2 shared connections)
 
 ## Source Files
 

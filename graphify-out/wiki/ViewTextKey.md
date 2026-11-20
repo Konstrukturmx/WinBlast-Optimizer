@@ -42,8 +42,8 @@
 - automation_center.rs `EXTRACTED`
 - views/game_prereqs.rs `EXTRACTED`
 - fault_diagnostics.rs `EXTRACTED`
-- goal_planner.rs `EXTRACTED`
-- views/network_diag.rs `EXTRACTED`
+- [goal_planner.rs](goal_planner.rs.md) `EXTRACTED`
+- [views/network_diag.rs](views-network_diag.rs.md) `EXTRACTED`
 - thermal_monitor.rs `EXTRACTED`
 - views/windows_repair.rs `EXTRACTED`
 - disk_health.rs `EXTRACTED`
@@ -56,7 +56,7 @@
 
 ### references
 - tr_view() `EXTRACTED`
-- .tr_v() `EXTRACTED`
+- .tr_v() `INFERRED`
 
 ---
 

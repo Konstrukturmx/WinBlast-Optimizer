@@ -262,10 +262,23 @@ try {{
 /// Apply update by atomically replacing the running binary.
 ///
 /// On Windows, a running executable cannot be written to directly, but it CAN be renamed.
+/// Normalizes a Windows executable path by stripping verbatim namespaces (`\\?\` and `\\?\UNC\`).
+pub fn clean_exe_path(path_str: &str) -> String {
+    if let Some(stripped) = path_str.strip_prefix(r"\\?\UNC\") {
+        format!(r"\\{}", stripped)
+    } else if let Some(stripped) = path_str.strip_prefix(r"\\?\") {
+        stripped.to_string()
+    } else {
+        path_str.to_string()
+    }
+}
+
+/// Applies a staged update binary by swapping the running executable and restarting.
+///
 /// Procedure:
 /// 1. Rename running `winblast0.exe` -> `winblast0.exe.old`.
 /// 2. Copy staged `new_binary` into `winblast0.exe`.
-/// 3. Spawn the new executable and terminate the current process.
+/// 3. Spawn the new executable detached and terminate the current process.
 pub fn apply_and_restart(new_binary: &Path) -> Result<(), String> {
     let current_exe = std::env::current_exe().map_err(|e| e.to_string())?;
     let backup_exe = current_exe.with_extension("exe.old");
@@ -288,17 +301,29 @@ pub fn apply_and_restart(new_binary: &Path) -> Result<(), String> {
         return Err(format!("Failed to install new binary: {}", e));
     }
 
-    // 3. Launch the new executable detached and exit cleanly
-    let current_exe_str = current_exe.to_string_lossy();
-    let safe_exe_str = current_exe_str.replace('"', "");
-    let cmd_restart = format!(
-        r#"timeout /t 1 /nobreak >nul & start "" "{}""#,
-        safe_exe_str
+    // 3. Launch the new executable detached and exit cleanly.
+    // Strip verbatim \\?\ prefixes to prevent cmd/start/explorer UNC path resolution failures.
+    let raw_exe_str = current_exe.to_string_lossy();
+    let clean_exe_str = clean_exe_path(&raw_exe_str);
+    let escaped_exe = clean_exe_str.replace('\'', "''");
+    let is_elevated = crate::core::elevation::is_elevated();
+    let verb_arg = if is_elevated { " -Verb RunAs" } else { "" };
+
+    // Use PowerShell to sleep briefly for file locks to fully release, then launch detached.
+    // This avoids cmd.exe's 'start' quote-stripping and verbatim '\\' UNC network parsing errors.
+    let ps_cmd = format!(
+        "Start-Sleep -Milliseconds 600; Start-Process -FilePath '{}'{}",
+        escaped_exe, verb_arg
     );
 
-    let _ = SilentCommand::new("cmd.exe")
-        .args(["/C", &cmd_restart])
+    let spawn_result = SilentCommand::new("powershell")
+        .args(["-WindowStyle", "Hidden", "-Command", &ps_cmd])
         .spawn();
+
+    if let Err(e) = spawn_result {
+        tracing::warn!("PowerShell detached launch failed ({}), attempting direct fallback launch", e);
+        let _ = SilentCommand::new(&clean_exe_str).spawn();
+    }
 
     std::process::exit(0);
 }
@@ -331,5 +356,12 @@ mod tests {
         };
         assert_eq!(r.tag_name, "v1.6.0");
         assert!(is_version_newer(&r.tag_name, "1.5.0"));
+    }
+
+    #[test]
+    fn test_clean_windows_exe_path() {
+        assert_eq!(clean_exe_path(r"\\?\C:\Program Files\WinBlast0\winblast0.exe"), r"C:\Program Files\WinBlast0\winblast0.exe");
+        assert_eq!(clean_exe_path(r"\\?\UNC\server\share\winblast0.exe"), r"\\server\share\winblast0.exe");
+        assert_eq!(clean_exe_path(r"C:\Tools\winblast0.exe"), r"C:\Tools\winblast0.exe");
     }
 }

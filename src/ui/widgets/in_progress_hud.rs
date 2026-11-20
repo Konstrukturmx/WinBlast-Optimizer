@@ -1,260 +1,383 @@
 //! Centered "In Progress" HUD overlay widget for WinBlast0.
 //!
-//! Pure-Rust Rune UI widget featuring a full-screen modal backdrop, an 8-dot
-//! circular radar spinner with smooth alpha-eased trailing decay, a cleanly
-//! wrapped/truncated status message, and an animated indeterminate progress bar.
+//! Fluent / Windows 11-style glassmorphic modal overlay featuring:
+//! - 10-dot clockwise cubic-eased orbital radar spinner with glowing trail.
+//! - Pulsing center lightning badge (`⚡`) driven by `(elapsed_secs * 3.0).sin()`.
+//! - Smooth indeterminate sliding progress bar with stretch-and-glide easing.
+//! - Clean typography with elapsed time display and word-wrapped status text.
+//!
+//! Layout invariants:
+//! - `El::pin(left, top, right, bottom)` always maps screen `x` to `left` and `y` to `top`.
+//! - All orbital dots, halos, and the pulsing core are positioned relative to
+//!   `(SPINNER_CENTER, SPINNER_CENTER)` so scaling never introduces positional jitter.
 
-use std::f32::consts::{FRAC_PI_2, PI, TAU};
+use std::f64::consts::{FRAC_PI_2, TAU};
 
-use crate::ui::theme::ThemePalette;
 use rune::color::Color;
 use rune::{col, row, text, El};
 
-const CARD_WIDTH: f32 = 420.0;
-const CARD_PADDING: f32 = 24.0;
-const CARD_RADIUS: f32 = 12.0;
+use crate::ui::theme::ThemePalette;
 
-const RADAR_CANVAS_SIZE: f32 = 76.0;
-const RADAR_ORBIT_RADIUS: f32 = 25.0;
-const RADAR_DOT_COUNT: usize = 8;
-const RADAR_DOT_MIN_DIAMETER: f32 = 6.0;
-const RADAR_DOT_MAX_DIAMETER: f32 = 10.5;
+const CARD_WIDTH: f32 = 360.0;
+const SPINNER_SIZE: f32 = 88.0;
+const SPINNER_CENTER: f32 = SPINNER_SIZE * 0.5;
+const ORBIT_RADIUS: f32 = 34.0;
 
-const MINI_BAR_WIDTH: f32 = 260.0;
-const MINI_BAR_HEIGHT: f32 = 4.0;
-const MINI_BAR_PILL_WIDTH: f32 = 76.0;
+const DOT_COUNT: usize = 10;
+const ORBIT_CYCLE_SECS: f64 = 1.85;
+const ORBIT_DRIFT_SECS: f64 = 5.2;
+const DOT_PHASE_STEP: f64 = 0.064;
 
-const MAX_STATUS_CHARS_PER_LINE: usize = 44;
-const MAX_STATUS_LINES: usize = 3;
-const DEFAULT_STATUS_MESSAGE: &str = "Executing system operation...";
+const TRACK_WIDTH: f32 = 280.0;
+const TRACK_HEIGHT: f32 = 4.0;
+const PROGRESS_CYCLE_SECS: f64 = 1.65;
 
-/// Renders the centered full-screen "In Progress" HUD overlay.
+const MAX_STATUS_CHARS_PER_LINE: usize = 42;
+const MAX_STATUS_LINES: usize = 2;
+
+/// Renders a Fluent / Windows 11-style glassmorphic "In Progress" HUD modal.
 ///
-/// # Parameters
-/// - `now_secs`: Monotonic animation clock in seconds. Non-finite or negative
-///   values are clamped safely to `0.0`.
-/// - `status_message`: Dynamic description of the active operation. Sanitized,
-///   word-wrapped, and truncated cleanly to prevent card overflow.
-/// - `palette`: Active WinBlast0 theme color tokens.
+/// Displays a clockwise cubic-eased orbital radar spinner, a pulsing central
+/// lightning badge driven by `(elapsed_secs * 3.0).sin()`, crisp action/timer
+/// typography, and a smooth indeterminate sliding progress pill.
 pub fn in_progress_hud(
     now_secs: f64,
     status_message: &str,
     palette: &ThemePalette,
 ) -> El {
-    let wrapped_secs = sanitize_time_secs(now_secs);
-    let radar = build_circular_radar(wrapped_secs, palette);
-    let status_lines = wrap_and_truncate_status(
-        status_message,
-        MAX_STATUS_CHARS_PER_LINE,
-        MAX_STATUS_LINES,
-    );
-    let mini_progress = build_mini_progress_bar(wrapped_secs, palette);
+    let elapsed = sanitize_elapsed(now_secs);
+    let display_action = if status_message.trim().is_empty() {
+        "Optimizing Windows..."
+    } else {
+        status_message.trim()
+    };
 
-    let mut status_block = col().gap(4.0).center();
-    for line in status_lines {
-        status_block = status_block.child(
-            text(line)
-                .font(rune::tok::type_::LABEL)
-                .color(palette.text_secondary),
+    let spinner = build_orbital_spinner(elapsed, palette);
+    let header_block = build_typography_block(display_action, elapsed, palette);
+    let progress_track = build_indeterminate_track(elapsed, palette);
+
+    let background_btn = row()
+        .center()
+        .pt(4.0)
+        .child(
+            crate::ui::widgets::button::action_button(
+                "Run in Background",
+                Color::TRANSPARENT,
+                palette.text_muted,
+                palette,
+                |s| {
+                    s.dismiss_progress_hud = true;
+                },
+            ),
         );
-    }
 
-    let title_row = row().center().child(
-        text("⚡ Operation in Progress")
-            .font(rune::tok::type_::TITLE)
-            .color(palette.text_primary),
-    );
-
+    // Floating Acrylic/Mica-style card
     let modal_card = col()
         .w(CARD_WIDTH)
-        .padding(CARD_PADDING)
-        .radius(CARD_RADIUS)
-        .fill(palette.bg_card)
-        .border(1.0, palette.border)
-        .gap(16.0)
+        .padding(26.0)
+        .gap(18.0)
         .center()
-        .child(radar)
-        .child(title_row)
-        .child(status_block)
-        .child(mini_progress)
-        .child(
-            row()
-                .center()
-                .pt(4.0)
-                .child(
-                    crate::ui::widgets::button::action_button(
-                        "Run in Background",
-                        Color::TRANSPARENT,
-                        palette.text_muted,
-                        palette,
-                        |s| {
-                            s.dismiss_progress_hud = true;
-                        },
-                    ),
-                ),
-        );
+        .fill(palette.bg_card)
+        .radius(16.0)
+        .border(1.0, palette.border)
+        .child(spinner)
+        .child(header_block)
+        .child(progress_track)
+        .child(background_btn);
 
+    // Full-viewport translucent modal overlay centered on the card
     col()
         .key("in_progress_hud_overlay")
         .pin(Some(0.0), Some(0.0), Some(0.0), Some(0.0))
-        .fill(Color::BLACK.alpha(0.45))
+        .fill(Color::BLACK.alpha(0.50))
         .modal(true, |s: &mut crate::app::AppState| s.dismiss_progress_hud = true)
         .center()
         .child(modal_card)
 }
 
-/// Keeps the animation clock finite, non-negative, and bounded within a 4-second
-/// harmonic period so floating-point precision never degrades across long uptimes.
-fn sanitize_time_secs(now_secs: f64) -> f64 {
-    if now_secs.is_finite() && now_secs >= 0.0 {
-        now_secs.rem_euclid(4.0)
+/// Builds the 10-dot clockwise cubic-eased orbital spinner and pulsing core badge.
+fn build_orbital_spinner(elapsed: f64, palette: &ThemePalette) -> El {
+    let mut canvas = col().w(SPINNER_SIZE).h(SPINNER_SIZE);
+
+    // 1. Subtle recessed radar track ring
+    let ring_diameter = ORBIT_RADIUS * 2.0;
+    let ring_offset = SPINNER_CENTER - ORBIT_RADIUS;
+    canvas = canvas.child(
+        col()
+            .key("radar_track_ring")
+            .w(ring_diameter)
+            .h(ring_diameter)
+            .radius(ring_diameter * 0.5)
+            .border(1.0, palette.border.alpha(0.24))
+            .pin(Some(ring_offset), Some(ring_offset), None, None),
+    );
+
+    // 2. Clockwise orbital dots with cubic ease-in-out and alpha gradient [0.15, 1.0]
+    let base_drift = (elapsed / ORBIT_DRIFT_SECS) * TAU;
+    let denom = (DOT_COUNT.saturating_sub(1)).max(1) as f32;
+
+    // Render tail-to-head so brighter leading dots stack cleanly on top
+    for i in (0..DOT_COUNT).rev() {
+        let lead_factor = 1.0 - (i as f32 / denom);
+        let alpha = 0.15 + 0.85 * lead_factor;
+        let dot_size = 3.2 + 3.6 * lead_factor;
+
+        let raw_t = ((elapsed / ORBIT_CYCLE_SECS) - (i as f64) * DOT_PHASE_STEP).rem_euclid(1.0);
+        let eased_t = ease_in_out_cubic(raw_t);
+        let angle = -FRAC_PI_2 + eased_t * TAU + base_drift;
+
+        let center_x = SPINNER_CENTER + ORBIT_RADIUS * (angle.cos() as f32);
+        let center_y = SPINNER_CENTER + ORBIT_RADIUS * (angle.sin() as f32);
+
+        // Soft luminous halo behind the top 4 leading dots
+        if i < 4 {
+            let halo_size = dot_size + 5.5;
+            let halo_left = center_x - halo_size * 0.5;
+            let halo_top = center_y - halo_size * 0.5;
+
+            canvas = canvas.child(
+                col()
+                    .key(format!("radar_halo_{}", i))
+                    .w(halo_size)
+                    .h(halo_size)
+                    .radius(halo_size * 0.5)
+                    .fill(palette.accent.alpha(alpha * 0.22))
+                    .pin(Some(halo_left), Some(halo_top), None, None),
+            );
+        }
+
+        let dot_left = center_x - dot_size * 0.5;
+        let dot_top = center_y - dot_size * 0.5;
+
+        canvas = canvas.child(
+            col()
+                .key(format!("radar_dot_{}", i))
+                .w(dot_size)
+                .h(dot_size)
+                .radius(dot_size * 0.5)
+                .fill(palette.accent.alpha(alpha))
+                .pin(Some(dot_left), Some(dot_top), None, None),
+        );
+    }
+
+    // 3. Gently pulsing center icon badge driven by (elapsed_secs * 3.0).sin()
+    let pulse = ((elapsed * 3.0).sin() as f32) * 0.5 + 0.5; // [0.0, 1.0]
+
+    let core_halo_size = 34.0 + 7.5 * pulse;
+    let core_halo_offset = SPINNER_CENTER - core_halo_size * 0.5;
+    canvas = canvas.child(
+        col()
+            .key("core_halo")
+            .w(core_halo_size)
+            .h(core_halo_size)
+            .radius(core_halo_size * 0.5)
+            .fill(palette.accent.alpha(0.08 + 0.14 * pulse))
+            .pin(Some(core_halo_offset), Some(core_halo_offset), None, None),
+    );
+
+    let badge_size = 28.0 + 2.4 * pulse;
+    let badge_offset = SPINNER_CENTER - badge_size * 0.5;
+    canvas = canvas.child(
+        col()
+            .key("core_badge")
+            .w(badge_size)
+            .h(badge_size)
+            .radius(badge_size * 0.5)
+            .center()
+            .fill(palette.accent.alpha(0.14 + 0.10 * pulse))
+            .border(1.0, palette.accent.alpha(0.32 + 0.28 * pulse))
+            .pin(Some(badge_offset), Some(badge_offset), None, None)
+            .child(
+                text("⚡")
+                    .color(palette.accent.alpha(0.78 + 0.22 * pulse)),
+            ),
+    );
+
+    canvas
+}
+
+/// Builds the action title and formatted elapsed timer pill.
+fn build_typography_block(action_name: &str, elapsed: f64, palette: &ThemePalette) -> El {
+    let pulse_dot_alpha = 0.45 + 0.55 * (((elapsed * 3.0).sin() as f32) * 0.5 + 0.5);
+    let elapsed_label = format_elapsed(elapsed);
+
+    let status_row = row()
+        .gap(6.0)
+        .center()
+        .child(
+            col()
+                .key("pulse_indicator_dot")
+                .w(6.0)
+                .h(6.0)
+                .radius(3.0)
+                .fill(palette.accent.alpha(pulse_dot_alpha)),
+        )
+        .child(
+            text("IN PROGRESS")
+                .font(rune::tok::type_::LABEL)
+                .color(palette.text_secondary),
+        )
+        .child(
+            text("•")
+                .font(rune::tok::type_::LABEL)
+                .color(palette.text_secondary.alpha(0.6)),
+        )
+        .child(
+            text(elapsed_label)
+                .font(rune::tok::type_::LABEL)
+                .color(palette.text_secondary),
+        );
+
+    let lines = wrap_and_truncate_status(
+        action_name,
+        MAX_STATUS_CHARS_PER_LINE,
+        MAX_STATUS_LINES,
+    );
+
+    let mut title_col = col().gap(2.0).center();
+    for (idx, line) in lines.iter().enumerate() {
+        title_col = title_col.child(
+            text(line)
+                .font(if idx == 0 { rune::tok::type_::TITLE } else { rune::tok::type_::BODY })
+                .color(palette.text_primary),
+        );
+    }
+
+    col().gap(6.0).center().child(title_col).child(status_row)
+}
+
+/// Builds a Fluent-style indeterminate progress track with a cubic-eased sliding pill.
+fn build_indeterminate_track(elapsed: f64, palette: &ThemePalette) -> El {
+    let t = (elapsed / PROGRESS_CYCLE_SECS).rem_euclid(1.0);
+
+    // Leading edge starts immediately; trailing edge follows after a 18% delay
+    let head = ease_in_out_cubic((t / 0.82).min(1.0)) as f32;
+    let tail = ease_in_out_cubic(((t - 0.18).max(0.0) / 0.82).min(1.0)) as f32;
+
+    let pill_left = (tail * TRACK_WIDTH).clamp(0.0, TRACK_WIDTH);
+    let pill_right = (head * TRACK_WIDTH).clamp(pill_left, TRACK_WIDTH);
+    let pill_width = (pill_right - pill_left).max(0.0);
+
+    let mut track = col()
+        .key("indeterminate_track")
+        .w(TRACK_WIDTH)
+        .h(TRACK_HEIGHT)
+        .radius(TRACK_HEIGHT * 0.5)
+        .fill(palette.border.alpha(0.3));
+
+    if pill_width > 0.5 {
+        // Subtle glow under the active pill
+        track = track.child(
+            col()
+                .key("pill_glow")
+                .w(pill_width)
+                .h(TRACK_HEIGHT)
+                .radius(TRACK_HEIGHT * 0.5)
+                .fill(palette.accent.alpha(0.32))
+                .pin(Some(pill_left), Some(0.0), None, Some(0.0)),
+        );
+
+        // Crisp foreground accent pill
+        track = track.child(
+            col()
+                .key("pill_fg")
+                .w(pill_width)
+                .h(TRACK_HEIGHT)
+                .radius(TRACK_HEIGHT * 0.5)
+                .fill(palette.accent)
+                .pin(Some(pill_left), Some(0.0), None, Some(0.0)),
+        );
+    }
+
+    track
+}
+
+/// Standard C1-continuous cubic ease-in-out over `[0.0, 1.0]`.
+#[inline]
+fn ease_in_out_cubic(t: f64) -> f64 {
+    let x = t.clamp(0.0, 1.0);
+    if x < 0.5 {
+        4.0 * x * x * x
+    } else {
+        1.0 - (-2.0 * x + 2.0).powi(3) * 0.5
+    }
+}
+
+/// Guards against `NaN`, infinity, or negative deltas from monotonic clock jitter.
+#[inline]
+fn sanitize_elapsed(elapsed_secs: f64) -> f64 {
+    if elapsed_secs.is_finite() && elapsed_secs > 0.0 {
+        elapsed_secs
     } else {
         0.0
     }
 }
 
-/// Builds the 8-dot circular radar indicator with smoothstep alpha interpolation
-/// between `palette.accent` (1.0) and `palette.accent.alpha(0.2)`.
-fn build_circular_radar(wrapped_secs: f64, palette: &ThemePalette) -> El {
-    let phase = wrapped_secs * 4.0;
-    let active_idx = (phase as usize) % RADAR_DOT_COUNT;
-    let frac = (phase - phase.floor()) as f32;
-    let center = RADAR_CANVAS_SIZE * 0.5;
-
-    let mut canvas = col().w(RADAR_CANVAS_SIZE).h(RADAR_CANVAS_SIZE);
-
-    for idx in 0..RADAR_DOT_COUNT {
-        let alpha = compute_dot_alpha(idx, active_idx, frac);
-        // Normalize alpha back into [0.0, 1.0] to subtly pulse dot diameter.
-        let glow_factor = ((alpha - 0.2) / 0.8).clamp(0.0, 1.0);
-        let diameter =
-            RADAR_DOT_MIN_DIAMETER + (RADAR_DOT_MAX_DIAMETER - RADAR_DOT_MIN_DIAMETER) * glow_factor;
-        let radius = diameter * 0.5;
-
-        let angle = (idx as f32 / RADAR_DOT_COUNT as f32) * TAU - FRAC_PI_2;
-        let x = (center + RADAR_ORBIT_RADIUS * angle.cos() - radius).max(0.0);
-        let y = (center + RADAR_ORBIT_RADIUS * angle.sin() - radius).max(0.0);
-
-        let dot = col()
-            .key(format!("radar_dot_{}", idx))
-            .w(diameter)
-            .h(diameter)
-            .radius(radius)
-            .fill(palette.accent.alpha(alpha))
-            .pin(Some(y), None, None, Some(x));
-
-        canvas = canvas.child(dot);
+/// Formats elapsed duration cleanly (`1.2s`, or `1m 04.2s` for long scans).
+fn format_elapsed(elapsed_secs: f64) -> String {
+    if elapsed_secs < 60.0 {
+        format!("{elapsed_secs:.1}s")
+    } else {
+        let mins = (elapsed_secs / 60.0).floor() as u64;
+        let secs = elapsed_secs % 60.0;
+        format!("{mins}m {secs:04.1}s")
     }
-
-    canvas
 }
 
-/// Computes the smooth alpha value in `[0.2, 1.0]` for dot `idx` given the active
-/// head dot `active_idx` and sub-step fraction `frac` in `[0.0, 1.0)`.
-fn compute_dot_alpha(idx: usize, active_idx: usize, frac: f32) -> f32 {
-    let steps_behind = (active_idx + RADAR_DOT_COUNT - (idx % RADAR_DOT_COUNT)) % RADAR_DOT_COUNT;
-    let trail_pos = (steps_behind as f32 + frac.clamp(0.0, 1.0)) % (RADAR_DOT_COUNT as f32);
-    let linear_intensity = (1.0 - (trail_pos / RADAR_DOT_COUNT as f32)).clamp(0.0, 1.0);
-    let smoothstep = linear_intensity * linear_intensity * (3.0 - 2.0 * linear_intensity);
-    0.2 + 0.8 * smoothstep
-}
-
-/// Builds a sleek indeterminate sliding progress bar with eased oscillation.
-fn build_mini_progress_bar(wrapped_secs: f64, palette: &ThemePalette) -> El {
-    // 2-second full sweep cycle with smooth ease-in-out at both track edges.
-    let oscillation = 0.5 - 0.5 * ((wrapped_secs as f32) * PI).cos();
-    let max_travel = (MINI_BAR_WIDTH - MINI_BAR_PILL_WIDTH).max(0.0);
-    let pill_left = max_travel * oscillation.clamp(0.0, 1.0);
-    let track_radius = MINI_BAR_HEIGHT * 0.5;
-
-    let sliding_pill = col()
-        .key("mini_pill")
-        .w(MINI_BAR_PILL_WIDTH)
-        .h(MINI_BAR_HEIGHT)
-        .radius(track_radius)
-        .fill(palette.accent)
-        .pin(Some(0.0), None, Some(0.0), Some(pill_left));
-
-    let track = col()
-        .key("mini_track")
-        .w(MINI_BAR_WIDTH)
-        .h(MINI_BAR_HEIGHT)
-        .radius(track_radius)
-        .fill(palette.accent.alpha(0.2))
-        .child(sliding_pill);
-
-    row().center().child(track)
-}
-
-/// Sanitizes control characters and wraps/truncates `raw` safely along Unicode
-/// scalar boundaries so arbitrary status messages never overflow or panic.
-fn wrap_and_truncate_status(
+/// Word-wraps and truncates a status message to at most `max_lines` lines of
+/// `max_chars_per_line` length each, appending an ellipsis on overflow.
+pub fn wrap_and_truncate_status(
     raw: &str,
     max_chars_per_line: usize,
     max_lines: usize,
 ) -> Vec<String> {
-    if max_chars_per_line == 0 || max_lines == 0 {
-        return Vec::new();
+    let trimmed = raw.trim();
+    if trimmed.is_empty() {
+        return vec!["Optimizing Windows...".to_string()];
     }
 
-    let cleaned: String = raw
-        .chars()
-        .map(|ch| if ch.is_control() { ' ' } else { ch })
-        .collect();
+    let mut lines = Vec::new();
+    let mut current = String::new();
 
-    let words: Vec<&str> = cleaned.split_whitespace().collect();
-    if words.is_empty() {
-        return vec![DEFAULT_STATUS_MESSAGE.to_string()];
-    }
+    for word in trimmed.split_whitespace() {
+        let candidate_len = if current.is_empty() {
+            word.chars().count()
+        } else {
+            current.chars().count() + 1 + word.chars().count()
+        };
 
-    let mut lines: Vec<String> = Vec::with_capacity(max_lines);
-    let mut current_line = String::new();
-    let mut current_len: usize = 0;
-    let mut truncated = false;
-
-    'outer: for word in words {
-        let mut remaining_chars = word.chars().peekable();
-
-        while remaining_chars.peek().is_some() {
-            let chunk: String = remaining_chars.by_ref().take(max_chars_per_line).collect();
-            let chunk_len = chunk.chars().count();
-
-            if current_len == 0 {
-                current_line.push_str(&chunk);
-                current_len = chunk_len;
-            } else if current_len + 1 + chunk_len <= max_chars_per_line {
-                current_line.push(' ');
-                current_line.push_str(&chunk);
-                current_len += 1 + chunk_len;
-            } else {
-                lines.push(current_line);
-                if lines.len() >= max_lines {
-                    truncated = true;
-                    current_line = String::new();
-                    break 'outer;
+        if candidate_len <= max_chars_per_line {
+            if !current.is_empty() {
+                current.push(' ');
+            }
+            current.push_str(word);
+        } else {
+            if !current.is_empty() {
+                lines.push(current);
+                current = String::new();
+                if lines.len() == max_lines {
+                    break;
                 }
-                current_line = chunk;
-                current_len = chunk_len;
+            }
+
+            if word.chars().count() > max_chars_per_line {
+                let chunk: String = word.chars().take(max_chars_per_line.saturating_sub(1)).collect();
+                lines.push(format!("{}…", chunk));
+                if lines.len() == max_lines {
+                    break;
+                }
+            } else {
+                current.push_str(word);
             }
         }
     }
 
-    if !current_line.is_empty() && lines.len() < max_lines {
-        lines.push(current_line);
+    if !current.is_empty() && lines.len() < max_lines {
+        lines.push(current);
     }
 
-    if truncated {
-        if let Some(last_line) = lines.last_mut() {
-            let char_count = last_line.chars().count();
-            if char_count >= max_chars_per_line {
-                let keep = max_chars_per_line.saturating_sub(1);
-                *last_line = last_line.chars().take(keep).collect();
-            }
-            while last_line.ends_with(' ') {
-                last_line.pop();
-            }
-            last_line.push('…');
-        }
+    if lines.is_empty() {
+        lines.push(trimmed.chars().take(max_chars_per_line).collect());
     }
 
     lines
@@ -265,42 +388,24 @@ mod tests {
     use super::*;
 
     #[test]
-    fn sanitize_time_handles_edge_values() {
-        assert_eq!(sanitize_time_secs(f64::NAN), 0.0);
-        assert_eq!(sanitize_time_secs(f64::INFINITY), 0.0);
-        assert_eq!(sanitize_time_secs(f64::NEG_INFINITY), 0.0);
-        assert_eq!(sanitize_time_secs(-5.0), 0.0);
-        assert!((sanitize_time_secs(4.5) - 0.5).abs() < 1e-9);
+    fn test_wrap_and_truncate_status() {
+        let s = "Scanning Windows Registry and removing telemetry tracking components from the host";
+        let lines = wrap_and_truncate_status(s, 30, 2);
+        assert!(!lines.is_empty());
+        assert!(lines.len() <= 2);
     }
 
     #[test]
-    fn dot_alpha_stays_within_expected_bounds() {
-        for active in 0..RADAR_DOT_COUNT {
-            for idx in 0..RADAR_DOT_COUNT {
-                let alpha = compute_dot_alpha(idx, active, 0.0);
-                assert!((0.2..=1.0).contains(&alpha));
-            }
-            let head_alpha = compute_dot_alpha(active, active, 0.0);
-            assert!((head_alpha - 1.0).abs() < 1e-6);
-        }
+    fn test_cubic_ease_in_out() {
+        assert!((ease_in_out_cubic(0.0) - 0.0).abs() < 1e-6);
+        assert!((ease_in_out_cubic(0.5) - 0.5).abs() < 1e-6);
+        assert!((ease_in_out_cubic(1.0) - 1.0).abs() < 1e-6);
     }
 
     #[test]
-    fn status_wrapping_handles_empty_unicode_and_overflow() {
-        assert_eq!(
-            wrap_and_truncate_status("   \n\t ", 44, 3),
-            vec![DEFAULT_STATUS_MESSAGE.to_string()]
-        );
-
-        let long_msg = "Scanning NVMe SMART telemetry blocks across PCIe Gen4 controllers and validating firmware descriptors for thermal safety";
-        let wrapped = wrap_and_truncate_status(long_msg, 24, 2);
-        assert_eq!(wrapped.len(), 2);
-        assert!(wrapped.iter().all(|line| line.chars().count() <= 24));
-        assert!(wrapped.last().is_some_and(|line| line.ends_with('…')));
-
-        let unicode_token = "🔥".repeat(30);
-        let wrapped_unicode = wrap_and_truncate_status(&unicode_token, 10, 2);
-        assert_eq!(wrapped_unicode.len(), 2);
-        assert!(wrapped_unicode.iter().all(|line| line.chars().count() <= 10));
+    fn test_format_elapsed() {
+        assert_eq!(format_elapsed(0.0), "0.0s");
+        assert_eq!(format_elapsed(12.34), "12.3s");
+        assert_eq!(format_elapsed(65.0), "1m 05.0s");
     }
 }

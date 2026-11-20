@@ -33,12 +33,11 @@
 
 ## Relationships
 
+- [SlowScanBackend](SlowScanBackend.md) (2 shared connections)
+- [super](super.md) (2 shared connections)
 - [LazyLoader](LazyLoader.md) (2 shared connections)
-- [PlatformSecurityInfo](PlatformSecurityInfo.md) (2 shared connections)
 - [AppState](AppState.md) (1 shared connections)
-- [PanickingBackend](PanickingBackend.md) (1 shared connections)
-- [path](path.md) (1 shared connections)
-- [SlowScanBackend](SlowScanBackend.md) (1 shared connections)
+- [PlatformSecurityInfo](PlatformSecurityInfo.md) (1 shared connections)
 
 ## Source Files
 

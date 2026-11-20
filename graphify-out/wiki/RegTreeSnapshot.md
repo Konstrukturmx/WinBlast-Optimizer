@@ -19,7 +19,7 @@
 ## Relationships
 
 - [BlastResult](BlastResult.md) (6 shared connections)
-- [PanickingBackend](PanickingBackend.md) (4 shared connections)
+- [SlowScanBackend](SlowScanBackend.md) (4 shared connections)
 - [task_scanner.rs](task_scanner.rs.md) (3 shared connections)
 - [.Reg State() Vendor()](Reg_State_Vendor.md) (2 shared connections)
 - [Integration Suite: Tweak Sandbox E2E](Integration_Suite-_Tweak_Sandbox_E2E.md) (2 shared connections)

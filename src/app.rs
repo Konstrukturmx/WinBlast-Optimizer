@@ -2181,7 +2181,8 @@ impl AppState {
     /// Relaunch WinBlast0 with elevated administrator privileges via Windows UAC.
     pub fn relaunch_elevated(&self) {
         if let Ok(exe) = std::env::current_exe() {
-            let file_w: Vec<u16> = exe.to_string_lossy().encode_utf16().chain(std::iter::once(0)).collect();
+            let clean_exe = crate::core::updater::clean_exe_path(&exe.to_string_lossy());
+            let file_w: Vec<u16> = clean_exe.encode_utf16().chain(std::iter::once(0)).collect();
             let op_w: Vec<u16> = "runas".encode_utf16().chain(std::iter::once(0)).collect();
             let hinst = unsafe {
                 windows::Win32::UI::Shell::ShellExecuteW(

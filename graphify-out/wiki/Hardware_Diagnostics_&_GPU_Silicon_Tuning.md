@@ -1,62 +1,55 @@
 # Hardware Diagnostics & GPU Silicon Tuning
 
-> 40 nodes · cohesion 0.14
+> 33 nodes · cohesion 0.06
 
 ## Key Concepts
 
-- **action_button_guarded()** (44 connections) — `src/ui/widgets/button.rs`
-- **clean_apps.rs** (32 connections) — `src/ui/views/clean_apps.rs`
-- **startup_tasks.rs** (28 connections) — `src/ui/views/startup_tasks.rs`
-- **button.rs** (23 connections) — `src/ui/widgets/button.rs`
-- **pill_badge()** (20 connections) — `src/ui/widgets/button.rs`
-- **El** (13 connections)
-- **build_appx_features_body()** (12 connections) — `src/ui/views/clean_apps.rs`
-- **build_disk_cleaner_body()** (12 connections) — `src/ui/views/clean_apps.rs`
-- **build_winget_body()** (12 connections) — `src/ui/views/clean_apps.rs`
-- **build_startup_apps_list()** (11 connections) — `src/ui/views/startup_tasks.rs`
-- **view()** (11 connections) — `src/ui/views/startup_tasks.rs`
-- **view()** (9 connections) — `src/ui/views/clean_apps.rs`
-- **build_services_list()** (9 connections) — `src/ui/views/startup_tasks.rs`
-- **build_tasks_list()** (9 connections) — `src/ui/views/startup_tasks.rs`
-- **Color** (8 connections)
-- **switch_indicator()** (8 connections) — `src/ui/widgets/button.rs`
-- **CleanAppsSubTab** (7 connections) — `src/app.rs`
-- **StartupTasksSubTab** (7 connections) — `src/app.rs`
-- **El** (7 connections)
-- **El** (7 connections)
-- **switch_toggle_with()** (7 connections) — `src/ui/widgets/button.rs`
-- **switch_visual_shell()** (7 connections) — `src/ui/widgets/button.rs`
-- **empty_card()** (6 connections) — `src/ui/views/clean_apps.rs`
-- **empty_card()** (6 connections) — `src/ui/views/startup_tasks.rs`
-- **action_button_loading()** (6 connections) — `src/ui/widgets/button.rs`
-- *... and 15 more nodes in this community*
+- **explorer_ctrl.rs** (49 connections) — `src/tools/explorer_ctrl.rs`
+- **create_unicode_environment** (1 connections)
+- **createenvironmentblock** (1 connections)
+- **createprocesswithtokenw** (1 connections)
+- **destroyenvironmentblock** (1 connections)
+- **duplicatetokenex** (1 connections)
+- **getshellwindow** (1 connections)
+- **getwindowthreadprocessid** (1 connections)
+- **hwnd_broadcast** (1 connections)
+- **logon_with_profile** (1 connections)
+- **lparam** (1 connections)
+- **openprocess** (1 connections)
+- **process_information** (1 connections)
+- **process_query_limited_information** (1 connections)
+- **process_synchronize** (1 connections)
+- **process_terminate** (1 connections)
+- **pwstr** (1 connections)
+- **securityimpersonation** (1 connections)
+- **sendmessagetimeoutw** (1 connections)
+- **shchangenotify** (1 connections)
+- **shcne_assocchanged** (1 connections)
+- **shcnf_flush** (1 connections)
+- **smto_abortifhung** (1 connections)
+- **startupinfow** (1 connections)
+- **terminateprocess** (1 connections)
+- *... and 8 more nodes in this community*
 
 ## Relationships
 
-- [.Toggle .Set .Apply](Toggle_.Set_.Apply.md) (74 shared connections)
-- [ThemePalette](ThemePalette.md) (24 shared connections)
-- [AppState](AppState.md) (20 shared connections)
-- [ui/mod.rs](ui-mod.rs.md) (4 shared connections)
-- [Core UI Internationalization & Text Catalog](Core_UI_Internationalization_&_Text_Catalog.md) (3 shared connections)
-- [app.rs](app.rs.md) (2 shared connections)
-- [enums](enums.md) (2 shared connections)
-- [Disk Cleaning & Temporary File Purger](Disk_Cleaning_&_Temporary_File_Purger.md) (2 shared connections)
-- [RealBackend](RealBackend.md) (2 shared connections)
-- [StartupEntry](StartupEntry.md) (2 shared connections)
-- [normalize_guid_str](normalize_guid_str.md) (2 shared connections)
-- [RegRawSnapshot](RegRawSnapshot.md) (1 shared connections)
+- [restart_explorer_safely](restart_explorer_safely.md) (5 shared connections)
+- [elevation.rs](elevation.rs.md) (3 shared connections)
+- [WinBlastError](WinBlastError.md) (2 shared connections)
+- [RegRawSnapshot](RegRawSnapshot.md) (2 shared connections)
+- [sys_inventory.rs](sys_inventory.rs.md) (2 shared connections)
+- [backend.rs](backend.rs.md) (1 shared connections)
+- [real_windows_env.rs](real_windows_env.rs.md) (1 shared connections)
+- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (1 shared connections)
 
 ## Source Files
 
-- `src/app.rs`
-- `src/ui/views/clean_apps.rs`
-- `src/ui/views/startup_tasks.rs`
-- `src/ui/widgets/button.rs`
+- `src/tools/explorer_ctrl.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 210 (84%)
-- INFERRED: 41 (16%)
+- EXTRACTED: 49 (100%)
+- INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 
 ---

@@ -9,14 +9,14 @@
 [![License](https://img.shields.io/badge/License-MIT-blueviolet?style=for-the-badge)](LICENSE)
 [![Platform](https://img.shields.io/badge/Platform-Windows%2010%20%7C%2011%20(x64)-0078D6?style=for-the-badge&logo=windows)](https://github.com/Konstrukturmx/WinBlast-Optimizer)
 [![Rust](https://img.shields.io/badge/Rust-2021%20Edition-DEA584?style=for-the-badge&logo=rust)](https://www.rust-lang.org/)
-[![Tests](https://img.shields.io/badge/Tests-193%20Passed%20(100%25)-success?style=for-the-badge)](tests/)
+[![Tests](https://img.shields.io/badge/Tests-194%20Passed%20(100%25)-success?style=for-the-badge)](tests/)
 [![Languages](https://img.shields.io/badge/i18n-8%20Languages%20(510%20Keys)-orange?style=for-the-badge)](src/core/i18n.rs)
 
 <p align="center">
   <b>WinBlast Optimizer</b> is a standalone, lightweight, zero-dependency Windows optimization suite designed for performance enthusiasts, competitive gamers, power users, and system administrators. Built in pure Rust with direct Win32/NT kernel bindings, it replaces bloated PowerShell scripts and black-box tweakers with an auditable, transactional, and fully reversible optimization engine.
 </p>
 
-[**Download Latest Release (v1.4.0)**](https://github.com/Konstrukturmx/WinBlast-Optimizer/releases/latest) • [**Changelog**](CHANGELOG.md) • [**Architecture Guide**](DEVELOPMENT.md) • [**VirusTotal Report**](https://www.virustotal.com/gui/file/19895c54d3699391aebedb5c3e384aeb7ac5a73f8d1bee9ff7da4cd623d2fa00) • [**Knowledge Graph**](graphify-out/graph.html)
+[**Download Latest Release (v1.4.1)**](https://github.com/Konstrukturmx/WinBlast-Optimizer/releases/latest) • [**Changelog**](CHANGELOG.md) • [**Architecture Guide**](DEVELOPMENT.md) • [**VirusTotal Report**](https://www.virustotal.com/gui/file/19895c54d3699391aebedb5c3e384aeb7ac5a73f8d1bee9ff7da4cd623d2fa00) • [**Knowledge Graph**](graphify-out/graph.html)
 
 ---
 
@@ -61,13 +61,14 @@ Derived from the formal [**WinBlast0 Architecture Guide**](DEVELOPMENT.md), WinB
   * **⚡ Compact (High Density)**: Micro-padding (8px), 4px corners, 180px sidebar, maximized information per square inch.
   * **🎨 Materialistic (Material Design 3)**: Soft 18px rounded cards, 24px pill buttons, tonal surfaces, and smooth decelerated spring motion.
 * **6 WCAG AA Color Schemes**: *Cyber Indigo*, *Midnight Stealth*, *Emerald Mint*, *Crimson Sunset*, *Solar Amber*, and *Arctic Aurora* with Dark and Light mode support.
-* **Permanent High-Resolution Icon**: Embedded `winblast.ico` with full PE Version Information (`Konstrukturmx`, `WinBlast Optimizer`, version `1.4.0.0`).
+* **Permanent High-Resolution Icon**: Embedded `winblast.ico` with full PE Version Information (`Konstrukturmx`, `WinBlast Optimizer`, version `1.4.1.0`).
 * **Themed Always-On Scroll Bars**: Every overflowing viewport renders a custom palette-driven scroll bar (6 pt muted thumb at rest, 9 pt theme-accent thumb on hover/drag) with dedicated `14.0pt` to `16.0pt` right gutters preventing thumb-button collisions.
 
-### 2. ⚡ Autonomous Self-Updater & Game Platform Engine (v1.4)
+### 2. ⚡ Autonomous Self-Updater & Game Platform Engine (v1.4.1)
+* **Autonomous Self-Updater with Verbatim Namespace Normalization**: Resolves the Windows `cannot find '\\'` launch error by stripping verbatim UNC namespaces (`\\?\` / `\\?\UNC\`) and launching detached via PowerShell with UAC elevation preservation (`-Verb RunAs`).
+* **Fluent / Windows 11 Kinetic "In Progress" Animation HUD**: Pure-Rust Rune modal overlay featuring a 10-dot cubic-eased clockwise orbital radar, pulsing lightning badge (`⚡`), and WinUI 3 stretch-and-glide indeterminate sliding progress bar with dynamic word-wrapping and non-blocking background mode.
 * **Instant 1-Click Dark / Light Mode Toggle**: Immediate theme mode switching with real-time palette regeneration (`ThemePalette::new`) and instant full-window repaint.
 * **Full Desktop Work Area Auto-Detection & Win32 `SW_MAXIMIZE`**: Dispatches native `ShowWindow(SW_MAXIMIZE)` on startup to guarantee full desktop work area launch without exclusive gaming fullscreen.
-* **Centered "In Progress" Animation HUD Overlay**: Real-time 8-dot circular radar spinner, dynamic status message, and indeterminate progress bar with a "Run in Background" button for smooth non-blocking execution.
 * **0ms Lazy-Loaded Diagnostic Views**: Non-blocking async telemetry for "Thermals & Fans", "Driver & BIOS", and "Disk Health" with animated loading skeleton states.
 * **Graph Optimization Algorithms (A*, Dijkstra & Raven)**: Cost-heuristic path optimization for minimum reboot dependencies and Pareto-optimal tweak conflict resolution.
 * **Microsecond Generational Caching**: 4-way set-associative LRU generational cache with atomic epoch invalidation fences for zero-allocation borrowed reads.

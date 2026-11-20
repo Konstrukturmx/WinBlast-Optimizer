@@ -1,45 +1,60 @@
 # SlowScanBackend
 
-> God node · 85 connections · `tests/tweak_sandbox_e2e.rs`
+> 40 nodes · cohesion 0.07
 
-**Community:** [PanickingBackend](PanickingBackend.md)
+## Key Concepts
 
-## Connections by Relation
+- **SlowScanBackend** (85 connections) — `tests/tweak_sandbox_e2e.rs`
+- **PanickingBackend** (81 connections) — `tests/tweak_sandbox_e2e.rs`
+- **AtomicBool** (7 connections)
+- **.remove_edge_preserve_webview2()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.run_scheduled_task()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.set_usb_root_hub_power_saving()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.uninstall_onedrive_safe()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.remove_edge_preserve_webview2()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.run_scheduled_task()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.set_usb_root_hub_power_saving()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.uninstall_onedrive_safe()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.reg_delete_value_for_vendor()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.reg_set_dword_for_vendor()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.remove_edge_preserve_webview2()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.run_scheduled_task()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.set_usb_root_hub_power_saving()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.uninstall_onedrive_safe()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.check_onedrive_kfm_active()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.get_task_enabled()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.logical_core_count()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.reg_delete_value_for_vendor()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.reg_get_dword()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.reg_key_exists()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.reg_set_dword_for_vendor()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.set_mpo_disabled()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
+- *... and 15 more nodes in this community*
 
-### contains
-- tweak_sandbox_e2e.rs `EXTRACTED`
+## Relationships
 
-### implements
-- [SystemBackend](SystemBackend.md) `EXTRACTED`
+- [BlastResult](BlastResult.md) (50 shared connections)
+- [FailAtMutationBackend](FailAtMutationBackend.md) (26 shared connections)
+- [test_wave1_ledger_rollback_and_concurrency_regressions](test_wave1_ledger_rollback_and_concurrency_regressions.md) (18 shared connections)
+- [test_wave1_compound_actions_deep_edge_cases](test_wave1_compound_actions_deep_edge_cases.md) (8 shared connections)
+- [theme.rs](theme.rs.md) (6 shared connections)
+- [LazyLoader](LazyLoader.md) (4 shared connections)
+- [latency_bench.rs](latency_bench.rs.md) (4 shared connections)
+- [RegTreeSnapshot](RegTreeSnapshot.md) (4 shared connections)
+- [.block_telemetry_hosts](block_telemetry_hosts.md) (4 shared connections)
+- [backend.rs](backend.rs.md) (4 shared connections)
+- [Disk Cleaning & Temporary File Purger](Disk_Cleaning_&_Temporary_File_Purger.md) (4 shared connections)
+- [SandboxEnv](SandboxEnv.md) (2 shared connections)
 
-### method
-- .set_optional_feature() `EXTRACTED`
-- .list_startup_entries() `EXTRACTED`
-- .reg_set_string() `EXTRACTED`
-- .reg_set_binary() `EXTRACTED`
-- .reg_set_raw() `EXTRACTED`
-- .set_hibernation_enabled() `EXTRACTED`
-- .block_telemetry_hosts() `EXTRACTED`
-- .execute_clean_targets() `EXTRACTED`
-- .set_startup_entry_enabled() `EXTRACTED`
-- .list_live_services() `EXTRACTED`
-- .detect_os() `EXTRACTED`
-- .reg_get_string() `EXTRACTED`
-- .reg_snapshot_tree() `EXTRACTED`
-- .reg_restore_tree() `EXTRACTED`
-- .get_active_power_scheme() `EXTRACTED`
-- .create_and_activate_performance_plan() `EXTRACTED`
-- .load_task_cache() `EXTRACTED`
-- .set_scheduled_task_enabled() `EXTRACTED`
-- .list_restore_points() `EXTRACTED`
-- .detect_gpus() `EXTRACTED`
-- *…and 59 more `method` connection(s) not listed (lowest-degree first to go)*
+## Source Files
 
-### references
-- [SandboxEnv](SandboxEnv.md) `EXTRACTED`
-- AtomicBool `EXTRACTED`
-- Mutex `EXTRACTED`
-- Condvar `EXTRACTED`
+- `tests/tweak_sandbox_e2e.rs`
+
+## Audit Trail
+
+- EXTRACTED: 220 (100%)
+- INFERRED: 0 (0%)
+- AMBIGUOUS: 0 (0%)
 
 ---
 

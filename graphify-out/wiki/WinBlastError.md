@@ -44,7 +44,7 @@
 - [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (2 shared connections)
 - [spawn_guarded_worker](spawn_guarded_worker.md) (2 shared connections)
 - [startup.rs](startup.rs.md) (2 shared connections)
-- [path](path.md) (1 shared connections)
+- [super](super.md) (1 shared connections)
 
 ## Source Files
 

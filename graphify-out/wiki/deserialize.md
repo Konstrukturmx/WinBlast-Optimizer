@@ -1,65 +1,48 @@
 # deserialize
 
-> 26 nodes · cohesion 0.13
+> 13 nodes · cohesion 0.21
 
 ## Key Concepts
 
-- **deserialize** (31 connections)
-- **serialize** (30 connections)
-- **enums** (20 connections)
-- **RegKey** (20 connections)
-- **diagnostics.rs** (10 connections) — `src/tools/diagnostics.rs`
-- **FaultDiagnosticsReport** (10 connections) — `src/tools/diagnostics.rs`
-- **tools/game_overlay.rs** (7 connections) — `src/tools/game_overlay.rs`
-- **bios.rs** (6 connections) — `src/hardware/bios.rs`
-- **os_detect.rs** (5 connections) — `src/core/os_detect.rs`
-- **GameSuitabilityReport** (5 connections) — `src/tools/game_overlay.rs`
-- **tools/game_profiles.rs** (5 connections) — `src/tools/game_profiles.rs`
-- **tools/windows_repair.rs** (4 connections) — `src/tools/windows_repair.rs`
-- **parse_multi_sz_lossless()** (3 connections) — `src/tools/diagnostics.rs`
-- **test_windows_info_detect_host()** (2 connections) — `src/core/os_detect.rs`
-- **.detect()** (2 connections) — `src/core/os_detect.rs`
-- **.scan()** (2 connections) — `src/tools/diagnostics.rs`
-- **MinidumpEntry** (2 connections) — `src/tools/diagnostics.rs`
-- **PendingRebootStatus** (2 connections) — `src/tools/diagnostics.rs`
-- **.default()** (2 connections) — `src/tools/game_overlay.rs`
-- **.evaluate()** (2 connections) — `src/tools/game_overlay.rs`
-- **SuitabilityCheck** (2 connections) — `src/tools/game_overlay.rs`
-- **test_unorthodox_multi_sz_odd_byte_lengths_and_corruptions()** (2 connections) — `tests/edge_cases_unorthodox.rs`
-- **.clear_cbs_reboot_flags()** (1 connections) — `src/tools/diagnostics.rs`
-- **.clear_minidumps()** (1 connections) — `src/tools/diagnostics.rs`
-- **.clear_pending_renames()** (1 connections) — `src/tools/diagnostics.rs`
-- *... and 1 more nodes in this community*
+- **LatencySnapshot** (18 connections) — `src/hardware/latency.rs`
+- **latency.rs** (4 connections) — `src/hardware/latency.rs`
+- **System** (4 connections)
+- **.capture_latency()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.capture_latency()** (3 connections) — `src/core/backend.rs`
+- **.capture_latency()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.capture_latency()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.capture_latency()** (2 connections) — `src/core/backend.rs`
+- **.capture_latency()** (2 connections) — `src/core/backend.rs`
+- **DateTime** (2 connections)
+- **Utc** (2 connections)
+- **.ram_display()** (1 connections) — `src/hardware/latency.rs`
+- **.timer_resolution_display()** (1 connections) — `src/hardware/latency.rs`
 
 ## Relationships
 
-- [sys_inventory.rs](sys_inventory.rs.md) (6 shared connections)
-- [path](path.md) (4 shared connections)
-- [driver_update.rs](driver_update.rs.md) (4 shared connections)
-- [Multi-Language Tweak Localization Tables](Multi-Language_Tweak_Localization_Tables.md) (4 shared connections)
-- [power.rs](power.rs.md) (4 shared connections)
-- [State Ledger & Restore Point Engine](State_Ledger_&_Restore_Point_Engine.md) (4 shared connections)
-- [Scandetailkind Appxinstalled Appxinstalledps](Scandetailkind_Appxinstalled_Appxinstalledps.md) (4 shared connections)
-- [spawn_guarded_worker](spawn_guarded_worker.md) (4 shared connections)
-- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (4 shared connections)
-- [PlatformSecurityInfo](PlatformSecurityInfo.md) (4 shared connections)
-- [startup.rs](startup.rs.md) (4 shared connections)
-- [test_wave1_ledger_rollback_and_concurrency_regressions](test_wave1_ledger_rollback_and_concurrency_regressions.md) (3 shared connections)
+- [SandboxEnv](SandboxEnv.md) (2 shared connections)
+- [startup.rs](startup.rs.md) (2 shared connections)
+- [SlowScanBackend](SlowScanBackend.md) (2 shared connections)
+- [.Reg State() Vendor()](Reg_State_Vendor.md) (1 shared connections)
+- [Integration Suite: Tweak Sandbox E2E](Integration_Suite-_Tweak_Sandbox_E2E.md) (1 shared connections)
+- [WorkerEvent](WorkerEvent.md) (1 shared connections)
+- [task_scanner.rs](task_scanner.rs.md) (1 shared connections)
+- [AppState](AppState.md) (1 shared connections)
+- [app.rs](app.rs.md) (1 shared connections)
+- [backend.rs](backend.rs.md) (1 shared connections)
+- [theme.rs](theme.rs.md) (1 shared connections)
+- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (1 shared connections)
 
 ## Source Files
 
-- `src/core/os_detect.rs`
-- `src/hardware/bios.rs`
-- `src/tools/diagnostics.rs`
-- `src/tools/game_overlay.rs`
-- `src/tools/game_profiles.rs`
-- `src/tools/windows_repair.rs`
-- `tests/edge_cases_unorthodox.rs`
+- `src/core/backend.rs`
+- `src/hardware/latency.rs`
+- `tests/tweak_sandbox_e2e.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 134 (98%)
-- INFERRED: 3 (2%)
+- EXTRACTED: 33 (100%)
+- INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 
 ---
