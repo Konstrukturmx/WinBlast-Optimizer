@@ -4,7 +4,7 @@
 
 ## Key Concepts
 
-- **widgets/mod.rs** (0 connections) — `src/ui/widgets/mod.rs`
+- **sign_binary.ps1** (0 connections) — `scripts/sign_binary.ps1`
 
 ## Relationships
 
@@ -12,7 +12,7 @@
 
 ## Source Files
 
-- `src/ui/widgets/mod.rs`
+- `scripts/sign_binary.ps1`
 
 ## Audit Trail
 

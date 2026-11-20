@@ -1,50 +1,63 @@
 # clean_apps.rs
 
-> 24 nodes · cohesion 0.16
+> 40 nodes · cohesion 0.13
 
 ## Key Concepts
 
-- **LazyLoader** (19 connections) — `src/hardware/lazy_loader.rs`
-- **LazyPayload** (12 connections) — `src/hardware/lazy_loader.rs`
-- **.spawn_probe()** (10 connections) — `src/hardware/lazy_loader.rs`
-- **background_probe_delivers_payload_without_blocking()** (5 connections) — `src/hardware/lazy_loader.rs`
-- **.is_any_loading()** (5 connections) — `src/hardware/lazy_loader.rs`
-- **.new()** (5 connections) — `src/hardware/lazy_loader.rs`
-- **background_panic_is_contained_and_clears_in_flight_flag()** (4 connections) — `src/hardware/lazy_loader.rs`
-- **.spawn_probe_drivers()** (4 connections) — `src/hardware/lazy_loader.rs`
-- **.try_recv()** (4 connections) — `src/hardware/lazy_loader.rs`
-- **.drain_ready()** (3 connections) — `src/hardware/lazy_loader.rs`
-- **.is_drivers_loading()** (3 connections) — `src/hardware/lazy_loader.rs`
-- **.spawn_probe_bios()** (3 connections) — `src/hardware/lazy_loader.rs`
-- **.spawn_probe_disks()** (3 connections) — `src/hardware/lazy_loader.rs`
-- **.spawn_probe_thermals()** (3 connections) — `src/hardware/lazy_loader.rs`
-- **Drivers** (3 connections) — `src/hardware/lazy_loader.rs`
-- **.default()** (2 connections) — `src/hardware/lazy_loader.rs`
-- **.is_bios_loading()** (2 connections) — `src/hardware/lazy_loader.rs`
-- **.is_disks_loading()** (2 connections) — `src/hardware/lazy_loader.rs`
-- **.is_thermals_loading()** (2 connections) — `src/hardware/lazy_loader.rs`
-- **Bios** (2 connections) — `src/hardware/lazy_loader.rs`
-- **Disks** (2 connections) — `src/hardware/lazy_loader.rs`
-- **Thermals** (2 connections) — `src/hardware/lazy_loader.rs`
-- **try_recv_is_non_blocking_when_empty()** (2 connections) — `src/hardware/lazy_loader.rs`
-- **F** (1 connections)
+- **engine.rs** (53 connections) — `src/executor/engine.rs`
+- **reg_helpers.rs** (24 connections) — `src/core/reg_helpers.rs`
+- **rollback_entry_with()** (22 connections) — `src/executor/engine.rs`
+- **apply_tweak_with()** (20 connections) — `src/executor/engine.rs`
+- **revert_tweak_with()** (19 connections) — `src/executor/engine.rs`
+- **apply_action_slice_with()** (17 connections) — `src/executor/engine.rs`
+- **Result** (14 connections) — `src/core/error.rs`
+- **is_unsupported_power_guid_error()** (12 connections) — `src/core/backend.rs`
+- **format_pipe_reg_target()** (10 connections) — `src/core/reg_helpers.rs`
+- **decode_hex()** (8 connections) — `src/core/reg_helpers.rs`
+- **escape_pipe()** (7 connections) — `src/core/reg_helpers.rs`
+- **merge_composite_pair()** (7 connections) — `src/core/reg_helpers.rs`
+- **parse_pipe_reg_target()** (6 connections) — `src/core/reg_helpers.rs`
+- **apply_tweaks_by_id_with()** (6 connections) — `src/executor/engine.rs`
+- **format_composite_action_key()** (6 connections) — `src/executor/engine.rs`
+- **revert_tweaks_by_id_with()** (6 connections) — `src/executor/engine.rs`
+- **rollback_recorded_ids()** (6 connections) — `src/executor/engine.rs`
+- **ensure_tweak_compatible()** (5 connections) — `src/executor/engine.rs`
+- **format_dword_action_key()** (5 connections) — `src/executor/engine.rs`
+- **read_composite_entry()** (4 connections) — `src/core/reg_helpers.rs`
+- **unescape_pipe()** (4 connections) — `src/core/reg_helpers.rs`
+- **apply_tweak()** (4 connections) — `src/executor/engine.rs`
+- **apply_tweaks_by_id()** (4 connections) — `src/executor/engine.rs`
+- **format_power_indices()** (4 connections) — `src/executor/engine.rs`
+- **revert_tweaks_by_id()** (4 connections) — `src/executor/engine.rs`
+- *... and 15 more nodes in this community*
 
 ## Relationships
 
-- [lazy_loader.rs](lazy_loader.rs.md) (10 shared connections)
-- [Language](Language.md) (2 shared connections)
-- [deserialize](deserialize.md) (1 shared connections)
-- [WorkerEvent](WorkerEvent.md) (1 shared connections)
-- [DiskSubsystemReport](DiskSubsystemReport.md) (1 shared connections)
+- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (27 shared connections)
+- [Win32 Registry Scanner & Mutator](Win32_Registry_Scanner_&_Mutator.md) (14 shared connections)
+- [startup.rs](startup.rs.md) (10 shared connections)
+- [svc_mutator.rs](svc_mutator.rs.md) (8 shared connections)
+- [DriverError](DriverError.md) (7 shared connections)
+- [parking.rs](parking.rs.md) (6 shared connections)
+- [WorkerEvent](WorkerEvent.md) (5 shared connections)
+- [SlowScanBackend](SlowScanBackend.md) (4 shared connections)
+- [ps_runner.rs](ps_runner.rs.md) (4 shared connections)
+- [theme.rs](theme.rs.md) (4 shared connections)
+- [deserialize](deserialize.md) (3 shared connections)
+- [TaskCache](TaskCache.md) (3 shared connections)
 
 ## Source Files
 
-- `src/hardware/lazy_loader.rs`
+- `src/core/backend.rs`
+- `src/core/error.rs`
+- `src/core/reg_helpers.rs`
+- `src/executor/engine.rs`
+- `tests/fuzz_mutation_properties.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 59 (100%)
-- INFERRED: 0 (0%)
+- EXTRACTED: 177 (83%)
+- INFERRED: 35 (17%)
 - AMBIGUOUS: 0 (0%)
 
 ---

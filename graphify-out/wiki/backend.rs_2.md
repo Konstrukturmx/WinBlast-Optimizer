@@ -1,40 +1,52 @@
 # backend.rs
 
-> 15 nodes · cohesion 0.21
+> 19 nodes · cohesion 0.11
 
 ## Key Concepts
 
-- **ps_runner.rs** (16 connections) — `src/executor/ps_runner.rs`
-- **block_telemetry_hosts_in_content()** (5 connections) — `src/executor/ps_runner.rs`
-- **unblock_telemetry_hosts_in_content()** (4 connections) — `src/executor/ps_runner.rs`
-- **unblock_telemetry_hosts_with()** (4 connections) — `src/executor/ps_runner.rs`
-- **block_telemetry_hosts()** (3 connections) — `src/executor/ps_runner.rs`
-- **find_exact_marker_line()** (3 connections) — `src/executor/ps_runner.rs`
-- **test_hosts_bom_ipv6_tabs_and_exact_footer_matching()** (3 connections) — `src/executor/ps_runner.rs`
-- **test_hosts_blocking_ignores_comments_and_subdomains()** (2 connections) — `src/executor/ps_runner.rs`
-- **write_hosts_file_raw()** (2 connections) — `src/executor/ps_runner.rs`
-- **openoptions** (1 connections)
-- **add_firewall_block_rule()** (1 connections) — `src/executor/ps_runner.rs`
-- **HOSTS_BLOCK_FOOTER** (1 connections) — `src/executor/ps_runner.rs`
-- **HOSTS_BLOCK_HEADER** (1 connections) — `src/executor/ps_runner.rs`
-- **remove_appx_package()** (1 connections) — `src/executor/ps_runner.rs`
-- **write** (1 connections)
+- **real_windows_env.rs** (33 connections) — `tests/real_windows_env.rs`
+- **fs** (4 connections)
+- **uuid** (4 connections)
+- **TempTestEnvGuard** (3 connections) — `tests/real_windows_env.rs`
+- **regvalue** (2 connections)
+- **HkcuTestEnvGuard** (2 connections) — `tests/real_windows_env.rs`
+- **.new()** (2 connections) — `tests/real_windows_env.rs`
+- **test_ntfs_junction_and_readonly_cleanup_sandbox()** (2 connections) — `tests/real_windows_env.rs`
+- **test_real_win32_registry_types_numeric_sz_binary_and_tree_roundtrip()** (2 connections) — `tests/real_windows_env.rs`
+- **cleantargetkind** (1 connections)
+- **coreparkingstate** (1 connections)
+- **cpuinfo** (1 connections)
+- **is_known_numeric_reg_sz** (1 connections)
+- **run_full_scan_with** (1 connections)
+- **FILE_ATTRIBUTE_REPARSE_POINT** (1 connections) — `tests/real_windows_env.rs`
+- **.drop()** (1 connections) — `tests/real_windows_env.rs`
+- **.drop()** (1 connections) — `tests/real_windows_env.rs`
+- **test_real_windows_disk_and_thermal_telemetry()** (1 connections) — `tests/real_windows_env.rs`
+- **windowsinfo** (1 connections)
 
 ## Relationships
 
-- [FailAtMutationBackend](FailAtMutationBackend.md) (1 shared connections)
-- [SlowScanBackend](SlowScanBackend.md) (1 shared connections)
-- [RealBackend](RealBackend.md) (1 shared connections)
-- [full_telemetry_audit_with](full_telemetry_audit_with.md) (1 shared connections)
+- [theme.rs](theme.rs.md) (3 shared connections)
+- [features_apps.rs](features_apps.rs.md) (2 shared connections)
+- [CoreParkingState](CoreParkingState.md) (2 shared connections)
+- [DriverError](DriverError.md) (2 shared connections)
+- [SlowScanBackend](SlowScanBackend.md) (2 shared connections)
+- [app.rs](app.rs.md) (2 shared connections)
+- [RegRawSnapshot](RegRawSnapshot.md) (1 shared connections)
+- [Disk Cleaning & Temporary File Purger](Disk_Cleaning_&_Temporary_File_Purger.md) (1 shared connections)
+- [WorkerEvent](WorkerEvent.md) (1 shared connections)
+- [Integration Suite: Tweak Sandbox E2E](Integration_Suite-_Tweak_Sandbox_E2E.md) (1 shared connections)
+- [startup.rs](startup.rs.md) (1 shared connections)
+- [tools/game_overlay.rs](tools-game_overlay.rs.md) (1 shared connections)
 
 ## Source Files
 
-- `src/executor/ps_runner.rs`
+- `tests/real_windows_env.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 25 (96%)
-- INFERRED: 1 (4%)
+- EXTRACTED: 44 (98%)
+- INFERRED: 1 (2%)
 - AMBIGUOUS: 0 (0%)
 
 ---

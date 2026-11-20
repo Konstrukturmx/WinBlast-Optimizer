@@ -1,63 +1,62 @@
 # .Reg State() Vendor()
 
-> 33 nodes · cohesion 0.16
+> 36 nodes · cohesion 0.06
 
 ## Key Concepts
 
-- **ThemePalette** (88 connections) — `src/ui/theme.rs`
-- **easy_dashboard.rs** (31 connections) — `src/ui/views/easy_dashboard.rs`
-- **diff_modal.rs** (20 connections) — `src/ui/widgets/diff_modal.rs`
-- **view()** (16 connections) — `src/ui/views/easy_dashboard.rs`
-- **view_items_with_palette()** (13 connections) — `src/ui/widgets/diff_modal.rs`
-- **El** (11 connections)
-- **sparkline.rs** (10 connections) — `src/ui/widgets/sparkline.rs`
-- **before_after_card()** (7 connections) — `src/ui/views/easy_dashboard.rs`
-- **quick_actions_card()** (7 connections) — `src/ui/views/easy_dashboard.rs`
-- **admin_warning_banner()** (6 connections) — `src/ui/views/easy_dashboard.rs`
-- **live_telemetry_card()** (6 connections) — `src/ui/views/easy_dashboard.rs`
-- **quick_action_card()** (6 connections) — `src/ui/views/easy_dashboard.rs`
-- **score_ring_badge()** (6 connections) — `src/ui/views/easy_dashboard.rs`
-- **updater_status_card()** (6 connections) — `src/ui/views/easy_dashboard.rs`
-- **El** (6 connections)
-- **view_with_palette()** (6 connections) — `src/ui/widgets/diff_modal.rs`
-- **hardware_overview_card()** (5 connections) — `src/ui/views/easy_dashboard.rs`
-- **optimization_categories_summary()** (5 connections) — `src/ui/views/easy_dashboard.rs`
-- **diff_single_card()** (5 connections) — `src/ui/widgets/diff_modal.rs`
-- **view_state()** (5 connections) — `src/ui/widgets/diff_modal.rs`
-- **BeforeAfterImpact** (4 connections) — `src/app.rs`
-- **health_color()** (4 connections) — `src/ui/views/easy_dashboard.rs`
-- **diff_pair_card()** (4 connections) — `src/ui/widgets/diff_modal.rs`
-- **directed_pair()** (4 connections) — `src/ui/widgets/diff_modal.rs`
-- **sparkline_with_palette()** (4 connections) — `src/ui/widgets/sparkline.rs`
-- *... and 8 more nodes in this community*
+- **ActiveView** (44 connections) — `src/app.rs`
+- **.nav_prev_view()** (3 connections) — `src/app.rs`
+- **AdvancedMatrix** (2 connections) — `src/app.rs`
+- **CoreParking** (2 connections) — `src/app.rs`
+- **EasyDashboard** (2 connections) — `src/app.rs`
+- **GpuTuning** (2 connections) — `src/app.rs`
+- **.prev()** (2 connections) — `src/app.rs`
+- **ALL_VIEWS** (2 connections) — `tests/ui_responsive_e2e.rs`
+- **Advanced Optimization Matrix UI** (1 connections) — `assets/screenshots/advanced_matrix.png`
+- **CPU Core Parking Topology Visualizer UI** (1 connections) — `assets/screenshots/cpu_parking.png`
+- **Easy Mode Telemetry Dashboard UI** (1 connections) — `assets/screenshots/dashboard.png`
+- **GPU Tuning & Vendor Gating UI** (1 connections) — `assets/screenshots/gpu_tuning.png`
+- **.ALL_VIEWS** (1 connections) — `src/app.rs`
+- **AutomationCenter** (1 connections) — `src/app.rs`
+- **BackupCenter** (1 connections) — `src/app.rs`
+- **CleanAndApps** (1 connections) — `src/app.rs`
+- **DiskHealth** (1 connections) — `src/app.rs`
+- **DriverBios** (1 connections) — `src/app.rs`
+- **FaultDiagnostics** (1 connections) — `src/app.rs`
+- **FpsBenchmark** (1 connections) — `src/app.rs`
+- **GameOverlay** (1 connections) — `src/app.rs`
+- **GamePrerequisites** (1 connections) — `src/app.rs`
+- **GameProfiles** (1 connections) — `src/app.rs`
+- **GameSuitability** (1 connections) — `src/app.rs`
+- **GamingStats** (1 connections) — `src/app.rs`
+- *... and 11 more nodes in this community*
 
 ## Relationships
 
-- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (21 shared connections)
-- [AppState](AppState.md) (19 shared connections)
-- [Multi-Language Tweak Localization Tables](Multi-Language_Tweak_Localization_Tables.md) (18 shared connections)
-- [Disk Cleaning & Temporary File Purger](Disk_Cleaning_&_Temporary_File_Purger.md) (16 shared connections)
-- [Runtime](Runtime.md) (8 shared connections)
-- [progress_bar.rs](progress_bar.rs.md) (8 shared connections)
-- [WinBlastScrollable](WinBlastScrollable.md) (8 shared connections)
-- [Embedded Catalog Test](Embedded_Catalog_Test.md) (5 shared connections)
-- [advanced_matrix.rs](advanced_matrix.rs.md) (4 shared connections)
-- [DriverError](DriverError.md) (4 shared connections)
-- [Project History & Release Version Ledger](Project_History_&_Release_Version_Ledger.md) (3 shared connections)
-- [Core UI Internationalization & Text Catalog](Core_UI_Internationalization_&_Text_Catalog.md) (3 shared connections)
+- [Runtime](Runtime.md) (3 shared connections)
+- [.Toggle .Set .Apply](Toggle_.Set_.Apply.md) (2 shared connections)
+- [advanced_matrix.rs](advanced_matrix.rs.md) (2 shared connections)
+- [updater.rs](updater.rs.md) (2 shared connections)
+- [Scandetailkind Appxinstalled Appxinstalledps](Scandetailkind_Appxinstalled_Appxinstalledps.md) (2 shared connections)
+- [AppxCache](AppxCache.md) (2 shared connections)
+- [WinBlastError](WinBlastError.md) (1 shared connections)
+- [task_scanner.rs](task_scanner.rs.md) (1 shared connections)
+- [enums](enums.md) (1 shared connections)
+- [SlowScanBackend](SlowScanBackend.md) (1 shared connections)
 
 ## Source Files
 
+- `assets/screenshots/advanced_matrix.png`
+- `assets/screenshots/cpu_parking.png`
+- `assets/screenshots/dashboard.png`
+- `assets/screenshots/gpu_tuning.png`
 - `src/app.rs`
-- `src/ui/theme.rs`
-- `src/ui/views/easy_dashboard.rs`
-- `src/ui/widgets/diff_modal.rs`
-- `src/ui/widgets/sparkline.rs`
+- `tests/ui_responsive_e2e.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 208 (96%)
-- INFERRED: 9 (4%)
+- EXTRACTED: 52 (100%)
+- INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 
 ---

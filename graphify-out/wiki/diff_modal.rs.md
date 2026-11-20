@@ -1,28 +1,30 @@
 # diff_modal.rs
 
-> 3 nodes · cohesion 0.67
+> 6 nodes · cohesion 0.40
 
 ## Key Concepts
 
-- **.set_startup_entry_enabled()** (6 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.set_startup_entry_enabled()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.set_startup_entry_enabled()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
+- **main.rs** (6 connections) — `src/main.rs`
+- **ui** (4 connections)
+- **detect_screen_workarea()** (2 connections) — `src/main.rs`
+- **main()** (2 connections) — `src/main.rs`
+- **appspec** (1 connections)
+- **core** (1 connections)
 
 ## Relationships
 
-- [SlowScanBackend](SlowScanBackend.md) (4 shared connections)
-- [WinBlast Optimizer](WinBlast_Optimizer.md) (3 shared connections)
-- [FailAtMutationBackend](FailAtMutationBackend.md) (1 shared connections)
-- [PanickingBackend](PanickingBackend.md) (1 shared connections)
-- [super](super.md) (1 shared connections)
+- [SlowScanBackend](SlowScanBackend.md) (1 shared connections)
+- [enums](enums.md) (1 shared connections)
+- [Scandetailkind Appxinstalled Appxinstalledps](Scandetailkind_Appxinstalled_Appxinstalledps.md) (1 shared connections)
+- [Runtime](Runtime.md) (1 shared connections)
 
 ## Source Files
 
-- `tests/tweak_sandbox_e2e.rs`
+- `src/main.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 12 (100%)
+- EXTRACTED: 10 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

@@ -1,61 +1,60 @@
 # ps_runner.rs
 
-> 28 nodes · cohesion 0.13
+> 29 nodes · cohesion 0.08
 
 ## Key Concepts
 
-- **Language** (51 connections) — `src/core/i18n.rs`
-- **localize_scan_detail()** (12 connections) — `src/core/status_i18n.rs`
-- **localize_status()** (12 connections) — `src/core/status_i18n.rs`
-- **pick()** (12 connections) — `src/core/status_i18n.rs`
-- **localize_feature_install_state()** (6 connections) — `src/core/status_i18n.rs`
-- **fmt1()** (5 connections) — `src/core/status_i18n.rs`
-- **fmt2()** (5 connections) — `src/core/status_i18n.rs`
-- **fmt3()** (5 connections) — `src/core/status_i18n.rs`
-- **localize_error_text()** (5 connections) — `src/core/status_i18n.rs`
-- **localize_service_start_mode()** (5 connections) — `src/core/status_i18n.rs`
-- **localize_task_active_label()** (4 connections) — `src/core/status_i18n.rs`
-- **idx()** (3 connections) — `src/core/status_i18n.rs`
-- **localize_ledger_action()** (3 connections) — `src/core/status_i18n.rs`
-- **localize_kfm_detail()** (2 connections) — `src/core/status_i18n.rs`
-- **test_localize_error_text_prefixes()** (2 connections) — `src/core/status_i18n.rs`
-- **test_scan_detail_all_languages()** (2 connections) — `src/core/status_i18n.rs`
-- **VERBOSE_LOCALES** (2 connections) — `tests/ui_responsive_e2e.rs`
-- **.ALL** (1 connections) — `src/core/i18n.rs`
-- **Chinese** (1 connections) — `src/core/i18n.rs`
-- **.code()** (1 connections) — `src/core/i18n.rs`
-- **English** (1 connections) — `src/core/i18n.rs`
-- **French** (1 connections) — `src/core/i18n.rs`
-- **German** (1 connections) — `src/core/i18n.rs`
-- **Japanese** (1 connections) — `src/core/i18n.rs`
-- **.label()** (1 connections) — `src/core/i18n.rs`
-- *... and 3 more nodes in this community*
+- **risk.rs** (44 connections) — `src/core/risk.rs`
+- **load_rules_with_fallback()** (7 connections) — `src/core/risk.rs`
+- **test_all_embedded_tweaks_full_sandbox_lifecycle()** (7 connections) — `tests/tweak_sandbox_e2e.rs`
+- **load_rules_from_dir()** (5 connections) — `src/core/risk.rs`
+- **OsRequirement** (4 connections) — `src/core/risk.rs`
+- **test_embedded_catalog_fallback()** (3 connections) — `src/core/risk.rs`
+- **matches_edition()** (2 connections) — `src/core/risk.rs`
+- **test_load_all_rules()** (2 connections) — `src/core/risk.rs`
+- **test_no_duplicate_tweak_ids()** (2 connections) — `src/core/risk.rs`
+- **TweakCatalog** (2 connections) — `src/core/risk.rs`
+- **.is_compatible()** (2 connections) — `src/core/risk.rs`
+- **default_equals()** (1 connections) — `src/core/risk.rs`
+- **default_semicolon()** (1 connections) — `src/core/risk.rs`
+- **default_true()** (1 connections) — `src/core/risk.rs`
+- **EMBEDDED_CATALOG_AI_PRIVACY_EXT** (1 connections) — `src/core/risk.rs`
+- **EMBEDDED_CATALOG_APPX** (1 connections) — `src/core/risk.rs`
+- **EMBEDDED_CATALOG_GAMING_LATENCY_ULTRA** (1 connections) — `src/core/risk.rs`
+- **EMBEDDED_CATALOG_HARDWARE** (1 connections) — `src/core/risk.rs`
+- **EMBEDDED_CATALOG_OS_SETTINGS** (1 connections) — `src/core/risk.rs`
+- **EMBEDDED_CATALOG_PERF_POWER_EXT** (1 connections) — `src/core/risk.rs`
+- **EMBEDDED_CATALOG_PRIVACY** (1 connections) — `src/core/risk.rs`
+- **EMBEDDED_CATALOG_REGISTRY_LAG** (1 connections) — `src/core/risk.rs`
+- **EMBEDDED_CATALOG_SYSTEM_DEEP_OPT** (1 connections) — `src/core/risk.rs`
+- **EMBEDDED_CATALOG_TELEMETRY_APPS** (1 connections) — `src/core/risk.rs`
+- **EMBEDDED_CATALOG_TELEMETRY_OS** (1 connections) — `src/core/risk.rs`
+- *... and 4 more nodes in this community*
 
 ## Relationships
 
-- [Win32 Registry Scanner & Mutator](Win32_Registry_Scanner_&_Mutator.md) (16 shared connections)
-- [System Architecture Changelog](System_Architecture_Changelog.md) (12 shared connections)
-- [SandboxEnv](SandboxEnv.md) (3 shared connections)
-- [AppState](AppState.md) (2 shared connections)
-- [.Toggle .Set .Apply](Toggle_.Set_.Apply.md) (2 shared connections)
-- [tools/game_overlay.rs](tools-game_overlay.rs.md) (2 shared connections)
-- [.take_injected_error](take_injected_error.md) (2 shared connections)
+- [Win32 Registry Scanner & Mutator](Win32_Registry_Scanner_&_Mutator.md) (7 shared connections)
+- [theme.rs](theme.rs.md) (6 shared connections)
+- [TaskCache](TaskCache.md) (4 shared connections)
+- [svc_mutator.rs](svc_mutator.rs.md) (4 shared connections)
+- [clean_apps.rs](clean_apps.rs.md) (4 shared connections)
+- [Reversibility Instant Requireslogoff](Reversibility_Instant_Requireslogoff.md) (2 shared connections)
 - [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (2 shared connections)
-- [SlowScanBackend](SlowScanBackend.md) (1 shared connections)
-- [Runtime](Runtime.md) (1 shared connections)
-- [Reversibility Instant Requireslogoff](Reversibility_Instant_Requireslogoff.md) (1 shared connections)
-- [AppX Package & Modern App Scanner](AppX_Package_&_Modern_App_Scanner.md) (1 shared connections)
+- [parking.rs](parking.rs.md) (1 shared connections)
+- [app.rs](app.rs.md) (1 shared connections)
+- [UiThemeStyle](UiThemeStyle.md) (1 shared connections)
+- [RegTreeSnapshot](RegTreeSnapshot.md) (1 shared connections)
+- [reg_mutator.rs](reg_mutator.rs.md) (1 shared connections)
 
 ## Source Files
 
-- `src/core/i18n.rs`
-- `src/core/status_i18n.rs`
-- `tests/ui_responsive_e2e.rs`
+- `src/core/risk.rs`
+- `tests/tweak_sandbox_e2e.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 97 (100%)
-- INFERRED: 0 (0%)
+- EXTRACTED: 60 (90%)
+- INFERRED: 7 (10%)
 - AMBIGUOUS: 0 (0%)
 
 ---

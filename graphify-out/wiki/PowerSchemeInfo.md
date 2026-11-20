@@ -1,38 +1,46 @@
 # PowerSchemeInfo
 
-> 7 nodes · cohesion 0.43
+> 12 nodes · cohesion 0.20
 
 ## Key Concepts
 
-- **path** (12 connections)
-- **profile_io.rs** (8 connections) — `src/backup/profile_io.rs`
-- **export_profile()** (4 connections) — `src/backup/profile_io.rs`
-- **import_profile()** (3 connections) — `src/backup/profile_io.rs`
-- **test_profile_export_import()** (3 connections) — `src/backup/profile_io.rs`
-- **TweakProfile** (2 connections) — `src/backup/profile_io.rs`
-- **.new()** (2 connections) — `src/backup/profile_io.rs`
+- **InstalledAppxPackage** (15 connections) — `src/tools/features_apps.rs`
+- **AppxSafetyTier** (10 connections) — `src/tools/features_apps.rs`
+- **.list_installed_appx_detailed()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.list_installed_appx_detailed()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.list_installed_appx_detailed()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.list_installed_appx_detailed()** (2 connections) — `src/core/backend.rs`
+- **.list_installed_appx_detailed()** (2 connections) — `src/core/backend.rs`
+- **AiBloat** (1 connections) — `src/tools/features_apps.rs`
+- **.as_label()** (1 connections) — `src/tools/features_apps.rs`
+- **Caution** (1 connections) — `src/tools/features_apps.rs`
+- **ProtectedCore** (1 connections) — `src/tools/features_apps.rs`
+- **SafeBloat** (1 connections) — `src/tools/features_apps.rs`
 
 ## Relationships
 
-- [SlowScanBackend](SlowScanBackend.md) (3 shared connections)
-- [FailAtMutationBackend](FailAtMutationBackend.md) (2 shared connections)
-- [startup.rs](startup.rs.md) (2 shared connections)
+- [parse_guid](parse_guid.md) (5 shared connections)
 - [deserialize](deserialize.md) (2 shared connections)
-- [app.rs](app.rs.md) (1 shared connections)
-- [task_scanner.rs](task_scanner.rs.md) (1 shared connections)
-- [power.rs](power.rs.md) (1 shared connections)
-- [.setup](setup.md) (1 shared connections)
-- [.Reg .Set Power](Reg_.Set_Power.md) (1 shared connections)
-- [backend.rs](backend.rs.md) (1 shared connections)
-- [super](super.md) (1 shared connections)
+- [sys_inventory.rs](sys_inventory.rs.md) (2 shared connections)
+- [Integration Suite: Tweak Sandbox E2E](Integration_Suite-_Tweak_Sandbox_E2E.md) (1 shared connections)
+- [startup.rs](startup.rs.md) (1 shared connections)
+- [PlatformSecurityInfo](PlatformSecurityInfo.md) (1 shared connections)
+- [.Toggle .Set .Apply](Toggle_.Set_.Apply.md) (1 shared connections)
+- [Embedded Catalog Test](Embedded_Catalog_Test.md) (1 shared connections)
+- [full_telemetry_audit_with](full_telemetry_audit_with.md) (1 shared connections)
+- [SlowScanBackend](SlowScanBackend.md) (1 shared connections)
+- [theme.rs](theme.rs.md) (1 shared connections)
+- [InstalledAppxPackage](InstalledAppxPackage.md) (1 shared connections)
 
 ## Source Files
 
-- `src/backup/profile_io.rs`
+- `src/core/backend.rs`
+- `src/tools/features_apps.rs`
+- `tests/tweak_sandbox_e2e.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 25 (100%)
+- EXTRACTED: 31 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

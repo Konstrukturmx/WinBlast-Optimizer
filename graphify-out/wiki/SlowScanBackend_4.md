@@ -2,7 +2,7 @@
 
 > God node · 85 connections · `tests/tweak_sandbox_e2e.rs`
 
-**Community:** [SlowScanBackend](SlowScanBackend.md)
+**Community:** [sys_inventory.rs](sys_inventory.rs.md)
 
 ## Connections by Relation
 

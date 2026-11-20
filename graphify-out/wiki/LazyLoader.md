@@ -33,13 +33,13 @@
 
 ## Relationships
 
-- [AppState](AppState.md) (2 shared connections)
-- [full_telemetry_audit_with](full_telemetry_audit_with.md) (2 shared connections)
-- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (2 shared connections)
-- [SlowScanBackend](SlowScanBackend.md) (2 shared connections)
-- [GPU Silicon & Hardware Tuning Policies](GPU_Silicon_&_Hardware_Tuning_Policies.md) (1 shared connections)
-- [startup.rs](startup.rs.md) (1 shared connections)
-- [parking.rs](parking.rs.md) (1 shared connections)
+- [.Toggle .Set .Apply](Toggle_.Set_.Apply.md) (2 shared connections)
+- [startup.rs](startup.rs.md) (2 shared connections)
+- [TaskCache](TaskCache.md) (2 shared connections)
+- [WorkerEvent](WorkerEvent.md) (2 shared connections)
+- [full_telemetry_audit_with](full_telemetry_audit_with.md) (1 shared connections)
+- [features_apps.rs](features_apps.rs.md) (1 shared connections)
+- [AppX Package & Modern App Scanner](AppX_Package_&_Modern_App_Scanner.md) (1 shared connections)
 
 ## Source Files
 

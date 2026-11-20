@@ -1137,6 +1137,66 @@ pub fn lookup(id: &str) -> Option<LocalizedTweakText> {
             description: "Microsoft Office tanılama verisi toplamasını, geri bildirim istemlerini ve Müşteri Deneyimi Geliştirme Programı (CEIP) telemetrisini devre dışı bırakır.",
             broken_features: &[],
         }),
+        "set_this_pc_as_default_explorer" => Some(LocalizedTweakText {
+            title: "'Bu Bilgisayar'ı Varsayılan Dosya Gezgini Görünümü Yap",
+            description: "Dosya Gezgini'nin başlangıçta 'Giriş' veya 'Hızlı Erişim' yerine doğrudan 'Bu Bilgisayar' görünümüyle açılmasını sağlar, ağ paylaşımları ve bulut geçmişi gecikmelerini önler.",
+            broken_features: &[],
+        }),
+        "enable_taskbar_end_task" => Some(LocalizedTweakText {
+            title: "Görev Çubuğunda Sağ Tık 'Görevi Sonlandır'ı Etkinleştir",
+            description: "Windows 11 görev çubuğu simgelerine sağ tıklandığında Görev Yöneticisi açmaya gerek kalmadan doğrudan 'Görevi Sonlandır' seçeneğini etkinleştirir.",
+            broken_features: &[],
+        }),
+        "disable_oobe_privacy_experience" => Some(LocalizedTweakText {
+            title: "Windows OOBE Gizlilik Ayarları Deneyim İstemi Devre Dışı Bırak",
+            description: "Yeni kullanıcı hesabı oluşturma ve özellik güncellemeleri sırasında çok sayfalı OOBE gizlilik yapılandırma ekranını Grup İlkesi ile engeller.",
+            broken_features: &[],
+        }),
+        "disable_explorer_sync_provider_ads" => Some(LocalizedTweakText {
+            title: "Dosya Gezgini Eşitleme Sağlayıcısı Reklamlarını Devre Dışı Bırak",
+            description: "Dosya Gezgini pencerelerinde OneDrive ve Microsoft 365 abonelik reklamları içeren tanıtım başlıklarını engeller.",
+            broken_features: &[],
+        }),
+        "disable_taskbar_task_view" => Some(LocalizedTweakText {
+            title: "Görev Çubuğunda Görev Görünümü Düğmesini Devre Dışı Bırak",
+            description: "Görev çubuğunda gereksiz yer kaplayan Görev Görünümü simgesini gizler; Alt+Tab ve Win+Tab kısayolları çalışmaya devam eder.",
+            broken_features: &[],
+        }),
+        "hide_taskbar_meet_now" => Some(LocalizedTweakText {
+            title: "Görev Çubuğundaki 'Şimdi Toplantı Yap' ve Sohbet Düğmesini Gizle",
+            description: "Windows bildirim alanında ve görev çubuğunda yer alan Microsoft Teams ve 'Şimdi Toplantı Yap' düğmesini gizler.",
+            broken_features: &[],
+        }),
+        "disable_background_apps_global" => Some(LocalizedTweakText {
+            title: "Arka Plan Uygulamalarının Çalışmasını Genel Olarak Devre Dışı Bırak",
+            description: "Windows Mağazası ve UWP uygulamalarının kapalıyken arka planda çalışmasını, bildirim çekmesini ve CPU/RAM tüketmesini engeller.",
+            broken_features: &[],
+        }),
+        "disable_finish_setup_ads" => Some(LocalizedTweakText {
+            title: "'Cihazınızın Kurulumunu Tamamlayın' Tam Ekran Bildirimlerini Devre Dışı Bırak",
+            description: "Yeniden başlatma sonrasında kullanıcıları Microsoft 365 veya OneDrive aboneliklerine zorlayan tam ekran kurulum önerilerini kapatır.",
+            broken_features: &[],
+        }),
+        "disable_lockscreen_spotlight_ads" => Some(LocalizedTweakText {
+            title: "Kilit Ekranı İpuçları ve Spotlight Reklamlarını Devre Dışı Bırak",
+            description: "Windows kilit ekranına yerleştirilen reklam katmanlarını, ipuçlarını ve web önerilerini engeller.",
+            broken_features: &[],
+        }),
+        "disable_welcome_experience_ads" => Some(LocalizedTweakText {
+            title: "Windows Hoş Geldiniz Deneyimi Tanıtım Pencerelerini Devre Dışı Bırak",
+            description: "Güncellemeler sonrasında açılan ve Microsoft Edge ile Copilot özelliklerini tanıtan 'Yenilikler' ve hoş geldiniz sayfalarını engeller.",
+            broken_features: &[],
+        }),
+        "disable_general_tips_ads" => Some(LocalizedTweakText {
+            title: "Windows Öneri, İpucu ve Tanıtım Bildirimlerini Devre Dışı Bırak",
+            description: "ContentDeliveryManager tarafından masaüstüne ve bildirim alanına gönderilen genel ipuçlarını ve özellik önerilerini kapatır.",
+            broken_features: &[],
+        }),
+        "enable_windowed_game_optimizations" => Some(LocalizedTweakText {
+            title: "Pencereli Oyunlar İçin İyileştirmeleri Etkinleştir",
+            description: "Pencereli ve çerçevesiz oyunlar için modern Windows 11 flip sunum modelini etkinleştirir; giriş gecikmesini düşürür ve Otomatik HDR ile VRR desteğini açar.",
+            broken_features: &[],
+        }),
         _ => None,
     }
 }

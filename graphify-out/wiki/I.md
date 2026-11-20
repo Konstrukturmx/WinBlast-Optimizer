@@ -4,7 +4,7 @@
 
 ## Key Concepts
 
-- **views/mod.rs** (0 connections) — `src/ui/views/mod.rs`
+- **make_ico.ps1** (0 connections) — `scripts/make_ico.ps1`
 
 ## Relationships
 
@@ -12,7 +12,7 @@
 
 ## Source Files
 
-- `src/ui/views/mod.rs`
+- `scripts/make_ico.ps1`
 
 ## Audit Trail
 

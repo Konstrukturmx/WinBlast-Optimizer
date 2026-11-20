@@ -28,14 +28,69 @@ pub struct LedgerEntry {
 
 impl LedgerEntry {
     /// Return `true` when this ledger entry represents an action that can be undone automatically.
+    #[inline]
     pub fn is_reversible(&self) -> bool {
-        let raw = self.action_type.strip_prefix("Revert:").unwrap_or(&self.action_type);
-        let kind = raw.split(':').next().unwrap_or("");
-        !matches!(
-            kind,
-            "CleanTargets" | "DiskCleanup" | "AppXBatch" | "App" | "AppXPackage" | "Startup"
-        )
+        is_reversible_action(&self.action_type)
     }
+}
+
+/// Zero-allocation, borrowed view of a ledger record directly over SQLite row memory buffers.
+#[derive(Debug, Clone, Copy)]
+pub struct LedgerEntryView<'a> {
+    /// Auto-incremented row ID.
+    pub id: i64,
+    /// The tweak ID that caused this change.
+    pub tweak_id: &'a str,
+    /// Type of action (e.g., "RegistryDword", "ServiceState").
+    pub action_type: &'a str,
+    /// Serialised original value before the change.
+    pub original_value: &'a str,
+    /// Serialised new value after the change.
+    pub new_value: &'a str,
+    /// RFC 3339 timestamp string borrowed directly from the row buffer.
+    pub timestamp_str: &'a str,
+    /// Whether this entry has been rolled back.
+    pub rolled_back: bool,
+}
+
+impl<'a> LedgerEntryView<'a> {
+    /// Return `true` when this ledger entry represents an action that can be undone automatically.
+    #[inline]
+    pub fn is_reversible(&self) -> bool {
+        is_reversible_action(self.action_type)
+    }
+
+    /// Parse the borrowed RFC 3339 timestamp string into `DateTime<Utc>`.
+    #[inline]
+    pub fn parse_timestamp(&self) -> DateTime<Utc> {
+        DateTime::parse_from_rfc3339(self.timestamp_str)
+            .map(|dt| dt.with_timezone(&Utc))
+            .unwrap_or_else(|_| Utc::now())
+    }
+
+    /// Materialize an owned `LedgerEntry` from this borrowed view.
+    pub fn to_owned(&self) -> LedgerEntry {
+        LedgerEntry {
+            id: self.id,
+            tweak_id: self.tweak_id.to_string(),
+            action_type: self.action_type.to_string(),
+            original_value: self.original_value.to_string(),
+            new_value: self.new_value.to_string(),
+            timestamp: self.parse_timestamp(),
+            rolled_back: self.rolled_back,
+        }
+    }
+}
+
+/// Check if an action type represents a reversible change.
+#[inline]
+pub fn is_reversible_action(action_type: &str) -> bool {
+    let raw = action_type.strip_prefix("Revert:").unwrap_or(action_type);
+    let kind = raw.split(':').next().unwrap_or("");
+    !matches!(
+        kind,
+        "CleanTargets" | "DiskCleanup" | "AppXBatch" | "App" | "AppXPackage" | "Startup"
+    )
 }
 
 /// A recorded system performance and utilization baseline for before/after comparison.
@@ -126,31 +181,96 @@ impl StateLedger {
         Ok(self.conn.last_insert_rowid())
     }
 
-    /// Retrieve the full change history, newest first.
-    pub fn get_history(&self) -> crate::core::error::Result<Vec<LedgerEntry>> {
+    /// Return the total count of entries recorded in the state ledger without allocating heap strings.
+    pub fn count_history(&self) -> crate::core::error::Result<usize> {
+        let count: i64 = self.conn.query_row(
+            "SELECT COUNT(1) FROM ledger",
+            [],
+            |r| r.get(0),
+        )?;
+        Ok(count.max(0) as usize)
+    }
+
+    /// Zero-copy iterator over state ledger entries, invoking `callback` with borrowed row views.
+    ///
+    /// Stops iterating when `callback` returns `false`.
+    pub fn for_each_history<F>(&self, mut callback: F) -> crate::core::error::Result<()>
+    where
+        F: FnMut(LedgerEntryView<'_>) -> bool,
+    {
         let mut stmt = self.conn.prepare(
             "SELECT id, tweak_id, action_type, original_value, new_value, timestamp, rolled_back
              FROM ledger ORDER BY id DESC",
         )?;
-        let rows = stmt.query_map([], |row| {
-            let ts_str: String = row.get(5)?;
-            let timestamp = DateTime::parse_from_rfc3339(&ts_str)
-                .map(|dt| dt.with_timezone(&Utc))
-                .unwrap_or_else(|_| Utc::now());
-            Ok(LedgerEntry {
+        let mut rows = stmt.query([])?;
+        while let Some(row) = rows.next()? {
+            let view = LedgerEntryView {
                 id: row.get(0)?,
-                tweak_id: row.get(1)?,
-                action_type: row.get(2)?,
-                original_value: row.get(3)?,
-                new_value: row.get(4)?,
-                timestamp,
+                tweak_id: row.get_ref(1)?.as_str()?,
+                action_type: row.get_ref(2)?.as_str()?,
+                original_value: row.get_ref(3)?.as_str()?,
+                new_value: row.get_ref(4)?.as_str()?,
+                timestamp_str: row.get_ref(5)?.as_str()?,
                 rolled_back: row.get::<_, i32>(6)? != 0,
-            })
-        })?;
-        let mut entries = Vec::new();
-        for row in rows {
-            entries.push(row?);
+            };
+            if !callback(view) {
+                break;
+            }
         }
+        Ok(())
+    }
+
+    /// Zero-copy iterator over state ledger entries filtered by `tweak_id`, invoking `callback` with borrowed row views.
+    ///
+    /// Stops iterating when `callback` returns `false`.
+    pub fn for_each_history_by_tweak<F>(&self, tweak_id: &str, mut callback: F) -> crate::core::error::Result<()>
+    where
+        F: FnMut(LedgerEntryView<'_>) -> bool,
+    {
+        let mut stmt = self.conn.prepare(
+            "SELECT id, tweak_id, action_type, original_value, new_value, timestamp, rolled_back
+             FROM ledger WHERE tweak_id = ?1 ORDER BY id DESC",
+        )?;
+        let mut rows = stmt.query(params![tweak_id])?;
+        while let Some(row) = rows.next()? {
+            let view = LedgerEntryView {
+                id: row.get(0)?,
+                tweak_id: row.get_ref(1)?.as_str()?,
+                action_type: row.get_ref(2)?.as_str()?,
+                original_value: row.get_ref(3)?.as_str()?,
+                new_value: row.get_ref(4)?.as_str()?,
+                timestamp_str: row.get_ref(5)?.as_str()?,
+                rolled_back: row.get::<_, i32>(6)? != 0,
+            };
+            if !callback(view) {
+                break;
+            }
+        }
+        Ok(())
+    }
+
+    /// Fast lookup for the latest active (unrolled) mutation recorded for a specific tweak ID.
+    pub fn find_latest_unrolled_by_tweak(&self, tweak_id: &str) -> crate::core::error::Result<Option<LedgerEntry>> {
+        let mut latest = None;
+        self.for_each_history_by_tweak(tweak_id, |view| {
+            if !view.rolled_back {
+                latest = Some(view.to_owned());
+                false
+            } else {
+                true
+            }
+        })?;
+        Ok(latest)
+    }
+
+    /// Retrieve the full change history, newest first.
+    pub fn get_history(&self) -> crate::core::error::Result<Vec<LedgerEntry>> {
+        let count = self.count_history().unwrap_or(0);
+        let mut entries = Vec::with_capacity(count);
+        self.for_each_history(|view| {
+            entries.push(view.to_owned());
+            true
+        })?;
         Ok(entries)
     }
 
@@ -326,6 +446,27 @@ mod tests {
         assert!(!hist.iter().find(|e| e.id == e_appx).unwrap().is_reversible());
         assert!(!hist.iter().find(|e| e.id == e_startup).unwrap().is_reversible());
         assert!(hist.iter().find(|e| e.id == e_approved).unwrap().is_reversible());
+
+        // Test zero-copy methods
+        assert_eq!(ledger.count_history().unwrap(), 4);
+        let mut count = 0;
+        let mut found_approved = false;
+        ledger.for_each_history(|view| {
+            count += 1;
+            if view.tweak_id == "sta" {
+                found_approved = true;
+                assert!(view.is_reversible());
+                assert_eq!(view.original_value, "true");
+                assert_eq!(view.new_value, "false");
+            }
+            true
+        }).unwrap();
+        assert_eq!(count, 4);
+        assert!(found_approved);
+
+        let latest_sta = ledger.find_latest_unrolled_by_tweak("sta").unwrap();
+        assert!(latest_sta.is_some());
+        assert_eq!(latest_sta.unwrap().id, e_approved);
 
         let _ = std::fs::remove_file(db_path);
     }

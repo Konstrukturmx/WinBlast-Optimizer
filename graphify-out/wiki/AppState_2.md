@@ -1,8 +1,8 @@
 # AppState
 
-> God node · 347 connections · `src/app.rs`
+> God node · 348 connections · `src/app.rs`
 
-**Community:** [AppState](AppState.md)
+**Community:** [.Toggle .Set .Apply](Toggle_.Set_.Apply.md)
 
 ## Connections by Relation
 
@@ -36,9 +36,9 @@
 - .apply_worker_event() `EXTRACTED`
 - .set_status_spec() `EXTRACTED`
 - .navigate() `EXTRACTED`
-- .setup() `EXTRACTED`
 - .sync_clean_apps_busy() `EXTRACTED`
 - .refresh_pending_actions() `EXTRACTED`
+- .setup() `EXTRACTED`
 - .handle_switch_click() `EXTRACTED`
 - .sync_startup_tasks_busy() `EXTRACTED`
 - .run_scan_internal() `EXTRACTED`
@@ -47,13 +47,13 @@
 - .refresh_restore_points() `EXTRACTED`
 - .is_tweak_compatible_and_applicable() `EXTRACTED`
 - .scan_clean_targets_async() `EXTRACTED`
-- .poll() `EXTRACTED`
+- .toggle_maintenance_task() `EXTRACTED`
+- .drain_worker_events_bounded() `EXTRACTED`
 - .set_status() `EXTRACTED`
-- .scan_online_drivers() `EXTRACTED`
 - .download_and_install_update() `EXTRACTED`
 - .refresh_core_parking() `EXTRACTED`
 - .apply_selected() `EXTRACTED`
-- *…and 122 more `method` connection(s) not listed (lowest-degree first to go)*
+- *…and 123 more `method` connection(s) not listed (lowest-degree first to go)*
 
 ### references
 - [SystemBackend](SystemBackend.md) `EXTRACTED`
@@ -61,8 +61,8 @@
 - [ThemePalette](ThemePalette.md) `EXTRACTED`
 - [WorkerEvent](WorkerEvent.md) `EXTRACTED`
 - action_button() `EXTRACTED`
-- [Language](Language.md) `EXTRACTED`
 - TweakDefinition `EXTRACTED`
+- [Language](Language.md) `EXTRACTED`
 - ActiveView `EXTRACTED`
 - action_button_guarded() `EXTRACTED`
 - TweakAction `EXTRACTED`
@@ -71,7 +71,7 @@
 - StartupEntry `EXTRACTED`
 - view() `EXTRACTED`
 - [HibernationStatus](HibernationStatus.md) `EXTRACTED`
-- DriverCategory `EXTRACTED`
+- DriverCategory `INFERRED`
 - [CoreParkingState](CoreParkingState.md) `EXTRACTED`
 - Changelog `EXTRACTED`
 - ColorScheme `EXTRACTED`

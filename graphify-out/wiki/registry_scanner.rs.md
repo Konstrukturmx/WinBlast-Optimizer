@@ -1,59 +1,59 @@
 # registry_scanner.rs
 
-> 28 nodes · cohesion 0.15
+> 31 nodes · cohesion 0.08
 
 ## Key Concepts
 
-- **registry_scanner.rs** (37 connections) — `src/scanner/registry_scanner.rs`
-- **open_subkey_read_64()** (13 connections) — `src/scanner/registry_scanner.rs`
-- **open_subkey_flags_64()** (8 connections) — `src/scanner/registry_scanner.rs`
-- **RegKey** (8 connections)
-- **get_string_for_vendor()** (7 connections) — `src/scanner/registry_scanner.rs`
-- **resolve_target_paths()** (7 connections) — `src/scanner/registry_scanner.rs`
-- **snapshot_key_recursive()** (7 connections) — `src/scanner/registry_scanner.rs`
-- **get_dword_for_vendor()** (6 connections) — `src/scanner/registry_scanner.rs`
-- **test_strict_reg_type_dispatch_and_negative_numeric_sz()** (6 connections) — `src/scanner/registry_scanner.rs`
-- **evaluate_dword_value_with_kind()** (5 connections) — `src/scanner/registry_scanner.rs`
-- **get_binary()** (5 connections) — `src/scanner/registry_scanner.rs`
-- **resolve_net_interface_paths()** (5 connections) — `src/scanner/registry_scanner.rs`
-- **snapshot_tree()** (5 connections) — `src/scanner/registry_scanner.rs`
-- **evaluate_dword()** (4 connections) — `src/scanner/registry_scanner.rs`
-- **evaluate_dword_value()** (4 connections) — `src/scanner/registry_scanner.rs`
-- **get_dword()** (4 connections) — `src/scanner/registry_scanner.rs`
-- **read_dword_from_key()** (4 connections) — `src/scanner/registry_scanner.rs`
-- **has_active_ip()** (3 connections) — `src/scanner/registry_scanner.rs`
-- **key_exists()** (3 connections) — `src/scanner/registry_scanner.rs`
-- **ScratchCleanup** (3 connections) — `src/scanner/registry_scanner.rs`
-- **test_evaluate_dword_value_with_kind_all_branches()** (3 connections) — `src/scanner/registry_scanner.rs`
-- **check_dword()** (2 connections) — `src/scanner/registry_scanner.rs`
-- **get_string()** (2 connections) — `src/scanner/registry_scanner.rs`
-- **replace_placeholder_ci()** (2 connections) — `src/scanner/registry_scanner.rs`
-- **DISPLAY_CLASS_LOWER** (1 connections) — `src/scanner/registry_scanner.rs`
-- *... and 3 more nodes in this community*
+- **.set_status_spec()** (26 connections) — `src/app.rs`
+- **.refresh_pending_actions()** (10 connections) — `src/app.rs`
+- **.is_tweak_compatible_and_applicable()** (6 connections) — `src/app.rs`
+- **.apply_preset()** (5 connections) — `src/app.rs`
+- **.import_profile()** (5 connections) — `src/app.rs`
+- **.set_status()** (5 connections) — `src/app.rs`
+- **PresetKind** (5 connections) — `src/app.rs`
+- **GpuVendor** (4 connections)
+- **.create_restore_point()** (4 connections) — `src/app.rs`
+- **.reset_baseline()** (4 connections) — `src/app.rs`
+- **.select_all()** (4 connections) — `src/app.rs`
+- **.deselect_all()** (3 connections) — `src/app.rs`
+- **.detected_gpu_vendors()** (3 connections) — `src/app.rs`
+- **.export_autounattend_xml()** (3 connections) — `src/app.rs`
+- **.restore_stock_parking()** (3 connections) — `src/app.rs`
+- **.set_language()** (3 connections) — `src/app.rs`
+- **.stage_planned_goal()** (3 connections) — `src/app.rs`
+- **.start_perf_benchmark_async()** (3 connections) — `src/app.rs`
+- **.toggle_engine_mode()** (3 connections) — `src/app.rs`
+- **.unpark_all_cores()** (3 connections) — `src/app.rs`
+- **.clear_changelog()** (2 connections) — `src/app.rs`
+- **.export_profile()** (2 connections) — `src/app.rs`
+- **.open_diff_preview()** (2 connections) — `src/app.rs`
+- **.relaunch_as_admin()** (2 connections) — `src/app.rs`
+- **.set_latency_baseline_before()** (2 connections) — `src/app.rs`
+- *... and 6 more nodes in this community*
 
 ## Relationships
 
-- [updater.rs](updater.rs.md) (20 shared connections)
-- [DriverUpdateState](DriverUpdateState.md) (5 shared connections)
-- [FailAtMutationBackend](FailAtMutationBackend.md) (2 shared connections)
-- [backend.rs](backend.rs.md) (2 shared connections)
-- [deserialize](deserialize.md) (2 shared connections)
-- [latency_bench.rs](latency_bench.rs.md) (2 shared connections)
-- [enums](enums.md) (2 shared connections)
-- [privacy_shield.rs](privacy_shield.rs.md) (1 shared connections)
-- [reg_helpers.rs](reg_helpers.rs.md) (1 shared connections)
-- [super](super.md) (1 shared connections)
-- [DriverError](DriverError.md) (1 shared connections)
-- [WinBlastError](WinBlastError.md) (1 shared connections)
+- [.Toggle .Set .Apply](Toggle_.Set_.Apply.md) (27 shared connections)
+- [GPU Silicon & Hardware Tuning Policies](GPU_Silicon_&_Hardware_Tuning_Policies.md) (7 shared connections)
+- [Embedded Catalog Test](Embedded_Catalog_Test.md) (6 shared connections)
+- [SlowScanBackend](SlowScanBackend.md) (2 shared connections)
+- [backend.rs](backend.rs.md) (1 shared connections)
+- [Scandetailkind Appxinstalled Appxinstalledps](Scandetailkind_Appxinstalled_Appxinstalledps.md) (1 shared connections)
+- [TaskCache](TaskCache.md) (1 shared connections)
+- [theme.rs](theme.rs.md) (1 shared connections)
+- [Win32 Registry Scanner & Mutator](Win32_Registry_Scanner_&_Mutator.md) (1 shared connections)
+- [FailAtMutationBackend](FailAtMutationBackend.md) (1 shared connections)
+- [power_governor.rs](power_governor.rs.md) (1 shared connections)
+- [spawn_guarded_worker](spawn_guarded_worker.md) (1 shared connections)
 
 ## Source Files
 
-- `src/scanner/registry_scanner.rs`
+- `src/app.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 84 (85%)
-- INFERRED: 15 (15%)
+- EXTRACTED: 85 (98%)
+- INFERRED: 2 (2%)
 - AMBIGUOUS: 0 (0%)
 
 ---

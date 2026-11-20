@@ -1,62 +1,62 @@
 # theme.rs
 
-> 34 nodes · cohesion 0.06
+> 51 nodes · cohesion 0.06
 
 ## Key Concepts
 
-- **ActiveView** (44 connections) — `src/app.rs`
-- **AdvancedMatrix** (2 connections) — `src/app.rs`
-- **CoreParking** (2 connections) — `src/app.rs`
-- **EasyDashboard** (2 connections) — `src/app.rs`
-- **GpuTuning** (2 connections) — `src/app.rs`
-- **ALL_VIEWS** (2 connections) — `tests/ui_responsive_e2e.rs`
-- **Advanced Optimization Matrix UI** (1 connections) — `assets/screenshots/advanced_matrix.png`
-- **CPU Core Parking Topology Visualizer UI** (1 connections) — `assets/screenshots/cpu_parking.png`
-- **Easy Mode Telemetry Dashboard UI** (1 connections) — `assets/screenshots/dashboard.png`
-- **GPU Tuning & Vendor Gating UI** (1 connections) — `assets/screenshots/gpu_tuning.png`
-- **.ALL_VIEWS** (1 connections) — `src/app.rs`
-- **AutomationCenter** (1 connections) — `src/app.rs`
-- **BackupCenter** (1 connections) — `src/app.rs`
-- **CleanAndApps** (1 connections) — `src/app.rs`
-- **DiskHealth** (1 connections) — `src/app.rs`
-- **DriverBios** (1 connections) — `src/app.rs`
-- **FaultDiagnostics** (1 connections) — `src/app.rs`
-- **FpsBenchmark** (1 connections) — `src/app.rs`
-- **GameOverlay** (1 connections) — `src/app.rs`
-- **GamePrerequisites** (1 connections) — `src/app.rs`
-- **GameProfiles** (1 connections) — `src/app.rs`
-- **GameSuitability** (1 connections) — `src/app.rs`
-- **GamingStats** (1 connections) — `src/app.rs`
-- **GoalPlanner** (1 connections) — `src/app.rs`
-- **HardwareView** (1 connections) — `src/app.rs`
-- *... and 9 more nodes in this community*
+- **tweak_sandbox_e2e.rs** (107 connections) — `tests/tweak_sandbox_e2e.rs`
+- **load_embedded_rules()** (46 connections) — `src/core/risk.rs`
+- **drain_until()** (14 connections) — `tests/tweak_sandbox_e2e.rs`
+- **test_wave1_compound_actions_deep_edge_cases()** (13 connections) — `tests/tweak_sandbox_e2e.rs`
+- **make_synth_tweak()** (8 connections) — `tests/tweak_sandbox_e2e.rs`
+- **test_atomic_partial_failure_rollback_and_partially_optimized_lifecycle()** (8 connections) — `tests/tweak_sandbox_e2e.rs`
+- **test_wave1_presets_policy_locked_winget_appx_and_autounattend_permutations()** (7 connections) — `tests/tweak_sandbox_e2e.rs`
+- **test_iso_25010_fault_tolerance_concurrency_and_corruption_recovery()** (6 connections) — `tests/tweak_sandbox_e2e.rs`
+- **test_catalog_integrity_audit()** (5 connections) — `tests/tweak_sandbox_e2e.rs`
+- **test_tools_appx_hosts_and_autounattend_edge_cases()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
+- **test_worker_panic_recovery_releases_all_inflight_flags()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
+- **test_unorthodox_concurrent_worker_event_stress()** (3 connections) — `tests/edge_cases_unorthodox.rs`
+- **test_real_backend_readonly_live_host_audit()** (3 connections) — `tests/real_windows_env.rs`
+- **.new()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.drop()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
+- **normalize_task_path()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.new()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
+- **test_app_state_export_import_profile_staging_sync()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
+- **test_app_state_instant_mode_error_unlocks_in_flight_tweaks()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
+- **test_app_state_normal_mode_low_build_select_all_and_batch_apply()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
+- **test_mode_transitions_select_all_and_diff_modal_separation()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
+- **test_sandbox_clean_apps_startup_features_power_and_autounattend()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
+- **tweaks_scope_overlap()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
+- **HkcuScratchGuard** (2 connections) — `tests/tweak_sandbox_e2e.rs`
+- **test_iso_29119_automation_engine_workflows()** (2 connections) — `tests/tweak_sandbox_e2e.rs`
+- *... and 26 more nodes in this community*
 
 ## Relationships
 
-- [ui_scrollbar_test.rs](ui_scrollbar_test.rs.md) (3 shared connections)
-- [Runtime](Runtime.md) (2 shared connections)
-- [.Reg State() Vendor()](Reg_State_Vendor.md) (2 shared connections)
-- [.take_injected_error](take_injected_error.md) (2 shared connections)
-- [spawn_guarded_worker](spawn_guarded_worker.md) (2 shared connections)
-- [AppState](AppState.md) (1 shared connections)
-- [Disk Cleaning & Temporary File Purger](Disk_Cleaning_&_Temporary_File_Purger.md) (1 shared connections)
-- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (1 shared connections)
-- [Reversibility Instant Requireslogoff](Reversibility_Instant_Requireslogoff.md) (1 shared connections)
-- [SlowScanBackend](SlowScanBackend.md) (1 shared connections)
+- [Win32 Registry Scanner & Mutator](Win32_Registry_Scanner_&_Mutator.md) (18 shared connections)
+- [sys_inventory.rs](sys_inventory.rs.md) (10 shared connections)
+- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (9 shared connections)
+- [SlowScanBackend](SlowScanBackend.md) (9 shared connections)
+- [ps_runner.rs](ps_runner.rs.md) (6 shared connections)
+- [Scandetailkind Appxinstalled Appxinstalledps](Scandetailkind_Appxinstalled_Appxinstalledps.md) (4 shared connections)
+- [svc_mutator.rs](svc_mutator.rs.md) (4 shared connections)
+- [clean_apps.rs](clean_apps.rs.md) (4 shared connections)
+- [TaskCache](TaskCache.md) (4 shared connections)
+- [enums](enums.md) (3 shared connections)
+- [backend.rs](backend.rs.md) (3 shared connections)
+- [.poll](poll.md) (3 shared connections)
 
 ## Source Files
 
-- `assets/screenshots/advanced_matrix.png`
-- `assets/screenshots/cpu_parking.png`
-- `assets/screenshots/dashboard.png`
-- `assets/screenshots/gpu_tuning.png`
-- `src/app.rs`
-- `tests/ui_responsive_e2e.rs`
+- `src/core/risk.rs`
+- `tests/edge_cases_unorthodox.rs`
+- `tests/real_windows_env.rs`
+- `tests/tweak_sandbox_e2e.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 49 (100%)
-- INFERRED: 0 (0%)
+- EXTRACTED: 165 (78%)
+- INFERRED: 47 (22%)
 - AMBIGUOUS: 0 (0%)
 
 ---

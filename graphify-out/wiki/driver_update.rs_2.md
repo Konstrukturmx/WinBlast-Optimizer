@@ -1,45 +1,51 @@
 # driver_update.rs
 
-> 19 nodes · cohesion 0.11
+> 25 nodes · cohesion 0.16
 
 ## Key Concepts
 
-- **SandboxOp** (25 connections) — `src/core/backend.rs`
-- **AppxRemove** (1 connections) — `src/core/backend.rs`
-- **BlockHosts** (1 connections) — `src/core/backend.rs`
-- **CleanExecuted** (1 connections) — `src/core/backend.rs`
-- **ExplorerRestarted** (1 connections) — `src/core/backend.rs`
-- **FeatureSet** (1 connections) — `src/core/backend.rs`
-- **GpuMsi** (1 connections) — `src/core/backend.rs`
-- **PowerCfgSet** (1 connections) — `src/core/backend.rs`
-- **RebootRequested** (1 connections) — `src/core/backend.rs`
-- **RegDelete** (1 connections) — `src/core/backend.rs`
-- **RegDeleteTree** (1 connections) — `src/core/backend.rs`
-- **RegSet** (1 connections) — `src/core/backend.rs`
-- **RegSetBinary** (1 connections) — `src/core/backend.rs`
-- **RegSetString** (1 connections) — `src/core/backend.rs`
-- **RestoreParking** (1 connections) — `src/core/backend.rs`
-- **ServiceSet** (1 connections) — `src/core/backend.rs`
-- **StartupToggled** (1 connections) — `src/core/backend.rs`
-- **TaskSet** (1 connections) — `src/core/backend.rs`
-- **UnparkCores** (1 connections) — `src/core/backend.rs`
+- **theme.rs** (38 connections) — `src/ui/theme.rs`
+- **Color** (29 connections)
+- **ACCENT** (2 connections) — `src/ui/theme.rs`
+- **ACCENT_HOVER** (2 connections) — `src/ui/theme.rs`
+- **ACCENT_PRESS** (2 connections) — `src/ui/theme.rs`
+- **BG_CARD** (2 connections) — `src/ui/theme.rs`
+- **BG_CARD_HOVER** (2 connections) — `src/ui/theme.rs`
+- **BG_PRIMARY** (2 connections) — `src/ui/theme.rs`
+- **BG_SIDEBAR** (2 connections) — `src/ui/theme.rs`
+- **BORDER** (2 connections) — `src/ui/theme.rs`
+- **BORDER_ACCENT** (2 connections) — `src/ui/theme.rs`
+- **BORDER_HOVER** (2 connections) — `src/ui/theme.rs`
+- **BTN_SECONDARY** (2 connections) — `src/ui/theme.rs`
+- **BTN_SECONDARY_HOVER** (2 connections) — `src/ui/theme.rs`
+- **BTN_SECONDARY_PRESS** (2 connections) — `src/ui/theme.rs`
+- **DANGER** (2 connections) — `src/ui/theme.rs`
+- **NEUTRAL_BADGE** (2 connections) — `src/ui/theme.rs`
+- **SPARKLINE_BG** (2 connections) — `src/ui/theme.rs`
+- **SPARKLINE_CPU** (2 connections) — `src/ui/theme.rs`
+- **SPARKLINE_RAM** (2 connections) — `src/ui/theme.rs`
+- **SUCCESS** (2 connections) — `src/ui/theme.rs`
+- **TEXT_MUTED** (2 connections) — `src/ui/theme.rs`
+- **TEXT_PRIMARY** (2 connections) — `src/ui/theme.rs`
+- **TEXT_SECONDARY** (2 connections) — `src/ui/theme.rs`
+- **WARNING** (2 connections) — `src/ui/theme.rs`
 
 ## Relationships
 
-- [reg_mutator.rs](reg_mutator.rs.md) (2 shared connections)
-- [FeatureInstallState](FeatureInstallState.md) (1 shared connections)
-- [GPU Silicon & Hardware Tuning Policies](GPU_Silicon_&_Hardware_Tuning_Policies.md) (1 shared connections)
-- [RegRawSnapshot](RegRawSnapshot.md) (1 shared connections)
-- [.set_status_spec](set_status_spec.md) (1 shared connections)
-- [State Ledger & Restore Point Engine](State_Ledger_&_Restore_Point_Engine.md) (1 shared connections)
+- [updater.rs](updater.rs.md) (5 shared connections)
+- [boot_config.rs](boot_config.rs.md) (5 shared connections)
+- [backend.rs](backend.rs.md) (4 shared connections)
+- [Reversibility Instant Requireslogoff](Reversibility_Instant_Requireslogoff.md) (2 shared connections)
+- [.setup](setup.md) (2 shared connections)
+- [RegTreeSnapshot](RegTreeSnapshot.md) (1 shared connections)
 
 ## Source Files
 
-- `src/core/backend.rs`
+- `src/ui/theme.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 25 (100%)
+- EXTRACTED: 66 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

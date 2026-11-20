@@ -1,45 +1,39 @@
 # ui_scrollbar_test.rs
 
-> 16 nodes · cohesion 0.34
+> 10 nodes · cohesion 0.47
 
 ## Key Concepts
 
-- **ui_scrollbar_test.rs** (24 connections) — `tests/ui_scrollbar_test.rs`
-- **runtime_for()** (9 connections) — `tests/ui_scrollbar_test.rs`
-- **thumb_rects()** (8 connections) — `tests/ui_scrollbar_test.rs`
-- **content_thumb()** (7 connections) — `tests/ui_scrollbar_test.rs`
-- **frames()** (7 connections) — `tests/ui_scrollbar_test.rs`
-- **Runtime** (7 connections)
-- **create_test_state()** (6 connections) — `tests/ui_scrollbar_test.rs`
-- **sidebar_thumb()** (5 connections) — `tests/ui_scrollbar_test.rs`
-- **test_advanced_matrix_scrollbar_structure_and_drag()** (5 connections) — `tests/ui_scrollbar_test.rs`
-- **test_wheel_scroll_moves_content_and_sidebar_thumbs()** (5 connections) — `tests/ui_scrollbar_test.rs`
-- **count_key()** (4 connections) — `tests/ui_scrollbar_test.rs`
-- **test_iso_29119_driver_section_scrollbar_bounds_and_filtering()** (4 connections) — `tests/ui_scrollbar_test.rs`
-- **test_scrollbars_render_across_all_main_views()** (4 connections) — `tests/ui_scrollbar_test.rs`
-- **test_themed_thumb_widens_under_the_pointer()** (4 connections) — `tests/ui_scrollbar_test.rs`
-- **scrollbars** (1 connections)
-- **CONTENT_X** (1 connections) — `tests/ui_scrollbar_test.rs`
+- **diff_modal.rs** (20 connections) — `src/ui/widgets/diff_modal.rs`
+- **view_items_with_palette()** (13 connections) — `src/ui/widgets/diff_modal.rs`
+- **El** (6 connections)
+- **view_with_palette()** (6 connections) — `src/ui/widgets/diff_modal.rs`
+- **diff_single_card()** (5 connections) — `src/ui/widgets/diff_modal.rs`
+- **view_state()** (5 connections) — `src/ui/widgets/diff_modal.rs`
+- **diff_pair_card()** (4 connections) — `src/ui/widgets/diff_modal.rs`
+- **directed_pair()** (4 connections) — `src/ui/widgets/diff_modal.rs`
+- **header_with_dir()** (3 connections) — `src/ui/widgets/diff_modal.rs`
+- **Color** (2 connections)
 
 ## Relationships
 
-- [AppState](AppState.md) (8 shared connections)
-- [theme.rs](theme.rs.md) (3 shared connections)
-- [super](super.md) (2 shared connections)
-- [Reversibility Instant Requireslogoff](Reversibility_Instant_Requireslogoff.md) (2 shared connections)
-- [parse_guid](parse_guid.md) (1 shared connections)
+- [.Toggle .Set .Apply](Toggle_.Set_.Apply.md) (6 shared connections)
+- [updater.rs](updater.rs.md) (6 shared connections)
+- [WinBlastError](WinBlastError.md) (4 shared connections)
+- [svc_mutator.rs](svc_mutator.rs.md) (4 shared connections)
+- [task_scanner.rs](task_scanner.rs.md) (2 shared connections)
+- [Core UI Internationalization & Text Catalog](Core_UI_Internationalization_&_Text_Catalog.md) (2 shared connections)
 - [advanced_matrix.rs](advanced_matrix.rs.md) (1 shared connections)
-- [main.rs](main.rs.md) (1 shared connections)
-- [lazy_loader.rs](lazy_loader.rs.md) (1 shared connections)
+- [Language](Language.md) (1 shared connections)
 
 ## Source Files
 
-- `tests/ui_scrollbar_test.rs`
+- `src/ui/widgets/diff_modal.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 57 (95%)
-- INFERRED: 3 (5%)
+- EXTRACTED: 46 (98%)
+- INFERRED: 1 (2%)
 - AMBIGUOUS: 0 (0%)
 
 ---

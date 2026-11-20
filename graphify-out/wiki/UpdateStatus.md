@@ -1,32 +1,23 @@
 # UpdateStatus
 
-> 7 nodes · cohesion 0.29
+> 1 nodes · cohesion 1.00
 
 ## Key Concepts
 
-- **UpdateStatus** (10 connections) — `src/app.rs`
-- **Available** (2 connections) — `src/app.rs`
-- **Checking** (1 connections) — `src/app.rs`
-- **Downloading** (1 connections) — `src/app.rs`
-- **Idle** (1 connections) — `src/app.rs`
-- **ReadyToRestart** (1 connections) — `src/app.rs`
-- **UpToDate** (1 connections) — `src/app.rs`
+- **executor/mod.rs** (0 connections) — `src/executor/mod.rs`
 
 ## Relationships
 
-- [WorkerEvent](WorkerEvent.md) (2 shared connections)
-- [AppState](AppState.md) (1 shared connections)
-- [SlowScanBackend](SlowScanBackend.md) (1 shared connections)
-- [app.rs](app.rs.md) (1 shared connections)
+- No strong cross-community connections detected
 
 ## Source Files
 
-- `src/app.rs`
+- `src/executor/mod.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 10 (91%)
-- INFERRED: 1 (9%)
+- EXTRACTED: 0 (0%)
+- INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 
 ---

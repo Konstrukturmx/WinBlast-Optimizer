@@ -671,7 +671,7 @@ mod tests {
     #[test]
     fn test_iso_29119_auto_tune_plan_generation_all_profiles() {
         let catalog = load_embedded_rules();
-        assert_eq!(catalog.len(), 218, "Catalog must contain exactly 218 tweaks");
+        assert_eq!(catalog.len(), 230, "Catalog must contain exactly 230 tweaks");
 
         for &profile in AutoTuneProfile::all() {
             let plan = create_auto_tune_plan(&catalog, profile);

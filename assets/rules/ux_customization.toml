@@ -713,3 +713,171 @@ name = "Start"
 optimized_value = 2
 default_value = 4
 
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "set_this_pc_as_default_explorer"
+title = "Set 'This PC' as Default File Explorer View"
+category = "UX Customization"
+description = "Configures Windows File Explorer to open to 'This PC' instead of 'Home' / 'Quick Access', avoiding slow network share enumeration and recent file cloud sync delays on launch."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 1
+privacy_gain = 0
+reversibility = "Instant"
+broken_features = []
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced"
+name = "LaunchTo"
+optimized_value = 1
+default_value = 2
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "enable_taskbar_end_task"
+title = "Enable Right-Click 'End Task' on Taskbar"
+category = "UX Customization"
+description = "Enables the native Windows 11 right-click 'End Task' context menu option directly on taskbar application icons, allowing instant process termination without opening Task Manager."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 22621
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 2
+privacy_gain = 0
+reversibility = "Instant"
+broken_features = []
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced"
+name = "TaskbarEndTask"
+optimized_value = 1
+default_value = 0
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "disable_oobe_privacy_experience"
+title = "Disable Windows OOBE Privacy Settings Experience Prompt"
+category = "UX Customization"
+description = "Suppresses the multi-page Windows OOBE privacy experience prompt during new user account creation and feature upgrades via Group Policy."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 1
+privacy_gain = 3
+reversibility = "Instant"
+broken_features = []
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SOFTWARE\\Policies\\Microsoft\\Windows\\OOBE"
+name = "DisablePrivacyExperience"
+optimized_value = 1
+default_value = 0
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "disable_explorer_sync_provider_ads"
+title = "Disable File Explorer Sync Provider Advertisements"
+category = "UX Customization"
+description = "Stops Windows File Explorer from rendering banners and promotional upsells for OneDrive and Microsoft 365 cloud subscriptions inside folder windows."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 1
+privacy_gain = 1
+reversibility = "Instant"
+broken_features = []
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced"
+name = "ShowSyncProviderNotifications"
+optimized_value = 0
+default_value = 1
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "disable_taskbar_task_view"
+title = "Disable Task View Button on Taskbar"
+category = "UX Customization"
+description = "Hides the redundant Task View icon from the Windows taskbar to save screen real estate, while retaining standard Alt+Tab and Win+Tab navigation."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 1
+privacy_gain = 0
+reversibility = "Instant"
+broken_features = []
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced"
+name = "ShowTaskViewButton"
+optimized_value = 0
+default_value = 1
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "hide_taskbar_meet_now"
+title = "Hide 'Meet Now' & Chat Button from Taskbar"
+category = "UX Customization"
+description = "Hides the integrated Meet Now / Microsoft Teams chat button from the Windows system tray and notification area."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 1
+privacy_gain = 1
+reversibility = "Instant"
+broken_features = []
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer"
+name = "HideSCAMeetNow"
+optimized_value = 1
+default_value = 0
+

@@ -1,40 +1,40 @@
 # WindowsOptionalFeature
 
-> 5 nodes · cohesion 0.60
+> 14 nodes · cohesion 0.24
 
 ## Key Concepts
 
-- **WindowsOptionalFeature** (18 connections) — `src/tools/features_apps.rs`
-- **.list_optional_features()** (5 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.list_optional_features()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.list_optional_features()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.list_optional_features()** (2 connections) — `src/core/backend.rs`
+- **sample_live_cpu_and_parking()** (7 connections) — `src/hardware/monitor.rs`
+- **active_logical_core_count()** (6 connections) — `src/hardware/monitor.rs`
+- **NtCpuSampler** (6 connections) — `src/hardware/monitor.rs`
+- **query_nt_processor_performance_into()** (6 connections) — `src/hardware/monitor.rs`
+- **SystemProcessorPerformanceInformation** (6 connections) — `src/hardware/monitor.rs`
+- **.new()** (5 connections) — `src/hardware/monitor.rs`
+- **compute_nt_cpu_deltas_into()** (4 connections) — `src/hardware/monitor.rs`
+- **.new()** (4 connections) — `src/hardware/monitor.rs`
+- **query_nt_processor_performance()** (4 connections) — `src/hardware/monitor.rs`
+- **.core_count()** (3 connections) — `src/hardware/monitor.rs`
+- **.sample()** (3 connections) — `src/hardware/monitor.rs`
+- **NtQuerySystemInformation()** (3 connections) — `src/hardware/monitor.rs`
+- **query_processor_group_bases()** (3 connections) — `src/hardware/monitor.rs`
+- **c_void** (2 connections)
 
 ## Relationships
 
-- [FeatureInstallState](FeatureInstallState.md) (3 shared connections)
-- [WinBlast Optimizer](WinBlast_Optimizer.md) (3 shared connections)
-- [GPU Silicon & Hardware Tuning Policies](GPU_Silicon_&_Hardware_Tuning_Policies.md) (2 shared connections)
-- [SlowScanBackend](SlowScanBackend.md) (2 shared connections)
-- [full_telemetry_audit_with](full_telemetry_audit_with.md) (1 shared connections)
-- [AppState](AppState.md) (1 shared connections)
-- [WorkerEvent](WorkerEvent.md) (1 shared connections)
-- [parse_guid](parse_guid.md) (1 shared connections)
-- [in_progress_hud.rs](in_progress_hud.rs.md) (1 shared connections)
-- [RegRawSnapshot](RegRawSnapshot.md) (1 shared connections)
-- [State Ledger & Restore Point Engine](State_Ledger_&_Restore_Point_Engine.md) (1 shared connections)
+- [AppX Package & Modern App Scanner](AppX_Package_&_Modern_App_Scanner.md) (9 shared connections)
+- [DateTime](DateTime.md) (4 shared connections)
+- [TaskCache](TaskCache.md) (3 shared connections)
 - [super](super.md) (1 shared connections)
+- [edge_cases_unorthodox.rs](edge_cases_unorthodox.rs.md) (1 shared connections)
 
 ## Source Files
 
-- `src/core/backend.rs`
-- `src/tools/features_apps.rs`
-- `tests/tweak_sandbox_e2e.rs`
+- `src/hardware/monitor.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 27 (100%)
-- INFERRED: 0 (0%)
+- EXTRACTED: 39 (98%)
+- INFERRED: 1 (2%)
 - AMBIGUOUS: 0 (0%)
 
 ---

@@ -1,39 +1,36 @@
 # test_wave1_compound_actions_deep_edge_cases
 
-> 6 nodes · cohesion 0.47
+> 9 nodes · cohesion 0.56
 
 ## Key Concepts
 
-- **RegStringValue** (11 connections) — `src/core/reg_helpers.rs`
-- **.reg_get_string()** (5 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.reg_get_string()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.reg_get_string()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.reg_get_string()** (2 connections) — `src/core/backend.rs`
-- **.reg_get_string()** (2 connections) — `src/core/backend.rs`
+- **svc_mutator.rs** (13 connections) — `src/executor/svc_mutator.rs`
+- **set_service_start_type()** (8 connections) — `src/executor/svc_mutator.rs`
+- **format_sc_output()** (6 connections) — `src/executor/svc_mutator.rs`
+- **stop_service()** (6 connections) — `src/executor/svc_mutator.rs`
+- **start_service()** (5 connections) — `src/executor/svc_mutator.rs`
+- **output_has_sc_code()** (4 connections) — `src/executor/svc_mutator.rs`
+- **validate_service_name()** (4 connections) — `src/executor/svc_mutator.rs`
+- **Output** (2 connections)
+- **sc_start_mode()** (2 connections) — `src/executor/svc_mutator.rs`
 
 ## Relationships
 
-- [RegRawSnapshot](RegRawSnapshot.md) (2 shared connections)
-- [super](super.md) (2 shared connections)
-- [in_progress_hud.rs](in_progress_hud.rs.md) (1 shared connections)
-- [full_telemetry_audit_with](full_telemetry_audit_with.md) (1 shared connections)
-- [State Ledger & Restore Point Engine](State_Ledger_&_Restore_Point_Engine.md) (1 shared connections)
-- [reg_helpers.rs](reg_helpers.rs.md) (1 shared connections)
-- [registry_scanner.rs](registry_scanner.rs.md) (1 shared connections)
-- [FailAtMutationBackend](FailAtMutationBackend.md) (1 shared connections)
-- [PanickingBackend](PanickingBackend.md) (1 shared connections)
-- [SlowScanBackend](SlowScanBackend.md) (1 shared connections)
+- [CoreParkingState](CoreParkingState.md) (2 shared connections)
+- [SlowScanBackend](SlowScanBackend.md) (2 shared connections)
+- [ThemePalette](ThemePalette.md) (2 shared connections)
+- [WorkerEvent](WorkerEvent.md) (2 shared connections)
+- [clean_apps.rs](clean_apps.rs.md) (1 shared connections)
+- [parking.rs](parking.rs.md) (1 shared connections)
 
 ## Source Files
 
-- `src/core/backend.rs`
-- `src/core/reg_helpers.rs`
-- `tests/tweak_sandbox_e2e.rs`
+- `src/executor/svc_mutator.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 18 (95%)
-- INFERRED: 1 (5%)
+- EXTRACTED: 28 (93%)
+- INFERRED: 2 (7%)
 - AMBIGUOUS: 0 (0%)
 
 ---

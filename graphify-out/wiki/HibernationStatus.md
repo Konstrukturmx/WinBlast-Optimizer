@@ -1,45 +1,53 @@
 # HibernationStatus
 
-> 10 nodes · cohesion 0.24
+> 17 nodes · cohesion 0.15
 
 ## Key Concepts
 
-- **LiveServiceInfo** (14 connections) — `src/tools/startup.rs`
-- **.list_live_services()** (6 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.list_live_tasks()** (5 connections) — `tests/tweak_sandbox_e2e.rs`
-- **test_iso_25010_fault_tolerance_concurrency_and_corruption_recovery()** (5 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.list_live_services()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.list_live_services()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.list_live_tasks()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.list_live_tasks()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.list_live_services()** (2 connections) — `src/core/backend.rs`
-- **.list_live_services()** (2 connections) — `src/core/backend.rs`
+- **HibernationStatus** (22 connections) — `src/hardware/power.rs`
+- **PowerSchemeInfo** (15 connections) — `src/hardware/power.rs`
+- **RollbackRefreshData** (6 connections) — `src/app.rs`
+- **.list_power_schemes()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.query_hibernation_status()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
+- **query_hibernation_and_standby()** (3 connections) — `src/hardware/power.rs`
+- **set_hibernation_enabled()** (3 connections) — `src/hardware/power.rs`
+- **.list_power_schemes()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.query_hibernation_status()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.list_power_schemes()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.query_hibernation_status()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.list_power_schemes()** (2 connections) — `src/core/backend.rs`
+- **.query_hibernation_status()** (2 connections) — `src/core/backend.rs`
+- **.set_hibernation_enabled()** (2 connections) — `src/core/backend.rs`
+- **.list_power_schemes()** (2 connections) — `src/core/backend.rs`
+- **.query_hibernation_status()** (2 connections) — `src/core/backend.rs`
+- **.set_hibernation_enabled()** (2 connections) — `src/core/backend.rs`
 
 ## Relationships
 
-- [SlowScanBackend](SlowScanBackend.md) (5 shared connections)
-- [super](super.md) (3 shared connections)
-- [WinBlast Optimizer](WinBlast_Optimizer.md) (3 shared connections)
-- [TaskCache](TaskCache.md) (3 shared connections)
-- [FailAtMutationBackend](FailAtMutationBackend.md) (2 shared connections)
-- [PanickingBackend](PanickingBackend.md) (2 shared connections)
-- [in_progress_hud.rs](in_progress_hud.rs.md) (1 shared connections)
-- [full_telemetry_audit_with](full_telemetry_audit_with.md) (1 shared connections)
-- [AppState](AppState.md) (1 shared connections)
-- [WorkerEvent](WorkerEvent.md) (1 shared connections)
-- [GPU Silicon & Hardware Tuning Policies](GPU_Silicon_&_Hardware_Tuning_Policies.md) (1 shared connections)
-- [RegRawSnapshot](RegRawSnapshot.md) (1 shared connections)
+- [SlowScanBackend](SlowScanBackend.md) (6 shared connections)
+- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (4 shared connections)
+- [sys_inventory.rs](sys_inventory.rs.md) (4 shared connections)
+- [Embedded Catalog Test](Embedded_Catalog_Test.md) (3 shared connections)
+- [Integration Suite: Tweak Sandbox E2E](Integration_Suite-_Tweak_Sandbox_E2E.md) (3 shared connections)
+- [startup.rs](startup.rs.md) (3 shared connections)
+- [.Toggle .Set .Apply](Toggle_.Set_.Apply.md) (2 shared connections)
+- [Project History & Release Version Ledger](Project_History_&_Release_Version_Ledger.md) (2 shared connections)
+- [deserialize](deserialize.md) (2 shared connections)
+- [theme.rs](theme.rs.md) (2 shared connections)
+- [full_telemetry_audit_with](full_telemetry_audit_with.md) (2 shared connections)
+- [InstalledAppxPackage](InstalledAppxPackage.md) (2 shared connections)
 
 ## Source Files
 
+- `src/app.rs`
 - `src/core/backend.rs`
-- `src/tools/startup.rs`
+- `src/hardware/power.rs`
 - `tests/tweak_sandbox_e2e.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 35 (95%)
-- INFERRED: 2 (5%)
+- EXTRACTED: 60 (100%)
+- INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 
 ---

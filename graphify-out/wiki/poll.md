@@ -1,34 +1,33 @@
 # .poll
 
-> 9 nodes · cohesion 0.25
+> 7 nodes · cohesion 0.29
 
 ## Key Concepts
 
-- **.poll()** (6 connections) — `src/app.rs`
-- **.drain_worker_events_bounded()** (5 connections) — `src/app.rs`
-- **.sync_search_state()** (4 connections) — `src/app.rs`
-- **attach_window_icon()** (3 connections) — `src/ui/window_icon.rs`
-- **.drain_worker_events()** (2 connections) — `src/app.rs`
-- **.is_in_progress()** (2 connections) — `src/app.rs`
-- **window_icon.rs** (2 connections) — `src/ui/window_icon.rs`
-- **EMBEDDED_ICON_BYTES** (1 connections) — `src/ui/window_icon.rs`
-- **Tx** (1 connections)
+- **.block_telemetry_hosts()** (6 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.unpark_all_cores()** (5 connections) — `tests/tweak_sandbox_e2e.rs`
+- **test_app_state_hardware_and_privacy_ledger_recording()** (5 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.block_telemetry_hosts()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.unpark_all_cores()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.block_telemetry_hosts()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.unpark_all_cores()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
 
 ## Relationships
 
-- [AppState](AppState.md) (5 shared connections)
-- [WorkerEvent](WorkerEvent.md) (2 shared connections)
-- [spawn_guarded_worker](spawn_guarded_worker.md) (1 shared connections)
+- [WinBlast Optimizer](WinBlast_Optimizer.md) (6 shared connections)
+- [sys_inventory.rs](sys_inventory.rs.md) (4 shared connections)
+- [theme.rs](theme.rs.md) (3 shared connections)
+- [InstalledAppxPackage](InstalledAppxPackage.md) (2 shared connections)
+- [SlowScanBackend](SlowScanBackend.md) (1 shared connections)
 
 ## Source Files
 
-- `src/app.rs`
-- `src/ui/window_icon.rs`
+- `tests/tweak_sandbox_e2e.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 17 (100%)
-- INFERRED: 0 (0%)
+- EXTRACTED: 21 (95%)
+- INFERRED: 1 (5%)
 - AMBIGUOUS: 0 (0%)
 
 ---

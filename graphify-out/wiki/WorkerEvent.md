@@ -1,50 +1,47 @@
 # WorkerEvent
 
-> 17 nodes · cohesion 0.17
+> 20 nodes · cohesion 0.26
 
 ## Key Concepts
 
-- **thermal.rs** (17 connections) — `src/hardware/thermal.rs`
-- **ThermalHealth** (9 connections) — `src/hardware/thermal.rs`
-- **SystemThermalSnapshot** (7 connections) — `src/hardware/thermal.rs`
-- **.read()** (4 connections) — `src/hardware/thermal.rs`
-- **AtomicU8** (3 connections)
-- **ComponentThermal** (3 connections) — `src/hardware/thermal.rs`
-- **NVIDIA_SMI_STATUS** (2 connections) — `src/hardware/thermal.rs`
-- **probe_acpi_wmi_and_perf()** (2 connections) — `src/hardware/thermal.rs`
-- **probe_gpu_thermals()** (2 connections) — `src/hardware/thermal.rs`
-- **test_thermal_snapshot_read_no_panic()** (2 connections) — `src/hardware/thermal.rs`
-- **WMI_ACPI_STATUS** (2 connections) — `src/hardware/thermal.rs`
-- **test_thermal_health_labels()** (1 connections) — `src/hardware/thermal.rs`
-- **Cool** (1 connections) — `src/hardware/thermal.rs`
-- **Hot** (1 connections) — `src/hardware/thermal.rs`
-- **.label()** (1 connections) — `src/hardware/thermal.rs`
-- **Optimal** (1 connections) — `src/hardware/thermal.rs`
-- **Warm** (1 connections) — `src/hardware/thermal.rs`
+- **parse_guid()** (11 connections) — `src/hardware/power.rs`
+- **create_and_activate_performance_plan()** (10 connections) — `src/hardware/power.rs`
+- **normalize_guid_str()** (10 connections) — `src/hardware/power.rs`
+- **write_power_setting_index()** (10 connections) — `src/hardware/power.rs`
+- **get_active_power_scheme()** (9 connections) — `src/hardware/power.rs`
+- **read_power_setting_index()** (9 connections) — `src/hardware/power.rs`
+- **list_power_schemes()** (8 connections) — `src/hardware/power.rs`
+- **map_win32_err()** (8 connections) — `src/hardware/power.rs`
+- **WIN32_ERROR** (8 connections)
+- **resolve_scheme()** (7 connections) — `src/hardware/power.rs`
+- **unlock_power_setting_range_if_clamped()** (7 connections) — `src/hardware/power.rs`
+- **format_guid()** (6 connections) — `src/hardware/power.rs`
+- **GUID** (5 connections)
+- **set_active_power_scheme()** (5 connections) — `src/hardware/power.rs`
+- **test_ac_power_status_and_enumerated_range_noop()** (5 connections) — `src/hardware/power.rs`
+- **LocalGuidPtr** (4 connections) — `src/hardware/power.rs`
+- **test_guid_roundtrip_and_normalization()** (4 connections) — `src/hardware/power.rs`
+- **set_usb_root_hub_power_saving()** (3 connections) — `src/hardware/power.rs`
+- **test_power_scheme_enumeration_nonblocking()** (3 connections) — `src/hardware/power.rs`
+- **.drop()** (1 connections) — `src/hardware/power.rs`
 
 ## Relationships
 
-- [deserialize](deserialize.md) (2 shared connections)
-- [InstalledAppxPackage](InstalledAppxPackage.md) (1 shared connections)
-- [FailAtMutationBackend](FailAtMutationBackend.md) (1 shared connections)
-- [sys_inventory.rs](sys_inventory.rs.md) (1 shared connections)
-- [PlatformSecurityInfo](PlatformSecurityInfo.md) (1 shared connections)
-- [privacy_shield.rs](privacy_shield.rs.md) (1 shared connections)
-- [clean_apps.rs](clean_apps.rs.md) (1 shared connections)
-- [lazy_loader.rs](lazy_loader.rs.md) (1 shared connections)
-- [WorkerEvent](WorkerEvent.md) (1 shared connections)
-- [AppState](AppState.md) (1 shared connections)
-- [Disk Cleaning & Temporary File Purger](Disk_Cleaning_&_Temporary_File_Purger.md) (1 shared connections)
-- [Reversibility Instant Requireslogoff](Reversibility_Instant_Requireslogoff.md) (1 shared connections)
+- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (24 shared connections)
+- [clean_apps.rs](clean_apps.rs.md) (4 shared connections)
+- [edge_cases_unorthodox.rs](edge_cases_unorthodox.rs.md) (2 shared connections)
+- [HibernationStatus](HibernationStatus.md) (1 shared connections)
+- [parking.rs](parking.rs.md) (1 shared connections)
+- [theme.rs](theme.rs.md) (1 shared connections)
 
 ## Source Files
 
-- `src/hardware/thermal.rs`
+- `src/hardware/power.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 34 (94%)
-- INFERRED: 2 (6%)
+- EXTRACTED: 78 (94%)
+- INFERRED: 5 (6%)
 - AMBIGUOUS: 0 (0%)
 
 ---

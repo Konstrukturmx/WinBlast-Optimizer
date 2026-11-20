@@ -1,48 +1,47 @@
 # DriverUpdateState
 
-> 12 nodes · cohesion 0.20
+> 17 nodes · cohesion 0.21
 
 ## Key Concepts
 
-- **RegRawSnapshot** (22 connections) — `src/core/reg_helpers.rs`
-- **get_raw()** (7 connections) — `src/scanner/registry_scanner.rs`
-- **encode_hex()** (4 connections) — `src/core/reg_helpers.rs`
-- **reg_type_to_u32()** (4 connections) — `src/scanner/registry_scanner.rs`
-- **.reg_get_raw()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.reg_get_raw()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.reg_get_raw()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.reg_get_raw()** (2 connections) — `src/core/backend.rs`
-- **.reg_set_raw()** (2 connections) — `src/core/backend.rs`
-- **.reg_get_raw()** (2 connections) — `src/core/backend.rs`
-- **.reg_set_raw()** (2 connections) — `src/core/backend.rs`
-- **RegType** (1 connections)
+- **task_scanner.rs** (20 connections) — `src/scanner/task_scanner.rs`
+- **normalize_task_path()** (8 connections) — `src/scanner/task_scanner.rs`
+- **query_single_task_detailed()** (8 connections) — `src/scanner/task_scanner.rs`
+- **query_task_via_schtasks()** (5 connections) — `src/scanner/task_scanner.rs`
+- **.load()** (5 connections) — `src/scanner/task_scanner.rs`
+- **is_disabled_status()** (4 connections) — `src/scanner/task_scanner.rs`
+- **.from_map()** (4 connections) — `src/scanner/task_scanner.rs`
+- **ComGuard** (3 connections) — `src/scanner/task_scanner.rs`
+- **parse_csv_line()** (3 connections) — `src/scanner/task_scanner.rs`
+- **query_task_via_com()** (3 connections) — `src/scanner/task_scanner.rs`
+- **test_evaluate_task_with_kind_all_cache_and_error_branches()** (3 connections) — `src/scanner/task_scanner.rs`
+- **canonical_task_path()** (2 connections) — `src/scanner/task_scanner.rs`
+- **get_task_enabled()** (2 connections) — `src/scanner/task_scanner.rs`
+- **test_multilingual_disabled_statuses()** (2 connections) — `src/scanner/task_scanner.rs`
+- **test_query_single_task_distinguishes_absent_vs_access_denied()** (2 connections) — `src/scanner/task_scanner.rs`
+- **test_task_cache_loaded_does_not_cross_match_prefixes()** (2 connections) — `src/scanner/task_scanner.rs`
+- **.drop()** (1 connections) — `src/scanner/task_scanner.rs`
 
 ## Relationships
 
-- [registry_scanner.rs](registry_scanner.rs.md) (5 shared connections)
-- [PanickingBackend](PanickingBackend.md) (3 shared connections)
-- [updater.rs](updater.rs.md) (3 shared connections)
-- [in_progress_hud.rs](in_progress_hud.rs.md) (2 shared connections)
+- [Low-Level NT Core & Kernel Architecture](Low-Level_NT_Core_&_Kernel_Architecture.md) (7 shared connections)
+- [ThemePalette](ThemePalette.md) (3 shared connections)
+- [parking.rs](parking.rs.md) (2 shared connections)
 - [full_telemetry_audit_with](full_telemetry_audit_with.md) (2 shared connections)
-- [reg_helpers.rs](reg_helpers.rs.md) (2 shared connections)
-- [RegRawSnapshot](RegRawSnapshot.md) (2 shared connections)
-- [FailAtMutationBackend](FailAtMutationBackend.md) (2 shared connections)
-- [Reversibility Instant Requireslogoff](Reversibility_Instant_Requireslogoff.md) (1 shared connections)
-- [GPU Silicon & Hardware Tuning Policies](GPU_Silicon_&_Hardware_Tuning_Policies.md) (1 shared connections)
-- [enums](enums.md) (1 shared connections)
-- [State Ledger & Restore Point Engine](State_Ledger_&_Restore_Point_Engine.md) (1 shared connections)
+- [.take_injected_error](take_injected_error.md) (1 shared connections)
+- [clean_apps.rs](clean_apps.rs.md) (1 shared connections)
+- [Project History & Release Version Ledger](Project_History_&_Release_Version_Ledger.md) (1 shared connections)
+- [power.rs](power.rs.md) (1 shared connections)
+- [WindowsOptionalFeature](WindowsOptionalFeature.md) (1 shared connections)
 
 ## Source Files
 
-- `src/core/backend.rs`
-- `src/core/reg_helpers.rs`
-- `src/scanner/registry_scanner.rs`
-- `tests/tweak_sandbox_e2e.rs`
+- `src/scanner/task_scanner.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 40 (93%)
-- INFERRED: 3 (7%)
+- EXTRACTED: 43 (90%)
+- INFERRED: 5 (10%)
 - AMBIGUOUS: 0 (0%)
 
 ---

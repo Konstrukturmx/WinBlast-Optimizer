@@ -1,40 +1,46 @@
 # path
 
-> 14 nodes · cohesion 0.24
+> 20 nodes · cohesion 0.21
 
 ## Key Concepts
 
-- **sample_live_cpu_and_parking()** (7 connections) — `src/hardware/monitor.rs`
-- **active_logical_core_count()** (6 connections) — `src/hardware/monitor.rs`
-- **NtCpuSampler** (6 connections) — `src/hardware/monitor.rs`
-- **query_nt_processor_performance_into()** (6 connections) — `src/hardware/monitor.rs`
-- **SystemProcessorPerformanceInformation** (6 connections) — `src/hardware/monitor.rs`
-- **.new()** (5 connections) — `src/hardware/monitor.rs`
-- **compute_nt_cpu_deltas_into()** (4 connections) — `src/hardware/monitor.rs`
-- **.new()** (4 connections) — `src/hardware/monitor.rs`
-- **query_nt_processor_performance()** (4 connections) — `src/hardware/monitor.rs`
-- **.core_count()** (3 connections) — `src/hardware/monitor.rs`
-- **.sample()** (3 connections) — `src/hardware/monitor.rs`
-- **NtQuerySystemInformation()** (3 connections) — `src/hardware/monitor.rs`
-- **query_processor_group_bases()** (3 connections) — `src/hardware/monitor.rs`
-- **c_void** (2 connections)
+- **.decode()** (25 connections) — `src/backup/preset_sharing.rs`
+- **BinaryReader<'a>** (10 connections) — `src/backup/preset_sharing.rs`
+- **ParamValue** (8 connections) — `src/backup/preset_sharing.rs`
+- **test_canonical_encode_decode_roundtrip_unsigned()** (7 connections) — `src/backup/preset_sharing.rs`
+- **.read_u32()** (6 connections) — `src/backup/preset_sharing.rs`
+- **.remaining()** (6 connections) — `src/backup/preset_sharing.rs`
+- **.read_bytes()** (5 connections) — `src/backup/preset_sharing.rs`
+- **.read_opt_u32()** (5 connections) — `src/backup/preset_sharing.rs`
+- **.read_string()** (5 connections) — `src/backup/preset_sharing.rs`
+- **.read_u8()** (5 connections) — `src/backup/preset_sharing.rs`
+- **.read_fixed()** (3 connections) — `src/backup/preset_sharing.rs`
+- **.read_i64()** (3 connections) — `src/backup/preset_sharing.rs`
+- **.read_u64()** (3 connections) — `src/backup/preset_sharing.rs`
+- **U64** (3 connections) — `src/backup/preset_sharing.rs`
+- **.new()** (2 connections) — `src/backup/preset_sharing.rs`
+- **Bytes** (2 connections) — `src/backup/preset_sharing.rs`
+- **I64** (2 connections) — `src/backup/preset_sharing.rs`
+- **Str** (2 connections) — `src/backup/preset_sharing.rs`
+- **test_corrupted_magic_rejection()** (2 connections) — `src/backup/preset_sharing.rs`
+- **Bool** (1 connections) — `src/backup/preset_sharing.rs`
 
 ## Relationships
 
-- [parking.rs](parking.rs.md) (9 shared connections)
-- [progress_bar.rs](progress_bar.rs.md) (4 shared connections)
-- [SystemMetrics](SystemMetrics.md) (3 shared connections)
-- [driver_update.rs](driver_update.rs.md) (1 shared connections)
-- [DriverUpdateItem](DriverUpdateItem.md) (1 shared connections)
+- [PanickingBackend](PanickingBackend.md) (12 shared connections)
+- [spawn_guarded_worker](spawn_guarded_worker.md) (10 shared connections)
+- [startup.rs](startup.rs.md) (3 shared connections)
+- [progress_bar.rs](progress_bar.rs.md) (1 shared connections)
+- [.all_physical](all_physical.md) (1 shared connections)
 
 ## Source Files
 
-- `src/hardware/monitor.rs`
+- `src/backup/preset_sharing.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 39 (98%)
-- INFERRED: 1 (2%)
+- EXTRACTED: 66 (100%)
+- INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 
 ---

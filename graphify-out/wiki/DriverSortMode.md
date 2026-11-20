@@ -1,26 +1,22 @@
 # DriverSortMode
 
-> 4 nodes · cohesion 0.50
+> 1 nodes · cohesion 1.00
 
 ## Key Concepts
 
-- **DriverSortMode** (5 connections) — `src/app.rs`
-- **Category** (1 connections) — `src/app.rs`
-- **NameAsc** (1 connections) — `src/app.rs`
-- **UpdatesFirst** (1 connections) — `src/app.rs`
+- **views/mod.rs** (0 connections) — `src/ui/views/mod.rs`
 
 ## Relationships
 
-- [AppState](AppState.md) (1 shared connections)
-- [SlowScanBackend](SlowScanBackend.md) (1 shared connections)
+- No strong cross-community connections detected
 
 ## Source Files
 
-- `src/app.rs`
+- `src/ui/views/mod.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 5 (100%)
+- EXTRACTED: 0 (0%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

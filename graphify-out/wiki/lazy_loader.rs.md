@@ -1,48 +1,38 @@
 # lazy_loader.rs
 
-> 15 nodes · cohesion 0.15
+> 9 nodes · cohesion 0.31
 
 ## Key Concepts
 
-- **lazy_loader.rs** (26 connections) — `src/hardware/lazy_loader.rs`
-- **arc** (8 connections)
-- **AtomicBool** (7 connections)
-- **extract_panic_message()** (3 connections) — `src/hardware/lazy_loader.rs`
-- **InFlightGuard** (3 connections) — `src/hardware/lazy_loader.rs`
-- **thread** (3 connections)
-- **Any** (2 connections)
-- **Receiver** (2 connections)
-- **Sender** (2 connections)
-- **assertunwindsafe** (1 connections)
-- **panic** (1 connections)
-- **assert_send_sync()** (1 connections) — `src/hardware/lazy_loader.rs`
-- **.drop()** (1 connections) — `src/hardware/lazy_loader.rs`
-- **lazy_loader_is_send_and_sync()** (1 connections) — `src/hardware/lazy_loader.rs`
-- **unbounded** (1 connections)
+- **DriverUpdateItem** (16 connections) — `src/hardware/driver_update.rs`
+- **scan_online_drivers_with_progress()** (7 connections) — `src/hardware/driver_update.rs`
+- **create_sandbox_test_item()** (5 connections) — `src/hardware/driver_update.rs`
+- **download_and_install_driver()** (5 connections) — `src/hardware/driver_update.rs`
+- **scan_online_drivers()** (4 connections) — `src/hardware/driver_update.rs`
+- **test_driver_sandbox_lifecycle()** (4 connections) — `src/hardware/driver_update.rs`
+- **test_create_sandbox_item_metadata()** (2 connections) — `src/hardware/driver_update.rs`
+- **test_driver_sandbox_lifecycle_execution()** (2 connections) — `src/hardware/driver_update.rs`
+- **.is_update_available()** (1 connections) — `src/hardware/driver_update.rs`
 
 ## Relationships
 
-- [clean_apps.rs](clean_apps.rs.md) (10 shared connections)
-- [Reversibility Instant Requireslogoff](Reversibility_Instant_Requireslogoff.md) (3 shared connections)
-- [SlowScanBackend](SlowScanBackend.md) (2 shared connections)
-- [Integration Suite: Tweak Sandbox E2E](Integration_Suite-_Tweak_Sandbox_E2E.md) (2 shared connections)
-- [deserialize](deserialize.md) (2 shared connections)
-- [State Ledger & Restore Point Engine](State_Ledger_&_Restore_Point_Engine.md) (1 shared connections)
-- [super](super.md) (1 shared connections)
-- [.take_injected_error](take_injected_error.md) (1 shared connections)
-- [ui_scrollbar_test.rs](ui_scrollbar_test.rs.md) (1 shared connections)
-- [PanickingBackend](PanickingBackend.md) (1 shared connections)
-- [sys_inventory.rs](sys_inventory.rs.md) (1 shared connections)
-- [DiskSubsystemReport](DiskSubsystemReport.md) (1 shared connections)
+- [RegRawSnapshot](RegRawSnapshot.md) (10 shared connections)
+- [SandboxEnv](SandboxEnv.md) (6 shared connections)
+- [normalize_guid_str](normalize_guid_str.md) (2 shared connections)
+- [State Ledger & Restore Point Engine](State_Ledger_&_Restore_Point_Engine.md) (2 shared connections)
+- [adaptive_tuning.rs](adaptive_tuning.rs.md) (1 shared connections)
+- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (1 shared connections)
+- [.Toggle .Set .Apply](Toggle_.Set_.Apply.md) (1 shared connections)
+- [Embedded Catalog Test](Embedded_Catalog_Test.md) (1 shared connections)
 
 ## Source Files
 
-- `src/hardware/lazy_loader.rs`
+- `src/hardware/driver_update.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 46 (100%)
-- INFERRED: 0 (0%)
+- EXTRACTED: 33 (94%)
+- INFERRED: 2 (6%)
 - AMBIGUOUS: 0 (0%)
 
 ---

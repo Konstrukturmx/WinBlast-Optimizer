@@ -1,35 +1,31 @@
 # adaptive_tuning.rs
 
-> 10 nodes · cohesion 0.38
+> 7 nodes · cohesion 0.29
 
 ## Key Concepts
 
-- **adaptive_tuning.rs** (16 connections) — `src/executor/adaptive_tuning.rs`
-- **evaluate_adaptive_tuning()** (7 connections) — `src/executor/adaptive_tuning.rs`
-- **apply_adaptive_tuning()** (5 connections) — `src/executor/adaptive_tuning.rs`
-- **AdaptiveTuningConfig** (3 connections) — `src/executor/adaptive_tuning.rs`
-- **MemoryStats** (3 connections) — `src/executor/adaptive_tuning.rs`
-- **test_apply_adaptive_tuning_sandbox()** (3 connections) — `src/executor/adaptive_tuning.rs`
-- **query_physical_ram()** (2 connections) — `src/executor/adaptive_tuning.rs`
-- **test_evaluate_adaptive_tuning_high_spec_nvme()** (2 connections) — `src/executor/adaptive_tuning.rs`
-- **test_evaluate_adaptive_tuning_low_spec_hdd()** (2 connections) — `src/executor/adaptive_tuning.rs`
-- **B** (1 connections)
+- **DriverUpdateState** (11 connections) — `src/hardware/driver_update.rs`
+- **Downloading** (1 connections) — `src/hardware/driver_update.rs`
+- **Installed** (1 connections) — `src/hardware/driver_update.rs`
+- **Installing** (1 connections) — `src/hardware/driver_update.rs`
+- **ReadyToInstall** (1 connections) — `src/hardware/driver_update.rs`
+- **UpdateAvailable** (1 connections) — `src/hardware/driver_update.rs`
+- **UpToDate** (1 connections) — `src/hardware/driver_update.rs`
 
 ## Relationships
 
-- [FailAtMutationBackend](FailAtMutationBackend.md) (3 shared connections)
-- [storage.rs](storage.rs.md) (3 shared connections)
-- [deserialize](deserialize.md) (2 shared connections)
-- [full_telemetry_audit_with](full_telemetry_audit_with.md) (1 shared connections)
-- [GPU Silicon & Hardware Tuning Policies](GPU_Silicon_&_Hardware_Tuning_Policies.md) (1 shared connections)
+- [RegRawSnapshot](RegRawSnapshot.md) (2 shared connections)
+- [lazy_loader.rs](lazy_loader.rs.md) (1 shared connections)
+- [elevation.rs](elevation.rs.md) (1 shared connections)
+- [SandboxEnv](SandboxEnv.md) (1 shared connections)
 
 ## Source Files
 
-- `src/executor/adaptive_tuning.rs`
+- `src/hardware/driver_update.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 27 (100%)
+- EXTRACTED: 11 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

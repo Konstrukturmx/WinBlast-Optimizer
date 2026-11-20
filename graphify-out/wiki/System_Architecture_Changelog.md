@@ -1,59 +1,56 @@
 # System Architecture Changelog
 
-> 36 nodes · cohesion 0.09
+> 38 nodes · cohesion 0.05
 
 ## Key Concepts
 
-- **tweak_i18n/mod.rs** (42 connections) — `src/core/tweak_i18n/mod.rs`
-- **lookup_text_table()** (6 connections) — `src/core/tweak_i18n/mod.rs`
-- **localize_category()** (5 connections) — `src/core/tweak_i18n/mod.rs`
-- **localize_optional_feature()** (5 connections) — `src/core/tweak_i18n/mod.rs`
-- **localize_sub_category()** (5 connections) — `src/core/tweak_i18n/mod.rs`
-- **localize_winget()** (5 connections) — `src/core/tweak_i18n/mod.rs`
-- **lookup_pair_table()** (5 connections) — `src/core/tweak_i18n/mod.rs`
-- **non_english_idx()** (5 connections) — `src/core/tweak_i18n/mod.rs`
-- **test_winget_optional_features_and_telemetry_services()** (5 connections) — `src/core/tweak_i18n/mod.rs`
-- **is_privacy_or_telemetry_category()** (4 connections) — `src/core/tweak_i18n/mod.rs`
-- **localize_ledger_token()** (4 connections) — `src/core/tweak_i18n/mod.rs`
-- **localize_power_scheme_name()** (4 connections) — `src/core/tweak_i18n/mod.rs`
-- **localize_telemetry_service()** (4 connections) — `src/core/tweak_i18n/mod.rs`
-- **test_all_10_gaming_latency_ultra_tweaks_localized_all_7_languages()** (4 connections) — `src/core/tweak_i18n/mod.rs`
-- **test_all_32_deep_opt_tweaks_localized_all_7_languages()** (4 connections) — `src/core/tweak_i18n/mod.rs`
-- **test_categories_and_sub_categories()** (4 connections) — `src/core/tweak_i18n/mod.rs`
-- **test_power_schemes_and_ledger_tokens()** (3 connections) — `src/core/tweak_i18n/mod.rs`
-- **tweak_description()** (3 connections) — `src/core/tweak_i18n/mod.rs`
-- **tweak_title()** (3 connections) — `src/core/tweak_i18n/mod.rs`
-- **.tweak_category()** (2 connections) — `src/app.rs`
-- **.tweak_sub_category()** (2 connections) — `src/app.rs`
-- **contains_ascii_ci()** (2 connections) — `src/core/tweak_i18n/mod.rs`
-- **NON_ENGLISH_LANGS** (2 connections) — `src/core/tweak_i18n/mod.rs`
-- **CAT_BROWSERS** (1 connections) — `src/core/tweak_i18n/mod.rs`
-- **CAT_DEVELOPMENT** (1 connections) — `src/core/tweak_i18n/mod.rs`
-- *... and 11 more nodes in this community*
+- **status_i18n.rs** (59 connections) — `src/core/status_i18n.rs`
+- **PresetKey** (6 connections) — `src/core/status_i18n.rs`
+- **ADMIN_RUN_MSG** (1 connections) — `src/core/status_i18n.rs`
+- **ERROR_PREFIX_TABLE** (1 connections) — `src/core/status_i18n.rs`
+- **KFM_REDIRECT_MSG** (1 connections) — `src/core/status_i18n.rs`
+- **POLICY_LOCKED_LABEL** (1 connections) — `src/core/status_i18n.rs`
+- **Gaming** (1 connections) — `src/core/status_i18n.rs`
+- **LaptopBattery** (1 connections) — `src/core/status_i18n.rs`
+- **ProAudio** (1 connections) — `src/core/status_i18n.rs`
+- **STATIC_APPX_SCANNING** (1 connections) — `src/core/status_i18n.rs`
+- **STATIC_BASELINE_RESET_OK** (1 connections) — `src/core/status_i18n.rs`
+- **STATIC_BASELINE_RESETTING** (1 connections) — `src/core/status_i18n.rs`
+- **STATIC_CHANGELOG_CLEARED** (1 connections) — `src/core/status_i18n.rs`
+- **STATIC_DESELECTED_ALL** (1 connections) — `src/core/status_i18n.rs`
+- **STATIC_DISK_SCANNING** (1 connections) — `src/core/status_i18n.rs`
+- **STATIC_EDGE_REMOVED** (1 connections) — `src/core/status_i18n.rs`
+- **STATIC_EXPLORER_RESTARTED** (1 connections) — `src/core/status_i18n.rs`
+- **STATIC_GPU_MSI_OK** (1 connections) — `src/core/status_i18n.rs`
+- **STATIC_LATENCY_BASELINE_SAVED** (1 connections) — `src/core/status_i18n.rs`
+- **STATIC_LATENCY_DONE** (1 connections) — `src/core/status_i18n.rs`
+- **STATIC_LATENCY_RUN_FIRST** (1 connections) — `src/core/status_i18n.rs`
+- **STATIC_LATENCY_RUNNING** (1 connections) — `src/core/status_i18n.rs`
+- **STATIC_MODE_INSTANT** (1 connections) — `src/core/status_i18n.rs`
+- **STATIC_MODE_NORMAL** (1 connections) — `src/core/status_i18n.rs`
+- **STATIC_NO_CLEANUP_SELECTED** (1 connections) — `src/core/status_i18n.rs`
+- *... and 13 more nodes in this community*
 
 ## Relationships
 
-- [ps_runner.rs](ps_runner.rs.md) (12 shared connections)
-- [AppX Package & Modern App Scanner](AppX_Package_&_Modern_App_Scanner.md) (5 shared connections)
-- [AppState](AppState.md) (2 shared connections)
-- [FeatureInstallState](FeatureInstallState.md) (2 shared connections)
-- [Multi-Language Tweak Localization Tables](Multi-Language_Tweak_Localization_Tables.md) (2 shared connections)
-- [FailAtMutationBackend](FailAtMutationBackend.md) (1 shared connections)
-- [super](super.md) (1 shared connections)
-- [SlowScanBackend](SlowScanBackend.md) (1 shared connections)
-- [features_apps.rs](features_apps.rs.md) (1 shared connections)
-- [advanced_matrix.rs](advanced_matrix.rs.md) (1 shared connections)
-- [Disk Cleaning & Temporary File Purger](Disk_Cleaning_&_Temporary_File_Purger.md) (1 shared connections)
+- [FailAtMutationBackend](FailAtMutationBackend.md) (16 shared connections)
+- [SlowScanBackend](SlowScanBackend.md) (2 shared connections)
+- [spawn_guarded_worker](spawn_guarded_worker.md) (2 shared connections)
+- [GameProfile](GameProfile.md) (2 shared connections)
+- [parking.rs](parking.rs.md) (1 shared connections)
+- [PlatformSecurityInfo](PlatformSecurityInfo.md) (1 shared connections)
+- [Core UI Internationalization & Text Catalog](Core_UI_Internationalization_&_Text_Catalog.md) (1 shared connections)
+- [UiThemeStyle](UiThemeStyle.md) (1 shared connections)
+- [in_progress_hud.rs](in_progress_hud.rs.md) (1 shared connections)
 
 ## Source Files
 
-- `src/app.rs`
-- `src/core/tweak_i18n/mod.rs`
+- `src/core/status_i18n.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 83 (98%)
-- INFERRED: 2 (2%)
+- EXTRACTED: 64 (100%)
+- INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 
 ---

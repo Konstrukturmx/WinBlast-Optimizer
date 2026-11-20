@@ -572,5 +572,153 @@ name = "UserContentFeedback"
 optimized_value = 0
 default_value = 1
 
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "disable_background_apps_global"
+title = "Disable Background Apps Execution Globally"
+category = "Privacy"
+description = "Prevents Windows Store and UWP applications from running background tasks, fetching notifications, and consuming CPU/RAM when closed."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 3
+privacy_gain = 2
+reversibility = "Instant"
+broken_features = []
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "Software\\Policies\\Microsoft\\Windows\\AppPrivacy"
+name = "LetAppsRunInBackground"
+optimized_value = 2
+default_value = 0
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "disable_finish_setup_ads"
+title = "Disable 'Finish Setting Up Your PC' Fullscreen Prompts"
+category = "Privacy"
+description = "Disables the recurring fullscreen nag screens prompting users to subscribe to Microsoft 365, OneDrive, or Windows Hello after reboots."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 1
+privacy_gain = 2
+reversibility = "Instant"
+broken_features = []
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Software\\Microsoft\\Windows\\CurrentVersion\\UserProfileEngagement"
+name = "ScoobeSystemSettingEnabled"
+optimized_value = 0
+default_value = 1
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "disable_lockscreen_spotlight_ads"
+title = "Disable Lock Screen Tips, Tricks & Spotlight Advertisements"
+category = "Privacy"
+description = "Suppresses dynamic advertising overlays, promotional tips, and web trivia pushed onto the Windows lock screen."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 1
+privacy_gain = 2
+reversibility = "Instant"
+broken_features = []
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Software\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager"
+name = "RotatingLockScreenOverlayEnabled"
+optimized_value = 0
+default_value = 1
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Software\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager"
+name = "SubscribedContent-338387Enabled"
+optimized_value = 0
+default_value = 1
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "disable_welcome_experience_ads"
+title = "Disable Windows Welcome Experience Promotional Screens"
+category = "Privacy"
+description = "Blocks the post-update 'What's New' and Welcome Experience browser popups showcasing Microsoft Edge and Copilot marketing content."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 1
+privacy_gain = 2
+reversibility = "Instant"
+broken_features = []
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Software\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager"
+name = "SubscribedContent-310093Enabled"
+optimized_value = 0
+default_value = 1
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "disable_general_tips_ads"
+title = "Disable Windows Suggestions, Tips & Trick Banners"
+category = "Privacy"
+description = "Disables generic Windows desktop tips, feature recommendations, and notification tray advice pushed by ContentDeliveryManager."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 1
+privacy_gain = 2
+reversibility = "Instant"
+broken_features = []
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Software\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager"
+name = "SubscribedContent-338389Enabled"
+optimized_value = 0
+default_value = 1
+
 
 

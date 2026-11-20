@@ -1349,6 +1349,66 @@ pub fn lookup(id: &str) -> Option<LocalizedTweakText> {
             description: "Отключает сбор диагностических данных Microsoft Office, запросы обратной связи и телеметрию программы улучшения качества ПО (CEIP).",
             broken_features: &[],
         }),
+        "set_this_pc_as_default_explorer" => Some(LocalizedTweakText {
+            title: "Установить 'Этот компьютер' представлением Проводника по умолчанию",
+            description: "Настраивает Проводник на открытие окна 'Этот компьютер' вместо 'Главная', устраняя задержки сетевого сканирования при запуске.",
+            broken_features: &[],
+        }),
+        "enable_taskbar_end_task" => Some(LocalizedTweakText {
+            title: "Включить 'Завершить задачу' по правому клику на панели задач",
+            description: "Активирует встроенную функцию Windows 11 для мгновенного завершения зависших процессов прямо из контекстного меню панели задач.",
+            broken_features: &[],
+        }),
+        "disable_oobe_privacy_experience" => Some(LocalizedTweakText {
+            title: "Отключить экран настройки конфиденциальности Windows OOBE",
+            description: "Подавляет многостраничный запрос параметров конфиденциальности OOBE при создании учетных записей и после обновлений компонентов.",
+            broken_features: &[],
+        }),
+        "disable_explorer_sync_provider_ads" => Some(LocalizedTweakText {
+            title: "Отключить рекламу поставщиков синхронизации в Проводнике",
+            description: "Блокирует рекламные баннеры OneDrive и Microsoft 365 внутри окон папок Проводника.",
+            broken_features: &[],
+        }),
+        "disable_taskbar_task_view" => Some(LocalizedTweakText {
+            title: "Отключить кнопку 'Представление задач' на панели задач",
+            description: "Скрывает значок представления задач с панели задач для экономии места, сохраняя стандартные сочетания клавиш Alt+Tab.",
+            broken_features: &[],
+        }),
+        "hide_taskbar_meet_now" => Some(LocalizedTweakText {
+            title: "Скрыть кнопку 'Провести собрание' и Чат с панели задач",
+            description: "Скрывает значок чата Microsoft Teams и кнопку проведения собраний из области уведомлений панели задач.",
+            broken_features: &[],
+        }),
+        "disable_background_apps_global" => Some(LocalizedTweakText {
+            title: "Отключить работу фоновых приложений глобально",
+            description: "Запрещает приложениям Windows Store и UWP работать в фоновом режиме, опрашивать уведомления и тратить ресурсы процессора и ОЗУ.",
+            broken_features: &[],
+        }),
+        "disable_finish_setup_ads" => Some(LocalizedTweakText {
+            title: "Отключить полноэкранные окна 'Завершите настройку устройства'",
+            description: "Блокирует назойливые полноэкранные напоминания о подписках Microsoft 365 и службах при перезагрузке системы.",
+            broken_features: &[],
+        }),
+        "disable_lockscreen_spotlight_ads" => Some(LocalizedTweakText {
+            title: "Отключить советы и рекламу на экране блокировки",
+            description: "Удаляет всплывающие рекламные подсказки, ссылки и промо-материалы с экрана блокировки Windows.",
+            broken_features: &[],
+        }),
+        "disable_welcome_experience_ads" => Some(LocalizedTweakText {
+            title: "Отключить приветственные промо-страницы Windows после обновлений",
+            description: "Блокирует всплывающие окна с рекламой функций браузера Edge и Copilot после установки обновлений Windows.",
+            broken_features: &[],
+        }),
+        "disable_general_tips_ads" => Some(LocalizedTweakText {
+            title: "Отключить подсказки, советы и рекомендации Windows",
+            description: "Отключает системные всплывающие советы, рекламные подсказки и рекомендации функций на рабочем столе.",
+            broken_features: &[],
+        }),
+        "enable_windowed_game_optimizations" => Some(LocalizedTweakText {
+            title: "Включить оптимизацию для игр в оконном режиме",
+            description: "Активирует современную модель отображения (Flip Model) Windows 11 для оконных игр, снижая задержку ввода и открывая поддержку VRR и Auto HDR.",
+            broken_features: &[],
+        }),
         _ => None,
     }
 }

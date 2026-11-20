@@ -1,28 +1,31 @@
 # .all_physical
 
-> 3 nodes · cohesion 0.67
+> 6 nodes · cohesion 0.33
 
 ## Key Concepts
 
-- **.unpark_all_cores()** (5 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.unpark_all_cores()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.unpark_all_cores()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
+- **GpuVendor** (8 connections) — `src/backup/preset_sharing.rs`
+- **.from_u8()** (3 connections) — `src/backup/preset_sharing.rs`
+- **.to_u8()** (2 connections) — `src/backup/preset_sharing.rs`
+- **Amd** (1 connections) — `src/backup/preset_sharing.rs`
+- **Intel** (1 connections) — `src/backup/preset_sharing.rs`
+- **Nvidia** (1 connections) — `src/backup/preset_sharing.rs`
 
 ## Relationships
 
-- [WinBlast Optimizer](WinBlast_Optimizer.md) (3 shared connections)
-- [FailAtMutationBackend](FailAtMutationBackend.md) (1 shared connections)
+- [spawn_guarded_worker](spawn_guarded_worker.md) (2 shared connections)
 - [PanickingBackend](PanickingBackend.md) (1 shared connections)
-- [super](super.md) (1 shared connections)
-- [SlowScanBackend](SlowScanBackend.md) (1 shared connections)
+- [startup.rs](startup.rs.md) (1 shared connections)
+- [path](path.md) (1 shared connections)
+- [privacy_shield.rs](privacy_shield.rs.md) (1 shared connections)
 
 ## Source Files
 
-- `tests/tweak_sandbox_e2e.rs`
+- `src/backup/preset_sharing.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 9 (100%)
+- EXTRACTED: 11 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

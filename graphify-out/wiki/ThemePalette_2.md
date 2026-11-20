@@ -2,7 +2,7 @@
 
 > God node · 88 connections · `src/ui/theme.rs`
 
-**Community:** [.Reg State() Vendor()](Reg_State_Vendor.md)
+**Community:** [updater.rs](updater.rs.md)
 
 ## Connections by Relation
 

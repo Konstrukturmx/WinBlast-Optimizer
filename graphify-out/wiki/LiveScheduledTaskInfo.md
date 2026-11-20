@@ -4,7 +4,7 @@
 
 ## Key Concepts
 
-- **CpuInfo** (14 connections) — `src/hardware/cpu.rs`
+- **CpuInfo** (13 connections) — `src/hardware/cpu.rs`
 - **cpu.rs** (9 connections) — `src/hardware/cpu.rs`
 - **classify_efficiency_records()** (4 connections) — `src/hardware/cpu.rs`
 - **query_win32_core_topology()** (4 connections) — `src/hardware/cpu.rs`
@@ -21,18 +21,18 @@
 
 ## Relationships
 
-- [FailAtMutationBackend](FailAtMutationBackend.md) (2 shared connections)
-- [SlowScanBackend](SlowScanBackend.md) (2 shared connections)
-- [in_progress_hud.rs](in_progress_hud.rs.md) (1 shared connections)
+- [sys_inventory.rs](sys_inventory.rs.md) (2 shared connections)
+- [Integration Suite: Tweak Sandbox E2E](Integration_Suite-_Tweak_Sandbox_E2E.md) (1 shared connections)
+- [startup.rs](startup.rs.md) (1 shared connections)
+- [parking.rs](parking.rs.md) (1 shared connections)
+- [DateTime](DateTime.md) (1 shared connections)
+- [Project History & Release Version Ledger](Project_History_&_Release_Version_Ledger.md) (1 shared connections)
+- [.Toggle .Set .Apply](Toggle_.Set_.Apply.md) (1 shared connections)
+- [SlowScanBackend](SlowScanBackend.md) (1 shared connections)
+- [deserialize](deserialize.md) (1 shared connections)
+- [theme.rs](theme.rs.md) (1 shared connections)
 - [full_telemetry_audit_with](full_telemetry_audit_with.md) (1 shared connections)
-- [progress_bar.rs](progress_bar.rs.md) (1 shared connections)
-- [RegRawSnapshot](RegRawSnapshot.md) (1 shared connections)
-- [AppState](AppState.md) (1 shared connections)
-- [State Ledger & Restore Point Engine](State_Ledger_&_Restore_Point_Engine.md) (1 shared connections)
-- [backend.rs](backend.rs.md) (1 shared connections)
-- [super](super.md) (1 shared connections)
-- [GPU Silicon & Hardware Tuning Policies](GPU_Silicon_&_Hardware_Tuning_Policies.md) (1 shared connections)
-- [PanickingBackend](PanickingBackend.md) (1 shared connections)
+- [InstalledAppxPackage](InstalledAppxPackage.md) (1 shared connections)
 
 ## Source Files
 
@@ -42,7 +42,7 @@
 
 ## Audit Trail
 
-- EXTRACTED: 35 (100%)
+- EXTRACTED: 34 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

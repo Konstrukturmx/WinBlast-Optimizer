@@ -1,59 +1,55 @@
 # GPU Silicon & Hardware Tuning Policies
 
-> 47 nodes · cohesion 0.08
+> 35 nodes · cohesion 0.07
 
 ## Key Concepts
 
-- **SandboxEnv** (119 connections) — `src/core/backend.rs`
-- **.state_read()** (39 connections) — `src/core/backend.rs`
-- **CachedScanBackend<'a>** (6 connections) — `src/core/backend.rs`
-- **.load_appx_cache()** (5 connections) — `src/core/backend.rs`
-- **.load_task_cache()** (5 connections) — `src/core/backend.rs`
-- **.detect_gpus()** (4 connections) — `src/core/backend.rs`
-- **.list_optional_features()** (4 connections) — `src/core/backend.rs`
-- **.reg_get_raw()** (4 connections) — `src/core/backend.rs`
-- **.run_scheduled_task()** (4 connections) — `src/core/backend.rs`
-- **.seed_tweak_defaults_for_tweak()** (4 connections) — `src/core/backend.rs`
-- **.appx()** (3 connections) — `src/core/backend.rs`
-- **.gpu_vendors()** (3 connections) — `src/core/backend.rs`
-- **.optional_features()** (3 connections) — `src/core/backend.rs`
-- **.tasks()** (3 connections) — `src/core/backend.rs`
-- **.capture_latency()** (3 connections) — `src/core/backend.rs`
-- **.detect_cpu()** (3 connections) — `src/core/backend.rs`
-- **.detect_os()** (3 connections) — `src/core/backend.rs`
-- **.detect_platform_security()** (3 connections) — `src/core/backend.rs`
-- **.get_task_enabled()** (3 connections) — `src/core/backend.rs`
-- **.list_installed_appx_detailed()** (3 connections) — `src/core/backend.rs`
-- **.list_live_services()** (3 connections) — `src/core/backend.rs`
-- **.list_live_tasks()** (3 connections) — `src/core/backend.rs`
-- **.list_power_schemes()** (3 connections) — `src/core/backend.rs`
-- **.list_startup_entries()** (3 connections) — `src/core/backend.rs`
-- **.query_hibernation_status()** (3 connections) — `src/core/backend.rs`
-- *... and 22 more nodes in this community*
+- **spawn_guarded_worker()** (48 connections) — `src/app.rs`
+- **.sync_clean_apps_busy()** (10 connections) — `src/app.rs`
+- **.execute_clean_selected()** (5 connections) — `src/app.rs`
+- **.scan_appx_and_features_async()** (5 connections) — `src/app.rs`
+- **WorkerDropGuard** (5 connections) — `src/app.rs`
+- **.install_selected_winget_async()** (4 connections) — `src/app.rs`
+- **.remove_edge_async()** (4 connections) — `src/app.rs`
+- **.remove_selected_appx_async()** (4 connections) — `src/app.rs`
+- **.rollback_entry()** (4 connections) — `src/app.rs`
+- **.start_latency_benchmark()** (4 connections) — `src/app.rs`
+- **.toggle_optional_feature_async()** (4 connections) — `src/app.rs`
+- **.uninstall_onedrive_async()** (4 connections) — `src/app.rs`
+- **Waker** (4 connections)
+- **Sender** (3 connections)
+- **.block_telemetry_hosts()** (3 connections) — `src/app.rs`
+- **.restart_explorer_safely()** (3 connections) — `src/app.rs`
+- **panic_payload_to_string()** (3 connections) — `src/app.rs`
+- **OneDriveEdgeResult** (3 connections) — `src/app.rs`
+- **P** (2 connections)
+- **.activate_winblast_ultimate_power_plan()** (2 connections) — `src/app.rs`
+- **.set_active_power_plan()** (2 connections) — `src/app.rs`
+- **.toggle_gpu_msi()** (2 connections) — `src/app.rs`
+- **.toggle_hags()** (2 connections) — `src/app.rs`
+- **.toggle_hibernation()** (2 connections) — `src/app.rs`
+- **.toggle_mpo()** (2 connections) — `src/app.rs`
+- *... and 10 more nodes in this community*
 
 ## Relationships
 
-- [RegRawSnapshot](RegRawSnapshot.md) (32 shared connections)
-- [reg_mutator.rs](reg_mutator.rs.md) (32 shared connections)
-- [State Ledger & Restore Point Engine](State_Ledger_&_Restore_Point_Engine.md) (7 shared connections)
-- [.set_status_spec](set_status_spec.md) (4 shared connections)
-- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (3 shared connections)
-- [full_telemetry_audit_with](full_telemetry_audit_with.md) (3 shared connections)
-- [TaskCache](TaskCache.md) (3 shared connections)
+- [.Toggle .Set .Apply](Toggle_.Set_.Apply.md) (24 shared connections)
+- [Embedded Catalog Test](Embedded_Catalog_Test.md) (16 shared connections)
+- [registry_scanner.rs](registry_scanner.rs.md) (7 shared connections)
+- [AppxCache](AppxCache.md) (6 shared connections)
+- [WinBlastScrollable](WinBlastScrollable.md) (5 shared connections)
+- [power_governor.rs](power_governor.rs.md) (4 shared connections)
 - [SlowScanBackend](SlowScanBackend.md) (3 shared connections)
-- [parse_guid](parse_guid.md) (3 shared connections)
-- [AppxCache](AppxCache.md) (2 shared connections)
-- [WindowsOptionalFeature](WindowsOptionalFeature.md) (2 shared connections)
-- [FailAtMutationBackend](FailAtMutationBackend.md) (2 shared connections)
+- [svc_mutator.rs](svc_mutator.rs.md) (1 shared connections)
 
 ## Source Files
 
-- `src/core/backend.rs`
+- `src/app.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 201 (99%)
-- INFERRED: 2 (1%)
+- EXTRACTED: 109 (100%)
+- INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 
 ---

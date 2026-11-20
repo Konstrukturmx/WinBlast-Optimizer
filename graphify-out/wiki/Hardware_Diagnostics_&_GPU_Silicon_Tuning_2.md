@@ -1,55 +1,56 @@
 # Hardware Diagnostics & GPU Silicon Tuning
 
-> 20 nodes · cohesion 0.29
+> 28 nodes · cohesion 0.08
 
 ## Key Concepts
 
-- **action_button()** (65 connections) — `src/ui/widgets/button.rs`
-- **gpu_tuning.rs** (26 connections) — `src/ui/views/gpu_tuning.rs`
-- **button.rs** (23 connections) — `src/ui/widgets/button.rs`
-- **hardware_view.rs** (18 connections) — `src/ui/views/hardware_view.rs`
-- **El** (13 connections)
-- **render_compatible_card()** (12 connections) — `src/ui/views/gpu_tuning.rs`
-- **view()** (10 connections) — `src/ui/views/gpu_tuning.rs`
-- **switch_toggle()** (10 connections) — `src/ui/widgets/button.rs`
-- **view()** (9 connections) — `src/ui/views/hardware_view.rs`
-- **Color** (8 connections)
-- **render_incompatible_card()** (7 connections) — `src/ui/views/gpu_tuning.rs`
-- **kv_row()** (7 connections) — `src/ui/widgets/button.rs`
-- **section_card()** (7 connections) — `src/ui/widgets/button.rs`
-- **switch_toggle_with()** (7 connections) — `src/ui/widgets/button.rs`
-- **switch_visual_shell()** (7 connections) — `src/ui/widgets/button.rs`
-- **action_button_loading()** (6 connections) — `src/ui/widgets/button.rs`
-- **action_button_icon_only()** (5 connections) — `src/ui/widgets/button.rs`
-- **action_button_with_tooltip()** (5 connections) — `src/ui/widgets/button.rs`
-- **El** (4 connections)
-- **El** (2 connections)
+- **power.rs** (60 connections) — `src/hardware/power.rs`
+- **fallback_scheme_name()** (6 connections) — `src/hardware/power.rs`
+- **resolve_indirect_string()** (2 connections) — `src/hardware/power.rs`
+- **strip_indirect_prefix()** (2 connections) — `src/hardware/power.rs`
+- **test_fallback_scheme_name_indirect_stripping()** (2 connections) — `src/hardware/power.rs`
+- **callntpowerinformation** (1 connections)
+- **getsystempowerstatus** (1 connections)
+- **hlocal** (1 connections)
+- **localfree** (1 connections)
+- **ntstatus** (1 connections)
+- **powerduplicatescheme** (1 connections)
+- **powergetactivescheme** (1 connections)
+- **powerreadacdefaultindex** (1 connections)
+- **powerreadacvalueindex** (1 connections)
+- **powerreaddcdefaultindex** (1 connections)
+- **powerreaddcvalueindex** (1 connections)
+- **powerreadvaluemax** (1 connections)
+- **powerreadvaluemin** (1 connections)
+- **powersetactivescheme** (1 connections)
+- **powerwriteacvalueindex** (1 connections)
+- **powerwritedcvalueindex** (1 connections)
+- **powerwritefriendlyname** (1 connections)
+- **powerwritevaluemax** (1 connections)
+- **powerwritevaluemin** (1 connections)
+- **system_power_capabilities** (1 connections)
+- *... and 3 more nodes in this community*
 
 ## Relationships
 
-- [Disk Cleaning & Temporary File Purger](Disk_Cleaning_&_Temporary_File_Purger.md) (42 shared connections)
-- [Multi-Language Tweak Localization Tables](Multi-Language_Tweak_Localization_Tables.md) (23 shared connections)
-- [.Reg State() Vendor()](Reg_State_Vendor.md) (21 shared connections)
-- [advanced_matrix.rs](advanced_matrix.rs.md) (16 shared connections)
-- [AppState](AppState.md) (12 shared connections)
-- [parse_guid](parse_guid.md) (5 shared connections)
-- [Runtime](Runtime.md) (5 shared connections)
-- [WinBlastScrollable](WinBlastScrollable.md) (4 shared connections)
-- [Core UI Internationalization & Text Catalog](Core_UI_Internationalization_&_Text_Catalog.md) (3 shared connections)
-- [progress_bar.rs](progress_bar.rs.md) (2 shared connections)
-- [PlatformSecurityInfo](PlatformSecurityInfo.md) (2 shared connections)
-- [views/network_diag.rs](views-network_diag.rs.md) (2 shared connections)
+- [WorkerEvent](WorkerEvent.md) (21 shared connections)
+- [HibernationStatus](HibernationStatus.md) (4 shared connections)
+- [CoreParkingState](CoreParkingState.md) (2 shared connections)
+- [parking.rs](parking.rs.md) (2 shared connections)
+- [Reversibility Instant Requireslogoff](Reversibility_Instant_Requireslogoff.md) (2 shared connections)
+- [deserialize](deserialize.md) (1 shared connections)
+- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (1 shared connections)
+- [clean_apps.rs](clean_apps.rs.md) (1 shared connections)
+- [edge_cases_unorthodox.rs](edge_cases_unorthodox.rs.md) (1 shared connections)
 
 ## Source Files
 
-- `src/ui/views/gpu_tuning.rs`
-- `src/ui/views/hardware_view.rs`
-- `src/ui/widgets/button.rs`
+- `src/hardware/power.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 150 (77%)
-- INFERRED: 46 (23%)
+- EXTRACTED: 64 (98%)
+- INFERRED: 1 (2%)
 - AMBIGUOUS: 0 (0%)
 
 ---

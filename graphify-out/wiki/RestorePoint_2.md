@@ -1,22 +1,26 @@
 # RestorePoint
 
-> 1 nodes · cohesion 1.00
+> 4 nodes · cohesion 0.50
 
 ## Key Concepts
 
-- **backup/mod.rs** (0 connections) — `src/backup/mod.rs`
+- **PowerActionKind** (5 connections) — `src/app.rs`
+- **Hibernation** (1 connections) — `src/app.rs`
+- **Scheme** (1 connections) — `src/app.rs`
+- **UsbPower** (1 connections) — `src/app.rs`
 
 ## Relationships
 
-- No strong cross-community connections detected
+- [Embedded Catalog Test](Embedded_Catalog_Test.md) (1 shared connections)
+- [SlowScanBackend](SlowScanBackend.md) (1 shared connections)
 
 ## Source Files
 
-- `src/backup/mod.rs`
+- `src/app.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 0 (0%)
+- EXTRACTED: 5 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

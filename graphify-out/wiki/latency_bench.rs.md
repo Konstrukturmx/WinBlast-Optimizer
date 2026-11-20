@@ -1,35 +1,40 @@
 # latency_bench.rs
 
-> 10 nodes · cohesion 0.36
+> 15 nodes · cohesion 0.21
 
 ## Key Concepts
 
-- **service_scanner.rs** (12 connections) — `src/scanner/service_scanner.rs`
-- **evaluate_service_value_with_kind()** (5 connections) — `src/scanner/service_scanner.rs`
-- **evaluate_service()** (4 connections) — `src/scanner/service_scanner.rs`
-- **evaluate_service_value()** (4 connections) — `src/scanner/service_scanner.rs`
-- **get_service_start_type()** (3 connections) — `src/scanner/service_scanner.rs`
-- **check_service_start_type()** (2 connections) — `src/scanner/service_scanner.rs`
-- **start_type_name()** (2 connections) — `src/scanner/service_scanner.rs`
-- **test_evaluate_absent_optional_service()** (2 connections) — `src/scanner/service_scanner.rs`
-- **test_evaluate_service_value_with_kind_all_branches()** (2 connections) — `src/scanner/service_scanner.rs`
-- **hkey_local_machine** (1 connections)
+- **ps_runner.rs** (16 connections) — `src/executor/ps_runner.rs`
+- **block_telemetry_hosts_in_content()** (5 connections) — `src/executor/ps_runner.rs`
+- **unblock_telemetry_hosts_in_content()** (4 connections) — `src/executor/ps_runner.rs`
+- **unblock_telemetry_hosts_with()** (4 connections) — `src/executor/ps_runner.rs`
+- **block_telemetry_hosts()** (3 connections) — `src/executor/ps_runner.rs`
+- **find_exact_marker_line()** (3 connections) — `src/executor/ps_runner.rs`
+- **test_hosts_bom_ipv6_tabs_and_exact_footer_matching()** (3 connections) — `src/executor/ps_runner.rs`
+- **test_hosts_blocking_ignores_comments_and_subdomains()** (2 connections) — `src/executor/ps_runner.rs`
+- **write_hosts_file_raw()** (2 connections) — `src/executor/ps_runner.rs`
+- **openoptions** (1 connections)
+- **add_firewall_block_rule()** (1 connections) — `src/executor/ps_runner.rs`
+- **HOSTS_BLOCK_FOOTER** (1 connections) — `src/executor/ps_runner.rs`
+- **HOSTS_BLOCK_HEADER** (1 connections) — `src/executor/ps_runner.rs`
+- **remove_appx_package()** (1 connections) — `src/executor/ps_runner.rs`
+- **write** (1 connections)
 
 ## Relationships
 
-- [registry_scanner.rs](registry_scanner.rs.md) (2 shared connections)
-- [InstalledAppxPackage](InstalledAppxPackage.md) (1 shared connections)
-- [FailAtMutationBackend](FailAtMutationBackend.md) (1 shared connections)
-- [WinBlastError](WinBlastError.md) (1 shared connections)
+- [parking.rs](parking.rs.md) (1 shared connections)
+- [WindowsOptionalFeature](WindowsOptionalFeature.md) (1 shared connections)
+- [clean_apps.rs](clean_apps.rs.md) (1 shared connections)
+- [startup.rs](startup.rs.md) (1 shared connections)
 
 ## Source Files
 
-- `src/scanner/service_scanner.rs`
+- `src/executor/ps_runner.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 16 (76%)
-- INFERRED: 5 (24%)
+- EXTRACTED: 25 (96%)
+- INFERRED: 1 (4%)
 - AMBIGUOUS: 0 (0%)
 
 ---

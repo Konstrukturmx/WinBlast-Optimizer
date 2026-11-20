@@ -1,40 +1,35 @@
 # RestorePoint
 
-> 13 nodes · cohesion 0.17
+> 10 nodes · cohesion 0.36
 
 ## Key Concepts
 
-- **DriveMediaKind** (10 connections) — `src/hardware/sys_inventory.rs`
-- **StorageVolumeInfo** (8 connections) — `src/hardware/sys_inventory.rs`
-- **HandleGuard** (4 connections) — `src/hardware/sys_inventory.rs`
-- **probe_drive_media_kind()** (4 connections) — `src/hardware/sys_inventory.rs`
-- **query_storage_volumes()** (4 connections) — `src/hardware/sys_inventory.rs`
-- **HANDLE** (2 connections)
-- **.as_label()** (1 connections) — `src/hardware/sys_inventory.rs`
-- **Hdd** (1 connections) — `src/hardware/sys_inventory.rs`
-- **Nvme** (1 connections) — `src/hardware/sys_inventory.rs`
-- **Removable** (1 connections) — `src/hardware/sys_inventory.rs`
-- **Ssd** (1 connections) — `src/hardware/sys_inventory.rs`
-- **Unknown** (1 connections) — `src/hardware/sys_inventory.rs`
-- **.drop()** (1 connections) — `src/hardware/sys_inventory.rs`
+- **service_scanner.rs** (12 connections) — `src/scanner/service_scanner.rs`
+- **evaluate_service_value_with_kind()** (5 connections) — `src/scanner/service_scanner.rs`
+- **evaluate_service()** (4 connections) — `src/scanner/service_scanner.rs`
+- **evaluate_service_value()** (4 connections) — `src/scanner/service_scanner.rs`
+- **get_service_start_type()** (3 connections) — `src/scanner/service_scanner.rs`
+- **check_service_start_type()** (2 connections) — `src/scanner/service_scanner.rs`
+- **start_type_name()** (2 connections) — `src/scanner/service_scanner.rs`
+- **test_evaluate_absent_optional_service()** (2 connections) — `src/scanner/service_scanner.rs`
+- **test_evaluate_service_value_with_kind_all_branches()** (2 connections) — `src/scanner/service_scanner.rs`
+- **hkey_local_machine** (1 connections)
 
 ## Relationships
 
-- [Scandetailkind Appxinstalled Appxinstalledps](Scandetailkind_Appxinstalled_Appxinstalledps.md) (6 shared connections)
-- [State Ledger & Restore Point Engine](State_Ledger_&_Restore_Point_Engine.md) (2 shared connections)
-- [PlatformSecurityInfo](PlatformSecurityInfo.md) (2 shared connections)
-- [AppState](AppState.md) (1 shared connections)
-- [WorkerEvent](WorkerEvent.md) (1 shared connections)
-- [SlowScanBackend](SlowScanBackend.md) (1 shared connections)
+- [SlowScanBackend](SlowScanBackend.md) (2 shared connections)
+- [CoreParkingState](CoreParkingState.md) (1 shared connections)
+- [parking.rs](parking.rs.md) (1 shared connections)
+- [in_progress_hud.rs](in_progress_hud.rs.md) (1 shared connections)
 
 ## Source Files
 
-- `src/hardware/sys_inventory.rs`
+- `src/scanner/service_scanner.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 26 (100%)
-- INFERRED: 0 (0%)
+- EXTRACTED: 16 (76%)
+- INFERRED: 5 (24%)
 - AMBIGUOUS: 0 (0%)
 
 ---

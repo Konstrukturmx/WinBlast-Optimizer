@@ -615,6 +615,12 @@ pub struct AppState {
     pub telemetry_interval_ms: std::sync::Arc<std::sync::atomic::AtomicU64>,
     pub window_icon_attached: bool,
 
+    // Latency & GPU power optimization (Milestone 2 dirty-rect throttling)
+    pub last_interaction_secs: f64,
+    pub last_render_secs: f64,
+    pub last_cpu_metric: f32,
+    pub last_ram_metric: f32,
+
     // Background worker communication channel
     pub rx_events: crossbeam_channel::Receiver<WorkerEvent>,
     pub tx_events: crossbeam_channel::Sender<WorkerEvent>,
@@ -843,6 +849,10 @@ impl AppState {
             latest_baseline,
             telemetry_interval_ms: std::sync::Arc::new(std::sync::atomic::AtomicU64::new(2000)),
             window_icon_attached: false,
+            last_interaction_secs: 0.0,
+            last_render_secs: 0.0,
+            last_cpu_metric: 0.0,
+            last_ram_metric: 0.0,
             rx_events,
             tx_events,
             waker: None,
@@ -968,6 +978,12 @@ impl AppState {
         self.last_synced_search = q;
     }
 
+    /// Record user interaction (mouse move, click, keystroke, view navigation).
+    #[inline]
+    pub fn record_user_interaction(&mut self) {
+        self.last_interaction_secs = self.current_time_secs;
+    }
+
     /// Rune framework lifecycle poll hook. Drains bounded worker events (max 64/frame) so bursts never stutter UI.
     pub fn poll(&mut self, now: f64, _tx: &mut rune::Tx) -> bool {
         self.current_time_secs = now;
@@ -986,9 +1002,34 @@ impl AppState {
             if let Some(ref w) = self.waker {
                 w();
             }
+            self.last_render_secs = now;
             return true;
         }
-        processed > 0
+
+        if processed > 0 {
+            // Milestone 2 Dirty-Rect GPU Frame Throttling:
+            // Calculate telemetry change delta across CPU and RAM.
+            let (cpu, ram) = if let Some(ref m) = self.realtime_metrics {
+                (m.cpu_usage, m.ram_percentage)
+            } else {
+                (0.0, 0.0)
+            };
+            let delta_cpu = (cpu - self.last_cpu_metric).abs();
+            let delta_ram = (ram - self.last_ram_metric).abs();
+            self.last_cpu_metric = cpu;
+            self.last_ram_metric = ram;
+
+            // Idle throttle: if user idle > 3.0s and telemetry delta < 1.0%, throttle to 5 FPS (200 ms interval)
+            let idle_duration = now - self.last_interaction_secs;
+            if idle_duration > 3.0 && delta_cpu < 1.0 && delta_ram < 1.0 && now - self.last_render_secs < 0.20 {
+                return false;
+            }
+
+            self.last_render_secs = now;
+            return true;
+        }
+
+        false
     }
 
     /// Drain up to `limit` queued worker events.
@@ -1963,6 +2004,7 @@ impl AppState {
 
     /// Navigate to a view tab and close compact drawer, syncing mode & lazily warming view-specific scans.
     pub fn navigate(&mut self, view: ActiveView) {
+        self.record_user_interaction();
         self.sync_search_state();
         self.active_view = view;
         self.sidebar_open = false;

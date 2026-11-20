@@ -1,59 +1,62 @@
 # features_apps.rs
 
-> 27 nodes · cohesion 0.13
+> 59 nodes · cohesion 0.06
 
 ## Key Concepts
 
-- **features_apps.rs** (57 connections) — `src/tools/features_apps.rs`
-- **normalize_appx_family_name()** (9 connections) — `src/tools/features_apps.rs`
-- **classify_appx_package()** (7 connections) — `src/tools/features_apps.rs`
-- **CURATED_WINGET_APPS** (5 connections) — `src/tools/features_apps.rs`
-- **extract_appx_short_name()** (4 connections) — `src/tools/features_apps.rs`
-- **extract_winget_error_detail()** (4 connections) — `src/tools/features_apps.rs`
-- **uninstall_onedrive_safe()** (4 connections) — `src/tools/features_apps.rs`
-- **winget_install_package()** (4 connections) — `src/tools/features_apps.rs`
-- **DISM_LOCK** (3 connections) — `src/tools/features_apps.rs`
-- **is_crockford_pub_id()** (3 connections) — `src/tools/features_apps.rs`
-- **query_provisioned_appx_families()** (3 connections) — `src/tools/features_apps.rs`
-- **remove_appx_batch()** (3 connections) — `src/tools/features_apps.rs`
-- **validate_appx_family()** (3 connections) — `src/tools/features_apps.rs`
-- **LazyLock** (2 connections)
-- **check_onedrive_kfm_active()** (2 connections) — `src/tools/features_apps.rs`
-- **find_onedrive_setup_exe()** (2 connections) — `src/tools/features_apps.rs`
-- **is_appx_arch()** (2 connections) — `src/tools/features_apps.rs`
-- **is_appx_version()** (2 connections) — `src/tools/features_apps.rs`
-- **is_progress_noise_char()** (2 connections) — `src/tools/features_apps.rs`
-- **Mutex** (2 connections)
-- **strip_ansi_sequences()** (2 connections) — `src/tools/features_apps.rs`
-- **test_protected_core_appx_never_classified_bloat()** (2 connections) — `src/tools/features_apps.rs`
-- **validate_winget_package_id()** (2 connections) — `src/tools/features_apps.rs`
-- **WinGetAppEntry** (2 connections) — `src/tools/features_apps.rs`
-- **AI_BLOAT_PREFIXES** (1 connections) — `src/tools/features_apps.rs`
-- *... and 2 more nodes in this community*
+- **cleaner.rs** (46 connections) — `src/tools/cleaner.rs`
+- **CleanTargetKind** (32 connections) — `src/tools/cleaner.rs`
+- **CleanTargetScan** (15 connections) — `src/tools/cleaner.rs`
+- **CleanExecutionReport** (14 connections) — `src/tools/cleaner.rs`
+- **delete_dir_contents()** (9 connections) — `src/tools/cleaner.rs`
+- **measure_dir()** (8 connections) — `src/tools/cleaner.rs`
+- **execute_clean_targets()** (7 connections) — `src/tools/cleaner.rs`
+- **scan_all_clean_targets()** (7 connections) — `src/tools/cleaner.rs`
+- **CleanTargetResult** (6 connections) — `src/tools/cleaner.rs`
+- **.execute_clean_targets()** (6 connections) — `tests/tweak_sandbox_e2e.rs`
+- **empty_recycle_bin()** (5 connections) — `src/tools/cleaner.rs`
+- **.execute_clean_targets()** (5 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.execute_clean_targets()** (5 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.execute_clean_targets()** (4 connections) — `src/core/backend.rs`
+- **init_com_sta()** (4 connections) — `src/tools/cleaner.rs`
+- **query_recycle_bin()** (4 connections) — `src/tools/cleaner.rs`
+- **resolve_target_paths()** (4 connections) — `src/tools/cleaner.rs`
+- **should_skip_entry()** (4 connections) — `src/tools/cleaner.rs`
+- **.scan_clean_targets()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.scan_clean_targets()** (3 connections) — `src/core/backend.rs`
+- **.execute_clean_targets()** (3 connections) — `src/core/backend.rs`
+- **ComStaGuard** (3 connections) — `src/tools/cleaner.rs`
+- **dir_meta_if_real()** (3 connections) — `src/tools/cleaner.rs`
+- **is_reparse_point()** (3 connections) — `src/tools/cleaner.rs`
+- **record_dir_io_error()** (3 connections) — `src/tools/cleaner.rs`
+- *... and 34 more nodes in this community*
 
 ## Relationships
 
-- [FeatureInstallState](FeatureInstallState.md) (15 shared connections)
-- [InstalledAppxPackage](InstalledAppxPackage.md) (9 shared connections)
-- [AppxCache](AppxCache.md) (3 shared connections)
-- [FailAtMutationBackend](FailAtMutationBackend.md) (2 shared connections)
-- [sys_inventory.rs](sys_inventory.rs.md) (2 shared connections)
-- [deserialize](deserialize.md) (2 shared connections)
-- [super](super.md) (2 shared connections)
-- [AppxSafetyTier](AppxSafetyTier.md) (2 shared connections)
-- [State Ledger & Restore Point Engine](State_Ledger_&_Restore_Point_Engine.md) (1 shared connections)
-- [reg_helpers.rs](reg_helpers.rs.md) (1 shared connections)
-- [PlatformSecurityInfo](PlatformSecurityInfo.md) (1 shared connections)
-- [privacy_shield.rs](privacy_shield.rs.md) (1 shared connections)
+- [deserialize](deserialize.md) (4 shared connections)
+- [sys_inventory.rs](sys_inventory.rs.md) (4 shared connections)
+- [.Toggle .Set .Apply](Toggle_.Set_.Apply.md) (3 shared connections)
+- [SlowScanBackend](SlowScanBackend.md) (3 shared connections)
+- [theme.rs](theme.rs.md) (3 shared connections)
+- [WinBlast Optimizer](WinBlast_Optimizer.md) (3 shared connections)
+- [Integration Suite: Tweak Sandbox E2E](Integration_Suite-_Tweak_Sandbox_E2E.md) (2 shared connections)
+- [startup.rs](startup.rs.md) (2 shared connections)
+- [app.rs](app.rs.md) (2 shared connections)
+- [Reversibility Instant Requireslogoff](Reversibility_Instant_Requireslogoff.md) (2 shared connections)
+- [parking.rs](parking.rs.md) (2 shared connections)
+- [backend.rs](backend.rs.md) (2 shared connections)
 
 ## Source Files
 
-- `src/tools/features_apps.rs`
+- `src/app.rs`
+- `src/core/backend.rs`
+- `src/tools/cleaner.rs`
+- `tests/tweak_sandbox_e2e.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 88 (99%)
-- INFERRED: 1 (1%)
+- EXTRACTED: 148 (100%)
+- INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 
 ---

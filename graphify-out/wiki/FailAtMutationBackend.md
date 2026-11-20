@@ -1,60 +1,50 @@
 # FailAtMutationBackend
 
-> 29 nodes · cohesion 0.08
+> 39 nodes · cohesion 0.11
 
 ## Key Concepts
 
-- **risk.rs** (44 connections) — `src/core/risk.rs`
-- **load_rules_with_fallback()** (7 connections) — `src/core/risk.rs`
-- **test_all_embedded_tweaks_full_sandbox_lifecycle()** (7 connections) — `tests/tweak_sandbox_e2e.rs`
-- **display_reg_value_name()** (6 connections) — `src/core/risk.rs`
-- **load_rules_from_dir()** (5 connections) — `src/core/risk.rs`
-- **test_embedded_catalog_fallback()** (3 connections) — `src/core/risk.rs`
-- **test_risk_valuation()** (3 connections) — `src/core/risk.rs`
-- **matches_edition()** (2 connections) — `src/core/risk.rs`
-- **test_load_all_rules()** (2 connections) — `src/core/risk.rs`
-- **test_no_duplicate_tweak_ids()** (2 connections) — `src/core/risk.rs`
-- **.is_compatible()** (2 connections) — `src/core/risk.rs`
-- **default_equals()** (1 connections) — `src/core/risk.rs`
-- **default_semicolon()** (1 connections) — `src/core/risk.rs`
-- **default_true()** (1 connections) — `src/core/risk.rs`
-- **EMBEDDED_CATALOG_AI_PRIVACY_EXT** (1 connections) — `src/core/risk.rs`
-- **EMBEDDED_CATALOG_APPX** (1 connections) — `src/core/risk.rs`
-- **EMBEDDED_CATALOG_GAMING_LATENCY_ULTRA** (1 connections) — `src/core/risk.rs`
-- **EMBEDDED_CATALOG_HARDWARE** (1 connections) — `src/core/risk.rs`
-- **EMBEDDED_CATALOG_OS_SETTINGS** (1 connections) — `src/core/risk.rs`
-- **EMBEDDED_CATALOG_PERF_POWER_EXT** (1 connections) — `src/core/risk.rs`
-- **EMBEDDED_CATALOG_PRIVACY** (1 connections) — `src/core/risk.rs`
-- **EMBEDDED_CATALOG_REGISTRY_LAG** (1 connections) — `src/core/risk.rs`
-- **EMBEDDED_CATALOG_SYSTEM_DEEP_OPT** (1 connections) — `src/core/risk.rs`
-- **EMBEDDED_CATALOG_TELEMETRY_APPS** (1 connections) — `src/core/risk.rs`
-- **EMBEDDED_CATALOG_TELEMETRY_OS** (1 connections) — `src/core/risk.rs`
-- *... and 4 more nodes in this community*
+- **topological_scheduler.rs** (21 connections) — `src/graph/topological_scheduler.rs`
+- **schedule_optimizations_topological()** (18 connections) — `src/graph/topological_scheduler.rs`
+- **BitSet256** (17 connections) — `src/graph/topological_scheduler.rs`
+- **kahn_schedule()** (9 connections) — `src/graph/topological_scheduler.rs`
+- **tarjan_scc()** (9 connections) — `src/graph/topological_scheduler.rs`
+- **resolve_cycles()** (8 connections) — `src/graph/topological_scheduler.rs`
+- **find_min_weight_cycle_edge()** (6 connections) — `src/graph/topological_scheduler.rs`
+- **.contains()** (5 connections) — `src/graph/topological_scheduler.rs`
+- **.new()** (5 connections) — `src/graph/topological_scheduler.rs`
+- **assert_valid_permutation()** (4 connections) — `src/graph/topological_scheduler.rs`
+- **position_of()** (4 connections) — `src/graph/topological_scheduler.rs`
+- **SccResult** (4 connections) — `src/graph/topological_scheduler.rs`
+- **test_cyclic_dependency_lowest_weight_break()** (4 connections) — `src/graph/topological_scheduler.rs`
+- **test_diamond_dependency_graph()** (4 connections) — `src/graph/topological_scheduler.rs`
+- **test_reboot_grouping_at_tail()** (4 connections) — `src/graph/topological_scheduler.rs`
+- **dual_engine_validation_test.rs** (4 connections) — `tests/dual_engine_validation_test.rs`
+- **.clear()** (3 connections) — `src/graph/topological_scheduler.rs`
+- **BitSetIter** (3 connections) — `src/graph/topological_scheduler.rs`
+- **MAX_NODES** (3 connections) — `src/graph/topological_scheduler.rs`
+- **.count_ones()** (2 connections) — `src/graph/topological_scheduler.rs`
+- **.difference()** (2 connections) — `src/graph/topological_scheduler.rs`
+- **.full()** (2 connections) — `src/graph/topological_scheduler.rs`
+- **.intersect()** (2 connections) — `src/graph/topological_scheduler.rs`
+- **.iter()** (2 connections) — `src/graph/topological_scheduler.rs`
+- **.next_set_from()** (2 connections) — `src/graph/topological_scheduler.rs`
+- *... and 14 more nodes in this community*
 
 ## Relationships
 
-- [parse_guid](parse_guid.md) (7 shared connections)
-- [super](super.md) (6 shared connections)
-- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (4 shared connections)
-- [RealBackend](RealBackend.md) (4 shared connections)
-- [updater.rs](updater.rs.md) (3 shared connections)
-- [DriverError](DriverError.md) (3 shared connections)
-- [deserialize](deserialize.md) (2 shared connections)
-- [FeatureInstallState](FeatureInstallState.md) (2 shared connections)
-- [FailAtMutationBackend](FailAtMutationBackend.md) (1 shared connections)
-- [PowerSchemeInfo](PowerSchemeInfo.md) (1 shared connections)
-- [Project Documentation, Architecture & Licensing](Project_Documentation,_Architecture_&_Licensing.md) (1 shared connections)
-- [advanced_matrix.rs](advanced_matrix.rs.md) (1 shared connections)
+- [.take_injected_error](take_injected_error.md) (2 shared connections)
+- [parking.rs](parking.rs.md) (1 shared connections)
 
 ## Source Files
 
-- `src/core/risk.rs`
-- `tests/tweak_sandbox_e2e.rs`
+- `src/graph/topological_scheduler.rs`
+- `tests/dual_engine_validation_test.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 59 (86%)
-- INFERRED: 10 (14%)
+- EXTRACTED: 82 (93%)
+- INFERRED: 6 (7%)
 - AMBIGUOUS: 0 (0%)
 
 ---

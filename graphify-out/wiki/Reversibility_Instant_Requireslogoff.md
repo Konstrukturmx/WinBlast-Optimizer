@@ -1,51 +1,55 @@
 # Reversibility Instant Requireslogoff
 
-> 17 nodes · cohesion 0.12
+> 20 nodes · cohesion 0.13
 
 ## Key Concepts
 
-- **edge_cases_unorthodox.rs** (27 connections) — `tests/edge_cases_unorthodox.rs`
-- **EngineMode** (6 connections) — `src/app.rs`
-- **env** (3 connections)
-- **sandboxenv** (3 connections)
-- **test_unorthodox_concurrent_worker_event_stress()** (3 connections) — `tests/edge_cases_unorthodox.rs`
-- **test_unorthodox_extreme_registry_corruption()** (3 connections) — `tests/edge_cases_unorthodox.rs`
-- **test_unorthodox_micro_and_ultrawide_viewports()** (2 connections) — `tests/edge_cases_unorthodox.rs`
-- **appstate** (1 connections)
-- **decode_hex** (1 connections)
-- **encode_hex** (1 connections)
-- **parse_multi_sz_lossless** (1 connections)
-- **Runtime** (1 connections)
-- **Instant** (1 connections) — `src/app.rs`
-- **Normal** (1 connections) — `src/app.rs`
-- **systemthermalsnapshot** (1 connections)
-- **test_unorthodox_hardware_sensor_anomalies()** (1 connections) — `tests/edge_cases_unorthodox.rs`
-- **uithemestyle** (1 connections)
+- **deserialize** (36 connections)
+- **serialize** (35 connections)
+- **instant** (8 connections)
+- **tools/gaming_stats.rs** (5 connections) — `src/tools/gaming_stats.rs`
+- **tools/performance_tests.rs** (5 connections) — `src/tools/performance_tests.rs`
+- **BenchmarkScore** (5 connections) — `src/tools/performance_tests.rs`
+- **RepairTask** (5 connections) — `src/tools/windows_repair.rs`
+- **GameFpsComparison** (4 connections) — `src/tools/gaming_stats.rs`
+- **get_standard_game_benchmarks()** (4 connections) — `src/tools/gaming_stats.rs`
+- **LiveGameTelemetry** (4 connections) — `src/tools/gaming_stats.rs`
+- **tools/windows_repair.rs** (4 connections) — `src/tools/windows_repair.rs`
+- **.default()** (2 connections) — `src/tools/gaming_stats.rs`
+- **.probe()** (2 connections) — `src/tools/gaming_stats.rs`
+- **BenchmarkRunner** (2 connections) — `src/tools/performance_tests.rs`
+- **.run_quick()** (2 connections) — `src/tools/performance_tests.rs`
+- **.fps_gain_pct()** (1 connections) — `src/tools/gaming_stats.rs`
+- **.low_gain_pct()** (1 connections) — `src/tools/gaming_stats.rs`
+- **.default()** (1 connections) — `src/tools/performance_tests.rs`
+- **.all()** (1 connections) — `src/tools/windows_repair.rs`
+- **.execute()** (1 connections) — `src/tools/windows_repair.rs`
 
 ## Relationships
 
-- [lazy_loader.rs](lazy_loader.rs.md) (3 shared connections)
-- [super](super.md) (3 shared connections)
-- [.take_injected_error](take_injected_error.md) (2 shared connections)
-- [ui_scrollbar_test.rs](ui_scrollbar_test.rs.md) (2 shared connections)
-- [parse_guid](parse_guid.md) (2 shared connections)
-- [CoreParkingState](CoreParkingState.md) (2 shared connections)
-- [AppState](AppState.md) (1 shared connections)
-- [Runtime](Runtime.md) (1 shared connections)
-- [SlowScanBackend](SlowScanBackend.md) (1 shared connections)
-- [sys_inventory.rs](sys_inventory.rs.md) (1 shared connections)
-- [theme.rs](theme.rs.md) (1 shared connections)
-- [ps_runner.rs](ps_runner.rs.md) (1 shared connections)
+- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (7 shared connections)
+- [app.rs](app.rs.md) (4 shared connections)
+- [task_scanner.rs](task_scanner.rs.md) (4 shared connections)
+- [CoreParkingState](CoreParkingState.md) (4 shared connections)
+- [Project Documentation, Architecture & Licensing](Project_Documentation,_Architecture_&_Licensing.md) (4 shared connections)
+- [DriverUpdateItem](DriverUpdateItem.md) (3 shared connections)
+- [.Reg .Set Power](Reg_.Set_Power.md) (3 shared connections)
+- [WinBlastError](WinBlastError.md) (3 shared connections)
+- [.Toggle .Set .Apply](Toggle_.Set_.Apply.md) (3 shared connections)
+- [PlatformSecurityInfo](PlatformSecurityInfo.md) (2 shared connections)
+- [clean_apps.rs](clean_apps.rs.md) (2 shared connections)
+- [ps_runner.rs](ps_runner.rs.md) (2 shared connections)
 
 ## Source Files
 
-- `src/app.rs`
-- `tests/edge_cases_unorthodox.rs`
+- `src/tools/gaming_stats.rs`
+- `src/tools/performance_tests.rs`
+- `src/tools/windows_repair.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 36 (88%)
-- INFERRED: 5 (12%)
+- EXTRACTED: 99 (95%)
+- INFERRED: 5 (5%)
 - AMBIGUOUS: 0 (0%)
 
 ---

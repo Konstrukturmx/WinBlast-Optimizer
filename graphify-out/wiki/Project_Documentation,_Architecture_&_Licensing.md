@@ -1,54 +1,53 @@
 # Project Documentation, Architecture & Licensing
 
-> 21 nodes · cohesion 0.11
+> 19 nodes · cohesion 0.13
 
 ## Key Concepts
 
-- **AutoTuneProfile** (17 connections) — `src/tools/automation.rs`
-- **RiskLevel** (15 connections) — `src/core/risk.rs`
-- **create_auto_tune_plan()** (6 connections) — `src/tools/automation.rs`
-- **AutoTunePlan** (4 connections) — `src/tools/automation.rs`
-- **.target_risk_level()** (4 connections) — `src/tools/automation.rs`
-- **test_iso_29119_auto_tune_plan_generation_all_profiles()** (4 connections) — `src/tools/automation.rs`
-- **AutoTuneResult** (3 connections) — `src/tools/automation.rs`
-- **.generate_auto_tune_plan()** (2 connections) — `src/app.rs`
-- **Extreme** (1 connections) — `src/core/risk.rs`
-- **High** (1 connections) — `src/core/risk.rs`
-- **Low** (1 connections) — `src/core/risk.rs`
-- **Moderate** (1 connections) — `src/core/risk.rs`
-- **Safe** (1 connections) — `src/core/risk.rs`
-- **.all()** (1 connections) — `src/tools/automation.rs`
-- **.description()** (1 connections) — `src/tools/automation.rs`
-- **.display_name()** (1 connections) — `src/tools/automation.rs`
-- **GamingLowLatency** (1 connections) — `src/tools/automation.rs`
-- **.icon()** (1 connections) — `src/tools/automation.rs`
-- **LaptopBatterySaving** (1 connections) — `src/tools/automation.rs`
-- **ProAudioDpc** (1 connections) — `src/tools/automation.rs`
-- **WorkstationStability** (1 connections) — `src/tools/automation.rs`
+- **SilentCommand** (13 connections) — `src/core/process.rs`
+- **tools/network_diag.rs** (12 connections) — `src/tools/network_diag.rs`
+- **NetworkDiagnostics** (8 connections) — `src/tools/network_diag.rs`
+- **duration** (6 connections)
+- **Command** (3 connections)
+- **process.rs** (3 connections) — `src/core/process.rs`
+- **.new()** (3 connections) — `src/core/process.rs`
+- **.default()** (3 connections) — `src/tools/network_diag.rs`
+- **DnsProbeResult** (2 connections) — `src/tools/network_diag.rs`
+- **.probe_live()** (2 connections) — `src/tools/network_diag.rs`
+- **query_local_ip()** (2 connections) — `src/tools/network_diag.rs`
+- **tcpstream** (2 connections)
+- **osstr** (1 connections)
+- **S** (1 connections)
+- **DNS_CATALOG** (1 connections) — `src/tools/network_diag.rs`
+- **.apply_dns_servers()** (1 connections) — `src/tools/network_diag.rs`
+- **.flush_dns()** (1 connections) — `src/tools/network_diag.rs`
+- **.reset_dns_dhcp()** (1 connections) — `src/tools/network_diag.rs`
+- **udpsocket** (1 connections)
 
 ## Relationships
 
-- [power.rs](power.rs.md) (6 shared connections)
-- [AppState](AppState.md) (5 shared connections)
-- [advanced_matrix.rs](advanced_matrix.rs.md) (3 shared connections)
-- [super](super.md) (2 shared connections)
-- [SlowScanBackend](SlowScanBackend.md) (1 shared connections)
-- [RealBackend](RealBackend.md) (1 shared connections)
+- [Reversibility Instant Requireslogoff](Reversibility_Instant_Requireslogoff.md) (4 shared connections)
+- [DriverUpdateItem](DriverUpdateItem.md) (3 shared connections)
+- [backend.rs](backend.rs.md) (1 shared connections)
+- [AppState](AppState.md) (1 shared connections)
 - [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (1 shared connections)
-- [FailAtMutationBackend](FailAtMutationBackend.md) (1 shared connections)
-- [Disk Cleaning & Temporary File Purger](Disk_Cleaning_&_Temporary_File_Purger.md) (1 shared connections)
-- [parse_guid](parse_guid.md) (1 shared connections)
+- [AppX Package & Modern App Scanner](AppX_Package_&_Modern_App_Scanner.md) (1 shared connections)
+- [theme.rs](theme.rs.md) (1 shared connections)
+- [Appx Package() Prefixes](Appx_Package_Prefixes.md) (1 shared connections)
+- [Multi-Language Tweak Localization Tables](Multi-Language_Tweak_Localization_Tables.md) (1 shared connections)
+- [RegRawSnapshot](RegRawSnapshot.md) (1 shared connections)
+- [deserialize](deserialize.md) (1 shared connections)
+- [.Reg .Set Power](Reg_.Set_Power.md) (1 shared connections)
 
 ## Source Files
 
-- `src/app.rs`
-- `src/core/risk.rs`
-- `src/tools/automation.rs`
+- `src/core/process.rs`
+- `src/tools/network_diag.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 42 (93%)
-- INFERRED: 3 (7%)
+- EXTRACTED: 43 (98%)
+- INFERRED: 1 (2%)
 - AMBIGUOUS: 0 (0%)
 
 ---

@@ -1,63 +1,40 @@
 # FeatureInstallState
 
-> 25 nodes · cohesion 0.12
+> 15 nodes · cohesion 0.19
 
 ## Key Concepts
 
-- **FeatureInstallState** (26 connections) — `src/core/risk.rs`
-- **OptionalFeatureKind** (21 connections) — `src/core/risk.rs`
-- **decode_oem_bytes()** (18 connections) — `src/scanner/task_scanner.rs`
-- **dism_error_from_output()** (7 connections) — `src/tools/features_apps.rs`
-- **query_dism_capabilities_locked()** (7 connections) — `src/tools/features_apps.rs`
-- **curated_windows_features_meta()** (6 connections) — `src/tools/features_apps.rs`
-- **query_dism_features_locked()** (6 connections) — `src/tools/features_apps.rs`
-- **set_optional_feature()** (6 connections) — `src/tools/features_apps.rs`
-- **list_optional_features()** (5 connections) — `src/tools/features_apps.rs`
-- **parse_dism_english_state()** (4 connections) — `src/tools/features_apps.rs`
-- **resolve_capability_identity_locked()** (4 connections) — `src/tools/features_apps.rs`
-- **.set_optional_feature()** (3 connections) — `src/core/backend.rs`
-- **.set_optional_feature()** (3 connections) — `src/core/backend.rs`
-- **request_system_reboot()** (2 connections) — `src/tools/explorer_ctrl.rs`
-- **remove_edge_preserve_webview2()** (2 connections) — `src/tools/features_apps.rs`
-- **validate_feature_name()** (2 connections) — `src/tools/features_apps.rs`
-- **run_scheduled_task()** (2 connections) — `src/tools/startup.rs`
-- **Disabled** (1 connections) — `src/core/risk.rs`
-- **DisablePending** (1 connections) — `src/core/risk.rs`
-- **Enabled** (1 connections) — `src/core/risk.rs`
-- **EnablePending** (1 connections) — `src/core/risk.rs`
-- **Removed** (1 connections) — `src/core/risk.rs`
-- **Capability** (1 connections) — `src/core/risk.rs`
-- **OptionalFeature** (1 connections) — `src/core/risk.rs`
-- **Output** (1 connections)
+- **boot_config.rs** (12 connections) — `src/tools/boot_config.rs`
+- **BootMenuPolicyResult** (7 connections) — `src/tools/boot_config.rs`
+- **apply_legacy_f8_boot_menu()** (6 connections) — `src/tools/boot_config.rs`
+- **BitLockerProtectionState** (5 connections) — `src/tools/boot_config.rs`
+- **restore_standard_boot_menu()** (4 connections) — `src/tools/boot_config.rs`
+- **query_system_drive_bitlocker_state()** (3 connections) — `src/tools/boot_config.rs`
+- **B** (2 connections)
+- **test_bitlocker_state_guards_legacy_boot()** (2 connections) — `src/tools/boot_config.rs`
+- **Indeterminate** (1 connections) — `src/tools/boot_config.rs`
+- **ProtectedOn** (1 connections) — `src/tools/boot_config.rs`
+- **ProtectionOff** (1 connections) — `src/tools/boot_config.rs`
+- **AppliedLegacy** (1 connections) — `src/tools/boot_config.rs`
+- **RestoredStandard** (1 connections) — `src/tools/boot_config.rs`
+- **SkippedBitLockerActive** (1 connections) — `src/tools/boot_config.rs`
+- **SkippedBitLockerIndeterminate** (1 connections) — `src/tools/boot_config.rs`
 
 ## Relationships
 
-- [features_apps.rs](features_apps.rs.md) (15 shared connections)
-- [FailAtMutationBackend](FailAtMutationBackend.md) (5 shared connections)
-- [.set_optional_feature](set_optional_feature.md) (4 shared connections)
-- [SlowScanBackend](SlowScanBackend.md) (4 shared connections)
-- [spawn_guarded_worker](spawn_guarded_worker.md) (4 shared connections)
-- [WindowsOptionalFeature](WindowsOptionalFeature.md) (3 shared connections)
-- [driver_update.rs](driver_update.rs.md) (3 shared connections)
-- [reg_mutator.rs](reg_mutator.rs.md) (2 shared connections)
-- [State Ledger & Restore Point Engine](State_Ledger_&_Restore_Point_Engine.md) (2 shared connections)
-- [super](super.md) (2 shared connections)
-- [RealBackend](RealBackend.md) (2 shared connections)
-- [.set_status_spec](set_status_spec.md) (2 shared connections)
+- [parking.rs](parking.rs.md) (4 shared connections)
+- [Reversibility Instant Requireslogoff](Reversibility_Instant_Requireslogoff.md) (2 shared connections)
+- [full_telemetry_audit_with](full_telemetry_audit_with.md) (1 shared connections)
+- [startup.rs](startup.rs.md) (1 shared connections)
 
 ## Source Files
 
-- `src/core/backend.rs`
-- `src/core/risk.rs`
-- `src/scanner/task_scanner.rs`
-- `src/tools/explorer_ctrl.rs`
-- `src/tools/features_apps.rs`
-- `src/tools/startup.rs`
+- `src/tools/boot_config.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 92 (96%)
-- INFERRED: 4 (4%)
+- EXTRACTED: 28 (100%)
+- INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 
 ---

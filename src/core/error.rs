@@ -35,6 +35,10 @@ pub enum WinBlastError {
     #[error("Database error: {0}")]
     Database(#[from] rusqlite::Error),
 
+    /// SQLite SQL conversion failure.
+    #[error("Database conversion error: {0}")]
+    DatabaseConversion(#[from] rusqlite::types::FromSqlError),
+
     /// A TOML rule file could not be parsed.
     #[error("TOML parse error: {0}")]
     TomlParse(#[from] toml::de::Error),

@@ -121,8 +121,8 @@ fn test_all_embedded_tweaks_full_sandbox_lifecycle() {
 
     let tweaks = load_embedded_rules();
     assert_eq!(
-        parsed_count, 218,
-        "Expected 218 total embedded tweaks across all catalogs, found {}",
+        parsed_count, 230,
+        "Expected 230 total embedded tweaks across all catalogs, found {}",
         parsed_count
     );
     assert_eq!(
@@ -423,7 +423,7 @@ fn tweaks_scope_overlap(a: &TweakDefinition, b: &TweakDefinition) -> bool {
 #[test]
 fn test_catalog_integrity_audit() {
     let tweaks = load_embedded_rules();
-    assert_eq!(tweaks.len(), 218, "Expected 218 tweaks, found {}", tweaks.len());
+    assert_eq!(tweaks.len(), 230, "Expected 230 tweaks, found {}", tweaks.len());
 
     // 1. Zero duplicate IDs & non-empty actions & no opt==def contradictions
     let mut seen_ids = HashSet::new();

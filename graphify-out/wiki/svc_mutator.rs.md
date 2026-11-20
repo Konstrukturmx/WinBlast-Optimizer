@@ -1,53 +1,62 @@
 # svc_mutator.rs
 
-> 25 nodes · cohesion 0.16
+> 28 nodes · cohesion 0.07
 
 ## Key Concepts
 
-- **theme.rs** (38 connections) — `src/ui/theme.rs`
-- **Color** (29 connections)
-- **ACCENT** (2 connections) — `src/ui/theme.rs`
-- **ACCENT_HOVER** (2 connections) — `src/ui/theme.rs`
-- **ACCENT_PRESS** (2 connections) — `src/ui/theme.rs`
-- **BG_CARD** (2 connections) — `src/ui/theme.rs`
-- **BG_CARD_HOVER** (2 connections) — `src/ui/theme.rs`
-- **BG_PRIMARY** (2 connections) — `src/ui/theme.rs`
-- **BG_SIDEBAR** (2 connections) — `src/ui/theme.rs`
-- **BORDER** (2 connections) — `src/ui/theme.rs`
-- **BORDER_ACCENT** (2 connections) — `src/ui/theme.rs`
-- **BORDER_HOVER** (2 connections) — `src/ui/theme.rs`
-- **BTN_SECONDARY** (2 connections) — `src/ui/theme.rs`
-- **BTN_SECONDARY_HOVER** (2 connections) — `src/ui/theme.rs`
-- **BTN_SECONDARY_PRESS** (2 connections) — `src/ui/theme.rs`
-- **DANGER** (2 connections) — `src/ui/theme.rs`
-- **NEUTRAL_BADGE** (2 connections) — `src/ui/theme.rs`
-- **SPARKLINE_BG** (2 connections) — `src/ui/theme.rs`
-- **SPARKLINE_CPU** (2 connections) — `src/ui/theme.rs`
-- **SPARKLINE_RAM** (2 connections) — `src/ui/theme.rs`
-- **SUCCESS** (2 connections) — `src/ui/theme.rs`
-- **TEXT_MUTED** (2 connections) — `src/ui/theme.rs`
-- **TEXT_PRIMARY** (2 connections) — `src/ui/theme.rs`
-- **TEXT_SECONDARY** (2 connections) — `src/ui/theme.rs`
-- **WARNING** (2 connections) — `src/ui/theme.rs`
+- **TweakAction** (36 connections) — `src/core/risk.rs`
+- **OptionalFeatureKind** (21 connections) — `src/core/risk.rs`
+- **PowerTargetScope** (7 connections) — `src/core/risk.rs`
+- **resolve_dynamic_dword()** (7 connections) — `src/scanner/mod.rs`
+- **DynamicDwordFormula** (6 connections) — `src/core/risk.rs`
+- **.set_optional_feature()** (3 connections) — `src/core/backend.rs`
+- **.set_optional_feature()** (3 connections) — `src/core/backend.rs`
+- **parse_feature_kind()** (3 connections) — `src/executor/engine.rs`
+- **LogicalCoreCount** (1 connections) — `src/core/risk.rs`
+- **TotalRamInKb** (1 connections) — `src/core/risk.rs`
+- **TotalRamInKbPlusMargin** (1 connections) — `src/core/risk.rs`
+- **Capability** (1 connections) — `src/core/risk.rs`
+- **OptionalFeature** (1 connections) — `src/core/risk.rs`
+- **AcAndDc** (1 connections) — `src/core/risk.rs`
+- **AcOnly** (1 connections) — `src/core/risk.rs`
+- **DcOnly** (1 connections) — `src/core/risk.rs`
+- **AppXPackage** (1 connections) — `src/core/risk.rs`
+- **CompositeStringKey** (1 connections) — `src/core/risk.rs`
+- **PowerCfgSetting** (1 connections) — `src/core/risk.rs`
+- **RegistryBinaryBit** (1 connections) — `src/core/risk.rs`
+- **RegistryDelete** (1 connections) — `src/core/risk.rs`
+- **RegistryDeleteTree** (1 connections) — `src/core/risk.rs`
+- **RegistryDword** (1 connections) — `src/core/risk.rs`
+- **RegistryDynamicDword** (1 connections) — `src/core/risk.rs`
+- **RegistryString** (1 connections) — `src/core/risk.rs`
+- *... and 3 more nodes in this community*
 
 ## Relationships
 
-- [progress_bar.rs](progress_bar.rs.md) (6 shared connections)
-- [RegTreeSnapshot](RegTreeSnapshot.md) (5 shared connections)
+- [clean_apps.rs](clean_apps.rs.md) (8 shared connections)
+- [Win32 Registry Scanner & Mutator](Win32_Registry_Scanner_&_Mutator.md) (6 shared connections)
+- [UiThemeStyle](UiThemeStyle.md) (4 shared connections)
+- [ps_runner.rs](ps_runner.rs.md) (4 shared connections)
+- [SlowScanBackend](SlowScanBackend.md) (4 shared connections)
+- [theme.rs](theme.rs.md) (4 shared connections)
+- [ui_scrollbar_test.rs](ui_scrollbar_test.rs.md) (4 shared connections)
+- [startup.rs](startup.rs.md) (3 shared connections)
 - [deserialize](deserialize.md) (2 shared connections)
-- [CoreParkingState](CoreParkingState.md) (2 shared connections)
-- [.Reg State() Vendor()](Reg_State_Vendor.md) (2 shared connections)
-- [advanced_matrix.rs](advanced_matrix.rs.md) (1 shared connections)
-- [Project History & Release Version Ledger](Project_History_&_Release_Version_Ledger.md) (1 shared connections)
+- [Project History & Release Version Ledger](Project_History_&_Release_Version_Ledger.md) (2 shared connections)
+- [Integration Suite: Tweak Sandbox E2E](Integration_Suite-_Tweak_Sandbox_E2E.md) (1 shared connections)
+- [Error.Rs Winblasterror Appx](Error.Rs_Winblasterror_Appx.md) (1 shared connections)
 
 ## Source Files
 
-- `src/ui/theme.rs`
+- `src/core/backend.rs`
+- `src/core/risk.rs`
+- `src/executor/engine.rs`
+- `src/scanner/mod.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 66 (100%)
-- INFERRED: 0 (0%)
+- EXTRACTED: 77 (97%)
+- INFERRED: 2 (3%)
 - AMBIGUOUS: 0 (0%)
 
 ---

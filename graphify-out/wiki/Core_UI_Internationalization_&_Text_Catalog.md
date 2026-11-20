@@ -33,18 +33,18 @@
 
 ## Relationships
 
-- [Disk Cleaning & Temporary File Purger](Disk_Cleaning_&_Temporary_File_Purger.md) (6 shared connections)
-- [.Reg State() Vendor()](Reg_State_Vendor.md) (3 shared connections)
-- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (3 shared connections)
-- [SandboxEnv](SandboxEnv.md) (3 shared connections)
-- [advanced_matrix.rs](advanced_matrix.rs.md) (2 shared connections)
-- [Multi-Language Tweak Localization Tables](Multi-Language_Tweak_Localization_Tables.md) (2 shared connections)
+- [elevation.rs](elevation.rs.md) (5 shared connections)
+- [task_scanner.rs](task_scanner.rs.md) (4 shared connections)
+- [PlatformSecurityInfo](PlatformSecurityInfo.md) (4 shared connections)
+- [WinBlastError](WinBlastError.md) (2 shared connections)
+- [ui_scrollbar_test.rs](ui_scrollbar_test.rs.md) (2 shared connections)
 - [SlowScanBackend](SlowScanBackend.md) (1 shared connections)
-- [Win32 Registry Scanner & Mutator](Win32_Registry_Scanner_&_Mutator.md) (1 shared connections)
-- [Runtime](Runtime.md) (1 shared connections)
-- [WinBlastScrollable](WinBlastScrollable.md) (1 shared connections)
-- [.take_injected_error](take_injected_error.md) (1 shared connections)
-- [AppState](AppState.md) (1 shared connections)
+- [System Architecture Changelog](System_Architecture_Changelog.md) (1 shared connections)
+- [advanced_matrix.rs](advanced_matrix.rs.md) (1 shared connections)
+- [updater.rs](updater.rs.md) (1 shared connections)
+- [Language](Language.md) (1 shared connections)
+- [RegTreeSnapshot](RegTreeSnapshot.md) (1 shared connections)
+- [Scandetailkind Appxinstalled Appxinstalledps](Scandetailkind_Appxinstalled_Appxinstalledps.md) (1 shared connections)
 
 ## Source Files
 

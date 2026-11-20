@@ -1,50 +1,54 @@
 # spawn_guarded_worker
 
-> 19 nodes · cohesion 0.20
+> 32 nodes · cohesion 0.07
 
 ## Key Concepts
 
-- **task_scanner.rs** (20 connections) — `src/scanner/task_scanner.rs`
-- **normalize_task_path()** (8 connections) — `src/scanner/task_scanner.rs`
-- **query_single_task_detailed()** (8 connections) — `src/scanner/task_scanner.rs`
-- **.evaluate_task_with_kind()** (7 connections) — `src/scanner/task_scanner.rs`
-- **query_task_via_schtasks()** (5 connections) — `src/scanner/task_scanner.rs`
-- **.load()** (5 connections) — `src/scanner/task_scanner.rs`
-- **is_disabled_status()** (4 connections) — `src/scanner/task_scanner.rs`
-- **.from_map()** (4 connections) — `src/scanner/task_scanner.rs`
-- **ComGuard** (3 connections) — `src/scanner/task_scanner.rs`
-- **parse_csv_line()** (3 connections) — `src/scanner/task_scanner.rs`
-- **query_task_via_com()** (3 connections) — `src/scanner/task_scanner.rs`
-- **test_evaluate_task_with_kind_all_cache_and_error_branches()** (3 connections) — `src/scanner/task_scanner.rs`
-- **canonical_task_path()** (2 connections) — `src/scanner/task_scanner.rs`
-- **get_task_enabled()** (2 connections) — `src/scanner/task_scanner.rs`
-- **task_leaf_name()** (2 connections) — `src/scanner/task_scanner.rs`
-- **test_multilingual_disabled_statuses()** (2 connections) — `src/scanner/task_scanner.rs`
-- **test_query_single_task_distinguishes_absent_vs_access_denied()** (2 connections) — `src/scanner/task_scanner.rs`
-- **test_task_cache_loaded_does_not_cross_match_prefixes()** (2 connections) — `src/scanner/task_scanner.rs`
-- **.drop()** (1 connections) — `src/scanner/task_scanner.rs`
+- **PresetError** (55 connections) — `src/backup/preset_sharing.rs`
+- **.validate()** (7 connections) — `src/backup/preset_sharing.rs`
+- **validate_identifier()** (3 connections) — `src/backup/preset_sharing.rs`
+- **validate_text_field()** (3 connections) — `src/backup/preset_sharing.rs`
+- **CollectionTooLarge** (1 connections) — `src/backup/preset_sharing.rs`
+- **ConflictingTweaks** (1 connections) — `src/backup/preset_sharing.rs`
+- **DependencyUnsatisfied** (1 connections) — `src/backup/preset_sharing.rs`
+- **DigestMismatch** (1 connections) — `src/backup/preset_sharing.rs`
+- **DuplicateTweakId** (1 connections) — `src/backup/preset_sharing.rs`
+- **EmptyField** (1 connections) — `src/backup/preset_sharing.rs`
+- **ExecutionFailed** (1 connections) — `src/backup/preset_sharing.rs`
+- **FieldTooLong** (1 connections) — `src/backup/preset_sharing.rs`
+- **GpuVendorIncompatible** (1 connections) — `src/backup/preset_sharing.rs`
+- **InvalidControlChar** (1 connections) — `src/backup/preset_sharing.rs`
+- **InvalidEnumTag** (1 connections) — `src/backup/preset_sharing.rs`
+- **InvalidGuardRange** (1 connections) — `src/backup/preset_sharing.rs`
+- **InvalidIdentifier** (1 connections) — `src/backup/preset_sharing.rs`
+- **InvalidMagic** (1 connections) — `src/backup/preset_sharing.rs`
+- **InvalidPublicKey** (1 connections) — `src/backup/preset_sharing.rs`
+- **InvalidSignatureEncoding** (1 connections) — `src/backup/preset_sharing.rs`
+- **InvalidUtf8** (1 connections) — `src/backup/preset_sharing.rs`
+- **MissingRequiredSignature** (1 connections) — `src/backup/preset_sharing.rs`
+- **NonCanonicalOverrideOrder** (1 connections) — `src/backup/preset_sharing.rs`
+- **OrphanedOverride** (1 connections) — `src/backup/preset_sharing.rs`
+- **OsBuildIncompatible** (1 connections) — `src/backup/preset_sharing.rs`
+- *... and 7 more nodes in this community*
 
 ## Relationships
 
-- [TaskCache](TaskCache.md) (5 shared connections)
-- [FeatureInstallState](FeatureInstallState.md) (3 shared connections)
-- [FailAtMutationBackend](FailAtMutationBackend.md) (2 shared connections)
-- [GPU Silicon & Hardware Tuning Policies](GPU_Silicon_&_Hardware_Tuning_Policies.md) (2 shared connections)
-- [sys_inventory.rs](sys_inventory.rs.md) (1 shared connections)
-- [reg_helpers.rs](reg_helpers.rs.md) (1 shared connections)
-- [RegRawSnapshot](RegRawSnapshot.md) (1 shared connections)
-- [reg_mutator.rs](reg_mutator.rs.md) (1 shared connections)
-- [SlowScanBackend](SlowScanBackend.md) (1 shared connections)
-- [WinBlastError](WinBlastError.md) (1 shared connections)
+- [path](path.md) (10 shared connections)
+- [PanickingBackend](PanickingBackend.md) (9 shared connections)
+- [privacy_shield.rs](privacy_shield.rs.md) (4 shared connections)
+- [startup.rs](startup.rs.md) (3 shared connections)
+- [.all_physical](all_physical.md) (2 shared connections)
+- [progress_bar.rs](progress_bar.rs.md) (1 shared connections)
+- [SandboxEnv](SandboxEnv.md) (1 shared connections)
 
 ## Source Files
 
-- `src/scanner/task_scanner.rs`
+- `src/backup/preset_sharing.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 46 (88%)
-- INFERRED: 6 (12%)
+- EXTRACTED: 63 (100%)
+- INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 
 ---

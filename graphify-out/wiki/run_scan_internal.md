@@ -4,15 +4,11 @@
 
 ## Key Concepts
 
-- **tools/mod.rs** (0 connections) — `src/tools/mod.rs`
+- **RegType** (0 connections)
 
 ## Relationships
 
 - No strong cross-community connections detected
-
-## Source Files
-
-- `src/tools/mod.rs`
 
 ## Audit Trail
 

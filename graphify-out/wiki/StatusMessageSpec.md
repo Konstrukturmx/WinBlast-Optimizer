@@ -2,7 +2,7 @@
 
 > God node · 105 connections · `src/core/status_i18n.rs`
 
-**Community:** [.Toggle .Set .Apply](Toggle_.Set_.Apply.md)
+**Community:** [spawn_guarded_worker](spawn_guarded_worker.md)
 
 ## Connections by Relation
 

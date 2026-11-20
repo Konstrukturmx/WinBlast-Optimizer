@@ -1,43 +1,44 @@
 # Runtime
 
-> 10 nodes · cohesion 0.49
+> 16 nodes · cohesion 0.34
 
 ## Key Concepts
 
-- **ui/mod.rs** (29 connections) — `src/ui/mod.rs`
-- **view()** (25 connections) — `src/ui/mod.rs`
-- **build_sidebar()** (11 connections) — `src/ui/mod.rs`
-- **build_dropdown_overlay()** (7 connections) — `src/ui/mod.rs`
-- **El** (7 connections)
-- **mode_tab()** (6 connections) — `src/ui/mod.rs`
-- **nav_button()** (6 connections) — `src/ui/mod.rs`
-- **nav_section_header()** (4 connections) — `src/ui/mod.rs`
-- **Cx** (2 connections)
-- **tier_from_rect()** (2 connections) — `src/ui/mod.rs`
+- **ui_scrollbar_test.rs** (24 connections) — `tests/ui_scrollbar_test.rs`
+- **runtime_for()** (9 connections) — `tests/ui_scrollbar_test.rs`
+- **thumb_rects()** (8 connections) — `tests/ui_scrollbar_test.rs`
+- **content_thumb()** (7 connections) — `tests/ui_scrollbar_test.rs`
+- **frames()** (7 connections) — `tests/ui_scrollbar_test.rs`
+- **Runtime** (7 connections)
+- **create_test_state()** (6 connections) — `tests/ui_scrollbar_test.rs`
+- **sidebar_thumb()** (5 connections) — `tests/ui_scrollbar_test.rs`
+- **test_advanced_matrix_scrollbar_structure_and_drag()** (5 connections) — `tests/ui_scrollbar_test.rs`
+- **test_wheel_scroll_moves_content_and_sidebar_thumbs()** (5 connections) — `tests/ui_scrollbar_test.rs`
+- **count_key()** (4 connections) — `tests/ui_scrollbar_test.rs`
+- **test_iso_29119_driver_section_scrollbar_bounds_and_filtering()** (4 connections) — `tests/ui_scrollbar_test.rs`
+- **test_scrollbars_render_across_all_main_views()** (4 connections) — `tests/ui_scrollbar_test.rs`
+- **test_themed_thumb_widens_under_the_pointer()** (4 connections) — `tests/ui_scrollbar_test.rs`
+- **scrollbars** (1 connections)
+- **CONTENT_X** (1 connections) — `tests/ui_scrollbar_test.rs`
 
 ## Relationships
 
-- [Disk Cleaning & Temporary File Purger](Disk_Cleaning_&_Temporary_File_Purger.md) (20 shared connections)
-- [.Reg State() Vendor()](Reg_State_Vendor.md) (8 shared connections)
-- [AppState](AppState.md) (5 shared connections)
-- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (5 shared connections)
+- [.Toggle .Set .Apply](Toggle_.Set_.Apply.md) (8 shared connections)
+- [.Reg State() Vendor()](Reg_State_Vendor.md) (3 shared connections)
 - [theme.rs](theme.rs.md) (2 shared connections)
-- [CoreParkingState](CoreParkingState.md) (2 shared connections)
-- [Multi-Language Tweak Localization Tables](Multi-Language_Tweak_Localization_Tables.md) (2 shared connections)
-- [SlowScanBackend](SlowScanBackend.md) (1 shared connections)
-- [Reversibility Instant Requireslogoff](Reversibility_Instant_Requireslogoff.md) (1 shared connections)
-- [ps_runner.rs](ps_runner.rs.md) (1 shared connections)
-- [Core UI Internationalization & Text Catalog](Core_UI_Internationalization_&_Text_Catalog.md) (1 shared connections)
-- [action_button_guarded](action_button_guarded.md) (1 shared connections)
+- [Win32 Registry Scanner & Mutator](Win32_Registry_Scanner_&_Mutator.md) (2 shared connections)
+- [enums](enums.md) (2 shared connections)
+- [diff_modal.rs](diff_modal.rs.md) (1 shared connections)
+- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (1 shared connections)
 
 ## Source Files
 
-- `src/ui/mod.rs`
+- `tests/ui_scrollbar_test.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 72 (94%)
-- INFERRED: 5 (6%)
+- EXTRACTED: 57 (95%)
+- INFERRED: 3 (5%)
 - AMBIGUOUS: 0 (0%)
 
 ---

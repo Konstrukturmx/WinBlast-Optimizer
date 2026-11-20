@@ -1,56 +1,56 @@
 # Hardware Diagnostics & GPU Silicon Tuning
 
-> 22 nodes · cohesion 0.16
+> 22 nodes · cohesion 0.09
 
 ## Key Concepts
 
-- **autounattend.rs** (24 connections) — `src/tools/autounattend.rs`
-- **generate_autounattend_xml()** (16 connections) — `src/tools/autounattend.rs`
-- **Reversibility** (10 connections) — `src/core/risk.rs`
-- **TargetArch** (6 connections) — `src/tools/autounattend.rs`
-- **UnattendOptions** (6 connections) — `src/tools/autounattend.rs`
-- **format_reg_add_cmd()** (5 connections) — `src/tools/autounattend.rs`
-- **format_reg_delete_cmd()** (5 connections) — `src/tools/autounattend.rs`
-- **escape_win32_quoted_arg()** (3 connections) — `src/tools/autounattend.rs`
-- **map_hive()** (3 connections) — `src/tools/autounattend.rs`
-- **test_autounattend_generation_wellformed_and_escaped()** (3 connections) — `src/tools/autounattend.rs`
-- **.default()** (3 connections) — `src/tools/autounattend.rs`
-- **escape_xml()** (2 connections) — `src/tools/autounattend.rs`
-- **sanitize_computer_name()** (2 connections) — `src/tools/autounattend.rs`
-- **sanitize_local_user()** (2 connections) — `src/tools/autounattend.rs`
-- **.as_str()** (2 connections) — `src/tools/autounattend.rs`
-- **.detect_host()** (2 connections) — `src/tools/autounattend.rs`
+- **fuzz_mutation_properties.rs** (24 connections) — `tests/fuzz_mutation_properties.rs`
+- **RiskLevel** (16 connections) — `src/core/risk.rs`
+- **Reversibility** (11 connections) — `src/core/risk.rs`
+- **prelude** (5 connections)
+- **assertunwindsafe** (2 connections)
+- **AtomicUsize** (2 connections)
+- **osrequirement** (2 connections)
+- **riskvaluation** (2 connections)
+- **rollback_entry_with** (2 connections)
+- **catch_unwind** (1 connections)
+- **format_pipe_reg_target** (1 connections)
 - **Instant** (1 connections) — `src/core/risk.rs`
 - **RequiresLogoff** (1 connections) — `src/core/risk.rs`
 - **RequiresPackageReinstall** (1 connections) — `src/core/risk.rs`
 - **RequiresReboot** (1 connections) — `src/core/risk.rs`
-- **Amd64** (1 connections) — `src/tools/autounattend.rs`
-- **Arm64** (1 connections) — `src/tools/autounattend.rs`
+- **Extreme** (1 connections) — `src/core/risk.rs`
+- **High** (1 connections) — `src/core/risk.rs`
+- **Low** (1 connections) — `src/core/risk.rs`
+- **Moderate** (1 connections) — `src/core/risk.rs`
+- **Safe** (1 connections) — `src/core/risk.rs`
+- **test_worker_panic_resilience_and_lock_recovery()** (1 connections) — `tests/fuzz_mutation_properties.rs`
+- **tweakdefinition** (1 connections)
 
 ## Relationships
 
-- [super](super.md) (4 shared connections)
-- [FailAtMutationBackend](FailAtMutationBackend.md) (4 shared connections)
-- [updater.rs](updater.rs.md) (4 shared connections)
-- [parse_guid](parse_guid.md) (3 shared connections)
-- [advanced_matrix.rs](advanced_matrix.rs.md) (2 shared connections)
-- [deserialize](deserialize.md) (2 shared connections)
-- [LazyLoader](LazyLoader.md) (2 shared connections)
-- [SlowScanBackend](SlowScanBackend.md) (2 shared connections)
-- [AppState](AppState.md) (2 shared connections)
-- [RealBackend](RealBackend.md) (1 shared connections)
-- [Project Documentation, Architecture & Licensing](Project_Documentation,_Architecture_&_Licensing.md) (1 shared connections)
-- [DriverError](DriverError.md) (1 shared connections)
+- [theme.rs](theme.rs.md) (7 shared connections)
+- [RegTreeSnapshot](RegTreeSnapshot.md) (4 shared connections)
+- [clean_apps.rs](clean_apps.rs.md) (4 shared connections)
+- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (3 shared connections)
+- [Win32 Registry Scanner & Mutator](Win32_Registry_Scanner_&_Mutator.md) (3 shared connections)
+- [TaskCache](TaskCache.md) (2 shared connections)
+- [ps_runner.rs](ps_runner.rs.md) (2 shared connections)
+- [.Reg .Set Power](Reg_.Set_Power.md) (2 shared connections)
+- [InstalledAppxPackage](InstalledAppxPackage.md) (1 shared connections)
+- [Multi-Language Tweak Localization Tables](Multi-Language_Tweak_Localization_Tables.md) (1 shared connections)
+- [features_apps.rs](features_apps.rs.md) (1 shared connections)
+- [FailAtMutationBackend](FailAtMutationBackend.md) (1 shared connections)
 
 ## Source Files
 
 - `src/core/risk.rs`
-- `src/tools/autounattend.rs`
+- `tests/fuzz_mutation_properties.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 54 (84%)
-- INFERRED: 10 (16%)
+- EXTRACTED: 58 (100%)
+- INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 
 ---
