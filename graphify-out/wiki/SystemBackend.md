@@ -50,12 +50,12 @@
 ### references
 - [AppState](AppState.md) `EXTRACTED`
 - rollback_entry_with() `EXTRACTED`
-- Changelog `EXTRACTED`
+- [Changelog](Changelog.md) `EXTRACTED`
 - revert_tweak_with() `EXTRACTED`
 - apply_action_slice_with() `EXTRACTED`
 - scan_single_tweak_with() `EXTRACTED`
 - apply_tweak_with() `EXTRACTED`
-- WinBlast Optimizer — Developer & Architecture Guide `EXTRACTED`
+- [WinBlast Optimizer — Developer & Architecture Guide](WinBlast_Optimizer_—_Developer_&_Architecture_Guide.md) `EXTRACTED`
 - scan_all_tweaks_parallel_with() `EXTRACTED`
 - CachedScanBackend `EXTRACTED`
 - run_full_scan_with() `EXTRACTED`

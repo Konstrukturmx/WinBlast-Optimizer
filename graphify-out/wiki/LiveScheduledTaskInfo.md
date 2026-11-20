@@ -15,12 +15,13 @@
 ## Relationships
 
 - [startup.rs](startup.rs.md) (2 shared connections)
-- [AppState](AppState.md) (2 shared connections)
 - [theme.rs](theme.rs.md) (2 shared connections)
-- [PanickingBackend](PanickingBackend.md) (2 shared connections)
+- [SlowScanBackend](SlowScanBackend.md) (2 shared connections)
 - [.Reg State() Vendor()](Reg_State_Vendor.md) (1 shared connections)
 - [Integration Suite: Tweak Sandbox E2E](Integration_Suite-_Tweak_Sandbox_E2E.md) (1 shared connections)
 - [TaskCache](TaskCache.md) (1 shared connections)
+- [AppState](AppState.md) (1 shared connections)
+- [WorkerEvent](WorkerEvent.md) (1 shared connections)
 - [SandboxEnv](SandboxEnv.md) (1 shared connections)
 - [app.rs](app.rs.md) (1 shared connections)
 - [backend.rs](backend.rs.md) (1 shared connections)

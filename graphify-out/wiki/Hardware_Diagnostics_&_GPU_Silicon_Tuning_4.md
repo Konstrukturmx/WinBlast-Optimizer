@@ -1,40 +1,37 @@
 # Hardware Diagnostics & GPU Silicon Tuning
 
-> 12 nodes · cohesion 0.30
+> 12 nodes · cohesion 0.41
 
 ## Key Concepts
 
-- **.sample()** (8 connections) — `src/hardware/monitor.rs`
-- **sample_live_cpu_and_parking()** (7 connections) — `src/hardware/monitor.rs`
-- **SystemMonitor** (7 connections) — `src/hardware/monitor.rs`
-- **active_logical_core_count()** (6 connections) — `src/hardware/monitor.rs`
-- **NtCpuSampler** (6 connections) — `src/hardware/monitor.rs`
-- **.new()** (5 connections) — `src/hardware/monitor.rs`
-- **.new()** (5 connections) — `src/hardware/monitor.rs`
-- **.new()** (4 connections) — `src/hardware/monitor.rs`
-- **.core_count()** (3 connections) — `src/hardware/monitor.rs`
-- **query_processor_group_bases()** (3 connections) — `src/hardware/monitor.rs`
-- **test_monitor_cold_main_thread_never_sleeps_or_spikes()** (3 connections) — `src/hardware/monitor.rs`
-- **test_monitor_sample()** (3 connections) — `src/hardware/monitor.rs`
+- **settle_frames()** (13 connections) — `tests/ui_responsive_e2e.rs`
+- **click_key()** (8 connections) — `tests/ui_responsive_e2e.rs`
+- **test_ui_live_viewport_sweep_and_compact_nav_menu_interaction()** (8 connections) — `tests/ui_responsive_e2e.rs`
+- **test_ui_v08_not_applicable_diff_modal_privacy_cores_and_protected_appx()** (8 connections) — `tests/ui_responsive_e2e.rs`
+- **Runtime** (7 connections)
+- **assert_frame_clean()** (6 connections) — `tests/ui_responsive_e2e.rs`
+- **click_text()** (6 connections) — `tests/ui_responsive_e2e.rs`
+- **drain_state_workers()** (6 connections) — `tests/ui_responsive_e2e.rs`
+- **assert_clean_appx_compact_vertical_geometry()** (5 connections) — `tests/ui_responsive_e2e.rs`
+- **test_ui_responsive_matrix_all_viewports_views_themes_locales_scales()** (5 connections) — `tests/ui_responsive_e2e.rs`
+- **test_ui_dropdown_anchoring_and_header_height_stability()** (4 connections) — `tests/ui_responsive_e2e.rs`
+- **test_ui_theme_style_selector_button_clicks_all_tiers()** (4 connections) — `tests/ui_responsive_e2e.rs`
 
 ## Relationships
 
-- [startup.rs](startup.rs.md) (10 shared connections)
-- [query_nt_processor_performance_into](query_nt_processor_performance_into.md) (4 shared connections)
-- [PdhParkingCollector](PdhParkingCollector.md) (2 shared connections)
-- [CoreParkingState](CoreParkingState.md) (1 shared connections)
-- [deserialize](deserialize.md) (1 shared connections)
-- [backend.rs](backend.rs.md) (1 shared connections)
-- [SystemMetrics](SystemMetrics.md) (1 shared connections)
+- [GPU Silicon & Hardware Tuning Policies](GPU_Silicon_&_Hardware_Tuning_Policies.md) (18 shared connections)
+- [AppState](AppState.md) (6 shared connections)
+- [theme.rs](theme.rs.md) (1 shared connections)
+- [app.rs](app.rs.md) (1 shared connections)
 
 ## Source Files
 
-- `src/hardware/monitor.rs`
+- `tests/ui_responsive_e2e.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 39 (98%)
-- INFERRED: 1 (2%)
+- EXTRACTED: 51 (96%)
+- INFERRED: 2 (4%)
 - AMBIGUOUS: 0 (0%)
 
 ---

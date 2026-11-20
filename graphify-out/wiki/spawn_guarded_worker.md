@@ -1,6 +1,6 @@
 # spawn_guarded_worker
 
-> 31 nodes · cohesion 0.12
+> 30 nodes · cohesion 0.12
 
 ## Key Concepts
 
@@ -29,22 +29,22 @@
 - **Mutex** (2 connections)
 - **strip_ansi_sequences()** (2 connections) — `src/tools/features_apps.rs`
 - **test_protected_core_appx_never_classified_bloat()** (2 connections) — `src/tools/features_apps.rs`
-- *... and 6 more nodes in this community*
+- *... and 5 more nodes in this community*
 
 ## Relationships
 
-- [RegRawSnapshot](RegRawSnapshot.md) (12 shared connections)
+- [RegRawSnapshot](RegRawSnapshot.md) (15 shared connections)
+- [super](super.md) (5 shared connections)
 - [app.rs](app.rs.md) (5 shared connections)
 - [InstalledAppxPackage](InstalledAppxPackage.md) (5 shared connections)
-- [deserialize](deserialize.md) (4 shared connections)
-- [restore_point.rs](restore_point.rs.md) (4 shared connections)
 - [WinBlastError](WinBlastError.md) (2 shared connections)
+- [SlowScanBackend](SlowScanBackend.md) (2 shared connections)
 - [theme.rs](theme.rs.md) (2 shared connections)
 - [backend.rs](backend.rs.md) (1 shared connections)
-- [path](path.md) (1 shared connections)
-- [SilentCommand](SilentCommand.md) (1 shared connections)
-- [task_scanner.rs](task_scanner.rs.md) (1 shared connections)
-- [SlowScanBackend](SlowScanBackend.md) (1 shared connections)
+- [real_windows_env.rs](real_windows_env.rs.md) (1 shared connections)
+- [Command Osstr Process.Rs](Command_Osstr_Process.Rs.md) (1 shared connections)
+- [RealBackend](RealBackend.md) (1 shared connections)
+- [clean_apps.rs](clean_apps.rs.md) (1 shared connections)
 
 ## Source Files
 
@@ -52,7 +52,7 @@
 
 ## Audit Trail
 
-- EXTRACTED: 95 (99%)
+- EXTRACTED: 94 (99%)
 - INFERRED: 1 (1%)
 - AMBIGUOUS: 0 (0%)
 

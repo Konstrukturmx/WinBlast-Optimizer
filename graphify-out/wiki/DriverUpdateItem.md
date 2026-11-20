@@ -20,8 +20,9 @@
 - [DriverError](DriverError.md) (6 shared connections)
 - [DriverCategory](DriverCategory.md) (3 shared connections)
 - [LazyLoader](LazyLoader.md) (3 shared connections)
-- [AppState](AppState.md) (2 shared connections)
 - [DriverUpdateState](DriverUpdateState.md) (1 shared connections)
+- [AppState](AppState.md) (1 shared connections)
+- [WorkerEvent](WorkerEvent.md) (1 shared connections)
 - [.all_physical](all_physical.md) (1 shared connections)
 
 ## Source Files

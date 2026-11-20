@@ -33,10 +33,13 @@
 
 ## Relationships
 
-- [.Toggle .Set .Apply](Toggle_.Set_.Apply.md) (16 shared connections)
+- [.Toggle .Set .Apply](Toggle_.Set_.Apply.md) (14 shared connections)
 - [view_i18n.rs](view_i18n.rs.md) (3 shared connections)
-- [ui/mod.rs](ui-mod.rs.md) (2 shared connections)
+- [ui/mod.rs](ui-mod.rs.md) (1 shared connections)
 - [ThemePalette](ThemePalette.md) (1 shared connections)
+- [goal_planner.rs](goal_planner.rs.md) (1 shared connections)
+- [action_button](action_button.md) (1 shared connections)
+- [views/network_diag.rs](views-network_diag.rs.md) (1 shared connections)
 
 ## Source Files
 
@@ -44,8 +47,8 @@
 
 ## Audit Trail
 
-- EXTRACTED: 220 (100%)
-- INFERRED: 0 (0%)
+- EXTRACTED: 219 (100%)
+- INFERRED: 1 (0%)
 - AMBIGUOUS: 0 (0%)
 
 ---

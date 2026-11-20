@@ -1,11 +1,12 @@
 # PdhParkingCollector
 
-> 6 nodes · cohesion 0.33
+> 7 nodes · cohesion 0.29
 
 ## Key Concepts
 
 - **PdhParkingCollector** (7 connections) — `src/hardware/monitor.rs`
 - **parse_pdh_processor_instance()** (3 connections) — `src/hardware/monitor.rs`
+- **test_nt_cpu_delta_handles_idledisable_and_multigroup()** (3 connections) — `src/hardware/monitor.rs`
 - **PDH_HCOUNTER** (2 connections)
 - **PDH_HQUERY** (2 connections)
 - **.sample()** (2 connections) — `src/hardware/monitor.rs`
@@ -13,9 +14,8 @@
 
 ## Relationships
 
-- [startup.rs](startup.rs.md) (4 shared connections)
-- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (2 shared connections)
-- [query_nt_processor_performance_into](query_nt_processor_performance_into.md) (1 shared connections)
+- [startup.rs](startup.rs.md) (5 shared connections)
+- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (3 shared connections)
 
 ## Source Files
 
@@ -23,8 +23,8 @@
 
 ## Audit Trail
 
-- EXTRACTED: 11 (92%)
-- INFERRED: 1 (8%)
+- EXTRACTED: 13 (93%)
+- INFERRED: 1 (7%)
 - AMBIGUOUS: 0 (0%)
 
 ---

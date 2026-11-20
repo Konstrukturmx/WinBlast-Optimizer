@@ -1,53 +1,47 @@
 # Hardware Diagnostics & GPU Silicon Tuning
 
-> 29 nodes · cohesion 0.13
+> 20 nodes · cohesion 0.18
 
 ## Key Concepts
 
-- **tools/game_prereqs.rs** (32 connections) — `src/tools/game_prereqs.rs`
-- **test_iso_29119_runtime_detection_heuristics_execution()** (11 connections) — `src/tools/game_prereqs.rs`
-- **PrereqInstallState** (7 connections) — `src/tools/game_prereqs.rs`
-- **GamePrerequisiteItem** (6 connections) — `src/tools/game_prereqs.rs`
-- **get_system32_path()** (6 connections) — `src/tools/game_prereqs.rs`
-- **detect_openal()** (4 connections) — `src/tools/game_prereqs.rs`
-- **install_prereq_cascade()** (4 connections) — `src/tools/game_prereqs.rs`
-- **scan_game_prereqs()** (4 connections) — `src/tools/game_prereqs.rs`
-- **detect_directx_legacy()** (3 connections) — `src/tools/game_prereqs.rs`
-- **detect_vcredist_2015_2022_x64()** (3 connections) — `src/tools/game_prereqs.rs`
-- **detect_vcredist_2015_2022_x86()** (3 connections) — `src/tools/game_prereqs.rs`
-- **detect_vcredist_all_in_one()** (3 connections) — `src/tools/game_prereqs.rs`
-- **detect_vulkan_runtime()** (3 connections) — `src/tools/game_prereqs.rs`
-- **get_syswow64_path()** (3 connections) — `src/tools/game_prereqs.rs`
-- **detect_dotnet_desktop_8()** (2 connections) — `src/tools/game_prereqs.rs`
-- **detect_dotnet_desktop_9()** (2 connections) — `src/tools/game_prereqs.rs`
-- **detect_dotnet_framework_481()** (2 connections) — `src/tools/game_prereqs.rs`
-- **detect_xna_framework_4()** (2 connections) — `src/tools/game_prereqs.rs`
-- **PREREQ_DESCRIPTORS** (2 connections) — `src/tools/game_prereqs.rs`
-- **PrereqDescriptor** (2 connections) — `src/tools/game_prereqs.rs`
-- **test_iso_29119_cascade_error_recovery_empty_source()** (2 connections) — `src/tools/game_prereqs.rs`
-- **test_iso_29119_cascade_fallback_url_validity()** (2 connections) — `src/tools/game_prereqs.rs`
-- **test_iso_29119_scan_returns_all_10_prereqs()** (2 connections) — `src/tools/game_prereqs.rs`
-- **test_iso_29119_serde_roundtrip()** (2 connections) — `src/tools/game_prereqs.rs`
-- **.is_installed()** (1 connections) — `src/tools/game_prereqs.rs`
-- *... and 4 more nodes in this community*
+- **.sample()** (8 connections) — `src/hardware/monitor.rs`
+- **sample_live_cpu_and_parking()** (7 connections) — `src/hardware/monitor.rs`
+- **SystemMonitor** (7 connections) — `src/hardware/monitor.rs`
+- **active_logical_core_count()** (6 connections) — `src/hardware/monitor.rs`
+- **NtCpuSampler** (6 connections) — `src/hardware/monitor.rs`
+- **query_nt_processor_performance_into()** (6 connections) — `src/hardware/monitor.rs`
+- **SystemProcessorPerformanceInformation** (6 connections) — `src/hardware/monitor.rs`
+- **.new()** (5 connections) — `src/hardware/monitor.rs`
+- **.new()** (5 connections) — `src/hardware/monitor.rs`
+- **compute_nt_cpu_deltas()** (4 connections) — `src/hardware/monitor.rs`
+- **compute_nt_cpu_deltas_into()** (4 connections) — `src/hardware/monitor.rs`
+- **.new()** (4 connections) — `src/hardware/monitor.rs`
+- **query_nt_processor_performance()** (4 connections) — `src/hardware/monitor.rs`
+- **.core_count()** (3 connections) — `src/hardware/monitor.rs`
+- **.sample()** (3 connections) — `src/hardware/monitor.rs`
+- **NtQuerySystemInformation()** (3 connections) — `src/hardware/monitor.rs`
+- **query_processor_group_bases()** (3 connections) — `src/hardware/monitor.rs`
+- **test_monitor_cold_main_thread_never_sleeps_or_spikes()** (3 connections) — `src/hardware/monitor.rs`
+- **test_monitor_sample()** (3 connections) — `src/hardware/monitor.rs`
+- **c_void** (2 connections)
 
 ## Relationships
 
-- [deserialize](deserialize.md) (4 shared connections)
-- [path](path.md) (2 shared connections)
-- [test_wave1_ledger_rollback_and_concurrency_regressions](test_wave1_ledger_rollback_and_concurrency_regressions.md) (1 shared connections)
-- [SilentCommand](SilentCommand.md) (1 shared connections)
-- [Disk Cleaning & Temporary File Purger](Disk_Cleaning_&_Temporary_File_Purger.md) (1 shared connections)
-- [AppState](AppState.md) (1 shared connections)
-- [.Toggle .Set .Apply](Toggle_.Set_.Apply.md) (1 shared connections)
+- [startup.rs](startup.rs.md) (16 shared connections)
+- [PdhParkingCollector](PdhParkingCollector.md) (3 shared connections)
+- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (1 shared connections)
+- [CoreParkingState](CoreParkingState.md) (1 shared connections)
+- [deserialize](deserialize.md) (1 shared connections)
+- [backend.rs](backend.rs.md) (1 shared connections)
+- [SystemMetrics](SystemMetrics.md) (1 shared connections)
 
 ## Source Files
 
-- `src/tools/game_prereqs.rs`
+- `src/hardware/monitor.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 63 (98%)
+- EXTRACTED: 57 (98%)
 - INFERRED: 1 (2%)
 - AMBIGUOUS: 0 (0%)
 

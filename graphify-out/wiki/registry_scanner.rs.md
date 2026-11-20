@@ -1,12 +1,11 @@
 # registry_scanner.rs
 
-> 32 nodes · cohesion 0.13
+> 31 nodes · cohesion 0.14
 
 ## Key Concepts
 
 - **registry_scanner.rs** (37 connections) — `src/scanner/registry_scanner.rs`
 - **open_subkey_read_64()** (13 connections) — `src/scanner/registry_scanner.rs`
-- **open_subkey_flags_64()** (8 connections) — `src/scanner/registry_scanner.rs`
 - **RegKey** (8 connections)
 - **get_raw()** (7 connections) — `src/scanner/registry_scanner.rs`
 - **get_string_for_vendor()** (7 connections) — `src/scanner/registry_scanner.rs`
@@ -29,22 +28,23 @@
 - **ScratchCleanup** (3 connections) — `src/scanner/registry_scanner.rs`
 - **test_evaluate_dword_value_with_kind_all_branches()** (3 connections) — `src/scanner/registry_scanner.rs`
 - **check_dword()** (2 connections) — `src/scanner/registry_scanner.rs`
-- *... and 7 more nodes in this community*
+- **get_string()** (2 connections) — `src/scanner/registry_scanner.rs`
+- *... and 6 more nodes in this community*
 
 ## Relationships
 
-- [reg_mutator.rs](reg_mutator.rs.md) (22 shared connections)
+- [reg_mutator.rs](reg_mutator.rs.md) (15 shared connections)
+- [ui_scrollbar_test.rs](ui_scrollbar_test.rs.md) (4 shared connections)
+- [.setup](setup.md) (3 shared connections)
+- [super](super.md) (2 shared connections)
 - [real_windows_env.rs](real_windows_env.rs.md) (2 shared connections)
 - [WinBlastError](WinBlastError.md) (2 shared connections)
-- [.setup](setup.md) (2 shared connections)
 - [Runtime](Runtime.md) (2 shared connections)
 - [RegTreeSnapshot](RegTreeSnapshot.md) (2 shared connections)
 - [full_telemetry_audit_with](full_telemetry_audit_with.md) (1 shared connections)
 - [edge_cases_unorthodox.rs](edge_cases_unorthodox.rs.md) (1 shared connections)
-- [deserialize](deserialize.md) (1 shared connections)
-- [path](path.md) (1 shared connections)
 - [theme.rs](theme.rs.md) (1 shared connections)
-- [AppX Package & Modern App Scanner](AppX_Package_&_Modern_App_Scanner.md) (1 shared connections)
+- [Embedded Catalog Test](Embedded_Catalog_Test.md) (1 shared connections)
 
 ## Source Files
 
@@ -53,8 +53,8 @@
 
 ## Audit Trail
 
-- EXTRACTED: 90 (84%)
-- INFERRED: 17 (16%)
+- EXTRACTED: 88 (86%)
+- INFERRED: 14 (14%)
 - AMBIGUOUS: 0 (0%)
 
 ---

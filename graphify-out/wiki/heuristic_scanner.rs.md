@@ -1,6 +1,6 @@
 # heuristic_scanner.rs
 
-> 61 nodes · cohesion 0.07
+> 62 nodes · cohesion 0.06
 
 ## Key Concepts
 
@@ -22,20 +22,22 @@
 - **matches_keyword_at()** (5 connections) — `src/tools/heuristic_scanner.rs`
 - **OwnedFinding** (5 connections) — `src/tools/heuristic_scanner.rs`
 - **ScanStats** (5 connections) — `src/tools/heuristic_scanner.rs`
+- **fs** (4 connections)
 - **.to_owned_finding()** (4 connections) — `src/tools/heuristic_scanner.rs`
 - **matches_truncating_cast()** (4 connections) — `src/tools/heuristic_scanner.rs`
 - **ScannerConfig** (4 connections) — `src/tools/heuristic_scanner.rs`
 - **.default_severity()** (3 connections) — `src/tools/heuristic_scanner.rs`
 - **contains_bytes()** (3 connections) — `src/tools/heuristic_scanner.rs`
 - **detects_all_four_hazard_categories()** (3 connections) — `src/tools/heuristic_scanner.rs`
-- **find_matching_bracket()** (3 connections) — `src/tools/heuristic_scanner.rs`
-- *... and 36 more nodes in this community*
+- *... and 37 more nodes in this community*
 
 ## Relationships
 
 - [path](path.md) (2 shared connections)
+- [driver_update.rs](driver_update.rs.md) (1 shared connections)
+- [Disk Cleaning & Temporary File Purger](Disk_Cleaning_&_Temporary_File_Purger.md) (1 shared connections)
 - [real_windows_env.rs](real_windows_env.rs.md) (1 shared connections)
-- [test_wave1_ledger_rollback_and_concurrency_regressions](test_wave1_ledger_rollback_and_concurrency_regressions.md) (1 shared connections)
+- [super](super.md) (1 shared connections)
 
 ## Source Files
 
@@ -43,7 +45,7 @@
 
 ## Audit Trail
 
-- EXTRACTED: 124 (100%)
+- EXTRACTED: 127 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

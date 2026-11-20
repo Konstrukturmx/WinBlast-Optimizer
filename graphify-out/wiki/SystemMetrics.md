@@ -14,7 +14,8 @@
 
 - [backend.rs](backend.rs.md) (5 shared connections)
 - [startup.rs](startup.rs.md) (3 shared connections)
-- [AppState](AppState.md) (2 shared connections)
+- [WorkerEvent](WorkerEvent.md) (1 shared connections)
+- [AppState](AppState.md) (1 shared connections)
 - [task_scanner.rs](task_scanner.rs.md) (1 shared connections)
 - [app.rs](app.rs.md) (1 shared connections)
 - [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (1 shared connections)

@@ -34,9 +34,10 @@
 
 - [normalize_guid_str](normalize_guid_str.md) (6 shared connections)
 - [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (5 shared connections)
-- [ThemePalette](ThemePalette.md) (3 shared connections)
-- [deserialize](deserialize.md) (2 shared connections)
+- [super](super.md) (2 shared connections)
 - [Reversibility Instant Requireslogoff](Reversibility_Instant_Requireslogoff.md) (2 shared connections)
+- [ThemePalette](ThemePalette.md) (2 shared connections)
+- [privacy_shield.rs](privacy_shield.rs.md) (1 shared connections)
 - [Project History & Release Version Ledger](Project_History_&_Release_Version_Ledger.md) (1 shared connections)
 
 ## Source Files

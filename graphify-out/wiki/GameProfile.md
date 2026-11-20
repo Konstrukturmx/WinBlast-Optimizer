@@ -12,7 +12,7 @@
 
 ## Relationships
 
-- [deserialize](deserialize.md) (1 shared connections)
+- [super](super.md) (1 shared connections)
 - [AppState](AppState.md) (1 shared connections)
 
 ## Source Files

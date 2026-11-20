@@ -1,6 +1,6 @@
 # ThemePalette
 
-> God node · 87 connections · `src/ui/theme.rs`
+> God node · 88 connections · `src/ui/theme.rs`
 
 **Community:** [ThemePalette](ThemePalette.md)
 
@@ -12,13 +12,13 @@
 ### imports_from
 - [app.rs](app.rs.md) `EXTRACTED`
 - [in_progress_hud.rs](in_progress_hud.rs.md) `EXTRACTED`
-- clean_apps.rs `EXTRACTED`
+- [clean_apps.rs](clean_apps.rs.md) `EXTRACTED`
 - easy_dashboard.rs `EXTRACTED`
 - [ui/mod.rs](ui-mod.rs.md) `EXTRACTED`
 - startup_tasks.rs `EXTRACTED`
 - gpu_tuning.rs `EXTRACTED`
 - button.rs `EXTRACTED`
-- diff_modal.rs `EXTRACTED`
+- [diff_modal.rs](diff_modal.rs.md) `EXTRACTED`
 - [progress_bar.rs](progress_bar.rs.md) `EXTRACTED`
 - risk_badge.rs `EXTRACTED`
 - sparkline.rs `EXTRACTED`
@@ -49,11 +49,11 @@
 - switch_toggle() `EXTRACTED`
 - build_services_list() `EXTRACTED`
 - build_tasks_list() `EXTRACTED`
-- in_progress_hud() `EXTRACTED`
 - Spring `EXTRACTED`
 - switch_indicator() `EXTRACTED`
+- in_progress_hud() `EXTRACTED`
 - progress_bar_styled() `EXTRACTED`
-- *…and 47 more `references` connection(s) not listed (lowest-degree first to go)*
+- *…and 48 more `references` connection(s) not listed (lowest-degree first to go)*
 
 ---
 

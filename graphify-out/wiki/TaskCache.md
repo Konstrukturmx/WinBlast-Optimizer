@@ -20,7 +20,7 @@
 - [task_scanner.rs](task_scanner.rs.md) (5 shared connections)
 - [theme.rs](theme.rs.md) (2 shared connections)
 - [SandboxEnv](SandboxEnv.md) (2 shared connections)
-- [PanickingBackend](PanickingBackend.md) (2 shared connections)
+- [SlowScanBackend](SlowScanBackend.md) (2 shared connections)
 - [.Reg State() Vendor()](Reg_State_Vendor.md) (1 shared connections)
 - [Integration Suite: Tweak Sandbox E2E](Integration_Suite-_Tweak_Sandbox_E2E.md) (1 shared connections)
 - [Embedded Catalog Test](Embedded_Catalog_Test.md) (1 shared connections)

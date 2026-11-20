@@ -1,55 +1,55 @@
 # Hardware Diagnostics & GPU Silicon Tuning
 
-> 33 nodes · cohesion 0.06
+> 30 nodes · cohesion 0.12
 
 ## Key Concepts
 
-- **explorer_ctrl.rs** (49 connections) — `src/tools/explorer_ctrl.rs`
-- **create_unicode_environment** (1 connections)
-- **createenvironmentblock** (1 connections)
-- **createprocesswithtokenw** (1 connections)
-- **destroyenvironmentblock** (1 connections)
-- **duplicatetokenex** (1 connections)
-- **getshellwindow** (1 connections)
-- **getwindowthreadprocessid** (1 connections)
-- **hwnd_broadcast** (1 connections)
-- **logon_with_profile** (1 connections)
-- **lparam** (1 connections)
-- **openprocess** (1 connections)
-- **process_information** (1 connections)
-- **process_query_limited_information** (1 connections)
-- **process_synchronize** (1 connections)
-- **process_terminate** (1 connections)
-- **pwstr** (1 connections)
-- **securityimpersonation** (1 connections)
-- **sendmessagetimeoutw** (1 connections)
-- **shchangenotify** (1 connections)
-- **shcne_assocchanged** (1 connections)
-- **shcnf_flush** (1 connections)
-- **smto_abortifhung** (1 connections)
-- **startupinfow** (1 connections)
-- **terminateprocess** (1 connections)
-- *... and 8 more nodes in this community*
+- **tools/game_prereqs.rs** (32 connections) — `src/tools/game_prereqs.rs`
+- **test_iso_29119_runtime_detection_heuristics_execution()** (11 connections) — `src/tools/game_prereqs.rs`
+- **PrereqInstallState** (7 connections) — `src/tools/game_prereqs.rs`
+- **GamePrerequisiteItem** (6 connections) — `src/tools/game_prereqs.rs`
+- **get_system32_path()** (6 connections) — `src/tools/game_prereqs.rs`
+- **prelude** (4 connections)
+- **detect_openal()** (4 connections) — `src/tools/game_prereqs.rs`
+- **install_prereq_cascade()** (4 connections) — `src/tools/game_prereqs.rs`
+- **scan_game_prereqs()** (4 connections) — `src/tools/game_prereqs.rs`
+- **detect_directx_legacy()** (3 connections) — `src/tools/game_prereqs.rs`
+- **detect_vcredist_2015_2022_x64()** (3 connections) — `src/tools/game_prereqs.rs`
+- **detect_vcredist_2015_2022_x86()** (3 connections) — `src/tools/game_prereqs.rs`
+- **detect_vcredist_all_in_one()** (3 connections) — `src/tools/game_prereqs.rs`
+- **detect_vulkan_runtime()** (3 connections) — `src/tools/game_prereqs.rs`
+- **get_syswow64_path()** (3 connections) — `src/tools/game_prereqs.rs`
+- **detect_dotnet_desktop_8()** (2 connections) — `src/tools/game_prereqs.rs`
+- **detect_dotnet_desktop_9()** (2 connections) — `src/tools/game_prereqs.rs`
+- **detect_dotnet_framework_481()** (2 connections) — `src/tools/game_prereqs.rs`
+- **detect_xna_framework_4()** (2 connections) — `src/tools/game_prereqs.rs`
+- **PREREQ_DESCRIPTORS** (2 connections) — `src/tools/game_prereqs.rs`
+- **PrereqDescriptor** (2 connections) — `src/tools/game_prereqs.rs`
+- **test_iso_29119_cascade_error_recovery_empty_source()** (2 connections) — `src/tools/game_prereqs.rs`
+- **test_iso_29119_cascade_fallback_url_validity()** (2 connections) — `src/tools/game_prereqs.rs`
+- **test_iso_29119_scan_returns_all_10_prereqs()** (2 connections) — `src/tools/game_prereqs.rs`
+- **test_iso_29119_serde_roundtrip()** (2 connections) — `src/tools/game_prereqs.rs`
+- *... and 5 more nodes in this community*
 
 ## Relationships
 
-- [restart_explorer_safely](restart_explorer_safely.md) (5 shared connections)
-- [elevation.rs](elevation.rs.md) (3 shared connections)
-- [WinBlastError](WinBlastError.md) (2 shared connections)
-- [restore_point.rs](restore_point.rs.md) (2 shared connections)
-- [sys_inventory.rs](sys_inventory.rs.md) (2 shared connections)
-- [backend.rs](backend.rs.md) (1 shared connections)
-- [SilentCommand](SilentCommand.md) (1 shared connections)
-- [query_nt_processor_performance_into](query_nt_processor_performance_into.md) (1 shared connections)
+- [super](super.md) (5 shared connections)
+- [path](path.md) (2 shared connections)
+- [sys_inventory.rs](sys_inventory.rs.md) (1 shared connections)
+- [Embedded Catalog Test](Embedded_Catalog_Test.md) (1 shared connections)
+- [Disk Cleaning & Temporary File Purger](Disk_Cleaning_&_Temporary_File_Purger.md) (1 shared connections)
+- [real_windows_env.rs](real_windows_env.rs.md) (1 shared connections)
+- [AppState](AppState.md) (1 shared connections)
+- [.Toggle .Set .Apply](Toggle_.Set_.Apply.md) (1 shared connections)
 
 ## Source Files
 
-- `src/tools/explorer_ctrl.rs`
+- `src/tools/game_prereqs.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 49 (100%)
-- INFERRED: 0 (0%)
+- EXTRACTED: 66 (99%)
+- INFERRED: 1 (1%)
 - AMBIGUOUS: 0 (0%)
 
 ---

@@ -33,16 +33,15 @@
 
 ## Relationships
 
-- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (10 shared connections)
-- [query_nt_processor_performance_into](query_nt_processor_performance_into.md) (7 shared connections)
-- [PdhParkingCollector](PdhParkingCollector.md) (4 shared connections)
+- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (16 shared connections)
+- [PdhParkingCollector](PdhParkingCollector.md) (5 shared connections)
 - [SystemMetrics](SystemMetrics.md) (3 shared connections)
 - [deserialize](deserialize.md) (2 shared connections)
-- [PlatformSecurityInfo](PlatformSecurityInfo.md) (2 shared connections)
+- [super](super.md) (2 shared connections)
 - [Error.Rs Winblasterror Appx](Error.Rs_Winblasterror_Appx.md) (2 shared connections)
 - [sys_inventory.rs](sys_inventory.rs.md) (1 shared connections)
-- [path](path.md) (1 shared connections)
 - [SlowScanBackend](SlowScanBackend.md) (1 shared connections)
+- [PlatformSecurityInfo](PlatformSecurityInfo.md) (1 shared connections)
 - [parking.rs](parking.rs.md) (1 shared connections)
 - [WinBlast Optimizer](WinBlast_Optimizer.md) (1 shared connections)
 

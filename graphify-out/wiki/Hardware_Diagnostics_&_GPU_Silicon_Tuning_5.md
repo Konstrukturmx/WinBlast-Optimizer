@@ -1,37 +1,32 @@
 # Hardware Diagnostics & GPU Silicon Tuning
 
-> 12 nodes · cohesion 0.41
+> 8 nodes · cohesion 0.29
 
 ## Key Concepts
 
-- **settle_frames()** (13 connections) — `tests/ui_responsive_e2e.rs`
-- **click_key()** (8 connections) — `tests/ui_responsive_e2e.rs`
-- **test_ui_live_viewport_sweep_and_compact_nav_menu_interaction()** (8 connections) — `tests/ui_responsive_e2e.rs`
-- **test_ui_v08_not_applicable_diff_modal_privacy_cores_and_protected_appx()** (8 connections) — `tests/ui_responsive_e2e.rs`
-- **Runtime** (7 connections)
-- **assert_frame_clean()** (6 connections) — `tests/ui_responsive_e2e.rs`
-- **click_text()** (6 connections) — `tests/ui_responsive_e2e.rs`
-- **drain_state_workers()** (6 connections) — `tests/ui_responsive_e2e.rs`
-- **assert_clean_appx_compact_vertical_geometry()** (5 connections) — `tests/ui_responsive_e2e.rs`
-- **test_ui_responsive_matrix_all_viewports_views_themes_locales_scales()** (5 connections) — `tests/ui_responsive_e2e.rs`
-- **test_ui_dropdown_anchoring_and_header_height_stability()** (4 connections) — `tests/ui_responsive_e2e.rs`
-- **test_ui_theme_style_selector_button_clicks_all_tiers()** (4 connections) — `tests/ui_responsive_e2e.rs`
+- **Spring** (8 connections)
+- **.motion()** (5 connections) — `src/ui/theme.rs`
+- **.easing_spring()** (3 connections) — `src/ui/theme.rs`
+- **EASING_CLASSIC** (2 connections) — `src/ui/theme.rs`
+- **EASING_COMPACT** (2 connections) — `src/ui/theme.rs`
+- **EASING_GLASSY** (2 connections) — `src/ui/theme.rs`
+- **EASING_MATERIALISTIC** (2 connections) — `src/ui/theme.rs`
+- **EASING_MINIMALISTIC** (2 connections) — `src/ui/theme.rs`
 
 ## Relationships
 
-- [GPU Silicon & Hardware Tuning Policies](GPU_Silicon_&_Hardware_Tuning_Policies.md) (18 shared connections)
-- [AppState](AppState.md) (6 shared connections)
-- [theme.rs](theme.rs.md) (1 shared connections)
-- [app.rs](app.rs.md) (1 shared connections)
+- [Dynamicdwordformula Logicalcorecount Totalraminkb](Dynamicdwordformula_Logicalcorecount_Totalraminkb.md) (5 shared connections)
+- [Project History & Release Version Ledger](Project_History_&_Release_Version_Ledger.md) (4 shared connections)
+- [ThemePalette](ThemePalette.md) (1 shared connections)
 
 ## Source Files
 
-- `tests/ui_responsive_e2e.rs`
+- `src/ui/theme.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 51 (96%)
-- INFERRED: 2 (4%)
+- EXTRACTED: 18 (100%)
+- INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 
 ---

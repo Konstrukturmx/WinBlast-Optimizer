@@ -1,10 +1,9 @@
 # RealBackend
 
-> 50 nodes · cohesion 0.07
+> 36 nodes · cohesion 0.09
 
 ## Key Concepts
 
-- **Language** (51 connections) — `src/core/i18n.rs`
 - **tweak_i18n/mod.rs** (42 connections) — `src/core/tweak_i18n/mod.rs`
 - **localize_tweak()** (6 connections) — `src/core/tweak_i18n/mod.rs`
 - **lookup_text_table()** (6 connections) — `src/core/tweak_i18n/mod.rs`
@@ -26,37 +25,33 @@
 - **test_power_schemes_and_ledger_tokens()** (3 connections) — `src/core/tweak_i18n/mod.rs`
 - **tweak_description()** (3 connections) — `src/core/tweak_i18n/mod.rs`
 - **tweak_title()** (3 connections) — `src/core/tweak_i18n/mod.rs`
-- **localize_kfm_detail()** (2 connections) — `src/core/status_i18n.rs`
 - **contains_ascii_ci()** (2 connections) — `src/core/tweak_i18n/mod.rs`
 - **NON_ENGLISH_LANGS** (2 connections) — `src/core/tweak_i18n/mod.rs`
-- *... and 25 more nodes in this community*
+- **CAT_BROWSERS** (1 connections) — `src/core/tweak_i18n/mod.rs`
+- **CAT_DEVELOPMENT** (1 connections) — `src/core/tweak_i18n/mod.rs`
+- *... and 11 more nodes in this community*
 
 ## Relationships
 
-- [Appx Package() Prefixes](Appx_Package_Prefixes.md) (14 shared connections)
-- [AppState](AppState.md) (3 shared connections)
-- [enums](enums.md) (3 shared connections)
-- [app.rs](app.rs.md) (2 shared connections)
-- [view_i18n.rs](view_i18n.rs.md) (2 shared connections)
-- [GPU Silicon & Hardware Tuning Policies](GPU_Silicon_&_Hardware_Tuning_Policies.md) (2 shared connections)
+- [Language](Language.md) (13 shared connections)
 - [theme.rs](theme.rs.md) (2 shared connections)
 - [RegRawSnapshot](RegRawSnapshot.md) (2 shared connections)
 - [driver_update.rs](driver_update.rs.md) (2 shared connections)
-- [.Toggle .Set .Apply](Toggle_.Set_.Apply.md) (2 shared connections)
-- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (2 shared connections)
-- [ui/mod.rs](ui-mod.rs.md) (1 shared connections)
+- [clean_apps.rs](clean_apps.rs.md) (2 shared connections)
+- [super](super.md) (1 shared connections)
+- [app.rs](app.rs.md) (1 shared connections)
+- [spawn_guarded_worker](spawn_guarded_worker.md) (1 shared connections)
+- [privacy_shield.rs](privacy_shield.rs.md) (1 shared connections)
+- [.Toggle .Set .Apply](Toggle_.Set_.Apply.md) (1 shared connections)
 
 ## Source Files
 
-- `src/core/i18n.rs`
-- `src/core/status_i18n.rs`
 - `src/core/tweak_i18n/mod.rs`
-- `tests/ui_responsive_e2e.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 122 (98%)
-- INFERRED: 3 (2%)
+- EXTRACTED: 82 (96%)
+- INFERRED: 3 (4%)
 - AMBIGUOUS: 0 (0%)
 
 ---

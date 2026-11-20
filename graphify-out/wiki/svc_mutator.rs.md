@@ -1,6 +1,6 @@
 # svc_mutator.rs
 
-> 24 nodes · cohesion 0.08
+> 22 nodes · cohesion 0.09
 
 ## Key Concepts
 
@@ -8,8 +8,6 @@
 - **.create_restore_point()** (5 connections) — `src/core/backend.rs`
 - **.ensure_preflight_restore_point()** (3 connections) — `src/core/backend.rs`
 - **CreateRestorePoint** (2 connections) — `src/core/backend.rs`
-- **SetHags** (2 connections) — `src/core/backend.rs`
-- **SetMpo** (2 connections) — `src/core/backend.rs`
 - **AppxRemove** (1 connections) — `src/core/backend.rs`
 - **BlockHosts** (1 connections) — `src/core/backend.rs`
 - **CleanExecuted** (1 connections) — `src/core/backend.rs`
@@ -44,7 +42,7 @@
 
 ## Audit Trail
 
-- EXTRACTED: 34 (100%)
+- EXTRACTED: 32 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

@@ -33,12 +33,14 @@
 
 ## Relationships
 
-- [AppState](AppState.md) (3 shared connections)
 - [backend.rs](backend.rs.md) (3 shared connections)
 - [ui/mod.rs](ui-mod.rs.md) (2 shared connections)
 - [ThemePalette](ThemePalette.md) (2 shared connections)
-- [.Toggle .Set .Apply](Toggle_.Set_.Apply.md) (2 shared connections)
 - [GPU Silicon & Hardware Tuning Policies](GPU_Silicon_&_Hardware_Tuning_Policies.md) (2 shared connections)
+- [.navigate](navigate.md) (2 shared connections)
+- [AppState](AppState.md) (1 shared connections)
+- [.Toggle .Set .Apply](Toggle_.Set_.Apply.md) (1 shared connections)
+- [action_button](action_button.md) (1 shared connections)
 - [edge_cases_unorthodox.rs](edge_cases_unorthodox.rs.md) (1 shared connections)
 - [theme.rs](theme.rs.md) (1 shared connections)
 - [app.rs](app.rs.md) (1 shared connections)

@@ -1,11 +1,12 @@
 # power.rs
 
-> 28 nodes · cohesion 0.08
+> 29 nodes · cohesion 0.08
 
 ## Key Concepts
 
 - **power.rs** (60 connections) — `src/hardware/power.rs`
 - **fallback_scheme_name()** (6 connections) — `src/hardware/power.rs`
+- **set_usb_root_hub_power_saving()** (3 connections) — `src/hardware/power.rs`
 - **resolve_indirect_string()** (2 connections) — `src/hardware/power.rs`
 - **strip_indirect_prefix()** (2 connections) — `src/hardware/power.rs`
 - **test_fallback_scheme_name_indirect_stripping()** (2 connections) — `src/hardware/power.rs`
@@ -28,20 +29,19 @@
 - **powerwritefriendlyname** (1 connections)
 - **powerwritevaluemax** (1 connections)
 - **powerwritevaluemin** (1 connections)
-- **system_power_capabilities** (1 connections)
-- *... and 3 more nodes in this community*
+- *... and 4 more nodes in this community*
 
 ## Relationships
 
 - [parse_guid](parse_guid.md) (21 shared connections)
-- [deserialize](deserialize.md) (4 shared connections)
+- [super](super.md) (5 shared connections)
 - [HibernationStatus](HibernationStatus.md) (3 shared connections)
 - [WinBlastError](WinBlastError.md) (2 shared connections)
 - [backend.rs](backend.rs.md) (1 shared connections)
 - [parking.rs](parking.rs.md) (1 shared connections)
-- [path](path.md) (1 shared connections)
 - [CoreParkingState](CoreParkingState.md) (1 shared connections)
 - [PowerSchemeInfo](PowerSchemeInfo.md) (1 shared connections)
+- [full_telemetry_audit_with](full_telemetry_audit_with.md) (1 shared connections)
 
 ## Source Files
 
@@ -49,8 +49,8 @@
 
 ## Audit Trail
 
-- EXTRACTED: 64 (98%)
-- INFERRED: 1 (2%)
+- EXTRACTED: 66 (99%)
+- INFERRED: 1 (1%)
 - AMBIGUOUS: 0 (0%)
 
 ---

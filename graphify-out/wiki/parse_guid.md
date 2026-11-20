@@ -1,6 +1,6 @@
 # parse_guid
 
-> 20 nodes · cohesion 0.26
+> 19 nodes · cohesion 0.29
 
 ## Key Concepts
 
@@ -21,14 +21,13 @@
 - **test_ac_power_status_and_enumerated_range_noop()** (5 connections) — `src/hardware/power.rs`
 - **LocalGuidPtr** (4 connections) — `src/hardware/power.rs`
 - **test_guid_roundtrip_and_normalization()** (4 connections) — `src/hardware/power.rs`
-- **set_usb_root_hub_power_saving()** (3 connections) — `src/hardware/power.rs`
 - **test_power_scheme_enumeration_nonblocking()** (3 connections) — `src/hardware/power.rs`
 - **.drop()** (1 connections) — `src/hardware/power.rs`
 
 ## Relationships
 
 - [power.rs](power.rs.md) (21 shared connections)
-- [full_telemetry_audit_with](full_telemetry_audit_with.md) (4 shared connections)
+- [full_telemetry_audit_with](full_telemetry_audit_with.md) (3 shared connections)
 - [parking.rs](parking.rs.md) (3 shared connections)
 - [CoreParkingState](CoreParkingState.md) (2 shared connections)
 - [PowerSchemeInfo](PowerSchemeInfo.md) (1 shared connections)
@@ -41,7 +40,7 @@
 
 ## Audit Trail
 
-- EXTRACTED: 78 (94%)
+- EXTRACTED: 76 (94%)
 - INFERRED: 5 (6%)
 - AMBIGUOUS: 0 (0%)
 

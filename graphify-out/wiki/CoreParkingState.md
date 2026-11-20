@@ -1,14 +1,12 @@
 # CoreParkingState
 
-> 15 nodes · cohesion 0.18
+> 13 nodes · cohesion 0.21
 
 ## Key Concepts
 
 - **CoreParkingState** (20 connections) — `src/hardware/parking.rs`
 - **.detect_internal()** (7 connections) — `src/hardware/parking.rs`
-- **.detect_core_parking()** (5 connections) — `src/core/backend.rs`
 - **.detect_core_parking()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.detect_core_parking_sampled()** (3 connections) — `src/core/backend.rs`
 - **.detect()** (3 connections) — `src/hardware/parking.rs`
 - **CoreStatus** (3 connections) — `src/hardware/parking.rs`
 - **is_on_ac_power()** (3 connections) — `src/hardware/power.rs`
@@ -23,17 +21,17 @@
 ## Relationships
 
 - [parking.rs](parking.rs.md) (4 shared connections)
-- [backend.rs](backend.rs.md) (3 shared connections)
 - [.Reg State() Vendor()](Reg_State_Vendor.md) (2 shared connections)
+- [backend.rs](backend.rs.md) (2 shared connections)
 - [SandboxEnv](SandboxEnv.md) (2 shared connections)
-- [Integration Suite: Tweak Sandbox E2E](Integration_Suite-_Tweak_Sandbox_E2E.md) (2 shared connections)
-- [AppState](AppState.md) (2 shared connections)
 - [parse_guid](parse_guid.md) (2 shared connections)
-- [PanickingBackend](PanickingBackend.md) (2 shared connections)
-- [GpuVendor](GpuVendor.md) (1 shared connections)
+- [SlowScanBackend](SlowScanBackend.md) (2 shared connections)
+- [Integration Suite: Tweak Sandbox E2E](Integration_Suite-_Tweak_Sandbox_E2E.md) (1 shared connections)
+- [WorkerEvent](WorkerEvent.md) (1 shared connections)
+- [AppState](AppState.md) (1 shared connections)
+- [PowerSchemeInfo](PowerSchemeInfo.md) (1 shared connections)
 - [task_scanner.rs](task_scanner.rs.md) (1 shared connections)
 - [app.rs](app.rs.md) (1 shared connections)
-- [theme.rs](theme.rs.md) (1 shared connections)
 
 ## Source Files
 
@@ -44,7 +42,7 @@
 
 ## Audit Trail
 
-- EXTRACTED: 45 (100%)
+- EXTRACTED: 40 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

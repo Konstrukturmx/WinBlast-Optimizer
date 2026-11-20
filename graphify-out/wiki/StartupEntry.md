@@ -32,13 +32,13 @@
 - [.Reg State() Vendor()](Reg_State_Vendor.md) (2 shared connections)
 - [SandboxEnv](SandboxEnv.md) (2 shared connections)
 - [Integration Suite: Tweak Sandbox E2E](Integration_Suite-_Tweak_Sandbox_E2E.md) (2 shared connections)
-- [AppState](AppState.md) (2 shared connections)
 - [backend.rs](backend.rs.md) (2 shared connections)
 - [theme.rs](theme.rs.md) (2 shared connections)
-- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (2 shared connections)
+- [action_button_guarded](action_button_guarded.md) (2 shared connections)
+- [AppState](AppState.md) (1 shared connections)
+- [WorkerEvent](WorkerEvent.md) (1 shared connections)
 - [task_scanner.rs](task_scanner.rs.md) (1 shared connections)
 - [app.rs](app.rs.md) (1 shared connections)
-- [.take_injected_error](take_injected_error.md) (1 shared connections)
 
 ## Source Files
 

@@ -16,6 +16,9 @@
 - **background_panic_is_contained_and_clears_in_flight_flag()** (4 connections) — `src/hardware/lazy_loader.rs`
 - **.spawn_probe_drivers()** (4 connections) — `src/hardware/lazy_loader.rs`
 - **.try_recv()** (4 connections) — `src/hardware/lazy_loader.rs`
+- **Any** (3 connections)
+- **Receiver** (3 connections)
+- **panic_payload_to_string()** (3 connections) — `src/app.rs`
 - **extract_panic_message()** (3 connections) — `src/hardware/lazy_loader.rs`
 - **InFlightGuard** (3 connections) — `src/hardware/lazy_loader.rs`
 - **.drain_ready()** (3 connections) — `src/hardware/lazy_loader.rs`
@@ -25,35 +28,33 @@
 - **.spawn_probe_thermals()** (3 connections) — `src/hardware/lazy_loader.rs`
 - **Drivers** (3 connections) — `src/hardware/lazy_loader.rs`
 - **thread** (3 connections)
-- **Any** (2 connections)
-- **Receiver** (2 connections)
-- **Sender** (2 connections)
 - **DisplayDriverInfo** (2 connections) — `src/hardware/bios.rs`
 - *... and 17 more nodes in this community*
 
 ## Relationships
 
-- [PanickingBackend](PanickingBackend.md) (4 shared connections)
+- [SlowScanBackend](SlowScanBackend.md) (5 shared connections)
+- [super](super.md) (4 shared connections)
+- [spawn_guarded_worker](spawn_guarded_worker.md) (3 shared connections)
 - [DriverUpdateItem](DriverUpdateItem.md) (3 shared connections)
+- [app.rs](app.rs.md) (2 shared connections)
 - [backend.rs](backend.rs.md) (2 shared connections)
 - [generational_cache.rs](generational_cache.rs.md) (2 shared connections)
 - [edge_cases_unorthodox.rs](edge_cases_unorthodox.rs.md) (2 shared connections)
-- [deserialize](deserialize.md) (2 shared connections)
 - [AppState](AppState.md) (2 shared connections)
 - [sys_inventory.rs](sys_inventory.rs.md) (2 shared connections)
 - [State Ledger & Restore Point Engine](State_Ledger_&_Restore_Point_Engine.md) (2 shared connections)
-- [PlatformSecurityInfo](PlatformSecurityInfo.md) (2 shared connections)
-- [app.rs](app.rs.md) (1 shared connections)
 - [theme.rs](theme.rs.md) (1 shared connections)
 
 ## Source Files
 
+- `src/app.rs`
 - `src/hardware/bios.rs`
 - `src/hardware/lazy_loader.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 97 (98%)
+- EXTRACTED: 101 (98%)
 - INFERRED: 2 (2%)
 - AMBIGUOUS: 0 (0%)
 

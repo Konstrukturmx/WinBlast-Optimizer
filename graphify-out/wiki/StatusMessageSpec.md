@@ -37,7 +37,7 @@
 
 ### references
 - [AppState](AppState.md) `EXTRACTED`
-- Language `EXTRACTED`
+- [Language](Language.md) `EXTRACTED`
 - .set_status_spec() `EXTRACTED`
 - localize_status() `EXTRACTED`
 - [PresetKey](PresetKey.md) `EXTRACTED`

@@ -1,55 +1,57 @@
 # test_wave1_ledger_rollback_and_concurrency_regressions
 
-> 22 nodes · cohesion 0.12
+> 28 nodes · cohesion 0.07
 
 ## Key Concepts
 
-- **updater.rs** (19 connections) — `src/core/updater.rs`
-- **pathbuf** (10 connections)
-- **UpdateState** (9 connections) — `src/core/updater.rs`
-- **ReleaseInfo** (5 connections) — `src/core/updater.rs`
-- **check_latest_release()** (4 connections) — `src/core/updater.rs`
-- **is_version_newer()** (4 connections) — `src/core/updater.rs`
-- **fetch_url_json()** (2 connections) — `src/core/updater.rs`
-- **GhAsset** (2 connections) — `src/core/updater.rs`
-- **GhRelease** (2 connections) — `src/core/updater.rs`
-- **test_release_info_structure()** (2 connections) — `src/core/updater.rs`
-- **test_version_comparison_logic()** (2 connections) — `src/core/updater.rs`
-- **apply_and_restart()** (1 connections) — `src/core/updater.rs`
-- **download_release_asset()** (1 connections) — `src/core/updater.rs`
-- **FALLBACK_REPO** (1 connections) — `src/core/updater.rs`
-- **GITHUB_REPO** (1 connections) — `src/core/updater.rs`
-- **Checking** (1 connections) — `src/core/updater.rs`
-- **Downloading** (1 connections) — `src/core/updater.rs`
-- **Failed** (1 connections) — `src/core/updater.rs`
-- **Idle** (1 connections) — `src/core/updater.rs`
-- **ReadyToRestart** (1 connections) — `src/core/updater.rs`
-- **UpdateAvailable** (1 connections) — `src/core/updater.rs`
-- **UpToDate** (1 connections) — `src/core/updater.rs`
+- **test_wave1_ledger_rollback_and_concurrency_regressions()** (19 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.list_startup_entries()** (7 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.set_hibernation_enabled()** (6 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.set_startup_entry_enabled()** (6 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.create_and_activate_performance_plan()** (5 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.detect_gpus()** (5 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.get_active_power_scheme()** (5 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.list_startup_entries()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.set_hibernation_enabled()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.set_startup_entry_enabled()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.list_startup_entries()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.set_hibernation_enabled()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.set_startup_entry_enabled()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.default_ledger_path()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.read_hosts_file()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.set_gpu_msi_mode()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.create_and_activate_performance_plan()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.detect_gpus()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.get_active_power_scheme()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.create_and_activate_performance_plan()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.detect_gpus()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.get_active_power_scheme()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.default_ledger_path()** (2 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.read_hosts_file()** (2 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.set_gpu_msi_mode()** (2 connections) — `tests/tweak_sandbox_e2e.rs`
+- *... and 3 more nodes in this community*
 
 ## Relationships
 
-- [deserialize](deserialize.md) (3 shared connections)
-- [path](path.md) (2 shared connections)
-- [AppState](AppState.md) (2 shared connections)
-- [app.rs](app.rs.md) (1 shared connections)
-- [backend.rs](backend.rs.md) (1 shared connections)
-- [driver_update.rs](driver_update.rs.md) (1 shared connections)
-- [Disk Cleaning & Temporary File Purger](Disk_Cleaning_&_Temporary_File_Purger.md) (1 shared connections)
-- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (1 shared connections)
-- [heuristic_scanner.rs](heuristic_scanner.rs.md) (1 shared connections)
-- [startup.rs](startup.rs.md) (1 shared connections)
-- [real_windows_env.rs](real_windows_env.rs.md) (1 shared connections)
-- [SilentCommand](SilentCommand.md) (1 shared connections)
+- [SlowScanBackend](SlowScanBackend.md) (18 shared connections)
+- [BlastResult](BlastResult.md) (16 shared connections)
+- [FailAtMutationBackend](FailAtMutationBackend.md) (9 shared connections)
+- [StartupEntry](StartupEntry.md) (6 shared connections)
+- [theme.rs](theme.rs.md) (5 shared connections)
+- [Multi-Language Tweak Localization Tables](Multi-Language_Tweak_Localization_Tables.md) (3 shared connections)
+- [HibernationStatus](HibernationStatus.md) (3 shared connections)
+- [test_wave1_compound_actions_deep_edge_cases](test_wave1_compound_actions_deep_edge_cases.md) (2 shared connections)
+- [full_telemetry_audit_with](full_telemetry_audit_with.md) (2 shared connections)
+- [.block_telemetry_hosts](block_telemetry_hosts.md) (1 shared connections)
 
 ## Source Files
 
-- `src/core/updater.rs`
+- `tests/tweak_sandbox_e2e.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 40 (91%)
-- INFERRED: 4 (9%)
+- EXTRACTED: 89 (97%)
+- INFERRED: 3 (3%)
 - AMBIGUOUS: 0 (0%)
 
 ---

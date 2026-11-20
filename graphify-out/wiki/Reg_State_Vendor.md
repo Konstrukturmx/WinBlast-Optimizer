@@ -33,18 +33,18 @@
 
 ## Relationships
 
-- [backend.rs](backend.rs.md) (6 shared connections)
+- [backend.rs](backend.rs.md) (5 shared connections)
 - [app.rs](app.rs.md) (2 shared connections)
 - [latency_bench.rs](latency_bench.rs.md) (2 shared connections)
 - [RegTreeSnapshot](RegTreeSnapshot.md) (2 shared connections)
 - [HibernationStatus](HibernationStatus.md) (2 shared connections)
 - [CoreParkingState](CoreParkingState.md) (2 shared connections)
 - [Disk Cleaning & Temporary File Purger](Disk_Cleaning_&_Temporary_File_Purger.md) (2 shared connections)
-- [RegRawSnapshot](RegRawSnapshot.md) (2 shared connections)
 - [StartupEntry](StartupEntry.md) (2 shared connections)
 - [full_telemetry_audit_with](full_telemetry_audit_with.md) (1 shared connections)
 - [Embedded Catalog Test](Embedded_Catalog_Test.md) (1 shared connections)
 - [Integration Suite: Tweak Sandbox E2E](Integration_Suite-_Tweak_Sandbox_E2E.md) (1 shared connections)
+- [WindowsInfo](WindowsInfo.md) (1 shared connections)
 
 ## Source Files
 

@@ -27,12 +27,12 @@
 
 - [driver_update.rs](driver_update.rs.md) (9 shared connections)
 - [DriverUpdateItem](DriverUpdateItem.md) (3 shared connections)
-- [AppState](AppState.md) (1 shared connections)
 - [.Toggle .Set .Apply](Toggle_.Set_.Apply.md) (1 shared connections)
 - [.all_physical](all_physical.md) (1 shared connections)
+- [AppState](AppState.md) (1 shared connections)
 - [DriverUpdateState](DriverUpdateState.md) (1 shared connections)
 - [DriverError](DriverError.md) (1 shared connections)
-- [deserialize](deserialize.md) (1 shared connections)
+- [super](super.md) (1 shared connections)
 
 ## Source Files
 
@@ -40,8 +40,8 @@
 
 ## Audit Trail
 
-- EXTRACTED: 39 (100%)
-- INFERRED: 0 (0%)
+- EXTRACTED: 38 (97%)
+- INFERRED: 1 (3%)
 - AMBIGUOUS: 0 (0%)
 
 ---

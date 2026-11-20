@@ -1,6 +1,6 @@
 # SlowScanBackend
 
-> 49 nodes · cohesion 0.08
+> 52 nodes · cohesion 0.07
 
 ## Key Concepts
 
@@ -9,6 +9,8 @@
 - **hashset** (9 connections)
 - **.plan()** (9 connections) — `src/graph/astar.rs`
 - **graph/mod.rs** (9 connections) — `src/graph/mod.rs`
+- **hashmap** (8 connections)
+- **OptimizationGoal** (8 connections) — `src/graph/astar.rs`
 - **raven.rs** (8 connections) — `src/graph/raven.rs`
 - **.schedule_execution()** (7 connections) — `src/graph/dijkstra.rs`
 - **RavenEngine** (7 connections) — `src/graph/raven.rs`
@@ -27,20 +29,18 @@
 - **ConflictResolution** (4 connections) — `src/graph/raven.rs`
 - **.partial_cmp()** (3 connections) — `src/graph/astar.rs`
 - **.new()** (3 connections) — `src/graph/astar.rs`
-- **.iter_set()** (3 connections) — `src/graph/astar.rs`
-- **ExecutionStep** (3 connections) — `src/graph/dijkstra.rs`
-- *... and 24 more nodes in this community*
+- *... and 27 more nodes in this community*
 
 ## Relationships
 
-- [ui/mod.rs](ui-mod.rs.md) (5 shared connections)
-- [path](path.md) (3 shared connections)
-- [AppState](AppState.md) (3 shared connections)
-- [app.rs](app.rs.md) (2 shared connections)
-- [backend.rs](backend.rs.md) (2 shared connections)
-- [task_scanner.rs](task_scanner.rs.md) (2 shared connections)
-- [spawn_guarded_worker](spawn_guarded_worker.md) (1 shared connections)
-- [theme.rs](theme.rs.md) (1 shared connections)
+- [AppState](AppState.md) (4 shared connections)
+- [app.rs](app.rs.md) (3 shared connections)
+- [backend.rs](backend.rs.md) (3 shared connections)
+- [super](super.md) (3 shared connections)
+- [spawn_guarded_worker](spawn_guarded_worker.md) (2 shared connections)
+- [startup.rs](startup.rs.md) (2 shared connections)
+- [theme.rs](theme.rs.md) (2 shared connections)
+- [task_scanner.rs](task_scanner.rs.md) (1 shared connections)
 - [GPU Silicon & Hardware Tuning Policies](GPU_Silicon_&_Hardware_Tuning_Policies.md) (1 shared connections)
 - [generational_cache.rs](generational_cache.rs.md) (1 shared connections)
 - [LazyLoader](LazyLoader.md) (1 shared connections)
@@ -55,8 +55,8 @@
 
 ## Audit Trail
 
-- EXTRACTED: 111 (97%)
-- INFERRED: 3 (3%)
+- EXTRACTED: 119 (97%)
+- INFERRED: 4 (3%)
 - AMBIGUOUS: 0 (0%)
 
 ---

@@ -1,11 +1,12 @@
 # HibernationStatus
 
-> 10 nodes · cohesion 0.27
+> 11 nodes · cohesion 0.24
 
 ## Key Concepts
 
 - **HibernationStatus** (22 connections) — `src/hardware/power.rs`
 - **.query_hibernation_status()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.query_hibernation_status()** (3 connections) — `src/core/backend.rs`
 - **query_hibernation_and_standby()** (3 connections) — `src/hardware/power.rs`
 - **set_hibernation_enabled()** (3 connections) — `src/hardware/power.rs`
 - **.query_hibernation_status()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
@@ -20,15 +21,15 @@
 - [test_wave1_ledger_rollback_and_concurrency_regressions](test_wave1_ledger_rollback_and_concurrency_regressions.md) (3 shared connections)
 - [power.rs](power.rs.md) (3 shared connections)
 - [.Reg State() Vendor()](Reg_State_Vendor.md) (2 shared connections)
+- [SandboxEnv](SandboxEnv.md) (2 shared connections)
 - [Integration Suite: Tweak Sandbox E2E](Integration_Suite-_Tweak_Sandbox_E2E.md) (2 shared connections)
-- [AppState](AppState.md) (2 shared connections)
-- [PanickingBackend](PanickingBackend.md) (2 shared connections)
-- [GpuVendor](GpuVendor.md) (1 shared connections)
+- [SlowScanBackend](SlowScanBackend.md) (2 shared connections)
+- [WorkerEvent](WorkerEvent.md) (1 shared connections)
+- [AppState](AppState.md) (1 shared connections)
+- [PowerSchemeInfo](PowerSchemeInfo.md) (1 shared connections)
 - [task_scanner.rs](task_scanner.rs.md) (1 shared connections)
 - [.take_injected_error](take_injected_error.md) (1 shared connections)
 - [app.rs](app.rs.md) (1 shared connections)
-- [backend.rs](backend.rs.md) (1 shared connections)
-- [theme.rs](theme.rs.md) (1 shared connections)
 
 ## Source Files
 
@@ -38,7 +39,7 @@
 
 ## Audit Trail
 
-- EXTRACTED: 34 (100%)
+- EXTRACTED: 36 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 
