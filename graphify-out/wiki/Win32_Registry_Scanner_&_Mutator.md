@@ -1,56 +1,62 @@
 # Win32 Registry Scanner & Mutator
 
-> 38 nodes · cohesion 0.05
+> 34 nodes · cohesion 0.15
 
 ## Key Concepts
 
-- **status_i18n.rs** (59 connections) — `src/core/status_i18n.rs`
-- **PresetKey** (6 connections) — `src/core/status_i18n.rs`
-- **ADMIN_RUN_MSG** (1 connections) — `src/core/status_i18n.rs`
-- **ERROR_PREFIX_TABLE** (1 connections) — `src/core/status_i18n.rs`
-- **KFM_REDIRECT_MSG** (1 connections) — `src/core/status_i18n.rs`
-- **POLICY_LOCKED_LABEL** (1 connections) — `src/core/status_i18n.rs`
-- **Gaming** (1 connections) — `src/core/status_i18n.rs`
-- **LaptopBattery** (1 connections) — `src/core/status_i18n.rs`
-- **ProAudio** (1 connections) — `src/core/status_i18n.rs`
-- **STATIC_APPX_SCANNING** (1 connections) — `src/core/status_i18n.rs`
-- **STATIC_BASELINE_RESET_OK** (1 connections) — `src/core/status_i18n.rs`
-- **STATIC_BASELINE_RESETTING** (1 connections) — `src/core/status_i18n.rs`
-- **STATIC_CHANGELOG_CLEARED** (1 connections) — `src/core/status_i18n.rs`
-- **STATIC_DESELECTED_ALL** (1 connections) — `src/core/status_i18n.rs`
-- **STATIC_DISK_SCANNING** (1 connections) — `src/core/status_i18n.rs`
-- **STATIC_EDGE_REMOVED** (1 connections) — `src/core/status_i18n.rs`
-- **STATIC_EXPLORER_RESTARTED** (1 connections) — `src/core/status_i18n.rs`
-- **STATIC_GPU_MSI_OK** (1 connections) — `src/core/status_i18n.rs`
-- **STATIC_LATENCY_BASELINE_SAVED** (1 connections) — `src/core/status_i18n.rs`
-- **STATIC_LATENCY_DONE** (1 connections) — `src/core/status_i18n.rs`
-- **STATIC_LATENCY_RUN_FIRST** (1 connections) — `src/core/status_i18n.rs`
-- **STATIC_LATENCY_RUNNING** (1 connections) — `src/core/status_i18n.rs`
-- **STATIC_MODE_INSTANT** (1 connections) — `src/core/status_i18n.rs`
-- **STATIC_MODE_NORMAL** (1 connections) — `src/core/status_i18n.rs`
-- **STATIC_NO_CLEANUP_SELECTED** (1 connections) — `src/core/status_i18n.rs`
-- *... and 13 more nodes in this community*
+- **TweakDefinition** (53 connections) — `src/core/risk.rs`
+- **scanner/mod.rs** (38 connections) — `src/scanner/mod.rs`
+- **ScanResult** (28 connections) — `src/scanner/mod.rs`
+- **scan_single_tweak_with()** (18 connections) — `src/scanner/mod.rs`
+- **TweakState** (18 connections) — `src/scanner/mod.rs`
+- **scan_all_tweaks_parallel_with()** (12 connections) — `src/scanner/mod.rs`
+- **CachedScanBackend** (10 connections) — `src/core/backend.rs`
+- **evaluate_single_action()** (10 connections) — `src/scanner/mod.rs`
+- **evaluate_tweak()** (10 connections) — `src/scanner/mod.rs`
+- **run_full_scan_with()** (9 connections) — `src/scanner/mod.rs`
+- **scan_tweaks_chunked_parallel_with()** (7 connections) — `src/scanner/mod.rs`
+- **ActionEval** (6 connections) — `src/scanner/mod.rs`
+- **evaluate_tweak_status()** (6 connections) — `src/scanner/mod.rs`
+- **make_scan_result()** (6 connections) — `src/scanner/mod.rs`
+- **test_parallel_scan_parity_with_sequential()** (5 connections) — `src/scanner/mod.rs`
+- **mk_test_tweak()** (4 connections) — `src/scanner/mod.rs`
+- **run_full_scan()** (4 connections) — `src/scanner/mod.rs`
+- **scan_all_tweaks_parallel()** (4 connections) — `src/scanner/mod.rs`
+- **scan_single_tweak()** (4 connections) — `src/scanner/mod.rs`
+- **scan_tweaks_chunked_parallel()** (4 connections) — `src/scanner/mod.rs`
+- **test_foreign_gpu_and_non_elevated_feature_and_partial_power_scan()** (4 connections) — `src/scanner/mod.rs`
+- **test_evaluate_tweak_status_single()** (3 connections) — `src/scanner/mod.rs`
+- **test_full_scan_execution_in_sandbox()** (3 connections) — `src/scanner/mod.rs`
+- **test_run_full_scan_populates_detail_kind_and_sub_category()** (3 connections) — `src/scanner/mod.rs`
+- **test_scan_single_tweak_detail_kind_every_action_and_na_branch()** (3 connections) — `src/scanner/mod.rs`
+- *... and 9 more nodes in this community*
 
 ## Relationships
 
-- [ps_runner.rs](ps_runner.rs.md) (16 shared connections)
-- [SlowScanBackend](SlowScanBackend.md) (2 shared connections)
-- [.Toggle .Set .Apply](Toggle_.Set_.Apply.md) (2 shared connections)
-- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (2 shared connections)
-- [FailAtMutationBackend](FailAtMutationBackend.md) (1 shared connections)
-- [SandboxEnv](SandboxEnv.md) (1 shared connections)
-- [Core UI Internationalization & Text Catalog](Core_UI_Internationalization_&_Text_Catalog.md) (1 shared connections)
-- [FeatureInstallState](FeatureInstallState.md) (1 shared connections)
-- [WinBlastError](WinBlastError.md) (1 shared connections)
+- [theme.rs](theme.rs.md) (18 shared connections)
+- [clean_apps.rs](clean_apps.rs.md) (14 shared connections)
+- [task_scanner.rs](task_scanner.rs.md) (10 shared connections)
+- [startup.rs](startup.rs.md) (8 shared connections)
+- [ps_runner.rs](ps_runner.rs.md) (7 shared connections)
+- [.Toggle .Set .Apply](Toggle_.Set_.Apply.md) (6 shared connections)
+- [svc_mutator.rs](svc_mutator.rs.md) (6 shared connections)
+- [RegTreeSnapshot](RegTreeSnapshot.md) (6 shared connections)
+- [SlowScanBackend](SlowScanBackend.md) (6 shared connections)
+- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (4 shared connections)
+- [in_progress_hud.rs](in_progress_hud.rs.md) (4 shared connections)
+- [deserialize](deserialize.md) (3 shared connections)
 
 ## Source Files
 
-- `src/core/status_i18n.rs`
+- `src/app.rs`
+- `src/core/backend.rs`
+- `src/core/risk.rs`
+- `src/scanner/mod.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 64 (100%)
-- INFERRED: 0 (0%)
+- EXTRACTED: 187 (93%)
+- INFERRED: 15 (7%)
 - AMBIGUOUS: 0 (0%)
 
 ---

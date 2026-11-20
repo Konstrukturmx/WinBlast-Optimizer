@@ -4,15 +4,11 @@
 
 ## Key Concepts
 
-- **lib.rs** (0 connections) — `src/lib.rs`
+- **I** (0 connections)
 
 ## Relationships
 
 - No strong cross-community connections detected
-
-## Source Files
-
-- `src/lib.rs`
 
 ## Audit Trail
 

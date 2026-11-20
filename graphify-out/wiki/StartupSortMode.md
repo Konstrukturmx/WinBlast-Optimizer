@@ -1,22 +1,25 @@
 # StartupSortMode
 
-> 1 nodes · cohesion 1.00
+> 3 nodes · cohesion 0.67
 
 ## Key Concepts
 
-- **hardware/mod.rs** (0 connections) — `src/hardware/mod.rs`
+- **.is_mpo_disabled()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.is_mpo_disabled()** (2 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.is_mpo_disabled()** (2 connections) — `tests/tweak_sandbox_e2e.rs`
 
 ## Relationships
 
-- No strong cross-community connections detected
+- [sys_inventory.rs](sys_inventory.rs.md) (2 shared connections)
+- [InstalledAppxPackage](InstalledAppxPackage.md) (1 shared connections)
 
 ## Source Files
 
-- `src/hardware/mod.rs`
+- `tests/tweak_sandbox_e2e.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 0 (0%)
+- EXTRACTED: 5 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

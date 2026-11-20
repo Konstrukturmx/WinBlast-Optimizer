@@ -1,39 +1,41 @@
 # SandboxEnv
 
-> 11 nodes · cohesion 0.25
+> 16 nodes · cohesion 0.21
 
 ## Key Concepts
 
-- **i18n.rs** (13 connections) — `src/core/i18n.rs`
-- **I18n** (8 connections) — `src/core/i18n.rs`
-- **.translate()** (7 connections) — `src/core/i18n.rs`
-- **.get()** (4 connections) — `src/core/i18n.rs`
-- **test_all_languages_and_all_keys_exhaustive()** (2 connections) — `src/core/i18n.rs`
-- **test_i18n_all_languages_populated()** (2 connections) — `src/core/i18n.rs`
-- **test_left_menu_translations_all_8_languages()** (2 connections) — `src/core/i18n.rs`
-- **.fold_search_str()** (1 connections) — `src/core/i18n.rs`
-- **test_fold_search_str_turkish_and_ascii()** (1 connections) — `src/core/i18n.rs`
-- **test_turkish_translation()** (1 connections) — `src/core/i18n.rs`
-- **TRANSLATIONS** (1 connections) — `src/core/i18n.rs`
+- **DriverError** (13 connections) — `src/hardware/driver_update.rs`
+- **download_and_install_driver_with_progress()** (10 connections) — `src/hardware/driver_update.rs`
+- **install_sandbox_driver()** (8 connections) — `src/hardware/driver_update.rs`
+- **backup_driver()** (7 connections) — `src/hardware/driver_update.rs`
+- **DriverProgressCallback** (6 connections) — `src/hardware/driver_update.rs`
+- **StagingFailed** (3 connections) — `src/hardware/driver_update.rs`
+- **Failed** (3 connections) — `src/hardware/driver_update.rs`
+- **Formatter** (2 connections)
+- **.fmt()** (2 connections) — `src/backup/preset_sharing.rs`
+- **BackupFailed** (2 connections) — `src/hardware/driver_update.rs`
+- **DownloadFailed** (2 connections) — `src/hardware/driver_update.rs`
+- **.fmt()** (2 connections) — `src/hardware/driver_update.rs`
+- **InstallFailed** (2 connections) — `src/hardware/driver_update.rs`
+- **Other** (1 connections) — `src/hardware/driver_update.rs`
+- **ScanFailed** (1 connections) — `src/hardware/driver_update.rs`
+- **VerificationFailed** (1 connections) — `src/hardware/driver_update.rs`
 
 ## Relationships
 
-- [ps_runner.rs](ps_runner.rs.md) (3 shared connections)
-- [Core UI Internationalization & Text Catalog](Core_UI_Internationalization_&_Text_Catalog.md) (3 shared connections)
-- [deserialize](deserialize.md) (2 shared connections)
-- [Multi-Language Tweak Localization Tables](Multi-Language_Tweak_Localization_Tables.md) (2 shared connections)
-- [FailAtMutationBackend](FailAtMutationBackend.md) (1 shared connections)
-- [Win32 Registry Scanner & Mutator](Win32_Registry_Scanner_&_Mutator.md) (1 shared connections)
-- [SlowScanBackend](SlowScanBackend.md) (1 shared connections)
-- [advanced_matrix.rs](advanced_matrix.rs.md) (1 shared connections)
+- [RegRawSnapshot](RegRawSnapshot.md) (7 shared connections)
+- [lazy_loader.rs](lazy_loader.rs.md) (6 shared connections)
+- [spawn_guarded_worker](spawn_guarded_worker.md) (1 shared connections)
+- [adaptive_tuning.rs](adaptive_tuning.rs.md) (1 shared connections)
 
 ## Source Files
 
-- `src/core/i18n.rs`
+- `src/backup/preset_sharing.rs`
+- `src/hardware/driver_update.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 28 (100%)
+- EXTRACTED: 40 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

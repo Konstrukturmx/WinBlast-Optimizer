@@ -1,36 +1,38 @@
 # storage.rs
 
-> 11 nodes · cohesion 0.25
+> 7 nodes · cohesion 0.48
 
 ## Key Concepts
 
-- **storage.rs** (8 connections) — `src/hardware/storage.rs`
-- **StorageMedium** (8 connections) — `src/hardware/storage.rs`
-- **StorageMediumInfo** (5 connections) — `src/hardware/storage.rs`
-- **diagnose_storage_medium()** (4 connections) — `src/hardware/storage.rs`
-- **probe_volume_seek_penalty()** (3 connections) — `src/hardware/storage.rs`
-- **test_storage_medium_info()** (2 connections) — `src/hardware/storage.rs`
-- **MechanicalHdd** (1 connections) — `src/hardware/storage.rs`
-- **Nvme** (1 connections) — `src/hardware/storage.rs`
-- **SataSsd** (1 connections) — `src/hardware/storage.rs`
-- **Unknown** (1 connections) — `src/hardware/storage.rs`
-- **UsbRemovable** (1 connections) — `src/hardware/storage.rs`
+- **goal_planner.rs** (14 connections) — `src/ui/views/goal_planner.rs`
+- **OptimizationGoal** (8 connections) — `src/graph/astar.rs`
+- **view()** (8 connections) — `src/ui/views/goal_planner.rs`
+- **metric_pill()** (5 connections) — `src/ui/views/goal_planner.rs`
+- **El** (3 connections)
+- **Color** (2 connections)
+- **.balanced_daily()** (1 connections) — `src/graph/astar.rs`
 
 ## Relationships
 
-- [adaptive_tuning.rs](adaptive_tuning.rs.md) (3 shared connections)
-- [deserialize](deserialize.md) (2 shared connections)
-- [FailAtMutationBackend](FailAtMutationBackend.md) (1 shared connections)
-- [probe_physical_drive](probe_physical_drive.md) (1 shared connections)
+- [.take_injected_error](take_injected_error.md) (5 shared connections)
+- [elevation.rs](elevation.rs.md) (4 shared connections)
+- [.Toggle .Set .Apply](Toggle_.Set_.Apply.md) (3 shared connections)
+- [WinBlastError](WinBlastError.md) (3 shared connections)
+- [task_scanner.rs](task_scanner.rs.md) (2 shared connections)
+- [action_button_guarded](action_button_guarded.md) (1 shared connections)
+- [Language](Language.md) (1 shared connections)
+- [updater.rs](updater.rs.md) (1 shared connections)
+- [advanced_matrix.rs](advanced_matrix.rs.md) (1 shared connections)
 
 ## Source Files
 
-- `src/hardware/storage.rs`
+- `src/graph/astar.rs`
+- `src/ui/views/goal_planner.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 20 (95%)
-- INFERRED: 1 (5%)
+- EXTRACTED: 27 (87%)
+- INFERRED: 4 (13%)
 - AMBIGUOUS: 0 (0%)
 
 ---

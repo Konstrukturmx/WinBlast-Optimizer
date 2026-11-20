@@ -1,8 +1,8 @@
 # SystemBackend
 
-> God node · 122 connections · `src/core/backend.rs`
+> God node · 124 connections · `src/core/backend.rs`
 
-**Community:** [full_telemetry_audit_with](full_telemetry_audit_with.md)
+**Community:** [startup.rs](startup.rs.md)
 
 ## Connections by Relation
 
@@ -19,9 +19,11 @@
 ### imports_from
 - tweak_sandbox_e2e.rs `EXTRACTED`
 - [app.rs](app.rs.md) `EXTRACTED`
+- preset_sharing.rs `EXTRACTED`
 - engine.rs `EXTRACTED`
 - scanner/mod.rs `EXTRACTED`
 - real_windows_env.rs `EXTRACTED`
+- fuzz_mutation_properties.rs `EXTRACTED`
 - [adaptive_tuning.rs](adaptive_tuning.rs.md) `EXTRACTED`
 - restore_point.rs `EXTRACTED`
 - [power_governor.rs](power_governor.rs.md) `EXTRACTED`
@@ -55,11 +57,11 @@
 ### references
 - [AppState](AppState.md) `EXTRACTED`
 - rollback_entry_with() `EXTRACTED`
+- apply_tweak_with() `EXTRACTED`
 - Changelog `EXTRACTED`
 - revert_tweak_with() `EXTRACTED`
-- apply_action_slice_with() `EXTRACTED`
-- apply_tweak_with() `EXTRACTED`
 - scan_single_tweak_with() `EXTRACTED`
+- apply_action_slice_with() `EXTRACTED`
 - [WinBlast Optimizer — Developer & Architecture Guide](WinBlast_Optimizer_—_Developer_&_Architecture_Guide.md) `EXTRACTED`
 - scan_all_tweaks_parallel_with() `EXTRACTED`
 - CachedScanBackend `EXTRACTED`
@@ -71,8 +73,8 @@
 - revert_tweaks_by_id_with() `EXTRACTED`
 - rollback_recorded_ids() `EXTRACTED`
 - evaluate_tweak_status() `EXTRACTED`
-- ensure_tweak_compatible() `EXTRACTED`
 - .new_with_backend() `EXTRACTED`
+- ensure_tweak_compatible() `EXTRACTED`
 - *…and 5 more `references` connection(s) not listed (lowest-degree first to go)*
 
 ---

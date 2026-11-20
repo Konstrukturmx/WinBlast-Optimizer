@@ -1,50 +1,52 @@
 # Dynamicdwordformula Logicalcorecount Totalraminkb
 
-> 21 nodes · cohesion 0.19
+> 28 nodes · cohesion 0.11
 
 ## Key Concepts
 
-- **StateLedger** (29 connections) — `src/backup/state_ledger.rs`
-- **state_ledger.rs** (11 connections) — `src/backup/state_ledger.rs`
-- **SystemBaseline** (9 connections) — `src/backup/state_ledger.rs`
-- **test_ledger_crud()** (8 connections) — `src/backup/state_ledger.rs`
-- **.get_initial_baseline()** (4 connections) — `src/backup/state_ledger.rs`
-- **.init_conn()** (4 connections) — `src/backup/state_ledger.rs`
-- **.query_single_baseline()** (4 connections) — `src/backup/state_ledger.rs`
-- **revert_tweak()** (4 connections) — `src/executor/engine.rs`
-- **Connection** (3 connections)
-- **DateTime** (3 connections)
-- **Utc** (3 connections)
-- **.get_history()** (3 connections) — `src/backup/state_ledger.rs`
-- **.get_latest_baseline()** (3 connections) — `src/backup/state_ledger.rs`
-- **.new()** (3 connections) — `src/backup/state_ledger.rs`
-- **.reset_baseline()** (3 connections) — `src/backup/state_ledger.rs`
-- **.save_baseline()** (3 connections) — `src/backup/state_ledger.rs`
-- **.in_memory()** (2 connections) — `src/backup/state_ledger.rs`
-- **.record_change()** (2 connections) — `src/backup/state_ledger.rs`
-- **.rollback_entry()** (2 connections) — `src/backup/state_ledger.rs`
-- **params** (1 connections)
-- **.clear_history()** (1 connections) — `src/backup/state_ledger.rs`
+- **in_progress_hud.rs** (33 connections) — `src/ui/widgets/in_progress_hud.rs`
+- **in_progress_hud()** (9 connections) — `src/ui/widgets/in_progress_hud.rs`
+- **build_typography_block()** (6 connections) — `src/ui/widgets/in_progress_hud.rs`
+- **build_indeterminate_track()** (5 connections) — `src/ui/widgets/in_progress_hud.rs`
+- **build_orbital_spinner()** (5 connections) — `src/ui/widgets/in_progress_hud.rs`
+- **El** (5 connections)
+- **ease_in_out_cubic()** (4 connections) — `src/ui/widgets/in_progress_hud.rs`
+- **format_elapsed()** (3 connections) — `src/ui/widgets/in_progress_hud.rs`
+- **wrap_and_truncate_status()** (3 connections) — `src/ui/widgets/in_progress_hud.rs`
+- **sanitize_elapsed()** (2 connections) — `src/ui/widgets/in_progress_hud.rs`
+- **test_cubic_ease_in_out()** (2 connections) — `src/ui/widgets/in_progress_hud.rs`
+- **test_format_elapsed()** (2 connections) — `src/ui/widgets/in_progress_hud.rs`
+- **test_wrap_and_truncate_status()** (2 connections) — `src/ui/widgets/in_progress_hud.rs`
+- **frac_pi_2** (1 connections)
+- **CARD_WIDTH** (1 connections) — `src/ui/widgets/in_progress_hud.rs`
+- **DOT_COUNT** (1 connections) — `src/ui/widgets/in_progress_hud.rs`
+- **DOT_PHASE_STEP** (1 connections) — `src/ui/widgets/in_progress_hud.rs`
+- **MAX_STATUS_CHARS_PER_LINE** (1 connections) — `src/ui/widgets/in_progress_hud.rs`
+- **MAX_STATUS_LINES** (1 connections) — `src/ui/widgets/in_progress_hud.rs`
+- **ORBIT_CYCLE_SECS** (1 connections) — `src/ui/widgets/in_progress_hud.rs`
+- **ORBIT_DRIFT_SECS** (1 connections) — `src/ui/widgets/in_progress_hud.rs`
+- **ORBIT_RADIUS** (1 connections) — `src/ui/widgets/in_progress_hud.rs`
+- **PROGRESS_CYCLE_SECS** (1 connections) — `src/ui/widgets/in_progress_hud.rs`
+- **SPINNER_CENTER** (1 connections) — `src/ui/widgets/in_progress_hud.rs`
+- **SPINNER_SIZE** (1 connections) — `src/ui/widgets/in_progress_hud.rs`
+- *... and 3 more nodes in this community*
 
 ## Relationships
 
-- [RealBackend](RealBackend.md) (17 shared connections)
-- [parse_guid](parse_guid.md) (3 shared connections)
-- [deserialize](deserialize.md) (2 shared connections)
-- [SlowScanBackend](SlowScanBackend.md) (2 shared connections)
-- [FailAtMutationBackend](FailAtMutationBackend.md) (1 shared connections)
-- [AppState](AppState.md) (1 shared connections)
-- [WorkerEvent](WorkerEvent.md) (1 shared connections)
+- [updater.rs](updater.rs.md) (5 shared connections)
+- [WinBlastError](WinBlastError.md) (4 shared connections)
+- [parking.rs](parking.rs.md) (1 shared connections)
+- [advanced_matrix.rs](advanced_matrix.rs.md) (1 shared connections)
+- [task_scanner.rs](task_scanner.rs.md) (1 shared connections)
 
 ## Source Files
 
-- `src/backup/state_ledger.rs`
-- `src/executor/engine.rs`
+- `src/ui/widgets/in_progress_hud.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 66 (100%)
-- INFERRED: 0 (0%)
+- EXTRACTED: 52 (96%)
+- INFERRED: 2 (4%)
 - AMBIGUOUS: 0 (0%)
 
 ---

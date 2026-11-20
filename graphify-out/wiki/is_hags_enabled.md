@@ -1,26 +1,22 @@
 # .is_hags_enabled
 
-> 3 nodes · cohesion 0.67
+> 1 nodes · cohesion 1.00
 
 ## Key Concepts
 
-- **.is_hags_enabled()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.is_hags_enabled()** (2 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.is_hags_enabled()** (2 connections) — `tests/tweak_sandbox_e2e.rs`
+- **widgets/mod.rs** (0 connections) — `src/ui/widgets/mod.rs`
 
 ## Relationships
 
-- [FailAtMutationBackend](FailAtMutationBackend.md) (1 shared connections)
-- [PanickingBackend](PanickingBackend.md) (1 shared connections)
-- [SlowScanBackend](SlowScanBackend.md) (1 shared connections)
+- No strong cross-community connections detected
 
 ## Source Files
 
-- `tests/tweak_sandbox_e2e.rs`
+- `src/ui/widgets/mod.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 5 (100%)
+- EXTRACTED: 0 (0%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

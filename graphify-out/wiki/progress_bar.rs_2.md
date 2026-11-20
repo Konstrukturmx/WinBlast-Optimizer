@@ -1,39 +1,41 @@
 # progress_bar.rs
 
-> 12 nodes · cohesion 0.39
+> 7 nodes · cohesion 0.48
 
 ## Key Concepts
 
-- **progress_bar.rs** (14 connections) — `src/ui/widgets/progress_bar.rs`
-- **rgb()** (10 connections) — `src/ui/theme.rs`
-- **rgba()** (8 connections) — `src/ui/theme.rs`
-- **progress_bar_styled()** (8 connections) — `src/ui/widgets/progress_bar.rs`
-- **Color** (6 connections)
-- **El** (6 connections)
-- **.card_fill_styled()** (5 connections) — `src/ui/theme.rs`
-- **progress_bar()** (5 connections) — `src/ui/widgets/progress_bar.rs`
-- **progress_bar_labeled()** (5 connections) — `src/ui/widgets/progress_bar.rs`
-- **.border_styled()** (4 connections) — `src/ui/theme.rs`
-- **progress_bar_indeterminate()** (4 connections) — `src/ui/widgets/progress_bar.rs`
-- **progress_bar_segmented()** (4 connections) — `src/ui/widgets/progress_bar.rs`
+- **RegTreeSnapshot** (24 connections) — `src/core/reg_helpers.rs`
+- **.reg_restore_tree()** (5 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.reg_snapshot_tree()** (5 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.reg_restore_tree()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.reg_snapshot_tree()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.reg_restore_tree()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.reg_snapshot_tree()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
 
 ## Relationships
 
-- [.Reg State() Vendor()](Reg_State_Vendor.md) (8 shared connections)
-- [Project History & Release Version Ledger](Project_History_&_Release_Version_Ledger.md) (7 shared connections)
-- [svc_mutator.rs](svc_mutator.rs.md) (6 shared connections)
-- [Disk Cleaning & Temporary File Purger](Disk_Cleaning_&_Temporary_File_Purger.md) (4 shared connections)
-- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (2 shared connections)
+- [WinBlast Optimizer](WinBlast_Optimizer.md) (6 shared connections)
+- [sys_inventory.rs](sys_inventory.rs.md) (4 shared connections)
+- [Project History & Release Version Ledger](Project_History_&_Release_Version_Ledger.md) (3 shared connections)
+- [Integration Suite: Tweak Sandbox E2E](Integration_Suite-_Tweak_Sandbox_E2E.md) (2 shared connections)
+- [startup.rs](startup.rs.md) (2 shared connections)
+- [clean_apps.rs](clean_apps.rs.md) (2 shared connections)
+- [SlowScanBackend](SlowScanBackend.md) (2 shared connections)
+- [DriverError](DriverError.md) (2 shared connections)
+- [InstalledAppxPackage](InstalledAppxPackage.md) (2 shared connections)
+- [tools/game_overlay.rs](tools-game_overlay.rs.md) (1 shared connections)
+- [deserialize](deserialize.md) (1 shared connections)
+- [backend.rs](backend.rs.md) (1 shared connections)
 
 ## Source Files
 
-- `src/ui/theme.rs`
-- `src/ui/widgets/progress_bar.rs`
+- `src/core/reg_helpers.rs`
+- `tests/tweak_sandbox_e2e.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 50 (94%)
-- INFERRED: 3 (6%)
+- EXTRACTED: 36 (90%)
+- INFERRED: 4 (10%)
 - AMBIGUOUS: 0 (0%)
 
 ---

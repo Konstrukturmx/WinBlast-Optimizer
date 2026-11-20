@@ -1,60 +1,50 @@
 # State Ledger & Restore Point Engine
 
-> 29 nodes · cohesion 0.10
+> 24 nodes · cohesion 0.16
 
 ## Key Concepts
 
-- **backend.rs** (77 connections) — `src/core/backend.rs`
-- **SystemMetrics** (14 connections) — `src/hardware/monitor.rs`
-- **MetricsSampler** (11 connections) — `src/core/backend.rs`
-- **test_sandbox_core_parking_labels_metrics_and_power_sync()** (7 connections) — `src/core/backend.rs`
-- **.new()** (5 connections) — `src/core/backend.rs`
-- **.restore_stock_parking()** (5 connections) — `src/core/backend.rs`
-- **SandboxMetricsSampler** (5 connections) — `src/core/backend.rs`
-- **SandboxTempDir** (5 connections) — `src/core/backend.rs`
-- **.create_metrics_sampler()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
-- **RwLock** (3 connections)
-- **.create_metrics_sampler()** (3 connections) — `src/core/backend.rs`
-- **.sample()** (3 connections) — `src/core/backend.rs`
-- **.new()** (3 connections) — `src/core/backend.rs`
-- **.create_metrics_sampler()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.create_metrics_sampler()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **Utc** (3 connections)
-- **DateTime** (2 connections)
-- **OnceLock** (2 connections)
-- **.sample()** (2 connections) — `src/core/backend.rs`
-- **.create_metrics_sampler()** (2 connections) — `src/core/backend.rs`
-- **.default()** (2 connections) — `src/core/backend.rs`
-- **.default()** (2 connections) — `src/core/backend.rs`
-- **.default()** (2 connections) — `src/core/backend.rs`
-- **.create_metrics_sampler()** (2 connections) — `src/core/backend.rs`
-- **SystemMonitor** (2 connections) — `src/core/backend.rs`
-- *... and 4 more nodes in this community*
+- **LazyLoader** (19 connections) — `src/hardware/lazy_loader.rs`
+- **LazyPayload** (12 connections) — `src/hardware/lazy_loader.rs`
+- **.spawn_probe()** (10 connections) — `src/hardware/lazy_loader.rs`
+- **background_probe_delivers_payload_without_blocking()** (5 connections) — `src/hardware/lazy_loader.rs`
+- **.is_any_loading()** (5 connections) — `src/hardware/lazy_loader.rs`
+- **.new()** (5 connections) — `src/hardware/lazy_loader.rs`
+- **background_panic_is_contained_and_clears_in_flight_flag()** (4 connections) — `src/hardware/lazy_loader.rs`
+- **.spawn_probe_drivers()** (4 connections) — `src/hardware/lazy_loader.rs`
+- **.try_recv()** (4 connections) — `src/hardware/lazy_loader.rs`
+- **.drain_ready()** (3 connections) — `src/hardware/lazy_loader.rs`
+- **.is_drivers_loading()** (3 connections) — `src/hardware/lazy_loader.rs`
+- **.spawn_probe_bios()** (3 connections) — `src/hardware/lazy_loader.rs`
+- **.spawn_probe_disks()** (3 connections) — `src/hardware/lazy_loader.rs`
+- **.spawn_probe_thermals()** (3 connections) — `src/hardware/lazy_loader.rs`
+- **Drivers** (3 connections) — `src/hardware/lazy_loader.rs`
+- **.default()** (2 connections) — `src/hardware/lazy_loader.rs`
+- **.is_bios_loading()** (2 connections) — `src/hardware/lazy_loader.rs`
+- **.is_disks_loading()** (2 connections) — `src/hardware/lazy_loader.rs`
+- **.is_thermals_loading()** (2 connections) — `src/hardware/lazy_loader.rs`
+- **Bios** (2 connections) — `src/hardware/lazy_loader.rs`
+- **Disks** (2 connections) — `src/hardware/lazy_loader.rs`
+- **Thermals** (2 connections) — `src/hardware/lazy_loader.rs`
+- **try_recv_is_non_blocking_when_empty()** (2 connections) — `src/hardware/lazy_loader.rs`
+- **F** (1 connections)
 
 ## Relationships
 
-- [GPU Silicon & Hardware Tuning Policies](GPU_Silicon_&_Hardware_Tuning_Policies.md) (7 shared connections)
-- [reg_mutator.rs](reg_mutator.rs.md) (5 shared connections)
-- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (4 shared connections)
-- [Error.Rs Winblasterror Appx](Error.Rs_Winblasterror_Appx.md) (4 shared connections)
-- [startup.rs](startup.rs.md) (4 shared connections)
-- [SlowScanBackend](SlowScanBackend.md) (4 shared connections)
-- [in_progress_hud.rs](in_progress_hud.rs.md) (4 shared connections)
-- [RegRawSnapshot](RegRawSnapshot.md) (4 shared connections)
-- [parking.rs](parking.rs.md) (3 shared connections)
-- [parse_guid](parse_guid.md) (3 shared connections)
-- [FailAtMutationBackend](FailAtMutationBackend.md) (3 shared connections)
-- [DriverUpdateItem](DriverUpdateItem.md) (3 shared connections)
+- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (8 shared connections)
+- [sys_inventory.rs](sys_inventory.rs.md) (2 shared connections)
+- [lazy_loader.rs](lazy_loader.rs.md) (2 shared connections)
+- [CoreParkingState](CoreParkingState.md) (1 shared connections)
+- [deserialize](deserialize.md) (1 shared connections)
+- [Multi-Language Tweak Localization Tables](Multi-Language_Tweak_Localization_Tables.md) (1 shared connections)
 
 ## Source Files
 
-- `src/core/backend.rs`
-- `src/hardware/monitor.rs`
-- `tests/tweak_sandbox_e2e.rs`
+- `src/hardware/lazy_loader.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 137 (100%)
+- EXTRACTED: 59 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

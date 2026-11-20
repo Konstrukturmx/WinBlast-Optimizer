@@ -1137,6 +1137,66 @@ pub fn lookup(id: &str) -> Option<LocalizedTweakText> {
             description: "Deshabilita la recopilación de datos de diagnóstico de Microsoft Office, las solicitudes de comentarios y la telemetría del Programa para la mejora de la experiencia del cliente (CEIP).",
             broken_features: &[],
         }),
+        "set_this_pc_as_default_explorer" => Some(LocalizedTweakText {
+            title: "Establecer 'Este equipo' como vista predeterminada del Explorador",
+            description: "Configura el Explorador de archivos para que se abra en 'Este equipo' en lugar de 'Inicio', evitando retrasos de sincronización al inicio.",
+            broken_features: &[],
+        }),
+        "enable_taskbar_end_task" => Some(LocalizedTweakText {
+            title: "Habilitar 'Finalizar tarea' con clic derecho en la barra de tareas",
+            description: "Habilita la opción nativa de Windows 11 'Finalizar tarea' directamente en la barra de tareas sin abrir el Administrador de tareas.",
+            broken_features: &[],
+        }),
+        "disable_oobe_privacy_experience" => Some(LocalizedTweakText {
+            title: "Desactivar avisos de configuración de privacidad OOBE de Windows",
+            description: "Suprime los avisos multipágina de configuración de privacidad OOBE durante la creación de cuentas de usuario y actualizaciones.",
+            broken_features: &[],
+        }),
+        "disable_explorer_sync_provider_ads" => Some(LocalizedTweakText {
+            title: "Desactivar anuncios del proveedor de sincronización en el Explorador",
+            description: "Evita que el Explorador muestre anuncios y promociones de suscripción a OneDrive y Microsoft 365.",
+            broken_features: &[],
+        }),
+        "disable_taskbar_task_view" => Some(LocalizedTweakText {
+            title: "Desactivar botón de Vista de tareas en la barra de tareas",
+            description: "Oculta el icono de Vista de tareas de la barra de tareas para ahorrar espacio, manteniendo los atajos Alt+Tab.",
+            broken_features: &[],
+        }),
+        "hide_taskbar_meet_now" => Some(LocalizedTweakText {
+            title: "Ocultar el botón 'Reunirse ahora' y Chat de la barra de tareas",
+            description: "Oculta el botón integrado de Reunirse ahora y Microsoft Teams de la barra de tareas.",
+            broken_features: &[],
+        }),
+        "disable_background_apps_global" => Some(LocalizedTweakText {
+            title: "Desactivar aplicaciones en segundo plano de forma global",
+            description: "Evita que las aplicaciones de la Tienda y UWP se ejecuten en segundo plano y consuman CPU/RAM cuando están cerradas.",
+            broken_features: &[],
+        }),
+        "disable_finish_setup_ads" => Some(LocalizedTweakText {
+            title: "Desactivar avisos de pantalla completa 'Terminar de configurar'",
+            description: "Desactiva las pantallas emergentes que sugieren suscribirse a Microsoft 365 o configurar OneDrive tras reiniciar.",
+            broken_features: &[],
+        }),
+        "disable_lockscreen_spotlight_ads" => Some(LocalizedTweakText {
+            title: "Desactivar consejos y publicidad en la pantalla de bloqueo",
+            description: "Elimina los consejos promocionales y enlaces publicitarios que aparecen en la pantalla de bloqueo de Windows.",
+            broken_features: &[],
+        }),
+        "disable_welcome_experience_ads" => Some(LocalizedTweakText {
+            title: "Desactivar pantallas de bienvenida promocionales de Windows",
+            description: "Bloquea las pantallas emergentes que muestran novedades de Microsoft Edge y Copilot tras las actualizaciones.",
+            broken_features: &[],
+        }),
+        "disable_general_tips_ads" => Some(LocalizedTweakText {
+            title: "Desactivar sugerencias, consejos y trucos de Windows",
+            description: "Desactiva los consejos generales del sistema y las sugerencias en las notificaciones del escritorio.",
+            broken_features: &[],
+        }),
+        "enable_windowed_game_optimizations" => Some(LocalizedTweakText {
+            title: "Habilitar optimizaciones para juegos en ventana",
+            description: "Habilita el modelo de presentación moderno de Windows 11 (flip model) para juegos en ventana, reduciendo la latencia de entrada y activando VRR.",
+            broken_features: &[],
+        }),
         _ => None,
     }
 }

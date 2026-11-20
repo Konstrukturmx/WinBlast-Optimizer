@@ -1,31 +1,45 @@
 # Hardware Diagnostics & GPU Silicon Tuning
 
-> 8 nodes · cohesion 0.25
+> 13 nodes · cohesion 0.17
 
 ## Key Concepts
 
-- **test_status_i18n_all_languages_and_core_specs()** (8 connections) — `src/core/status_i18n.rs`
-- **LanguageChanged** (3 connections) — `src/core/status_i18n.rs`
-- **test_turkish_language_changed_status_message()** (3 connections) — `src/core/status_i18n.rs`
-- **BatchCompleted** (2 connections) — `src/core/status_i18n.rs`
-- **HagsUpdated** (2 connections) — `src/core/status_i18n.rs`
-- **MpoUpdated** (2 connections) — `src/core/status_i18n.rs`
-- **ScanCompleted** (2 connections) — `src/core/status_i18n.rs`
-- **ScanFailed** (2 connections) — `src/core/status_i18n.rs`
+- **lazy_loader.rs** (26 connections) — `src/hardware/lazy_loader.rs`
+- **arc** (9 connections)
+- **extract_panic_message()** (3 connections) — `src/hardware/lazy_loader.rs`
+- **InFlightGuard** (3 connections) — `src/hardware/lazy_loader.rs`
+- **thread** (3 connections)
+- **Any** (2 connections)
+- **Receiver** (2 connections)
+- **Sender** (2 connections)
+- **panic** (1 connections)
+- **assert_send_sync()** (1 connections) — `src/hardware/lazy_loader.rs`
+- **.drop()** (1 connections) — `src/hardware/lazy_loader.rs`
+- **lazy_loader_is_send_and_sync()** (1 connections) — `src/hardware/lazy_loader.rs`
+- **unbounded** (1 connections)
 
 ## Relationships
 
-- [.Toggle .Set .Apply](Toggle_.Set_.Apply.md) (6 shared connections)
-- [ps_runner.rs](ps_runner.rs.md) (2 shared connections)
-- [Win32 Registry Scanner & Mutator](Win32_Registry_Scanner_&_Mutator.md) (2 shared connections)
+- [State Ledger & Restore Point Engine](State_Ledger_&_Restore_Point_Engine.md) (8 shared connections)
+- [deserialize](deserialize.md) (2 shared connections)
+- [AppState](AppState.md) (2 shared connections)
+- [enums](enums.md) (2 shared connections)
+- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (2 shared connections)
+- [sys_inventory.rs](sys_inventory.rs.md) (2 shared connections)
+- [SlowScanBackend](SlowScanBackend.md) (1 shared connections)
+- [theme.rs](theme.rs.md) (1 shared connections)
+- [Scandetailkind Appxinstalled Appxinstalledps](Scandetailkind_Appxinstalled_Appxinstalledps.md) (1 shared connections)
+- [Runtime](Runtime.md) (1 shared connections)
+- [.take_injected_error](take_injected_error.md) (1 shared connections)
+- [CoreParkingState](CoreParkingState.md) (1 shared connections)
 
 ## Source Files
 
-- `src/core/status_i18n.rs`
+- `src/hardware/lazy_loader.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 17 (100%)
+- EXTRACTED: 42 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

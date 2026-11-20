@@ -1,50 +1,53 @@
 # backend.rs
 
-> 17 nodes · cohesion 0.12
+> 23 nodes · cohesion 0.15
 
 ## Key Concepts
 
-- **real_windows_env.rs** (33 connections) — `tests/real_windows_env.rs`
-- **uuid** (4 connections)
-- **TempTestEnvGuard** (3 connections) — `tests/real_windows_env.rs`
-- **test_real_backend_readonly_live_host_audit()** (3 connections) — `tests/real_windows_env.rs`
-- **gpuvendor** (2 connections)
-- **regvalue** (2 connections)
-- **HkcuTestEnvGuard** (2 connections) — `tests/real_windows_env.rs`
-- **.new()** (2 connections) — `tests/real_windows_env.rs`
-- **test_ntfs_junction_and_readonly_cleanup_sandbox()** (2 connections) — `tests/real_windows_env.rs`
-- **tweakstate** (2 connections)
-- **is_known_numeric_reg_sz** (1 connections)
-- **realbackend** (1 connections)
-- **run_full_scan_with** (1 connections)
-- **FILE_ATTRIBUTE_REPARSE_POINT** (1 connections) — `tests/real_windows_env.rs`
-- **.drop()** (1 connections) — `tests/real_windows_env.rs`
-- **.drop()** (1 connections) — `tests/real_windows_env.rs`
-- **test_real_windows_disk_and_thermal_telemetry()** (1 connections) — `tests/real_windows_env.rs`
+- **UiThemeStyle** (32 connections) — `src/ui/theme.rs`
+- **.build_dark()** (14 connections) — `src/ui/theme.rs`
+- **.build_light()** (14 connections) — `src/ui/theme.rs`
+- **rgba()** (8 connections) — `src/ui/theme.rs`
+- **.border_styled()** (4 connections) — `src/ui/theme.rs`
+- **.badge_radius()** (3 connections) — `src/ui/theme.rs`
+- **.border_width()** (3 connections) — `src/ui/theme.rs`
+- **.btn_radius()** (3 connections) — `src/ui/theme.rs`
+- **.card_padding()** (3 connections) — `src/ui/theme.rs`
+- **.card_radius()** (3 connections) — `src/ui/theme.rs`
+- **.input_radius()** (3 connections) — `src/ui/theme.rs`
+- **.sidebar_width()** (3 connections) — `src/ui/theme.rs`
+- **.set_theme_style()** (2 connections) — `src/app.rs`
+- **.ALL** (1 connections) — `src/ui/theme.rs`
+- **Classic** (1 connections) — `src/ui/theme.rs`
+- **Compact** (1 connections) — `src/ui/theme.rs`
+- **.easing_curve()** (1 connections) — `src/ui/theme.rs`
+- **.easing_duration_ms()** (1 connections) — `src/ui/theme.rs`
+- **Glassy** (1 connections) — `src/ui/theme.rs`
+- **.label()** (1 connections) — `src/ui/theme.rs`
+- **Materialistic** (1 connections) — `src/ui/theme.rs`
+- **Minimalistic** (1 connections) — `src/ui/theme.rs`
+- **.short_label()** (1 connections) — `src/ui/theme.rs`
 
 ## Relationships
 
-- [super](super.md) (4 shared connections)
-- [privacy_shield.rs](privacy_shield.rs.md) (2 shared connections)
-- [registry_scanner.rs](registry_scanner.rs.md) (2 shared connections)
-- [startup.rs](startup.rs.md) (2 shared connections)
-- [.take_injected_error](take_injected_error.md) (1 shared connections)
-- [SlowScanBackend](SlowScanBackend.md) (1 shared connections)
-- [InstalledAppxPackage](InstalledAppxPackage.md) (1 shared connections)
-- [full_telemetry_audit_with](full_telemetry_audit_with.md) (1 shared connections)
-- [DriverUpdateState](DriverUpdateState.md) (1 shared connections)
-- [enums](enums.md) (1 shared connections)
-- [DriverError](DriverError.md) (1 shared connections)
-- [updater.rs](updater.rs.md) (1 shared connections)
+- [updater.rs](updater.rs.md) (11 shared connections)
+- [.setup](setup.md) (5 shared connections)
+- [driver_update.rs](driver_update.rs.md) (4 shared connections)
+- [boot_config.rs](boot_config.rs.md) (4 shared connections)
+- [.Toggle .Set .Apply](Toggle_.Set_.Apply.md) (2 shared connections)
+- [Language](Language.md) (1 shared connections)
+- [advanced_matrix.rs](advanced_matrix.rs.md) (1 shared connections)
+- [WinBlastError](WinBlastError.md) (1 shared connections)
 
 ## Source Files
 
-- `tests/real_windows_env.rs`
+- `src/app.rs`
+- `src/ui/theme.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 43 (96%)
-- INFERRED: 2 (4%)
+- EXTRACTED: 62 (93%)
+- INFERRED: 5 (7%)
 - AMBIGUOUS: 0 (0%)
 
 ---

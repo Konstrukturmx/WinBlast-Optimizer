@@ -1349,6 +1349,66 @@ pub fn lookup(id: &str) -> Option<LocalizedTweakText> {
             description: "Microsoft Office の診断数据收集、フィードバック プロンプト、カスタマー エクスペリエンス向上プログラム (CEIP) テレメトリを無効にします。",
             broken_features: &[],
         }),
+        "set_this_pc_as_default_explorer" => Some(LocalizedTweakText {
+            title: "「PC」をエクスプローラーのデフォルト起動ビューに設定",
+            description: "ファイルエクスプローラーの初期フォルダーを「ホーム」ではなく「PC」に設定し、起動時のネットワーク遅延を防ぎます。",
+            broken_features: &[],
+        }),
+        "enable_taskbar_end_task" => Some(LocalizedTweakText {
+            title: "タスクバーの右クリックに「タスクの終了」を有効化",
+            description: "Windows 11のタスクバーアイコン右クリックメニューに「タスクの終了」を追加し、タスクマネージャーを開かずに即時終了できます。",
+            broken_features: &[],
+        }),
+        "disable_oobe_privacy_experience" => Some(LocalizedTweakText {
+            title: "Windows OOBE プライバシー設定画面を無効化",
+            description: "新規ユーザー作成時や大型アップデート後に表示される複数ページのOOBEプライバシー設定画面をポリシーで抑止します。",
+            broken_features: &[],
+        }),
+        "disable_explorer_sync_provider_ads" => Some(LocalizedTweakText {
+            title: "エクスプローラーの同期プロバイダー広告を無効化",
+            description: "フォルダーウィンドウ内に表示されるOneDriveやMicrosoft 365のサブスクリプション広告バナーを停止します。",
+            broken_features: &[],
+        }),
+        "disable_taskbar_task_view" => Some(LocalizedTweakText {
+            title: "タスクバーの「タスクビュー」ボタンを非表示",
+            description: "タスクバー上のタスクビューアイコンを非表示にして領域を節約します。Alt+Tabなどの切り替えはそのまま使用可能です。",
+            broken_features: &[],
+        }),
+        "hide_taskbar_meet_now" => Some(LocalizedTweakText {
+            title: "タスクバーの「今すぐ会議」・チャットボタンを非表示",
+            description: "タスクバーおよび通知領域からMicrosoft Teamsの「今すぐ会議」とチャットボタンを非表示にします。",
+            broken_features: &[],
+        }),
+        "disable_background_apps_global" => Some(LocalizedTweakText {
+            title: "バックグラウンドアプリの実行を一括無効化",
+            description: "UWPおよびストアアプリが閉じられた状態でもバックグラウンドで動作し、CPUやRAMを浪費するのを一括で防ぎます。",
+            broken_features: &[],
+        }),
+        "disable_finish_setup_ads" => Some(LocalizedTweakText {
+            title: "「デバイスのセットアップを完了する」全画面表示を無効化",
+            description: "PC再起動後に表示されるMicrosoft 365やOneDriveの購読を促す全画面リマインダーを停止します。",
+            broken_features: &[],
+        }),
+        "disable_lockscreen_spotlight_ads" => Some(LocalizedTweakText {
+            title: "ロック画面のヒント・トリビアおよびおすすめ広告を無効化",
+            description: "Windowsロック画面に表示される広告オーバーレイやヒント、ウェブリンクの宣伝を非表示にします。",
+            broken_features: &[],
+        }),
+        "disable_welcome_experience_ads" => Some(LocalizedTweakText {
+            title: "アップデート後のWindowsウェルカムプロモーション画面を無効化",
+            description: "更新適用後に自動起動する「新機能のご案内」やEdge・Copilotのマーケティング案内画面をブロックします。",
+            broken_features: &[],
+        }),
+        "disable_general_tips_ads" => Some(LocalizedTweakText {
+            title: "Windowsの提案・ヒントとテクニックの通知バナーを無効化",
+            description: "ContentDeliveryManagerから配信される日常的な機能提案、ヒント、およびトレイ通知を無効化します。",
+            broken_features: &[],
+        }),
+        "enable_windowed_game_optimizations" => Some(LocalizedTweakText {
+            title: "ウィンドウゲームの最適化を有効化",
+            description: "ウィンドウ表示およびボーダーレスゲームにWindows 11の最新フリップモデルを適用し、入力遅延を低减してVRRとAuto HDRを有効化します。",
+            broken_features: &[],
+        }),
         _ => None,
     }
 }

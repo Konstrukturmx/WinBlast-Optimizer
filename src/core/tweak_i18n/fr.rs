@@ -1137,6 +1137,66 @@ pub fn lookup(id: &str) -> Option<LocalizedTweakText> {
             description: "Désactive la collecte des données de diagnostic, les demandes de commentaires et la télémétrie du Programme d'amélioration de l'expérience utilisateur (CEIP) d'Office.",
             broken_features: &[],
         }),
+        "set_this_pc_as_default_explorer" => Some(LocalizedTweakText {
+            title: "Définir 'Ce PC' comme vue par défaut de l'Explorateur de fichiers",
+            description: "Configure l'Explorateur de fichiers pour qu'il s'ouvre sur 'Ce PC' plutôt que sur 'Accueil', évitant ainsi les ralentissements au lancement.",
+            broken_features: &[],
+        }),
+        "enable_taskbar_end_task" => Some(LocalizedTweakText {
+            title: "Activer 'Fin de tâche' par clic droit dans la barre des tâches",
+            description: "Active l'option native Windows 11 'Fin de tâche' directement dans le menu contextuel de la barre des tâches sans ouvrir le Gestionnaire des tâches.",
+            broken_features: &[],
+        }),
+        "disable_oobe_privacy_experience" => Some(LocalizedTweakText {
+            title: "Désactiver les invites de configuration de confidentialité OOBE",
+            description: "Supprime les invites multipages de paramètres de confidentialité OOBE lors de la création d'utilisateurs et après les mises à jour.",
+            broken_features: &[],
+        }),
+        "disable_explorer_sync_provider_ads" => Some(LocalizedTweakText {
+            title: "Désactiver les publicités de synchronisation dans l'Explorateur",
+            description: "Empêche l'Explorateur d'afficher des bannières promotionnelles pour OneDrive et Microsoft 365.",
+            broken_features: &[],
+        }),
+        "disable_taskbar_task_view" => Some(LocalizedTweakText {
+            title: "Désactiver le bouton Affichage des tâches dans la barre des tâches",
+            description: "Masque l'icône Affichage des tâches de la barre des tâches pour libérer de l'espace tout en conservant Alt+Tab.",
+            broken_features: &[],
+        }),
+        "hide_taskbar_meet_now" => Some(LocalizedTweakText {
+            title: "Masquer le bouton 'Réunion immédiate' et Chat de la barre des tâches",
+            description: "Masque le bouton de conversation Microsoft Teams et Réunion immédiate de la barre des tâches.",
+            broken_features: &[],
+        }),
+        "disable_background_apps_global" => Some(LocalizedTweakText {
+            title: "Désactiver l'exécution des applications en arrière-plan globalement",
+            description: "Empêche les applications du Windows Store et UWP de s'exécuter en arrière-plan et de consommer des ressources lorsqu'elles sont fermées.",
+            broken_features: &[],
+        }),
+        "disable_finish_setup_ads" => Some(LocalizedTweakText {
+            title: "Désactiver les invites plein écran 'Terminer la configuration'",
+            description: "Désactive les écrans de rappel récurrents incitant à s'abonner à Microsoft 365 ou OneDrive après le démarrage.",
+            broken_features: &[],
+        }),
+        "disable_lockscreen_spotlight_ads" => Some(LocalizedTweakText {
+            title: "Désactiver les conseils et publicités sur l'écran de verrouillage",
+            description: "Supprime les bannières publicitaires, astuces et promotions affichées sur l'écran de verrouillage de Windows.",
+            broken_features: &[],
+        }),
+        "disable_welcome_experience_ads" => Some(LocalizedTweakText {
+            title: "Désactiver les écrans de bienvenue promotionnels après mise à jour",
+            description: "Bloque les fenêtres 'Nouveautés' et d'expérience d'accueil affichant du contenu marketing pour Edge ou Copilot.",
+            broken_features: &[],
+        }),
+        "disable_general_tips_ads" => Some(LocalizedTweakText {
+            title: "Désactiver les suggestions, astuces et conseils de Windows",
+            description: "Désactive les conseils génériques et recommandations de fonctionnalités poussés par ContentDeliveryManager.",
+            broken_features: &[],
+        }),
+        "enable_windowed_game_optimizations" => Some(LocalizedTweakText {
+            title: "Activer les optimisations pour les jeux en mode fenêtré",
+            description: "Active le modèle de présentation moderne de Windows 11 (flip model) pour les jeux fenêtrés, réduisant la latence et activant VRR.",
+            broken_features: &[],
+        }),
         _ => None,
     }
 }

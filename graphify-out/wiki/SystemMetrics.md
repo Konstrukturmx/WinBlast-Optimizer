@@ -1,32 +1,34 @@
 # SystemMetrics
 
-> 8 nodes · cohesion 0.25
+> 10 nodes · cohesion 0.27
 
 ## Key Concepts
 
-- **PdhParkingCollector** (7 connections) — `src/hardware/monitor.rs`
-- **compute_nt_cpu_deltas()** (4 connections) — `src/hardware/monitor.rs`
-- **parse_pdh_processor_instance()** (3 connections) — `src/hardware/monitor.rs`
-- **test_nt_cpu_delta_handles_idledisable_and_multigroup()** (3 connections) — `src/hardware/monitor.rs`
-- **PDH_HCOUNTER** (2 connections)
-- **PDH_HQUERY** (2 connections)
-- **.sample()** (2 connections) — `src/hardware/monitor.rs`
-- **.drop()** (1 connections) — `src/hardware/monitor.rs`
+- **tools/game_overlay.rs** (7 connections) — `src/tools/game_overlay.rs`
+- **GameOverlaySettings** (6 connections) — `src/tools/game_overlay.rs`
+- **GameSuitabilityReport** (5 connections) — `src/tools/game_overlay.rs`
+- **.default()** (2 connections) — `src/tools/game_overlay.rs`
+- **.read_live()** (2 connections) — `src/tools/game_overlay.rs`
+- **.default()** (2 connections) — `src/tools/game_overlay.rs`
+- **.evaluate()** (2 connections) — `src/tools/game_overlay.rs`
+- **SuitabilityCheck** (2 connections) — `src/tools/game_overlay.rs`
+- **.set_game_dvr_disabled()** (1 connections) — `src/tools/game_overlay.rs`
+- **.set_game_mode_enabled()** (1 connections) — `src/tools/game_overlay.rs`
 
 ## Relationships
 
-- [parking.rs](parking.rs.md) (6 shared connections)
-- [path](path.md) (3 shared connections)
-- [progress_bar.rs](progress_bar.rs.md) (1 shared connections)
+- [Reversibility Instant Requireslogoff](Reversibility_Instant_Requireslogoff.md) (2 shared connections)
+- [CoreParkingState](CoreParkingState.md) (2 shared connections)
+- [.Toggle .Set .Apply](Toggle_.Set_.Apply.md) (2 shared connections)
 
 ## Source Files
 
-- `src/hardware/monitor.rs`
+- `src/tools/game_overlay.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 16 (94%)
-- INFERRED: 1 (6%)
+- EXTRACTED: 16 (89%)
+- INFERRED: 2 (11%)
 - AMBIGUOUS: 0 (0%)
 
 ---

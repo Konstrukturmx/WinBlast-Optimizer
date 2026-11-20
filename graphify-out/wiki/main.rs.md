@@ -1,18 +1,26 @@
 # main.rs
 
-> 1 nodes · cohesion 1.00
+> 3 nodes · cohesion 0.67
 
 ## Key Concepts
 
-- **DateTime** (0 connections)
+- **.run_scheduled_task()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.run_scheduled_task()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.run_scheduled_task()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
 
 ## Relationships
 
-- No strong cross-community connections detected
+- [WinBlast Optimizer](WinBlast_Optimizer.md) (3 shared connections)
+- [sys_inventory.rs](sys_inventory.rs.md) (2 shared connections)
+- [InstalledAppxPackage](InstalledAppxPackage.md) (1 shared connections)
+
+## Source Files
+
+- `tests/tweak_sandbox_e2e.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 0 (0%)
+- EXTRACTED: 8 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

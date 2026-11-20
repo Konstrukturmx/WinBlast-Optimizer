@@ -1,53 +1,59 @@
 # .Reg .Set Power
 
-> 62 nodes · cohesion 0.06
+> 55 nodes · cohesion 0.06
 
 ## Key Concepts
 
-- **heuristic_scanner.rs** (41 connections) — `src/tools/heuristic_scanner.rs`
-- **.scan_line()** (20 connections) — `src/tools/heuristic_scanner.rs`
-- **BugRule** (9 connections) — `src/tools/heuristic_scanner.rs`
-- **HeuristicBugScanner** (9 connections) — `src/tools/heuristic_scanner.rs`
-- **Severity** (8 connections) — `src/tools/heuristic_scanner.rs`
-- **.scan_source_with()** (7 connections) — `src/tools/heuristic_scanner.rs`
-- **emit_finding()** (6 connections) — `src/tools/heuristic_scanner.rs`
-- **.scan_source()** (6 connections) — `src/tools/heuristic_scanner.rs`
-- **is_ident_byte()** (6 connections) — `src/tools/heuristic_scanner.rs`
-- **ScanReport** (6 connections) — `src/tools/heuristic_scanner.rs`
-- **FileScanState** (5 connections) — `src/tools/heuristic_scanner.rs`
-- **.new()** (5 connections) — `src/tools/heuristic_scanner.rs`
-- **.scan_directory()** (5 connections) — `src/tools/heuristic_scanner.rs`
-- **.scan_single_file()** (5 connections) — `src/tools/heuristic_scanner.rs`
-- **is_indexing_hazard()** (5 connections) — `src/tools/heuristic_scanner.rs`
-- **matches_keyword_at()** (5 connections) — `src/tools/heuristic_scanner.rs`
-- **OwnedFinding** (5 connections) — `src/tools/heuristic_scanner.rs`
-- **ScanStats** (5 connections) — `src/tools/heuristic_scanner.rs`
-- **fs** (4 connections)
-- **.to_owned_finding()** (4 connections) — `src/tools/heuristic_scanner.rs`
-- **matches_truncating_cast()** (4 connections) — `src/tools/heuristic_scanner.rs`
-- **ScannerConfig** (4 connections) — `src/tools/heuristic_scanner.rs`
-- **.default_severity()** (3 connections) — `src/tools/heuristic_scanner.rs`
-- **contains_bytes()** (3 connections) — `src/tools/heuristic_scanner.rs`
-- **detects_all_four_hazard_categories()** (3 connections) — `src/tools/heuristic_scanner.rs`
-- *... and 37 more nodes in this community*
+- **automation.rs** (32 connections) — `src/tools/automation.rs`
+- **AutoTuneProfile** (17 connections) — `src/tools/automation.rs`
+- **MaintenanceTaskKind** (14 connections) — `src/tools/automation.rs`
+- **create_auto_tune_plan()** (8 connections) — `src/tools/automation.rs`
+- **OverallHealthGrade** (7 connections) — `src/tools/automation.rs`
+- **query_all_maintenance_tasks()** (7 connections) — `src/tools/automation.rs`
+- **.toggle_maintenance_task()** (6 connections) — `src/app.rs`
+- **install_maintenance_task()** (6 connections) — `src/tools/automation.rs`
+- **.task_name()** (6 connections) — `src/tools/automation.rs`
+- **.execute_auto_tune_profile()** (5 connections) — `src/app.rs`
+- **HealthSeverity** (5 connections) — `src/tools/automation.rs`
+- **is_maintenance_task_installed()** (5 connections) — `src/tools/automation.rs`
+- **SystemHealthAssessment** (5 connections) — `src/tools/automation.rs`
+- **test_iso_29119_maintenance_tasks_specification()** (5 connections) — `src/tools/automation.rs`
+- **.refresh_system_health()** (4 connections) — `src/app.rs`
+- **assess_system_health()** (4 connections) — `src/tools/automation.rs`
+- **AutoTunePlan** (4 connections) — `src/tools/automation.rs`
+- **.target_risk_level()** (4 connections) — `src/tools/automation.rs`
+- **MaintenanceTaskStatus** (4 connections) — `src/tools/automation.rs`
+- **remove_maintenance_task()** (4 connections) — `src/tools/automation.rs`
+- **test_iso_29119_auto_tune_plan_generation_all_profiles()** (4 connections) — `src/tools/automation.rs`
+- **.execute_memory_trim()** (3 connections) — `src/app.rs`
+- **.generate_auto_tune_plan()** (3 connections) — `src/app.rs`
+- **.refresh_maintenance_tasks()** (3 connections) — `src/app.rs`
+- **AutoTuneResult** (3 connections) — `src/tools/automation.rs`
+- *... and 30 more nodes in this community*
 
 ## Relationships
 
-- [task_scanner.rs](task_scanner.rs.md) (1 shared connections)
-- [startup.rs](startup.rs.md) (1 shared connections)
-- [backend.rs](backend.rs.md) (1 shared connections)
-- [PowerSchemeInfo](PowerSchemeInfo.md) (1 shared connections)
-- [.setup](setup.md) (1 shared connections)
-- [FailAtMutationBackend](FailAtMutationBackend.md) (1 shared connections)
+- [.Toggle .Set .Apply](Toggle_.Set_.Apply.md) (15 shared connections)
+- [Reversibility Instant Requireslogoff](Reversibility_Instant_Requireslogoff.md) (3 shared connections)
+- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (2 shared connections)
+- [Win32 Registry Scanner & Mutator](Win32_Registry_Scanner_&_Mutator.md) (2 shared connections)
+- [CoreParkingState](CoreParkingState.md) (2 shared connections)
+- [theme.rs](theme.rs.md) (2 shared connections)
+- [AppxCache](AppxCache.md) (1 shared connections)
+- [app.rs](app.rs.md) (1 shared connections)
+- [parking.rs](parking.rs.md) (1 shared connections)
+- [Project Documentation, Architecture & Licensing](Project_Documentation,_Architecture_&_Licensing.md) (1 shared connections)
+- [WinBlastError](WinBlastError.md) (1 shared connections)
 
 ## Source Files
 
-- `src/tools/heuristic_scanner.rs`
+- `src/app.rs`
+- `src/tools/automation.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 127 (100%)
-- INFERRED: 0 (0%)
+- EXTRACTED: 111 (92%)
+- INFERRED: 10 (8%)
 - AMBIGUOUS: 0 (0%)
 
 ---

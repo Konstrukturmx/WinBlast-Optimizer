@@ -1,60 +1,52 @@
 # WorkerEvent
 
-> 46 nodes · cohesion 0.07
+> 19 nodes · cohesion 0.21
 
 ## Key Concepts
 
-- **WorkerEvent** (81 connections) — `src/app.rs`
-- **.apply_worker_event()** (31 connections) — `src/app.rs`
-- **.setup()** (11 connections) — `src/app.rs`
-- **.run_telemetry_audit()** (7 connections) — `src/app.rs`
-- **.refresh_restore_points()** (6 connections) — `src/app.rs`
-- **StatusUpdate** (6 connections) — `src/app.rs`
-- **.download_and_install_update()** (5 connections) — `src/app.rs`
-- **.refresh_core_parking()** (5 connections) — `src/app.rs`
-- **.refresh_latency()** (5 connections) — `src/app.rs`
-- **.refresh_platform_inventory()** (5 connections) — `src/app.rs`
-- **.check_for_updates()** (4 connections) — `src/app.rs`
-- **.scan_thermal_snapshot_async()** (4 connections) — `src/app.rs`
-- **Failed** (4 connections) — `src/app.rs`
-- **apply_and_restart()** (4 connections) — `src/core/updater.rs`
-- **.apply_and_restart()** (3 connections) — `src/app.rs`
-- **TelemetryServicesNeutralized** (3 connections) — `src/app.rs`
-- **ThermalSnapshot** (3 connections) — `src/app.rs`
-- **.optimization_progress()** (2 connections) — `src/app.rs`
-- **.rebuild_scan_index()** (2 connections) — `src/app.rs`
-- **.record_current_baseline()** (2 connections) — `src/app.rs`
-- **.refresh_ledger()** (2 connections) — `src/app.rs`
-- **CoreParkingUpdated** (2 connections) — `src/app.rs`
-- **HagsUpdated** (2 connections) — `src/app.rs`
-- **LatencyBenchmarkFailed** (2 connections) — `src/app.rs`
-- **LatencyUpdated** (2 connections) — `src/app.rs`
-- *... and 21 more nodes in this community*
+- **startup.rs** (48 connections) — `src/tools/startup.rs`
+- **list_live_services()** (7 connections) — `src/tools/startup.rs`
+- **is_protected_core_service()** (6 connections) — `src/tools/startup.rs`
+- **enum_scm_services_by_type()** (5 connections) — `src/tools/startup.rs`
+- **query_scm_win32_services()** (5 connections) — `src/tools/startup.rs`
+- **SC_HANDLE** (4 connections)
+- **expand_system_root_vars()** (4 connections) — `src/tools/startup.rs`
+- **is_microsoft_service_binary()** (4 connections) — `src/tools/startup.rs`
+- **query_scm_service_config()** (4 connections) — `src/tools/startup.rs`
+- **ScHandleGuard** (4 connections) — `src/tools/startup.rs`
+- **is_microsoft_run_command()** (3 connections) — `src/tools/startup.rs`
+- **ScmServiceRecord** (3 connections) — `src/tools/startup.rs`
+- **ENUM_SERVICE_TYPE** (2 connections)
+- **replace_ascii_ci()** (2 connections) — `src/tools/startup.rs`
+- **resolve_indirect_display_string()** (2 connections) — `src/tools/startup.rs`
+- **.drop()** (2 connections) — `src/tools/startup.rs`
+- **test_critical_service_blocklist_protects_core_services()** (2 connections) — `src/tools/startup.rs`
+- **fromregvalue** (1 connections)
+- **CRITICAL_CORE_SERVICES** (1 connections) — `src/tools/startup.rs`
 
 ## Relationships
 
-- [spawn_guarded_worker](spawn_guarded_worker.md) (32 shared connections)
-- [AppState](AppState.md) (26 shared connections)
-- [SlowScanBackend](SlowScanBackend.md) (5 shared connections)
-- [app.rs](app.rs.md) (4 shared connections)
-- [.poll](poll.md) (2 shared connections)
-- [UpdateStatus](UpdateStatus.md) (2 shared connections)
-- [PowerSchemeInfo](PowerSchemeInfo.md) (2 shared connections)
-- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (2 shared connections)
-- [PlatformSecurityInfo](PlatformSecurityInfo.md) (2 shared connections)
-- [startup.rs](startup.rs.md) (2 shared connections)
-- [deserialize](deserialize.md) (2 shared connections)
-- [parse_guid](parse_guid.md) (1 shared connections)
+- [restart_explorer_safely](restart_explorer_safely.md) (9 shared connections)
+- [WindowsOptionalFeature](WindowsOptionalFeature.md) (3 shared connections)
+- [Reversibility Instant Requireslogoff](Reversibility_Instant_Requireslogoff.md) (2 shared connections)
+- [CoreParkingState](CoreParkingState.md) (2 shared connections)
+- [parking.rs](parking.rs.md) (2 shared connections)
+- [app.rs](app.rs.md) (2 shared connections)
+- [Item](Item.md) (2 shared connections)
+- [reg_helpers.rs](reg_helpers.rs.md) (2 shared connections)
+- [LazyLoader](LazyLoader.md) (2 shared connections)
+- [test_wave1_compound_actions_deep_edge_cases](test_wave1_compound_actions_deep_edge_cases.md) (2 shared connections)
+- [deserialize](deserialize.md) (1 shared connections)
+- [backend.rs](backend.rs.md) (1 shared connections)
 
 ## Source Files
 
-- `src/app.rs`
-- `src/core/updater.rs`
+- `src/tools/startup.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 159 (96%)
-- INFERRED: 7 (4%)
+- EXTRACTED: 71 (97%)
+- INFERRED: 2 (3%)
 - AMBIGUOUS: 0 (0%)
 
 ---

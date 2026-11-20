@@ -1,27 +1,18 @@
 # OverallHealthGrade
 
-> 6 nodes · cohesion 0.33
+> 1 nodes · cohesion 1.00
 
 ## Key Concepts
 
-- **OverallHealthGrade** (7 connections) — `src/tools/automation.rs`
-- **.badge_text()** (1 connections) — `src/tools/automation.rs`
-- **Good** (1 connections) — `src/tools/automation.rs`
-- **NeedsOptimization** (1 connections) — `src/tools/automation.rs`
-- **Optimal** (1 connections) — `src/tools/automation.rs`
-- **Suboptimal** (1 connections) — `src/tools/automation.rs`
+- **DateTime** (0 connections)
 
 ## Relationships
 
-- [power.rs](power.rs.md) (2 shared connections)
-
-## Source Files
-
-- `src/tools/automation.rs`
+- No strong cross-community connections detected
 
 ## Audit Trail
 
-- EXTRACTED: 7 (100%)
+- EXTRACTED: 0 (0%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

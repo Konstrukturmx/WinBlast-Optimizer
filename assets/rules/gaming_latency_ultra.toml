@@ -281,3 +281,31 @@ path = "SYSTEM\\CurrentControlSet\\Services\\SCardSvr"
 name = "Start"
 optimized_value = 4
 default_value = 3
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "enable_windowed_game_optimizations"
+title = "Enable Optimizations for Windowed Games"
+category = "Gaming & Latency"
+description = "Enables Windows 11 modern presentation model (flip model) for legacy windowed and borderless gaming applications, reducing input latency and unlocking Auto HDR / Variable Refresh Rate (VRR)."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 22621
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 3
+privacy_gain = 0
+reversibility = "Instant"
+broken_features = []
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Software\\Microsoft\\DirectX\\UserGpuPreferences"
+name = "DirectXUserGlobalSettings"
+optimized_value = 1
+default_value = 0

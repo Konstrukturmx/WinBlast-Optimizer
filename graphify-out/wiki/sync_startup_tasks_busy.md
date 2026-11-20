@@ -1,23 +1,25 @@
 # .sync_startup_tasks_busy
 
-> 3 nodes · cohesion 0.67
+> 6 nodes · cohesion 0.33
 
 ## Key Concepts
 
-- **.set_usb_root_hub_power_saving()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.set_usb_root_hub_power_saving()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.set_usb_root_hub_power_saving()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
+- **GamingSubTab** (8 connections) — `src/app.rs`
+- **FpsBenchmark** (1 connections) — `src/app.rs`
+- **GameOverlay** (1 connections) — `src/app.rs`
+- **GameProfiles** (1 connections) — `src/app.rs`
+- **GameSuitability** (1 connections) — `src/app.rs`
+- **LiveMonitor** (1 connections) — `src/app.rs`
 
 ## Relationships
 
-- [WinBlast Optimizer](WinBlast_Optimizer.md) (3 shared connections)
-- [FailAtMutationBackend](FailAtMutationBackend.md) (1 shared connections)
-- [PanickingBackend](PanickingBackend.md) (1 shared connections)
+- [.Toggle .Set .Apply](Toggle_.Set_.Apply.md) (1 shared connections)
+- [WinBlastError](WinBlastError.md) (1 shared connections)
 - [SlowScanBackend](SlowScanBackend.md) (1 shared connections)
 
 ## Source Files
 
-- `tests/tweak_sandbox_e2e.rs`
+- `src/app.rs`
 
 ## Audit Trail
 

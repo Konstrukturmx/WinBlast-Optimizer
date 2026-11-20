@@ -1,59 +1,55 @@
 # FailAtMutationBackend
 
-> 27 nodes · cohesion 0.11
+> 29 nodes · cohesion 0.13
 
 ## Key Concepts
 
-- **super** (49 connections)
-- **WinBlastError** (46 connections) — `src/core/error.rs`
-- **test_error_formatting()** (6 connections) — `src/core/error.rs`
-- **error.rs** (5 connections) — `src/core/error.rs`
-- **test_error_helpers()** (5 connections) — `src/core/error.rs`
-- **Registry** (5 connections) — `src/core/error.rs`
-- **.invalid_input()** (4 connections) — `src/core/error.rs`
-- **Service** (4 connections) — `src/core/error.rs`
-- **S** (3 connections)
-- **.from_reg_err()** (3 connections) — `src/core/error.rs`
-- **InvalidInput** (3 connections) — `src/core/error.rs`
-- **Com** (2 connections) — `src/core/error.rs`
-- **NtStatus** (2 connections) — `src/core/error.rs`
-- **AppX** (1 connections) — `src/core/error.rs`
-- **Backup** (1 connections) — `src/core/error.rs`
-- **Database** (1 connections) — `src/core/error.rs`
-- **ElevationRequired** (1 connections) — `src/core/error.rs`
-- **Hardware** (1 connections) — `src/core/error.rs`
-- **Io** (1 connections) — `src/core/error.rs`
-- **OsIncompatible** (1 connections) — `src/core/error.rs`
-- **PowerShell** (1 connections) — `src/core/error.rs`
-- **Rollback** (1 connections) — `src/core/error.rs`
-- **ScheduledTask** (1 connections) — `src/core/error.rs`
-- **Serialization** (1 connections) — `src/core/error.rs`
-- **TomlParse** (1 connections) — `src/core/error.rs`
-- *... and 2 more nodes in this community*
+- **tools/game_prereqs.rs** (32 connections) — `src/tools/game_prereqs.rs`
+- **test_iso_29119_runtime_detection_heuristics_execution()** (11 connections) — `src/tools/game_prereqs.rs`
+- **PrereqInstallState** (7 connections) — `src/tools/game_prereqs.rs`
+- **GamePrerequisiteItem** (6 connections) — `src/tools/game_prereqs.rs`
+- **get_system32_path()** (6 connections) — `src/tools/game_prereqs.rs`
+- **detect_openal()** (4 connections) — `src/tools/game_prereqs.rs`
+- **install_prereq_cascade()** (4 connections) — `src/tools/game_prereqs.rs`
+- **scan_game_prereqs()** (4 connections) — `src/tools/game_prereqs.rs`
+- **detect_directx_legacy()** (3 connections) — `src/tools/game_prereqs.rs`
+- **detect_vcredist_2015_2022_x64()** (3 connections) — `src/tools/game_prereqs.rs`
+- **detect_vcredist_2015_2022_x86()** (3 connections) — `src/tools/game_prereqs.rs`
+- **detect_vcredist_all_in_one()** (3 connections) — `src/tools/game_prereqs.rs`
+- **detect_vulkan_runtime()** (3 connections) — `src/tools/game_prereqs.rs`
+- **get_syswow64_path()** (3 connections) — `src/tools/game_prereqs.rs`
+- **detect_dotnet_desktop_8()** (2 connections) — `src/tools/game_prereqs.rs`
+- **detect_dotnet_desktop_9()** (2 connections) — `src/tools/game_prereqs.rs`
+- **detect_dotnet_framework_481()** (2 connections) — `src/tools/game_prereqs.rs`
+- **detect_xna_framework_4()** (2 connections) — `src/tools/game_prereqs.rs`
+- **PREREQ_DESCRIPTORS** (2 connections) — `src/tools/game_prereqs.rs`
+- **PrereqDescriptor** (2 connections) — `src/tools/game_prereqs.rs`
+- **test_iso_29119_cascade_error_recovery_empty_source()** (2 connections) — `src/tools/game_prereqs.rs`
+- **test_iso_29119_cascade_fallback_url_validity()** (2 connections) — `src/tools/game_prereqs.rs`
+- **test_iso_29119_scan_returns_all_10_prereqs()** (2 connections) — `src/tools/game_prereqs.rs`
+- **test_iso_29119_serde_roundtrip()** (2 connections) — `src/tools/game_prereqs.rs`
+- **.is_installed()** (1 connections) — `src/tools/game_prereqs.rs`
+- *... and 4 more nodes in this community*
 
 ## Relationships
 
-- [boot_config.rs](boot_config.rs.md) (4 shared connections)
-- [reg_helpers.rs](reg_helpers.rs.md) (3 shared connections)
-- [adaptive_tuning.rs](adaptive_tuning.rs.md) (3 shared connections)
-- [sysprep_engine.rs](sysprep_engine.rs.md) (3 shared connections)
-- [power_governor.rs](power_governor.rs.md) (3 shared connections)
-- [RealBackend](RealBackend.md) (3 shared connections)
-- [startup.rs](startup.rs.md) (3 shared connections)
-- [sys_inventory.rs](sys_inventory.rs.md) (3 shared connections)
-- [State Ledger & Restore Point Engine](State_Ledger_&_Restore_Point_Engine.md) (2 shared connections)
-- [elevation.rs](elevation.rs.md) (2 shared connections)
-- [registry_scanner.rs](registry_scanner.rs.md) (2 shared connections)
-- [spawn_guarded_worker](spawn_guarded_worker.md) (2 shared connections)
+- [app.rs](app.rs.md) (2 shared connections)
+- [CoreParkingState](CoreParkingState.md) (2 shared connections)
+- [Reversibility Instant Requireslogoff](Reversibility_Instant_Requireslogoff.md) (2 shared connections)
+- [parking.rs](parking.rs.md) (1 shared connections)
+- [Project Documentation, Architecture & Licensing](Project_Documentation,_Architecture_&_Licensing.md) (1 shared connections)
+- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (1 shared connections)
+- [.Toggle .Set .Apply](Toggle_.Set_.Apply.md) (1 shared connections)
+- [elevation.rs](elevation.rs.md) (1 shared connections)
 
 ## Source Files
 
-- `src/core/error.rs`
+- `src/tools/game_prereqs.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 112 (100%)
-- INFERRED: 0 (0%)
+- EXTRACTED: 63 (98%)
+- INFERRED: 1 (2%)
 - AMBIGUOUS: 0 (0%)
 
 ---

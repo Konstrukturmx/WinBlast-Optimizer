@@ -1,46 +1,50 @@
 # .setup
 
-> 12 nodes · cohesion 0.21
+> 18 nodes · cohesion 0.12
 
 ## Key Concepts
 
-- **pathbuf** (10 connections)
-- **diagnostics.rs** (10 connections) — `src/tools/diagnostics.rs`
-- **FaultDiagnosticsReport** (10 connections) — `src/tools/diagnostics.rs`
-- **parse_multi_sz_lossless()** (3 connections) — `src/tools/diagnostics.rs`
-- **.scan()** (2 connections) — `src/tools/diagnostics.rs`
-- **MinidumpEntry** (2 connections) — `src/tools/diagnostics.rs`
-- **PendingRebootStatus** (2 connections) — `src/tools/diagnostics.rs`
-- **test_unorthodox_multi_sz_odd_byte_lengths_and_corruptions()** (2 connections) — `tests/edge_cases_unorthodox.rs`
-- **.clear_cbs_reboot_flags()** (1 connections) — `src/tools/diagnostics.rs`
-- **.clear_minidumps()** (1 connections) — `src/tools/diagnostics.rs`
-- **.clear_pending_renames()** (1 connections) — `src/tools/diagnostics.rs`
-- **.restart_system()** (1 connections) — `src/tools/diagnostics.rs`
+- **ColorScheme** (19 connections) — `src/ui/theme.rs`
+- **ThemeMode** (13 connections) — `src/ui/theme.rs`
+- **.new()** (7 connections) — `src/ui/theme.rs`
+- **.default_for()** (4 connections) — `src/ui/theme.rs`
+- **.set_color_scheme()** (2 connections) — `src/app.rs`
+- **.text_key()** (2 connections) — `src/ui/theme.rs`
+- **THEMES** (2 connections) — `tests/ui_responsive_e2e.rs`
+- **.ALL** (1 connections) — `src/ui/theme.rs`
+- **ArcticAurora** (1 connections) — `src/ui/theme.rs`
+- **CrimsonSunset** (1 connections) — `src/ui/theme.rs`
+- **CyberIndigo** (1 connections) — `src/ui/theme.rs`
+- **EmeraldMint** (1 connections) — `src/ui/theme.rs`
+- **.label()** (1 connections) — `src/ui/theme.rs`
+- **MidnightStealth** (1 connections) — `src/ui/theme.rs`
+- **SolarAmber** (1 connections) — `src/ui/theme.rs`
+- **Dark** (1 connections) — `src/ui/theme.rs`
+- **.label()** (1 connections) — `src/ui/theme.rs`
+- **Light** (1 connections) — `src/ui/theme.rs`
 
 ## Relationships
 
+- [backend.rs](backend.rs.md) (5 shared connections)
+- [.Toggle .Set .Apply](Toggle_.Set_.Apply.md) (4 shared connections)
 - [SlowScanBackend](SlowScanBackend.md) (2 shared connections)
-- [startup.rs](startup.rs.md) (2 shared connections)
-- [deserialize](deserialize.md) (2 shared connections)
-- [State Ledger & Restore Point Engine](State_Ledger_&_Restore_Point_Engine.md) (1 shared connections)
-- [app.rs](app.rs.md) (1 shared connections)
-- [task_scanner.rs](task_scanner.rs.md) (1 shared connections)
-- [.Reg .Set Power](Reg_.Set_Power.md) (1 shared connections)
-- [backend.rs](backend.rs.md) (1 shared connections)
-- [PowerSchemeInfo](PowerSchemeInfo.md) (1 shared connections)
-- [privacy_shield.rs](privacy_shield.rs.md) (1 shared connections)
-- [InstalledAppxPackage](InstalledAppxPackage.md) (1 shared connections)
-- [AppState](AppState.md) (1 shared connections)
+- [advanced_matrix.rs](advanced_matrix.rs.md) (2 shared connections)
+- [enums](enums.md) (2 shared connections)
+- [driver_update.rs](driver_update.rs.md) (2 shared connections)
+- [Scandetailkind Appxinstalled Appxinstalledps](Scandetailkind_Appxinstalled_Appxinstalledps.md) (2 shared connections)
+- [updater.rs](updater.rs.md) (2 shared connections)
+- [Core UI Internationalization & Text Catalog](Core_UI_Internationalization_&_Text_Catalog.md) (1 shared connections)
 
 ## Source Files
 
-- `src/tools/diagnostics.rs`
-- `tests/edge_cases_unorthodox.rs`
+- `src/app.rs`
+- `src/ui/theme.rs`
+- `tests/ui_responsive_e2e.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 30 (97%)
-- INFERRED: 1 (3%)
+- EXTRACTED: 40 (98%)
+- INFERRED: 1 (2%)
 - AMBIGUOUS: 0 (0%)
 
 ---

@@ -140,6 +140,18 @@ pub fn tweak_title(id: &str) -> Option<&'static str> {
         "optimize_timer_resolution_requests" => Some("Allow Applications to Request High Timer Resolution"),
         "disable_wpbt_execution" => Some("Disable WPBT Firmware Binary Execution"),
         "service_shutdown_timeout_15s" => Some("Reduce Service Shutdown Timeout to 15s"),
+        "set_this_pc_as_default_explorer" => Some("Set 'This PC' as Default File Explorer View"),
+        "enable_taskbar_end_task" => Some("Enable Right-Click 'End Task' on Taskbar"),
+        "disable_oobe_privacy_experience" => Some("Disable Windows OOBE Privacy Settings Experience Prompt"),
+        "disable_explorer_sync_provider_ads" => Some("Disable File Explorer Sync Provider Advertisements"),
+        "disable_taskbar_task_view" => Some("Disable Task View Button on Taskbar"),
+        "hide_taskbar_meet_now" => Some("Hide 'Meet Now' & Chat Button from Taskbar"),
+        "disable_background_apps_global" => Some("Disable Background Apps Execution Globally"),
+        "disable_finish_setup_ads" => Some("Disable 'Finish Setting Up Your PC' Fullscreen Prompts"),
+        "disable_lockscreen_spotlight_ads" => Some("Disable Lock Screen Tips, Tricks & Spotlight Advertisements"),
+        "disable_welcome_experience_ads" => Some("Disable Windows Welcome Experience Promotional Screens"),
+        "disable_general_tips_ads" => Some("Disable Windows Suggestions, Tips & Trick Banners"),
+        "enable_windowed_game_optimizations" => Some("Enable Optimizations for Windowed Games"),
         _ => None,
     }
 }
@@ -190,6 +202,18 @@ pub fn tweak_description(id: &str) -> Option<&'static str> {
         "optimize_timer_resolution_requests" => Some("Sets GlobalTimerResolutionRequests=1 in the Session Manager kernel key, allowing applications to request the maximum platform timer resolution (0.5 ms) system-wide. Without this, Windows may ignore high-resolution timer requests from non-foreground processes, causing timing jitter in background audio engines, game servers, and real-time applications."),
         "disable_wpbt_execution" => Some("Blocks the Windows Kernel from executing binaries bundled into the motherboard UEFI Windows Platform Binary Table (WPBT)."),
         "service_shutdown_timeout_15s" => Some("Reduces the OS service termination timeout during shutdown from default 20s to 15s to prevent long shutdown hangs."),
+        "set_this_pc_as_default_explorer" => Some("Configures Windows File Explorer to open to 'This PC' instead of 'Home' / 'Quick Access', avoiding slow network share enumeration and recent file cloud sync delays on launch."),
+        "enable_taskbar_end_task" => Some("Enables the native Windows 11 right-click 'End Task' context menu option directly on taskbar application icons, allowing instant process termination without opening Task Manager."),
+        "disable_oobe_privacy_experience" => Some("Suppresses the multi-page Windows OOBE privacy experience prompt during new user account creation and feature upgrades via Group Policy."),
+        "disable_explorer_sync_provider_ads" => Some("Stops Windows File Explorer from rendering banners and promotional upsells for OneDrive and Microsoft 365 cloud subscriptions inside folder windows."),
+        "disable_taskbar_task_view" => Some("Hides the redundant Task View icon from the Windows taskbar to save screen real estate, while retaining standard Alt+Tab and Win+Tab navigation."),
+        "hide_taskbar_meet_now" => Some("Hides the integrated Meet Now / Microsoft Teams chat button from the Windows system tray and notification area."),
+        "disable_background_apps_global" => Some("Prevents Windows Store and UWP applications from running background tasks, fetching notifications, and consuming CPU/RAM when closed."),
+        "disable_finish_setup_ads" => Some("Disables the recurring fullscreen nag screens prompting users to subscribe to Microsoft 365, OneDrive, or Windows Hello after reboots."),
+        "disable_lockscreen_spotlight_ads" => Some("Suppresses dynamic advertising overlays, promotional tips, and web trivia pushed onto the Windows lock screen."),
+        "disable_welcome_experience_ads" => Some("Blocks the post-update 'What's New' and Welcome Experience browser popups showcasing Microsoft Edge and Copilot marketing content."),
+        "disable_general_tips_ads" => Some("Disables generic Windows desktop tips, feature recommendations, and notification tray advice pushed by ContentDeliveryManager."),
+        "enable_windowed_game_optimizations" => Some("Enables Windows 11 modern presentation model (flip model) for legacy windowed and borderless gaming applications, reducing input latency and unlocking Auto HDR / Variable Refresh Rate (VRR)."),
         _ => None,
     }
 }
@@ -1154,9 +1178,9 @@ mod tests {
     ];
 
     #[test]
-    fn test_all_218_tweaks_localized_all_7_languages() {
+    fn test_all_230_tweaks_localized_all_7_languages() {
         let tweaks = load_embedded_rules();
-        assert_eq!(tweaks.len(), 218, "Expected 218 embedded catalog tweaks");
+        assert_eq!(tweaks.len(), 230, "Expected 230 embedded catalog tweaks");
 
         for tweak in &tweaks {
             assert!(
@@ -1397,11 +1421,11 @@ mod tests {
 
 
     #[test]
-    fn test_all_10_gaming_latency_ultra_tweaks_localized_all_7_languages() {
+    fn test_all_11_gaming_latency_ultra_tweaks_localized_all_7_languages() {
         let ultra_toml = include_str!("../../../assets/rules/gaming_latency_ultra.toml");
         let catalog = toml::from_str::<crate::core::risk::TweakCatalog>(ultra_toml)
             .expect("gaming_latency_ultra.toml should parse cleanly");
-        assert_eq!(catalog.tweaks.len(), 10, "Expected 10 gaming latency ultra tweaks");
+        assert_eq!(catalog.tweaks.len(), 11, "Expected 11 gaming latency ultra tweaks");
 
         for tweak in &catalog.tweaks {
             // English base lookup

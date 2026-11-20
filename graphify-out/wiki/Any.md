@@ -1,47 +1,57 @@
 # Any
 
-> 19 nodes · cohesion 0.29
+> 22 nodes · cohesion 0.16
 
 ## Key Concepts
 
-- **parse_guid()** (11 connections) — `src/hardware/power.rs`
-- **create_and_activate_performance_plan()** (10 connections) — `src/hardware/power.rs`
-- **normalize_guid_str()** (10 connections) — `src/hardware/power.rs`
-- **write_power_setting_index()** (10 connections) — `src/hardware/power.rs`
-- **get_active_power_scheme()** (9 connections) — `src/hardware/power.rs`
-- **read_power_setting_index()** (9 connections) — `src/hardware/power.rs`
-- **list_power_schemes()** (8 connections) — `src/hardware/power.rs`
-- **map_win32_err()** (8 connections) — `src/hardware/power.rs`
-- **WIN32_ERROR** (8 connections)
-- **resolve_scheme()** (7 connections) — `src/hardware/power.rs`
-- **unlock_power_setting_range_if_clamped()** (7 connections) — `src/hardware/power.rs`
-- **format_guid()** (6 connections) — `src/hardware/power.rs`
-- **GUID** (5 connections)
-- **set_active_power_scheme()** (5 connections) — `src/hardware/power.rs`
-- **test_ac_power_status_and_enumerated_range_noop()** (5 connections) — `src/hardware/power.rs`
-- **LocalGuidPtr** (4 connections) — `src/hardware/power.rs`
-- **test_guid_roundtrip_and_normalization()** (4 connections) — `src/hardware/power.rs`
-- **test_power_scheme_enumeration_nonblocking()** (3 connections) — `src/hardware/power.rs`
-- **.drop()** (1 connections) — `src/hardware/power.rs`
+- **AppxCache** (20 connections) — `src/scanner/appx_scanner.rs`
+- **appx_scanner.rs** (13 connections) — `src/scanner/appx_scanner.rs`
+- **.evaluate_package_with_kind()** (7 connections) — `src/scanner/appx_scanner.rs`
+- **.from_packages()** (5 connections) — `src/scanner/appx_scanner.rs`
+- **appx_package_matches_family()** (4 connections) — `src/scanner/appx_scanner.rs`
+- **.evaluate_package()** (4 connections) — `src/scanner/appx_scanner.rs`
+- **split_appx_name_and_publisher()** (4 connections) — `src/scanner/appx_scanner.rs`
+- **.load_appx_cache()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.is_package_removed()** (3 connections) — `src/scanner/appx_scanner.rs`
+- **check_package_removed()** (3 connections) — `src/scanner/appx_scanner.rs`
+- **test_appx_cache_loaded_empty_no_fallback()** (3 connections) — `src/scanner/appx_scanner.rs`
+- **test_split_appx_name_and_publisher_with_underscores_and_prefix()** (3 connections) — `src/scanner/appx_scanner.rs`
+- **.load_appx_cache()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.load_appx_cache()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.load_appx_cache()** (2 connections) — `src/core/backend.rs`
+- **.load_appx_cache()** (2 connections) — `src/core/backend.rs`
+- **.iter()** (2 connections) — `src/scanner/appx_scanner.rs`
+- **.load()** (2 connections) — `src/scanner/appx_scanner.rs`
+- **check_package_removed_ps()** (2 connections) — `src/scanner/appx_scanner.rs`
+- **test_appx_publisher_suffix_matching()** (2 connections) — `src/scanner/appx_scanner.rs`
+- **test_evaluate_package_with_kind_all_cache_branches()** (2 connections) — `src/scanner/appx_scanner.rs`
+- **Item** (1 connections)
 
 ## Relationships
 
-- [elevation.rs](elevation.rs.md) (21 shared connections)
-- [RealBackend](RealBackend.md) (3 shared connections)
-- [task_scanner.rs](task_scanner.rs.md) (3 shared connections)
-- [DriverUpdateItem](DriverUpdateItem.md) (2 shared connections)
-- [PowerSchemeInfo](PowerSchemeInfo.md) (1 shared connections)
-- [FailAtMutationBackend](FailAtMutationBackend.md) (1 shared connections)
-- [super](super.md) (1 shared connections)
+- [parse_guid](parse_guid.md) (5 shared connections)
+- [CoreParkingState](CoreParkingState.md) (2 shared connections)
+- [full_telemetry_audit_with](full_telemetry_audit_with.md) (2 shared connections)
+- [sys_inventory.rs](sys_inventory.rs.md) (2 shared connections)
+- [Integration Suite: Tweak Sandbox E2E](Integration_Suite-_Tweak_Sandbox_E2E.md) (1 shared connections)
+- [startup.rs](startup.rs.md) (1 shared connections)
+- [parking.rs](parking.rs.md) (1 shared connections)
+- [.take_injected_error](take_injected_error.md) (1 shared connections)
+- [Win32 Registry Scanner & Mutator](Win32_Registry_Scanner_&_Mutator.md) (1 shared connections)
+- [deserialize](deserialize.md) (1 shared connections)
+- [theme.rs](theme.rs.md) (1 shared connections)
+- [in_progress_hud.rs](in_progress_hud.rs.md) (1 shared connections)
 
 ## Source Files
 
-- `src/hardware/power.rs`
+- `src/core/backend.rs`
+- `src/scanner/appx_scanner.rs`
+- `tests/tweak_sandbox_e2e.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 76 (94%)
-- INFERRED: 5 (6%)
+- EXTRACTED: 55 (96%)
+- INFERRED: 2 (4%)
 - AMBIGUOUS: 0 (0%)
 
 ---

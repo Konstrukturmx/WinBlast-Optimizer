@@ -1,46 +1,51 @@
 # Hardware Diagnostics & GPU Silicon Tuning
 
-> 11 nodes · cohesion 0.25
+> 18 nodes · cohesion 0.17
 
 ## Key Concepts
 
-- **LatencySnapshot** (18 connections) — `src/hardware/latency.rs`
-- **latency.rs** (4 connections) — `src/hardware/latency.rs`
-- **.capture_latency()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.capture_latency()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.capture_latency()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.capture_latency()** (2 connections) — `src/core/backend.rs`
-- **.capture_latency()** (2 connections) — `src/core/backend.rs`
-- **DateTime** (2 connections)
-- **Utc** (2 connections)
-- **.ram_display()** (1 connections) — `src/hardware/latency.rs`
-- **.timer_resolution_display()** (1 connections) — `src/hardware/latency.rs`
+- **parking.rs** (24 connections) — `src/hardware/parking.rs`
+- **ParkingSnapshot** (10 connections) — `src/hardware/parking.rs`
+- **write_parking_thresholds()** (8 connections) — `src/hardware/parking.rs`
+- **.apply_parking_snapshot()** (4 connections) — `src/core/backend.rs`
+- **test_parking_snapshot_roundtrip_and_active_rail_logic()** (4 connections) — `src/hardware/parking.rs`
+- **apply_parking_snapshot()** (3 connections) — `src/hardware/parking.rs`
+- **capture_parking_snapshot()** (3 connections) — `src/hardware/parking.rs`
+- **compute_is_fully_unparked()** (3 connections) — `src/hardware/parking.rs`
+- **.apply_parking_snapshot()** (2 connections) — `src/core/backend.rs`
+- **.deserialize()** (2 connections) — `src/hardware/parking.rs`
+- **.serialize()** (2 connections) — `src/hardware/parking.rs`
+- **restore_stock_parking()** (2 connections) — `src/hardware/parking.rs`
+- **unpark_all_cores()** (2 connections) — `src/hardware/parking.rs`
+- **CPMAXCORES** (1 connections) — `src/hardware/parking.rs`
+- **CPMAXCORES1** (1 connections) — `src/hardware/parking.rs`
+- **CPMINCORES** (1 connections) — `src/hardware/parking.rs`
+- **CPMINCORES1** (1 connections) — `src/hardware/parking.rs`
+- **SUB_PROCESSOR** (1 connections) — `src/hardware/parking.rs`
 
 ## Relationships
 
-- [SlowScanBackend](SlowScanBackend.md) (2 shared connections)
-- [in_progress_hud.rs](in_progress_hud.rs.md) (1 shared connections)
-- [full_telemetry_audit_with](full_telemetry_audit_with.md) (1 shared connections)
-- [progress_bar.rs](progress_bar.rs.md) (1 shared connections)
-- [WorkerEvent](WorkerEvent.md) (1 shared connections)
-- [RegRawSnapshot](RegRawSnapshot.md) (1 shared connections)
-- [AppState](AppState.md) (1 shared connections)
-- [State Ledger & Restore Point Engine](State_Ledger_&_Restore_Point_Engine.md) (1 shared connections)
-- [super](super.md) (1 shared connections)
-- [GPU Silicon & Hardware Tuning Policies](GPU_Silicon_&_Hardware_Tuning_Policies.md) (1 shared connections)
+- [clean_apps.rs](clean_apps.rs.md) (4 shared connections)
+- [edge_cases_unorthodox.rs](edge_cases_unorthodox.rs.md) (4 shared connections)
+- [power.rs](power.rs.md) (3 shared connections)
+- [WorkerEvent](WorkerEvent.md) (3 shared connections)
+- [Reversibility Instant Requireslogoff](Reversibility_Instant_Requireslogoff.md) (2 shared connections)
+- [Integration Suite: Tweak Sandbox E2E](Integration_Suite-_Tweak_Sandbox_E2E.md) (1 shared connections)
+- [startup.rs](startup.rs.md) (1 shared connections)
+- [deserialize](deserialize.md) (1 shared connections)
+- [AppX Package & Modern App Scanner](AppX_Package_&_Modern_App_Scanner.md) (1 shared connections)
+- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (1 shared connections)
 - [parking.rs](parking.rs.md) (1 shared connections)
-- [FailAtMutationBackend](FailAtMutationBackend.md) (1 shared connections)
 
 ## Source Files
 
 - `src/core/backend.rs`
-- `src/hardware/latency.rs`
-- `tests/tweak_sandbox_e2e.rs`
+- `src/hardware/parking.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 28 (100%)
-- INFERRED: 0 (0%)
+- EXTRACTED: 42 (88%)
+- INFERRED: 6 (12%)
 - AMBIGUOUS: 0 (0%)
 
 ---

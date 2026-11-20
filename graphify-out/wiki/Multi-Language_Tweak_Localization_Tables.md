@@ -1,62 +1,58 @@
 # Multi-Language Tweak Localization Tables
 
-> 32 nodes · cohesion 0.17
+> 39 nodes · cohesion 0.09
 
 ## Key Concepts
 
-- **action_button_guarded()** (44 connections) — `src/ui/widgets/button.rs`
-- **clean_apps.rs** (32 connections) — `src/ui/views/clean_apps.rs`
-- **startup_tasks.rs** (28 connections) — `src/ui/views/startup_tasks.rs`
-- **pill_badge()** (20 connections) — `src/ui/widgets/button.rs`
-- **build_appx_features_body()** (12 connections) — `src/ui/views/clean_apps.rs`
-- **build_disk_cleaner_body()** (12 connections) — `src/ui/views/clean_apps.rs`
-- **build_winget_body()** (12 connections) — `src/ui/views/clean_apps.rs`
-- **build_startup_apps_list()** (11 connections) — `src/ui/views/startup_tasks.rs`
-- **view()** (11 connections) — `src/ui/views/startup_tasks.rs`
-- **view()** (9 connections) — `src/ui/views/clean_apps.rs`
-- **build_services_list()** (9 connections) — `src/ui/views/startup_tasks.rs`
-- **build_tasks_list()** (9 connections) — `src/ui/views/startup_tasks.rs`
-- **switch_indicator()** (8 connections) — `src/ui/widgets/button.rs`
-- **CleanAppsSubTab** (7 connections) — `src/app.rs`
-- **StartupTasksSubTab** (7 connections) — `src/app.rs`
-- **El** (7 connections)
-- **El** (7 connections)
-- **empty_card()** (6 connections) — `src/ui/views/clean_apps.rs`
-- **empty_card()** (6 connections) — `src/ui/views/startup_tasks.rs`
-- **sub_tab_btn()** (5 connections) — `src/ui/views/clean_apps.rs`
-- **sub_tab_btn()** (5 connections) — `src/ui/views/startup_tasks.rs`
-- **clean_target_label()** (4 connections) — `src/ui/views/clean_apps.rs`
-- **startup_source_label()** (4 connections) — `src/ui/views/startup_tasks.rs`
-- **growthspec** (2 connections)
-- **rc** (2 connections)
-- *... and 7 more nodes in this community*
+- **disks.rs** (46 connections) — `src/hardware/disks.rs`
+- **probe_physical_drive()** (10 connections) — `src/hardware/disks.rs`
+- **DiskSubsystemReport** (8 connections) — `src/hardware/disks.rs`
+- **HANDLE** (7 connections)
+- **HandleGuard** (7 connections) — `src/hardware/disks.rs`
+- **DriveSmartData** (5 connections) — `src/hardware/disks.rs`
+- **query_ata_smart_ioctl()** (5 connections) — `src/hardware/disks.rs`
+- **query_disk_performance_ioctl()** (5 connections) — `src/hardware/disks.rs`
+- **query_nvme_smart_ioctl()** (5 connections) — `src/hardware/disks.rs`
+- **.probe()** (4 connections) — `src/hardware/disks.rs`
+- **parse_ata_smart_attributes()** (4 connections) — `src/hardware/disks.rs`
+- **parse_nvme_smart_log()** (4 connections) — `src/hardware/disks.rs`
+- **PhysicalDriveHealth** (4 connections) — `src/hardware/disks.rs`
+- **probe_volume_fallback()** (3 connections) — `src/hardware/disks.rs`
+- **query_disk_capacity_ioctl()** (3 connections) — `src/hardware/disks.rs`
+- **query_smart_health_wmi()** (3 connections) — `src/hardware/disks.rs`
+- **test_kernel_disk_performance_live_probe()** (3 connections) — `src/hardware/disks.rs`
+- **device_seek_penalty_descriptor** (2 connections)
+- **deviceiocontrol** (2 connections)
+- **file_share_read** (2 connections)
+- **file_share_write** (2 connections)
+- **getdiskfreespaceexw** (2 connections)
+- **getlogicaldrives** (2 connections)
+- **getvolumeinformationw** (2 connections)
+- **ioctl_storage_query_property** (2 connections)
+- *... and 14 more nodes in this community*
 
 ## Relationships
 
-- [Disk Cleaning & Temporary File Purger](Disk_Cleaning_&_Temporary_File_Purger.md) (34 shared connections)
-- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (23 shared connections)
-- [.Reg State() Vendor()](Reg_State_Vendor.md) (18 shared connections)
-- [AppState](AppState.md) (15 shared connections)
-- [advanced_matrix.rs](advanced_matrix.rs.md) (8 shared connections)
-- [WinBlastScrollable](WinBlastScrollable.md) (4 shared connections)
-- [SlowScanBackend](SlowScanBackend.md) (2 shared connections)
-- [SandboxEnv](SandboxEnv.md) (2 shared connections)
-- [Core UI Internationalization & Text Catalog](Core_UI_Internationalization_&_Text_Catalog.md) (2 shared connections)
-- [startup.rs](startup.rs.md) (2 shared connections)
-- [System Architecture Changelog](System_Architecture_Changelog.md) (2 shared connections)
-- [Project History & Release Version Ledger](Project_History_&_Release_Version_Ledger.md) (2 shared connections)
+- [.logical_core_count](logical_core_count.md) (17 shared connections)
+- [PdhParkingCollector](PdhParkingCollector.md) (2 shared connections)
+- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (2 shared connections)
+- [Reversibility Instant Requireslogoff](Reversibility_Instant_Requireslogoff.md) (2 shared connections)
+- [parking.rs](parking.rs.md) (1 shared connections)
+- [Project Documentation, Architecture & Licensing](Project_Documentation,_Architecture_&_Licensing.md) (1 shared connections)
+- [State Ledger & Restore Point Engine](State_Ledger_&_Restore_Point_Engine.md) (1 shared connections)
+- [Embedded Catalog Test](Embedded_Catalog_Test.md) (1 shared connections)
+- [.Toggle .Set .Apply](Toggle_.Set_.Apply.md) (1 shared connections)
+- [tools/game_overlay.rs](tools-game_overlay.rs.md) (1 shared connections)
+- [task_scanner.rs](task_scanner.rs.md) (1 shared connections)
 
 ## Source Files
 
-- `src/app.rs`
-- `src/ui/views/clean_apps.rs`
-- `src/ui/views/startup_tasks.rs`
-- `src/ui/widgets/button.rs`
+- `src/hardware/disks.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 164 (80%)
-- INFERRED: 40 (20%)
+- EXTRACTED: 94 (96%)
+- INFERRED: 4 (4%)
 - AMBIGUOUS: 0 (0%)
 
 ---

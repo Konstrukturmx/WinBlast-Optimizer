@@ -1,61 +1,59 @@
 # DriverError
 
-> 28 nodes · cohesion 0.08
+> 24 nodes · cohesion 0.18
 
 ## Key Concepts
 
-- **TweakAction** (34 connections) — `src/core/risk.rs`
-- **evaluate_single_action()** (10 connections) — `src/scanner/mod.rs`
-- **PowerTargetScope** (7 connections) — `src/core/risk.rs`
-- **resolve_dynamic_dword()** (7 connections) — `src/scanner/mod.rs`
-- **DynamicDwordFormula** (6 connections) — `src/core/risk.rs`
-- **ActionEval** (6 connections) — `src/scanner/mod.rs`
-- **.seed_tweak_defaults()** (3 connections) — `src/core/backend.rs`
-- **FeatureAuthRequired** (2 connections) — `src/scanner/mod.rs`
-- **LogicalCoreCount** (1 connections) — `src/core/risk.rs`
-- **TotalRamInKb** (1 connections) — `src/core/risk.rs`
-- **TotalRamInKbPlusMargin** (1 connections) — `src/core/risk.rs`
-- **AcAndDc** (1 connections) — `src/core/risk.rs`
-- **AcOnly** (1 connections) — `src/core/risk.rs`
-- **DcOnly** (1 connections) — `src/core/risk.rs`
-- **AppXPackage** (1 connections) — `src/core/risk.rs`
-- **CompositeStringKey** (1 connections) — `src/core/risk.rs`
-- **PowerCfgSetting** (1 connections) — `src/core/risk.rs`
-- **RegistryBinaryBit** (1 connections) — `src/core/risk.rs`
-- **RegistryDelete** (1 connections) — `src/core/risk.rs`
-- **RegistryDeleteTree** (1 connections) — `src/core/risk.rs`
-- **RegistryDword** (1 connections) — `src/core/risk.rs`
-- **RegistryDynamicDword** (1 connections) — `src/core/risk.rs`
-- **RegistryString** (1 connections) — `src/core/risk.rs`
-- **ScheduledTask** (1 connections) — `src/core/risk.rs`
-- **ServiceState** (1 connections) — `src/core/risk.rs`
-- *... and 3 more nodes in this community*
+- **reg_mutator.rs** (25 connections) — `src/executor/reg_mutator.rs`
+- **validate_registry_mutation_path()** (17 connections) — `src/core/reg_helpers.rs`
+- **resolve_hive()** (16 connections) — `src/scanner/registry_scanner.rs`
+- **set_raw()** (8 connections) — `src/executor/reg_mutator.rs`
+- **create_subkey_64()** (8 connections) — `src/scanner/registry_scanner.rs`
+- **delete_value_for_vendor()** (7 connections) — `src/executor/reg_mutator.rs`
+- **restore_tree_node()** (7 connections) — `src/executor/reg_mutator.rs`
+- **set_dword_for_vendor()** (7 connections) — `src/executor/reg_mutator.rs`
+- **set_string_for_vendor()** (7 connections) — `src/executor/reg_mutator.rs`
+- **set_binary()** (6 connections) — `src/executor/reg_mutator.rs`
+- **is_known_numeric_reg_sz()** (5 connections) — `src/core/reg_helpers.rs`
+- **restore_tree()** (5 connections) — `src/executor/reg_mutator.rs`
+- **write_dword_or_numeric_sz()** (5 connections) — `src/executor/reg_mutator.rs`
+- **delete_tree()** (4 connections) — `src/executor/reg_mutator.rs`
+- **u32_to_reg_type()** (4 connections) — `src/executor/reg_mutator.rs`
+- **RegKey** (3 connections)
+- **set_dword()** (3 connections) — `src/executor/reg_mutator.rs`
+- **test_hkcr_and_shallow_tree_delete_blocked()** (2 connections) — `src/core/reg_helpers.rs`
+- **test_known_numeric_reg_sz()** (2 connections) — `src/core/reg_helpers.rs`
+- **delete_value()** (2 connections) — `src/executor/reg_mutator.rs`
+- **set_string()** (2 connections) — `src/executor/reg_mutator.rs`
+- **resolve_target_paths** (1 connections)
+- **REG_DELETE_RIGHT** (1 connections) — `src/executor/reg_mutator.rs`
+- **RegType** (1 connections)
 
 ## Relationships
 
-- [parse_guid](parse_guid.md) (8 shared connections)
-- [RealBackend](RealBackend.md) (6 shared connections)
-- [.Reg State() Vendor()](Reg_State_Vendor.md) (4 shared connections)
-- [FailAtMutationBackend](FailAtMutationBackend.md) (3 shared connections)
-- [super](super.md) (3 shared connections)
-- [RegRawSnapshot](RegRawSnapshot.md) (2 shared connections)
-- [GPU Silicon & Hardware Tuning Policies](GPU_Silicon_&_Hardware_Tuning_Policies.md) (1 shared connections)
-- [AppState](AppState.md) (1 shared connections)
-- [FeatureInstallState](FeatureInstallState.md) (1 shared connections)
-- [SlowScanBackend](SlowScanBackend.md) (1 shared connections)
-- [State Ledger & Restore Point Engine](State_Ledger_&_Restore_Point_Engine.md) (1 shared connections)
-- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (1 shared connections)
+- [SlowScanBackend](SlowScanBackend.md) (15 shared connections)
+- [clean_apps.rs](clean_apps.rs.md) (7 shared connections)
+- [Project History & Release Version Ledger](Project_History_&_Release_Version_Ledger.md) (5 shared connections)
+- [TaskCache](TaskCache.md) (5 shared connections)
+- [.new](new.md) (3 shared connections)
+- [backend.rs](backend.rs.md) (2 shared connections)
+- [tools/game_overlay.rs](tools-game_overlay.rs.md) (2 shared connections)
+- [progress_bar.rs](progress_bar.rs.md) (2 shared connections)
+- [deserialize](deserialize.md) (1 shared connections)
+- [power.rs](power.rs.md) (1 shared connections)
+- [CoreParkingState](CoreParkingState.md) (1 shared connections)
+- [parking.rs](parking.rs.md) (1 shared connections)
 
 ## Source Files
 
-- `src/core/backend.rs`
-- `src/core/risk.rs`
-- `src/scanner/mod.rs`
+- `src/core/reg_helpers.rs`
+- `src/executor/reg_mutator.rs`
+- `src/scanner/registry_scanner.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 63 (95%)
-- INFERRED: 3 (5%)
+- EXTRACTED: 66 (68%)
+- INFERRED: 31 (32%)
 - AMBIGUOUS: 0 (0%)
 
 ---

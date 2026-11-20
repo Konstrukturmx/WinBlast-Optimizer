@@ -1,59 +1,66 @@
 # elevation.rs
 
-> 29 nodes · cohesion 0.08
+> 31 nodes · cohesion 0.15
 
 ## Key Concepts
 
-- **power.rs** (60 connections) — `src/hardware/power.rs`
-- **fallback_scheme_name()** (6 connections) — `src/hardware/power.rs`
-- **set_usb_root_hub_power_saving()** (3 connections) — `src/hardware/power.rs`
-- **resolve_indirect_string()** (2 connections) — `src/hardware/power.rs`
-- **strip_indirect_prefix()** (2 connections) — `src/hardware/power.rs`
-- **test_fallback_scheme_name_indirect_stripping()** (2 connections) — `src/hardware/power.rs`
-- **callntpowerinformation** (1 connections)
-- **getsystempowerstatus** (1 connections)
-- **hlocal** (1 connections)
-- **localfree** (1 connections)
-- **ntstatus** (1 connections)
-- **powerduplicatescheme** (1 connections)
-- **powergetactivescheme** (1 connections)
-- **powerreadacdefaultindex** (1 connections)
-- **powerreadacvalueindex** (1 connections)
-- **powerreaddcdefaultindex** (1 connections)
-- **powerreaddcvalueindex** (1 connections)
-- **powerreadvaluemax** (1 connections)
-- **powerreadvaluemin** (1 connections)
-- **powersetactivescheme** (1 connections)
-- **powerwriteacvalueindex** (1 connections)
-- **powerwritedcvalueindex** (1 connections)
-- **powerwritefriendlyname** (1 connections)
-- **powerwritevaluemax** (1 connections)
-- **powerwritevaluemin** (1 connections)
-- *... and 4 more nodes in this community*
+- **LayoutTier** (66 connections) — `src/ui/mod.rs`
+- **action_button_guarded()** (44 connections) — `src/ui/widgets/button.rs`
+- **startup_tasks.rs** (28 connections) — `src/ui/views/startup_tasks.rs`
+- **driver_bios.rs** (17 connections) — `src/ui/views/driver_bios.rs`
+- **views/game_prereqs.rs** (15 connections) — `src/ui/views/game_prereqs.rs`
+- **backup_center.rs** (13 connections) — `src/ui/views/backup_center.rs`
+- **cpu_parking.rs** (13 connections) — `src/ui/views/cpu_parking.rs`
+- **build_startup_apps_list()** (11 connections) — `src/ui/views/startup_tasks.rs`
+- **view()** (11 connections) — `src/ui/views/startup_tasks.rs`
+- **build_services_list()** (9 connections) — `src/ui/views/startup_tasks.rs`
+- **build_tasks_list()** (9 connections) — `src/ui/views/startup_tasks.rs`
+- **StartupTasksSubTab** (7 connections) — `src/app.rs`
+- **view()** (7 connections) — `src/ui/views/backup_center.rs`
+- **view()** (7 connections) — `src/ui/views/driver_bios.rs`
+- **El** (7 connections)
+- **view()** (6 connections) — `src/ui/views/cpu_parking.rs`
+- **view()** (6 connections) — `src/ui/views/game_prereqs.rs`
+- **empty_card()** (6 connections) — `src/ui/views/startup_tasks.rs`
+- **sub_tab_btn()** (5 connections) — `src/ui/views/startup_tasks.rs`
+- **text_input** (5 connections)
+- **startup_source_label()** (4 connections) — `src/ui/views/startup_tasks.rs`
+- **El** (2 connections)
+- **El** (2 connections)
+- **El** (2 connections)
+- **El** (2 connections)
+- *... and 6 more nodes in this community*
 
 ## Relationships
 
-- [Any](Any.md) (21 shared connections)
-- [normalize_guid_str](normalize_guid_str.md) (3 shared connections)
-- [FailAtMutationBackend](FailAtMutationBackend.md) (2 shared connections)
-- [deserialize](deserialize.md) (2 shared connections)
-- [State Ledger & Restore Point Engine](State_Ledger_&_Restore_Point_Engine.md) (1 shared connections)
-- [task_scanner.rs](task_scanner.rs.md) (1 shared connections)
-- [InstalledAppxPackage](InstalledAppxPackage.md) (1 shared connections)
-- [reg_helpers.rs](reg_helpers.rs.md) (1 shared connections)
-- [privacy_shield.rs](privacy_shield.rs.md) (1 shared connections)
-- [DriverUpdateItem](DriverUpdateItem.md) (1 shared connections)
-- [PowerSchemeInfo](PowerSchemeInfo.md) (1 shared connections)
-- [RealBackend](RealBackend.md) (1 shared connections)
+- [WinBlastError](WinBlastError.md) (53 shared connections)
+- [task_scanner.rs](task_scanner.rs.md) (27 shared connections)
+- [.Toggle .Set .Apply](Toggle_.Set_.Apply.md) (18 shared connections)
+- [PlatformSecurityInfo](PlatformSecurityInfo.md) (18 shared connections)
+- [updater.rs](updater.rs.md) (13 shared connections)
+- [Language](Language.md) (9 shared connections)
+- [advanced_matrix.rs](advanced_matrix.rs.md) (8 shared connections)
+- [Core UI Internationalization & Text Catalog](Core_UI_Internationalization_&_Text_Catalog.md) (5 shared connections)
+- [storage.rs](storage.rs.md) (4 shared connections)
+- [RegTreeSnapshot](RegTreeSnapshot.md) (4 shared connections)
+- [action_button_guarded](action_button_guarded.md) (2 shared connections)
+- [restart_explorer_safely](restart_explorer_safely.md) (2 shared connections)
 
 ## Source Files
 
-- `src/hardware/power.rs`
+- `src/app.rs`
+- `src/ui/mod.rs`
+- `src/ui/views/backup_center.rs`
+- `src/ui/views/cpu_parking.rs`
+- `src/ui/views/driver_bios.rs`
+- `src/ui/views/game_prereqs.rs`
+- `src/ui/views/startup_tasks.rs`
+- `src/ui/widgets/button.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 66 (99%)
-- INFERRED: 1 (1%)
+- EXTRACTED: 208 (87%)
+- INFERRED: 31 (13%)
 - AMBIGUOUS: 0 (0%)
 
 ---

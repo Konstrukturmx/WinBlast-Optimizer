@@ -1,59 +1,60 @@
 # SlowScanBackend
 
-> 31 nodes · cohesion 0.07
+> 28 nodes · cohesion 0.15
 
 ## Key Concepts
 
-- **SlowScanBackend** (85 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.reg_set_binary()** (6 connections) — `tests/tweak_sandbox_e2e.rs`
-- **test_epoch_and_stale_scan_fencing_preserves_instant_mutation()** (6 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.read_hosts_file()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.reg_delete_value()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.reg_set_dword()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.remove_appx_package()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.reg_delete_value()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.reg_set_binary()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.reg_set_dword()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.remove_appx_package()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.check_onedrive_kfm_active()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.get_service_start_type()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.is_elevated()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.new()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.reg_key_exists()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.check_onedrive_kfm_active()** (2 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.get_service_start_type()** (2 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.is_elevated()** (2 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.read_hosts_file()** (2 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.reg_key_exists()** (2 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.check_onedrive_kfm_active()** (2 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.get_service_start_type()** (2 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.is_elevated()** (2 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.read_hosts_file()** (2 connections) — `tests/tweak_sandbox_e2e.rs`
-- *... and 6 more nodes in this community*
+- **registry_scanner.rs** (37 connections) — `src/scanner/registry_scanner.rs`
+- **open_subkey_read_64()** (13 connections) — `src/scanner/registry_scanner.rs`
+- **open_subkey_flags_64()** (8 connections) — `src/scanner/registry_scanner.rs`
+- **RegKey** (8 connections)
+- **get_raw()** (7 connections) — `src/scanner/registry_scanner.rs`
+- **get_string_for_vendor()** (7 connections) — `src/scanner/registry_scanner.rs`
+- **resolve_target_paths()** (7 connections) — `src/scanner/registry_scanner.rs`
+- **snapshot_key_recursive()** (7 connections) — `src/scanner/registry_scanner.rs`
+- **get_dword_for_vendor()** (6 connections) — `src/scanner/registry_scanner.rs`
+- **evaluate_dword_value_with_kind()** (5 connections) — `src/scanner/registry_scanner.rs`
+- **resolve_net_interface_paths()** (5 connections) — `src/scanner/registry_scanner.rs`
+- **snapshot_tree()** (5 connections) — `src/scanner/registry_scanner.rs`
+- **encode_hex()** (4 connections) — `src/core/reg_helpers.rs`
+- **evaluate_dword()** (4 connections) — `src/scanner/registry_scanner.rs`
+- **evaluate_dword_value()** (4 connections) — `src/scanner/registry_scanner.rs`
+- **get_dword()** (4 connections) — `src/scanner/registry_scanner.rs`
+- **read_dword_from_key()** (4 connections) — `src/scanner/registry_scanner.rs`
+- **reg_type_to_u32()** (4 connections) — `src/scanner/registry_scanner.rs`
+- **has_active_ip()** (3 connections) — `src/scanner/registry_scanner.rs`
+- **key_exists()** (3 connections) — `src/scanner/registry_scanner.rs`
+- **test_evaluate_dword_value_with_kind_all_branches()** (3 connections) — `src/scanner/registry_scanner.rs`
+- **check_dword()** (2 connections) — `src/scanner/registry_scanner.rs`
+- **get_string()** (2 connections) — `src/scanner/registry_scanner.rs`
+- **replace_placeholder_ci()** (2 connections) — `src/scanner/registry_scanner.rs`
+- **DISPLAY_CLASS_LOWER** (1 connections) — `src/scanner/registry_scanner.rs`
+- *... and 3 more nodes in this community*
 
 ## Relationships
 
-- [WinBlast Optimizer](WinBlast_Optimizer.md) (25 shared connections)
-- [PanickingBackend](PanickingBackend.md) (21 shared connections)
-- [FailAtMutationBackend](FailAtMutationBackend.md) (12 shared connections)
-- [super](super.md) (7 shared connections)
-- [GPU Silicon & Hardware Tuning Policies](GPU_Silicon_&_Hardware_Tuning_Policies.md) (2 shared connections)
-- [enums](enums.md) (2 shared connections)
-- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (2 shared connections)
-- [startup.rs](startup.rs.md) (2 shared connections)
-- [HibernationStatus](HibernationStatus.md) (2 shared connections)
-- [Integration Suite: Tweak Sandbox E2E](Integration_Suite-_Tweak_Sandbox_E2E.md) (1 shared connections)
-- [lazy_loader.rs](lazy_loader.rs.md) (1 shared connections)
-- [full_telemetry_audit_with](full_telemetry_audit_with.md) (1 shared connections)
+- [DriverError](DriverError.md) (15 shared connections)
+- [.new](new.md) (5 shared connections)
+- [TaskCache](TaskCache.md) (3 shared connections)
+- [clean_apps.rs](clean_apps.rs.md) (2 shared connections)
+- [parking.rs](parking.rs.md) (2 shared connections)
+- [backend.rs](backend.rs.md) (2 shared connections)
+- [test_wave1_compound_actions_deep_edge_cases](test_wave1_compound_actions_deep_edge_cases.md) (2 shared connections)
+- [RestorePoint](RestorePoint.md) (2 shared connections)
+- [progress_bar.rs](progress_bar.rs.md) (2 shared connections)
+- [enums](enums.md) (1 shared connections)
+- [CoreParkingState](CoreParkingState.md) (1 shared connections)
+- [theme.rs](theme.rs.md) (1 shared connections)
 
 ## Source Files
 
-- `tests/tweak_sandbox_e2e.rs`
+- `src/core/reg_helpers.rs`
+- `src/scanner/registry_scanner.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 136 (99%)
-- INFERRED: 1 (1%)
+- EXTRACTED: 84 (84%)
+- INFERRED: 16 (16%)
 - AMBIGUOUS: 0 (0%)
 
 ---

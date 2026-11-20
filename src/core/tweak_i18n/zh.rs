@@ -1349,6 +1349,66 @@ pub fn lookup(id: &str) -> Option<LocalizedTweakText> {
             description: "禁用 Microsoft Office 诊断数据收集、反馈提示和客户体验改善计划 (CEIP) 遥测。",
             broken_features: &[],
         }),
+        "set_this_pc_as_default_explorer" => Some(LocalizedTweakText {
+            title: "将“此电脑”设为文件资源管理器默认打开视图",
+            description: "配置文件资源管理器启动时直接打开“此电脑”而非“主页/快速访问”，避免网络驱动器扫描和云同步带来的打开延迟。",
+            broken_features: &[],
+        }),
+        "enable_taskbar_end_task" => Some(LocalizedTweakText {
+            title: "在任务栏右键菜单中启用“结束任务”选项",
+            description: "启用 Windows 11 原生任务栏右键“结束任务”功能，无需打开任务管理器即可瞬间强行终止进程。",
+            broken_features: &[],
+        }),
+        "disable_oobe_privacy_experience" => Some(LocalizedTweakText {
+            title: "禁用 Windows OOBE 隐私设置体验弹窗",
+            description: "在创建新用户账户或完成系统功能更新时，通过组策略彻底抑制多页 OOBE 隐私设置向导提示。",
+            broken_features: &[],
+        }),
+        "disable_explorer_sync_provider_ads" => Some(LocalizedTweakText {
+            title: "禁用文件资源管理器同步提供程序横幅广告",
+            description: "禁止 Windows 文件资源管理器在文件夹顶部弹出 OneDrive 及 Microsoft 365 订阅促销横幅。",
+            broken_features: &[],
+        }),
+        "disable_taskbar_task_view" => Some(LocalizedTweakText {
+            title: "隐藏任务栏上的“任务视图”按钮",
+            description: "隐藏任务栏中多余的任务视图图标以释放宝贵的屏幕空间，同时不影响快捷键 Alt+Tab 切换。",
+            broken_features: &[],
+        }),
+        "hide_taskbar_meet_now" => Some(LocalizedTweakText {
+            title: "从任务栏中隐藏“立即开会”及聊天按钮",
+            description: "从任务栏和系统托盘中彻底隐藏 Microsoft Teams 聊天及“立即开会”图标。",
+            broken_features: &[],
+        }),
+        "disable_background_apps_global" => Some(LocalizedTweakText {
+            title: "全局禁止后台应用程序运行",
+            description: "阻止所有 Windows 商店与 UWP 应用在关闭后仍悄悄驻留后台运行、拉取通知及占用 CPU 与内存资源。",
+            broken_features: &[],
+        }),
+        "disable_finish_setup_ads" => Some(LocalizedTweakText {
+            title: "禁用“完成设备设置”全屏营销提示",
+            description: "彻底关闭重启后反复弹出的全屏“让我们完成设备设置”以推销 Microsoft 365 和 OneDrive 的烦人引导。",
+            broken_features: &[],
+        }),
+        "disable_lockscreen_spotlight_ads" => Some(LocalizedTweakText {
+            title: "禁用锁屏界面趣味知识与商业推广广告",
+            description: "禁止 Windows 锁屏界面上推送的各类提示、链接推荐以及全屏动态商业广告覆盖层。",
+            broken_features: &[],
+        }),
+        "disable_welcome_experience_ads" => Some(LocalizedTweakText {
+            title: "禁用重大更新后的 Windows 欢迎与促销体验弹窗",
+            description: "禁止系统更新后强行弹出的“最新功能介绍”以及推销 Microsoft Edge 和 Copilot 服务的欢迎界面。",
+            broken_features: &[],
+        }),
+        "disable_general_tips_ads" => Some(LocalizedTweakText {
+            title: "禁用 Windows 系统日常使用提示与技巧横幅",
+            description: "全面关闭由 ContentDeliveryManager 周期性向桌面及通知栏推送的系统技巧、建议和推广通知。",
+            broken_features: &[],
+        }),
+        "enable_windowed_game_optimizations" => Some(LocalizedTweakText {
+            title: "启用窗口化游戏专项低延迟优化",
+            description: "为窗口化和无边框游戏强制启用 Windows 11 现代翻转呈现模型 (Flip Model)，显著削减输入延迟并解锁自动 HDR 与可变刷新率 (VRR)。",
+            broken_features: &[],
+        }),
         _ => None,
     }
 }

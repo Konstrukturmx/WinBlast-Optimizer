@@ -1,63 +1,59 @@
 # parse_guid
 
-> 28 nodes · cohesion 0.19
+> 30 nodes · cohesion 0.12
 
 ## Key Concepts
 
-- **TweakDefinition** (51 connections) — `src/core/risk.rs`
-- **scanner/mod.rs** (38 connections) — `src/scanner/mod.rs`
-- **ScanResult** (28 connections) — `src/scanner/mod.rs`
-- **scan_single_tweak_with()** (16 connections) — `src/scanner/mod.rs`
-- **scan_all_tweaks_parallel_with()** (12 connections) — `src/scanner/mod.rs`
-- **CachedScanBackend** (10 connections) — `src/core/backend.rs`
-- **evaluate_tweak()** (10 connections) — `src/scanner/mod.rs`
-- **run_full_scan_with()** (9 connections) — `src/scanner/mod.rs`
-- **scan_tweaks_chunked_parallel_with()** (7 connections) — `src/scanner/mod.rs`
-- **revert_tweaks_by_id_with()** (6 connections) — `src/executor/engine.rs`
-- **evaluate_tweak_status()** (6 connections) — `src/scanner/mod.rs`
-- **make_scan_result()** (6 connections) — `src/scanner/mod.rs`
-- **test_parallel_scan_parity_with_sequential()** (5 connections) — `src/scanner/mod.rs`
-- **OsRequirement** (4 connections) — `src/core/risk.rs`
-- **revert_tweaks_by_id()** (4 connections) — `src/executor/engine.rs`
-- **mk_test_tweak()** (4 connections) — `src/scanner/mod.rs`
-- **run_full_scan()** (4 connections) — `src/scanner/mod.rs`
-- **scan_all_tweaks_parallel()** (4 connections) — `src/scanner/mod.rs`
-- **scan_single_tweak()** (4 connections) — `src/scanner/mod.rs`
-- **scan_tweaks_chunked_parallel()** (4 connections) — `src/scanner/mod.rs`
-- **test_foreign_gpu_and_non_elevated_feature_and_partial_power_scan()** (4 connections) — `src/scanner/mod.rs`
-- **test_evaluate_tweak_status_single()** (3 connections) — `src/scanner/mod.rs`
-- **test_full_scan_execution_in_sandbox()** (3 connections) — `src/scanner/mod.rs`
-- **test_run_full_scan_populates_detail_kind_and_sub_category()** (3 connections) — `src/scanner/mod.rs`
-- **test_scan_single_tweak_detail_kind_every_action_and_na_branch()** (3 connections) — `src/scanner/mod.rs`
-- *... and 3 more nodes in this community*
+- **features_apps.rs** (57 connections) — `src/tools/features_apps.rs`
+- **list_installed_appx_from_cache_with_provisioned()** (9 connections) — `src/tools/features_apps.rs`
+- **normalize_appx_family_name()** (9 connections) — `src/tools/features_apps.rs`
+- **classify_appx_package()** (7 connections) — `src/tools/features_apps.rs`
+- **CURATED_WINGET_APPS** (5 connections) — `src/tools/features_apps.rs`
+- **extract_appx_short_name()** (4 connections) — `src/tools/features_apps.rs`
+- **extract_winget_error_detail()** (4 connections) — `src/tools/features_apps.rs`
+- **list_installed_appx_from_cache()** (4 connections) — `src/tools/features_apps.rs`
+- **uninstall_onedrive_safe()** (4 connections) — `src/tools/features_apps.rs`
+- **winget_install_package()** (4 connections) — `src/tools/features_apps.rs`
+- **DISM_LOCK** (3 connections) — `src/tools/features_apps.rs`
+- **is_crockford_pub_id()** (3 connections) — `src/tools/features_apps.rs`
+- **query_provisioned_appx_families()** (3 connections) — `src/tools/features_apps.rs`
+- **remove_appx_batch()** (3 connections) — `src/tools/features_apps.rs`
+- **validate_appx_family()** (3 connections) — `src/tools/features_apps.rs`
+- **LazyLock** (2 connections)
+- **check_onedrive_kfm_active()** (2 connections) — `src/tools/features_apps.rs`
+- **find_onedrive_setup_exe()** (2 connections) — `src/tools/features_apps.rs`
+- **is_appx_arch()** (2 connections) — `src/tools/features_apps.rs`
+- **is_appx_version()** (2 connections) — `src/tools/features_apps.rs`
+- **is_microsoft_appx_publisher()** (2 connections) — `src/tools/features_apps.rs`
+- **is_progress_noise_char()** (2 connections) — `src/tools/features_apps.rs`
+- **Mutex** (2 connections)
+- **strip_ansi_sequences()** (2 connections) — `src/tools/features_apps.rs`
+- **test_protected_core_appx_never_classified_bloat()** (2 connections) — `src/tools/features_apps.rs`
+- *... and 5 more nodes in this community*
 
 ## Relationships
 
-- [RealBackend](RealBackend.md) (14 shared connections)
-- [super](super.md) (13 shared connections)
-- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (10 shared connections)
-- [advanced_matrix.rs](advanced_matrix.rs.md) (9 shared connections)
-- [full_telemetry_audit_with](full_telemetry_audit_with.md) (8 shared connections)
-- [DriverError](DriverError.md) (8 shared connections)
-- [FailAtMutationBackend](FailAtMutationBackend.md) (8 shared connections)
-- [AppState](AppState.md) (7 shared connections)
-- [SlowScanBackend](SlowScanBackend.md) (4 shared connections)
-- [State Ledger & Restore Point Engine](State_Ledger_&_Restore_Point_Engine.md) (3 shared connections)
-- [GPU Silicon & Hardware Tuning Policies](GPU_Silicon_&_Hardware_Tuning_Policies.md) (3 shared connections)
-- [Dynamicdwordformula Logicalcorecount Totalraminkb](Dynamicdwordformula_Logicalcorecount_Totalraminkb.md) (3 shared connections)
+- [UiThemeStyle](UiThemeStyle.md) (10 shared connections)
+- [Any](Any.md) (5 shared connections)
+- [PowerSchemeInfo](PowerSchemeInfo.md) (5 shared connections)
+- [ThemePalette](ThemePalette.md) (4 shared connections)
+- [CoreParkingState](CoreParkingState.md) (2 shared connections)
+- [parking.rs](parking.rs.md) (2 shared connections)
+- [.take_injected_error](take_injected_error.md) (2 shared connections)
+- [Reversibility Instant Requireslogoff](Reversibility_Instant_Requireslogoff.md) (2 shared connections)
+- [theme.rs](theme.rs.md) (2 shared connections)
+- [deserialize](deserialize.md) (1 shared connections)
+- [clean_apps.rs](clean_apps.rs.md) (1 shared connections)
+- [Project Documentation, Architecture & Licensing](Project_Documentation,_Architecture_&_Licensing.md) (1 shared connections)
 
 ## Source Files
 
-- `src/app.rs`
-- `src/core/backend.rs`
-- `src/core/risk.rs`
-- `src/executor/engine.rs`
-- `src/scanner/mod.rs`
+- `src/tools/features_apps.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 169 (92%)
-- INFERRED: 14 (8%)
+- EXTRACTED: 94 (99%)
+- INFERRED: 1 (1%)
 - AMBIGUOUS: 0 (0%)
 
 ---

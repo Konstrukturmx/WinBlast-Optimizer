@@ -1,52 +1,54 @@
 # .set_status_spec
 
-> 18 nodes · cohesion 0.14
+> 19 nodes · cohesion 0.12
 
 ## Key Concepts
 
-- **restore_point.rs** (14 connections) — `src/backup/restore_point.rs`
-- **RestorePoint** (14 connections) — `src/backup/restore_point.rs`
-- **parse_restore_point_time()** (5 connections) — `src/backup/restore_point.rs`
-- **.create_restore_point()** (5 connections) — `src/core/backend.rs`
-- **ensure_preflight_restore_point_with()** (4 connections) — `src/backup/restore_point.rs`
-- **.list_restore_points()** (4 connections) — `src/core/backend.rs`
-- **is_recent_restore_point_present_with()** (3 connections) — `src/backup/restore_point.rs`
-- **list_restore_points()** (3 connections) — `src/backup/restore_point.rs`
-- **.ensure_preflight_restore_point()** (3 connections) — `src/core/backend.rs`
-- **create_restore_point()** (2 connections) — `src/backup/restore_point.rs`
-- **ensure_preflight_restore_point()** (2 connections) — `src/backup/restore_point.rs`
-- **test_ensure_preflight_restore_point_sandbox()** (2 connections) — `src/backup/restore_point.rs`
-- **test_parse_restore_point_time_formats()** (2 connections) — `src/backup/restore_point.rs`
-- **.list_restore_points()** (2 connections) — `src/core/backend.rs`
-- **CreateRestorePoint** (2 connections) — `src/core/backend.rs`
-- **.list_restore_points()** (2 connections) — `src/core/backend.rs`
-- **DateTime** (1 connections)
-- **Utc** (1 connections)
+- **PlatformSecurityInfo** (16 connections) — `src/hardware/sys_inventory.rs`
+- **DriveMediaKind** (10 connections) — `src/hardware/sys_inventory.rs`
+- **StorageVolumeInfo** (8 connections) — `src/hardware/sys_inventory.rs`
+- **HandleGuard** (4 connections) — `src/hardware/sys_inventory.rs`
+- **probe_drive_media_kind()** (4 connections) — `src/hardware/sys_inventory.rs`
+- **query_storage_volumes()** (4 connections) — `src/hardware/sys_inventory.rs`
+- **.detect_platform_security()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.detect_platform_security()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.detect_platform_security()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.detect_platform_security()** (2 connections) — `src/core/backend.rs`
+- **.detect_platform_security()** (2 connections) — `src/core/backend.rs`
+- **HANDLE** (2 connections)
+- **.as_label()** (1 connections) — `src/hardware/sys_inventory.rs`
+- **Hdd** (1 connections) — `src/hardware/sys_inventory.rs`
+- **Nvme** (1 connections) — `src/hardware/sys_inventory.rs`
+- **Removable** (1 connections) — `src/hardware/sys_inventory.rs`
+- **Ssd** (1 connections) — `src/hardware/sys_inventory.rs`
+- **Unknown** (1 connections) — `src/hardware/sys_inventory.rs`
+- **.drop()** (1 connections) — `src/hardware/sys_inventory.rs`
 
 ## Relationships
 
-- [full_telemetry_audit_with](full_telemetry_audit_with.md) (5 shared connections)
-- [GPU Silicon & Hardware Tuning Policies](GPU_Silicon_&_Hardware_Tuning_Policies.md) (4 shared connections)
-- [WinBlast Optimizer](WinBlast_Optimizer.md) (3 shared connections)
-- [State Ledger & Restore Point Engine](State_Ledger_&_Restore_Point_Engine.md) (2 shared connections)
-- [FeatureInstallState](FeatureInstallState.md) (2 shared connections)
-- [reg_mutator.rs](reg_mutator.rs.md) (2 shared connections)
-- [FailAtMutationBackend](FailAtMutationBackend.md) (1 shared connections)
-- [deserialize](deserialize.md) (1 shared connections)
-- [AppState](AppState.md) (1 shared connections)
-- [WorkerEvent](WorkerEvent.md) (1 shared connections)
-- [RegRawSnapshot](RegRawSnapshot.md) (1 shared connections)
-- [SlowScanBackend](SlowScanBackend.md) (1 shared connections)
+- [.logical_core_count](logical_core_count.md) (10 shared connections)
+- [deserialize](deserialize.md) (3 shared connections)
+- [Embedded Catalog Test](Embedded_Catalog_Test.md) (2 shared connections)
+- [.Toggle .Set .Apply](Toggle_.Set_.Apply.md) (2 shared connections)
+- [SlowScanBackend](SlowScanBackend.md) (2 shared connections)
+- [sys_inventory.rs](sys_inventory.rs.md) (2 shared connections)
+- [Integration Suite: Tweak Sandbox E2E](Integration_Suite-_Tweak_Sandbox_E2E.md) (1 shared connections)
+- [startup.rs](startup.rs.md) (1 shared connections)
+- [Project History & Release Version Ledger](Project_History_&_Release_Version_Ledger.md) (1 shared connections)
+- [theme.rs](theme.rs.md) (1 shared connections)
+- [full_telemetry_audit_with](full_telemetry_audit_with.md) (1 shared connections)
+- [InstalledAppxPackage](InstalledAppxPackage.md) (1 shared connections)
 
 ## Source Files
 
-- `src/backup/restore_point.rs`
 - `src/core/backend.rs`
+- `src/hardware/sys_inventory.rs`
+- `tests/tweak_sandbox_e2e.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 48 (98%)
-- INFERRED: 1 (2%)
+- EXTRACTED: 48 (100%)
+- INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 
 ---

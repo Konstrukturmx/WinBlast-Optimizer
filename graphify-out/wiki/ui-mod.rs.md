@@ -1,27 +1,27 @@
 # ui/mod.rs
 
-> 3 nodes · cohesion 0.67
+> 6 nodes · cohesion 0.33
 
 ## Key Concepts
 
-- **.set_startup_entry_enabled_by_id()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.set_startup_entry_enabled_by_id()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.set_startup_entry_enabled_by_id()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
+- **build.rs** (5 connections) — `build.rs`
+- **asinvoker** (1 connections)
+- **main()** (1 connections) — `build.rs`
+- **embed_manifest** (1 connections)
+- **highestavailable** (1 connections)
+- **new_manifest** (1 connections)
 
 ## Relationships
 
-- [WinBlast Optimizer](WinBlast_Optimizer.md) (3 shared connections)
-- [FailAtMutationBackend](FailAtMutationBackend.md) (1 shared connections)
-- [PanickingBackend](PanickingBackend.md) (1 shared connections)
-- [SlowScanBackend](SlowScanBackend.md) (1 shared connections)
+- No strong cross-community connections detected
 
 ## Source Files
 
-- `tests/tweak_sandbox_e2e.rs`
+- `build.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 8 (100%)
+- EXTRACTED: 5 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

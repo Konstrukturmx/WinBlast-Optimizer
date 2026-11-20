@@ -1,43 +1,51 @@
 # Language
 
-> 11 nodes · cohesion 0.25
+> 17 nodes · cohesion 0.18
 
 ## Key Concepts
 
-- **DriverUpdateItem** (16 connections) — `src/hardware/driver_update.rs`
-- **download_and_install_driver()** (7 connections) — `src/hardware/driver_update.rs`
-- **scan_online_drivers_with_progress()** (7 connections) — `src/hardware/driver_update.rs`
-- **create_sandbox_test_item()** (6 connections) — `src/hardware/driver_update.rs`
-- **scan_online_drivers()** (5 connections) — `src/hardware/driver_update.rs`
-- **test_driver_sandbox_lifecycle()** (4 connections) — `src/hardware/driver_update.rs`
-- **.test_sandbox_driver_install()** (3 connections) — `src/app.rs`
-- **.install_driver_update()** (2 connections) — `src/app.rs`
-- **test_create_sandbox_item_metadata()** (2 connections) — `src/hardware/driver_update.rs`
-- **test_driver_sandbox_lifecycle_execution()** (2 connections) — `src/hardware/driver_update.rs`
-- **.is_update_available()** (1 connections) — `src/hardware/driver_update.rs`
+- **WinBlastScrollable** (32 connections) — `src/ui/widgets/scrollbar.rs`
+- **latency_bench.rs** (15 connections) — `src/ui/views/latency_bench.rs`
+- **scrollbar.rs** (8 connections) — `src/ui/widgets/scrollbar.rs`
+- **view()** (7 connections) — `src/ui/views/latency_bench.rs`
+- **before_after_comparison_card()** (5 connections) — `src/ui/views/latency_bench.rs`
+- **winblast_scrollbar_style()** (5 connections) — `src/ui/widgets/scrollbar.rs`
+- **El** (4 connections)
+- **.winblast_scroll()** (4 connections) — `src/ui/widgets/scrollbar.rs`
+- **.winblast_scroll_smooth()** (4 connections) — `src/ui/widgets/scrollbar.rs`
+- **El** (3 connections)
+- **rune::El** (3 connections) — `src/ui/widgets/scrollbar.rs`
+- **.winblast_scroll()** (3 connections) — `src/ui/widgets/scrollbar.rs`
+- **.winblast_scroll_smooth()** (3 connections) — `src/ui/widgets/scrollbar.rs`
+- **ScrollBarStyle** (2 connections)
+- **SCROLL_MIN_VELOCITY** (1 connections) — `src/ui/widgets/scrollbar.rs`
+- **SCROLL_MOMENTUM_FRICTION** (1 connections) — `src/ui/widgets/scrollbar.rs`
+- **SCROLL_VELOCITY_DECAY** (1 connections) — `src/ui/widgets/scrollbar.rs`
 
 ## Relationships
 
-- [task_scanner.rs](task_scanner.rs.md) (8 shared connections)
-- [TaskCache](TaskCache.md) (6 shared connections)
-- [AppState](AppState.md) (3 shared connections)
-- [InstalledAppxPackage](InstalledAppxPackage.md) (3 shared connections)
-- [clean_apps.rs](clean_apps.rs.md) (2 shared connections)
-- [PdhParkingCollector](PdhParkingCollector.md) (1 shared connections)
-- [lazy_loader.rs](lazy_loader.rs.md) (1 shared connections)
-- [WorkerEvent](WorkerEvent.md) (1 shared connections)
-- [spawn_guarded_worker](spawn_guarded_worker.md) (1 shared connections)
-- [GameProfile](GameProfile.md) (1 shared connections)
+- [WinBlastError](WinBlastError.md) (17 shared connections)
+- [elevation.rs](elevation.rs.md) (9 shared connections)
+- [updater.rs](updater.rs.md) (7 shared connections)
+- [task_scanner.rs](task_scanner.rs.md) (5 shared connections)
+- [.Toggle .Set .Apply](Toggle_.Set_.Apply.md) (4 shared connections)
+- [DriverUpdateItem](DriverUpdateItem.md) (2 shared connections)
+- [Core UI Internationalization & Text Catalog](Core_UI_Internationalization_&_Text_Catalog.md) (1 shared connections)
+- [backend.rs](backend.rs.md) (1 shared connections)
+- [advanced_matrix.rs](advanced_matrix.rs.md) (1 shared connections)
+- [PlatformSecurityInfo](PlatformSecurityInfo.md) (1 shared connections)
+- [storage.rs](storage.rs.md) (1 shared connections)
+- [RegTreeSnapshot](RegTreeSnapshot.md) (1 shared connections)
 
 ## Source Files
 
-- `src/app.rs`
-- `src/hardware/driver_update.rs`
+- `src/ui/views/latency_bench.rs`
+- `src/ui/widgets/scrollbar.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 39 (95%)
-- INFERRED: 2 (5%)
+- EXTRACTED: 74 (97%)
+- INFERRED: 2 (3%)
 - AMBIGUOUS: 0 (0%)
 
 ---

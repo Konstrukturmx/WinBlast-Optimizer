@@ -33,13 +33,14 @@
 
 ## Relationships
 
-- [Disk Cleaning & Temporary File Purger](Disk_Cleaning_&_Temporary_File_Purger.md) (14 shared connections)
-- [tools/game_overlay.rs](tools-game_overlay.rs.md) (3 shared connections)
-- [Runtime](Runtime.md) (1 shared connections)
-- [.Reg State() Vendor()](Reg_State_Vendor.md) (1 shared connections)
-- [PlatformSecurityInfo](PlatformSecurityInfo.md) (1 shared connections)
-- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (1 shared connections)
-- [views/network_diag.rs](views-network_diag.rs.md) (1 shared connections)
+- [WinBlastError](WinBlastError.md) (12 shared connections)
+- [Utc](Utc.md) (3 shared connections)
+- [elevation.rs](elevation.rs.md) (2 shared connections)
+- [advanced_matrix.rs](advanced_matrix.rs.md) (1 shared connections)
+- [updater.rs](updater.rs.md) (1 shared connections)
+- [storage.rs](storage.rs.md) (1 shared connections)
+- [task_scanner.rs](task_scanner.rs.md) (1 shared connections)
+- [.Toggle .Set .Apply](Toggle_.Set_.Apply.md) (1 shared connections)
 
 ## Source Files
 
@@ -47,8 +48,8 @@
 
 ## Audit Trail
 
-- EXTRACTED: 220 (100%)
-- INFERRED: 0 (0%)
+- EXTRACTED: 219 (100%)
+- INFERRED: 1 (0%)
 - AMBIGUOUS: 0 (0%)
 
 ---

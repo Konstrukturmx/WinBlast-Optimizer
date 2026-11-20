@@ -1,55 +1,59 @@
 # driver_update.rs
 
-> 40 nodes · cohesion 0.06
+> 34 nodes · cohesion 0.11
 
 ## Key Concepts
 
-- **explorer_ctrl.rs** (49 connections) — `src/tools/explorer_ctrl.rs`
-- **restart_explorer_safely()** (5 connections) — `src/tools/explorer_ctrl.rs`
-- **HandleCloser** (4 connections) — `src/tools/explorer_ctrl.rs`
-- **EnvBlockGuard** (3 connections) — `src/tools/explorer_ctrl.rs`
-- **broadcast_shell_settings_changed()** (2 connections) — `src/tools/explorer_ctrl.rs`
-- **HANDLE** (2 connections)
-- **create_unicode_environment** (1 connections)
-- **createenvironmentblock** (1 connections)
-- **createprocesswithtokenw** (1 connections)
-- **destroyenvironmentblock** (1 connections)
-- **duplicatetokenex** (1 connections)
-- **getshellwindow** (1 connections)
-- **getwindowthreadprocessid** (1 connections)
-- **hwnd_broadcast** (1 connections)
-- **logon_with_profile** (1 connections)
-- **lparam** (1 connections)
-- **openprocess** (1 connections)
-- **process_information** (1 connections)
-- **process_query_limited_information** (1 connections)
-- **process_synchronize** (1 connections)
-- **process_terminate** (1 connections)
-- **pwstr** (1 connections)
-- **securityimpersonation** (1 connections)
-- **sendmessagetimeoutw** (1 connections)
-- **shchangenotify** (1 connections)
-- *... and 15 more nodes in this community*
+- **localize_tweak()** (16 connections) — `src/core/tweak_i18n/mod.rs`
+- **LocalizedTweakText** (16 connections) — `src/core/tweak_i18n/mod.rs`
+- **lookup()** (5 connections) — `src/core/tweak_i18n/de.rs`
+- **lookup()** (5 connections) — `src/core/tweak_i18n/es.rs`
+- **lookup()** (5 connections) — `src/core/tweak_i18n/fr.rs`
+- **lookup()** (5 connections) — `src/core/tweak_i18n/ja.rs`
+- **lookup()** (5 connections) — `src/core/tweak_i18n/ru.rs`
+- **lookup()** (5 connections) — `src/core/tweak_i18n/tr.rs`
+- **lookup()** (5 connections) — `src/core/tweak_i18n/zh.rs`
+- **de.rs** (4 connections) — `src/core/tweak_i18n/de.rs`
+- **es.rs** (4 connections) — `src/core/tweak_i18n/es.rs`
+- **fr.rs** (4 connections) — `src/core/tweak_i18n/fr.rs`
+- **ja.rs** (4 connections) — `src/core/tweak_i18n/ja.rs`
+- **ru.rs** (4 connections) — `src/core/tweak_i18n/ru.rs`
+- **tr.rs** (4 connections) — `src/core/tweak_i18n/tr.rs`
+- **zh.rs** (4 connections) — `src/core/tweak_i18n/zh.rs`
+- **test_all_230_tweaks_localized_all_7_languages()** (3 connections) — `src/core/tweak_i18n/mod.rs`
+- **.tweak_broken_features()** (2 connections) — `src/app.rs`
+- **.tweak_description()** (2 connections) — `src/app.rs`
+- **.tweak_title()** (2 connections) — `src/app.rs`
+- **tweak_description()** (2 connections) — `src/core/tweak_i18n/de.rs`
+- **tweak_title()** (2 connections) — `src/core/tweak_i18n/de.rs`
+- **tweak_description()** (2 connections) — `src/core/tweak_i18n/es.rs`
+- **tweak_title()** (2 connections) — `src/core/tweak_i18n/es.rs`
+- **tweak_description()** (2 connections) — `src/core/tweak_i18n/fr.rs`
+- *... and 9 more nodes in this community*
 
 ## Relationships
 
-- [restart_explorer_safely](restart_explorer_safely.md) (5 shared connections)
-- [FeatureInstallState](FeatureInstallState.md) (2 shared connections)
-- [State Ledger & Restore Point Engine](State_Ledger_&_Restore_Point_Engine.md) (1 shared connections)
-- [reg_helpers.rs](reg_helpers.rs.md) (1 shared connections)
+- [RealBackend](RealBackend.md) (5 shared connections)
+- [.Toggle .Set .Apply](Toggle_.Set_.Apply.md) (3 shared connections)
 - [FailAtMutationBackend](FailAtMutationBackend.md) (1 shared connections)
-- [PlatformSecurityInfo](PlatformSecurityInfo.md) (1 shared connections)
-- [path](path.md) (1 shared connections)
-- [Scandetailkind Appxinstalled Appxinstalledps](Scandetailkind_Appxinstalled_Appxinstalledps.md) (1 shared connections)
+- [theme.rs](theme.rs.md) (1 shared connections)
 
 ## Source Files
 
-- `src/tools/explorer_ctrl.rs`
+- `src/app.rs`
+- `src/core/tweak_i18n/de.rs`
+- `src/core/tweak_i18n/es.rs`
+- `src/core/tweak_i18n/fr.rs`
+- `src/core/tweak_i18n/ja.rs`
+- `src/core/tweak_i18n/mod.rs`
+- `src/core/tweak_i18n/ru.rs`
+- `src/core/tweak_i18n/tr.rs`
+- `src/core/tweak_i18n/zh.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 56 (100%)
-- INFERRED: 0 (0%)
+- EXTRACTED: 70 (99%)
+- INFERRED: 1 (1%)
 - AMBIGUOUS: 0 (0%)
 
 ---

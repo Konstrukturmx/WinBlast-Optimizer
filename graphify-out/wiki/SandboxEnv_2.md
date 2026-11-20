@@ -1,8 +1,8 @@
 # SandboxEnv
 
-> God node · 119 connections · `src/core/backend.rs`
+> God node · 122 connections · `src/core/backend.rs`
 
-**Community:** [GPU Silicon & Hardware Tuning Policies](GPU_Silicon_&_Hardware_Tuning_Policies.md)
+**Community:** [full_telemetry_audit_with](full_telemetry_audit_with.md)
 
 ## Connections by Relation
 
@@ -14,8 +14,10 @@
 
 ### imports_from
 - tweak_sandbox_e2e.rs `EXTRACTED`
+- preset_sharing.rs `EXTRACTED`
 - engine.rs `EXTRACTED`
 - scanner/mod.rs `EXTRACTED`
+- fuzz_mutation_properties.rs `EXTRACTED`
 - [adaptive_tuning.rs](adaptive_tuning.rs.md) `EXTRACTED`
 - restore_point.rs `EXTRACTED`
 - [power_governor.rs](power_governor.rs.md) `EXTRACTED`
@@ -51,6 +53,7 @@
 - [FailAtMutationBackend](FailAtMutationBackend.md) `EXTRACTED`
 - SandboxState `EXTRACTED`
 - [WinBlast Optimizer — Developer & Architecture Guide](WinBlast_Optimizer_—_Developer_&_Architecture_Guide.md) `EXTRACTED`
+- simulate_preset_dry_run() `EXTRACTED`
 - SandboxTempDir `EXTRACTED`
 - RwLock `EXTRACTED`
 - .new() `EXTRACTED`

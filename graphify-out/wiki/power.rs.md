@@ -1,58 +1,59 @@
 # power.rs
 
-> 27 nodes · cohesion 0.13
+> 33 nodes · cohesion 0.11
 
 ## Key Concepts
 
-- **automation.rs** (32 connections) — `src/tools/automation.rs`
-- **MaintenanceTaskKind** (14 connections) — `src/tools/automation.rs`
-- **.task_name()** (6 connections) — `src/tools/automation.rs`
-- **HealthSeverity** (5 connections) — `src/tools/automation.rs`
-- **install_maintenance_task()** (5 connections) — `src/tools/automation.rs`
-- **query_all_maintenance_tasks()** (5 connections) — `src/tools/automation.rs`
-- **SystemHealthAssessment** (5 connections) — `src/tools/automation.rs`
-- **test_iso_29119_maintenance_tasks_specification()** (5 connections) — `src/tools/automation.rs`
-- **is_maintenance_task_installed()** (4 connections) — `src/tools/automation.rs`
-- **MaintenanceTaskStatus** (4 connections) — `src/tools/automation.rs`
-- **assess_system_health()** (3 connections) — `src/tools/automation.rs`
-- **.schedule_frequency()** (3 connections) — `src/tools/automation.rs`
-- **.trigger_time()** (3 connections) — `src/tools/automation.rs`
-- **MemoryTrimResult** (3 connections) — `src/tools/automation.rs`
-- **remove_maintenance_task()** (3 connections) — `src/tools/automation.rs`
-- **SystemHealthIssue** (3 connections) — `src/tools/automation.rs`
-- **test_iso_29119_health_assessment_scoring_and_grades()** (2 connections) — `src/tools/automation.rs`
-- **trim_system_memory_and_cache()** (2 connections) — `src/tools/automation.rs`
-- **Critical** (1 connections) — `src/tools/automation.rs`
-- **Info** (1 connections) — `src/tools/automation.rs`
-- **Warning** (1 connections) — `src/tools/automation.rs`
-- **.all()** (1 connections) — `src/tools/automation.rs`
-- **DailyMemoryPurge** (1 connections) — `src/tools/automation.rs`
-- **.description()** (1 connections) — `src/tools/automation.rs`
-- **TelemetryGuard** (1 connections) — `src/tools/automation.rs`
-- *... and 2 more nodes in this community*
+- **.take_injected_error()** (37 connections) — `src/core/backend.rs`
+- **.state_write()** (36 connections) — `src/core/backend.rs`
+- **.sync_parking_in_state()** (7 connections) — `src/core/backend.rs`
+- **.reg_restore_tree()** (6 connections) — `src/core/backend.rs`
+- **.set_optional_feature()** (6 connections) — `src/core/backend.rs`
+- **.apply_parking_snapshot()** (5 connections) — `src/core/backend.rs`
+- **.execute_clean_targets()** (5 connections) — `src/core/backend.rs`
+- **.restore_stock_parking()** (5 connections) — `src/core/backend.rs`
+- **.write_power_setting_index()** (5 connections) — `src/core/backend.rs`
+- **.remove_appx_batch()** (4 connections) — `src/core/backend.rs`
+- **.remove_appx_family_in_state()** (4 connections) — `src/core/backend.rs`
+- **.remove_appx_package()** (4 connections) — `src/core/backend.rs`
+- **.set_hags()** (4 connections) — `src/core/backend.rs`
+- **.set_hibernation_enabled()** (4 connections) — `src/core/backend.rs`
+- **.set_mpo_disabled()** (4 connections) — `src/core/backend.rs`
+- **.set_scheduled_task_enabled()** (4 connections) — `src/core/backend.rs`
+- **.set_startup_entry_enabled()** (4 connections) — `src/core/backend.rs`
+- **.set_usb_root_hub_power_saving()** (4 connections) — `src/core/backend.rs`
+- **optional_feature_matches()** (3 connections) — `src/core/backend.rs`
+- **.block_telemetry_hosts()** (3 connections) — `src/core/backend.rs`
+- **.create_and_activate_performance_plan()** (3 connections) — `src/core/backend.rs`
+- **.request_system_reboot()** (3 connections) — `src/core/backend.rs`
+- **.restart_explorer_safely()** (3 connections) — `src/core/backend.rs`
+- **.set_active_power_scheme()** (3 connections) — `src/core/backend.rs`
+- **.set_gpu_msi_mode()** (3 connections) — `src/core/backend.rs`
+- *... and 8 more nodes in this community*
 
 ## Relationships
 
-- [Project Documentation, Architecture & Licensing](Project_Documentation,_Architecture_&_Licensing.md) (6 shared connections)
-- [AppState](AppState.md) (4 shared connections)
-- [deserialize](deserialize.md) (3 shared connections)
-- [OverallHealthGrade](OverallHealthGrade.md) (2 shared connections)
-- [parse_guid](parse_guid.md) (1 shared connections)
-- [PowerSchemeInfo](PowerSchemeInfo.md) (1 shared connections)
-- [privacy_shield.rs](privacy_shield.rs.md) (1 shared connections)
-- [InstalledAppxPackage](InstalledAppxPackage.md) (1 shared connections)
-- [FailAtMutationBackend](FailAtMutationBackend.md) (1 shared connections)
-- [super](super.md) (1 shared connections)
-- [PlatformSecurityInfo](PlatformSecurityInfo.md) (1 shared connections)
+- [full_telemetry_audit_with](full_telemetry_audit_with.md) (31 shared connections)
+- [Project History & Release Version Ledger](Project_History_&_Release_Version_Ledger.md) (16 shared connections)
+- [deserialize](deserialize.md) (5 shared connections)
+- [Error.Rs Winblasterror Appx](Error.Rs_Winblasterror_Appx.md) (4 shared connections)
+- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (3 shared connections)
+- [features_apps.rs](features_apps.rs.md) (2 shared connections)
+- [tools/game_overlay.rs](tools-game_overlay.rs.md) (2 shared connections)
+- [progress_bar.rs](progress_bar.rs.md) (1 shared connections)
+- [DriverError](DriverError.md) (1 shared connections)
+- [HibernationStatus](HibernationStatus.md) (1 shared connections)
+- [UiThemeStyle](UiThemeStyle.md) (1 shared connections)
+- [svc_mutator.rs](svc_mutator.rs.md) (1 shared connections)
 
 ## Source Files
 
-- `src/tools/automation.rs`
+- `src/core/backend.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 65 (94%)
-- INFERRED: 4 (6%)
+- EXTRACTED: 125 (97%)
+- INFERRED: 4 (3%)
 - AMBIGUOUS: 0 (0%)
 
 ---

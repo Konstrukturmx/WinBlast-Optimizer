@@ -56,7 +56,7 @@
 
 ### references
 - tr_view() `EXTRACTED`
-- .tr_v() `EXTRACTED`
+- .tr_v() `INFERRED`
 
 ---
 

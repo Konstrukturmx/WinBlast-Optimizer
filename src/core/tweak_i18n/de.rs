@@ -1137,6 +1137,66 @@ pub fn lookup(id: &str) -> Option<LocalizedTweakText> {
             description: "Deaktiviert die Erfassung von Diagnosedaten, Feedback-Aufforderungen und die Telemetrie des Programms zur Verbesserung der Benutzerfreundlichkeit (CEIP) in Office.",
             broken_features: &[],
         }),
+        "set_this_pc_as_default_explorer" => Some(LocalizedTweakText {
+            title: "'Dieser PC' als Standard-Ansicht im Datei-Explorer festlegen",
+            description: "Konfiguriert den Datei-Explorer so, dass er standardmäßig mit 'Dieser PC' statt 'Start' öffnet, um Verzögerungen durch Netzwerklaufwerke zu vermeiden.",
+            broken_features: &[],
+        }),
+        "enable_taskbar_end_task" => Some(LocalizedTweakText {
+            title: "Rechtsklick 'Task beenden' in der Taskleiste aktivieren",
+            description: "Aktiviert die native Windows 11-Option 'Task beenden' direkt im Kontextmenü der Taskleistensymbole für sofortigen Prozessabbruch.",
+            broken_features: &[],
+        }),
+        "disable_oobe_privacy_experience" => Some(LocalizedTweakText {
+            title: "Windows OOBE-Datenschutzeinstellungen-Aufforderung deaktivieren",
+            description: "Unterdrückt die mehrseitige OOBE-Datenschutzeinstellungs-Aufforderung bei der Erstellung neuer Benutzerkonten und nach Funktionsupdates.",
+            broken_features: &[],
+        }),
+        "disable_explorer_sync_provider_ads" => Some(LocalizedTweakText {
+            title: "Synchronisierungsanbieter-Werbung im Datei-Explorer deaktivieren",
+            description: "Verhindert, dass der Datei-Explorer Werbebanner für OneDrive und Microsoft 365-Abonnements anzeigt.",
+            broken_features: &[],
+        }),
+        "disable_taskbar_task_view" => Some(LocalizedTweakText {
+            title: "Aktive Anwendungen (Task View)-Schaltfläche ausblenden",
+            description: "Blendet das Task View-Symbol aus der Taskleiste aus, um Platz zu sparen; Alt+Tab bleibt voll funktionsfähig.",
+            broken_features: &[],
+        }),
+        "hide_taskbar_meet_now" => Some(LocalizedTweakText {
+            title: "'Jetzt besprechen'- und Chat-Schaltfläche ausblenden",
+            description: "Blendet die Schaltflächen 'Jetzt besprechen' und Microsoft Teams-Chat aus der Taskleiste und dem Infobereich aus.",
+            broken_features: &[],
+        }),
+        "disable_background_apps_global" => Some(LocalizedTweakText {
+            title: "Hintergrund-Apps systemweit deaktivieren",
+            description: "Verhindert, dass Windows Store- und UWP-Apps im Hintergrund ausgeführt werden, Daten abrufen und CPU/RAM beanspruchen.",
+            broken_features: &[],
+        }),
+        "disable_finish_setup_ads" => Some(LocalizedTweakText {
+            title: "'Einrichtung abschließen'-Vollbildhinweise deaktivieren",
+            description: "Deaktiviert die wiederkehrenden Vollbild-Aufforderungen zur Einrichtung von Microsoft 365 und OneDrive nach dem Neustart.",
+            broken_features: &[],
+        }),
+        "disable_lockscreen_spotlight_ads" => Some(LocalizedTweakText {
+            title: "Sperrbildschirm-Tipps und Spotlight-Werbung deaktivieren",
+            description: "Unterdrückt Werbeeinblendungen, Spieletipps und Werbelinks auf dem Windows-Sperrbildschirm.",
+            broken_features: &[],
+        }),
+        "disable_welcome_experience_ads" => Some(LocalizedTweakText {
+            title: "Windows-Willkommensseiten nach Updates deaktivieren",
+            description: "Blockiert die Willkommensbildschirme nach Updates, die neue Edge- und Copilot-Funktionen bewerben.",
+            broken_features: &[],
+        }),
+        "disable_general_tips_ads" => Some(LocalizedTweakText {
+            title: "Windows-Tipps, Tricks und Empfehlungen deaktivieren",
+            description: "Deaktiviert allgemeine Systemtipps, Benachrichtigungsempfehlungen und Feature-Vorschläge auf dem Desktop.",
+            broken_features: &[],
+        }),
+        "enable_windowed_game_optimizations" => Some(LocalizedTweakText {
+            title: "Optimierungen für Fensterspiele aktivieren",
+            description: "Aktiviert das moderne Windows 11-Präsentationsmodell (Flip-Modell) für Fensterspiele, reduziert die Eingabelatenz und schaltet VRR frei.",
+            broken_features: &[],
+        }),
         _ => None,
     }
 }

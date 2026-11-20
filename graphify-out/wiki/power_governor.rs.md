@@ -1,37 +1,33 @@
 # power_governor.rs
 
-> 13 nodes · cohesion 0.27
+> 8 nodes · cohesion 0.29
 
 ## Key Concepts
 
-- **power_governor.rs** (14 connections) — `src/hardware/power_governor.rs`
-- **FormFactor** (7 connections) — `src/hardware/power_governor.rs`
-- **evaluate_chassis_profile()** (6 connections) — `src/hardware/power_governor.rs`
-- **apply_chassis_governor()** (5 connections) — `src/hardware/power_governor.rs`
-- **ChassisProfile** (4 connections) — `src/hardware/power_governor.rs`
-- **test_apply_chassis_governor_sandbox()** (3 connections) — `src/hardware/power_governor.rs`
-- **probe_system_form_factor()** (2 connections) — `src/hardware/power_governor.rs`
-- **test_desktop_profile_evaluation()** (2 connections) — `src/hardware/power_governor.rs`
-- **test_laptop_profile_evaluation()** (2 connections) — `src/hardware/power_governor.rs`
-- **Desktop** (1 connections) — `src/hardware/power_governor.rs`
-- **Laptop** (1 connections) — `src/hardware/power_governor.rs`
-- **Unknown** (1 connections) — `src/hardware/power_governor.rs`
-- **B** (1 connections)
+- **.sync_startup_tasks_busy()** (7 connections) — `src/app.rs`
+- **.set_live_service_start_async()** (5 connections) — `src/app.rs`
+- **.run_live_task_async()** (4 connections) — `src/app.rs`
+- **.toggle_live_task_async()** (4 connections) — `src/app.rs`
+- **.toggle_startup_entry_async()** (4 connections) — `src/app.rs`
+- **ScheduledTaskRunResult** (3 connections) — `src/app.rs`
+- **ServiceLiveUpdated** (2 connections) — `src/app.rs`
+- **StartupEntryToggled** (2 connections) — `src/app.rs`
 
 ## Relationships
 
-- [FailAtMutationBackend](FailAtMutationBackend.md) (3 shared connections)
-- [deserialize](deserialize.md) (2 shared connections)
-- [full_telemetry_audit_with](full_telemetry_audit_with.md) (1 shared connections)
-- [GPU Silicon & Hardware Tuning Policies](GPU_Silicon_&_Hardware_Tuning_Policies.md) (1 shared connections)
+- [.Toggle .Set .Apply](Toggle_.Set_.Apply.md) (5 shared connections)
+- [GPU Silicon & Hardware Tuning Policies](GPU_Silicon_&_Hardware_Tuning_Policies.md) (4 shared connections)
+- [Embedded Catalog Test](Embedded_Catalog_Test.md) (4 shared connections)
+- [registry_scanner.rs](registry_scanner.rs.md) (1 shared connections)
+- [AppxCache](AppxCache.md) (1 shared connections)
 
 ## Source Files
 
-- `src/hardware/power_governor.rs`
+- `src/app.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 28 (100%)
+- EXTRACTED: 23 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

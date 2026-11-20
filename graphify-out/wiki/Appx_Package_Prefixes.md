@@ -1,50 +1,58 @@
 # Appx Package() Prefixes
 
-> 39 nodes · cohesion 0.11
+> 36 nodes · cohesion 0.07
 
 ## Key Concepts
 
-- **topological_scheduler.rs** (21 connections) — `src/graph/topological_scheduler.rs`
-- **schedule_optimizations_topological()** (18 connections) — `src/graph/topological_scheduler.rs`
-- **BitSet256** (17 connections) — `src/graph/topological_scheduler.rs`
-- **kahn_schedule()** (9 connections) — `src/graph/topological_scheduler.rs`
-- **tarjan_scc()** (9 connections) — `src/graph/topological_scheduler.rs`
-- **resolve_cycles()** (8 connections) — `src/graph/topological_scheduler.rs`
-- **find_min_weight_cycle_edge()** (6 connections) — `src/graph/topological_scheduler.rs`
-- **.contains()** (5 connections) — `src/graph/topological_scheduler.rs`
-- **.new()** (5 connections) — `src/graph/topological_scheduler.rs`
-- **assert_valid_permutation()** (4 connections) — `src/graph/topological_scheduler.rs`
-- **position_of()** (4 connections) — `src/graph/topological_scheduler.rs`
-- **SccResult** (4 connections) — `src/graph/topological_scheduler.rs`
-- **test_cyclic_dependency_lowest_weight_break()** (4 connections) — `src/graph/topological_scheduler.rs`
-- **test_diamond_dependency_graph()** (4 connections) — `src/graph/topological_scheduler.rs`
-- **test_reboot_grouping_at_tail()** (4 connections) — `src/graph/topological_scheduler.rs`
-- **dual_engine_validation_test.rs** (4 connections) — `tests/dual_engine_validation_test.rs`
-- **.clear()** (3 connections) — `src/graph/topological_scheduler.rs`
-- **BitSetIter** (3 connections) — `src/graph/topological_scheduler.rs`
-- **MAX_NODES** (3 connections) — `src/graph/topological_scheduler.rs`
-- **.count_ones()** (2 connections) — `src/graph/topological_scheduler.rs`
-- **.difference()** (2 connections) — `src/graph/topological_scheduler.rs`
-- **.full()** (2 connections) — `src/graph/topological_scheduler.rs`
-- **.intersect()** (2 connections) — `src/graph/topological_scheduler.rs`
-- **.iter()** (2 connections) — `src/graph/topological_scheduler.rs`
-- **.next_set_from()** (2 connections) — `src/graph/topological_scheduler.rs`
-- *... and 14 more nodes in this community*
+- **updater.rs** (21 connections) — `src/core/updater.rs`
+- **UpdateStatus** (10 connections) — `src/app.rs`
+- **UpdateState** (9 connections) — `src/core/updater.rs`
+- **.download_and_install_update()** (5 connections) — `src/app.rs`
+- **check_latest_release()** (5 connections) — `src/core/updater.rs`
+- **clean_exe_path()** (5 connections) — `src/core/updater.rs`
+- **ReleaseInfo** (5 connections) — `src/core/updater.rs`
+- **Failed** (4 connections) — `src/app.rs`
+- **apply_and_restart()** (4 connections) — `src/core/updater.rs`
+- **is_version_newer()** (4 connections) — `src/core/updater.rs`
+- **.apply_and_restart()** (3 connections) — `src/app.rs`
+- **.relaunch_elevated()** (2 connections) — `src/app.rs`
+- **Available** (2 connections) — `src/app.rs`
+- **UpdateDownloadCompleted** (2 connections) — `src/app.rs`
+- **relaunch_as_admin()** (2 connections) — `src/core/elevation.rs`
+- **download_release_asset()** (2 connections) — `src/core/updater.rs`
+- **fetch_url_json()** (2 connections) — `src/core/updater.rs`
+- **GhAsset** (2 connections) — `src/core/updater.rs`
+- **GhRelease** (2 connections) — `src/core/updater.rs`
+- **test_clean_windows_exe_path()** (2 connections) — `src/core/updater.rs`
+- **test_release_info_structure()** (2 connections) — `src/core/updater.rs`
+- **test_version_comparison_logic()** (2 connections) — `src/core/updater.rs`
+- **Checking** (1 connections) — `src/app.rs`
+- **Downloading** (1 connections) — `src/app.rs`
+- **Idle** (1 connections) — `src/app.rs`
+- *... and 11 more nodes in this community*
 
 ## Relationships
 
-- [sys_inventory.rs](sys_inventory.rs.md) (2 shared connections)
-- [FailAtMutationBackend](FailAtMutationBackend.md) (1 shared connections)
+- [Embedded Catalog Test](Embedded_Catalog_Test.md) (6 shared connections)
+- [.Toggle .Set .Apply](Toggle_.Set_.Apply.md) (4 shared connections)
+- [Reversibility Instant Requireslogoff](Reversibility_Instant_Requireslogoff.md) (2 shared connections)
+- [app.rs](app.rs.md) (2 shared connections)
+- [SlowScanBackend](SlowScanBackend.md) (1 shared connections)
+- [PdhParkingCollector](PdhParkingCollector.md) (1 shared connections)
+- [parking.rs](parking.rs.md) (1 shared connections)
+- [Project Documentation, Architecture & Licensing](Project_Documentation,_Architecture_&_Licensing.md) (1 shared connections)
+- [WinBlastScrollable](WinBlastScrollable.md) (1 shared connections)
 
 ## Source Files
 
-- `src/graph/topological_scheduler.rs`
-- `tests/dual_engine_validation_test.rs`
+- `src/app.rs`
+- `src/core/elevation.rs`
+- `src/core/updater.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 82 (93%)
-- INFERRED: 6 (7%)
+- EXTRACTED: 60 (92%)
+- INFERRED: 5 (8%)
 - AMBIGUOUS: 0 (0%)
 
 ---
