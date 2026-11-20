@@ -1,59 +1,55 @@
 # spawn_guarded_worker
 
-> 30 nodes · cohesion 0.12
+> 57 nodes · cohesion 0.05
 
 ## Key Concepts
 
-- **features_apps.rs** (57 connections) — `src/tools/features_apps.rs`
-- **list_installed_appx_from_cache_with_provisioned()** (9 connections) — `src/tools/features_apps.rs`
-- **normalize_appx_family_name()** (9 connections) — `src/tools/features_apps.rs`
-- **classify_appx_package()** (7 connections) — `src/tools/features_apps.rs`
-- **CURATED_WINGET_APPS** (5 connections) — `src/tools/features_apps.rs`
-- **extract_appx_short_name()** (4 connections) — `src/tools/features_apps.rs`
-- **extract_winget_error_detail()** (4 connections) — `src/tools/features_apps.rs`
-- **list_installed_appx_from_cache()** (4 connections) — `src/tools/features_apps.rs`
-- **uninstall_onedrive_safe()** (4 connections) — `src/tools/features_apps.rs`
-- **winget_install_package()** (4 connections) — `src/tools/features_apps.rs`
-- **DISM_LOCK** (3 connections) — `src/tools/features_apps.rs`
-- **is_crockford_pub_id()** (3 connections) — `src/tools/features_apps.rs`
-- **query_provisioned_appx_families()** (3 connections) — `src/tools/features_apps.rs`
-- **remove_appx_batch()** (3 connections) — `src/tools/features_apps.rs`
-- **validate_appx_family()** (3 connections) — `src/tools/features_apps.rs`
-- **LazyLock** (2 connections)
-- **check_onedrive_kfm_active()** (2 connections) — `src/tools/features_apps.rs`
-- **find_onedrive_setup_exe()** (2 connections) — `src/tools/features_apps.rs`
-- **is_appx_arch()** (2 connections) — `src/tools/features_apps.rs`
-- **is_appx_version()** (2 connections) — `src/tools/features_apps.rs`
-- **is_microsoft_appx_publisher()** (2 connections) — `src/tools/features_apps.rs`
-- **is_progress_noise_char()** (2 connections) — `src/tools/features_apps.rs`
-- **Mutex** (2 connections)
-- **strip_ansi_sequences()** (2 connections) — `src/tools/features_apps.rs`
-- **test_protected_core_appx_never_classified_bloat()** (2 connections) — `src/tools/features_apps.rs`
-- *... and 5 more nodes in this community*
+- **spawn_guarded_worker()** (48 connections) — `src/app.rs`
+- **.navigate()** (15 connections) — `src/app.rs`
+- **.sync_clean_apps_busy()** (10 connections) — `src/app.rs`
+- **.sync_startup_tasks_busy()** (7 connections) — `src/app.rs`
+- **.scan_clean_targets_async()** (6 connections) — `src/app.rs`
+- **.execute_clean_selected()** (5 connections) — `src/app.rs`
+- **.scan_appx_and_features_async()** (5 connections) — `src/app.rs`
+- **.scan_online_drivers()** (5 connections) — `src/app.rs`
+- **.scan_startup_and_tasks_async()** (5 connections) — `src/app.rs`
+- **.set_live_service_start_async()** (5 connections) — `src/app.rs`
+- **WorkerDropGuard** (5 connections) — `src/app.rs`
+- **.create_restore_point()** (4 connections) — `src/app.rs`
+- **.install_selected_winget_async()** (4 connections) — `src/app.rs`
+- **.remove_edge_async()** (4 connections) — `src/app.rs`
+- **.remove_selected_appx_async()** (4 connections) — `src/app.rs`
+- **.reset_baseline()** (4 connections) — `src/app.rs`
+- **.run_live_task_async()** (4 connections) — `src/app.rs`
+- **.scan_bios_info_async()** (4 connections) — `src/app.rs`
+- **.scan_disk_health_async()** (4 connections) — `src/app.rs`
+- **.toggle_live_task_async()** (4 connections) — `src/app.rs`
+- **.toggle_optional_feature_async()** (4 connections) — `src/app.rs`
+- **.toggle_startup_entry_async()** (4 connections) — `src/app.rs`
+- **.uninstall_onedrive_async()** (4 connections) — `src/app.rs`
+- **Waker** (4 connections)
+- **.block_telemetry_hosts()** (3 connections) — `src/app.rs`
+- *... and 32 more nodes in this community*
 
 ## Relationships
 
-- [RegRawSnapshot](RegRawSnapshot.md) (15 shared connections)
-- [super](super.md) (5 shared connections)
-- [app.rs](app.rs.md) (5 shared connections)
-- [InstalledAppxPackage](InstalledAppxPackage.md) (5 shared connections)
-- [WinBlastError](WinBlastError.md) (2 shared connections)
-- [SlowScanBackend](SlowScanBackend.md) (2 shared connections)
+- [AppState](AppState.md) (47 shared connections)
+- [WorkerEvent](WorkerEvent.md) (32 shared connections)
+- [SlowScanBackend](SlowScanBackend.md) (3 shared connections)
 - [theme.rs](theme.rs.md) (2 shared connections)
-- [backend.rs](backend.rs.md) (1 shared connections)
-- [real_windows_env.rs](real_windows_env.rs.md) (1 shared connections)
-- [Command Osstr Process.Rs](Command_Osstr_Process.Rs.md) (1 shared connections)
-- [RealBackend](RealBackend.md) (1 shared connections)
-- [clean_apps.rs](clean_apps.rs.md) (1 shared connections)
+- [.poll](poll.md) (1 shared connections)
+- [startup.rs](startup.rs.md) (1 shared connections)
+- [Language](Language.md) (1 shared connections)
+- [FeatureInstallState](FeatureInstallState.md) (1 shared connections)
 
 ## Source Files
 
-- `src/tools/features_apps.rs`
+- `src/app.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 94 (99%)
-- INFERRED: 1 (1%)
+- EXTRACTED: 164 (100%)
+- INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 
 ---

@@ -1,33 +1,48 @@
 # DriverUpdateState
 
-> 7 nodes · cohesion 0.29
+> 12 nodes · cohesion 0.20
 
 ## Key Concepts
 
-- **DriverUpdateState** (11 connections) — `src/hardware/driver_update.rs`
-- **Downloading** (1 connections) — `src/hardware/driver_update.rs`
-- **Installed** (1 connections) — `src/hardware/driver_update.rs`
-- **Installing** (1 connections) — `src/hardware/driver_update.rs`
-- **ReadyToInstall** (1 connections) — `src/hardware/driver_update.rs`
-- **UpdateAvailable** (1 connections) — `src/hardware/driver_update.rs`
-- **UpToDate** (1 connections) — `src/hardware/driver_update.rs`
+- **RegRawSnapshot** (22 connections) — `src/core/reg_helpers.rs`
+- **get_raw()** (7 connections) — `src/scanner/registry_scanner.rs`
+- **encode_hex()** (4 connections) — `src/core/reg_helpers.rs`
+- **reg_type_to_u32()** (4 connections) — `src/scanner/registry_scanner.rs`
+- **.reg_get_raw()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.reg_get_raw()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.reg_get_raw()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.reg_get_raw()** (2 connections) — `src/core/backend.rs`
+- **.reg_set_raw()** (2 connections) — `src/core/backend.rs`
+- **.reg_get_raw()** (2 connections) — `src/core/backend.rs`
+- **.reg_set_raw()** (2 connections) — `src/core/backend.rs`
+- **RegType** (1 connections)
 
 ## Relationships
 
-- [DriverUpdateItem](DriverUpdateItem.md) (1 shared connections)
-- [.Toggle .Set .Apply](Toggle_.Set_.Apply.md) (1 shared connections)
-- [DriverCategory](DriverCategory.md) (1 shared connections)
-- [DriverError](DriverError.md) (1 shared connections)
-- [driver_update.rs](driver_update.rs.md) (1 shared connections)
+- [registry_scanner.rs](registry_scanner.rs.md) (5 shared connections)
+- [PanickingBackend](PanickingBackend.md) (3 shared connections)
+- [updater.rs](updater.rs.md) (3 shared connections)
+- [in_progress_hud.rs](in_progress_hud.rs.md) (2 shared connections)
+- [full_telemetry_audit_with](full_telemetry_audit_with.md) (2 shared connections)
+- [reg_helpers.rs](reg_helpers.rs.md) (2 shared connections)
+- [RegRawSnapshot](RegRawSnapshot.md) (2 shared connections)
+- [FailAtMutationBackend](FailAtMutationBackend.md) (2 shared connections)
+- [Reversibility Instant Requireslogoff](Reversibility_Instant_Requireslogoff.md) (1 shared connections)
+- [GPU Silicon & Hardware Tuning Policies](GPU_Silicon_&_Hardware_Tuning_Policies.md) (1 shared connections)
+- [enums](enums.md) (1 shared connections)
+- [State Ledger & Restore Point Engine](State_Ledger_&_Restore_Point_Engine.md) (1 shared connections)
 
 ## Source Files
 
-- `src/hardware/driver_update.rs`
+- `src/core/backend.rs`
+- `src/core/reg_helpers.rs`
+- `src/scanner/registry_scanner.rs`
+- `tests/tweak_sandbox_e2e.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 11 (100%)
-- INFERRED: 0 (0%)
+- EXTRACTED: 40 (93%)
+- INFERRED: 3 (7%)
 - AMBIGUOUS: 0 (0%)
 
 ---

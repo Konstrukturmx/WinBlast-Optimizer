@@ -452,4 +452,125 @@ name = "SubscribedContent-338387Enabled"
 optimized_value = 0
 default_value = 1
 
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "disable_settings_ads"
+title = "Disable Settings App Recommendations & Ads"
+category = "Privacy"
+description = "Disables promotional suggestions, cloud storage upsells, and feature banners in Windows Settings."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 1
+privacy_gain = 2
+reversibility = "Instant"
+broken_features = ["Promotional recommendations and tips in Settings app will be hidden"]
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Software\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager"
+name = "SubscribedContent-353698Enabled"
+optimized_value = 0
+default_value = 1
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "disable_start_menu_suggested_apps"
+title = "Disable Start Menu Suggested & Promoted Apps"
+category = "Privacy"
+description = "Prevents Windows from automatically inserting suggested apps and ads into the Start Menu."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 1
+privacy_gain = 2
+reversibility = "Instant"
+broken_features = ["Sponsored consumer apps and games will not be automatically installed into the Start Menu"]
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Software\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager"
+name = "SubscribedContent-338388Enabled"
+optimized_value = 0
+default_value = 1
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "disable_hardware_companion_software"
+title = "Block Hardware Companion Software Auto-Install"
+category = "Privacy"
+description = "Blocks Windows from automatically downloading OEM companion apps and promotional software when peripheral devices are connected."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 2
+privacy_gain = 2
+reversibility = "Instant"
+broken_features = []
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "Software\\Policies\\Microsoft\\Windows\\CloudContent"
+name = "BlockThirdPartyHardwareSoftware"
+optimized_value = 1
+default_value = 0
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "disable_ms_office_telemetry"
+title = "Disable Microsoft Office Telemetry & Feedback"
+category = "Privacy"
+description = "Disables diagnostic data logging, Customer Experience Improvement Program participation, and feedback prompts in Microsoft Office."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 1
+privacy_gain = 3
+reversibility = "Instant"
+broken_features = []
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Software\\Policies\\Microsoft\\Office\\Common\\Feedback"
+name = "UserContentFeedback"
+optimized_value = 0
+default_value = 1
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Software\\Policies\\Microsoft\\Office\\16.0\\Common\\Feedback"
+name = "UserContentFeedback"
+optimized_value = 0
+default_value = 1
+
+
 

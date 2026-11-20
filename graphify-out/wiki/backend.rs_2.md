@@ -1,49 +1,40 @@
 # backend.rs
 
-> 18 nodes · cohesion 0.28
+> 15 nodes · cohesion 0.21
 
 ## Key Concepts
 
-- **ui_scrollbar_test.rs** (24 connections) — `tests/ui_scrollbar_test.rs`
-- **runtime_for()** (9 connections) — `tests/ui_scrollbar_test.rs`
-- **thumb_rects()** (8 connections) — `tests/ui_scrollbar_test.rs`
-- **content_thumb()** (7 connections) — `tests/ui_scrollbar_test.rs`
-- **frames()** (7 connections) — `tests/ui_scrollbar_test.rs`
-- **Runtime** (7 connections)
-- **create_test_state()** (6 connections) — `tests/ui_scrollbar_test.rs`
-- **sidebar_thumb()** (5 connections) — `tests/ui_scrollbar_test.rs`
-- **test_advanced_matrix_scrollbar_structure_and_drag()** (5 connections) — `tests/ui_scrollbar_test.rs`
-- **test_wheel_scroll_moves_content_and_sidebar_thumbs()** (5 connections) — `tests/ui_scrollbar_test.rs`
-- **load_embedded_rules** (4 connections)
-- **count_key()** (4 connections) — `tests/ui_scrollbar_test.rs`
-- **test_iso_29119_driver_section_scrollbar_bounds_and_filtering()** (4 connections) — `tests/ui_scrollbar_test.rs`
-- **test_scrollbars_render_across_all_main_views()** (4 connections) — `tests/ui_scrollbar_test.rs`
-- **test_themed_thumb_widens_under_the_pointer()** (4 connections) — `tests/ui_scrollbar_test.rs`
-- **env** (3 connections)
-- **scrollbars** (1 connections)
-- **CONTENT_X** (1 connections) — `tests/ui_scrollbar_test.rs`
+- **ps_runner.rs** (16 connections) — `src/executor/ps_runner.rs`
+- **block_telemetry_hosts_in_content()** (5 connections) — `src/executor/ps_runner.rs`
+- **unblock_telemetry_hosts_in_content()** (4 connections) — `src/executor/ps_runner.rs`
+- **unblock_telemetry_hosts_with()** (4 connections) — `src/executor/ps_runner.rs`
+- **block_telemetry_hosts()** (3 connections) — `src/executor/ps_runner.rs`
+- **find_exact_marker_line()** (3 connections) — `src/executor/ps_runner.rs`
+- **test_hosts_bom_ipv6_tabs_and_exact_footer_matching()** (3 connections) — `src/executor/ps_runner.rs`
+- **test_hosts_blocking_ignores_comments_and_subdomains()** (2 connections) — `src/executor/ps_runner.rs`
+- **write_hosts_file_raw()** (2 connections) — `src/executor/ps_runner.rs`
+- **openoptions** (1 connections)
+- **add_firewall_block_rule()** (1 connections) — `src/executor/ps_runner.rs`
+- **HOSTS_BLOCK_FOOTER** (1 connections) — `src/executor/ps_runner.rs`
+- **HOSTS_BLOCK_HEADER** (1 connections) — `src/executor/ps_runner.rs`
+- **remove_appx_package()** (1 connections) — `src/executor/ps_runner.rs`
+- **write** (1 connections)
 
 ## Relationships
 
-- [AppState](AppState.md) (8 shared connections)
-- [edge_cases_unorthodox.rs](edge_cases_unorthodox.rs.md) (3 shared connections)
-- [System Architecture Changelog](System_Architecture_Changelog.md) (3 shared connections)
-- [GPU Silicon & Hardware Tuning Policies](GPU_Silicon_&_Hardware_Tuning_Policies.md) (2 shared connections)
-- [real_windows_env.rs](real_windows_env.rs.md) (1 shared connections)
-- [Embedded Catalog Test](Embedded_Catalog_Test.md) (1 shared connections)
-- [privacy_shield.rs](privacy_shield.rs.md) (1 shared connections)
-- [PresetKey](PresetKey.md) (1 shared connections)
-- [LazyLoader](LazyLoader.md) (1 shared connections)
-- [theme.rs](theme.rs.md) (1 shared connections)
+- [FailAtMutationBackend](FailAtMutationBackend.md) (1 shared connections)
+- [SlowScanBackend](SlowScanBackend.md) (1 shared connections)
+- [RealBackend](RealBackend.md) (1 shared connections)
+- [full_telemetry_audit_with](full_telemetry_audit_with.md) (1 shared connections)
 
 ## Source Files
 
-- `tests/ui_scrollbar_test.rs`
+- `src/executor/ps_runner.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 62 (95%)
-- INFERRED: 3 (5%)
+- EXTRACTED: 25 (96%)
+- INFERRED: 1 (4%)
 - AMBIGUOUS: 0 (0%)
 
 ---

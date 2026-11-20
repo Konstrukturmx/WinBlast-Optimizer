@@ -4,23 +4,25 @@
 
 ## Key Concepts
 
-- **.all_physical()** (4 connections) — `src/hardware/driver_update.rs`
-- **test_all_categories_have_guid()** (2 connections) — `src/hardware/driver_update.rs`
-- **test_all_categories_have_icon_and_name()** (2 connections) — `src/hardware/driver_update.rs`
+- **.unpark_all_cores()** (5 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.unpark_all_cores()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.unpark_all_cores()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
 
 ## Relationships
 
-- [driver_update.rs](driver_update.rs.md) (2 shared connections)
-- [DriverUpdateItem](DriverUpdateItem.md) (1 shared connections)
-- [DriverCategory](DriverCategory.md) (1 shared connections)
+- [WinBlast Optimizer](WinBlast_Optimizer.md) (3 shared connections)
+- [FailAtMutationBackend](FailAtMutationBackend.md) (1 shared connections)
+- [PanickingBackend](PanickingBackend.md) (1 shared connections)
+- [super](super.md) (1 shared connections)
+- [SlowScanBackend](SlowScanBackend.md) (1 shared connections)
 
 ## Source Files
 
-- `src/hardware/driver_update.rs`
+- `tests/tweak_sandbox_e2e.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 6 (100%)
+- EXTRACTED: 9 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

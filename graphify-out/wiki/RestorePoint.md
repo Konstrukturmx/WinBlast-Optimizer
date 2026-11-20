@@ -1,40 +1,39 @@
 # RestorePoint
 
-> 6 nodes · cohesion 0.47
+> 13 nodes · cohesion 0.17
 
 ## Key Concepts
 
-- **RestorePoint** (14 connections) — `src/backup/restore_point.rs`
-- **.list_restore_points()** (5 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.list_restore_points()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.list_restore_points()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.list_restore_points()** (2 connections) — `src/core/backend.rs`
-- **.list_restore_points()** (2 connections) — `src/core/backend.rs`
+- **DriveMediaKind** (10 connections) — `src/hardware/sys_inventory.rs`
+- **StorageVolumeInfo** (8 connections) — `src/hardware/sys_inventory.rs`
+- **HandleGuard** (4 connections) — `src/hardware/sys_inventory.rs`
+- **probe_drive_media_kind()** (4 connections) — `src/hardware/sys_inventory.rs`
+- **query_storage_volumes()** (4 connections) — `src/hardware/sys_inventory.rs`
+- **HANDLE** (2 connections)
+- **.as_label()** (1 connections) — `src/hardware/sys_inventory.rs`
+- **Hdd** (1 connections) — `src/hardware/sys_inventory.rs`
+- **Nvme** (1 connections) — `src/hardware/sys_inventory.rs`
+- **Removable** (1 connections) — `src/hardware/sys_inventory.rs`
+- **Ssd** (1 connections) — `src/hardware/sys_inventory.rs`
+- **Unknown** (1 connections) — `src/hardware/sys_inventory.rs`
+- **.drop()** (1 connections) — `src/hardware/sys_inventory.rs`
 
 ## Relationships
 
-- [BlastResult](BlastResult.md) (3 shared connections)
-- [SlowScanBackend](SlowScanBackend.md) (2 shared connections)
+- [Scandetailkind Appxinstalled Appxinstalledps](Scandetailkind_Appxinstalled_Appxinstalledps.md) (6 shared connections)
+- [State Ledger & Restore Point Engine](State_Ledger_&_Restore_Point_Engine.md) (2 shared connections)
+- [PlatformSecurityInfo](PlatformSecurityInfo.md) (2 shared connections)
 - [AppState](AppState.md) (1 shared connections)
 - [WorkerEvent](WorkerEvent.md) (1 shared connections)
-- [RegRawSnapshot](RegRawSnapshot.md) (1 shared connections)
-- [SandboxEnv](SandboxEnv.md) (1 shared connections)
-- [task_scanner.rs](task_scanner.rs.md) (1 shared connections)
-- [app.rs](app.rs.md) (1 shared connections)
-- [backend.rs](backend.rs.md) (1 shared connections)
-- [theme.rs](theme.rs.md) (1 shared connections)
-- [restore_point.rs](restore_point.rs.md) (1 shared connections)
-- [.Reg State() Vendor()](Reg_State_Vendor.md) (1 shared connections)
+- [SlowScanBackend](SlowScanBackend.md) (1 shared connections)
 
 ## Source Files
 
-- `src/backup/restore_point.rs`
-- `src/core/backend.rs`
-- `tests/tweak_sandbox_e2e.rs`
+- `src/hardware/sys_inventory.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 24 (100%)
+- EXTRACTED: 26 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

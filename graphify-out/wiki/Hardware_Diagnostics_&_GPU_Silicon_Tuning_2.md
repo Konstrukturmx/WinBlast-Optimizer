@@ -1,55 +1,55 @@
 # Hardware Diagnostics & GPU Silicon Tuning
 
-> 30 nodes · cohesion 0.12
+> 20 nodes · cohesion 0.29
 
 ## Key Concepts
 
-- **tools/game_prereqs.rs** (32 connections) — `src/tools/game_prereqs.rs`
-- **test_iso_29119_runtime_detection_heuristics_execution()** (11 connections) — `src/tools/game_prereqs.rs`
-- **PrereqInstallState** (7 connections) — `src/tools/game_prereqs.rs`
-- **GamePrerequisiteItem** (6 connections) — `src/tools/game_prereqs.rs`
-- **get_system32_path()** (6 connections) — `src/tools/game_prereqs.rs`
-- **prelude** (4 connections)
-- **detect_openal()** (4 connections) — `src/tools/game_prereqs.rs`
-- **install_prereq_cascade()** (4 connections) — `src/tools/game_prereqs.rs`
-- **scan_game_prereqs()** (4 connections) — `src/tools/game_prereqs.rs`
-- **detect_directx_legacy()** (3 connections) — `src/tools/game_prereqs.rs`
-- **detect_vcredist_2015_2022_x64()** (3 connections) — `src/tools/game_prereqs.rs`
-- **detect_vcredist_2015_2022_x86()** (3 connections) — `src/tools/game_prereqs.rs`
-- **detect_vcredist_all_in_one()** (3 connections) — `src/tools/game_prereqs.rs`
-- **detect_vulkan_runtime()** (3 connections) — `src/tools/game_prereqs.rs`
-- **get_syswow64_path()** (3 connections) — `src/tools/game_prereqs.rs`
-- **detect_dotnet_desktop_8()** (2 connections) — `src/tools/game_prereqs.rs`
-- **detect_dotnet_desktop_9()** (2 connections) — `src/tools/game_prereqs.rs`
-- **detect_dotnet_framework_481()** (2 connections) — `src/tools/game_prereqs.rs`
-- **detect_xna_framework_4()** (2 connections) — `src/tools/game_prereqs.rs`
-- **PREREQ_DESCRIPTORS** (2 connections) — `src/tools/game_prereqs.rs`
-- **PrereqDescriptor** (2 connections) — `src/tools/game_prereqs.rs`
-- **test_iso_29119_cascade_error_recovery_empty_source()** (2 connections) — `src/tools/game_prereqs.rs`
-- **test_iso_29119_cascade_fallback_url_validity()** (2 connections) — `src/tools/game_prereqs.rs`
-- **test_iso_29119_scan_returns_all_10_prereqs()** (2 connections) — `src/tools/game_prereqs.rs`
-- **test_iso_29119_serde_roundtrip()** (2 connections) — `src/tools/game_prereqs.rs`
-- *... and 5 more nodes in this community*
+- **action_button()** (65 connections) — `src/ui/widgets/button.rs`
+- **gpu_tuning.rs** (26 connections) — `src/ui/views/gpu_tuning.rs`
+- **button.rs** (23 connections) — `src/ui/widgets/button.rs`
+- **hardware_view.rs** (18 connections) — `src/ui/views/hardware_view.rs`
+- **El** (13 connections)
+- **render_compatible_card()** (12 connections) — `src/ui/views/gpu_tuning.rs`
+- **view()** (10 connections) — `src/ui/views/gpu_tuning.rs`
+- **switch_toggle()** (10 connections) — `src/ui/widgets/button.rs`
+- **view()** (9 connections) — `src/ui/views/hardware_view.rs`
+- **Color** (8 connections)
+- **render_incompatible_card()** (7 connections) — `src/ui/views/gpu_tuning.rs`
+- **kv_row()** (7 connections) — `src/ui/widgets/button.rs`
+- **section_card()** (7 connections) — `src/ui/widgets/button.rs`
+- **switch_toggle_with()** (7 connections) — `src/ui/widgets/button.rs`
+- **switch_visual_shell()** (7 connections) — `src/ui/widgets/button.rs`
+- **action_button_loading()** (6 connections) — `src/ui/widgets/button.rs`
+- **action_button_icon_only()** (5 connections) — `src/ui/widgets/button.rs`
+- **action_button_with_tooltip()** (5 connections) — `src/ui/widgets/button.rs`
+- **El** (4 connections)
+- **El** (2 connections)
 
 ## Relationships
 
-- [super](super.md) (5 shared connections)
-- [path](path.md) (2 shared connections)
-- [sys_inventory.rs](sys_inventory.rs.md) (1 shared connections)
-- [Embedded Catalog Test](Embedded_Catalog_Test.md) (1 shared connections)
-- [Disk Cleaning & Temporary File Purger](Disk_Cleaning_&_Temporary_File_Purger.md) (1 shared connections)
-- [real_windows_env.rs](real_windows_env.rs.md) (1 shared connections)
-- [AppState](AppState.md) (1 shared connections)
-- [.Toggle .Set .Apply](Toggle_.Set_.Apply.md) (1 shared connections)
+- [Disk Cleaning & Temporary File Purger](Disk_Cleaning_&_Temporary_File_Purger.md) (42 shared connections)
+- [Multi-Language Tweak Localization Tables](Multi-Language_Tweak_Localization_Tables.md) (23 shared connections)
+- [.Reg State() Vendor()](Reg_State_Vendor.md) (21 shared connections)
+- [advanced_matrix.rs](advanced_matrix.rs.md) (16 shared connections)
+- [AppState](AppState.md) (12 shared connections)
+- [parse_guid](parse_guid.md) (5 shared connections)
+- [Runtime](Runtime.md) (5 shared connections)
+- [WinBlastScrollable](WinBlastScrollable.md) (4 shared connections)
+- [Core UI Internationalization & Text Catalog](Core_UI_Internationalization_&_Text_Catalog.md) (3 shared connections)
+- [progress_bar.rs](progress_bar.rs.md) (2 shared connections)
+- [PlatformSecurityInfo](PlatformSecurityInfo.md) (2 shared connections)
+- [views/network_diag.rs](views-network_diag.rs.md) (2 shared connections)
 
 ## Source Files
 
-- `src/tools/game_prereqs.rs`
+- `src/ui/views/gpu_tuning.rs`
+- `src/ui/views/hardware_view.rs`
+- `src/ui/widgets/button.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 66 (99%)
-- INFERRED: 1 (1%)
+- EXTRACTED: 150 (77%)
+- INFERRED: 46 (23%)
 - AMBIGUOUS: 0 (0%)
 
 ---

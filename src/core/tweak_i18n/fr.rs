@@ -1087,6 +1087,56 @@ pub fn lookup(id: &str) -> Option<LocalizedTweakText> {
             description: "Désactive la suspension sélective USB au niveau du pilote racine (DisableSelectiveSuspend=1). Empêche les souris et claviers de jeu d'entrer en veille, éliminant la latence de réveil.",
             broken_features: &["Consommation d'énergie au repos légèrement plus élevée sur le bus USB", "Autonomie de batterie réduite sur les ordinateurs portables"],
         }),
+        "remove_webexperience_package" => Some(LocalizedTweakText {
+            title: "Supprimer le package Windows WebExperienceHost (Hôte des widgets)",
+            description: "Supprime le package MicrosoftWindows.Client.WebExperience pour empêcher les widgets de la barre des tâches de consommer de la mémoire Edge WebView2 en arrière-plan.",
+            broken_features: &["Les widgets de la barre des tâches et les flux d'actualités seront définitivement supprimés."],
+        }),
+        "disable_wpbt_execution" => Some(LocalizedTweakText {
+            title: "Désactiver l'exécution des binaires du micrologiciel WPBT",
+            description: "Empêche le noyau Windows d'exécuter des binaires intégrés dans la table WPBT de l'UEFI de la carte mère.",
+            broken_features: &[],
+        }),
+        "service_shutdown_timeout_15s" => Some(LocalizedTweakText {
+            title: "Réduire le délai d'arrêt des services à 15 secondes",
+            description: "Réduit le délai d'arrêt des services de 20 s à 15 s pour éviter les blocages lors de l'extinction de Windows.",
+            broken_features: &[],
+        }),
+        "start_menu_show_more_pins" => Some(LocalizedTweakText {
+            title: "Menu Démarrer : afficher plus d'épingles",
+            description: "Configure le menu Démarrer de Windows 11 pour donner la priorité aux applications épinglées sur les recommandations.",
+            broken_features: &[],
+        }),
+        "disable_taskbar_people_button" => Some(LocalizedTweakText {
+            title: "Désactiver le bouton Contacts de la barre des tâches",
+            description: "Masque et désactive l'icône Contacts de la barre des tâches Windows.",
+            broken_features: &[],
+        }),
+        "repair_ndu_graph" => Some(LocalizedTweakText {
+            title: "Réparer le graphique d'utilisation réseau (NDU) du Gestionnaire des tâches",
+            description: "Garantit que le pilote de noyau NDU est défini sur Start=2 (Automatique) pour que les graphiques réseau du Gestionnaire des tâches fonctionnent correctement.",
+            broken_features: &[],
+        }),
+        "disable_settings_ads" => Some(LocalizedTweakText {
+            title: "Désactiver les contenus suggérés et les publicités dans les Paramètres",
+            description: "Empêche Microsoft d'afficher des applications suggérées, des promotions de partenaires et des conseils dans les Paramètres Windows.",
+            broken_features: &["Les cartes promotionnelles et les conseils dans Paramètres sont masqués."],
+        }),
+        "disable_start_menu_suggested_apps" => Some(LocalizedTweakText {
+            title: "Désactiver l'installation automatique des applications suggérées",
+            description: "Empêche Windows Content Delivery Manager de télécharger et d'épingler silencieusement des applications et jeux suggérés.",
+            broken_features: &["Les jeux sponsorisés ne seront pas installés automatiquement dans le menu Démarrer."],
+        }),
+        "disable_hardware_companion_software" => Some(LocalizedTweakText {
+            title: "Désactiver les recommandations de logiciels compagnons matériels",
+            description: "Empêche Windows de notifier et recommander automatiquement des logiciels compagnons OEM lors du branchement de périphériques.",
+            broken_features: &[],
+        }),
+        "disable_ms_office_telemetry" => Some(LocalizedTweakText {
+            title: "Désactiver la télémétrie Microsoft Office et les journaux CEIP",
+            description: "Désactive la collecte des données de diagnostic, les demandes de commentaires et la télémétrie du Programme d'amélioration de l'expérience utilisateur (CEIP) d'Office.",
+            broken_features: &[],
+        }),
         _ => None,
     }
 }

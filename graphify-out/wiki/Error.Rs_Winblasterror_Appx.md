@@ -1,6 +1,6 @@
 # Error.Rs Winblasterror Appx
 
-> 19 nodes · cohesion 0.19
+> 18 nodes · cohesion 0.20
 
 ## Key Concepts
 
@@ -14,7 +14,6 @@
 - **TargetPingResult** (4 connections) — `src/hardware/net_latency.rs`
 - **.run_latency_benchmark()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
 - **SocketAddr** (3 connections)
-- **.run_latency_benchmark()** (3 connections) — `src/core/backend.rs`
 - **.run_latency_benchmark()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
 - **.run_latency_benchmark()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
 - **.run_latency_benchmark()** (2 connections) — `src/core/backend.rs`
@@ -26,17 +25,17 @@
 
 ## Relationships
 
-- [backend.rs](backend.rs.md) (4 shared connections)
-- [super](super.md) (4 shared connections)
+- [State Ledger & Restore Point Engine](State_Ledger_&_Restore_Point_Engine.md) (4 shared connections)
 - [PlatformSecurityInfo](PlatformSecurityInfo.md) (3 shared connections)
-- [SandboxEnv](SandboxEnv.md) (2 shared connections)
-- [startup.rs](startup.rs.md) (2 shared connections)
-- [action_button_guarded](action_button_guarded.md) (2 shared connections)
+- [deserialize](deserialize.md) (3 shared connections)
+- [parking.rs](parking.rs.md) (2 shared connections)
+- [FailAtMutationBackend](FailAtMutationBackend.md) (2 shared connections)
 - [SlowScanBackend](SlowScanBackend.md) (2 shared connections)
-- [.Reg State() Vendor()](Reg_State_Vendor.md) (1 shared connections)
-- [Integration Suite: Tweak Sandbox E2E](Integration_Suite-_Tweak_Sandbox_E2E.md) (1 shared connections)
+- [WinBlastScrollable](WinBlastScrollable.md) (2 shared connections)
+- [in_progress_hud.rs](in_progress_hud.rs.md) (1 shared connections)
+- [full_telemetry_audit_with](full_telemetry_audit_with.md) (1 shared connections)
 - [AppState](AppState.md) (1 shared connections)
-- [task_scanner.rs](task_scanner.rs.md) (1 shared connections)
+- [RegRawSnapshot](RegRawSnapshot.md) (1 shared connections)
 - [WorkerEvent](WorkerEvent.md) (1 shared connections)
 
 ## Source Files
@@ -47,7 +46,7 @@
 
 ## Audit Trail
 
-- EXTRACTED: 58 (98%)
+- EXTRACTED: 56 (98%)
 - INFERRED: 1 (2%)
 - AMBIGUOUS: 0 (0%)
 

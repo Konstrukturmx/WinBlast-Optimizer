@@ -1087,6 +1087,56 @@ pub fn lookup(id: &str) -> Option<LocalizedTweakText> {
             description: "Kök USB sürücü düzeyinde seçmeli askıya almayı devre dışı bırakır (DisableSelectiveSuspend=1). Fare, klavye ve DAC'ların uykuya geçmesini önleyerek giriş uyandırma gecikmesini ortadan kaldırır.",
             broken_features: &["USB veriyolunda boşta biraz daha yüksek güç tüketimi", "Dizüstü bilgisayarlarda azalan pil ömrü"],
         }),
+        "remove_webexperience_package" => Some(LocalizedTweakText {
+            title: "Windows WebExperienceHost Paketini (Widget Ana Makinesi) Kaldır",
+            description: "Görev çubuğu widget'larının arka planda Edge WebView2 belleği tüketmesini önlemek için MicrosoftWindows.Client.WebExperience paketini kaldırır.",
+            broken_features: &["Görev Çubuğu Widget'ları ve haber akışları kalıcı olarak kaldırılır."],
+        }),
+        "disable_wpbt_execution" => Some(LocalizedTweakText {
+            title: "WPBT Bellenim İkili Yürütmesini Devre Dışı Bırak",
+            description: "Windows Çekirdeğinin anakart UEFI Windows Platform Binary Table (WPBT) içine gömülü ikilileri yürütmesini engeller.",
+            broken_features: &[],
+        }),
+        "service_shutdown_timeout_15s" => Some(LocalizedTweakText {
+            title: "Hizmet Kapanış Zaman Aşımını 15 Saniyeye Düşür",
+            description: "Windows kapanışı sırasında uzun süren takılmaları önlemek için hizmet sonlandırma zaman aşımını varsayılan 20 saniyeden 15 saniyeye düşürür.",
+            broken_features: &[],
+        }),
+        "start_menu_show_more_pins" => Some(LocalizedTweakText {
+            title: "Başlat Menüsü: Daha Fazla Sabitleme Düzeni",
+            description: "Windows 11 Başlat Menüsünü önerilen akış içerikleri yerine sabitlenmiş uygulamalara öncelik verecek şekilde yapılandırır.",
+            broken_features: &[],
+        }),
+        "disable_taskbar_people_button" => Some(LocalizedTweakText {
+            title: "Görev Çubuğu Kişiler Düğmesini Devre Dışı Bırak",
+            description: "Eski Kişiler / Kişilerim simgesini Windows görev çubuğundan gizler ve devre dışı bırakır.",
+            broken_features: &[],
+        }),
+        "repair_ndu_graph" => Some(LocalizedTweakText {
+            title: "Görev Yöneticisi Ağ Veri Kullanımı (NDU) Grafiğini Onar",
+            description: "Görev Yöneticisi ağ grafiklerinin düzgün çalışması için Network Diagnostic Usage (NDU) çekirdek sürücüsünün Start=2 (Otomatik) olarak ayarlanmasını sağlar.",
+            broken_features: &[],
+        }),
+        "disable_settings_ads" => Some(LocalizedTweakText {
+            title: "Ayarlar Uygulamasındaki Önerilen İçerikleri ve Reklamları Kapat",
+            description: "Microsoft'un Windows Ayarları içinde önerilen uygulamaları, iş ortağı tanıtımlarını ve ipuçlarını göstermesini engeller.",
+            broken_features: &["Ayarlar uygulamasındaki tanıtım kartları ve ipuçları gizlenir."],
+        }),
+        "disable_start_menu_suggested_apps" => Some(LocalizedTweakText {
+            title: "Önerilen Mağaza Uygulamalarının Otomatik Yüklenmesini Engelle",
+            description: "Windows Content Delivery Manager'ın önerilen tüketici uygulamalarını ve oyunlarını sessizce indirmesini ve Başlat menüsüne sabitlemesini önler.",
+            broken_features: &["Sponsorlu tüketici oyunları Başlat Menüsüne otomatik olarak yüklenmeyecektir."],
+        }),
+        "disable_hardware_companion_software" => Some(LocalizedTweakText {
+            title: "Donanım Yardımcı Yazılımı Önerilerini Devre Dışı Bırak",
+            description: "Çevre birimleri bağlandığında Windows'un üçüncü taraf OEM donanım yardımcı yazılımlarını bildirmesini ve otomatik olarak önermesini engeller.",
+            broken_features: &[],
+        }),
+        "disable_ms_office_telemetry" => Some(LocalizedTweakText {
+            title: "Microsoft Office Telemetrisini ve Müşteri Deneyimi Günlüğünü Devre Dışı Bırak",
+            description: "Microsoft Office tanılama verisi toplamasını, geri bildirim istemlerini ve Müşteri Deneyimi Geliştirme Programı (CEIP) telemetrisini devre dışı bırakır.",
+            broken_features: &[],
+        }),
         _ => None,
     }
 }

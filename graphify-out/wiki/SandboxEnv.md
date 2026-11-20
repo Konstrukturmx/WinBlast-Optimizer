@@ -1,60 +1,40 @@
 # SandboxEnv
 
-> 47 nodes · cohesion 0.07
+> 11 nodes · cohesion 0.25
 
 ## Key Concepts
 
-- **SandboxEnv** (115 connections) — `src/core/backend.rs`
-- **.state_read()** (39 connections) — `src/core/backend.rs`
-- **normalize_task_path()** (8 connections) — `src/scanner/task_scanner.rs`
-- **CachedScanBackend<'a>** (6 connections) — `src/core/backend.rs`
-- **.detect_core_parking()** (5 connections) — `src/core/backend.rs`
-- **.load_appx_cache()** (5 connections) — `src/core/backend.rs`
-- **.load_task_cache()** (5 connections) — `src/core/backend.rs`
-- **.reg_get_dword_for_vendor()** (5 connections) — `src/core/backend.rs`
-- **.detect_gpus()** (4 connections) — `src/core/backend.rs`
-- **.list_optional_features()** (4 connections) — `src/core/backend.rs`
-- **.list_restore_points()** (4 connections) — `src/core/backend.rs`
-- **.reg_get_raw()** (4 connections) — `src/core/backend.rs`
-- **.run_scheduled_task()** (4 connections) — `src/core/backend.rs`
-- **.seed_tweak_defaults_for_tweak()** (4 connections) — `src/core/backend.rs`
-- **.set_scheduled_task_enabled()** (4 connections) — `src/core/backend.rs`
-- **.appx()** (3 connections) — `src/core/backend.rs`
-- **.gpu_vendors()** (3 connections) — `src/core/backend.rs`
-- **.optional_features()** (3 connections) — `src/core/backend.rs`
-- **.tasks()** (3 connections) — `src/core/backend.rs`
-- **.detect_cpu()** (3 connections) — `src/core/backend.rs`
-- **.detect_os()** (3 connections) — `src/core/backend.rs`
-- **.get_task_enabled()** (3 connections) — `src/core/backend.rs`
-- **.list_installed_appx_detailed()** (3 connections) — `src/core/backend.rs`
-- **.list_live_services()** (3 connections) — `src/core/backend.rs`
-- **.list_live_tasks()** (3 connections) — `src/core/backend.rs`
-- *... and 22 more nodes in this community*
+- **i18n.rs** (13 connections) — `src/core/i18n.rs`
+- **I18n** (8 connections) — `src/core/i18n.rs`
+- **.translate()** (7 connections) — `src/core/i18n.rs`
+- **.get()** (4 connections) — `src/core/i18n.rs`
+- **test_all_languages_and_all_keys_exhaustive()** (2 connections) — `src/core/i18n.rs`
+- **test_i18n_all_languages_populated()** (2 connections) — `src/core/i18n.rs`
+- **test_left_menu_translations_all_8_languages()** (2 connections) — `src/core/i18n.rs`
+- **.fold_search_str()** (1 connections) — `src/core/i18n.rs`
+- **test_fold_search_str_turkish_and_ascii()** (1 connections) — `src/core/i18n.rs`
+- **test_turkish_translation()** (1 connections) — `src/core/i18n.rs`
+- **TRANSLATIONS** (1 connections) — `src/core/i18n.rs`
 
 ## Relationships
 
-- [task_scanner.rs](task_scanner.rs.md) (37 shared connections)
-- [.take_injected_error](take_injected_error.md) (35 shared connections)
-- [Integration Suite: Tweak Sandbox E2E](Integration_Suite-_Tweak_Sandbox_E2E.md) (5 shared connections)
-- [backend.rs](backend.rs.md) (5 shared connections)
-- [theme.rs](theme.rs.md) (4 shared connections)
-- [.new](new.md) (3 shared connections)
-- [Embedded Catalog Test](Embedded_Catalog_Test.md) (3 shared connections)
-- [svc_mutator.rs](svc_mutator.rs.md) (3 shared connections)
-- [app.rs](app.rs.md) (2 shared connections)
+- [ps_runner.rs](ps_runner.rs.md) (3 shared connections)
+- [Core UI Internationalization & Text Catalog](Core_UI_Internationalization_&_Text_Catalog.md) (3 shared connections)
+- [deserialize](deserialize.md) (2 shared connections)
 - [Multi-Language Tweak Localization Tables](Multi-Language_Tweak_Localization_Tables.md) (2 shared connections)
-- [Command Osstr Process.Rs](Command_Osstr_Process.Rs.md) (2 shared connections)
-- [TaskCache](TaskCache.md) (2 shared connections)
+- [FailAtMutationBackend](FailAtMutationBackend.md) (1 shared connections)
+- [Win32 Registry Scanner & Mutator](Win32_Registry_Scanner_&_Mutator.md) (1 shared connections)
+- [SlowScanBackend](SlowScanBackend.md) (1 shared connections)
+- [advanced_matrix.rs](advanced_matrix.rs.md) (1 shared connections)
 
 ## Source Files
 
-- `src/core/backend.rs`
-- `src/scanner/task_scanner.rs`
+- `src/core/i18n.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 207 (98%)
-- INFERRED: 4 (2%)
+- EXTRACTED: 28 (100%)
+- INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 
 ---

@@ -1,58 +1,62 @@
 # startup.rs
 
-> 24 nodes · cohesion 0.16
+> 59 nodes · cohesion 0.06
 
 ## Key Concepts
 
-- **startup.rs** (48 connections) — `src/tools/startup.rs`
-- **list_live_services()** (7 connections) — `src/tools/startup.rs`
-- **is_protected_core_service()** (6 connections) — `src/tools/startup.rs`
-- **enum_scm_services_by_type()** (5 connections) — `src/tools/startup.rs`
-- **query_scm_win32_services()** (5 connections) — `src/tools/startup.rs`
-- **set_startup_entry_enabled()** (5 connections) — `src/tools/startup.rs`
-- **SC_HANDLE** (4 connections)
-- **set_scheduled_task_enabled()** (4 connections) — `src/executor/ps_runner.rs`
-- **expand_system_root_vars()** (4 connections) — `src/tools/startup.rs`
-- **is_microsoft_service_binary()** (4 connections) — `src/tools/startup.rs`
-- **query_scm_service_config()** (4 connections) — `src/tools/startup.rs`
-- **ScHandleGuard** (4 connections) — `src/tools/startup.rs`
-- **encode_startup_approved_bytes()** (3 connections) — `src/tools/startup.rs`
-- **is_microsoft_run_command()** (3 connections) — `src/tools/startup.rs`
-- **ScmServiceRecord** (3 connections) — `src/tools/startup.rs`
-- **set_startup_entry_enabled_by_id()** (3 connections) — `src/tools/startup.rs`
-- **ENUM_SERVICE_TYPE** (2 connections)
-- **replace_ascii_ci()** (2 connections) — `src/tools/startup.rs`
-- **resolve_indirect_display_string()** (2 connections) — `src/tools/startup.rs`
-- **.drop()** (2 connections) — `src/tools/startup.rs`
-- **test_critical_service_blocklist_protects_core_services()** (2 connections) — `src/tools/startup.rs`
-- **test_startup_approved_12_byte_encoding()** (2 connections) — `src/tools/startup.rs`
-- **fromregvalue** (1 connections)
-- **CRITICAL_CORE_SERVICES** (1 connections) — `src/tools/startup.rs`
+- **cleaner.rs** (46 connections) — `src/tools/cleaner.rs`
+- **CleanTargetKind** (33 connections) — `src/tools/cleaner.rs`
+- **CleanTargetScan** (15 connections) — `src/tools/cleaner.rs`
+- **CleanExecutionReport** (14 connections) — `src/tools/cleaner.rs`
+- **delete_dir_contents()** (9 connections) — `src/tools/cleaner.rs`
+- **measure_dir()** (8 connections) — `src/tools/cleaner.rs`
+- **execute_clean_targets()** (7 connections) — `src/tools/cleaner.rs`
+- **scan_all_clean_targets()** (7 connections) — `src/tools/cleaner.rs`
+- **CleanTargetResult** (6 connections) — `src/tools/cleaner.rs`
+- **.execute_clean_targets()** (6 connections) — `tests/tweak_sandbox_e2e.rs`
+- **empty_recycle_bin()** (5 connections) — `src/tools/cleaner.rs`
+- **.execute_clean_targets()** (5 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.execute_clean_targets()** (5 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.execute_clean_targets()** (4 connections) — `src/core/backend.rs`
+- **init_com_sta()** (4 connections) — `src/tools/cleaner.rs`
+- **query_recycle_bin()** (4 connections) — `src/tools/cleaner.rs`
+- **resolve_target_paths()** (4 connections) — `src/tools/cleaner.rs`
+- **should_skip_entry()** (4 connections) — `src/tools/cleaner.rs`
+- **.scan_clean_targets()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.scan_clean_targets()** (3 connections) — `src/core/backend.rs`
+- **.execute_clean_targets()** (3 connections) — `src/core/backend.rs`
+- **ComStaGuard** (3 connections) — `src/tools/cleaner.rs`
+- **dir_meta_if_real()** (3 connections) — `src/tools/cleaner.rs`
+- **is_reparse_point()** (3 connections) — `src/tools/cleaner.rs`
+- **record_dir_io_error()** (3 connections) — `src/tools/cleaner.rs`
+- *... and 34 more nodes in this community*
 
 ## Relationships
 
-- [StartupEntry](StartupEntry.md) (11 shared connections)
-- [super](super.md) (5 shared connections)
-- [backend.rs](backend.rs.md) (3 shared connections)
-- [RegRawSnapshot](RegRawSnapshot.md) (2 shared connections)
-- [real_windows_env.rs](real_windows_env.rs.md) (2 shared connections)
-- [WinBlastError](WinBlastError.md) (2 shared connections)
-- [path](path.md) (2 shared connections)
-- [LiveScheduledTaskInfo](LiveScheduledTaskInfo.md) (2 shared connections)
-- [.setup](setup.md) (2 shared connections)
-- [task_scanner.rs](task_scanner.rs.md) (1 shared connections)
-- [ps_runner.rs](ps_runner.rs.md) (1 shared connections)
-- [TaskCache](TaskCache.md) (1 shared connections)
+- [SlowScanBackend](SlowScanBackend.md) (5 shared connections)
+- [FailAtMutationBackend](FailAtMutationBackend.md) (4 shared connections)
+- [State Ledger & Restore Point Engine](State_Ledger_&_Restore_Point_Engine.md) (4 shared connections)
+- [AppState](AppState.md) (3 shared connections)
+- [super](super.md) (3 shared connections)
+- [WinBlast Optimizer](WinBlast_Optimizer.md) (3 shared connections)
+- [in_progress_hud.rs](in_progress_hud.rs.md) (2 shared connections)
+- [full_telemetry_audit_with](full_telemetry_audit_with.md) (2 shared connections)
+- [Scandetailkind Appxinstalled Appxinstalledps](Scandetailkind_Appxinstalled_Appxinstalledps.md) (2 shared connections)
+- [deserialize](deserialize.md) (2 shared connections)
+- [backend.rs](backend.rs.md) (2 shared connections)
+- [WorkerEvent](WorkerEvent.md) (2 shared connections)
 
 ## Source Files
 
-- `src/executor/ps_runner.rs`
-- `src/tools/startup.rs`
+- `src/app.rs`
+- `src/core/backend.rs`
+- `src/tools/cleaner.rs`
+- `tests/tweak_sandbox_e2e.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 80 (98%)
-- INFERRED: 2 (2%)
+- EXTRACTED: 149 (100%)
+- INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 
 ---

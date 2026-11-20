@@ -1,31 +1,31 @@
 # Hardware Diagnostics & GPU Silicon Tuning
 
-> 8 nodes · cohesion 0.29
+> 8 nodes · cohesion 0.25
 
 ## Key Concepts
 
-- **Spring** (8 connections)
-- **.motion()** (5 connections) — `src/ui/theme.rs`
-- **.easing_spring()** (3 connections) — `src/ui/theme.rs`
-- **EASING_CLASSIC** (2 connections) — `src/ui/theme.rs`
-- **EASING_COMPACT** (2 connections) — `src/ui/theme.rs`
-- **EASING_GLASSY** (2 connections) — `src/ui/theme.rs`
-- **EASING_MATERIALISTIC** (2 connections) — `src/ui/theme.rs`
-- **EASING_MINIMALISTIC** (2 connections) — `src/ui/theme.rs`
+- **test_status_i18n_all_languages_and_core_specs()** (8 connections) — `src/core/status_i18n.rs`
+- **LanguageChanged** (3 connections) — `src/core/status_i18n.rs`
+- **test_turkish_language_changed_status_message()** (3 connections) — `src/core/status_i18n.rs`
+- **BatchCompleted** (2 connections) — `src/core/status_i18n.rs`
+- **HagsUpdated** (2 connections) — `src/core/status_i18n.rs`
+- **MpoUpdated** (2 connections) — `src/core/status_i18n.rs`
+- **ScanCompleted** (2 connections) — `src/core/status_i18n.rs`
+- **ScanFailed** (2 connections) — `src/core/status_i18n.rs`
 
 ## Relationships
 
-- [Dynamicdwordformula Logicalcorecount Totalraminkb](Dynamicdwordformula_Logicalcorecount_Totalraminkb.md) (5 shared connections)
-- [Project History & Release Version Ledger](Project_History_&_Release_Version_Ledger.md) (4 shared connections)
-- [ThemePalette](ThemePalette.md) (1 shared connections)
+- [.Toggle .Set .Apply](Toggle_.Set_.Apply.md) (6 shared connections)
+- [ps_runner.rs](ps_runner.rs.md) (2 shared connections)
+- [Win32 Registry Scanner & Mutator](Win32_Registry_Scanner_&_Mutator.md) (2 shared connections)
 
 ## Source Files
 
-- `src/ui/theme.rs`
+- `src/core/status_i18n.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 18 (100%)
+- EXTRACTED: 17 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

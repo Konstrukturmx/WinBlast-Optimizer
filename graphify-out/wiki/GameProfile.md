@@ -1,28 +1,27 @@
 # GameProfile
 
-> 5 nodes · cohesion 0.50
+> 3 nodes · cohesion 0.67
 
 ## Key Concepts
 
-- **GameProfile** (6 connections) — `src/tools/game_profiles.rs`
-- **.all()** (2 connections) — `src/tools/game_profiles.rs`
-- **.check_applied()** (2 connections) — `src/tools/game_profiles.rs`
-- **.apply()** (1 connections) — `src/tools/game_profiles.rs`
-- **.revert()** (1 connections) — `src/tools/game_profiles.rs`
+- **.all_physical()** (4 connections) — `src/hardware/driver_update.rs`
+- **test_all_categories_have_guid()** (2 connections) — `src/hardware/driver_update.rs`
+- **test_all_categories_have_icon_and_name()** (2 connections) — `src/hardware/driver_update.rs`
 
 ## Relationships
 
-- [super](super.md) (1 shared connections)
-- [AppState](AppState.md) (1 shared connections)
+- [task_scanner.rs](task_scanner.rs.md) (2 shared connections)
+- [Language](Language.md) (1 shared connections)
+- [InstalledAppxPackage](InstalledAppxPackage.md) (1 shared connections)
 
 ## Source Files
 
-- `src/tools/game_profiles.rs`
+- `src/hardware/driver_update.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 6 (86%)
-- INFERRED: 1 (14%)
+- EXTRACTED: 6 (100%)
+- INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 
 ---

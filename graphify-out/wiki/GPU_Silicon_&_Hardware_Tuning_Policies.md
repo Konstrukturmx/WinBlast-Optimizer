@@ -1,59 +1,59 @@
 # GPU Silicon & Hardware Tuning Policies
 
-> 34 nodes · cohesion 0.07
+> 47 nodes · cohesion 0.08
 
 ## Key Concepts
 
-- **ui_responsive_e2e.rs** (61 connections) — `tests/ui_responsive_e2e.rs`
-- **build_populated_sandbox_state()** (17 connections) — `tests/ui_responsive_e2e.rs`
-- **init_cpu_parking_state()** (3 connections) — `tests/ui_responsive_e2e.rs`
-- **init_dashboard_state()** (3 connections) — `tests/ui_responsive_e2e.rs`
-- **init_fault_diagnostics_state()** (3 connections) — `tests/ui_responsive_e2e.rs`
-- **init_gpu_state()** (3 connections) — `tests/ui_responsive_e2e.rs`
-- **init_matrix_state()** (3 connections) — `tests/ui_responsive_e2e.rs`
-- **init_minimalistic_theme_state()** (3 connections) — `tests/ui_responsive_e2e.rs`
-- **init_support_about_state()** (3 connections) — `tests/ui_responsive_e2e.rs`
-- **test_driver_bios_no_card_overlap()** (3 connections) — `tests/ui_responsive_e2e.rs`
-- **test_hardware_view_power_schemes_no_overlap()** (3 connections) — `tests/ui_responsive_e2e.rs`
-- **targetarch** (2 connections)
-- **cleanappssubtab** (1 connections)
-- **detectedgpu** (1 connections)
-- **full_telemetry_audit_with** (1 connections)
-- **liveserviceinfo** (1 connections)
-- **startupentry** (1 connections)
-- **startupsource** (1 connections)
-- **startuptaskssubtab** (1 connections)
-- **_keep_el_import_used()** (1 connections) — `tests/ui_responsive_e2e.rs`
-- **SCALES** (1 connections) — `tests/ui_responsive_e2e.rs`
-- **snap_advanced_matrix_view()** (1 connections) — `tests/ui_responsive_e2e.rs`
-- **snap_cpu_parking_view()** (1 connections) — `tests/ui_responsive_e2e.rs`
-- **snap_dashboard_view()** (1 connections) — `tests/ui_responsive_e2e.rs`
-- **snap_fault_diagnostics_view()** (1 connections) — `tests/ui_responsive_e2e.rs`
-- *... and 9 more nodes in this community*
+- **SandboxEnv** (119 connections) — `src/core/backend.rs`
+- **.state_read()** (39 connections) — `src/core/backend.rs`
+- **CachedScanBackend<'a>** (6 connections) — `src/core/backend.rs`
+- **.load_appx_cache()** (5 connections) — `src/core/backend.rs`
+- **.load_task_cache()** (5 connections) — `src/core/backend.rs`
+- **.detect_gpus()** (4 connections) — `src/core/backend.rs`
+- **.list_optional_features()** (4 connections) — `src/core/backend.rs`
+- **.reg_get_raw()** (4 connections) — `src/core/backend.rs`
+- **.run_scheduled_task()** (4 connections) — `src/core/backend.rs`
+- **.seed_tweak_defaults_for_tweak()** (4 connections) — `src/core/backend.rs`
+- **.appx()** (3 connections) — `src/core/backend.rs`
+- **.gpu_vendors()** (3 connections) — `src/core/backend.rs`
+- **.optional_features()** (3 connections) — `src/core/backend.rs`
+- **.tasks()** (3 connections) — `src/core/backend.rs`
+- **.capture_latency()** (3 connections) — `src/core/backend.rs`
+- **.detect_cpu()** (3 connections) — `src/core/backend.rs`
+- **.detect_os()** (3 connections) — `src/core/backend.rs`
+- **.detect_platform_security()** (3 connections) — `src/core/backend.rs`
+- **.get_task_enabled()** (3 connections) — `src/core/backend.rs`
+- **.list_installed_appx_detailed()** (3 connections) — `src/core/backend.rs`
+- **.list_live_services()** (3 connections) — `src/core/backend.rs`
+- **.list_live_tasks()** (3 connections) — `src/core/backend.rs`
+- **.list_power_schemes()** (3 connections) — `src/core/backend.rs`
+- **.list_startup_entries()** (3 connections) — `src/core/backend.rs`
+- **.query_hibernation_status()** (3 connections) — `src/core/backend.rs`
+- *... and 22 more nodes in this community*
 
 ## Relationships
 
-- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (18 shared connections)
-- [AppState](AppState.md) (9 shared connections)
-- [theme.rs](theme.rs.md) (2 shared connections)
-- [Language](Language.md) (2 shared connections)
-- [backend.rs](backend.rs.md) (2 shared connections)
-- [Reversibility Instant Requireslogoff](Reversibility_Instant_Requireslogoff.md) (2 shared connections)
-- [System Architecture Changelog](System_Architecture_Changelog.md) (2 shared connections)
-- [edge_cases_unorthodox.rs](edge_cases_unorthodox.rs.md) (1 shared connections)
-- [Core UI Internationalization & Text Catalog](Core_UI_Internationalization_&_Text_Catalog.md) (1 shared connections)
-- [PresetKey](PresetKey.md) (1 shared connections)
-- [SlowScanBackend](SlowScanBackend.md) (1 shared connections)
-- [LazyLoader](LazyLoader.md) (1 shared connections)
+- [RegRawSnapshot](RegRawSnapshot.md) (32 shared connections)
+- [reg_mutator.rs](reg_mutator.rs.md) (32 shared connections)
+- [State Ledger & Restore Point Engine](State_Ledger_&_Restore_Point_Engine.md) (7 shared connections)
+- [.set_status_spec](set_status_spec.md) (4 shared connections)
+- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (3 shared connections)
+- [full_telemetry_audit_with](full_telemetry_audit_with.md) (3 shared connections)
+- [TaskCache](TaskCache.md) (3 shared connections)
+- [SlowScanBackend](SlowScanBackend.md) (3 shared connections)
+- [parse_guid](parse_guid.md) (3 shared connections)
+- [AppxCache](AppxCache.md) (2 shared connections)
+- [WindowsOptionalFeature](WindowsOptionalFeature.md) (2 shared connections)
+- [FailAtMutationBackend](FailAtMutationBackend.md) (2 shared connections)
 
 ## Source Files
 
-- `tests/ui_responsive_e2e.rs`
+- `src/core/backend.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 84 (97%)
-- INFERRED: 3 (3%)
+- EXTRACTED: 201 (99%)
+- INFERRED: 2 (1%)
 - AMBIGUOUS: 0 (0%)
 
 ---

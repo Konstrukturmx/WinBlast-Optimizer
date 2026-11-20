@@ -937,3 +937,60 @@ path = "SYSTEM\\CurrentControlSet\\Control\\Power\\PowerSettings\\54533251-82be-
 name = "IdlePromoteThreshold"
 optimized_value = 100
 default_value = 60
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "disable_wpbt_execution"
+title = "Disable WPBT Firmware Binary Execution"
+category = "System Deep Optimization"
+description = "Blocks the Windows Kernel from executing binaries bundled into the motherboard UEFI Windows Platform Binary Table (WPBT)."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 1
+privacy_gain = 3
+reversibility = "Instant"
+broken_features = []
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SYSTEM\\CurrentControlSet\\Control\\Session Manager"
+name = "DisableWpbExecution"
+optimized_value = 1
+default_value = 0
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "service_shutdown_timeout_15s"
+title = "Reduce Service Shutdown Timeout to 15s"
+category = "System Deep Optimization"
+description = "Reduces the OS service termination timeout during shutdown from default 20s to 15s to prevent long shutdown hangs."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 2
+privacy_gain = 0
+reversibility = "Instant"
+broken_features = []
+
+[[tweaks.actions]]
+type = "RegistryString"
+hive = "HKLM"
+path = "SYSTEM\\CurrentControlSet\\Control"
+name = "WaitToKillServiceTimeout"
+optimized_value = "15000"
+default_value = "20000"
+

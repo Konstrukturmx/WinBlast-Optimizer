@@ -42,7 +42,7 @@
 - [ui/mod.rs](ui-mod.rs.md) `EXTRACTED`
 - startup_tasks.rs `EXTRACTED`
 - gpu_tuning.rs `EXTRACTED`
-- advanced_matrix.rs `EXTRACTED`
+- [advanced_matrix.rs](advanced_matrix.rs.md) `EXTRACTED`
 - button.rs `EXTRACTED`
 - [privacy_shield.rs](privacy_shield.rs.md) `EXTRACTED`
 - [diff_modal.rs](diff_modal.rs.md) `EXTRACTED`

@@ -2,7 +2,7 @@
 
 > God node · 105 connections · `src/core/status_i18n.rs`
 
-**Community:** [AppState](AppState.md)
+**Community:** [.Toggle .Set .Apply](Toggle_.Set_.Apply.md)
 
 ## Connections by Relation
 
@@ -40,7 +40,7 @@
 - [Language](Language.md) `EXTRACTED`
 - .set_status_spec() `EXTRACTED`
 - localize_status() `EXTRACTED`
-- [PresetKey](PresetKey.md) `EXTRACTED`
+- PresetKey `EXTRACTED`
 
 ---
 

@@ -1,46 +1,61 @@
 # State Ledger & Restore Point Engine
 
-> 17 nodes · cohesion 0.17
+> 29 nodes · cohesion 0.10
 
 ## Key Concepts
 
-- **thermal.rs** (17 connections) — `src/hardware/thermal.rs`
-- **ThermalHealth** (9 connections) — `src/hardware/thermal.rs`
-- **SystemThermalSnapshot** (8 connections) — `src/hardware/thermal.rs`
-- **.read()** (4 connections) — `src/hardware/thermal.rs`
-- **AtomicU8** (3 connections)
-- **ComponentThermal** (3 connections) — `src/hardware/thermal.rs`
-- **NVIDIA_SMI_STATUS** (2 connections) — `src/hardware/thermal.rs`
-- **probe_acpi_wmi_and_perf()** (2 connections) — `src/hardware/thermal.rs`
-- **probe_gpu_thermals()** (2 connections) — `src/hardware/thermal.rs`
-- **test_thermal_snapshot_read_no_panic()** (2 connections) — `src/hardware/thermal.rs`
-- **WMI_ACPI_STATUS** (2 connections) — `src/hardware/thermal.rs`
-- **test_thermal_health_labels()** (1 connections) — `src/hardware/thermal.rs`
-- **Cool** (1 connections) — `src/hardware/thermal.rs`
-- **Hot** (1 connections) — `src/hardware/thermal.rs`
-- **.label()** (1 connections) — `src/hardware/thermal.rs`
-- **Optimal** (1 connections) — `src/hardware/thermal.rs`
-- **Warm** (1 connections) — `src/hardware/thermal.rs`
+- **backend.rs** (77 connections) — `src/core/backend.rs`
+- **SystemMetrics** (14 connections) — `src/hardware/monitor.rs`
+- **MetricsSampler** (11 connections) — `src/core/backend.rs`
+- **test_sandbox_core_parking_labels_metrics_and_power_sync()** (7 connections) — `src/core/backend.rs`
+- **.new()** (5 connections) — `src/core/backend.rs`
+- **.restore_stock_parking()** (5 connections) — `src/core/backend.rs`
+- **SandboxMetricsSampler** (5 connections) — `src/core/backend.rs`
+- **SandboxTempDir** (5 connections) — `src/core/backend.rs`
+- **.create_metrics_sampler()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
+- **RwLock** (3 connections)
+- **.create_metrics_sampler()** (3 connections) — `src/core/backend.rs`
+- **.sample()** (3 connections) — `src/core/backend.rs`
+- **.new()** (3 connections) — `src/core/backend.rs`
+- **.create_metrics_sampler()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.create_metrics_sampler()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
+- **Utc** (3 connections)
+- **DateTime** (2 connections)
+- **OnceLock** (2 connections)
+- **.sample()** (2 connections) — `src/core/backend.rs`
+- **.create_metrics_sampler()** (2 connections) — `src/core/backend.rs`
+- **.default()** (2 connections) — `src/core/backend.rs`
+- **.default()** (2 connections) — `src/core/backend.rs`
+- **.default()** (2 connections) — `src/core/backend.rs`
+- **.create_metrics_sampler()** (2 connections) — `src/core/backend.rs`
+- **SystemMonitor** (2 connections) — `src/core/backend.rs`
+- *... and 4 more nodes in this community*
 
 ## Relationships
 
-- [super](super.md) (5 shared connections)
-- [LazyLoader](LazyLoader.md) (2 shared connections)
-- [edge_cases_unorthodox.rs](edge_cases_unorthodox.rs.md) (2 shared connections)
-- [SlowScanBackend](SlowScanBackend.md) (1 shared connections)
-- [real_windows_env.rs](real_windows_env.rs.md) (1 shared connections)
-- [WorkerEvent](WorkerEvent.md) (1 shared connections)
-- [AppState](AppState.md) (1 shared connections)
-- [.Toggle .Set .Apply](Toggle_.Set_.Apply.md) (1 shared connections)
+- [GPU Silicon & Hardware Tuning Policies](GPU_Silicon_&_Hardware_Tuning_Policies.md) (7 shared connections)
+- [reg_mutator.rs](reg_mutator.rs.md) (5 shared connections)
+- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (4 shared connections)
+- [Error.Rs Winblasterror Appx](Error.Rs_Winblasterror_Appx.md) (4 shared connections)
+- [startup.rs](startup.rs.md) (4 shared connections)
+- [SlowScanBackend](SlowScanBackend.md) (4 shared connections)
+- [in_progress_hud.rs](in_progress_hud.rs.md) (4 shared connections)
+- [RegRawSnapshot](RegRawSnapshot.md) (4 shared connections)
+- [parking.rs](parking.rs.md) (3 shared connections)
+- [parse_guid](parse_guid.md) (3 shared connections)
+- [FailAtMutationBackend](FailAtMutationBackend.md) (3 shared connections)
+- [DriverUpdateItem](DriverUpdateItem.md) (3 shared connections)
 
 ## Source Files
 
-- `src/hardware/thermal.rs`
+- `src/core/backend.rs`
+- `src/hardware/monitor.rs`
+- `tests/tweak_sandbox_e2e.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 35 (95%)
-- INFERRED: 2 (5%)
+- EXTRACTED: 137 (100%)
+- INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 
 ---

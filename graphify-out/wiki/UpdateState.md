@@ -1,29 +1,22 @@
 # UpdateState
 
-> 8 nodes · cohesion 0.25
+> 1 nodes · cohesion 1.00
 
 ## Key Concepts
 
-- **UpdateState** (9 connections) — `src/core/updater.rs`
-- **Checking** (1 connections) — `src/core/updater.rs`
-- **Downloading** (1 connections) — `src/core/updater.rs`
-- **Failed** (1 connections) — `src/core/updater.rs`
-- **Idle** (1 connections) — `src/core/updater.rs`
-- **ReadyToRestart** (1 connections) — `src/core/updater.rs`
-- **UpdateAvailable** (1 connections) — `src/core/updater.rs`
-- **UpToDate** (1 connections) — `src/core/updater.rs`
+- **lib.rs** (0 connections) — `src/lib.rs`
 
 ## Relationships
 
-- [updater.rs](updater.rs.md) (2 shared connections)
+- No strong cross-community connections detected
 
 ## Source Files
 
-- `src/core/updater.rs`
+- `src/lib.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 9 (100%)
+- EXTRACTED: 0 (0%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

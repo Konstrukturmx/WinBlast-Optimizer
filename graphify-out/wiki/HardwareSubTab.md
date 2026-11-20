@@ -4,15 +4,11 @@
 
 ## Key Concepts
 
-- **widgets/mod.rs** (0 connections) — `src/ui/widgets/mod.rs`
+- **Utc** (0 connections)
 
 ## Relationships
 
 - No strong cross-community connections detected
-
-## Source Files
-
-- `src/ui/widgets/mod.rs`
 
 ## Audit Trail
 

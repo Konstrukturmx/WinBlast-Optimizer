@@ -1,48 +1,45 @@
 # Dynamicdwordformula Logicalcorecount Totalraminkb
 
-> 25 nodes · cohesion 0.16
+> 21 nodes · cohesion 0.19
 
 ## Key Concepts
 
-- **theme.rs** (38 connections) — `src/ui/theme.rs`
-- **Color** (29 connections)
-- **ACCENT** (2 connections) — `src/ui/theme.rs`
-- **ACCENT_HOVER** (2 connections) — `src/ui/theme.rs`
-- **ACCENT_PRESS** (2 connections) — `src/ui/theme.rs`
-- **BG_CARD** (2 connections) — `src/ui/theme.rs`
-- **BG_CARD_HOVER** (2 connections) — `src/ui/theme.rs`
-- **BG_PRIMARY** (2 connections) — `src/ui/theme.rs`
-- **BG_SIDEBAR** (2 connections) — `src/ui/theme.rs`
-- **BORDER** (2 connections) — `src/ui/theme.rs`
-- **BORDER_ACCENT** (2 connections) — `src/ui/theme.rs`
-- **BORDER_HOVER** (2 connections) — `src/ui/theme.rs`
-- **BTN_SECONDARY** (2 connections) — `src/ui/theme.rs`
-- **BTN_SECONDARY_HOVER** (2 connections) — `src/ui/theme.rs`
-- **BTN_SECONDARY_PRESS** (2 connections) — `src/ui/theme.rs`
-- **DANGER** (2 connections) — `src/ui/theme.rs`
-- **NEUTRAL_BADGE** (2 connections) — `src/ui/theme.rs`
-- **SPARKLINE_BG** (2 connections) — `src/ui/theme.rs`
-- **SPARKLINE_CPU** (2 connections) — `src/ui/theme.rs`
-- **SPARKLINE_RAM** (2 connections) — `src/ui/theme.rs`
-- **SUCCESS** (2 connections) — `src/ui/theme.rs`
-- **TEXT_MUTED** (2 connections) — `src/ui/theme.rs`
-- **TEXT_PRIMARY** (2 connections) — `src/ui/theme.rs`
-- **TEXT_SECONDARY** (2 connections) — `src/ui/theme.rs`
-- **WARNING** (2 connections) — `src/ui/theme.rs`
+- **StateLedger** (29 connections) — `src/backup/state_ledger.rs`
+- **state_ledger.rs** (11 connections) — `src/backup/state_ledger.rs`
+- **SystemBaseline** (9 connections) — `src/backup/state_ledger.rs`
+- **test_ledger_crud()** (8 connections) — `src/backup/state_ledger.rs`
+- **.get_initial_baseline()** (4 connections) — `src/backup/state_ledger.rs`
+- **.init_conn()** (4 connections) — `src/backup/state_ledger.rs`
+- **.query_single_baseline()** (4 connections) — `src/backup/state_ledger.rs`
+- **revert_tweak()** (4 connections) — `src/executor/engine.rs`
+- **Connection** (3 connections)
+- **DateTime** (3 connections)
+- **Utc** (3 connections)
+- **.get_history()** (3 connections) — `src/backup/state_ledger.rs`
+- **.get_latest_baseline()** (3 connections) — `src/backup/state_ledger.rs`
+- **.new()** (3 connections) — `src/backup/state_ledger.rs`
+- **.reset_baseline()** (3 connections) — `src/backup/state_ledger.rs`
+- **.save_baseline()** (3 connections) — `src/backup/state_ledger.rs`
+- **.in_memory()** (2 connections) — `src/backup/state_ledger.rs`
+- **.record_change()** (2 connections) — `src/backup/state_ledger.rs`
+- **.rollback_entry()** (2 connections) — `src/backup/state_ledger.rs`
+- **params** (1 connections)
+- **.clear_history()** (1 connections) — `src/backup/state_ledger.rs`
 
 ## Relationships
 
-- [normalize_guid_str](normalize_guid_str.md) (6 shared connections)
-- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (5 shared connections)
-- [super](super.md) (2 shared connections)
-- [Reversibility Instant Requireslogoff](Reversibility_Instant_Requireslogoff.md) (2 shared connections)
-- [ThemePalette](ThemePalette.md) (2 shared connections)
-- [privacy_shield.rs](privacy_shield.rs.md) (1 shared connections)
-- [Project History & Release Version Ledger](Project_History_&_Release_Version_Ledger.md) (1 shared connections)
+- [RealBackend](RealBackend.md) (17 shared connections)
+- [parse_guid](parse_guid.md) (3 shared connections)
+- [deserialize](deserialize.md) (2 shared connections)
+- [SlowScanBackend](SlowScanBackend.md) (2 shared connections)
+- [FailAtMutationBackend](FailAtMutationBackend.md) (1 shared connections)
+- [AppState](AppState.md) (1 shared connections)
+- [WorkerEvent](WorkerEvent.md) (1 shared connections)
 
 ## Source Files
 
-- `src/ui/theme.rs`
+- `src/backup/state_ledger.rs`
+- `src/executor/engine.rs`
 
 ## Audit Trail
 

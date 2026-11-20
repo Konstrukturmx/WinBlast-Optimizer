@@ -628,3 +628,88 @@ path = "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\AppModelUnlock"
 name = "AllowDevelopmentWithoutDevLicense"
 optimized_value = 1
 default_value = 0
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "start_menu_show_more_pins"
+title = "Start Menu: Show More Pins Layout"
+category = "UX Customization"
+description = "Expands the Start Menu pinned applications grid and minimizes empty recommendation space."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 22000
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 1
+privacy_gain = 0
+reversibility = "Instant"
+broken_features = []
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced"
+name = "Start_ShowMorePins"
+optimized_value = 1
+default_value = 0
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "disable_taskbar_people_button"
+title = "Disable Taskbar People Button"
+category = "UX Customization"
+description = "Removes the unused People band from the Windows taskbar to save screen real estate and memory."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 1
+privacy_gain = 1
+reversibility = "Instant"
+broken_features = []
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\\People"
+name = "PeopleBand"
+optimized_value = 0
+default_value = 1
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "repair_ndu_graph"
+title = "Fix Network Data Usage Graph (Restore Ndu Driver)"
+category = "UX Customization"
+description = "Restores the Network Diagnostic Usage (Ndu) kernel driver to automatic startup (Start=2), fixing the broken Network performance graph and data usage monitoring in Task Manager."
+easy_mode_included = true
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 1
+privacy_gain = 0
+reversibility = "Instant"
+broken_features = []
+
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKLM"
+path = "SYSTEM\\CurrentControlSet\\Services\\Ndu"
+name = "Start"
+optimized_value = 2
+default_value = 4
+

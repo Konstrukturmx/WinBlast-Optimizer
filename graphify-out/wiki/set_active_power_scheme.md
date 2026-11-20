@@ -10,9 +10,10 @@
 
 ## Relationships
 
-- [BlastResult](BlastResult.md) (3 shared connections)
-- [SlowScanBackend](SlowScanBackend.md) (2 shared connections)
+- [WinBlast Optimizer](WinBlast_Optimizer.md) (3 shared connections)
 - [FailAtMutationBackend](FailAtMutationBackend.md) (1 shared connections)
+- [PanickingBackend](PanickingBackend.md) (1 shared connections)
+- [SlowScanBackend](SlowScanBackend.md) (1 shared connections)
 
 ## Source Files
 

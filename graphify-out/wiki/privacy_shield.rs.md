@@ -1,64 +1,43 @@
 # privacy_shield.rs
 
-> 31 nodes · cohesion 0.09
+> 9 nodes · cohesion 0.25
 
 ## Key Concepts
 
-- **privacy_shield.rs** (22 connections) — `src/ui/views/privacy_shield.rs`
-- **TweakState** (17 connections) — `src/scanner/mod.rs`
-- **RiskLevel** (15 connections) — `src/core/risk.rs`
-- **RiskValuation** (13 connections) — `src/core/risk.rs`
-- **risk_badge.rs** (13 connections) — `src/ui/widgets/risk_badge.rs`
-- **view()** (12 connections) — `src/ui/views/privacy_shield.rs`
-- **Reversibility** (10 connections) — `src/core/risk.rs`
-- **tweak_state_meta()** (10 connections) — `src/ui/widgets/button.rs`
-- **view_localized()** (7 connections) — `src/ui/widgets/risk_badge.rs`
-- **StagedTransition** (6 connections) — `src/app.rs`
-- **state_counts()** (4 connections) — `src/ui/views/privacy_shield.rs`
-- **El** (4 connections)
-- **view_with_palette()** (4 connections) — `src/ui/widgets/risk_badge.rs`
-- **view()** (3 connections) — `src/ui/widgets/risk_badge.rs`
-- **El** (2 connections)
-- **StageApply** (1 connections) — `src/app.rs`
-- **StageRevert** (1 connections) — `src/app.rs`
-- **Instant** (1 connections) — `src/core/risk.rs`
-- **RequiresLogoff** (1 connections) — `src/core/risk.rs`
-- **RequiresPackageReinstall** (1 connections) — `src/core/risk.rs`
-- **RequiresReboot** (1 connections) — `src/core/risk.rs`
-- **Extreme** (1 connections) — `src/core/risk.rs`
-- **High** (1 connections) — `src/core/risk.rs`
-- **Low** (1 connections) — `src/core/risk.rs`
-- **Moderate** (1 connections) — `src/core/risk.rs`
-- *... and 6 more nodes in this community*
+- **enums** (20 connections)
+- **WindowsInfo** (16 connections) — `src/core/os_detect.rs`
+- **os_detect.rs** (5 connections) — `src/core/os_detect.rs`
+- **.detect_os()** (2 connections) — `src/core/backend.rs`
+- **.detect_os()** (2 connections) — `src/core/backend.rs`
+- **test_windows_info_detect_host()** (2 connections) — `src/core/os_detect.rs`
+- **.detect()** (2 connections) — `src/core/os_detect.rs`
+- **.has_recall()** (1 connections) — `src/core/os_detect.rs`
+- **.supports_hags()** (1 connections) — `src/core/os_detect.rs`
 
 ## Relationships
 
-- [action_button](action_button.md) (12 shared connections)
-- [.Toggle .Set .Apply](Toggle_.Set_.Apply.md) (9 shared connections)
-- [Embedded Catalog Test](Embedded_Catalog_Test.md) (8 shared connections)
-- [theme.rs](theme.rs.md) (6 shared connections)
-- [clean_apps.rs](clean_apps.rs.md) (6 shared connections)
-- [AppState](AppState.md) (5 shared connections)
-- [ThemePalette](ThemePalette.md) (4 shared connections)
-- [app.rs](app.rs.md) (3 shared connections)
-- [full_telemetry_audit_with](full_telemetry_audit_with.md) (3 shared connections)
-- [ui_scrollbar_test.rs](ui_scrollbar_test.rs.md) (3 shared connections)
-- [Win32 Registry Scanner & Mutator](Win32_Registry_Scanner_&_Mutator.md) (3 shared connections)
-- [action_button_guarded](action_button_guarded.md) (2 shared connections)
+- [deserialize](deserialize.md) (3 shared connections)
+- [WinBlast Optimizer](WinBlast_Optimizer.md) (3 shared connections)
+- [SlowScanBackend](SlowScanBackend.md) (2 shared connections)
+- [backend.rs](backend.rs.md) (2 shared connections)
+- [super](super.md) (2 shared connections)
+- [updater.rs](updater.rs.md) (1 shared connections)
+- [task_scanner.rs](task_scanner.rs.md) (1 shared connections)
+- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (1 shared connections)
+- [elevation.rs](elevation.rs.md) (1 shared connections)
+- [Scandetailkind Appxinstalled Appxinstalledps](Scandetailkind_Appxinstalled_Appxinstalledps.md) (1 shared connections)
+- [WorkerEvent](WorkerEvent.md) (1 shared connections)
+- [AppxCache](AppxCache.md) (1 shared connections)
 
 ## Source Files
 
-- `src/app.rs`
-- `src/core/risk.rs`
-- `src/scanner/mod.rs`
-- `src/ui/views/privacy_shield.rs`
-- `src/ui/widgets/button.rs`
-- `src/ui/widgets/risk_badge.rs`
+- `src/core/backend.rs`
+- `src/core/os_detect.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 107 (93%)
-- INFERRED: 8 (7%)
+- EXTRACTED: 42 (100%)
+- INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 
 ---

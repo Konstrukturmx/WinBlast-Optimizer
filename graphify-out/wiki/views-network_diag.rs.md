@@ -12,12 +12,12 @@
 
 ## Relationships
 
-- [.Toggle .Set .Apply](Toggle_.Set_.Apply.md) (7 shared connections)
+- [Disk Cleaning & Temporary File Purger](Disk_Cleaning_&_Temporary_File_Purger.md) (7 shared connections)
 - [AppState](AppState.md) (4 shared connections)
-- [action_button](action_button.md) (2 shared connections)
+- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (2 shared connections)
 - [WinBlastScrollable](WinBlastScrollable.md) (1 shared connections)
 - [action_button_guarded](action_button_guarded.md) (1 shared connections)
-- [ui/mod.rs](ui-mod.rs.md) (1 shared connections)
+- [Runtime](Runtime.md) (1 shared connections)
 
 ## Source Files
 

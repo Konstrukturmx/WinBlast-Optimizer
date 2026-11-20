@@ -1,38 +1,51 @@
 # DriverUpdateItem
 
-> 9 nodes · cohesion 0.31
+> 15 nodes · cohesion 0.18
 
 ## Key Concepts
 
-- **DriverUpdateItem** (16 connections) — `src/hardware/driver_update.rs`
-- **scan_online_drivers_with_progress()** (7 connections) — `src/hardware/driver_update.rs`
-- **create_sandbox_test_item()** (5 connections) — `src/hardware/driver_update.rs`
-- **download_and_install_driver()** (5 connections) — `src/hardware/driver_update.rs`
-- **scan_online_drivers()** (4 connections) — `src/hardware/driver_update.rs`
-- **test_driver_sandbox_lifecycle()** (4 connections) — `src/hardware/driver_update.rs`
-- **test_create_sandbox_item_metadata()** (2 connections) — `src/hardware/driver_update.rs`
-- **test_driver_sandbox_lifecycle_execution()** (2 connections) — `src/hardware/driver_update.rs`
-- **.is_update_available()** (1 connections) — `src/hardware/driver_update.rs`
+- **CoreParkingState** (21 connections) — `src/hardware/parking.rs`
+- **.detect_internal()** (7 connections) — `src/hardware/parking.rs`
+- **.detect_core_parking()** (5 connections) — `src/core/backend.rs`
+- **.detect_core_parking()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.detect_core_parking_sampled()** (3 connections) — `src/core/backend.rs`
+- **.detect()** (3 connections) — `src/hardware/parking.rs`
+- **CoreStatus** (3 connections) — `src/hardware/parking.rs`
+- **is_on_ac_power()** (3 connections) — `src/hardware/power.rs`
+- **.detect_core_parking()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.detect_core_parking()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.detect_core_parking()** (2 connections) — `src/core/backend.rs`
+- **.detect_core_parking_sampled()** (2 connections) — `src/core/backend.rs`
+- **.detect_core_parking()** (2 connections) — `src/core/backend.rs`
+- **.detect_sampled()** (2 connections) — `src/hardware/parking.rs`
+- **test_core_parking_detect()** (2 connections) — `src/hardware/parking.rs`
 
 ## Relationships
 
-- [driver_update.rs](driver_update.rs.md) (8 shared connections)
-- [DriverError](DriverError.md) (6 shared connections)
-- [DriverCategory](DriverCategory.md) (3 shared connections)
-- [LazyLoader](LazyLoader.md) (3 shared connections)
-- [DriverUpdateState](DriverUpdateState.md) (1 shared connections)
-- [AppState](AppState.md) (1 shared connections)
+- [task_scanner.rs](task_scanner.rs.md) (4 shared connections)
+- [State Ledger & Restore Point Engine](State_Ledger_&_Restore_Point_Engine.md) (3 shared connections)
+- [in_progress_hud.rs](in_progress_hud.rs.md) (2 shared connections)
+- [GPU Silicon & Hardware Tuning Policies](GPU_Silicon_&_Hardware_Tuning_Policies.md) (2 shared connections)
+- [full_telemetry_audit_with](full_telemetry_audit_with.md) (2 shared connections)
+- [SlowScanBackend](SlowScanBackend.md) (2 shared connections)
+- [Any](Any.md) (2 shared connections)
 - [WorkerEvent](WorkerEvent.md) (1 shared connections)
-- [.all_physical](all_physical.md) (1 shared connections)
+- [AppState](AppState.md) (1 shared connections)
+- [PowerSchemeInfo](PowerSchemeInfo.md) (1 shared connections)
+- [RegRawSnapshot](RegRawSnapshot.md) (1 shared connections)
+- [backend.rs](backend.rs.md) (1 shared connections)
 
 ## Source Files
 
-- `src/hardware/driver_update.rs`
+- `src/core/backend.rs`
+- `src/hardware/parking.rs`
+- `src/hardware/power.rs`
+- `tests/tweak_sandbox_e2e.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 33 (94%)
-- INFERRED: 2 (6%)
+- EXTRACTED: 46 (100%)
+- INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 
 ---

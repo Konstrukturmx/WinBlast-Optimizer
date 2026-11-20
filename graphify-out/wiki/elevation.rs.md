@@ -1,40 +1,59 @@
 # elevation.rs
 
-> 10 nodes · cohesion 0.22
+> 29 nodes · cohesion 0.08
 
 ## Key Concepts
 
-- **elevation.rs** (13 connections) — `src/core/elevation.rs`
-- **apply_and_restart()** (5 connections) — `src/core/updater.rs`
-- **is_elevated()** (4 connections) — `src/core/elevation.rs`
-- **openprocesstoken** (2 connections)
-- **check_elevation()** (2 connections) — `src/core/elevation.rs`
-- **token_query** (2 connections)
-- **getcurrentprocess** (1 connections)
-- **gettokeninformation** (1 connections)
-- **token_elevation** (1 connections)
-- **tokenelevation** (1 connections)
+- **power.rs** (60 connections) — `src/hardware/power.rs`
+- **fallback_scheme_name()** (6 connections) — `src/hardware/power.rs`
+- **set_usb_root_hub_power_saving()** (3 connections) — `src/hardware/power.rs`
+- **resolve_indirect_string()** (2 connections) — `src/hardware/power.rs`
+- **strip_indirect_prefix()** (2 connections) — `src/hardware/power.rs`
+- **test_fallback_scheme_name_indirect_stripping()** (2 connections) — `src/hardware/power.rs`
+- **callntpowerinformation** (1 connections)
+- **getsystempowerstatus** (1 connections)
+- **hlocal** (1 connections)
+- **localfree** (1 connections)
+- **ntstatus** (1 connections)
+- **powerduplicatescheme** (1 connections)
+- **powergetactivescheme** (1 connections)
+- **powerreadacdefaultindex** (1 connections)
+- **powerreadacvalueindex** (1 connections)
+- **powerreaddcdefaultindex** (1 connections)
+- **powerreaddcvalueindex** (1 connections)
+- **powerreadvaluemax** (1 connections)
+- **powerreadvaluemin** (1 connections)
+- **powersetactivescheme** (1 connections)
+- **powerwriteacvalueindex** (1 connections)
+- **powerwritedcvalueindex** (1 connections)
+- **powerwritefriendlyname** (1 connections)
+- **powerwritevaluemax** (1 connections)
+- **powerwritevaluemin** (1 connections)
+- *... and 4 more nodes in this community*
 
 ## Relationships
 
-- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (3 shared connections)
-- [sys_inventory.rs](sys_inventory.rs.md) (2 shared connections)
-- [updater.rs](updater.rs.md) (2 shared connections)
-- [backend.rs](backend.rs.md) (1 shared connections)
-- [.set_status_spec](set_status_spec.md) (1 shared connections)
-- [restart_explorer_safely](restart_explorer_safely.md) (1 shared connections)
-- [UpdateStatus](UpdateStatus.md) (1 shared connections)
-- [WorkerEvent](WorkerEvent.md) (1 shared connections)
+- [Any](Any.md) (21 shared connections)
+- [normalize_guid_str](normalize_guid_str.md) (3 shared connections)
+- [FailAtMutationBackend](FailAtMutationBackend.md) (2 shared connections)
+- [deserialize](deserialize.md) (2 shared connections)
+- [State Ledger & Restore Point Engine](State_Ledger_&_Restore_Point_Engine.md) (1 shared connections)
+- [task_scanner.rs](task_scanner.rs.md) (1 shared connections)
+- [InstalledAppxPackage](InstalledAppxPackage.md) (1 shared connections)
+- [reg_helpers.rs](reg_helpers.rs.md) (1 shared connections)
+- [privacy_shield.rs](privacy_shield.rs.md) (1 shared connections)
+- [DriverUpdateItem](DriverUpdateItem.md) (1 shared connections)
+- [PowerSchemeInfo](PowerSchemeInfo.md) (1 shared connections)
+- [RealBackend](RealBackend.md) (1 shared connections)
 
 ## Source Files
 
-- `src/core/elevation.rs`
-- `src/core/updater.rs`
+- `src/hardware/power.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 22 (100%)
-- INFERRED: 0 (0%)
+- EXTRACTED: 66 (99%)
+- INFERRED: 1 (1%)
 - AMBIGUOUS: 0 (0%)
 
 ---

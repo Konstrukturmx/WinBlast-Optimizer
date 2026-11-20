@@ -1,43 +1,38 @@
 # PowerSchemeInfo
 
-> 8 nodes · cohesion 0.32
+> 7 nodes · cohesion 0.43
 
 ## Key Concepts
 
-- **PowerSchemeInfo** (15 connections) — `src/hardware/power.rs`
-- **RollbackRefreshData** (6 connections) — `src/app.rs`
-- **.list_power_schemes()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.list_power_schemes()** (3 connections) — `src/core/backend.rs`
-- **.list_power_schemes()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.list_power_schemes()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.list_power_schemes()** (2 connections) — `src/core/backend.rs`
-- **.list_power_schemes()** (2 connections) — `src/core/backend.rs`
+- **path** (12 connections)
+- **profile_io.rs** (8 connections) — `src/backup/profile_io.rs`
+- **export_profile()** (4 connections) — `src/backup/profile_io.rs`
+- **import_profile()** (3 connections) — `src/backup/profile_io.rs`
+- **test_profile_export_import()** (3 connections) — `src/backup/profile_io.rs`
+- **TweakProfile** (2 connections) — `src/backup/profile_io.rs`
+- **.new()** (2 connections) — `src/backup/profile_io.rs`
 
 ## Relationships
 
-- [WorkerEvent](WorkerEvent.md) (2 shared connections)
-- [app.rs](app.rs.md) (2 shared connections)
-- [SandboxEnv](SandboxEnv.md) (2 shared connections)
-- [SlowScanBackend](SlowScanBackend.md) (2 shared connections)
-- [CoreParkingState](CoreParkingState.md) (1 shared connections)
-- [HibernationStatus](HibernationStatus.md) (1 shared connections)
-- [Multi-Language Tweak Localization Tables](Multi-Language_Tweak_Localization_Tables.md) (1 shared connections)
-- [.Reg State() Vendor()](Reg_State_Vendor.md) (1 shared connections)
-- [Integration Suite: Tweak Sandbox E2E](Integration_Suite-_Tweak_Sandbox_E2E.md) (1 shared connections)
-- [AppState](AppState.md) (1 shared connections)
+- [SlowScanBackend](SlowScanBackend.md) (3 shared connections)
+- [FailAtMutationBackend](FailAtMutationBackend.md) (2 shared connections)
+- [startup.rs](startup.rs.md) (2 shared connections)
+- [deserialize](deserialize.md) (2 shared connections)
+- [app.rs](app.rs.md) (1 shared connections)
 - [task_scanner.rs](task_scanner.rs.md) (1 shared connections)
-- [parse_guid](parse_guid.md) (1 shared connections)
+- [power.rs](power.rs.md) (1 shared connections)
+- [.setup](setup.md) (1 shared connections)
+- [.Reg .Set Power](Reg_.Set_Power.md) (1 shared connections)
+- [backend.rs](backend.rs.md) (1 shared connections)
+- [super](super.md) (1 shared connections)
 
 ## Source Files
 
-- `src/app.rs`
-- `src/core/backend.rs`
-- `src/hardware/power.rs`
-- `tests/tweak_sandbox_e2e.rs`
+- `src/backup/profile_io.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 29 (100%)
+- EXTRACTED: 25 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

@@ -4,7 +4,7 @@
 
 ## Key Concepts
 
-- **core/mod.rs** (0 connections) — `src/core/mod.rs`
+- **test_disks.ps1** (0 connections) — `scripts/test_disks.ps1`
 
 ## Relationships
 
@@ -12,7 +12,7 @@
 
 ## Source Files
 
-- `src/core/mod.rs`
+- `scripts/test_disks.ps1`
 
 ## Audit Trail
 

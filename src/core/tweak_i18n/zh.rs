@@ -1299,6 +1299,56 @@ pub fn lookup(id: &str) -> Option<LocalizedTweakText> {
             description: "在根驱动层彻底禁用 USB 选择性暂停 (DisableSelectiveSuspend=1)。防止主板控制器休眠空闲的电竞鼠标、键盘与专业 USB DAC 声卡，实现零唤醒输入延迟。",
             broken_features: &["USB 总线在空闲待机时的功耗会有微小增加", "笔记本电脑的电池续航时间将有所减少"],
         }),
+        "remove_webexperience_package" => Some(LocalizedTweakText {
+            title: "删除 Windows WebExperienceHost 程序包（小组件宿主）",
+            description: "卸载 MicrosoftWindows.Client.WebExperience 程序包，防止任务栏小组件在后台占用 Edge WebView2 内存。",
+            broken_features: &["任务栏小组件和新闻资讯流将被永久移除。"],
+        }),
+        "disable_wpbt_execution" => Some(LocalizedTweakText {
+            title: "禁用 WPBT 固件二进制文件执行",
+            description: "阻止 Windows 内核执行主板 UEFI Windows 平台二进制表 (WPBT) 中嵌入的捆绑程序。",
+            broken_features: &[],
+        }),
+        "service_shutdown_timeout_15s" => Some(LocalizedTweakText {
+            title: "将服务关机超时缩减至 15 秒",
+            description: "将关机期间的服务终止等待超时从默认的 20 秒减少到 15 秒，防止关机卡死。",
+            broken_features: &[],
+        }),
+        "start_menu_show_more_pins" => Some(LocalizedTweakText {
+            title: "开始菜单：显示更多固定项布局",
+            description: "配置 Windows 11 开始菜单布局，优先显示固定应用程序而非推荐源建议。",
+            broken_features: &[],
+        }),
+        "disable_taskbar_people_button" => Some(LocalizedTweakText {
+            title: "禁用任务栏“人脉”按钮",
+            description: "隐藏并禁用 Windows 任务栏上的旧版“人脉”图标。",
+            broken_features: &[],
+        }),
+        "repair_ndu_graph" => Some(LocalizedTweakText {
+            title: "修复任务管理器网络数据使用量 (NDU) 图表",
+            description: "确保网络诊断使用量 (NDU) 内核驱动程序设置为 Start=2（自动），以便任务管理器网络图表正常工作。",
+            broken_features: &[],
+        }),
+        "disable_settings_ads" => Some(LocalizedTweakText {
+            title: "禁用“设置”中的推荐内容与广告",
+            description: "阻止 Microsoft 在 Windows“设置”中显示推荐应用程序、合作伙伴促销和提示。",
+            broken_features: &["“设置”应用中的推广卡片和提示将被抑制。"],
+        }),
+        "disable_start_menu_suggested_apps" => Some(LocalizedTweakText {
+            title: "禁用推荐应用商店应用的自动安装",
+            description: "阻止 Windows Content Delivery Manager 静默下载并固定推荐的消费类应用和赞助游戏。",
+            broken_features: &["赞助商游戏将不会自动安装到开始菜单中。"],
+        }),
+        "disable_hardware_companion_software" => Some(LocalizedTweakText {
+            title: "禁用硬件配套软件推荐",
+            description: "阻止 Windows 在插入外设时自动推荐并通知安装第三方 OEM 硬件配套软件。",
+            broken_features: &[],
+        }),
+        "disable_ms_office_telemetry" => Some(LocalizedTweakText {
+            title: "禁用 Microsoft Office 遥测与客户体验日志记录",
+            description: "禁用 Microsoft Office 诊断数据收集、反馈提示和客户体验改善计划 (CEIP) 遥测。",
+            broken_features: &[],
+        }),
         _ => None,
     }
 }

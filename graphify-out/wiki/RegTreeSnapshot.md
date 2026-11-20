@@ -1,46 +1,32 @@
 # RegTreeSnapshot
 
-> 11 nodes · cohesion 0.25
+> 8 nodes · cohesion 0.29
 
 ## Key Concepts
 
-- **RegTreeSnapshot** (23 connections) — `src/core/reg_helpers.rs`
-- **.reg_restore_tree()** (5 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.reg_snapshot_tree()** (5 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.reg_restore_tree()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.reg_snapshot_tree()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.reg_restore_tree()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.reg_snapshot_tree()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.reg_restore_tree()** (2 connections) — `src/core/backend.rs`
-- **.reg_snapshot_tree()** (2 connections) — `src/core/backend.rs`
-- **.reg_restore_tree()** (2 connections) — `src/core/backend.rs`
-- **.reg_snapshot_tree()** (2 connections) — `src/core/backend.rs`
+- **Spring** (8 connections)
+- **.motion()** (5 connections) — `src/ui/theme.rs`
+- **.easing_spring()** (3 connections) — `src/ui/theme.rs`
+- **EASING_CLASSIC** (2 connections) — `src/ui/theme.rs`
+- **EASING_COMPACT** (2 connections) — `src/ui/theme.rs`
+- **EASING_GLASSY** (2 connections) — `src/ui/theme.rs`
+- **EASING_MATERIALISTIC** (2 connections) — `src/ui/theme.rs`
+- **EASING_MINIMALISTIC** (2 connections) — `src/ui/theme.rs`
 
 ## Relationships
 
-- [BlastResult](BlastResult.md) (6 shared connections)
-- [SlowScanBackend](SlowScanBackend.md) (4 shared connections)
-- [task_scanner.rs](task_scanner.rs.md) (3 shared connections)
-- [.Reg State() Vendor()](Reg_State_Vendor.md) (2 shared connections)
-- [Integration Suite: Tweak Sandbox E2E](Integration_Suite-_Tweak_Sandbox_E2E.md) (2 shared connections)
-- [full_telemetry_audit_with](full_telemetry_audit_with.md) (2 shared connections)
-- [registry_scanner.rs](registry_scanner.rs.md) (2 shared connections)
-- [reg_mutator.rs](reg_mutator.rs.md) (2 shared connections)
-- [FailAtMutationBackend](FailAtMutationBackend.md) (2 shared connections)
-- [latency_bench.rs](latency_bench.rs.md) (1 shared connections)
-- [backend.rs](backend.rs.md) (1 shared connections)
-- [theme.rs](theme.rs.md) (1 shared connections)
+- [svc_mutator.rs](svc_mutator.rs.md) (5 shared connections)
+- [Project History & Release Version Ledger](Project_History_&_Release_Version_Ledger.md) (4 shared connections)
+- [.Reg State() Vendor()](Reg_State_Vendor.md) (1 shared connections)
 
 ## Source Files
 
-- `src/core/backend.rs`
-- `src/core/reg_helpers.rs`
-- `tests/tweak_sandbox_e2e.rs`
+- `src/ui/theme.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 39 (91%)
-- INFERRED: 4 (9%)
+- EXTRACTED: 18 (100%)
+- INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 
 ---

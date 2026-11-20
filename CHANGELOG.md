@@ -5,6 +5,58 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ---
 
+## [v1.5.0] - 2026-11-20
+
+### 🚀 Milestone 4 Architecture & Feature Implementations
+- **Enterprise Sysprep & Multi-User Profile Propagation Engine (`src/executor/sysprep_engine.rs`)**:
+  - Direct Win32 `RegLoadKeyW` / `RegUnLoadKeyW` integration for mounting offline `C:\Users\Default\NTUSER.DAT` under `HKEY_USERS\WinBlast_DefaultProfile` with `SE_RESTORE_NAME` and `SE_BACKUP_NAME` security token privilege acquisition.
+  - Propagates user-level debloat and privacy rules to current user (`HKCU`), future created profiles (`NTUSER.DAT`), and system accounts (`HKU\.DEFAULT`).
+  - Safe RAII guard ensures loaded hives are reliably unloaded during application lifecycle or in panic conditions.
+- **Hardware-Adaptive Storage & Memory Tuning (`src/hardware/storage.rs`, `src/executor/adaptive_tuning.rs`)**:
+  - Kernel seek-penalty detection via `IOCTL_STORAGE_QUERY_PROPERTY` (`StorageDeviceSeekPenaltyProperty`).
+  - Adaptive memory optimization: selectively gates SysMain and MMAgent memory compression based on installed RAM and SSD vs HDD presence.
+  - Automatically calculates and configures static anti-stutter pagefiles to eliminate dynamic Windows pagefile expansion latency.
+- **Cryptographic BitLocker-Guarded Legacy F8 Boot Policy (`src/tools/boot_config.rs`)**:
+  - Preflight cryptographic verification via `Win32_EncryptableVolume` and `Get-BitLockerVolume`.
+  - Automatically suppresses legacy F8 boot menu alterations if BitLocker encryption is active or protection status is indeterminate, preventing TPM PCR 7/11 integrity violations and BitLocker recovery key lockout prompts.
+- **Chassis-Aware Power & Thermal Governor (`src/hardware/power_governor.rs`)**:
+  - Real-time battery status (`GetSystemPowerStatus`) and WMI chassis type probing to differentiate desktop AC workstations from laptop mobile profiles.
+  - Unhides and tunes hidden processor boost aggressiveness (`PERFBOOSTMODE` 4 vs 5) with aggressive guaranteed ramp-up for desktop gaming and efficient race-to-idle for laptops.
+- **10 New Declarative Optimization & Bloatware Rules (`assets/rules/`)**:
+  - `disable_wpbt_execution`: Disables Windows Platform Binary Table UEFI execution without modifying firmware.
+  - `service_shutdown_timeout_15s`: Enforces 15-second service shutdown wait for faster power cycles.
+  - `remove_webexperience_package`: Deprovisions background WebExperienceHost widget engine.
+  - `start_menu_show_more_pins`: Expands Start Menu layout capacity for pinned apps.
+  - `disable_settings_ads`: Suppresses promotional content and suggested settings across the Windows Settings app.
+  - `disable_start_menu_suggested_apps`: Blocks automatic background installation of suggested store apps.
+  - `disable_hardware_companion_software`: Prevents unwanted OEM companion software prompts.
+  - `disable_taskbar_people_button`: Hides unused Taskbar People / Meet Now clutter.
+  - `repair_ndu_graph`: Resolves Network Data Usage (NDU) graph recording stalls.
+  - `disable_ms_office_telemetry`: Turns off Microsoft Office CEIP telemetry, diagnostic feedback, and logging.
+  - Catalog expanded to **218 total audited system tweaks** (32 deep optimizations).
+  - Complete 8-language localization reconciled across English, Turkish, German, French, Spanish, Russian, Chinese, and Japanese.
+
+### 🐛 Auto-Updater Verbatim Path Fix & Native Win32 Execution
+- **Native Win32 ShellExecute Execution (`src/core/updater.rs`)**:
+  - Replaced fragile shell command invocation (`cmd.exe /c start ""`) with direct Win32 `ShellExecuteExW` API execution with `SW_SHOWNORMAL` and `"runas"` / `"open"` verb handling.
+  - Normalized verbatim device paths via `clean_exe_path()`, stripping `\\?\` and `\\?\UNC\` prefixes and trimming enclosing quotes/whitespace.
+  - Completely eliminates the modal error dialog: *"Windows cannot find '\\'. Check the spelling and try again..."*.
+
+### 📊 Accurate Dual SMART & NT Kernel Disk Telemetry Engine
+- **Authentic Physical SSD Wear, Health & TBW Sensing (`src/hardware/disks.rs`)**:
+  - Implemented dual-protocol SMART engine querying NVMe SMART Log Page `0x02` (dynamic `ProtocolDataOffset` parser for Data Units Written and available spare) and ATA miniport pass-through (`SMART_RCV_DRIVE_DATA` attributes 0xE7, 0xA9, 0xCA, 0xF1, 0xF6).
+  - Integrated NT kernel `IOCTL_DISK_GET_PERFORMANCE` (`0x00070020`) querying direct disk driver cumulative read/written bytes across all privilege tiers without permission denied errors.
+  - Cascading handle acquisition (`0xC0000000` $\to$ `0x80000000` $\to$ `FILE_READ_ATTRIBUTES`) ensures non-admin users receive real hardware metrics.
+  - Meets strict **Zero Fabricated Hardware Telemetry** standards (verified live on host: CX400 SATA SSD 99% health / 0.04 TBW, SNV3S500G NVMe SSD 99% health / 0.10 TBW).
+
+### 🧪 Quality Assurance & Compiler Standards
+- **218 / 218 Tests Passing (100% Pass Rate)** across 7 suites including new `dual_engine_validation_test`.
+- **Zero Clippy Warnings (`cargo clippy --all-targets -- -D warnings`)**.
+- **Static Heuristic Scanner Clean**: 117 source files, 69,474 lines audited — zero runtime hazards or unbounded loops.
+- **Graphify Knowledge Graph Synchronized**: 3,857 nodes, 8,006 edges, 171 communities, 181 wiki articles.
+
+---
+
 ## [v1.4.1] - 2026-11-20
 
 ### 🐛 Auto-Updater Launch Fix & Path Normalization

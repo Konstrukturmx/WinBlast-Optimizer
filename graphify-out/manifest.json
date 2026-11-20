@@ -1,21 +1,21 @@
 {
   "Cargo.toml": {
-    "mtime": 1795165325.0607185,
-    "seen": 1795165597.3467882,
-    "ast_hash": "17d85f780bfb3fc263b475c2b40b44c3",
+    "mtime": 1795197659.3872411,
+    "seen": 1795197862.2533627,
+    "ast_hash": "8335b349aa86a610859cdc9852726e00",
     "semantic_hash": ""
   },
   "build.rs": {
     "mtime": 1795165334.0716588,
-    "seen": 1795165597.3467917,
+    "seen": 1795173143.9268653,
     "ast_hash": "5fac70216b1c1246fbc8dd47e6e1c389",
-    "semantic_hash": ""
+    "semantic_hash": "5fac70216b1c1246fbc8dd47e6e1c389"
   },
   "src/app.rs": {
     "mtime": 1795165073.6412094,
-    "seen": 1795165597.346802,
+    "seen": 1795173143.9272087,
     "ast_hash": "899575460362b38bc46222b6651a7916",
-    "semantic_hash": ""
+    "semantic_hash": "899575460362b38bc46222b6651a7916"
   },
   "src/backup/mod.rs": {
     "mtime": 1794128690.122692,
@@ -43,15 +43,15 @@
   },
   "src/core/backend.rs": {
     "mtime": 1795099910.9719021,
-    "seen": 1795100442.857179,
+    "seen": 1795173143.927723,
     "ast_hash": "a456470e43ef19c190a49adc9c572d9f",
-    "semantic_hash": ""
+    "semantic_hash": "a456470e43ef19c190a49adc9c572d9f"
   },
   "src/core/elevation.rs": {
     "mtime": 1795165061.1558154,
-    "seen": 1795165597.3468125,
+    "seen": 1795173143.9277258,
     "ast_hash": "67cde828d30faa192f24e22f38709a46",
-    "semantic_hash": ""
+    "semantic_hash": "67cde828d30faa192f24e22f38709a46"
   },
   "src/core/error.rs": {
     "mtime": 1794924315.0660121,
@@ -61,15 +61,15 @@
   },
   "src/core/i18n.rs": {
     "mtime": 1795099910.9734018,
-    "seen": 1795100442.8571842,
+    "seen": 1795173143.9278352,
     "ast_hash": "3c22d75adbc299e8dc2b9dc8e75d377f",
-    "semantic_hash": ""
+    "semantic_hash": "3c22d75adbc299e8dc2b9dc8e75d377f"
   },
   "src/core/mod.rs": {
     "mtime": 1795099910.9739015,
-    "seen": 1795100442.8571856,
+    "seen": 1795173143.927837,
     "ast_hash": "2a138e4a7fc0912946570ec52c75c910",
-    "semantic_hash": ""
+    "semantic_hash": "2a138e4a7fc0912946570ec52c75c910"
   },
   "src/core/os_detect.rs": {
     "mtime": 1794924342.130461,
@@ -91,9 +91,9 @@
   },
   "src/core/risk.rs": {
     "mtime": 1795099910.9749024,
-    "seen": 1795100442.8571908,
+    "seen": 1795173143.928208,
     "ast_hash": "9347b894fced84b9332debc3fef142c6",
-    "semantic_hash": ""
+    "semantic_hash": "9347b894fced84b9332debc3fef142c6"
   },
   "src/core/status_i18n.rs": {
     "mtime": 1794719498.165331,
@@ -102,52 +102,52 @@
     "semantic_hash": "9b98f41468d3fba3b9fc41b68dab5ff1"
   },
   "src/core/tweak_i18n/de.rs": {
-    "mtime": 1794771694.2520034,
-    "seen": 1794927918.8831887,
-    "ast_hash": "a009abd5e7bb40554b38971ceb69cea9",
-    "semantic_hash": "a009abd5e7bb40554b38971ceb69cea9"
+    "mtime": 1795197280.2093184,
+    "seen": 1795197862.2534,
+    "ast_hash": "131f682cced2e3096805143d7318347b",
+    "semantic_hash": ""
   },
   "src/core/tweak_i18n/es.rs": {
-    "mtime": 1794771694.2530086,
-    "seen": 1794927918.8831906,
-    "ast_hash": "289ee03bc828ce8ee44d667b4943db44",
-    "semantic_hash": "289ee03bc828ce8ee44d667b4943db44"
+    "mtime": 1795197280.219327,
+    "seen": 1795197862.2534015,
+    "ast_hash": "4c2d701ba991c24174affb13e2901ca0",
+    "semantic_hash": ""
   },
   "src/core/tweak_i18n/fr.rs": {
-    "mtime": 1794771694.255033,
-    "seen": 1794927918.8831918,
-    "ast_hash": "b78f1a051e67f278b2b1b4643ee7e271",
-    "semantic_hash": "b78f1a051e67f278b2b1b4643ee7e271"
+    "mtime": 1795197280.2143247,
+    "seen": 1795197862.253403,
+    "ast_hash": "ff28b2cac557d9d036f5f3bac97bbec6",
+    "semantic_hash": ""
   },
   "src/core/tweak_i18n/ja.rs": {
-    "mtime": 1794771694.2555356,
-    "seen": 1794927918.8831933,
-    "ast_hash": "4a4a573c597c7fa0fab02c29990c51b8",
-    "semantic_hash": "4a4a573c597c7fa0fab02c29990c51b8"
+    "mtime": 1795197280.2328355,
+    "seen": 1795197862.253404,
+    "ast_hash": "6d8c40d24b7b19c762089234692afe28",
+    "semantic_hash": ""
   },
   "src/core/tweak_i18n/mod.rs": {
-    "mtime": 1795099910.9754016,
-    "seen": 1795100442.8571985,
-    "ast_hash": "00f7cfefa56ad5eb6dd5f97599712eda",
+    "mtime": 1795197221.9391108,
+    "seen": 1795197862.253405,
+    "ast_hash": "7dabee1579d200aa2604a1b72d72dd8a",
     "semantic_hash": ""
   },
   "src/core/tweak_i18n/ru.rs": {
-    "mtime": 1794771694.2575412,
-    "seen": 1794927918.883196,
-    "ast_hash": "82c247f5757f058e5a9b432716f62d32",
-    "semantic_hash": "82c247f5757f058e5a9b432716f62d32"
+    "mtime": 1795197280.224333,
+    "seen": 1795197862.2534063,
+    "ast_hash": "1f7ac6c5e26b71ca42946da31e2c2c7e",
+    "semantic_hash": ""
   },
   "src/core/tweak_i18n/tr.rs": {
-    "mtime": 1794771694.2585483,
-    "seen": 1794927918.8831975,
-    "ast_hash": "9d289e6a14bf7715e6d0022371f2d3ee",
-    "semantic_hash": "9d289e6a14bf7715e6d0022371f2d3ee"
+    "mtime": 1795197280.2018187,
+    "seen": 1795197862.2534075,
+    "ast_hash": "9826683074e44f0d98d366090dd6666f",
+    "semantic_hash": ""
   },
   "src/core/tweak_i18n/zh.rs": {
-    "mtime": 1794771694.2595482,
-    "seen": 1794927918.8831992,
-    "ast_hash": "a367ff0e2cb1577c488ec6b3f7109a7a",
-    "semantic_hash": "a367ff0e2cb1577c488ec6b3f7109a7a"
+    "mtime": 1795197280.2288356,
+    "seen": 1795197862.2534084,
+    "ast_hash": "6d8348faabdd03e0c5652b1f5bbaba1a",
+    "semantic_hash": ""
   },
   "src/executor/engine.rs": {
     "mtime": 1794924652.5920448,
@@ -156,10 +156,10 @@
     "semantic_hash": "4b22604b322edd50e8faff22da246ed1"
   },
   "src/executor/mod.rs": {
-    "mtime": 1794128690.1965575,
-    "seen": 1794717863.8929503,
-    "ast_hash": "e2f918d332aec19e885ad73e28e54358",
-    "semantic_hash": "e2f918d332aec19e885ad73e28e54358"
+    "mtime": 1795196365.263566,
+    "seen": 1795197862.2534156,
+    "ast_hash": "d2cf96ccdd1001378bc8f1583ea328d1",
+    "semantic_hash": ""
   },
   "src/executor/ps_runner.rs": {
     "mtime": 1794924379.6705692,
@@ -198,16 +198,16 @@
     "semantic_hash": "511e4b533893a9e99ddabc65f8bd2cb1"
   },
   "src/hardware/mod.rs": {
-    "mtime": 1795099910.9804058,
-    "seen": 1795100442.8572268,
-    "ast_hash": "d95384aa3485f5403aa8c7e713d5009f",
+    "mtime": 1795196313.7132251,
+    "seen": 1795197862.2534397,
+    "ast_hash": "0d5feb022dfb90dcfb194685d4ae0c85",
     "semantic_hash": ""
   },
   "src/hardware/monitor.rs": {
     "mtime": 1795099910.9804058,
-    "seen": 1795100442.857228,
+    "seen": 1795173143.9298818,
     "ast_hash": "1c2d9a3de80efb6effd61f5fd7520f8d",
-    "semantic_hash": ""
+    "semantic_hash": "1c2d9a3de80efb6effd61f5fd7520f8d"
   },
   "src/hardware/net_latency.rs": {
     "mtime": 1794741745.9256904,
@@ -241,9 +241,9 @@
   },
   "src/main.rs": {
     "mtime": 1795099910.9819152,
-    "seen": 1795100442.857237,
+    "seen": 1795173143.9304059,
     "ast_hash": "125e4573ff6aeaf34b5cfef1f8c8350f",
-    "semantic_hash": ""
+    "semantic_hash": "125e4573ff6aeaf34b5cfef1f8c8350f"
   },
   "src/scanner/appx_scanner.rs": {
     "mtime": 1794336032.0200186,
@@ -289,9 +289,9 @@
   },
   "src/tools/cleaner.rs": {
     "mtime": 1795099910.9824133,
-    "seen": 1795100442.857249,
+    "seen": 1795173143.9314845,
     "ast_hash": "6cf064d50eca3730029c3b07371671fd",
-    "semantic_hash": ""
+    "semantic_hash": "6cf064d50eca3730029c3b07371671fd"
   },
   "src/tools/explorer_ctrl.rs": {
     "mtime": 1794329689.3983047,
@@ -306,9 +306,9 @@
     "semantic_hash": "49696f81c07c45e78e9edaee478599b7"
   },
   "src/tools/mod.rs": {
-    "mtime": 1795099910.983913,
-    "seen": 1795100442.8572602,
-    "ast_hash": "78e46c931e442fd77e3b9ec23e8479c0",
+    "mtime": 1795196273.1085572,
+    "seen": 1795197862.253479,
+    "ast_hash": "459380aa0e12482af47a81388d1b4738",
     "semantic_hash": ""
   },
   "src/tools/startup.rs": {
@@ -319,9 +319,9 @@
   },
   "src/ui/mod.rs": {
     "mtime": 1795099910.9849143,
-    "seen": 1795100442.857267,
+    "seen": 1795173143.9324534,
     "ast_hash": "7b5767f3228a5c12c533629a3a979b9b",
-    "semantic_hash": ""
+    "semantic_hash": "7b5767f3228a5c12c533629a3a979b9b"
   },
   "src/ui/theme.rs": {
     "mtime": 1794764990.5898283,
@@ -331,9 +331,9 @@
   },
   "src/ui/views/advanced_matrix.rs": {
     "mtime": 1795099910.6659718,
-    "seen": 1795100442.8572695,
+    "seen": 1795173143.9325492,
     "ast_hash": "10ffd5a23dd129cc167adbf4c06a4cd2",
-    "semantic_hash": ""
+    "semantic_hash": "10ffd5a23dd129cc167adbf4c06a4cd2"
   },
   "src/ui/views/backup_center.rs": {
     "mtime": 1794834858.284737,
@@ -355,9 +355,9 @@
   },
   "src/ui/views/easy_dashboard.rs": {
     "mtime": 1795099910.986413,
-    "seen": 1795100442.8572788,
+    "seen": 1795173143.9328847,
     "ast_hash": "e5d372327b98bc3bc636996b41e0555b",
-    "semantic_hash": ""
+    "semantic_hash": "e5d372327b98bc3bc636996b41e0555b"
   },
   "src/ui/views/gpu_tuning.rs": {
     "mtime": 1794834881.8688593,
@@ -367,9 +367,9 @@
   },
   "src/ui/views/hardware_view.rs": {
     "mtime": 1795099910.987413,
-    "seen": 1795100442.8572917,
+    "seen": 1795173143.9332683,
     "ast_hash": "ecff1a9136292e16ca712557787aec21",
-    "semantic_hash": ""
+    "semantic_hash": "ecff1a9136292e16ca712557787aec21"
   },
   "src/ui/views/latency_bench.rs": {
     "mtime": 1794834906.2753816,
@@ -397,9 +397,9 @@
   },
   "src/ui/widgets/button.rs": {
     "mtime": 1795099910.672984,
-    "seen": 1795100442.8573046,
+    "seen": 1795173143.933912,
     "ast_hash": "2bcd817497d7c8bfcb2a29ff5de070ef",
-    "semantic_hash": ""
+    "semantic_hash": "2bcd817497d7c8bfcb2a29ff5de070ef"
   },
   "src/ui/widgets/diff_modal.rs": {
     "mtime": 1794547570.4235551,
@@ -409,9 +409,9 @@
   },
   "src/ui/widgets/mod.rs": {
     "mtime": 1795099910.988413,
-    "seen": 1795100442.8573081,
+    "seen": 1795173143.9340162,
     "ast_hash": "850f55be789ca5967935a50774034c92",
-    "semantic_hash": ""
+    "semantic_hash": "850f55be789ca5967935a50774034c92"
   },
   "src/ui/widgets/risk_badge.rs": {
     "mtime": 1794765095.216743,
@@ -432,33 +432,33 @@
     "semantic_hash": "db864acdc9593f26387bbf3469c91de2"
   },
   "tests/real_windows_env.rs": {
-    "mtime": 1795099910.9904177,
-    "seen": 1795100442.857317,
-    "ast_hash": "a4a149d6506a2045e1d0049e601925ec",
+    "mtime": 1795196101.8594751,
+    "seen": 1795197862.2535405,
+    "ast_hash": "a0076ab531eea6585157fa73516b844a",
     "semantic_hash": ""
   },
   "tests/tweak_sandbox_e2e.rs": {
-    "mtime": 1794913825.002816,
-    "seen": 1794927918.885508,
-    "ast_hash": "631ffe29b944449528c9f3cada582ffc",
-    "semantic_hash": "631ffe29b944449528c9f3cada582ffc"
+    "mtime": 1795196079.197188,
+    "seen": 1795197862.253542,
+    "ast_hash": "ed447bf6e7000a3d812a8b93852247e0",
+    "semantic_hash": ""
   },
   "tests/ui_responsive_e2e.rs": {
     "mtime": 1795099910.9914193,
-    "seen": 1795100442.8573194,
+    "seen": 1795173143.9345224,
     "ast_hash": "c91fbcfacd93d53c9baba56c64de92f2",
-    "semantic_hash": ""
+    "semantic_hash": "c91fbcfacd93d53c9baba56c64de92f2"
   },
   "tests/ui_scrollbar_test.rs": {
     "mtime": 1795099910.991922,
-    "seen": 1795100442.8573208,
+    "seen": 1795173143.9345243,
     "ast_hash": "e410508012ee92c2777cfed00066a149",
-    "semantic_hash": ""
+    "semantic_hash": "e410508012ee92c2777cfed00066a149"
   },
   "CHANGELOG.md": {
-    "mtime": 1795099910.8481977,
-    "seen": 1795100442.8573256,
-    "ast_hash": "8286b530c4c9b4bd6ddccab2f848d1f5",
+    "mtime": 1795166852.700742,
+    "seen": 1795197862.2535503,
+    "ast_hash": "bbf9acb2def8346e7facac51a37a78e2",
     "semantic_hash": ""
   },
   "DEVELOPMENT.md": {
@@ -474,64 +474,64 @@
     "semantic_hash": "e3fa3528630a8cd577262679cf2230c7"
   },
   "README.md": {
-    "mtime": 1795099910.8502085,
-    "seen": 1795100442.8573296,
-    "ast_hash": "6c3959c7c9fa7cd31b55f723790c0f61",
+    "mtime": 1795166895.131052,
+    "seen": 1795197862.253554,
+    "ast_hash": "1ff1575a07d645b868301153d6fef7f3",
     "semantic_hash": ""
   },
   "assets/screenshots/advanced_matrix.png": {
-    "mtime": 1795165519.5650768,
-    "seen": 1795165597.3469973,
-    "ast_hash": "9ee8337160ae641042ac1bf32234d979",
+    "mtime": 1795197841.402521,
+    "seen": 1795197862.2535684,
+    "ast_hash": "e5e3b8876da9d97af04a1646913d0f61",
     "semantic_hash": ""
   },
   "assets/screenshots/cpu_parking.png": {
-    "mtime": 1795165517.2538693,
-    "seen": 1795165597.3469985,
-    "ast_hash": "5927eb46bd04c365bae283f255d75ebe",
+    "mtime": 1795197840.3233619,
+    "seen": 1795197862.2535696,
+    "ast_hash": "ce94f00277b2099cbf2acf6a581f7719",
     "semantic_hash": ""
   },
   "assets/screenshots/dashboard.png": {
-    "mtime": 1795165519.8511279,
-    "seen": 1795165597.3470001,
-    "ast_hash": "40ba4c0c97046f2bbdbef08e18d5fd90",
+    "mtime": 1795197841.2331932,
+    "seen": 1795197862.2535708,
+    "ast_hash": "dc5f9d0175261e89d5c133faa476068c",
     "semantic_hash": ""
   },
   "assets/screenshots/gpu_tuning.png": {
-    "mtime": 1795165517.7171457,
-    "seen": 1795165597.3470023,
-    "ast_hash": "7be7749ee65ee7cde805f4d8bcdfeaa7",
+    "mtime": 1795197840.9173355,
+    "seen": 1795197862.2535732,
+    "ast_hash": "26dbe73c2791ba5ca478c8c5ff43c616",
     "semantic_hash": ""
   },
   "src/graph/astar.rs": {
     "mtime": 1795099910.9774015,
-    "seen": 1795100442.8572133,
+    "seen": 1795173143.9295669,
     "ast_hash": "046ba531a70fde27d8aef31f795ff0a4",
-    "semantic_hash": ""
+    "semantic_hash": "046ba531a70fde27d8aef31f795ff0a4"
   },
   "src/graph/dijkstra.rs": {
     "mtime": 1795099910.9779017,
-    "seen": 1795100442.8572142,
+    "seen": 1795173143.929569,
     "ast_hash": "86ca0a60d4defedf2da3a430f115baad",
-    "semantic_hash": ""
+    "semantic_hash": "86ca0a60d4defedf2da3a430f115baad"
   },
   "src/graph/mod.rs": {
-    "mtime": 1794719305.2257562,
-    "seen": 1794720881.765568,
-    "ast_hash": "e22d50925fdf75dfc60b4bb2b9b826b9",
-    "semantic_hash": "e22d50925fdf75dfc60b4bb2b9b826b9"
+    "mtime": 1795172685.3776608,
+    "seen": 1795173143.929571,
+    "ast_hash": "cf5a0d2682baca6f42823383550ffa95",
+    "semantic_hash": "cf5a0d2682baca6f42823383550ffa95"
   },
   "src/graph/raven.rs": {
     "mtime": 1795099910.9784017,
-    "seen": 1795100442.8572168,
+    "seen": 1795173143.9295726,
     "ast_hash": "a7401d80c58d386d13c5085954a0a5fc",
-    "semantic_hash": ""
+    "semantic_hash": "a7401d80c58d386d13c5085954a0a5fc"
   },
   "src/ui/views/goal_planner.rs": {
     "mtime": 1795099910.6699762,
-    "seen": 1795100442.8572893,
+    "seen": 1795173143.9331543,
     "ast_hash": "cedc41648d7e137ac57b937eb14755aa",
-    "semantic_hash": ""
+    "semantic_hash": "cedc41648d7e137ac57b937eb14755aa"
   },
   "scripts/make_ico.ps1": {
     "mtime": 1794726610.6772304,
@@ -546,40 +546,40 @@
     "semantic_hash": "1a444e51bf606752411fc352c8024b9e"
   },
   "src/core/view_i18n.rs": {
-    "mtime": 1795165343.4457898,
-    "seen": 1795165597.3468406,
-    "ast_hash": "c2ac8ef272223a5a7190bc83f18cb488",
+    "mtime": 1795197670.3350203,
+    "seen": 1795197862.253411,
+    "ast_hash": "411e188edad21fbc85642ae5e3efcc08",
     "semantic_hash": ""
   },
   "src/hardware/bios.rs": {
     "mtime": 1795099910.5276246,
-    "seen": 1795100442.857218,
+    "seen": 1795173143.9295766,
     "ast_hash": "3650e179e0e6a574b1da0c59e9678eb9",
-    "semantic_hash": ""
+    "semantic_hash": "3650e179e0e6a574b1da0c59e9678eb9"
   },
   "src/hardware/disks.rs": {
-    "mtime": 1795099910.9784017,
-    "seen": 1795100442.8572206,
-    "ast_hash": "12f4b1d8ff146753d9d81a57e6cb76d1",
+    "mtime": 1795196629.498232,
+    "seen": 1795197862.2534325,
+    "ast_hash": "78b59e07898ac6c57568fc4e7b533cc7",
     "semantic_hash": ""
   },
   "src/hardware/driver_update.rs": {
     "mtime": 1795099910.9794035,
-    "seen": 1795100442.8572216,
+    "seen": 1795173143.9296825,
     "ast_hash": "f2ff60e83b2d2f7c92f7c4e19ed06932",
-    "semantic_hash": ""
+    "semantic_hash": "f2ff60e83b2d2f7c92f7c4e19ed06932"
   },
   "src/hardware/thermal.rs": {
     "mtime": 1795099910.9814098,
-    "seen": 1795100442.8572345,
+    "seen": 1795173143.9303024,
     "ast_hash": "128c0574024d70d750fcad45f9a5c63f",
-    "semantic_hash": ""
+    "semantic_hash": "128c0574024d70d750fcad45f9a5c63f"
   },
   "src/tools/diagnostics.rs": {
     "mtime": 1795099910.6644719,
-    "seen": 1795100442.8572502,
+    "seen": 1795173143.9314873,
     "ast_hash": "fcf7caef7260c2460189ab1fdcb1b81b",
-    "semantic_hash": ""
+    "semantic_hash": "fcf7caef7260c2460189ab1fdcb1b81b"
   },
   "src/tools/game_overlay.rs": {
     "mtime": 1794741700.0438063,
@@ -619,27 +619,27 @@
   },
   "src/ui/views/disk_health.rs": {
     "mtime": 1795099910.985413,
-    "seen": 1795100442.8572764,
+    "seen": 1795173143.9328804,
     "ast_hash": "9f86be2755801136bf43140f080091ef",
-    "semantic_hash": ""
+    "semantic_hash": "9f86be2755801136bf43140f080091ef"
   },
   "src/ui/views/driver_bios.rs": {
     "mtime": 1795099910.9859128,
-    "seen": 1795100442.8572776,
+    "seen": 1795173143.9328828,
     "ast_hash": "5a2f157a50260dabd4917963d6ff0396",
-    "semantic_hash": ""
+    "semantic_hash": "5a2f157a50260dabd4917963d6ff0396"
   },
   "src/ui/views/fault_diagnostics.rs": {
     "mtime": 1795099910.6679718,
-    "seen": 1795100442.85728,
+    "seen": 1795173143.932887,
     "ast_hash": "14063854da8d2505ae15c9c7aa254591",
-    "semantic_hash": ""
+    "semantic_hash": "14063854da8d2505ae15c9c7aa254591"
   },
   "src/ui/views/fps_benchmark.rs": {
     "mtime": 1795099910.6679718,
-    "seen": 1795100442.8572814,
+    "seen": 1795173143.9328885,
     "ast_hash": "b7e1e8b1d985929bcf5d71110067acf2",
-    "semantic_hash": ""
+    "semantic_hash": "b7e1e8b1d985929bcf5d71110067acf2"
   },
   "src/ui/views/game_overlay.rs": {
     "mtime": 1794834980.8096645,
@@ -649,9 +649,9 @@
   },
   "src/ui/views/game_profiles.rs": {
     "mtime": 1795099910.669476,
-    "seen": 1795100442.8572853,
+    "seen": 1795173143.9330325,
     "ast_hash": "5d3f40a20db39c2e124c6a5b7c918a93",
-    "semantic_hash": ""
+    "semantic_hash": "5d3f40a20db39c2e124c6a5b7c918a93"
   },
   "src/ui/views/game_suitability.rs": {
     "mtime": 1794834999.4401991,
@@ -661,33 +661,33 @@
   },
   "src/ui/views/gaming_stats.rs": {
     "mtime": 1795099910.6699762,
-    "seen": 1795100442.857288,
+    "seen": 1795173143.9331522,
     "ast_hash": "91d6a1d5f9e0c618d11330f7302227cc",
-    "semantic_hash": ""
+    "semantic_hash": "91d6a1d5f9e0c618d11330f7302227cc"
   },
   "src/ui/views/network_diag.rs": {
     "mtime": 1795099910.671482,
-    "seen": 1795100442.8572955,
+    "seen": 1795173143.9335442,
     "ast_hash": "8c02061c82f15c302cc00ff8892399b1",
-    "semantic_hash": ""
+    "semantic_hash": "8c02061c82f15c302cc00ff8892399b1"
   },
   "src/ui/views/performance_tests.rs": {
     "mtime": 1795099910.6719823,
-    "seen": 1795100442.857297,
+    "seen": 1795173143.9335465,
     "ast_hash": "ada97d71bc8e14116adee44fba25c903",
-    "semantic_hash": ""
+    "semantic_hash": "ada97d71bc8e14116adee44fba25c903"
   },
   "src/ui/views/support_about.rs": {
     "mtime": 1795099910.6724823,
-    "seen": 1795100442.8573008,
+    "seen": 1795173143.9337962,
     "ast_hash": "9ad4e8c806659e9d1584e70071f04fbb",
-    "semantic_hash": ""
+    "semantic_hash": "9ad4e8c806659e9d1584e70071f04fbb"
   },
   "src/ui/views/thermal_monitor.rs": {
     "mtime": 1795099910.987914,
-    "seen": 1795100442.857302,
+    "seen": 1795173143.9337986,
     "ast_hash": "89688f1d479f74cc2c544051bb1ae9b8",
-    "semantic_hash": ""
+    "semantic_hash": "89688f1d479f74cc2c544051bb1ae9b8"
   },
   "src/ui/views/windows_repair.rs": {
     "mtime": 1794834922.7558143,
@@ -702,21 +702,21 @@
     "semantic_hash": ""
   },
   "assets/screenshots/fault_diagnostics.png": {
-    "mtime": 1795165517.3020751,
-    "seen": 1795165597.3470013,
-    "ast_hash": "172fe8d7f38ea11495a8ba908ea9a3fc",
+    "mtime": 1795197840.9238727,
+    "seen": 1795197862.2535717,
+    "ast_hash": "d2e36f09620831ef865468b5f78b3a25",
     "semantic_hash": ""
   },
   "assets/screenshots/minimalistic_theme.png": {
-    "mtime": 1795165518.1873624,
-    "seen": 1795165597.347004,
-    "ast_hash": "c929839fbca14d34bc1ef925725eb07b",
+    "mtime": 1795197840.5264766,
+    "seen": 1795197862.2535741,
+    "ast_hash": "f1a24ecf2ccfa2228ddddd685e5a295e",
     "semantic_hash": ""
   },
   "assets/screenshots/support_about.png": {
-    "mtime": 1795165519.007102,
-    "seen": 1795165597.3470051,
-    "ast_hash": "d3be71b80099b59fc4f3cf39f70265d7",
+    "mtime": 1795197840.939412,
+    "seen": 1795197862.2535753,
+    "ast_hash": "560c3caccbc78bd1b00262414bd31534",
     "semantic_hash": ""
   },
   "winblast.png": {
@@ -732,34 +732,34 @@
     "semantic_hash": ""
   },
   "src/core/updater.rs": {
-    "mtime": 1795164471.2745905,
-    "seen": 1795165597.346839,
-    "ast_hash": "33110246692e45629e99a9ce11e9818d",
+    "mtime": 1795195846.8835907,
+    "seen": 1795197862.2534099,
+    "ast_hash": "c390f82a04d8d6b726178e2510eff7ff",
     "semantic_hash": ""
   },
   "src/tools/automation.rs": {
-    "mtime": 1794774130.5723667,
-    "seen": 1794927918.884867,
-    "ast_hash": "14a7661c037460cac02be6c336762f95",
-    "semantic_hash": "14a7661c037460cac02be6c336762f95"
+    "mtime": 1795196798.5520058,
+    "seen": 1795197862.2534626,
+    "ast_hash": "7250990a33b81f070569175def60e49e",
+    "semantic_hash": ""
   },
   "src/tools/game_prereqs.rs": {
     "mtime": 1795099910.982913,
-    "seen": 1795100442.8572555,
+    "seen": 1795173143.9318883,
     "ast_hash": "b86a7b7ec4a696d9550b817f0aaa5a18",
-    "semantic_hash": ""
+    "semantic_hash": "b86a7b7ec4a696d9550b817f0aaa5a18"
   },
   "src/ui/views/automation_center.rs": {
     "mtime": 1795099910.6664715,
-    "seen": 1795100442.8572707,
+    "seen": 1795173143.9325511,
     "ast_hash": "28a6a1174040336e463a23b5a694b2ab",
-    "semantic_hash": ""
+    "semantic_hash": "28a6a1174040336e463a23b5a694b2ab"
   },
   "src/ui/views/game_prereqs.rs": {
     "mtime": 1795099910.6689737,
-    "seen": 1795100442.857284,
+    "seen": 1795173143.9330297,
     "ast_hash": "2922b2df1b88e5b327e747985ed9237e",
-    "semantic_hash": ""
+    "semantic_hash": "2922b2df1b88e5b327e747985ed9237e"
   },
   "src/ui/widgets/progress_bar.rs": {
     "mtime": 1794766628.5294826,
@@ -775,9 +775,9 @@
   },
   "tests/edge_cases_unorthodox.rs": {
     "mtime": 1795099910.9899175,
-    "seen": 1795100442.8573158,
+    "seen": 1795173143.9344227,
     "ast_hash": "451141af4ac82b7601f2744378da10a3",
-    "semantic_hash": ""
+    "semantic_hash": "451141af4ac82b7601f2744378da10a3"
   },
   ".agents/rules/ui-layout-collision.md": {
     "mtime": 1795099910.4760413,
@@ -799,9 +799,9 @@
   },
   "src/ui/window_icon.rs": {
     "mtime": 1795099910.989415,
-    "seen": 1795100442.8573146,
+    "seen": 1795173143.9344187,
     "ast_hash": "9d855f8b18d96b550264a8d6fe80f9b9",
-    "semantic_hash": ""
+    "semantic_hash": "9d855f8b18d96b550264a8d6fe80f9b9"
   },
   ".agents/rules/dual-engine-coding-protocol.md": {
     "mtime": 1795099910.846695,
@@ -811,33 +811,33 @@
   },
   "src/core/generational_cache.rs": {
     "mtime": 1795099910.972402,
-    "seen": 1795100442.857183,
+    "seen": 1795173143.927833,
     "ast_hash": "22db27026c31df74cf3df887c388f70d",
-    "semantic_hash": ""
+    "semantic_hash": "22db27026c31df74cf3df887c388f70d"
   },
   "src/tools/heuristic_scanner.rs": {
     "mtime": 1795099910.983413,
-    "seen": 1795100442.8572593,
+    "seen": 1795173143.9320788,
     "ast_hash": "fff7a8b2ae89552672d7c24729e51a3d",
-    "semantic_hash": ""
+    "semantic_hash": "fff7a8b2ae89552672d7c24729e51a3d"
   },
   "scripts/test_disks.ps1": {
     "mtime": 1795099910.9693933,
-    "seen": 1795100442.85717,
+    "seen": 1795173143.9272053,
     "ast_hash": "d0a03284c6e38f6aef6cd0a71f6048b7",
-    "semantic_hash": ""
+    "semantic_hash": "d0a03284c6e38f6aef6cd0a71f6048b7"
   },
   "src/hardware/lazy_loader.rs": {
     "mtime": 1795099910.9799058,
-    "seen": 1795100442.8572257,
+    "seen": 1795173143.9298782,
     "ast_hash": "ae71620c092285d1e429f67f762249cf",
-    "semantic_hash": ""
+    "semantic_hash": "ae71620c092285d1e429f67f762249cf"
   },
   "src/ui/widgets/in_progress_hud.rs": {
     "mtime": 1795164983.528934,
-    "seen": 1795165597.346962,
+    "seen": 1795173143.9340143,
     "ast_hash": "896f56658713cb47793e7471044a01d8",
-    "semantic_hash": ""
+    "semantic_hash": "896f56658713cb47793e7471044a01d8"
   },
   "SECURITY.md": {
     "mtime": 1795099910.248797,
@@ -845,10 +845,46 @@
     "ast_hash": "8d7ae730d049cb3250c0ade3d574a302",
     "semantic_hash": ""
   },
-  ".vscode/settings.json": {
-    "mtime": 1795162531.4909866,
-    "seen": 1795165597.3467808,
-    "ast_hash": "cbcfc0c6a6b81f6e0338ae769b245996",
+  "src/graph/topological_scheduler.rs": {
+    "mtime": 1795172752.2638776,
+    "seen": 1795173143.9295745,
+    "ast_hash": "9efe1d2e22ab5c8be825420fb8c25321",
+    "semantic_hash": "9efe1d2e22ab5c8be825420fb8c25321"
+  },
+  "tests/dual_engine_validation_test.rs": {
+    "mtime": 1795172719.9921517,
+    "seen": 1795173143.9344208,
+    "ast_hash": "0dde6d1402814d816053b36c17ab9c59",
+    "semantic_hash": "0dde6d1402814d816053b36c17ab9c59"
+  },
+  "src/executor/adaptive_tuning.rs": {
+    "mtime": 1795196421.29561,
+    "seen": 1795197862.2534127,
+    "ast_hash": "212ba90fe4f948229c916ff4ee9bc99f",
+    "semantic_hash": ""
+  },
+  "src/executor/sysprep_engine.rs": {
+    "mtime": 1795196658.6039557,
+    "seen": 1795197862.2534208,
+    "ast_hash": "d45d8775332f72c7952faa9191dc97e1",
+    "semantic_hash": ""
+  },
+  "src/hardware/power_governor.rs": {
+    "mtime": 1795196141.662899,
+    "seen": 1795197862.253446,
+    "ast_hash": "229323775fa0f26a8f612fd70154f067",
+    "semantic_hash": ""
+  },
+  "src/hardware/storage.rs": {
+    "mtime": 1795196359.1519911,
+    "seen": 1795197862.2534475,
+    "ast_hash": "1e79d596bf8b8aad20155c835cb19c1e",
+    "semantic_hash": ""
+  },
+  "src/tools/boot_config.rs": {
+    "mtime": 1795196263.9929612,
+    "seen": 1795197862.2534652,
+    "ast_hash": "097f5e74eff0d1ee3c8168abd4af4c2d",
     "semantic_hash": ""
   }
 }

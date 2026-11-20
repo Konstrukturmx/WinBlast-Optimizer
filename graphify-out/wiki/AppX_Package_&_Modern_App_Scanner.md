@@ -1,56 +1,59 @@
 # AppX Package & Modern App Scanner
 
-> 22 nodes · cohesion 0.09
+> 34 nodes · cohesion 0.11
 
 ## Key Concepts
 
-- **TweakAction** (33 connections) — `src/core/risk.rs`
-- **PowerTargetScope** (8 connections) — `src/core/risk.rs`
-- **DynamicDwordFormula** (7 connections) — `src/core/risk.rs`
-- **resolve_dynamic_dword()** (7 connections) — `src/scanner/mod.rs`
-- **LogicalCoreCount** (1 connections) — `src/core/risk.rs`
-- **TotalRamInKb** (1 connections) — `src/core/risk.rs`
-- **TotalRamInKbPlusMargin** (1 connections) — `src/core/risk.rs`
-- **AcAndDc** (1 connections) — `src/core/risk.rs`
-- **AcOnly** (1 connections) — `src/core/risk.rs`
-- **DcOnly** (1 connections) — `src/core/risk.rs`
-- **AppXPackage** (1 connections) — `src/core/risk.rs`
-- **CompositeStringKey** (1 connections) — `src/core/risk.rs`
-- **PowerCfgSetting** (1 connections) — `src/core/risk.rs`
-- **RegistryBinaryBit** (1 connections) — `src/core/risk.rs`
-- **RegistryDelete** (1 connections) — `src/core/risk.rs`
-- **RegistryDeleteTree** (1 connections) — `src/core/risk.rs`
-- **RegistryDword** (1 connections) — `src/core/risk.rs`
-- **RegistryDynamicDword** (1 connections) — `src/core/risk.rs`
-- **RegistryString** (1 connections) — `src/core/risk.rs`
-- **ScheduledTask** (1 connections) — `src/core/risk.rs`
-- **ServiceState** (1 connections) — `src/core/risk.rs`
-- **WindowsFeature** (1 connections) — `src/core/risk.rs`
+- **localize_tweak()** (16 connections) — `src/core/tweak_i18n/mod.rs`
+- **LocalizedTweakText** (16 connections) — `src/core/tweak_i18n/mod.rs`
+- **lookup()** (5 connections) — `src/core/tweak_i18n/de.rs`
+- **lookup()** (5 connections) — `src/core/tweak_i18n/es.rs`
+- **lookup()** (5 connections) — `src/core/tweak_i18n/fr.rs`
+- **lookup()** (5 connections) — `src/core/tweak_i18n/ja.rs`
+- **lookup()** (5 connections) — `src/core/tweak_i18n/ru.rs`
+- **lookup()** (5 connections) — `src/core/tweak_i18n/tr.rs`
+- **lookup()** (5 connections) — `src/core/tweak_i18n/zh.rs`
+- **de.rs** (4 connections) — `src/core/tweak_i18n/de.rs`
+- **es.rs** (4 connections) — `src/core/tweak_i18n/es.rs`
+- **fr.rs** (4 connections) — `src/core/tweak_i18n/fr.rs`
+- **ja.rs** (4 connections) — `src/core/tweak_i18n/ja.rs`
+- **ru.rs** (4 connections) — `src/core/tweak_i18n/ru.rs`
+- **tr.rs** (4 connections) — `src/core/tweak_i18n/tr.rs`
+- **zh.rs** (4 connections) — `src/core/tweak_i18n/zh.rs`
+- **test_all_218_tweaks_localized_all_7_languages()** (3 connections) — `src/core/tweak_i18n/mod.rs`
+- **.tweak_broken_features()** (2 connections) — `src/app.rs`
+- **.tweak_description()** (2 connections) — `src/app.rs`
+- **.tweak_title()** (2 connections) — `src/app.rs`
+- **tweak_description()** (2 connections) — `src/core/tweak_i18n/de.rs`
+- **tweak_title()** (2 connections) — `src/core/tweak_i18n/de.rs`
+- **tweak_description()** (2 connections) — `src/core/tweak_i18n/es.rs`
+- **tweak_title()** (2 connections) — `src/core/tweak_i18n/es.rs`
+- **tweak_description()** (2 connections) — `src/core/tweak_i18n/fr.rs`
+- *... and 9 more nodes in this community*
 
 ## Relationships
 
-- [Embedded Catalog Test](Embedded_Catalog_Test.md) (6 shared connections)
-- [full_telemetry_audit_with](full_telemetry_audit_with.md) (5 shared connections)
-- [theme.rs](theme.rs.md) (4 shared connections)
-- [diff_modal.rs](diff_modal.rs.md) (4 shared connections)
-- [Win32 Registry Scanner & Mutator](Win32_Registry_Scanner_&_Mutator.md) (3 shared connections)
-- [task_scanner.rs](task_scanner.rs.md) (2 shared connections)
-- [AppState](AppState.md) (1 shared connections)
-- [RegRawSnapshot](RegRawSnapshot.md) (1 shared connections)
-- [app.rs](app.rs.md) (1 shared connections)
-- [backend.rs](backend.rs.md) (1 shared connections)
-- [ui_scrollbar_test.rs](ui_scrollbar_test.rs.md) (1 shared connections)
-- [Integration Suite: Tweak Sandbox E2E](Integration_Suite-_Tweak_Sandbox_E2E.md) (1 shared connections)
+- [System Architecture Changelog](System_Architecture_Changelog.md) (5 shared connections)
+- [AppState](AppState.md) (3 shared connections)
+- [ps_runner.rs](ps_runner.rs.md) (1 shared connections)
+- [super](super.md) (1 shared connections)
 
 ## Source Files
 
-- `src/core/risk.rs`
-- `src/scanner/mod.rs`
+- `src/app.rs`
+- `src/core/tweak_i18n/de.rs`
+- `src/core/tweak_i18n/es.rs`
+- `src/core/tweak_i18n/fr.rs`
+- `src/core/tweak_i18n/ja.rs`
+- `src/core/tweak_i18n/mod.rs`
+- `src/core/tweak_i18n/ru.rs`
+- `src/core/tweak_i18n/tr.rs`
+- `src/core/tweak_i18n/zh.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 49 (94%)
-- INFERRED: 3 (6%)
+- EXTRACTED: 70 (99%)
+- INFERRED: 1 (1%)
 - AMBIGUOUS: 0 (0%)
 
 ---

@@ -2,7 +2,7 @@
 
 > God node · 83 connections · `src/core/backend.rs`
 
-**Community:** [.Reg State() Vendor()](Reg_State_Vendor.md)
+**Community:** [in_progress_hud.rs](in_progress_hud.rs.md)
 
 ## Connections by Relation
 
@@ -19,9 +19,10 @@
 
 ### method
 - .execute_clean_targets() `EXTRACTED`
+- .is_elevated() `EXTRACTED`
+- .scan_clean_targets() `EXTRACTED`
 - .list_optional_features() `EXTRACTED`
 - .set_optional_feature() `EXTRACTED`
-- .is_elevated() `EXTRACTED`
 - .detect_os() `EXTRACTED`
 - .default_ledger_path() `EXTRACTED`
 - .default_profile_path() `EXTRACTED`
@@ -37,7 +38,6 @@
 - .load_task_cache() `EXTRACTED`
 - .load_appx_cache() `EXTRACTED`
 - .list_restore_points() `EXTRACTED`
-- .detect_cpu() `EXTRACTED`
 - *…and 58 more `method` connection(s) not listed (lowest-degree first to go)*
 
 ---

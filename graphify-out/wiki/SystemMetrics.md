@@ -1,24 +1,23 @@
 # SystemMetrics
 
-> 5 nodes · cohesion 0.40
+> 8 nodes · cohesion 0.25
 
 ## Key Concepts
 
-- **SystemMetrics** (14 connections) — `src/hardware/monitor.rs`
-- **Utc** (3 connections)
-- **DateTime** (2 connections)
-- **.ram_display()** (1 connections) — `src/hardware/monitor.rs`
-- **.timer_res_ms_display()** (1 connections) — `src/hardware/monitor.rs`
+- **PdhParkingCollector** (7 connections) — `src/hardware/monitor.rs`
+- **compute_nt_cpu_deltas()** (4 connections) — `src/hardware/monitor.rs`
+- **parse_pdh_processor_instance()** (3 connections) — `src/hardware/monitor.rs`
+- **test_nt_cpu_delta_handles_idledisable_and_multigroup()** (3 connections) — `src/hardware/monitor.rs`
+- **PDH_HCOUNTER** (2 connections)
+- **PDH_HQUERY** (2 connections)
+- **.sample()** (2 connections) — `src/hardware/monitor.rs`
+- **.drop()** (1 connections) — `src/hardware/monitor.rs`
 
 ## Relationships
 
-- [backend.rs](backend.rs.md) (5 shared connections)
-- [startup.rs](startup.rs.md) (3 shared connections)
-- [WorkerEvent](WorkerEvent.md) (1 shared connections)
-- [AppState](AppState.md) (1 shared connections)
-- [task_scanner.rs](task_scanner.rs.md) (1 shared connections)
-- [app.rs](app.rs.md) (1 shared connections)
-- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (1 shared connections)
+- [parking.rs](parking.rs.md) (6 shared connections)
+- [path](path.md) (3 shared connections)
+- [progress_bar.rs](progress_bar.rs.md) (1 shared connections)
 
 ## Source Files
 
@@ -26,8 +25,8 @@
 
 ## Audit Trail
 
-- EXTRACTED: 17 (100%)
-- INFERRED: 0 (0%)
+- EXTRACTED: 16 (94%)
+- INFERRED: 1 (6%)
 - AMBIGUOUS: 0 (0%)
 
 ---

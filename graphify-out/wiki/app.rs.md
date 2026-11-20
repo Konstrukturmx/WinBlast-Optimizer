@@ -1,56 +1,48 @@
 # app.rs
 
-> 22 nodes · cohesion 0.16
+> 19 nodes · cohesion 0.15
 
 ## Key Concepts
 
-- **AppxCache** (20 connections) — `src/scanner/appx_scanner.rs`
-- **appx_scanner.rs** (13 connections) — `src/scanner/appx_scanner.rs`
-- **.evaluate_package_with_kind()** (7 connections) — `src/scanner/appx_scanner.rs`
-- **.from_packages()** (5 connections) — `src/scanner/appx_scanner.rs`
-- **appx_package_matches_family()** (4 connections) — `src/scanner/appx_scanner.rs`
-- **.evaluate_package()** (4 connections) — `src/scanner/appx_scanner.rs`
-- **split_appx_name_and_publisher()** (4 connections) — `src/scanner/appx_scanner.rs`
-- **.load_appx_cache()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.is_package_removed()** (3 connections) — `src/scanner/appx_scanner.rs`
-- **check_package_removed()** (3 connections) — `src/scanner/appx_scanner.rs`
-- **test_appx_cache_loaded_empty_no_fallback()** (3 connections) — `src/scanner/appx_scanner.rs`
-- **test_split_appx_name_and_publisher_with_underscores_and_prefix()** (3 connections) — `src/scanner/appx_scanner.rs`
-- **.load_appx_cache()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.load_appx_cache()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.load_appx_cache()** (2 connections) — `src/core/backend.rs`
-- **.load_appx_cache()** (2 connections) — `src/core/backend.rs`
-- **.iter()** (2 connections) — `src/scanner/appx_scanner.rs`
-- **.load()** (2 connections) — `src/scanner/appx_scanner.rs`
-- **check_package_removed_ps()** (2 connections) — `src/scanner/appx_scanner.rs`
-- **test_appx_publisher_suffix_matching()** (2 connections) — `src/scanner/appx_scanner.rs`
-- **test_evaluate_package_with_kind_all_cache_branches()** (2 connections) — `src/scanner/appx_scanner.rs`
-- **Item** (1 connections)
+- **updater.rs** (21 connections) — `src/core/updater.rs`
+- **UpdateState** (9 connections) — `src/core/updater.rs`
+- **check_latest_release()** (5 connections) — `src/core/updater.rs`
+- **ReleaseInfo** (5 connections) — `src/core/updater.rs`
+- **is_version_newer()** (4 connections) — `src/core/updater.rs`
+- **fetch_url_json()** (2 connections) — `src/core/updater.rs`
+- **GhAsset** (2 connections) — `src/core/updater.rs`
+- **GhRelease** (2 connections) — `src/core/updater.rs`
+- **test_release_info_structure()** (2 connections) — `src/core/updater.rs`
+- **test_version_comparison_logic()** (2 connections) — `src/core/updater.rs`
+- **FALLBACK_REPO** (1 connections) — `src/core/updater.rs`
+- **GITHUB_REPO** (1 connections) — `src/core/updater.rs`
+- **Checking** (1 connections) — `src/core/updater.rs`
+- **Downloading** (1 connections) — `src/core/updater.rs`
+- **Failed** (1 connections) — `src/core/updater.rs`
+- **Idle** (1 connections) — `src/core/updater.rs`
+- **ReadyToRestart** (1 connections) — `src/core/updater.rs`
+- **UpdateAvailable** (1 connections) — `src/core/updater.rs`
+- **UpToDate** (1 connections) — `src/core/updater.rs`
 
 ## Relationships
 
-- [spawn_guarded_worker](spawn_guarded_worker.md) (5 shared connections)
-- [super](super.md) (3 shared connections)
-- [SlowScanBackend](SlowScanBackend.md) (3 shared connections)
-- [SandboxEnv](SandboxEnv.md) (2 shared connections)
-- [.Reg State() Vendor()](Reg_State_Vendor.md) (1 shared connections)
-- [Integration Suite: Tweak Sandbox E2E](Integration_Suite-_Tweak_Sandbox_E2E.md) (1 shared connections)
-- [Embedded Catalog Test](Embedded_Catalog_Test.md) (1 shared connections)
-- [backend.rs](backend.rs.md) (1 shared connections)
-- [theme.rs](theme.rs.md) (1 shared connections)
-- [.Reg .Set Power](Reg_.Set_Power.md) (1 shared connections)
+- [WorkerEvent](WorkerEvent.md) (4 shared connections)
+- [deserialize](deserialize.md) (2 shared connections)
+- [clean_exe_path](clean_exe_path.md) (2 shared connections)
 - [FailAtMutationBackend](FailAtMutationBackend.md) (1 shared connections)
+- [PowerSchemeInfo](PowerSchemeInfo.md) (1 shared connections)
+- [.setup](setup.md) (1 shared connections)
+- [PlatformSecurityInfo](PlatformSecurityInfo.md) (1 shared connections)
+- [UpdateStatus](UpdateStatus.md) (1 shared connections)
 
 ## Source Files
 
-- `src/core/backend.rs`
-- `src/scanner/appx_scanner.rs`
-- `tests/tweak_sandbox_e2e.rs`
+- `src/core/updater.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 55 (96%)
-- INFERRED: 2 (4%)
+- EXTRACTED: 34 (89%)
+- INFERRED: 4 (11%)
 - AMBIGUOUS: 0 (0%)
 
 ---

@@ -4,15 +4,11 @@
 
 ## Key Concepts
 
-- **make_ico.ps1** (0 connections) — `scripts/make_ico.ps1`
+- **RegType** (0 connections)
 
 ## Relationships
 
 - No strong cross-community connections detected
-
-## Source Files
-
-- `scripts/make_ico.ps1`
 
 ## Audit Trail
 

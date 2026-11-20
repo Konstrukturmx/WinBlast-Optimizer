@@ -1,46 +1,58 @@
 # updater.rs
 
-> 14 nodes · cohesion 0.22
+> 22 nodes · cohesion 0.23
 
 ## Key Concepts
 
-- **updater.rs** (21 connections) — `src/core/updater.rs`
-- **check_latest_release()** (5 connections) — `src/core/updater.rs`
-- **clean_exe_path()** (5 connections) — `src/core/updater.rs`
-- **ReleaseInfo** (5 connections) — `src/core/updater.rs`
-- **is_version_newer()** (4 connections) — `src/core/updater.rs`
-- **.relaunch_elevated()** (2 connections) — `src/app.rs`
-- **fetch_url_json()** (2 connections) — `src/core/updater.rs`
-- **GhAsset** (2 connections) — `src/core/updater.rs`
-- **GhRelease** (2 connections) — `src/core/updater.rs`
-- **test_clean_windows_exe_path()** (2 connections) — `src/core/updater.rs`
-- **test_release_info_structure()** (2 connections) — `src/core/updater.rs`
-- **test_version_comparison_logic()** (2 connections) — `src/core/updater.rs`
-- **FALLBACK_REPO** (1 connections) — `src/core/updater.rs`
-- **GITHUB_REPO** (1 connections) — `src/core/updater.rs`
+- **reg_mutator.rs** (25 connections) — `src/executor/reg_mutator.rs`
+- **normalize_reg_value_name()** (21 connections) — `src/core/risk.rs`
+- **validate_registry_mutation_path()** (17 connections) — `src/core/reg_helpers.rs`
+- **resolve_hive()** (16 connections) — `src/scanner/registry_scanner.rs`
+- **set_raw()** (8 connections) — `src/executor/reg_mutator.rs`
+- **create_subkey_64()** (8 connections) — `src/scanner/registry_scanner.rs`
+- **delete_value_for_vendor()** (7 connections) — `src/executor/reg_mutator.rs`
+- **restore_tree_node()** (7 connections) — `src/executor/reg_mutator.rs`
+- **set_dword_for_vendor()** (7 connections) — `src/executor/reg_mutator.rs`
+- **set_string_for_vendor()** (7 connections) — `src/executor/reg_mutator.rs`
+- **set_binary()** (6 connections) — `src/executor/reg_mutator.rs`
+- **restore_tree()** (5 connections) — `src/executor/reg_mutator.rs`
+- **write_dword_or_numeric_sz()** (5 connections) — `src/executor/reg_mutator.rs`
+- **delete_tree()** (4 connections) — `src/executor/reg_mutator.rs`
+- **u32_to_reg_type()** (4 connections) — `src/executor/reg_mutator.rs`
+- **RegKey** (3 connections)
+- **set_dword()** (3 connections) — `src/executor/reg_mutator.rs`
+- **delete_value()** (2 connections) — `src/executor/reg_mutator.rs`
+- **set_string()** (2 connections) — `src/executor/reg_mutator.rs`
+- **resolve_target_paths** (1 connections)
+- **REG_DELETE_RIGHT** (1 connections) — `src/executor/reg_mutator.rs`
+- **RegType** (1 connections)
 
 ## Relationships
 
-- [super](super.md) (3 shared connections)
-- [path](path.md) (2 shared connections)
-- [UpdateStatus](UpdateStatus.md) (2 shared connections)
-- [UpdateState](UpdateState.md) (2 shared connections)
-- [elevation.rs](elevation.rs.md) (2 shared connections)
-- [AppState](AppState.md) (1 shared connections)
-- [real_windows_env.rs](real_windows_env.rs.md) (1 shared connections)
-- [.setup](setup.md) (1 shared connections)
-- [.set_status_spec](set_status_spec.md) (1 shared connections)
-- [WorkerEvent](WorkerEvent.md) (1 shared connections)
+- [registry_scanner.rs](registry_scanner.rs.md) (20 shared connections)
+- [reg_helpers.rs](reg_helpers.rs.md) (7 shared connections)
+- [RegRawSnapshot](RegRawSnapshot.md) (7 shared connections)
+- [FailAtMutationBackend](FailAtMutationBackend.md) (4 shared connections)
+- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (4 shared connections)
+- [DriverUpdateState](DriverUpdateState.md) (3 shared connections)
+- [State Ledger & Restore Point Engine](State_Ledger_&_Restore_Point_Engine.md) (2 shared connections)
+- [reg_mutator.rs](reg_mutator.rs.md) (2 shared connections)
+- [enums](enums.md) (2 shared connections)
+- [RealBackend](RealBackend.md) (2 shared connections)
+- [privacy_shield.rs](privacy_shield.rs.md) (1 shared connections)
+- [backend.rs](backend.rs.md) (1 shared connections)
 
 ## Source Files
 
-- `src/app.rs`
-- `src/core/updater.rs`
+- `src/core/reg_helpers.rs`
+- `src/core/risk.rs`
+- `src/executor/reg_mutator.rs`
+- `src/scanner/registry_scanner.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 31 (86%)
-- INFERRED: 5 (14%)
+- EXTRACTED: 72 (67%)
+- INFERRED: 36 (33%)
 - AMBIGUOUS: 0 (0%)
 
 ---

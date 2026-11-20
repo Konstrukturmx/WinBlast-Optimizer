@@ -33,18 +33,18 @@
 
 ## Relationships
 
-- [.Toggle .Set .Apply](Toggle_.Set_.Apply.md) (6 shared connections)
-- [action_button](action_button.md) (3 shared connections)
-- [enums](enums.md) (3 shared connections)
-- [clean_apps.rs](clean_apps.rs.md) (2 shared connections)
-- [action_button_guarded](action_button_guarded.md) (2 shared connections)
-- [diff_modal.rs](diff_modal.rs.md) (2 shared connections)
-- [app.rs](app.rs.md) (1 shared connections)
-- [Appx Package() Prefixes](Appx_Package_Prefixes.md) (1 shared connections)
-- [ui/mod.rs](ui-mod.rs.md) (1 shared connections)
-- [ThemePalette](ThemePalette.md) (1 shared connections)
-- [privacy_shield.rs](privacy_shield.rs.md) (1 shared connections)
-- [GPU Silicon & Hardware Tuning Policies](GPU_Silicon_&_Hardware_Tuning_Policies.md) (1 shared connections)
+- [Disk Cleaning & Temporary File Purger](Disk_Cleaning_&_Temporary_File_Purger.md) (6 shared connections)
+- [.Reg State() Vendor()](Reg_State_Vendor.md) (3 shared connections)
+- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (3 shared connections)
+- [SandboxEnv](SandboxEnv.md) (3 shared connections)
+- [advanced_matrix.rs](advanced_matrix.rs.md) (2 shared connections)
+- [Multi-Language Tweak Localization Tables](Multi-Language_Tweak_Localization_Tables.md) (2 shared connections)
+- [SlowScanBackend](SlowScanBackend.md) (1 shared connections)
+- [Win32 Registry Scanner & Mutator](Win32_Registry_Scanner_&_Mutator.md) (1 shared connections)
+- [Runtime](Runtime.md) (1 shared connections)
+- [WinBlastScrollable](WinBlastScrollable.md) (1 shared connections)
+- [.take_injected_error](take_injected_error.md) (1 shared connections)
+- [AppState](AppState.md) (1 shared connections)
 
 ## Source Files
 

@@ -1087,6 +1087,56 @@ pub fn lookup(id: &str) -> Option<LocalizedTweakText> {
             description: "Deaktiviert selektives USB-Energiesparen auf Root-Treiber-Ebene (DisableSelectiveSuspend=1). Verhindert das Abschalten von Gaming-Mäusen, Tastaturen und DACs für latenzfreie Eingaben.",
             broken_features: &["Geringfügig höherer Ruhestromverbrauch am USB-Bus", "Verkürzte Akkulaufzeit bei Laptops"],
         }),
+        "remove_webexperience_package" => Some(LocalizedTweakText {
+            title: "Windows WebExperienceHost-Paket (Widgets-Host) entfernen",
+            description: "Entfernt das Paket MicrosoftWindows.Client.WebExperience, um zu verhindern, dass Taskleisten-Widgets im Hintergrund Edge WebView2-Speicher belegen.",
+            broken_features: &["Taskleisten-Widgets und News-Feeds werden dauerhaft entfernt."],
+        }),
+        "disable_wpbt_execution" => Some(LocalizedTweakText {
+            title: "WPBT-Firmware-Binärausführung deaktivieren",
+            description: "Verhindert, dass der Windows-Kernel Binärdateien ausführt, die in die UEFI-Windows-Platform-Binary-Table (WPBT) des Motherboards eingebettet sind.",
+            broken_features: &[],
+        }),
+        "service_shutdown_timeout_15s" => Some(LocalizedTweakText {
+            title: "Dienste-Herunterfahren-Timeout auf 15 Sekunden reduzieren",
+            description: "Verkürzt das Timeout für das Beenden von Diensten beim Herunterfahren von 20 auf 15 Sekunden, um Verzögerungen zu vermeiden.",
+            broken_features: &[],
+        }),
+        "start_menu_show_more_pins" => Some(LocalizedTweakText {
+            title: "Startmenü: Mehr Pins anzeigen",
+            description: "Konfiguriert das Windows 11-Startmenü so, dass angeheftete Apps gegenüber Empfehlungen priorisiert werden.",
+            broken_features: &[],
+        }),
+        "disable_taskbar_people_button" => Some(LocalizedTweakText {
+            title: "Taskleisten-Kontakte-Schaltfläche deaktivieren",
+            description: "Blendet das alte Kontakte-Symbol in der Windows-Taskleiste aus und deaktiviert es.",
+            broken_features: &[],
+        }),
+        "repair_ndu_graph" => Some(LocalizedTweakText {
+            title: "Task-Manager Netzwerkdatennutzung (NDU) Diagramm reparieren",
+            description: "Stellt sicher, dass der NDU-Kerntreiber auf Start=2 (Automatisch) gesetzt ist, damit Task-Manager-Netzwerkgraphen ordnungsgemäß funktionieren.",
+            broken_features: &[],
+        }),
+        "disable_settings_ads" => Some(LocalizedTweakText {
+            title: "Vorgeschlagene Inhalte und Werbung in Einstellungen deaktivieren",
+            description: "Verhindert, dass Microsoft vorgeschlagene Apps, Partner-Promotions und Tipps in den Windows-Einstellungen anzeigt.",
+            broken_features: &["Werbekarten und Tipps in der Einstellungen-App werden unterdrückt."],
+        }),
+        "disable_start_menu_suggested_apps" => Some(LocalizedTweakText {
+            title: "Automatische Installation vorgeschlagener Store-Apps deaktivieren",
+            description: "Verhindert, dass der Windows Content Delivery Manager automatisch vorgeschlagene Apps und Spiele herunterlädt und anheftet.",
+            broken_features: &["Gesponserte Spiele werden nicht automatisch im Startmenü installiert."],
+        }),
+        "disable_hardware_companion_software" => Some(LocalizedTweakText {
+            title: "Hardware-Begleitsoftware-Empfehlungen deaktivieren",
+            description: "Verhindert, dass Windows beim Anschließen von Peripheriegeräten Benachrichtigungen und Empfehlungen für OEM-Begleitsoftware anzeigt.",
+            broken_features: &[],
+        }),
+        "disable_ms_office_telemetry" => Some(LocalizedTweakText {
+            title: "Microsoft Office Telemetrie & CEIP-Protokollierung deaktivieren",
+            description: "Deaktiviert die Erfassung von Diagnosedaten, Feedback-Aufforderungen und die Telemetrie des Programms zur Verbesserung der Benutzerfreundlichkeit (CEIP) in Office.",
+            broken_features: &[],
+        }),
         _ => None,
     }
 }

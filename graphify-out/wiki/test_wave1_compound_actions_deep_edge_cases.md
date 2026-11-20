@@ -1,40 +1,28 @@
 # test_wave1_compound_actions_deep_edge_cases
 
-> 16 nodes · cohesion 0.14
+> 6 nodes · cohesion 0.47
 
 ## Key Concepts
 
-- **test_wave1_compound_actions_deep_edge_cases()** (13 connections) — `tests/tweak_sandbox_e2e.rs`
 - **RegStringValue** (11 connections) — `src/core/reg_helpers.rs`
-- **.set_optional_feature()** (8 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.set_optional_feature()** (6 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.reg_set_binary()** (6 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.set_optional_feature()** (5 connections) — `tests/tweak_sandbox_e2e.rs`
 - **.reg_get_string()** (5 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.reg_set_binary()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.reg_get_binary()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
 - **.reg_get_string()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
 - **.reg_get_string()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.reg_set_binary()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
 - **.reg_get_string()** (2 connections) — `src/core/backend.rs`
 - **.reg_get_string()** (2 connections) — `src/core/backend.rs`
-- **.reg_get_binary()** (2 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.reg_get_binary()** (2 connections) — `tests/tweak_sandbox_e2e.rs`
 
 ## Relationships
 
-- [BlastResult](BlastResult.md) (9 shared connections)
-- [SlowScanBackend](SlowScanBackend.md) (8 shared connections)
-- [RegRawSnapshot](RegRawSnapshot.md) (6 shared connections)
-- [theme.rs](theme.rs.md) (4 shared connections)
-- [FailAtMutationBackend](FailAtMutationBackend.md) (4 shared connections)
-- [full_telemetry_audit_with](full_telemetry_audit_with.md) (3 shared connections)
-- [task_scanner.rs](task_scanner.rs.md) (2 shared connections)
-- [test_wave1_ledger_rollback_and_concurrency_regressions](test_wave1_ledger_rollback_and_concurrency_regressions.md) (2 shared connections)
-- [.Reg State() Vendor()](Reg_State_Vendor.md) (1 shared connections)
-- [Integration Suite: Tweak Sandbox E2E](Integration_Suite-_Tweak_Sandbox_E2E.md) (1 shared connections)
-- [backend.rs](backend.rs.md) (1 shared connections)
+- [RegRawSnapshot](RegRawSnapshot.md) (2 shared connections)
+- [super](super.md) (2 shared connections)
+- [in_progress_hud.rs](in_progress_hud.rs.md) (1 shared connections)
+- [full_telemetry_audit_with](full_telemetry_audit_with.md) (1 shared connections)
+- [State Ledger & Restore Point Engine](State_Ledger_&_Restore_Point_Engine.md) (1 shared connections)
+- [reg_helpers.rs](reg_helpers.rs.md) (1 shared connections)
 - [registry_scanner.rs](registry_scanner.rs.md) (1 shared connections)
+- [FailAtMutationBackend](FailAtMutationBackend.md) (1 shared connections)
+- [PanickingBackend](PanickingBackend.md) (1 shared connections)
+- [SlowScanBackend](SlowScanBackend.md) (1 shared connections)
 
 ## Source Files
 
@@ -44,8 +32,8 @@
 
 ## Audit Trail
 
-- EXTRACTED: 56 (90%)
-- INFERRED: 6 (10%)
+- EXTRACTED: 18 (95%)
+- INFERRED: 1 (5%)
 - AMBIGUOUS: 0 (0%)
 
 ---

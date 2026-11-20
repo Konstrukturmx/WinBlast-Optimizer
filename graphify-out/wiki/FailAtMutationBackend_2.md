@@ -1,54 +1,58 @@
 # FailAtMutationBackend
 
-> 25 nodes · cohesion 0.16
+> 27 nodes · cohesion 0.11
 
 ## Key Concepts
 
-- **StateLedger** (30 connections) — `src/backup/state_ledger.rs`
-- **state_ledger.rs** (11 connections) — `src/backup/state_ledger.rs`
-- **LedgerEntry** (10 connections) — `src/backup/state_ledger.rs`
-- **SystemBaseline** (9 connections) — `src/backup/state_ledger.rs`
-- **test_ledger_crud()** (8 connections) — `src/backup/state_ledger.rs`
-- **revert_tweaks_by_id_with()** (6 connections) — `src/executor/engine.rs`
-- **.get_initial_baseline()** (4 connections) — `src/backup/state_ledger.rs`
-- **.init_conn()** (4 connections) — `src/backup/state_ledger.rs`
-- **.query_single_baseline()** (4 connections) — `src/backup/state_ledger.rs`
-- **revert_tweak()** (4 connections) — `src/executor/engine.rs`
-- **revert_tweaks_by_id()** (4 connections) — `src/executor/engine.rs`
-- **Connection** (3 connections)
-- **DateTime** (3 connections)
-- **Utc** (3 connections)
-- **.get_history()** (3 connections) — `src/backup/state_ledger.rs`
-- **.get_latest_baseline()** (3 connections) — `src/backup/state_ledger.rs`
-- **.new()** (3 connections) — `src/backup/state_ledger.rs`
-- **.reset_baseline()** (3 connections) — `src/backup/state_ledger.rs`
-- **.save_baseline()** (3 connections) — `src/backup/state_ledger.rs`
-- **.in_memory()** (2 connections) — `src/backup/state_ledger.rs`
-- **.record_change()** (2 connections) — `src/backup/state_ledger.rs`
-- **.rollback_entry()** (2 connections) — `src/backup/state_ledger.rs`
-- **params** (1 connections)
-- **.is_reversible()** (1 connections) — `src/backup/state_ledger.rs`
-- **.clear_history()** (1 connections) — `src/backup/state_ledger.rs`
+- **super** (49 connections)
+- **WinBlastError** (46 connections) — `src/core/error.rs`
+- **test_error_formatting()** (6 connections) — `src/core/error.rs`
+- **error.rs** (5 connections) — `src/core/error.rs`
+- **test_error_helpers()** (5 connections) — `src/core/error.rs`
+- **Registry** (5 connections) — `src/core/error.rs`
+- **.invalid_input()** (4 connections) — `src/core/error.rs`
+- **Service** (4 connections) — `src/core/error.rs`
+- **S** (3 connections)
+- **.from_reg_err()** (3 connections) — `src/core/error.rs`
+- **InvalidInput** (3 connections) — `src/core/error.rs`
+- **Com** (2 connections) — `src/core/error.rs`
+- **NtStatus** (2 connections) — `src/core/error.rs`
+- **AppX** (1 connections) — `src/core/error.rs`
+- **Backup** (1 connections) — `src/core/error.rs`
+- **Database** (1 connections) — `src/core/error.rs`
+- **ElevationRequired** (1 connections) — `src/core/error.rs`
+- **Hardware** (1 connections) — `src/core/error.rs`
+- **Io** (1 connections) — `src/core/error.rs`
+- **OsIncompatible** (1 connections) — `src/core/error.rs`
+- **PowerShell** (1 connections) — `src/core/error.rs`
+- **Rollback** (1 connections) — `src/core/error.rs`
+- **ScheduledTask** (1 connections) — `src/core/error.rs`
+- **Serialization** (1 connections) — `src/core/error.rs`
+- **TomlParse** (1 connections) — `src/core/error.rs`
+- *... and 2 more nodes in this community*
 
 ## Relationships
 
-- [full_telemetry_audit_with](full_telemetry_audit_with.md) (19 shared connections)
-- [super](super.md) (3 shared connections)
-- [app.rs](app.rs.md) (3 shared connections)
-- [Embedded Catalog Test](Embedded_Catalog_Test.md) (3 shared connections)
-- [AppState](AppState.md) (2 shared connections)
-- [theme.rs](theme.rs.md) (1 shared connections)
-- [WorkerEvent](WorkerEvent.md) (1 shared connections)
-- [Integration Suite: Tweak Sandbox E2E](Integration_Suite-_Tweak_Sandbox_E2E.md) (1 shared connections)
+- [boot_config.rs](boot_config.rs.md) (4 shared connections)
+- [reg_helpers.rs](reg_helpers.rs.md) (3 shared connections)
+- [adaptive_tuning.rs](adaptive_tuning.rs.md) (3 shared connections)
+- [sysprep_engine.rs](sysprep_engine.rs.md) (3 shared connections)
+- [power_governor.rs](power_governor.rs.md) (3 shared connections)
+- [RealBackend](RealBackend.md) (3 shared connections)
+- [startup.rs](startup.rs.md) (3 shared connections)
+- [sys_inventory.rs](sys_inventory.rs.md) (3 shared connections)
+- [State Ledger & Restore Point Engine](State_Ledger_&_Restore_Point_Engine.md) (2 shared connections)
+- [elevation.rs](elevation.rs.md) (2 shared connections)
+- [registry_scanner.rs](registry_scanner.rs.md) (2 shared connections)
+- [spawn_guarded_worker](spawn_guarded_worker.md) (2 shared connections)
 
 ## Source Files
 
-- `src/backup/state_ledger.rs`
-- `src/executor/engine.rs`
+- `src/core/error.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 80 (100%)
+- EXTRACTED: 112 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

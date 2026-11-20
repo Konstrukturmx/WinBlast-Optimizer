@@ -1,8 +1,8 @@
 # SandboxEnv
 
-> God node · 115 connections · `src/core/backend.rs`
+> God node · 119 connections · `src/core/backend.rs`
 
-**Community:** [SandboxEnv](SandboxEnv.md)
+**Community:** [GPU Silicon & Hardware Tuning Policies](GPU_Silicon_&_Hardware_Tuning_Policies.md)
 
 ## Connections by Relation
 
@@ -16,7 +16,11 @@
 - tweak_sandbox_e2e.rs `EXTRACTED`
 - engine.rs `EXTRACTED`
 - scanner/mod.rs `EXTRACTED`
-- [restore_point.rs](restore_point.rs.md) `EXTRACTED`
+- [adaptive_tuning.rs](adaptive_tuning.rs.md) `EXTRACTED`
+- restore_point.rs `EXTRACTED`
+- [power_governor.rs](power_governor.rs.md) `EXTRACTED`
+- [boot_config.rs](boot_config.rs.md) `EXTRACTED`
+- [sysprep_engine.rs](sysprep_engine.rs.md) `EXTRACTED`
 
 ### method
 - .state_read() `EXTRACTED`
@@ -48,7 +52,7 @@
 - SandboxState `EXTRACTED`
 - [WinBlast Optimizer — Developer & Architecture Guide](WinBlast_Optimizer_—_Developer_&_Architecture_Guide.md) `EXTRACTED`
 - SandboxTempDir `EXTRACTED`
-- [RwLock](RwLock.md) `EXTRACTED`
+- RwLock `EXTRACTED`
 - .new() `EXTRACTED`
 - .new() `EXTRACTED`
 - .new() `EXTRACTED`

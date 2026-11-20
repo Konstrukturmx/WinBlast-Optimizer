@@ -1,61 +1,62 @@
 # Multi-Language Tweak Localization Tables
 
-> 32 nodes · cohesion 0.10
+> 32 nodes · cohesion 0.17
 
 ## Key Concepts
 
-- **gpu.rs** (27 connections) — `src/hardware/gpu.rs`
-- **GpuVendor** (19 connections) — `src/hardware/gpu.rs`
-- **DetectedGpu** (17 connections) — `src/hardware/gpu.rs`
-- **detect_gpus()** (7 connections) — `src/hardware/gpu.rs`
-- **detect_vendor()** (7 connections) — `src/hardware/gpu.rs`
-- **resolve_gpu_class_path_for_vendor()** (6 connections) — `src/hardware/gpu.rs`
-- **DevInfoGuard** (4 connections) — `src/hardware/gpu.rs`
-- **.as_str()** (4 connections) — `src/hardware/gpu.rs`
-- **parse_target_vendor()** (4 connections) — `src/hardware/gpu.rs`
-- **present_display_class_subkeys()** (4 connections) — `src/hardware/gpu.rs`
-- **primary_vendor()** (3 connections) — `src/hardware/gpu.rs`
-- **.detect_gpus()** (2 connections) — `src/core/backend.rs`
-- **.detect_gpus()** (2 connections) — `src/core/backend.rs`
-- **test_gpu_vendor_compatibility()** (2 connections) — `src/core/risk.rs`
-- **.is_gpu_vendor_compatible()** (2 connections) — `src/core/risk.rs`
-- **detect_dxgi_vram_table()** (2 connections) — `src/hardware/gpu.rs`
-- **has_ascii_token()** (2 connections) — `src/hardware/gpu.rs`
-- **parse_ven_dev()** (2 connections) — `src/hardware/gpu.rs`
-- **resolve_gpu_class_path()** (2 connections) — `src/hardware/gpu.rs`
-- **test_detect_vendor_no_false_positive_ati()** (2 connections) — `src/hardware/gpu.rs`
-- **HDEVINFO** (1 connections)
-- **.drop()** (1 connections) — `src/hardware/gpu.rs`
-- **DISPLAY_CLASS_PREFIX** (1 connections) — `src/hardware/gpu.rs`
-- **Amd** (1 connections) — `src/hardware/gpu.rs`
-- **Intel** (1 connections) — `src/hardware/gpu.rs`
+- **action_button_guarded()** (44 connections) — `src/ui/widgets/button.rs`
+- **clean_apps.rs** (32 connections) — `src/ui/views/clean_apps.rs`
+- **startup_tasks.rs** (28 connections) — `src/ui/views/startup_tasks.rs`
+- **pill_badge()** (20 connections) — `src/ui/widgets/button.rs`
+- **build_appx_features_body()** (12 connections) — `src/ui/views/clean_apps.rs`
+- **build_disk_cleaner_body()** (12 connections) — `src/ui/views/clean_apps.rs`
+- **build_winget_body()** (12 connections) — `src/ui/views/clean_apps.rs`
+- **build_startup_apps_list()** (11 connections) — `src/ui/views/startup_tasks.rs`
+- **view()** (11 connections) — `src/ui/views/startup_tasks.rs`
+- **view()** (9 connections) — `src/ui/views/clean_apps.rs`
+- **build_services_list()** (9 connections) — `src/ui/views/startup_tasks.rs`
+- **build_tasks_list()** (9 connections) — `src/ui/views/startup_tasks.rs`
+- **switch_indicator()** (8 connections) — `src/ui/widgets/button.rs`
+- **CleanAppsSubTab** (7 connections) — `src/app.rs`
+- **StartupTasksSubTab** (7 connections) — `src/app.rs`
+- **El** (7 connections)
+- **El** (7 connections)
+- **empty_card()** (6 connections) — `src/ui/views/clean_apps.rs`
+- **empty_card()** (6 connections) — `src/ui/views/startup_tasks.rs`
+- **sub_tab_btn()** (5 connections) — `src/ui/views/clean_apps.rs`
+- **sub_tab_btn()** (5 connections) — `src/ui/views/startup_tasks.rs`
+- **clean_target_label()** (4 connections) — `src/ui/views/clean_apps.rs`
+- **startup_source_label()** (4 connections) — `src/ui/views/startup_tasks.rs`
+- **growthspec** (2 connections)
+- **rc** (2 connections)
 - *... and 7 more nodes in this community*
 
 ## Relationships
 
-- [super](super.md) (5 shared connections)
-- [backend.rs](backend.rs.md) (3 shared connections)
-- [test_wave1_ledger_rollback_and_concurrency_regressions](test_wave1_ledger_rollback_and_concurrency_regressions.md) (3 shared connections)
-- [Embedded Catalog Test](Embedded_Catalog_Test.md) (2 shared connections)
-- [real_windows_env.rs](real_windows_env.rs.md) (2 shared connections)
+- [Disk Cleaning & Temporary File Purger](Disk_Cleaning_&_Temporary_File_Purger.md) (34 shared connections)
+- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (23 shared connections)
+- [.Reg State() Vendor()](Reg_State_Vendor.md) (18 shared connections)
+- [AppState](AppState.md) (15 shared connections)
+- [advanced_matrix.rs](advanced_matrix.rs.md) (8 shared connections)
+- [WinBlastScrollable](WinBlastScrollable.md) (4 shared connections)
+- [SlowScanBackend](SlowScanBackend.md) (2 shared connections)
 - [SandboxEnv](SandboxEnv.md) (2 shared connections)
-- [app.rs](app.rs.md) (2 shared connections)
-- [.Reg State() Vendor()](Reg_State_Vendor.md) (1 shared connections)
-- [Integration Suite: Tweak Sandbox E2E](Integration_Suite-_Tweak_Sandbox_E2E.md) (1 shared connections)
-- [Win32 Registry Scanner & Mutator](Win32_Registry_Scanner_&_Mutator.md) (1 shared connections)
-- [AppState](AppState.md) (1 shared connections)
-- [PowerSchemeInfo](PowerSchemeInfo.md) (1 shared connections)
+- [Core UI Internationalization & Text Catalog](Core_UI_Internationalization_&_Text_Catalog.md) (2 shared connections)
+- [startup.rs](startup.rs.md) (2 shared connections)
+- [System Architecture Changelog](System_Architecture_Changelog.md) (2 shared connections)
+- [Project History & Release Version Ledger](Project_History_&_Release_Version_Ledger.md) (2 shared connections)
 
 ## Source Files
 
-- `src/core/backend.rs`
-- `src/core/risk.rs`
-- `src/hardware/gpu.rs`
+- `src/app.rs`
+- `src/ui/views/clean_apps.rs`
+- `src/ui/views/startup_tasks.rs`
+- `src/ui/widgets/button.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 76 (94%)
-- INFERRED: 5 (6%)
+- EXTRACTED: 164 (80%)
+- INFERRED: 40 (20%)
 - AMBIGUOUS: 0 (0%)
 
 ---

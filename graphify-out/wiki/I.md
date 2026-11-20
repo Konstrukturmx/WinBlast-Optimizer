@@ -4,11 +4,15 @@
 
 ## Key Concepts
 
-- **I** (0 connections)
+- **views/mod.rs** (0 connections) — `src/ui/views/mod.rs`
 
 ## Relationships
 
 - No strong cross-community connections detected
+
+## Source Files
+
+- `src/ui/views/mod.rs`
 
 ## Audit Trail
 

@@ -1,56 +1,50 @@
 # spawn_guarded_worker
 
-> 32 nodes · cohesion 0.07
+> 19 nodes · cohesion 0.20
 
 ## Key Concepts
 
-- **spawn_guarded_worker()** (48 connections) — `src/app.rs`
-- **.sync_startup_tasks_busy()** (7 connections) — `src/app.rs`
-- **Sender** (5 connections)
-- **.set_live_service_start_async()** (5 connections) — `src/app.rs`
-- **WorkerDropGuard** (5 connections) — `src/app.rs`
-- **.create_restore_point()** (4 connections) — `src/app.rs`
-- **.rollback_entry()** (4 connections) — `src/app.rs`
-- **.run_live_task_async()** (4 connections) — `src/app.rs`
-- **.start_latency_benchmark()** (4 connections) — `src/app.rs`
-- **.toggle_live_task_async()** (4 connections) — `src/app.rs`
-- **.toggle_optional_feature_async()** (4 connections) — `src/app.rs`
-- **.toggle_startup_entry_async()** (4 connections) — `src/app.rs`
-- **Waker** (4 connections)
-- **.block_telemetry_hosts()** (3 connections) — `src/app.rs`
-- **.restart_explorer_safely()** (3 connections) — `src/app.rs`
-- **ScheduledTaskRunResult** (3 connections) — `src/app.rs`
-- **P** (2 connections)
-- **.activate_winblast_ultimate_power_plan()** (2 connections) — `src/app.rs`
-- **.set_active_power_plan()** (2 connections) — `src/app.rs`
-- **.toggle_gpu_msi()** (2 connections) — `src/app.rs`
-- **.toggle_hags()** (2 connections) — `src/app.rs`
-- **.toggle_hibernation()** (2 connections) — `src/app.rs`
-- **.toggle_mpo()** (2 connections) — `src/app.rs`
-- **.toggle_usb_power_saving()** (2 connections) — `src/app.rs`
-- **ExplorerRestarted** (2 connections) — `src/app.rs`
-- *... and 7 more nodes in this community*
+- **task_scanner.rs** (20 connections) — `src/scanner/task_scanner.rs`
+- **normalize_task_path()** (8 connections) — `src/scanner/task_scanner.rs`
+- **query_single_task_detailed()** (8 connections) — `src/scanner/task_scanner.rs`
+- **.evaluate_task_with_kind()** (7 connections) — `src/scanner/task_scanner.rs`
+- **query_task_via_schtasks()** (5 connections) — `src/scanner/task_scanner.rs`
+- **.load()** (5 connections) — `src/scanner/task_scanner.rs`
+- **is_disabled_status()** (4 connections) — `src/scanner/task_scanner.rs`
+- **.from_map()** (4 connections) — `src/scanner/task_scanner.rs`
+- **ComGuard** (3 connections) — `src/scanner/task_scanner.rs`
+- **parse_csv_line()** (3 connections) — `src/scanner/task_scanner.rs`
+- **query_task_via_com()** (3 connections) — `src/scanner/task_scanner.rs`
+- **test_evaluate_task_with_kind_all_cache_and_error_branches()** (3 connections) — `src/scanner/task_scanner.rs`
+- **canonical_task_path()** (2 connections) — `src/scanner/task_scanner.rs`
+- **get_task_enabled()** (2 connections) — `src/scanner/task_scanner.rs`
+- **task_leaf_name()** (2 connections) — `src/scanner/task_scanner.rs`
+- **test_multilingual_disabled_statuses()** (2 connections) — `src/scanner/task_scanner.rs`
+- **test_query_single_task_distinguishes_absent_vs_access_denied()** (2 connections) — `src/scanner/task_scanner.rs`
+- **test_task_cache_loaded_does_not_cross_match_prefixes()** (2 connections) — `src/scanner/task_scanner.rs`
+- **.drop()** (1 connections) — `src/scanner/task_scanner.rs`
 
 ## Relationships
 
-- [AppState](AppState.md) (21 shared connections)
-- [WorkerEvent](WorkerEvent.md) (21 shared connections)
-- [.set_status_spec](set_status_spec.md) (7 shared connections)
-- [.navigate](navigate.md) (6 shared connections)
-- [.setup](setup.md) (5 shared connections)
-- [LazyLoader](LazyLoader.md) (3 shared connections)
-- [.run_scan_internal](run_scan_internal.md) (2 shared connections)
-- [app.rs](app.rs.md) (2 shared connections)
+- [TaskCache](TaskCache.md) (5 shared connections)
+- [FeatureInstallState](FeatureInstallState.md) (3 shared connections)
+- [FailAtMutationBackend](FailAtMutationBackend.md) (2 shared connections)
+- [GPU Silicon & Hardware Tuning Policies](GPU_Silicon_&_Hardware_Tuning_Policies.md) (2 shared connections)
+- [sys_inventory.rs](sys_inventory.rs.md) (1 shared connections)
+- [reg_helpers.rs](reg_helpers.rs.md) (1 shared connections)
 - [RegRawSnapshot](RegRawSnapshot.md) (1 shared connections)
+- [reg_mutator.rs](reg_mutator.rs.md) (1 shared connections)
+- [SlowScanBackend](SlowScanBackend.md) (1 shared connections)
+- [WinBlastError](WinBlastError.md) (1 shared connections)
 
 ## Source Files
 
-- `src/app.rs`
+- `src/scanner/task_scanner.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 105 (100%)
-- INFERRED: 0 (0%)
+- EXTRACTED: 46 (88%)
+- INFERRED: 6 (12%)
 - AMBIGUOUS: 0 (0%)
 
 ---

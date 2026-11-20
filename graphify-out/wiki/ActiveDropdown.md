@@ -4,7 +4,7 @@
 
 ## Key Concepts
 
-- **c_void** (0 connections)
+- **Output** (0 connections)
 
 ## Relationships
 

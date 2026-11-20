@@ -1087,6 +1087,56 @@ pub fn lookup(id: &str) -> Option<LocalizedTweakText> {
             description: "Desactiva la suspensión selectiva USB a nivel de controlador raíz (DisableSelectiveSuspend=1). Evita que ratones, teclados y DACs entren en reposo, garantizando latencia cero de entrada.",
             broken_features: &["Consumo de energía ligeramente mayor en el bus USB en reposo", "Menor duración de la batería del portátil"],
         }),
+        "remove_webexperience_package" => Some(LocalizedTweakText {
+            title: "Eliminar paquete Windows WebExperienceHost (Host de widgets)",
+            description: "Elimina el paquete MicrosoftWindows.Client.WebExperience para evitar que los widgets de la barra de tareas consuman memoria de Edge WebView2 en segundo plano.",
+            broken_features: &["Los widgets de la barra de tareas y las noticias se eliminarán permanentemente."],
+        }),
+        "disable_wpbt_execution" => Some(LocalizedTweakText {
+            title: "Deshabilitar ejecución de binarios de firmware WPBT",
+            description: "Evita que el kernel de Windows ejecute binarios incrustados en la tabla WPBT de la UEFI de la placa base.",
+            broken_features: &[],
+        }),
+        "service_shutdown_timeout_15s" => Some(LocalizedTweakText {
+            title: "Reducir tiempo de espera de apagado de servicios a 15 segundos",
+            description: "Reduce el tiempo de espera de terminación de servicios durante el apagado de 20 s a 15 s para evitar bloqueos.",
+            broken_features: &[],
+        }),
+        "start_menu_show_more_pins" => Some(LocalizedTweakText {
+            title: "Menú Inicio: diseño con más anclajes",
+            description: "Configura el menú Inicio de Windows 11 para priorizar las aplicaciones ancladas sobre las sugerencias recomendadas.",
+            broken_features: &[],
+        }),
+        "disable_taskbar_people_button" => Some(LocalizedTweakText {
+            title: "Deshabilitar botón Contactos de la barre de tareas",
+            description: "Oculta y deshabilita el icono Contactos de la barra de tareas de Windows.",
+            broken_features: &[],
+        }),
+        "repair_ndu_graph" => Some(LocalizedTweakText {
+            title: "Reparar gráfico de uso de datos de red (NDU) del Administrador de tareas",
+            description: "Asegura que el controlador del kernel NDU esté configurado en Start=2 (Automático) para que los gráficos de red del Administrador de tareas funcionen correctamente.",
+            broken_features: &[],
+        }),
+        "disable_settings_ads" => Some(LocalizedTweakText {
+            title: "Deshabilitar contenido sugerido y anuncios en Configuración",
+            description: "Evita que Microsoft muestre aplicaciones sugeridas, promociones de socios y sugerencias dentro de la Configuración de Windows.",
+            broken_features: &["Se suprimen las tarjetas promocionales y sugerencias en Configuración."],
+        }),
+        "disable_start_menu_suggested_apps" => Some(LocalizedTweakText {
+            title: "Deshabilitar instalación automática de aplicaciones sugeridas",
+            description: "Evita que Windows Content Delivery Manager descargue y ancle silenciosamente aplicaciones y juegos sugeridos.",
+            broken_features: &["Los juegos patrocinados no se instalarán automáticamente en el menú Inicio."],
+        }),
+        "disable_hardware_companion_software" => Some(LocalizedTweakText {
+            title: "Deshabilitar recomendaciones de software complementario de hardware",
+            description: "Evita que Windows notifique y recomiende automáticamente software complementario de OEM al conectar periféricos.",
+            broken_features: &[],
+        }),
+        "disable_ms_office_telemetry" => Some(LocalizedTweakText {
+            title: "Deshabilitar telemetría y registro de experiencia de Microsoft Office",
+            description: "Deshabilita la recopilación de datos de diagnóstico de Microsoft Office, las solicitudes de comentarios y la telemetría del Programa para la mejora de la experiencia del cliente (CEIP).",
+            broken_features: &[],
+        }),
         _ => None,
     }
 }

@@ -1,60 +1,62 @@
 # sys_inventory.rs
 
-> 62 nodes · cohesion 0.06
+> 52 nodes · cohesion 0.07
 
 ## Key Concepts
 
-- **sys_inventory.rs** (50 connections) — `src/hardware/sys_inventory.rs`
-- **disks.rs** (36 connections) — `src/hardware/disks.rs`
-- **DiskSubsystemReport** (8 connections) — `src/hardware/disks.rs`
-- **probe_physical_drive()** (8 connections) — `src/hardware/disks.rs`
-- **StorageVolumeInfo** (8 connections) — `src/hardware/sys_inventory.rs`
-- **detect_platform_security_info()** (7 connections) — `src/hardware/sys_inventory.rs`
-- **RamDimmInfo** (7 connections) — `src/hardware/sys_inventory.rs`
-- **HANDLE** (5 connections)
-- **pcwstr** (5 connections)
-- **PhysicalDriveHealth** (5 connections) — `src/hardware/disks.rs`
-- **query_ram_dimms()** (5 connections) — `src/hardware/sys_inventory.rs`
-- **closehandle** (4 connections)
-- **.probe()** (4 connections) — `src/hardware/disks.rs`
-- **HandleGuard** (4 connections) — `src/hardware/disks.rs`
-- **query_nvme_smart_ioctl()** (4 connections) — `src/hardware/disks.rs`
-- **HandleGuard** (4 connections) — `src/hardware/sys_inventory.rs`
-- **probe_drive_media_kind()** (4 connections) — `src/hardware/sys_inventory.rs`
-- **query_storage_volumes()** (4 connections) — `src/hardware/sys_inventory.rs`
-- **probe_volume_fallback()** (3 connections) — `src/hardware/disks.rs`
-- **query_disk_capacity_ioctl()** (3 connections) — `src/hardware/disks.rs`
-- **query_smart_health_wmi()** (3 connections) — `src/hardware/disks.rs`
-- **NtQuerySystemInformation()** (3 connections) — `src/hardware/sys_inventory.rs`
-- **query_live_code_integrity_options()** (3 connections) — `src/hardware/sys_inventory.rs`
-- **test_ram_and_platform_inventory_nonblocking()** (3 connections) — `src/hardware/sys_inventory.rs`
-- **total_physical_ram_kb()** (3 connections) — `src/hardware/sys_inventory.rs`
-- *... and 37 more nodes in this community*
+- **dijkstra.rs** (14 connections) — `src/graph/dijkstra.rs`
+- **astar.rs** (12 connections) — `src/graph/astar.rs`
+- **graph/mod.rs** (11 connections) — `src/graph/mod.rs`
+- **hashset** (9 connections)
+- **.plan()** (9 connections) — `src/graph/astar.rs`
+- **hashmap** (8 connections)
+- **OptimizationGoal** (8 connections) — `src/graph/astar.rs`
+- **raven.rs** (8 connections) — `src/graph/raven.rs`
+- **.schedule_execution()** (7 connections) — `src/graph/dijkstra.rs`
+- **RavenEngine** (7 connections) — `src/graph/raven.rs`
+- **.resolve_conflicts()** (7 connections) — `src/graph/raven.rs`
+- **ordering** (6 connections)
+- **BitSet256** (6 connections) — `src/graph/astar.rs`
+- **.new()** (5 connections) — `src/graph/dijkstra.rs`
+- **ExecutionOrder** (5 connections) — `src/graph/dijkstra.rs`
+- **TweakCriteria** (5 connections) — `src/graph/raven.rs`
+- **AStarNode** (4 connections) — `src/graph/astar.rs`
+- **AStarPlanner** (4 connections) — `src/graph/astar.rs`
+- **OptimizationPlan** (4 connections) — `src/graph/astar.rs`
+- **test_astar_finds_optimal_gaming_path()** (4 connections) — `src/graph/astar.rs`
+- **test_astar_respects_reboot_constraint()** (4 connections) — `src/graph/astar.rs`
+- **DijkstraScheduler** (4 connections) — `src/graph/dijkstra.rs`
+- **ConflictResolution** (4 connections) — `src/graph/raven.rs`
+- **.partial_cmp()** (3 connections) — `src/graph/astar.rs`
+- **.new()** (3 connections) — `src/graph/astar.rs`
+- *... and 27 more nodes in this community*
 
 ## Relationships
 
-- [super](super.md) (8 shared connections)
-- [PlatformSecurityInfo](PlatformSecurityInfo.md) (4 shared connections)
-- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (3 shared connections)
-- [WorkerEvent](WorkerEvent.md) (3 shared connections)
-- [AppState](AppState.md) (3 shared connections)
-- [backend.rs](backend.rs.md) (3 shared connections)
-- [DriverError](DriverError.md) (3 shared connections)
-- [elevation.rs](elevation.rs.md) (2 shared connections)
-- [LazyLoader](LazyLoader.md) (2 shared connections)
-- [app.rs](app.rs.md) (2 shared connections)
-- [startup.rs](startup.rs.md) (1 shared connections)
-- [Disk Cleaning & Temporary File Purger](Disk_Cleaning_&_Temporary_File_Purger.md) (1 shared connections)
+- [AppState](AppState.md) (4 shared connections)
+- [SlowScanBackend](SlowScanBackend.md) (3 shared connections)
+- [State Ledger & Restore Point Engine](State_Ledger_&_Restore_Point_Engine.md) (3 shared connections)
+- [FailAtMutationBackend](FailAtMutationBackend.md) (3 shared connections)
+- [features_apps.rs](features_apps.rs.md) (2 shared connections)
+- [super](super.md) (2 shared connections)
+- [Appx Package() Prefixes](Appx_Package_Prefixes.md) (2 shared connections)
+- [spawn_guarded_worker](spawn_guarded_worker.md) (1 shared connections)
+- [AppxCache](AppxCache.md) (1 shared connections)
+- [.take_injected_error](take_injected_error.md) (1 shared connections)
+- [Integration Suite: Tweak Sandbox E2E](Integration_Suite-_Tweak_Sandbox_E2E.md) (1 shared connections)
+- [lazy_loader.rs](lazy_loader.rs.md) (1 shared connections)
 
 ## Source Files
 
-- `src/hardware/disks.rs`
-- `src/hardware/sys_inventory.rs`
+- `src/graph/astar.rs`
+- `src/graph/dijkstra.rs`
+- `src/graph/mod.rs`
+- `src/graph/raven.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 142 (99%)
-- INFERRED: 2 (1%)
+- EXTRACTED: 125 (100%)
+- INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 
 ---

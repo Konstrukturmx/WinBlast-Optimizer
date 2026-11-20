@@ -1,43 +1,60 @@
 # PanickingBackend
 
-> God node · 81 connections · `tests/tweak_sandbox_e2e.rs`
+> 31 nodes · cohesion 0.06
 
-**Community:** [SlowScanBackend](SlowScanBackend.md)
+## Key Concepts
 
-## Connections by Relation
+- **PanickingBackend** (81 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.reg_set_raw()** (6 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.set_scheduled_task_enabled()** (5 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.reg_set_raw()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.default_ledger_path()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.reg_get_binary()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.set_gpu_msi_mode()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.set_service_start_type()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.write_power_setting_index()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.new()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.set_scheduled_task_enabled()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.set_service_start_type()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.write_power_setting_index()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.default_profile_path()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.is_mpo_disabled()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.reg_get_dword()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.total_physical_ram_kb()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.default_ledger_path()** (2 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.default_profile_path()** (2 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.is_mpo_disabled()** (2 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.reg_get_binary()** (2 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.reg_get_dword()** (2 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.set_gpu_msi_mode()** (2 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.total_physical_ram_kb()** (2 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.default_ledger_path()** (2 connections) — `tests/tweak_sandbox_e2e.rs`
+- *... and 6 more nodes in this community*
 
-### contains
-- tweak_sandbox_e2e.rs `EXTRACTED`
+## Relationships
 
-### implements
-- [SystemBackend](SystemBackend.md) `EXTRACTED`
+- [WinBlast Optimizer](WinBlast_Optimizer.md) (25 shared connections)
+- [SlowScanBackend](SlowScanBackend.md) (21 shared connections)
+- [FailAtMutationBackend](FailAtMutationBackend.md) (14 shared connections)
+- [super](super.md) (7 shared connections)
+- [DriverUpdateState](DriverUpdateState.md) (3 shared connections)
+- [GPU Silicon & Hardware Tuning Policies](GPU_Silicon_&_Hardware_Tuning_Policies.md) (2 shared connections)
+- [enums](enums.md) (2 shared connections)
+- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (2 shared connections)
+- [startup.rs](startup.rs.md) (2 shared connections)
+- [HibernationStatus](HibernationStatus.md) (2 shared connections)
+- [lazy_loader.rs](lazy_loader.rs.md) (1 shared connections)
+- [full_telemetry_audit_with](full_telemetry_audit_with.md) (1 shared connections)
 
-### method
-- .execute_clean_targets() `EXTRACTED`
-- .set_optional_feature() `EXTRACTED`
-- .detect_os() `EXTRACTED`
-- .reg_set_raw() `EXTRACTED`
-- .reg_snapshot_tree() `EXTRACTED`
-- .reg_restore_tree() `EXTRACTED`
-- .set_hibernation_enabled() `EXTRACTED`
-- .list_restore_points() `EXTRACTED`
-- .list_optional_features() `EXTRACTED`
-- .list_startup_entries() `EXTRACTED`
-- .set_startup_entry_enabled() `EXTRACTED`
-- .list_live_services() `EXTRACTED`
-- .new() `EXTRACTED`
-- .reg_set_dword() `EXTRACTED`
-- .reg_delete_value() `EXTRACTED`
-- .reg_set_dword_for_vendor() `EXTRACTED`
-- .reg_delete_value_for_vendor() `EXTRACTED`
-- .reg_get_string() `EXTRACTED`
-- .reg_set_string() `EXTRACTED`
-- .reg_set_binary() `EXTRACTED`
-- *…and 57 more `method` connection(s) not listed (lowest-degree first to go)*
+## Source Files
 
-### references
-- [SandboxEnv](SandboxEnv.md) `EXTRACTED`
-- AtomicBool `EXTRACTED`
+- `tests/tweak_sandbox_e2e.rs`
+
+## Audit Trail
+
+- EXTRACTED: 138 (100%)
+- INFERRED: 0 (0%)
+- AMBIGUOUS: 0 (0%)
 
 ---
 

@@ -1299,6 +1299,56 @@ pub fn lookup(id: &str) -> Option<LocalizedTweakText> {
             description: "ルート USB ドライバレベルでセレクティブサスペンドを無効化 (DisableSelectiveSuspend=1) します。アイドル状態のゲーミングマウスやキーボード、DAC の電源オフを防ぎ、入力復帰遅延をゼロにします。",
             broken_features: &["USB バスのアイドル時消費電力がわずかに増加します", "ノート PC のバッテリー持続時間が短縮されます"],
         }),
+        "remove_webexperience_package" => Some(LocalizedTweakText {
+            title: "Windows WebExperienceHost パッケージ (ウィジェット ホスト) の削除",
+            description: "MicrosoftWindows.Client.WebExperience パッケージを削除し、タスクバーのウィジェットによるバックグラウンド Edge WebView2 メモリ消費を防ぎます。",
+            broken_features: &["タスクバーのウィジェットとニュース フィードが完全に削除されます。"],
+        }),
+        "disable_wpbt_execution" => Some(LocalizedTweakText {
+            title: "WPBT ファームウェア バイナリ実行の無効化",
+            description: "マザーボードの UEFI Windows Platform Binary Table (WPBT) に埋め込まれたバイナリの実行をブロックします。",
+            broken_features: &[],
+        }),
+        "service_shutdown_timeout_15s" => Some(LocalizedTweakText {
+            title: "サービスのシャットダウン タイムアウトを 15 秒に短縮",
+            description: "シャットダウン時のサービス終了タイムアウトを 20 秒から 15 秒に短縮し、シャットダウンの遅延を防ぎます。",
+            broken_features: &[],
+        }),
+        "start_menu_show_more_pins" => Some(LocalizedTweakText {
+            title: "スタート メニュー: ピン留めを増やすレイアウト",
+            description: "Windows 11 スタート メニューでおすすめの候補よりもピン留めされたアプリを優先するように構成します。",
+            broken_features: &[],
+        }),
+        "disable_taskbar_people_button" => Some(LocalizedTweakText {
+            title: "タスクバーの「People」ボタンの無効化",
+            description: "Windows タスクバーからレガシーな「People」アイコンを非表示にして無効化します。",
+            broken_features: &[],
+        }),
+        "repair_ndu_graph" => Some(LocalizedTweakText {
+            title: "タスク マネージャー ネットワーク データ使用量 (NDU) グラフの修復",
+            description: "タスク マネージャーのネットワーク グラフが正常に機能するよう、Network Diagnostic Usage (NDU) カーネル ドライバーを Start=2 (自動) に設定します。",
+            broken_features: &[],
+        }),
+        "disable_settings_ads" => Some(LocalizedTweakText {
+            title: "「設定」内の推奨コンテンツと広告の無効化",
+            description: "Windows の「設定」内に Microsoft が推奨アプリ、パートナーのプロモーション、ヒントを表示するのを防ぎます。",
+            broken_features: &["「設定」アプリ内のプロモーション カードとヒントが非表示になります。"],
+        }),
+        "disable_start_menu_suggested_apps" => Some(LocalizedTweakText {
+            title: "おすすめストア アプリの自動インストールの無効化",
+            description: "Windows Content Delivery Manager によるおすすめアプリやゲームのサイレント ダウンロードとピン留めを防ぎます。",
+            broken_features: &["スポンサー提供のゲームがスタート メニューに自動インストールされなくなります。"],
+        }),
+        "disable_hardware_companion_software" => Some(LocalizedTweakText {
+            title: "ハードウェア コンパニオン ソフトウェアの推奨を無効化",
+            description: "周辺機器を接続した際に、サードパーティ製 OEM ハードウェア コンパニオン ソフトウェアを通知・推奨するのを防ぎます。",
+            broken_features: &[],
+        }),
+        "disable_ms_office_telemetry" => Some(LocalizedTweakText {
+            title: "Microsoft Office テレメトリおよびカスタマー エクスペリエンス ログの無効化",
+            description: "Microsoft Office の診断数据收集、フィードバック プロンプト、カスタマー エクスペリエンス向上プログラム (CEIP) テレメトリを無効にします。",
+            broken_features: &[],
+        }),
         _ => None,
     }
 }

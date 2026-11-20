@@ -1,52 +1,59 @@
 # in_progress_hud.rs
 
-> 28 nodes · cohesion 0.11
+> 52 nodes · cohesion 0.04
 
 ## Key Concepts
 
-- **in_progress_hud.rs** (33 connections) — `src/ui/widgets/in_progress_hud.rs`
-- **in_progress_hud()** (8 connections) — `src/ui/widgets/in_progress_hud.rs`
-- **El** (6 connections)
-- **build_typography_block()** (6 connections) — `src/ui/widgets/in_progress_hud.rs`
-- **build_indeterminate_track()** (5 connections) — `src/ui/widgets/in_progress_hud.rs`
-- **build_orbital_spinner()** (5 connections) — `src/ui/widgets/in_progress_hud.rs`
-- **ease_in_out_cubic()** (4 connections) — `src/ui/widgets/in_progress_hud.rs`
-- **format_elapsed()** (3 connections) — `src/ui/widgets/in_progress_hud.rs`
-- **wrap_and_truncate_status()** (3 connections) — `src/ui/widgets/in_progress_hud.rs`
-- **sanitize_elapsed()** (2 connections) — `src/ui/widgets/in_progress_hud.rs`
-- **test_cubic_ease_in_out()** (2 connections) — `src/ui/widgets/in_progress_hud.rs`
-- **test_format_elapsed()** (2 connections) — `src/ui/widgets/in_progress_hud.rs`
-- **test_wrap_and_truncate_status()** (2 connections) — `src/ui/widgets/in_progress_hud.rs`
-- **frac_pi_2** (1 connections)
-- **CARD_WIDTH** (1 connections) — `src/ui/widgets/in_progress_hud.rs`
-- **DOT_COUNT** (1 connections) — `src/ui/widgets/in_progress_hud.rs`
-- **DOT_PHASE_STEP** (1 connections) — `src/ui/widgets/in_progress_hud.rs`
-- **MAX_STATUS_CHARS_PER_LINE** (1 connections) — `src/ui/widgets/in_progress_hud.rs`
-- **MAX_STATUS_LINES** (1 connections) — `src/ui/widgets/in_progress_hud.rs`
-- **ORBIT_CYCLE_SECS** (1 connections) — `src/ui/widgets/in_progress_hud.rs`
-- **ORBIT_DRIFT_SECS** (1 connections) — `src/ui/widgets/in_progress_hud.rs`
-- **ORBIT_RADIUS** (1 connections) — `src/ui/widgets/in_progress_hud.rs`
-- **PROGRESS_CYCLE_SECS** (1 connections) — `src/ui/widgets/in_progress_hud.rs`
-- **SPINNER_CENTER** (1 connections) — `src/ui/widgets/in_progress_hud.rs`
-- **SPINNER_SIZE** (1 connections) — `src/ui/widgets/in_progress_hud.rs`
-- *... and 3 more nodes in this community*
+- **RealBackend** (83 connections) — `src/core/backend.rs`
+- **resolve_persistent_app_dir()** (4 connections) — `src/core/backend.rs`
+- **.is_elevated()** (3 connections) — `src/core/backend.rs`
+- **.list_optional_features()** (3 connections) — `src/core/backend.rs`
+- **.default_ledger_path()** (2 connections) — `src/core/backend.rs`
+- **.default_profile_path()** (2 connections) — `src/core/backend.rs`
+- **.drop()** (2 connections) — `src/core/backend.rs`
+- **.block_telemetry_hosts()** (1 connections) — `src/core/backend.rs`
+- **.broadcast_shell_settings_changed()** (1 connections) — `src/core/backend.rs`
+- **.check_onedrive_kfm_active()** (1 connections) — `src/core/backend.rs`
+- **.create_and_activate_performance_plan()** (1 connections) — `src/core/backend.rs`
+- **.create_restore_point()** (1 connections) — `src/core/backend.rs`
+- **.get_active_power_scheme()** (1 connections) — `src/core/backend.rs`
+- **.get_service_start_type()** (1 connections) — `src/core/backend.rs`
+- **.get_task_enabled()** (1 connections) — `src/core/backend.rs`
+- **.is_hags_enabled()** (1 connections) — `src/core/backend.rs`
+- **.is_mpo_disabled()** (1 connections) — `src/core/backend.rs`
+- **.logical_core_count()** (1 connections) — `src/core/backend.rs`
+- **.read_hosts_file()** (1 connections) — `src/core/backend.rs`
+- **.read_power_setting_index()** (1 connections) — `src/core/backend.rs`
+- **.reg_delete_tree()** (1 connections) — `src/core/backend.rs`
+- **.reg_delete_value()** (1 connections) — `src/core/backend.rs`
+- **.reg_delete_value_for_vendor()** (1 connections) — `src/core/backend.rs`
+- **.reg_get_binary()** (1 connections) — `src/core/backend.rs`
+- **.reg_get_dword()** (1 connections) — `src/core/backend.rs`
+- *... and 27 more nodes in this community*
 
 ## Relationships
 
-- [ThemePalette](ThemePalette.md) (5 shared connections)
-- [.Toggle .Set .Apply](Toggle_.Set_.Apply.md) (4 shared connections)
-- [GPU Silicon & Hardware Tuning Policies](GPU_Silicon_&_Hardware_Tuning_Policies.md) (1 shared connections)
-- [super](super.md) (1 shared connections)
-- [ui/mod.rs](ui-mod.rs.md) (1 shared connections)
+- [State Ledger & Restore Point Engine](State_Ledger_&_Restore_Point_Engine.md) (4 shared connections)
+- [SlowScanBackend](SlowScanBackend.md) (3 shared connections)
+- [DriverUpdateState](DriverUpdateState.md) (2 shared connections)
+- [enums](enums.md) (2 shared connections)
+- [normalize_guid_str](normalize_guid_str.md) (2 shared connections)
+- [TaskCache](TaskCache.md) (2 shared connections)
+- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (2 shared connections)
+- [DriverUpdateItem](DriverUpdateItem.md) (2 shared connections)
+- [startup.rs](startup.rs.md) (2 shared connections)
+- [RealBackend](RealBackend.md) (1 shared connections)
+- [parse_guid](parse_guid.md) (1 shared connections)
+- [full_telemetry_audit_with](full_telemetry_audit_with.md) (1 shared connections)
 
 ## Source Files
 
-- `src/ui/widgets/in_progress_hud.rs`
+- `src/core/backend.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 52 (96%)
-- INFERRED: 2 (4%)
+- EXTRACTED: 90 (99%)
+- INFERRED: 1 (1%)
 - AMBIGUOUS: 0 (0%)
 
 ---

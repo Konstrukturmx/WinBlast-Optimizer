@@ -1,34 +1,43 @@
 # Runtime
 
-> 10 nodes · cohesion 0.36
+> 10 nodes · cohesion 0.49
 
 ## Key Concepts
 
-- **service_scanner.rs** (12 connections) — `src/scanner/service_scanner.rs`
-- **evaluate_service_value_with_kind()** (5 connections) — `src/scanner/service_scanner.rs`
-- **evaluate_service()** (4 connections) — `src/scanner/service_scanner.rs`
-- **evaluate_service_value()** (4 connections) — `src/scanner/service_scanner.rs`
-- **get_service_start_type()** (3 connections) — `src/scanner/service_scanner.rs`
-- **check_service_start_type()** (2 connections) — `src/scanner/service_scanner.rs`
-- **start_type_name()** (2 connections) — `src/scanner/service_scanner.rs`
-- **test_evaluate_absent_optional_service()** (2 connections) — `src/scanner/service_scanner.rs`
-- **test_evaluate_service_value_with_kind_all_branches()** (2 connections) — `src/scanner/service_scanner.rs`
-- **hkey_local_machine** (1 connections)
+- **ui/mod.rs** (29 connections) — `src/ui/mod.rs`
+- **view()** (25 connections) — `src/ui/mod.rs`
+- **build_sidebar()** (11 connections) — `src/ui/mod.rs`
+- **build_dropdown_overlay()** (7 connections) — `src/ui/mod.rs`
+- **El** (7 connections)
+- **mode_tab()** (6 connections) — `src/ui/mod.rs`
+- **nav_button()** (6 connections) — `src/ui/mod.rs`
+- **nav_section_header()** (4 connections) — `src/ui/mod.rs`
+- **Cx** (2 connections)
+- **tier_from_rect()** (2 connections) — `src/ui/mod.rs`
 
 ## Relationships
 
-- [super](super.md) (2 shared connections)
-- [registry_scanner.rs](registry_scanner.rs.md) (2 shared connections)
-- [.Reg .Set Power](Reg_.Set_Power.md) (1 shared connections)
+- [Disk Cleaning & Temporary File Purger](Disk_Cleaning_&_Temporary_File_Purger.md) (20 shared connections)
+- [.Reg State() Vendor()](Reg_State_Vendor.md) (8 shared connections)
+- [AppState](AppState.md) (5 shared connections)
+- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (5 shared connections)
+- [theme.rs](theme.rs.md) (2 shared connections)
+- [CoreParkingState](CoreParkingState.md) (2 shared connections)
+- [Multi-Language Tweak Localization Tables](Multi-Language_Tweak_Localization_Tables.md) (2 shared connections)
+- [SlowScanBackend](SlowScanBackend.md) (1 shared connections)
+- [Reversibility Instant Requireslogoff](Reversibility_Instant_Requireslogoff.md) (1 shared connections)
+- [ps_runner.rs](ps_runner.rs.md) (1 shared connections)
+- [Core UI Internationalization & Text Catalog](Core_UI_Internationalization_&_Text_Catalog.md) (1 shared connections)
+- [action_button_guarded](action_button_guarded.md) (1 shared connections)
 
 ## Source Files
 
-- `src/scanner/service_scanner.rs`
+- `src/ui/mod.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 16 (76%)
-- INFERRED: 5 (24%)
+- EXTRACTED: 72 (94%)
+- INFERRED: 5 (6%)
 - AMBIGUOUS: 0 (0%)
 
 ---

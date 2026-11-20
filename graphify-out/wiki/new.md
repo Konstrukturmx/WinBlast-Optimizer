@@ -4,7 +4,7 @@
 
 ## Key Concepts
 
-- **hardware/mod.rs** (0 connections) — `src/hardware/mod.rs`
+- **executor/mod.rs** (0 connections) — `src/executor/mod.rs`
 
 ## Relationships
 
@@ -12,7 +12,7 @@
 
 ## Source Files
 
-- `src/hardware/mod.rs`
+- `src/executor/mod.rs`
 
 ## Audit Trail
 
