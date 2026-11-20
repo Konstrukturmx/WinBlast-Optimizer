@@ -1,48 +1,63 @@
 # deserialize
 
-> 13 nodes · cohesion 0.21
+> 30 nodes · cohesion 0.09
 
 ## Key Concepts
 
-- **LatencySnapshot** (18 connections) — `src/hardware/latency.rs`
-- **latency.rs** (4 connections) — `src/hardware/latency.rs`
-- **System** (4 connections)
-- **.capture_latency()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.capture_latency()** (3 connections) — `src/core/backend.rs`
-- **.capture_latency()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.capture_latency()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.capture_latency()** (2 connections) — `src/core/backend.rs`
-- **.capture_latency()** (2 connections) — `src/core/backend.rs`
-- **DateTime** (2 connections)
-- **Utc** (2 connections)
-- **.ram_display()** (1 connections) — `src/hardware/latency.rs`
-- **.timer_resolution_display()** (1 connections) — `src/hardware/latency.rs`
+- **deserialize** (36 connections)
+- **serialize** (35 connections)
+- **instant** (8 connections)
+- **BiosSystemInfo** (8 connections) — `src/hardware/bios.rs`
+- **bios.rs** (6 connections) — `src/hardware/bios.rs`
+- **GameProfile** (6 connections) — `src/tools/game_profiles.rs`
+- **tools/game_profiles.rs** (5 connections) — `src/tools/game_profiles.rs`
+- **tools/gaming_stats.rs** (5 connections) — `src/tools/gaming_stats.rs`
+- **tools/performance_tests.rs** (5 connections) — `src/tools/performance_tests.rs`
+- **BenchmarkScore** (5 connections) — `src/tools/performance_tests.rs`
+- **RepairTask** (5 connections) — `src/tools/windows_repair.rs`
+- **GameFpsComparison** (4 connections) — `src/tools/gaming_stats.rs`
+- **LiveGameTelemetry** (4 connections) — `src/tools/gaming_stats.rs`
+- **tools/windows_repair.rs** (4 connections) — `src/tools/windows_repair.rs`
+- **DisplayDriverInfo** (2 connections) — `src/hardware/bios.rs`
+- **.all()** (2 connections) — `src/tools/game_profiles.rs`
+- **.check_applied()** (2 connections) — `src/tools/game_profiles.rs`
+- **.default()** (2 connections) — `src/tools/gaming_stats.rs`
+- **.probe()** (2 connections) — `src/tools/gaming_stats.rs`
+- **BenchmarkRunner** (2 connections) — `src/tools/performance_tests.rs`
+- **.run_quick()** (2 connections) — `src/tools/performance_tests.rs`
+- **.has_warning()** (1 connections) — `src/hardware/bios.rs`
+- **.probe()** (1 connections) — `src/hardware/bios.rs`
+- **.apply()** (1 connections) — `src/tools/game_profiles.rs`
+- **.revert()** (1 connections) — `src/tools/game_profiles.rs`
+- *... and 5 more nodes in this community*
 
 ## Relationships
 
-- [SandboxEnv](SandboxEnv.md) (2 shared connections)
-- [startup.rs](startup.rs.md) (2 shared connections)
-- [SlowScanBackend](SlowScanBackend.md) (2 shared connections)
-- [.Reg State() Vendor()](Reg_State_Vendor.md) (1 shared connections)
-- [Integration Suite: Tweak Sandbox E2E](Integration_Suite-_Tweak_Sandbox_E2E.md) (1 shared connections)
-- [WorkerEvent](WorkerEvent.md) (1 shared connections)
-- [task_scanner.rs](task_scanner.rs.md) (1 shared connections)
-- [AppState](AppState.md) (1 shared connections)
-- [app.rs](app.rs.md) (1 shared connections)
-- [backend.rs](backend.rs.md) (1 shared connections)
-- [theme.rs](theme.rs.md) (1 shared connections)
-- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (1 shared connections)
+- [AppState](AppState.md) (5 shared connections)
+- [Scandetailkind Appxinstalled Appxinstalledps](Scandetailkind_Appxinstalled_Appxinstalledps.md) (4 shared connections)
+- [task_scanner.rs](task_scanner.rs.md) (4 shared connections)
+- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (4 shared connections)
+- [WorkerEvent](WorkerEvent.md) (4 shared connections)
+- [startup.rs](startup.rs.md) (4 shared connections)
+- [PlatformSecurityInfo](PlatformSecurityInfo.md) (4 shared connections)
+- [Error.Rs Winblasterror Appx](Error.Rs_Winblasterror_Appx.md) (3 shared connections)
+- [power.rs](power.rs.md) (3 shared connections)
+- [Disk Cleaning & Temporary File Purger](Disk_Cleaning_&_Temporary_File_Purger.md) (3 shared connections)
+- [PowerSchemeInfo](PowerSchemeInfo.md) (2 shared connections)
+- [Dynamicdwordformula Logicalcorecount Totalraminkb](Dynamicdwordformula_Logicalcorecount_Totalraminkb.md) (2 shared connections)
 
 ## Source Files
 
-- `src/core/backend.rs`
-- `src/hardware/latency.rs`
-- `tests/tweak_sandbox_e2e.rs`
+- `src/hardware/bios.rs`
+- `src/tools/game_profiles.rs`
+- `src/tools/gaming_stats.rs`
+- `src/tools/performance_tests.rs`
+- `src/tools/windows_repair.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 33 (100%)
-- INFERRED: 0 (0%)
+- EXTRACTED: 115 (94%)
+- INFERRED: 7 (6%)
 - AMBIGUOUS: 0 (0%)
 
 ---

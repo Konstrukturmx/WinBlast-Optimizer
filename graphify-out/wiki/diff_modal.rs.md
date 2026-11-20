@@ -1,39 +1,29 @@
 # diff_modal.rs
 
-> 10 nodes · cohesion 0.47
+> 3 nodes · cohesion 0.67
 
 ## Key Concepts
 
-- **diff_modal.rs** (20 connections) — `src/ui/widgets/diff_modal.rs`
-- **view_items_with_palette()** (13 connections) — `src/ui/widgets/diff_modal.rs`
-- **El** (6 connections)
-- **view_with_palette()** (6 connections) — `src/ui/widgets/diff_modal.rs`
-- **diff_single_card()** (5 connections) — `src/ui/widgets/diff_modal.rs`
-- **view_state()** (5 connections) — `src/ui/widgets/diff_modal.rs`
-- **diff_pair_card()** (4 connections) — `src/ui/widgets/diff_modal.rs`
-- **directed_pair()** (4 connections) — `src/ui/widgets/diff_modal.rs`
-- **header_with_dir()** (3 connections) — `src/ui/widgets/diff_modal.rs`
-- **Color** (2 connections)
+- **.set_startup_entry_enabled()** (6 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.set_startup_entry_enabled()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.set_startup_entry_enabled()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
 
 ## Relationships
 
-- [AppState](AppState.md) (6 shared connections)
-- [ThemePalette](ThemePalette.md) (6 shared connections)
-- [.Toggle .Set .Apply](Toggle_.Set_.Apply.md) (4 shared connections)
-- [AppX Package & Modern App Scanner](AppX_Package_&_Modern_App_Scanner.md) (4 shared connections)
-- [action_button](action_button.md) (2 shared connections)
-- [Core UI Internationalization & Text Catalog](Core_UI_Internationalization_&_Text_Catalog.md) (2 shared connections)
-- [ui/mod.rs](ui-mod.rs.md) (1 shared connections)
-- [WinBlastScrollable](WinBlastScrollable.md) (1 shared connections)
+- [SlowScanBackend](SlowScanBackend.md) (4 shared connections)
+- [WinBlast Optimizer](WinBlast_Optimizer.md) (3 shared connections)
+- [FailAtMutationBackend](FailAtMutationBackend.md) (1 shared connections)
+- [PanickingBackend](PanickingBackend.md) (1 shared connections)
+- [super](super.md) (1 shared connections)
 
 ## Source Files
 
-- `src/ui/widgets/diff_modal.rs`
+- `tests/tweak_sandbox_e2e.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 46 (98%)
-- INFERRED: 1 (2%)
+- EXTRACTED: 12 (100%)
+- INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 
 ---

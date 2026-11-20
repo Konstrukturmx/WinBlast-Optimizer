@@ -4,27 +4,30 @@
 
 ## Key Concepts
 
-- **PdhParkingCollector** (7 connections) — `src/hardware/monitor.rs`
-- **parse_pdh_processor_instance()** (3 connections) — `src/hardware/monitor.rs`
-- **test_nt_cpu_delta_handles_idledisable_and_multigroup()** (3 connections) — `src/hardware/monitor.rs`
-- **PDH_HCOUNTER** (2 connections)
-- **PDH_HQUERY** (2 connections)
-- **.sample()** (2 connections) — `src/hardware/monitor.rs`
-- **.drop()** (1 connections) — `src/hardware/monitor.rs`
+- **DriverUpdateState** (11 connections) — `src/hardware/driver_update.rs`
+- **Downloading** (1 connections) — `src/hardware/driver_update.rs`
+- **Installed** (1 connections) — `src/hardware/driver_update.rs`
+- **Installing** (1 connections) — `src/hardware/driver_update.rs`
+- **ReadyToInstall** (1 connections) — `src/hardware/driver_update.rs`
+- **UpdateAvailable** (1 connections) — `src/hardware/driver_update.rs`
+- **UpToDate** (1 connections) — `src/hardware/driver_update.rs`
 
 ## Relationships
 
-- [startup.rs](startup.rs.md) (5 shared connections)
-- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (3 shared connections)
+- [Language](Language.md) (1 shared connections)
+- [Disk Cleaning & Temporary File Purger](Disk_Cleaning_&_Temporary_File_Purger.md) (1 shared connections)
+- [InstalledAppxPackage](InstalledAppxPackage.md) (1 shared connections)
+- [TaskCache](TaskCache.md) (1 shared connections)
+- [task_scanner.rs](task_scanner.rs.md) (1 shared connections)
 
 ## Source Files
 
-- `src/hardware/monitor.rs`
+- `src/hardware/driver_update.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 13 (93%)
-- INFERRED: 1 (7%)
+- EXTRACTED: 11 (100%)
+- INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 
 ---

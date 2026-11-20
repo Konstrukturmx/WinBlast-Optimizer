@@ -1299,6 +1299,56 @@ pub fn lookup(id: &str) -> Option<LocalizedTweakText> {
             description: "Отключает выборочную приостановку USB на уровне корневого драйвера (DisableSelectiveSuspend=1). Предотвращает засыпание игровых мышей, клавиатур и ЦАП, устраняя задержки пробуждения ввода.",
             broken_features: &["Незначительно более высокое энергопотребление шины USB в простое", "Снижение времени работы ноутбука от батареи"],
         }),
+        "remove_webexperience_package" => Some(LocalizedTweakText {
+            title: "Удалить пакет Windows WebExperienceHost (Хост мини-приложений)",
+            description: "Удаляет пакет MicrosoftWindows.Client.WebExperience, предотвращая фоновое использование памяти Edge WebView2 для мини-приложений панели задач.",
+            broken_features: &["Мини-приложения панели задач и лента новостей будут удалены."],
+        }),
+        "disable_wpbt_execution" => Some(LocalizedTweakText {
+            title: "Отключить выполнение бинарных файлов прошивки WPBT",
+            description: "Блокирует выполнение ядром Windows бинарных файлов, встроенных в таблицу UEFI Windows Platform Binary Table (WPBT) материнской платы.",
+            broken_features: &[],
+        }),
+        "service_shutdown_timeout_15s" => Some(LocalizedTweakText {
+            title: "Сократить тайм-аут завершения служб до 15 секунд",
+            description: "Уменьшает время ожидания завершения служб при выключении с 20 до 15 секунд для ускорения завершения работы.",
+            broken_features: &[],
+        }),
+        "start_menu_show_more_pins" => Some(LocalizedTweakText {
+            title: "Меню «Пуск»: режим отображения большего числа закрепленных значков",
+            description: "Настраивает меню «Пуск» Windows 11 для приоритета закрепленных приложений над лентой рекомендаций.",
+            broken_features: &[],
+        }),
+        "disable_taskbar_people_button" => Some(LocalizedTweakText {
+            title: "Отключить кнопку «Люди» на панели задач",
+            description: "Скрывает и отключает устаревший значок «Люди» на панели задач Windows.",
+            broken_features: &[],
+        }),
+        "repair_ndu_graph" => Some(LocalizedTweakText {
+            title: "Восстановить график использования сети (NDU) в Диспетчере задач",
+            description: "Устанавливает драйвер ядра Network Diagnostic Usage (NDU) на Start=2 (Автоматически) для корректной работы сетевых графиков Диспетчера задач.",
+            broken_features: &[],
+        }),
+        "disable_settings_ads" => Some(LocalizedTweakText {
+            title: "Отключить рекомендуемый контент и рекламу в «Параметрах»",
+            description: "Запрещает Microsoft отображать рекомендуемые приложения, рекламу партнеров и советы в приложении «Параметры» Windows.",
+            broken_features: &["Рекламные баннеры и советы в «Параметрах» будут скрыты."],
+        }),
+        "disable_start_menu_suggested_apps" => Some(LocalizedTweakText {
+            title: "Отключить автоустановку рекомендуемых приложений из Store",
+            description: "Предотвращает автоматическую фоновую загрузку и закрепление рекомендуемых приложений и игр службой Windows Content Delivery Manager.",
+            broken_features: &["Рекламные игры не будут автоматически устанавливаться в меню «Пуск»."],
+        }),
+        "disable_hardware_companion_software" => Some(LocalizedTweakText {
+            title: "Отключить рекомендации сопутствующего ПО для оборудования",
+            description: "Предотвращает уведомления и автоматические предложения установить сопутствующее ПО от OEM при подключении периферийных устройств.",
+            broken_features: &[],
+        }),
+        "disable_ms_office_telemetry" => Some(LocalizedTweakText {
+            title: "Отключить телеметрию Microsoft Office и ведение журнала CEIP",
+            description: "Отключает сбор диагностических данных Microsoft Office, запросы обратной связи и телеметрию программы улучшения качества ПО (CEIP).",
+            broken_features: &[],
+        }),
         _ => None,
     }
 }

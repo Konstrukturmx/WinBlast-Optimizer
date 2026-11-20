@@ -1,49 +1,50 @@
 # CoreParkingState
 
-> 13 nodes · cohesion 0.21
+> 18 nodes · cohesion 0.12
 
 ## Key Concepts
 
-- **CoreParkingState** (20 connections) — `src/hardware/parking.rs`
-- **.detect_internal()** (7 connections) — `src/hardware/parking.rs`
-- **.detect_core_parking()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.detect()** (3 connections) — `src/hardware/parking.rs`
-- **CoreStatus** (3 connections) — `src/hardware/parking.rs`
-- **is_on_ac_power()** (3 connections) — `src/hardware/power.rs`
-- **.detect_core_parking()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.detect_core_parking()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.detect_core_parking()** (2 connections) — `src/core/backend.rs`
-- **.detect_core_parking_sampled()** (2 connections) — `src/core/backend.rs`
-- **.detect_core_parking()** (2 connections) — `src/core/backend.rs`
-- **.detect_sampled()** (2 connections) — `src/hardware/parking.rs`
-- **test_core_parking_detect()** (2 connections) — `src/hardware/parking.rs`
+- **ColorScheme** (19 connections) — `src/ui/theme.rs`
+- **ThemeMode** (13 connections) — `src/ui/theme.rs`
+- **.new()** (7 connections) — `src/ui/theme.rs`
+- **.default_for()** (4 connections) — `src/ui/theme.rs`
+- **.set_color_scheme()** (2 connections) — `src/app.rs`
+- **.text_key()** (2 connections) — `src/ui/theme.rs`
+- **THEMES** (2 connections) — `tests/ui_responsive_e2e.rs`
+- **.ALL** (1 connections) — `src/ui/theme.rs`
+- **ArcticAurora** (1 connections) — `src/ui/theme.rs`
+- **CrimsonSunset** (1 connections) — `src/ui/theme.rs`
+- **CyberIndigo** (1 connections) — `src/ui/theme.rs`
+- **EmeraldMint** (1 connections) — `src/ui/theme.rs`
+- **.label()** (1 connections) — `src/ui/theme.rs`
+- **MidnightStealth** (1 connections) — `src/ui/theme.rs`
+- **SolarAmber** (1 connections) — `src/ui/theme.rs`
+- **Dark** (1 connections) — `src/ui/theme.rs`
+- **.label()** (1 connections) — `src/ui/theme.rs`
+- **Light** (1 connections) — `src/ui/theme.rs`
 
 ## Relationships
 
-- [parking.rs](parking.rs.md) (4 shared connections)
-- [.Reg State() Vendor()](Reg_State_Vendor.md) (2 shared connections)
-- [backend.rs](backend.rs.md) (2 shared connections)
-- [SandboxEnv](SandboxEnv.md) (2 shared connections)
-- [parse_guid](parse_guid.md) (2 shared connections)
+- [Project History & Release Version Ledger](Project_History_&_Release_Version_Ledger.md) (5 shared connections)
+- [AppState](AppState.md) (4 shared connections)
 - [SlowScanBackend](SlowScanBackend.md) (2 shared connections)
-- [Integration Suite: Tweak Sandbox E2E](Integration_Suite-_Tweak_Sandbox_E2E.md) (1 shared connections)
-- [WorkerEvent](WorkerEvent.md) (1 shared connections)
-- [AppState](AppState.md) (1 shared connections)
-- [PowerSchemeInfo](PowerSchemeInfo.md) (1 shared connections)
-- [task_scanner.rs](task_scanner.rs.md) (1 shared connections)
-- [app.rs](app.rs.md) (1 shared connections)
+- [Runtime](Runtime.md) (2 shared connections)
+- [Reversibility Instant Requireslogoff](Reversibility_Instant_Requireslogoff.md) (2 shared connections)
+- [svc_mutator.rs](svc_mutator.rs.md) (2 shared connections)
+- [.take_injected_error](take_injected_error.md) (2 shared connections)
+- [.Reg State() Vendor()](Reg_State_Vendor.md) (2 shared connections)
+- [Core UI Internationalization & Text Catalog](Core_UI_Internationalization_&_Text_Catalog.md) (1 shared connections)
 
 ## Source Files
 
-- `src/core/backend.rs`
-- `src/hardware/parking.rs`
-- `src/hardware/power.rs`
-- `tests/tweak_sandbox_e2e.rs`
+- `src/app.rs`
+- `src/ui/theme.rs`
+- `tests/ui_responsive_e2e.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 40 (100%)
-- INFERRED: 0 (0%)
+- EXTRACTED: 40 (98%)
+- INFERRED: 1 (2%)
 - AMBIGUOUS: 0 (0%)
 
 ---

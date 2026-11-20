@@ -1,51 +1,60 @@
 # parking.rs
 
-> 18 nodes · cohesion 0.17
+> 29 nodes · cohesion 0.09
 
 ## Key Concepts
 
-- **parking.rs** (24 connections) — `src/hardware/parking.rs`
-- **ParkingSnapshot** (10 connections) — `src/hardware/parking.rs`
-- **write_parking_thresholds()** (8 connections) — `src/hardware/parking.rs`
-- **.apply_parking_snapshot()** (4 connections) — `src/core/backend.rs`
-- **test_parking_snapshot_roundtrip_and_active_rail_logic()** (4 connections) — `src/hardware/parking.rs`
-- **apply_parking_snapshot()** (3 connections) — `src/hardware/parking.rs`
-- **capture_parking_snapshot()** (3 connections) — `src/hardware/parking.rs`
-- **compute_is_fully_unparked()** (3 connections) — `src/hardware/parking.rs`
-- **.apply_parking_snapshot()** (2 connections) — `src/core/backend.rs`
-- **.deserialize()** (2 connections) — `src/hardware/parking.rs`
-- **.serialize()** (2 connections) — `src/hardware/parking.rs`
-- **restore_stock_parking()** (2 connections) — `src/hardware/parking.rs`
-- **unpark_all_cores()** (2 connections) — `src/hardware/parking.rs`
-- **CPMAXCORES** (1 connections) — `src/hardware/parking.rs`
-- **CPMAXCORES1** (1 connections) — `src/hardware/parking.rs`
-- **CPMINCORES** (1 connections) — `src/hardware/parking.rs`
-- **CPMINCORES1** (1 connections) — `src/hardware/parking.rs`
-- **SUB_PROCESSOR** (1 connections) — `src/hardware/parking.rs`
+- **monitor.rs** (55 connections) — `src/hardware/monitor.rs`
+- **query_nt_timer_resolution()** (7 connections) — `src/hardware/monitor.rs`
+- **query_system_perf_info()** (5 connections) — `src/hardware/monitor.rs`
+- **query_system_process_and_thread_counts()** (4 connections) — `src/hardware/monitor.rs`
+- **query_system_thread_count()** (4 connections) — `src/hardware/monitor.rs`
+- **.capture()** (3 connections) — `src/hardware/latency.rs`
+- **GetPerformanceInfo()** (3 connections) — `src/hardware/monitor.rs`
+- **NtQueryTimerResolution()** (3 connections) — `src/hardware/monitor.rs`
+- **PerformanceInformation** (3 connections) — `src/hardware/monitor.rs`
+- **test_nt_timer_resolution()** (2 connections) — `src/hardware/monitor.rs`
+- **test_system_thread_count()** (2 connections) — `src/hardware/monitor.rs`
+- **all_processor_groups** (1 connections)
+- **getactiveprocessorcount** (1 connections)
+- **getactiveprocessorgroupcount** (1 connections)
+- **memoryrefreshkind** (1 connections)
+- **pdh_cstatus_new_data** (1 connections)
+- **pdh_cstatus_valid_data** (1 connections)
+- **pdh_fmt_countervalue_item_w** (1 connections)
+- **pdh_fmt_double** (1 connections)
+- **pdh_more_data** (1 connections)
+- **pdhaddenglishcounterw** (1 connections)
+- **pdhclosequery** (1 connections)
+- **pdhcollectquerydata** (1 connections)
+- **pdhgetformattedcounterarrayw** (1 connections)
+- **pdhopenqueryw** (1 connections)
+- *... and 4 more nodes in this community*
 
 ## Relationships
 
-- [CoreParkingState](CoreParkingState.md) (4 shared connections)
-- [.take_injected_error](take_injected_error.md) (3 shared connections)
-- [full_telemetry_audit_with](full_telemetry_audit_with.md) (3 shared connections)
-- [super](super.md) (3 shared connections)
-- [parse_guid](parse_guid.md) (3 shared connections)
-- [.Reg State() Vendor()](Reg_State_Vendor.md) (1 shared connections)
-- [Integration Suite: Tweak Sandbox E2E](Integration_Suite-_Tweak_Sandbox_E2E.md) (1 shared connections)
-- [backend.rs](backend.rs.md) (1 shared connections)
-- [WinBlastError](WinBlastError.md) (1 shared connections)
-- [startup.rs](startup.rs.md) (1 shared connections)
-- [power.rs](power.rs.md) (1 shared connections)
+- [path](path.md) (9 shared connections)
+- [progress_bar.rs](progress_bar.rs.md) (7 shared connections)
+- [SystemMetrics](SystemMetrics.md) (6 shared connections)
+- [State Ledger & Restore Point Engine](State_Ledger_&_Restore_Point_Engine.md) (3 shared connections)
+- [Error.Rs Winblasterror Appx](Error.Rs_Winblasterror_Appx.md) (2 shared connections)
+- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (1 shared connections)
+- [Scandetailkind Appxinstalled Appxinstalledps](Scandetailkind_Appxinstalled_Appxinstalledps.md) (1 shared connections)
+- [FailAtMutationBackend](FailAtMutationBackend.md) (1 shared connections)
+- [sys_inventory.rs](sys_inventory.rs.md) (1 shared connections)
+- [PlatformSecurityInfo](PlatformSecurityInfo.md) (1 shared connections)
+- [deserialize](deserialize.md) (1 shared connections)
+- [task_scanner.rs](task_scanner.rs.md) (1 shared connections)
 
 ## Source Files
 
-- `src/core/backend.rs`
-- `src/hardware/parking.rs`
+- `src/hardware/latency.rs`
+- `src/hardware/monitor.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 42 (88%)
-- INFERRED: 6 (12%)
+- EXTRACTED: 71 (99%)
+- INFERRED: 1 (1%)
 - AMBIGUOUS: 0 (0%)
 
 ---

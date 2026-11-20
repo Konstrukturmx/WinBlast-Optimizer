@@ -4,36 +4,43 @@
 
 ## Key Concepts
 
-- **i18n.rs** (13 connections) — `src/core/i18n.rs`
-- **I18n** (8 connections) — `src/core/i18n.rs`
-- **.translate()** (7 connections) — `src/core/i18n.rs`
-- **.get()** (4 connections) — `src/core/i18n.rs`
-- **test_all_languages_and_all_keys_exhaustive()** (2 connections) — `src/core/i18n.rs`
-- **test_i18n_all_languages_populated()** (2 connections) — `src/core/i18n.rs`
-- **test_left_menu_translations_all_8_languages()** (2 connections) — `src/core/i18n.rs`
-- **.fold_search_str()** (1 connections) — `src/core/i18n.rs`
-- **test_fold_search_str_turkish_and_ascii()** (1 connections) — `src/core/i18n.rs`
-- **test_turkish_translation()** (1 connections) — `src/core/i18n.rs`
-- **TRANSLATIONS** (1 connections) — `src/core/i18n.rs`
+- **RegTreeSnapshot** (24 connections) — `src/core/reg_helpers.rs`
+- **.reg_restore_tree()** (5 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.reg_snapshot_tree()** (5 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.reg_restore_tree()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.reg_snapshot_tree()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.reg_restore_tree()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.reg_snapshot_tree()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.reg_restore_tree()** (2 connections) — `src/core/backend.rs`
+- **.reg_snapshot_tree()** (2 connections) — `src/core/backend.rs`
+- **.reg_restore_tree()** (2 connections) — `src/core/backend.rs`
+- **.reg_snapshot_tree()** (2 connections) — `src/core/backend.rs`
 
 ## Relationships
 
-- [super](super.md) (3 shared connections)
-- [Language](Language.md) (3 shared connections)
-- [Core UI Internationalization & Text Catalog](Core_UI_Internationalization_&_Text_Catalog.md) (3 shared connections)
-- [clean_apps.rs](clean_apps.rs.md) (2 shared connections)
-- [Appx Package() Prefixes](Appx_Package_Prefixes.md) (1 shared connections)
-- [app.rs](app.rs.md) (1 shared connections)
-- [action_button_guarded](action_button_guarded.md) (1 shared connections)
+- [WinBlast Optimizer](WinBlast_Optimizer.md) (6 shared connections)
+- [RegRawSnapshot](RegRawSnapshot.md) (3 shared connections)
+- [in_progress_hud.rs](in_progress_hud.rs.md) (2 shared connections)
+- [full_telemetry_audit_with](full_telemetry_audit_with.md) (2 shared connections)
+- [registry_scanner.rs](registry_scanner.rs.md) (2 shared connections)
+- [updater.rs](updater.rs.md) (2 shared connections)
+- [FailAtMutationBackend](FailAtMutationBackend.md) (2 shared connections)
+- [PanickingBackend](PanickingBackend.md) (2 shared connections)
+- [SlowScanBackend](SlowScanBackend.md) (2 shared connections)
+- [DriverUpdateState](DriverUpdateState.md) (1 shared connections)
+- [State Ledger & Restore Point Engine](State_Ledger_&_Restore_Point_Engine.md) (1 shared connections)
+- [RealBackend](RealBackend.md) (1 shared connections)
 
 ## Source Files
 
-- `src/core/i18n.rs`
+- `src/core/backend.rs`
+- `src/core/reg_helpers.rs`
+- `tests/tweak_sandbox_e2e.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 28 (100%)
-- INFERRED: 0 (0%)
+- EXTRACTED: 40 (91%)
+- INFERRED: 4 (9%)
 - AMBIGUOUS: 0 (0%)
 
 ---

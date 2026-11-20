@@ -1,37 +1,46 @@
 # Hardware Diagnostics & GPU Silicon Tuning
 
-> 12 nodes · cohesion 0.41
+> 11 nodes · cohesion 0.25
 
 ## Key Concepts
 
-- **settle_frames()** (13 connections) — `tests/ui_responsive_e2e.rs`
-- **click_key()** (8 connections) — `tests/ui_responsive_e2e.rs`
-- **test_ui_live_viewport_sweep_and_compact_nav_menu_interaction()** (8 connections) — `tests/ui_responsive_e2e.rs`
-- **test_ui_v08_not_applicable_diff_modal_privacy_cores_and_protected_appx()** (8 connections) — `tests/ui_responsive_e2e.rs`
-- **Runtime** (7 connections)
-- **assert_frame_clean()** (6 connections) — `tests/ui_responsive_e2e.rs`
-- **click_text()** (6 connections) — `tests/ui_responsive_e2e.rs`
-- **drain_state_workers()** (6 connections) — `tests/ui_responsive_e2e.rs`
-- **assert_clean_appx_compact_vertical_geometry()** (5 connections) — `tests/ui_responsive_e2e.rs`
-- **test_ui_responsive_matrix_all_viewports_views_themes_locales_scales()** (5 connections) — `tests/ui_responsive_e2e.rs`
-- **test_ui_dropdown_anchoring_and_header_height_stability()** (4 connections) — `tests/ui_responsive_e2e.rs`
-- **test_ui_theme_style_selector_button_clicks_all_tiers()** (4 connections) — `tests/ui_responsive_e2e.rs`
+- **LatencySnapshot** (18 connections) — `src/hardware/latency.rs`
+- **latency.rs** (4 connections) — `src/hardware/latency.rs`
+- **.capture_latency()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.capture_latency()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.capture_latency()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.capture_latency()** (2 connections) — `src/core/backend.rs`
+- **.capture_latency()** (2 connections) — `src/core/backend.rs`
+- **DateTime** (2 connections)
+- **Utc** (2 connections)
+- **.ram_display()** (1 connections) — `src/hardware/latency.rs`
+- **.timer_resolution_display()** (1 connections) — `src/hardware/latency.rs`
 
 ## Relationships
 
-- [GPU Silicon & Hardware Tuning Policies](GPU_Silicon_&_Hardware_Tuning_Policies.md) (18 shared connections)
-- [AppState](AppState.md) (6 shared connections)
-- [theme.rs](theme.rs.md) (1 shared connections)
-- [app.rs](app.rs.md) (1 shared connections)
+- [SlowScanBackend](SlowScanBackend.md) (2 shared connections)
+- [in_progress_hud.rs](in_progress_hud.rs.md) (1 shared connections)
+- [full_telemetry_audit_with](full_telemetry_audit_with.md) (1 shared connections)
+- [progress_bar.rs](progress_bar.rs.md) (1 shared connections)
+- [WorkerEvent](WorkerEvent.md) (1 shared connections)
+- [RegRawSnapshot](RegRawSnapshot.md) (1 shared connections)
+- [AppState](AppState.md) (1 shared connections)
+- [State Ledger & Restore Point Engine](State_Ledger_&_Restore_Point_Engine.md) (1 shared connections)
+- [super](super.md) (1 shared connections)
+- [GPU Silicon & Hardware Tuning Policies](GPU_Silicon_&_Hardware_Tuning_Policies.md) (1 shared connections)
+- [parking.rs](parking.rs.md) (1 shared connections)
+- [FailAtMutationBackend](FailAtMutationBackend.md) (1 shared connections)
 
 ## Source Files
 
-- `tests/ui_responsive_e2e.rs`
+- `src/core/backend.rs`
+- `src/hardware/latency.rs`
+- `tests/tweak_sandbox_e2e.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 51 (96%)
-- INFERRED: 2 (4%)
+- EXTRACTED: 28 (100%)
+- INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 
 ---

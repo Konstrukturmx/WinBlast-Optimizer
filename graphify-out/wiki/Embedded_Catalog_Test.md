@@ -1,61 +1,52 @@
 # Embedded Catalog Test
 
-> 28 nodes · cohesion 0.20
+> 28 nodes · cohesion 0.11
 
 ## Key Concepts
 
-- **TweakDefinition** (51 connections) — `src/core/risk.rs`
-- **scanner/mod.rs** (38 connections) — `src/scanner/mod.rs`
-- **ScanResult** (28 connections) — `src/scanner/mod.rs`
-- **scan_single_tweak_with()** (17 connections) — `src/scanner/mod.rs`
-- **scan_all_tweaks_parallel_with()** (11 connections) — `src/scanner/mod.rs`
-- **CachedScanBackend** (10 connections) — `src/core/backend.rs`
-- **evaluate_single_action()** (10 connections) — `src/scanner/mod.rs`
-- **evaluate_tweak()** (10 connections) — `src/scanner/mod.rs`
-- **run_full_scan_with()** (9 connections) — `src/scanner/mod.rs`
-- **scan_tweaks_chunked_parallel_with()** (7 connections) — `src/scanner/mod.rs`
-- **ActionEval** (6 connections) — `src/scanner/mod.rs`
-- **evaluate_tweak_status()** (6 connections) — `src/scanner/mod.rs`
-- **make_scan_result()** (6 connections) — `src/scanner/mod.rs`
-- **test_parallel_scan_parity_with_sequential()** (5 connections) — `src/scanner/mod.rs`
-- **mk_test_tweak()** (4 connections) — `src/scanner/mod.rs`
-- **run_full_scan()** (4 connections) — `src/scanner/mod.rs`
-- **scan_all_tweaks_parallel()** (4 connections) — `src/scanner/mod.rs`
-- **scan_single_tweak()** (4 connections) — `src/scanner/mod.rs`
-- **scan_tweaks_chunked_parallel()** (4 connections) — `src/scanner/mod.rs`
-- **test_foreign_gpu_and_non_elevated_feature_and_partial_power_scan()** (4 connections) — `src/scanner/mod.rs`
-- **test_evaluate_tweak_status_single()** (3 connections) — `src/scanner/mod.rs`
-- **test_full_scan_execution_in_sandbox()** (3 connections) — `src/scanner/mod.rs`
-- **test_run_full_scan_populates_detail_kind_and_sub_category()** (3 connections) — `src/scanner/mod.rs`
-- **test_scan_single_tweak_detail_kind_every_action_and_na_branch()** (3 connections) — `src/scanner/mod.rs`
-- **test_scan_single_tweak_in_sandbox()** (3 connections) — `src/scanner/mod.rs`
+- **in_progress_hud.rs** (33 connections) — `src/ui/widgets/in_progress_hud.rs`
+- **in_progress_hud()** (9 connections) — `src/ui/widgets/in_progress_hud.rs`
+- **build_typography_block()** (6 connections) — `src/ui/widgets/in_progress_hud.rs`
+- **build_indeterminate_track()** (5 connections) — `src/ui/widgets/in_progress_hud.rs`
+- **build_orbital_spinner()** (5 connections) — `src/ui/widgets/in_progress_hud.rs`
+- **El** (5 connections)
+- **ease_in_out_cubic()** (4 connections) — `src/ui/widgets/in_progress_hud.rs`
+- **format_elapsed()** (3 connections) — `src/ui/widgets/in_progress_hud.rs`
+- **wrap_and_truncate_status()** (3 connections) — `src/ui/widgets/in_progress_hud.rs`
+- **sanitize_elapsed()** (2 connections) — `src/ui/widgets/in_progress_hud.rs`
+- **test_cubic_ease_in_out()** (2 connections) — `src/ui/widgets/in_progress_hud.rs`
+- **test_format_elapsed()** (2 connections) — `src/ui/widgets/in_progress_hud.rs`
+- **test_wrap_and_truncate_status()** (2 connections) — `src/ui/widgets/in_progress_hud.rs`
+- **frac_pi_2** (1 connections)
+- **CARD_WIDTH** (1 connections) — `src/ui/widgets/in_progress_hud.rs`
+- **DOT_COUNT** (1 connections) — `src/ui/widgets/in_progress_hud.rs`
+- **DOT_PHASE_STEP** (1 connections) — `src/ui/widgets/in_progress_hud.rs`
+- **MAX_STATUS_CHARS_PER_LINE** (1 connections) — `src/ui/widgets/in_progress_hud.rs`
+- **MAX_STATUS_LINES** (1 connections) — `src/ui/widgets/in_progress_hud.rs`
+- **ORBIT_CYCLE_SECS** (1 connections) — `src/ui/widgets/in_progress_hud.rs`
+- **ORBIT_DRIFT_SECS** (1 connections) — `src/ui/widgets/in_progress_hud.rs`
+- **ORBIT_RADIUS** (1 connections) — `src/ui/widgets/in_progress_hud.rs`
+- **PROGRESS_CYCLE_SECS** (1 connections) — `src/ui/widgets/in_progress_hud.rs`
+- **SPINNER_CENTER** (1 connections) — `src/ui/widgets/in_progress_hud.rs`
+- **SPINNER_SIZE** (1 connections) — `src/ui/widgets/in_progress_hud.rs`
 - *... and 3 more nodes in this community*
 
 ## Relationships
 
-- [theme.rs](theme.rs.md) (16 shared connections)
-- [full_telemetry_audit_with](full_telemetry_audit_with.md) (12 shared connections)
-- [privacy_shield.rs](privacy_shield.rs.md) (8 shared connections)
-- [Integration Suite: Tweak Sandbox E2E](Integration_Suite-_Tweak_Sandbox_E2E.md) (7 shared connections)
-- [Win32 Registry Scanner & Mutator](Win32_Registry_Scanner_&_Mutator.md) (7 shared connections)
-- [AppX Package & Modern App Scanner](AppX_Package_&_Modern_App_Scanner.md) (6 shared connections)
-- [app.rs](app.rs.md) (5 shared connections)
-- [AppState](AppState.md) (5 shared connections)
-- [action_button](action_button.md) (5 shared connections)
-- [backend.rs](backend.rs.md) (4 shared connections)
-- [.Reg .Set Power](Reg_.Set_Power.md) (4 shared connections)
-- [SandboxEnv](SandboxEnv.md) (3 shared connections)
+- [.Reg State() Vendor()](Reg_State_Vendor.md) (5 shared connections)
+- [Disk Cleaning & Temporary File Purger](Disk_Cleaning_&_Temporary_File_Purger.md) (4 shared connections)
+- [FailAtMutationBackend](FailAtMutationBackend.md) (1 shared connections)
+- [Runtime](Runtime.md) (1 shared connections)
+- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (1 shared connections)
 
 ## Source Files
 
-- `src/core/backend.rs`
-- `src/core/risk.rs`
-- `src/scanner/mod.rs`
+- `src/ui/widgets/in_progress_hud.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 167 (92%)
-- INFERRED: 15 (8%)
+- EXTRACTED: 52 (96%)
+- INFERRED: 2 (4%)
 - AMBIGUOUS: 0 (0%)
 
 ---

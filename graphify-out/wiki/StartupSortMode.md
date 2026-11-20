@@ -4,7 +4,7 @@
 
 ## Key Concepts
 
-- **lib.rs** (0 connections) — `src/lib.rs`
+- **hardware/mod.rs** (0 connections) — `src/hardware/mod.rs`
 
 ## Relationships
 
@@ -12,7 +12,7 @@
 
 ## Source Files
 
-- `src/lib.rs`
+- `src/hardware/mod.rs`
 
 ## Audit Trail
 

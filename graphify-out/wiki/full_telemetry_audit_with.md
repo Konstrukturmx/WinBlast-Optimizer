@@ -1,61 +1,59 @@
 # full_telemetry_audit_with
 
-> 39 nodes · cohesion 0.13
+> 48 nodes · cohesion 0.04
 
 ## Key Concepts
 
-- **engine.rs** (53 connections) — `src/executor/engine.rs`
-- **reg_helpers.rs** (24 connections) — `src/core/reg_helpers.rs`
-- **rollback_entry_with()** (21 connections) — `src/executor/engine.rs`
-- **revert_tweak_with()** (19 connections) — `src/executor/engine.rs`
-- **apply_action_slice_with()** (17 connections) — `src/executor/engine.rs`
-- **apply_tweak_with()** (16 connections) — `src/executor/engine.rs`
-- **is_unsupported_power_guid_error()** (12 connections) — `src/core/backend.rs`
-- **format_pipe_reg_target()** (9 connections) — `src/core/reg_helpers.rs`
-- **decode_hex()** (8 connections) — `src/core/reg_helpers.rs`
-- **escape_pipe()** (7 connections) — `src/core/reg_helpers.rs`
-- **merge_composite_pair()** (7 connections) — `src/core/reg_helpers.rs`
-- **parse_pipe_reg_target()** (6 connections) — `src/core/reg_helpers.rs`
-- **apply_tweaks_by_id_with()** (6 connections) — `src/executor/engine.rs`
-- **format_composite_action_key()** (6 connections) — `src/executor/engine.rs`
-- **rollback_recorded_ids()** (6 connections) — `src/executor/engine.rs`
-- **ensure_tweak_compatible()** (5 connections) — `src/executor/engine.rs`
-- **format_dword_action_key()** (5 connections) — `src/executor/engine.rs`
-- **read_composite_entry()** (4 connections) — `src/core/reg_helpers.rs`
-- **unescape_pipe()** (4 connections) — `src/core/reg_helpers.rs`
-- **apply_tweak()** (4 connections) — `src/executor/engine.rs`
-- **apply_tweaks_by_id()** (4 connections) — `src/executor/engine.rs`
-- **format_power_indices()** (4 connections) — `src/executor/engine.rs`
-- **rollback_entry()** (4 connections) — `src/executor/engine.rs`
-- **test_batch1_engine_edge_cases_and_atomic_revert()** (4 connections) — `src/executor/engine.rs`
-- **parse_composite_pairs()** (3 connections) — `src/core/reg_helpers.rs`
-- *... and 14 more nodes in this community*
+- **SystemBackend** (122 connections) — `src/core/backend.rs`
+- **.reg_get_dword_for_vendor()** (2 connections) — `src/core/backend.rs`
+- **.set_usb_power_saving_enabled()** (2 connections) — `src/core/backend.rs`
+- **.block_telemetry_hosts()** (1 connections) — `src/core/backend.rs`
+- **.broadcast_shell_settings_changed()** (1 connections) — `src/core/backend.rs`
+- **.check_onedrive_kfm_active()** (1 connections) — `src/core/backend.rs`
+- **.create_and_activate_performance_plan()** (1 connections) — `src/core/backend.rs`
+- **.create_restore_point()** (1 connections) — `src/core/backend.rs`
+- **.default_ledger_path()** (1 connections) — `src/core/backend.rs`
+- **.default_profile_path()** (1 connections) — `src/core/backend.rs`
+- **.get_active_power_scheme()** (1 connections) — `src/core/backend.rs`
+- **.get_service_start_type()** (1 connections) — `src/core/backend.rs`
+- **.get_task_enabled()** (1 connections) — `src/core/backend.rs`
+- **.is_elevated()** (1 connections) — `src/core/backend.rs`
+- **.is_hags_enabled()** (1 connections) — `src/core/backend.rs`
+- **.is_mpo_disabled()** (1 connections) — `src/core/backend.rs`
+- **.logical_core_count()** (1 connections) — `src/core/backend.rs`
+- **.read_hosts_file()** (1 connections) — `src/core/backend.rs`
+- **.read_power_setting_index()** (1 connections) — `src/core/backend.rs`
+- **.reg_delete_tree()** (1 connections) — `src/core/backend.rs`
+- **.reg_delete_value()** (1 connections) — `src/core/backend.rs`
+- **.reg_get_binary()** (1 connections) — `src/core/backend.rs`
+- **.reg_get_dword()** (1 connections) — `src/core/backend.rs`
+- **.reg_key_exists()** (1 connections) — `src/core/backend.rs`
+- **.reg_set_binary()** (1 connections) — `src/core/backend.rs`
+- *... and 23 more nodes in this community*
 
 ## Relationships
 
-- [FailAtMutationBackend](FailAtMutationBackend.md) (19 shared connections)
-- [Embedded Catalog Test](Embedded_Catalog_Test.md) (12 shared connections)
-- [Integration Suite: Tweak Sandbox E2E](Integration_Suite-_Tweak_Sandbox_E2E.md) (8 shared connections)
-- [reg_mutator.rs](reg_mutator.rs.md) (6 shared connections)
-- [WinBlastError](WinBlastError.md) (5 shared connections)
-- [AppX Package & Modern App Scanner](AppX_Package_&_Modern_App_Scanner.md) (5 shared connections)
-- [super](super.md) (4 shared connections)
-- [Win32 Registry Scanner & Mutator](Win32_Registry_Scanner_&_Mutator.md) (4 shared connections)
-- [parking.rs](parking.rs.md) (3 shared connections)
-- [parse_guid](parse_guid.md) (3 shared connections)
-- [ui_scrollbar_test.rs](ui_scrollbar_test.rs.md) (3 shared connections)
-- [test_wave1_compound_actions_deep_edge_cases](test_wave1_compound_actions_deep_edge_cases.md) (3 shared connections)
+- [parse_guid](parse_guid.md) (8 shared connections)
+- [RealBackend](RealBackend.md) (8 shared connections)
+- [SlowScanBackend](SlowScanBackend.md) (6 shared connections)
+- [.set_status_spec](set_status_spec.md) (5 shared connections)
+- [GPU Silicon & Hardware Tuning Policies](GPU_Silicon_&_Hardware_Tuning_Policies.md) (3 shared connections)
+- [RegRawSnapshot](RegRawSnapshot.md) (3 shared connections)
+- [AppState](AppState.md) (2 shared connections)
+- [backend.rs](backend.rs.md) (2 shared connections)
+- [State Ledger & Restore Point Engine](State_Ledger_&_Restore_Point_Engine.md) (2 shared connections)
+- [normalize_guid_str](normalize_guid_str.md) (2 shared connections)
+- [TaskCache](TaskCache.md) (2 shared connections)
+- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (2 shared connections)
 
 ## Source Files
 
 - `src/core/backend.rs`
-- `src/core/reg_helpers.rs`
-- `src/executor/engine.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 158 (83%)
-- INFERRED: 33 (17%)
+- EXTRACTED: 123 (99%)
+- INFERRED: 1 (1%)
 - AMBIGUOUS: 0 (0%)
 
 ---

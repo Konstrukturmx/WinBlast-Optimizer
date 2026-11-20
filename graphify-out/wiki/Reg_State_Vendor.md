@@ -1,59 +1,63 @@
 # .Reg State() Vendor()
 
-> 52 nodes · cohesion 0.04
+> 33 nodes · cohesion 0.16
 
 ## Key Concepts
 
-- **RealBackend** (83 connections) — `src/core/backend.rs`
-- **resolve_persistent_app_dir()** (4 connections) — `src/core/backend.rs`
-- **.list_optional_features()** (3 connections) — `src/core/backend.rs`
-- **.default_ledger_path()** (2 connections) — `src/core/backend.rs`
-- **.default_profile_path()** (2 connections) — `src/core/backend.rs`
-- **.is_elevated()** (2 connections) — `src/core/backend.rs`
-- **.drop()** (2 connections) — `src/core/backend.rs`
-- **.block_telemetry_hosts()** (1 connections) — `src/core/backend.rs`
-- **.broadcast_shell_settings_changed()** (1 connections) — `src/core/backend.rs`
-- **.check_onedrive_kfm_active()** (1 connections) — `src/core/backend.rs`
-- **.create_and_activate_performance_plan()** (1 connections) — `src/core/backend.rs`
-- **.create_restore_point()** (1 connections) — `src/core/backend.rs`
-- **.get_active_power_scheme()** (1 connections) — `src/core/backend.rs`
-- **.get_service_start_type()** (1 connections) — `src/core/backend.rs`
-- **.get_task_enabled()** (1 connections) — `src/core/backend.rs`
-- **.is_hags_enabled()** (1 connections) — `src/core/backend.rs`
-- **.is_mpo_disabled()** (1 connections) — `src/core/backend.rs`
-- **.logical_core_count()** (1 connections) — `src/core/backend.rs`
-- **.read_hosts_file()** (1 connections) — `src/core/backend.rs`
-- **.read_power_setting_index()** (1 connections) — `src/core/backend.rs`
-- **.reg_delete_tree()** (1 connections) — `src/core/backend.rs`
-- **.reg_delete_value()** (1 connections) — `src/core/backend.rs`
-- **.reg_delete_value_for_vendor()** (1 connections) — `src/core/backend.rs`
-- **.reg_get_binary()** (1 connections) — `src/core/backend.rs`
-- **.reg_get_dword()** (1 connections) — `src/core/backend.rs`
-- *... and 27 more nodes in this community*
+- **ThemePalette** (88 connections) — `src/ui/theme.rs`
+- **easy_dashboard.rs** (31 connections) — `src/ui/views/easy_dashboard.rs`
+- **diff_modal.rs** (20 connections) — `src/ui/widgets/diff_modal.rs`
+- **view()** (16 connections) — `src/ui/views/easy_dashboard.rs`
+- **view_items_with_palette()** (13 connections) — `src/ui/widgets/diff_modal.rs`
+- **El** (11 connections)
+- **sparkline.rs** (10 connections) — `src/ui/widgets/sparkline.rs`
+- **before_after_card()** (7 connections) — `src/ui/views/easy_dashboard.rs`
+- **quick_actions_card()** (7 connections) — `src/ui/views/easy_dashboard.rs`
+- **admin_warning_banner()** (6 connections) — `src/ui/views/easy_dashboard.rs`
+- **live_telemetry_card()** (6 connections) — `src/ui/views/easy_dashboard.rs`
+- **quick_action_card()** (6 connections) — `src/ui/views/easy_dashboard.rs`
+- **score_ring_badge()** (6 connections) — `src/ui/views/easy_dashboard.rs`
+- **updater_status_card()** (6 connections) — `src/ui/views/easy_dashboard.rs`
+- **El** (6 connections)
+- **view_with_palette()** (6 connections) — `src/ui/widgets/diff_modal.rs`
+- **hardware_overview_card()** (5 connections) — `src/ui/views/easy_dashboard.rs`
+- **optimization_categories_summary()** (5 connections) — `src/ui/views/easy_dashboard.rs`
+- **diff_single_card()** (5 connections) — `src/ui/widgets/diff_modal.rs`
+- **view_state()** (5 connections) — `src/ui/widgets/diff_modal.rs`
+- **BeforeAfterImpact** (4 connections) — `src/app.rs`
+- **health_color()** (4 connections) — `src/ui/views/easy_dashboard.rs`
+- **diff_pair_card()** (4 connections) — `src/ui/widgets/diff_modal.rs`
+- **directed_pair()** (4 connections) — `src/ui/widgets/diff_modal.rs`
+- **sparkline_with_palette()** (4 connections) — `src/ui/widgets/sparkline.rs`
+- *... and 8 more nodes in this community*
 
 ## Relationships
 
-- [backend.rs](backend.rs.md) (5 shared connections)
-- [app.rs](app.rs.md) (2 shared connections)
-- [latency_bench.rs](latency_bench.rs.md) (2 shared connections)
-- [RegTreeSnapshot](RegTreeSnapshot.md) (2 shared connections)
-- [HibernationStatus](HibernationStatus.md) (2 shared connections)
-- [CoreParkingState](CoreParkingState.md) (2 shared connections)
-- [Disk Cleaning & Temporary File Purger](Disk_Cleaning_&_Temporary_File_Purger.md) (2 shared connections)
-- [StartupEntry](StartupEntry.md) (2 shared connections)
-- [full_telemetry_audit_with](full_telemetry_audit_with.md) (1 shared connections)
-- [Embedded Catalog Test](Embedded_Catalog_Test.md) (1 shared connections)
-- [Integration Suite: Tweak Sandbox E2E](Integration_Suite-_Tweak_Sandbox_E2E.md) (1 shared connections)
-- [WindowsInfo](WindowsInfo.md) (1 shared connections)
+- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (21 shared connections)
+- [AppState](AppState.md) (19 shared connections)
+- [Multi-Language Tweak Localization Tables](Multi-Language_Tweak_Localization_Tables.md) (18 shared connections)
+- [Disk Cleaning & Temporary File Purger](Disk_Cleaning_&_Temporary_File_Purger.md) (16 shared connections)
+- [Runtime](Runtime.md) (8 shared connections)
+- [progress_bar.rs](progress_bar.rs.md) (8 shared connections)
+- [WinBlastScrollable](WinBlastScrollable.md) (8 shared connections)
+- [Embedded Catalog Test](Embedded_Catalog_Test.md) (5 shared connections)
+- [advanced_matrix.rs](advanced_matrix.rs.md) (4 shared connections)
+- [DriverError](DriverError.md) (4 shared connections)
+- [Project History & Release Version Ledger](Project_History_&_Release_Version_Ledger.md) (3 shared connections)
+- [Core UI Internationalization & Text Catalog](Core_UI_Internationalization_&_Text_Catalog.md) (3 shared connections)
 
 ## Source Files
 
-- `src/core/backend.rs`
+- `src/app.rs`
+- `src/ui/theme.rs`
+- `src/ui/views/easy_dashboard.rs`
+- `src/ui/widgets/diff_modal.rs`
+- `src/ui/widgets/sparkline.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 89 (99%)
-- INFERRED: 1 (1%)
+- EXTRACTED: 208 (96%)
+- INFERRED: 9 (4%)
 - AMBIGUOUS: 0 (0%)
 
 ---

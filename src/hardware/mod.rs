@@ -13,5 +13,7 @@ pub mod monitor;
 pub mod net_latency;
 pub mod parking;
 pub mod power;
+pub mod power_governor;
+pub mod storage;
 pub mod sys_inventory;
 pub mod thermal;

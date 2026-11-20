@@ -1,39 +1,45 @@
 # normalize_guid_str
 
-> 12 nodes · cohesion 0.39
+> 10 nodes · cohesion 0.27
 
 ## Key Concepts
 
-- **progress_bar.rs** (14 connections) — `src/ui/widgets/progress_bar.rs`
-- **rgb()** (10 connections) — `src/ui/theme.rs`
-- **rgba()** (8 connections) — `src/ui/theme.rs`
-- **progress_bar_styled()** (8 connections) — `src/ui/widgets/progress_bar.rs`
-- **Color** (6 connections)
-- **El** (6 connections)
-- **.card_fill_styled()** (5 connections) — `src/ui/theme.rs`
-- **progress_bar()** (5 connections) — `src/ui/widgets/progress_bar.rs`
-- **progress_bar_labeled()** (5 connections) — `src/ui/widgets/progress_bar.rs`
-- **.border_styled()** (4 connections) — `src/ui/theme.rs`
-- **progress_bar_indeterminate()** (4 connections) — `src/ui/widgets/progress_bar.rs`
-- **progress_bar_segmented()** (4 connections) — `src/ui/widgets/progress_bar.rs`
+- **HibernationStatus** (22 connections) — `src/hardware/power.rs`
+- **.query_hibernation_status()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
+- **query_hibernation_and_standby()** (3 connections) — `src/hardware/power.rs`
+- **set_hibernation_enabled()** (3 connections) — `src/hardware/power.rs`
+- **.query_hibernation_status()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.query_hibernation_status()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.query_hibernation_status()** (2 connections) — `src/core/backend.rs`
+- **.set_hibernation_enabled()** (2 connections) — `src/core/backend.rs`
+- **.query_hibernation_status()** (2 connections) — `src/core/backend.rs`
+- **.set_hibernation_enabled()** (2 connections) — `src/core/backend.rs`
 
 ## Relationships
 
-- [ThemePalette](ThemePalette.md) (8 shared connections)
-- [Project History & Release Version Ledger](Project_History_&_Release_Version_Ledger.md) (7 shared connections)
-- [Dynamicdwordformula Logicalcorecount Totalraminkb](Dynamicdwordformula_Logicalcorecount_Totalraminkb.md) (6 shared connections)
-- [.Toggle .Set .Apply](Toggle_.Set_.Apply.md) (4 shared connections)
-- [action_button](action_button.md) (2 shared connections)
+- [WinBlast Optimizer](WinBlast_Optimizer.md) (3 shared connections)
+- [elevation.rs](elevation.rs.md) (3 shared connections)
+- [in_progress_hud.rs](in_progress_hud.rs.md) (2 shared connections)
+- [full_telemetry_audit_with](full_telemetry_audit_with.md) (2 shared connections)
+- [SlowScanBackend](SlowScanBackend.md) (2 shared connections)
+- [WorkerEvent](WorkerEvent.md) (1 shared connections)
+- [AppState](AppState.md) (1 shared connections)
+- [PowerSchemeInfo](PowerSchemeInfo.md) (1 shared connections)
+- [RegRawSnapshot](RegRawSnapshot.md) (1 shared connections)
+- [reg_mutator.rs](reg_mutator.rs.md) (1 shared connections)
+- [State Ledger & Restore Point Engine](State_Ledger_&_Restore_Point_Engine.md) (1 shared connections)
+- [super](super.md) (1 shared connections)
 
 ## Source Files
 
-- `src/ui/theme.rs`
-- `src/ui/widgets/progress_bar.rs`
+- `src/core/backend.rs`
+- `src/hardware/power.rs`
+- `tests/tweak_sandbox_e2e.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 50 (94%)
-- INFERRED: 3 (6%)
+- EXTRACTED: 34 (100%)
+- INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 
 ---

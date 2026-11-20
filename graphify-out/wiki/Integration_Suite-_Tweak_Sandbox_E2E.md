@@ -1,59 +1,53 @@
 # Integration Suite: Tweak Sandbox E2E
 
-> 50 nodes · cohesion 0.04
+> 62 nodes · cohesion 0.07
 
 ## Key Concepts
 
-- **SystemBackend** (117 connections) — `src/core/backend.rs`
-- **.reg_delete_value_for_vendor()** (2 connections) — `src/core/backend.rs`
-- **.reg_get_dword_for_vendor()** (2 connections) — `src/core/backend.rs`
-- **.reg_set_dword_for_vendor()** (2 connections) — `src/core/backend.rs`
-- **.set_usb_power_saving_enabled()** (2 connections) — `src/core/backend.rs`
-- **.block_telemetry_hosts()** (1 connections) — `src/core/backend.rs`
-- **.broadcast_shell_settings_changed()** (1 connections) — `src/core/backend.rs`
-- **.check_onedrive_kfm_active()** (1 connections) — `src/core/backend.rs`
-- **.create_and_activate_performance_plan()** (1 connections) — `src/core/backend.rs`
-- **.create_restore_point()** (1 connections) — `src/core/backend.rs`
-- **.default_ledger_path()** (1 connections) — `src/core/backend.rs`
-- **.default_profile_path()** (1 connections) — `src/core/backend.rs`
-- **.get_active_power_scheme()** (1 connections) — `src/core/backend.rs`
-- **.get_service_start_type()** (1 connections) — `src/core/backend.rs`
-- **.get_task_enabled()** (1 connections) — `src/core/backend.rs`
-- **.is_elevated()** (1 connections) — `src/core/backend.rs`
-- **.is_hags_enabled()** (1 connections) — `src/core/backend.rs`
-- **.is_mpo_disabled()** (1 connections) — `src/core/backend.rs`
-- **.logical_core_count()** (1 connections) — `src/core/backend.rs`
-- **.read_hosts_file()** (1 connections) — `src/core/backend.rs`
-- **.read_power_setting_index()** (1 connections) — `src/core/backend.rs`
-- **.reg_delete_tree()** (1 connections) — `src/core/backend.rs`
-- **.reg_delete_value()** (1 connections) — `src/core/backend.rs`
-- **.reg_get_binary()** (1 connections) — `src/core/backend.rs`
-- **.reg_get_dword()** (1 connections) — `src/core/backend.rs`
-- *... and 25 more nodes in this community*
+- **generational_cache.rs** (33 connections) — `src/core/generational_cache.rs`
+- **GenerationalAotCache<K, V>** (15 connections) — `src/core/generational_cache.rs`
+- **.get_with()** (10 connections) — `src/core/generational_cache.rs`
+- **.new()** (10 connections) — `src/core/generational_cache.rs`
+- **V** (10 connections)
+- **.insert_ns()** (9 connections) — `src/core/generational_cache.rs`
+- **K** (8 connections)
+- **CachePadded** (8 connections) — `src/core/generational_cache.rs`
+- **CacheSet** (8 connections) — `src/core/generational_cache.rs`
+- **CacheSlot** (7 connections) — `src/core/generational_cache.rs`
+- **FastAotHasher** (7 connections) — `src/core/generational_cache.rs`
+- **GenerationalAotCache** (7 connections) — `src/core/generational_cache.rs`
+- **.insert()** (7 connections) — `src/core/generational_cache.rs`
+- **.insert_with_ttl()** (7 connections) — `src/core/generational_cache.rs`
+- **.set_for_hash()** (7 connections) — `src/core/generational_cache.rs`
+- **hash_key()** (7 connections) — `src/core/generational_cache.rs`
+- **CacheMetrics** (6 connections) — `src/core/generational_cache.rs`
+- **.get_copied()** (6 connections) — `src/core/generational_cache.rs`
+- **Q** (5 connections)
+- **aot_prewarm_and_zero_alloc_borrowed_reads()** (5 connections) — `src/core/generational_cache.rs`
+- **concurrent_reads_writes_and_epoch_bumps()** (5 connections) — `src/core/generational_cache.rs`
+- **.invalidate_key()** (5 connections) — `src/core/generational_cache.rs`
+- **atomic_epoch_invalidation_fences_all_entries_in_o1()** (4 connections) — `src/core/generational_cache.rs`
+- **.new()** (4 connections) — `src/core/generational_cache.rs`
+- **.write()** (4 connections) — `src/core/generational_cache.rs`
+- *... and 37 more nodes in this community*
 
 ## Relationships
 
-- [full_telemetry_audit_with](full_telemetry_audit_with.md) (8 shared connections)
-- [Embedded Catalog Test](Embedded_Catalog_Test.md) (7 shared connections)
-- [SandboxEnv](SandboxEnv.md) (5 shared connections)
-- [app.rs](app.rs.md) (4 shared connections)
-- [backend.rs](backend.rs.md) (4 shared connections)
-- [restore_point.rs](restore_point.rs.md) (3 shared connections)
-- [AppState](AppState.md) (2 shared connections)
-- [FailAtMutationBackend](FailAtMutationBackend.md) (2 shared connections)
-- [SlowScanBackend](SlowScanBackend.md) (2 shared connections)
-- [HibernationStatus](HibernationStatus.md) (2 shared connections)
-- [Disk Cleaning & Temporary File Purger](Disk_Cleaning_&_Temporary_File_Purger.md) (2 shared connections)
-- [StartupEntry](StartupEntry.md) (2 shared connections)
+- [lazy_loader.rs](lazy_loader.rs.md) (2 shared connections)
+- [SlowScanBackend](SlowScanBackend.md) (1 shared connections)
+- [FailAtMutationBackend](FailAtMutationBackend.md) (1 shared connections)
+- [sys_inventory.rs](sys_inventory.rs.md) (1 shared connections)
+- [PlatformSecurityInfo](PlatformSecurityInfo.md) (1 shared connections)
+- [deserialize](deserialize.md) (1 shared connections)
 
 ## Source Files
 
-- `src/core/backend.rs`
+- `src/core/generational_cache.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 120 (99%)
-- INFERRED: 1 (1%)
+- EXTRACTED: 143 (100%)
+- INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 
 ---

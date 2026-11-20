@@ -1,58 +1,58 @@
 # .take_injected_error
 
-> 35 nodes · cohesion 0.11
+> 45 nodes · cohesion 0.09
 
 ## Key Concepts
 
-- **.take_injected_error()** (37 connections) — `src/core/backend.rs`
-- **.state_write()** (36 connections) — `src/core/backend.rs`
-- **.sync_parking_in_state()** (7 connections) — `src/core/backend.rs`
-- **test_sandbox_core_parking_labels_metrics_and_power_sync()** (7 connections) — `src/core/backend.rs`
-- **.reg_restore_tree()** (6 connections) — `src/core/backend.rs`
-- **.reg_set_raw()** (6 connections) — `src/core/backend.rs`
-- **.set_optional_feature()** (6 connections) — `src/core/backend.rs`
-- **.apply_parking_snapshot()** (5 connections) — `src/core/backend.rs`
-- **.execute_clean_targets()** (5 connections) — `src/core/backend.rs`
-- **.restore_stock_parking()** (5 connections) — `src/core/backend.rs`
-- **.unpark_all_cores()** (5 connections) — `src/core/backend.rs`
-- **.write_power_setting_index()** (5 connections) — `src/core/backend.rs`
-- **.remove_appx_batch()** (4 connections) — `src/core/backend.rs`
-- **.remove_appx_family_in_state()** (4 connections) — `src/core/backend.rs`
-- **.remove_appx_package()** (4 connections) — `src/core/backend.rs`
-- **.set_hags()** (4 connections) — `src/core/backend.rs`
-- **.set_hibernation_enabled()** (4 connections) — `src/core/backend.rs`
-- **.set_mpo_disabled()** (4 connections) — `src/core/backend.rs`
-- **.set_startup_entry_enabled()** (4 connections) — `src/core/backend.rs`
-- **.set_usb_root_hub_power_saving()** (4 connections) — `src/core/backend.rs`
-- **optional_feature_matches()** (3 connections) — `src/core/backend.rs`
-- **.block_telemetry_hosts()** (3 connections) — `src/core/backend.rs`
-- **.create_and_activate_performance_plan()** (3 connections) — `src/core/backend.rs`
-- **.request_system_reboot()** (3 connections) — `src/core/backend.rs`
-- **.restart_explorer_safely()** (3 connections) — `src/core/backend.rs`
-- *... and 10 more nodes in this community*
+- **ui_responsive_e2e.rs** (61 connections) — `tests/ui_responsive_e2e.rs`
+- **build_populated_sandbox_state()** (17 connections) — `tests/ui_responsive_e2e.rs`
+- **settle_frames()** (13 connections) — `tests/ui_responsive_e2e.rs`
+- **click_key()** (8 connections) — `tests/ui_responsive_e2e.rs`
+- **test_ui_live_viewport_sweep_and_compact_nav_menu_interaction()** (8 connections) — `tests/ui_responsive_e2e.rs`
+- **test_ui_v08_not_applicable_diff_modal_privacy_cores_and_protected_appx()** (8 connections) — `tests/ui_responsive_e2e.rs`
+- **Runtime** (7 connections)
+- **assert_frame_clean()** (6 connections) — `tests/ui_responsive_e2e.rs`
+- **click_text()** (6 connections) — `tests/ui_responsive_e2e.rs`
+- **drain_state_workers()** (6 connections) — `tests/ui_responsive_e2e.rs`
+- **assert_clean_appx_compact_vertical_geometry()** (5 connections) — `tests/ui_responsive_e2e.rs`
+- **test_ui_responsive_matrix_all_viewports_views_themes_locales_scales()** (5 connections) — `tests/ui_responsive_e2e.rs`
+- **test_ui_dropdown_anchoring_and_header_height_stability()** (4 connections) — `tests/ui_responsive_e2e.rs`
+- **test_ui_theme_style_selector_button_clicks_all_tiers()** (4 connections) — `tests/ui_responsive_e2e.rs`
+- **init_cpu_parking_state()** (3 connections) — `tests/ui_responsive_e2e.rs`
+- **init_dashboard_state()** (3 connections) — `tests/ui_responsive_e2e.rs`
+- **init_fault_diagnostics_state()** (3 connections) — `tests/ui_responsive_e2e.rs`
+- **init_gpu_state()** (3 connections) — `tests/ui_responsive_e2e.rs`
+- **init_matrix_state()** (3 connections) — `tests/ui_responsive_e2e.rs`
+- **init_minimalistic_theme_state()** (3 connections) — `tests/ui_responsive_e2e.rs`
+- **init_support_about_state()** (3 connections) — `tests/ui_responsive_e2e.rs`
+- **test_driver_bios_no_card_overlap()** (3 connections) — `tests/ui_responsive_e2e.rs`
+- **test_hardware_view_power_schemes_no_overlap()** (3 connections) — `tests/ui_responsive_e2e.rs`
+- **targetarch** (2 connections)
+- **cleanappssubtab** (1 connections)
+- *... and 20 more nodes in this community*
 
 ## Relationships
 
-- [SandboxEnv](SandboxEnv.md) (35 shared connections)
-- [task_scanner.rs](task_scanner.rs.md) (17 shared connections)
-- [backend.rs](backend.rs.md) (4 shared connections)
-- [svc_mutator.rs](svc_mutator.rs.md) (4 shared connections)
-- [parking.rs](parking.rs.md) (3 shared connections)
-- [Disk Cleaning & Temporary File Purger](Disk_Cleaning_&_Temporary_File_Purger.md) (2 shared connections)
-- [reg_mutator.rs](reg_mutator.rs.md) (2 shared connections)
-- [RegRawSnapshot](RegRawSnapshot.md) (2 shared connections)
-- [RegTreeSnapshot](RegTreeSnapshot.md) (1 shared connections)
-- [latency_bench.rs](latency_bench.rs.md) (1 shared connections)
-- [HibernationStatus](HibernationStatus.md) (1 shared connections)
-- [StartupEntry](StartupEntry.md) (1 shared connections)
+- [AppState](AppState.md) (15 shared connections)
+- [super](super.md) (4 shared connections)
+- [SlowScanBackend](SlowScanBackend.md) (3 shared connections)
+- [Reversibility Instant Requireslogoff](Reversibility_Instant_Requireslogoff.md) (2 shared connections)
+- [ps_runner.rs](ps_runner.rs.md) (2 shared connections)
+- [CoreParkingState](CoreParkingState.md) (2 shared connections)
+- [theme.rs](theme.rs.md) (2 shared connections)
+- [Core UI Internationalization & Text Catalog](Core_UI_Internationalization_&_Text_Catalog.md) (1 shared connections)
+- [backend.rs](backend.rs.md) (1 shared connections)
+- [Project History & Release Version Ledger](Project_History_&_Release_Version_Ledger.md) (1 shared connections)
+- [main.rs](main.rs.md) (1 shared connections)
+- [sys_inventory.rs](sys_inventory.rs.md) (1 shared connections)
 
 ## Source Files
 
-- `src/core/backend.rs`
+- `tests/ui_responsive_e2e.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 134 (97%)
+- EXTRACTED: 118 (97%)
 - INFERRED: 4 (3%)
 - AMBIGUOUS: 0 (0%)
 

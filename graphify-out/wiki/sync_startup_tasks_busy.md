@@ -1,23 +1,27 @@
 # .sync_startup_tasks_busy
 
-> 2 nodes · cohesion 1.00
+> 3 nodes · cohesion 0.67
 
 ## Key Concepts
 
-- **WorkerDropGuard<P>** (1 connections) — `src/app.rs`
-- **.drop()** (1 connections) — `src/app.rs`
+- **.set_usb_root_hub_power_saving()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.set_usb_root_hub_power_saving()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.set_usb_root_hub_power_saving()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
 
 ## Relationships
 
-- No strong cross-community connections detected
+- [WinBlast Optimizer](WinBlast_Optimizer.md) (3 shared connections)
+- [FailAtMutationBackend](FailAtMutationBackend.md) (1 shared connections)
+- [PanickingBackend](PanickingBackend.md) (1 shared connections)
+- [SlowScanBackend](SlowScanBackend.md) (1 shared connections)
 
 ## Source Files
 
-- `src/app.rs`
+- `tests/tweak_sandbox_e2e.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 1 (100%)
+- EXTRACTED: 8 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

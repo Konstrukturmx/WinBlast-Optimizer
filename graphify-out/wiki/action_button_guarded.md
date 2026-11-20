@@ -33,12 +33,12 @@
 
 ## Relationships
 
-- [.Toggle .Set .Apply](Toggle_.Set_.Apply.md) (14 shared connections)
-- [view_i18n.rs](view_i18n.rs.md) (3 shared connections)
-- [ui/mod.rs](ui-mod.rs.md) (1 shared connections)
-- [ThemePalette](ThemePalette.md) (1 shared connections)
-- [goal_planner.rs](goal_planner.rs.md) (1 shared connections)
-- [action_button](action_button.md) (1 shared connections)
+- [Disk Cleaning & Temporary File Purger](Disk_Cleaning_&_Temporary_File_Purger.md) (14 shared connections)
+- [tools/game_overlay.rs](tools-game_overlay.rs.md) (3 shared connections)
+- [Runtime](Runtime.md) (1 shared connections)
+- [.Reg State() Vendor()](Reg_State_Vendor.md) (1 shared connections)
+- [PlatformSecurityInfo](PlatformSecurityInfo.md) (1 shared connections)
+- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (1 shared connections)
 - [views/network_diag.rs](views-network_diag.rs.md) (1 shared connections)
 
 ## Source Files
@@ -47,8 +47,8 @@
 
 ## Audit Trail
 
-- EXTRACTED: 219 (100%)
-- INFERRED: 1 (0%)
+- EXTRACTED: 220 (100%)
+- INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 
 ---

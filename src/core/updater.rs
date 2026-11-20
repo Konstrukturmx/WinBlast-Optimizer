@@ -262,23 +262,28 @@ try {{
 /// Apply update by atomically replacing the running binary.
 ///
 /// On Windows, a running executable cannot be written to directly, but it CAN be renamed.
-/// Normalizes a Windows executable path by stripping verbatim namespaces (`\\?\` and `\\?\UNC\`).
+/// Normalizes a Windows executable path by stripping verbatim namespaces (`\\?\` and `\\?\UNC\`),
+/// trimming spurious whitespace/quotes, and normalizing directory separators.
 pub fn clean_exe_path(path_str: &str) -> String {
-    if let Some(stripped) = path_str.strip_prefix(r"\\?\UNC\") {
+    let trimmed = path_str.trim().trim_matches('"').trim_matches('\'');
+    let normalized = if let Some(stripped) = trimmed.strip_prefix(r"\\?\UNC\") {
         format!(r"\\{}", stripped)
-    } else if let Some(stripped) = path_str.strip_prefix(r"\\?\") {
+    } else if let Some(stripped) = trimmed.strip_prefix(r"\\?\") {
         stripped.to_string()
     } else {
-        path_str.to_string()
-    }
+        trimmed.to_string()
+    };
+    normalized.replace('/', "\\")
 }
 
 /// Applies a staged update binary by swapping the running executable and restarting.
 ///
 /// Procedure:
 /// 1. Rename running `winblast0.exe` -> `winblast0.exe.old`.
-/// 2. Copy staged `new_binary` into `winblast0.exe`.
-/// 3. Spawn the new executable detached and terminate the current process.
+/// 2. Copy staged `new_binary` into `winblast0.exe` and flush to disk.
+/// 3. Launch the new executable using native Win32 `ShellExecuteW` (with RunAs elevation if required).
+/// 4. Fallback to detached process spawn if ShellExecute returns an error.
+/// 5. Exit current process cleanly.
 pub fn apply_and_restart(new_binary: &Path) -> Result<(), String> {
     let current_exe = std::env::current_exe().map_err(|e| e.to_string())?;
     let backup_exe = current_exe.with_extension("exe.old");
@@ -301,28 +306,54 @@ pub fn apply_and_restart(new_binary: &Path) -> Result<(), String> {
         return Err(format!("Failed to install new binary: {}", e));
     }
 
-    // 3. Launch the new executable detached and exit cleanly.
-    // Strip verbatim \\?\ prefixes to prevent cmd/start/explorer UNC path resolution failures.
+    // Ensure new binary is completely flushed to storage
+    if let Ok(file) = std::fs::File::open(&current_exe) {
+        let _ = file.sync_all();
+    }
+
+    // 3. Normalize executable path
     let raw_exe_str = current_exe.to_string_lossy();
     let clean_exe_str = clean_exe_path(&raw_exe_str);
-    let escaped_exe = clean_exe_str.replace('\'', "''");
     let is_elevated = crate::core::elevation::is_elevated();
-    let verb_arg = if is_elevated { " -Verb RunAs" } else { "" };
 
-    // Use PowerShell to sleep briefly for file locks to fully release, then launch detached.
-    // This avoids cmd.exe's 'start' quote-stripping and verbatim '\\' UNC network parsing errors.
-    let ps_cmd = format!(
-        "Start-Sleep -Milliseconds 600; Start-Process -FilePath '{}'{}",
-        escaped_exe, verb_arg
-    );
+    // 4. Launch via native Win32 ShellExecuteW (avoids cmd.exe/powershell string escaping & UNC '\\' errors)
+    #[cfg(windows)]
+    {
+        let file_w: Vec<u16> = clean_exe_str.encode_utf16().chain(std::iter::once(0)).collect();
+        let verb = if is_elevated { "runas" } else { "open" };
+        let verb_w: Vec<u16> = verb.encode_utf16().chain(std::iter::once(0)).collect();
 
-    let spawn_result = SilentCommand::new("powershell")
-        .args(["-WindowStyle", "Hidden", "-Command", &ps_cmd])
-        .spawn();
+        let hinstance = unsafe {
+            windows::Win32::UI::Shell::ShellExecuteW(
+                None,
+                windows::core::PCWSTR(verb_w.as_ptr()),
+                windows::core::PCWSTR(file_w.as_ptr()),
+                None,
+                None,
+                windows::Win32::UI::WindowsAndMessaging::SW_SHOWNORMAL,
+            )
+        };
 
-    if let Err(e) = spawn_result {
-        tracing::warn!("PowerShell detached launch failed ({}), attempting direct fallback launch", e);
-        let _ = SilentCommand::new(&clean_exe_str).spawn();
+        let result_code = hinstance.0 as usize;
+        if result_code > 32 {
+            tracing::info!("Successfully launched updated binary via Win32 ShellExecuteW (code: {})", result_code);
+            std::process::exit(0);
+        } else {
+            tracing::warn!("Win32 ShellExecuteW failed with code {}, attempting detached process spawn", result_code);
+        }
+    }
+
+    // Fallback: spawn via standard library Command with detached flags
+    let mut cmd = std::process::Command::new(&clean_exe_str);
+    #[cfg(windows)]
+    {
+        use std::os::windows::process::CommandExt;
+        // CREATE_NEW_PROCESS_GROUP (0x200) | DETACHED_PROCESS (0x8)
+        cmd.creation_flags(0x00000200 | 0x00000008);
+    }
+    if let Err(e) = cmd.spawn() {
+        tracing::error!("Direct detached spawn fallback failed: {}", e);
+        return Err(format!("Failed to launch new binary: {}", e));
     }
 
     std::process::exit(0);
@@ -363,5 +394,7 @@ mod tests {
         assert_eq!(clean_exe_path(r"\\?\C:\Program Files\WinBlast0\winblast0.exe"), r"C:\Program Files\WinBlast0\winblast0.exe");
         assert_eq!(clean_exe_path(r"\\?\UNC\server\share\winblast0.exe"), r"\\server\share\winblast0.exe");
         assert_eq!(clean_exe_path(r"C:\Tools\winblast0.exe"), r"C:\Tools\winblast0.exe");
+        assert_eq!(clean_exe_path(r#""C:\Tools\winblast0.exe""#), r"C:\Tools\winblast0.exe");
+        assert_eq!(clean_exe_path("  'C:/Tools/winblast0.exe'  "), r"C:\Tools\winblast0.exe");
     }
 }

@@ -4,6 +4,7 @@
 
 pub mod autounattend;
 pub mod automation;
+pub mod boot_config;
 pub mod cleaner;
 pub mod diagnostics;
 pub mod explorer_ctrl;

@@ -1,44 +1,43 @@
 # TaskCache
 
-> 10 nodes · cohesion 0.27
+> 16 nodes · cohesion 0.21
 
 ## Key Concepts
 
-- **TaskCache** (19 connections) — `src/scanner/task_scanner.rs`
-- **.load_task_cache()** (5 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.evaluate_task()** (3 connections) — `src/scanner/task_scanner.rs`
-- **.load_task_cache()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.load_task_cache()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.load_task_cache()** (2 connections) — `src/core/backend.rs`
-- **.load_task_cache()** (2 connections) — `src/core/backend.rs`
-- **.all_entries()** (2 connections) — `src/scanner/task_scanner.rs`
-- **.is_task_enabled()** (2 connections) — `src/scanner/task_scanner.rs`
-- **Item** (1 connections)
+- **DriverError** (13 connections) — `src/hardware/driver_update.rs`
+- **download_and_install_driver_with_progress()** (10 connections) — `src/hardware/driver_update.rs`
+- **backup_driver()** (8 connections) — `src/hardware/driver_update.rs`
+- **install_sandbox_driver()** (8 connections) — `src/hardware/driver_update.rs`
+- **DriverProgressCallback** (6 connections) — `src/hardware/driver_update.rs`
+- **StagingFailed** (3 connections) — `src/hardware/driver_update.rs`
+- **Failed** (3 connections) — `src/hardware/driver_update.rs`
+- **.backup_driver()** (2 connections) — `src/app.rs`
+- **BackupFailed** (2 connections) — `src/hardware/driver_update.rs`
+- **DownloadFailed** (2 connections) — `src/hardware/driver_update.rs`
+- **.fmt()** (2 connections) — `src/hardware/driver_update.rs`
+- **InstallFailed** (2 connections) — `src/hardware/driver_update.rs`
+- **Formatter** (1 connections)
+- **Other** (1 connections) — `src/hardware/driver_update.rs`
+- **ScanFailed** (1 connections) — `src/hardware/driver_update.rs`
+- **VerificationFailed** (1 connections) — `src/hardware/driver_update.rs`
 
 ## Relationships
 
-- [task_scanner.rs](task_scanner.rs.md) (5 shared connections)
-- [theme.rs](theme.rs.md) (2 shared connections)
-- [SandboxEnv](SandboxEnv.md) (2 shared connections)
-- [SlowScanBackend](SlowScanBackend.md) (2 shared connections)
-- [.Reg State() Vendor()](Reg_State_Vendor.md) (1 shared connections)
-- [Integration Suite: Tweak Sandbox E2E](Integration_Suite-_Tweak_Sandbox_E2E.md) (1 shared connections)
-- [Embedded Catalog Test](Embedded_Catalog_Test.md) (1 shared connections)
-- [backend.rs](backend.rs.md) (1 shared connections)
-- [startup.rs](startup.rs.md) (1 shared connections)
-- [LiveScheduledTaskInfo](LiveScheduledTaskInfo.md) (1 shared connections)
-- [FailAtMutationBackend](FailAtMutationBackend.md) (1 shared connections)
+- [task_scanner.rs](task_scanner.rs.md) (6 shared connections)
+- [Language](Language.md) (6 shared connections)
+- [AppState](AppState.md) (1 shared connections)
+- [InstalledAppxPackage](InstalledAppxPackage.md) (1 shared connections)
+- [PdhParkingCollector](PdhParkingCollector.md) (1 shared connections)
 
 ## Source Files
 
-- `src/core/backend.rs`
-- `src/scanner/task_scanner.rs`
-- `tests/tweak_sandbox_e2e.rs`
+- `src/app.rs`
+- `src/hardware/driver_update.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 29 (97%)
-- INFERRED: 1 (3%)
+- EXTRACTED: 40 (100%)
+- INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 
 ---

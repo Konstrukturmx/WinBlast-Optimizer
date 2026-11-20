@@ -1,46 +1,45 @@
 # HibernationStatus
 
-> 11 nodes · cohesion 0.24
+> 10 nodes · cohesion 0.24
 
 ## Key Concepts
 
-- **HibernationStatus** (22 connections) — `src/hardware/power.rs`
-- **.query_hibernation_status()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.query_hibernation_status()** (3 connections) — `src/core/backend.rs`
-- **query_hibernation_and_standby()** (3 connections) — `src/hardware/power.rs`
-- **set_hibernation_enabled()** (3 connections) — `src/hardware/power.rs`
-- **.query_hibernation_status()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.query_hibernation_status()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.query_hibernation_status()** (2 connections) — `src/core/backend.rs`
-- **.set_hibernation_enabled()** (2 connections) — `src/core/backend.rs`
-- **.query_hibernation_status()** (2 connections) — `src/core/backend.rs`
-- **.set_hibernation_enabled()** (2 connections) — `src/core/backend.rs`
+- **LiveServiceInfo** (14 connections) — `src/tools/startup.rs`
+- **.list_live_services()** (6 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.list_live_tasks()** (5 connections) — `tests/tweak_sandbox_e2e.rs`
+- **test_iso_25010_fault_tolerance_concurrency_and_corruption_recovery()** (5 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.list_live_services()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.list_live_services()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.list_live_tasks()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.list_live_tasks()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.list_live_services()** (2 connections) — `src/core/backend.rs`
+- **.list_live_services()** (2 connections) — `src/core/backend.rs`
 
 ## Relationships
 
-- [test_wave1_ledger_rollback_and_concurrency_regressions](test_wave1_ledger_rollback_and_concurrency_regressions.md) (3 shared connections)
-- [power.rs](power.rs.md) (3 shared connections)
-- [.Reg State() Vendor()](Reg_State_Vendor.md) (2 shared connections)
-- [SandboxEnv](SandboxEnv.md) (2 shared connections)
-- [Integration Suite: Tweak Sandbox E2E](Integration_Suite-_Tweak_Sandbox_E2E.md) (2 shared connections)
-- [SlowScanBackend](SlowScanBackend.md) (2 shared connections)
-- [WorkerEvent](WorkerEvent.md) (1 shared connections)
+- [SlowScanBackend](SlowScanBackend.md) (5 shared connections)
+- [super](super.md) (3 shared connections)
+- [WinBlast Optimizer](WinBlast_Optimizer.md) (3 shared connections)
+- [TaskCache](TaskCache.md) (3 shared connections)
+- [FailAtMutationBackend](FailAtMutationBackend.md) (2 shared connections)
+- [PanickingBackend](PanickingBackend.md) (2 shared connections)
+- [in_progress_hud.rs](in_progress_hud.rs.md) (1 shared connections)
+- [full_telemetry_audit_with](full_telemetry_audit_with.md) (1 shared connections)
 - [AppState](AppState.md) (1 shared connections)
-- [PowerSchemeInfo](PowerSchemeInfo.md) (1 shared connections)
-- [task_scanner.rs](task_scanner.rs.md) (1 shared connections)
-- [.take_injected_error](take_injected_error.md) (1 shared connections)
-- [app.rs](app.rs.md) (1 shared connections)
+- [WorkerEvent](WorkerEvent.md) (1 shared connections)
+- [GPU Silicon & Hardware Tuning Policies](GPU_Silicon_&_Hardware_Tuning_Policies.md) (1 shared connections)
+- [RegRawSnapshot](RegRawSnapshot.md) (1 shared connections)
 
 ## Source Files
 
 - `src/core/backend.rs`
-- `src/hardware/power.rs`
+- `src/tools/startup.rs`
 - `tests/tweak_sandbox_e2e.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 36 (100%)
-- INFERRED: 0 (0%)
+- EXTRACTED: 35 (95%)
+- INFERRED: 2 (5%)
 - AMBIGUOUS: 0 (0%)
 
 ---

@@ -1,59 +1,60 @@
 # FailAtMutationBackend
 
-> 26 nodes · cohesion 0.08
+> 29 nodes · cohesion 0.08
 
 ## Key Concepts
 
-- **FailAtMutationBackend** (79 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.broadcast_shell_settings_changed()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.default_profile_path()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.get_service_start_type()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.is_elevated()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.is_hags_enabled()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.is_mpo_disabled()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.set_hags()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.total_physical_ram_kb()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.broadcast_shell_settings_changed()** (2 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.default_profile_path()** (2 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.get_service_start_type()** (2 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.is_elevated()** (2 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.is_hags_enabled()** (2 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.is_mpo_disabled()** (2 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.set_hags()** (2 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.total_physical_ram_kb()** (2 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.broadcast_shell_settings_changed()** (2 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.default_profile_path()** (2 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.get_service_start_type()** (2 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.is_elevated()** (2 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.is_hags_enabled()** (2 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.is_mpo_disabled()** (2 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.set_hags()** (2 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.total_physical_ram_kb()** (2 connections) — `tests/tweak_sandbox_e2e.rs`
-- *... and 1 more nodes in this community*
+- **risk.rs** (44 connections) — `src/core/risk.rs`
+- **load_rules_with_fallback()** (7 connections) — `src/core/risk.rs`
+- **test_all_embedded_tweaks_full_sandbox_lifecycle()** (7 connections) — `tests/tweak_sandbox_e2e.rs`
+- **display_reg_value_name()** (6 connections) — `src/core/risk.rs`
+- **load_rules_from_dir()** (5 connections) — `src/core/risk.rs`
+- **test_embedded_catalog_fallback()** (3 connections) — `src/core/risk.rs`
+- **test_risk_valuation()** (3 connections) — `src/core/risk.rs`
+- **matches_edition()** (2 connections) — `src/core/risk.rs`
+- **test_load_all_rules()** (2 connections) — `src/core/risk.rs`
+- **test_no_duplicate_tweak_ids()** (2 connections) — `src/core/risk.rs`
+- **.is_compatible()** (2 connections) — `src/core/risk.rs`
+- **default_equals()** (1 connections) — `src/core/risk.rs`
+- **default_semicolon()** (1 connections) — `src/core/risk.rs`
+- **default_true()** (1 connections) — `src/core/risk.rs`
+- **EMBEDDED_CATALOG_AI_PRIVACY_EXT** (1 connections) — `src/core/risk.rs`
+- **EMBEDDED_CATALOG_APPX** (1 connections) — `src/core/risk.rs`
+- **EMBEDDED_CATALOG_GAMING_LATENCY_ULTRA** (1 connections) — `src/core/risk.rs`
+- **EMBEDDED_CATALOG_HARDWARE** (1 connections) — `src/core/risk.rs`
+- **EMBEDDED_CATALOG_OS_SETTINGS** (1 connections) — `src/core/risk.rs`
+- **EMBEDDED_CATALOG_PERF_POWER_EXT** (1 connections) — `src/core/risk.rs`
+- **EMBEDDED_CATALOG_PRIVACY** (1 connections) — `src/core/risk.rs`
+- **EMBEDDED_CATALOG_REGISTRY_LAG** (1 connections) — `src/core/risk.rs`
+- **EMBEDDED_CATALOG_SYSTEM_DEEP_OPT** (1 connections) — `src/core/risk.rs`
+- **EMBEDDED_CATALOG_TELEMETRY_APPS** (1 connections) — `src/core/risk.rs`
+- **EMBEDDED_CATALOG_TELEMETRY_OS** (1 connections) — `src/core/risk.rs`
+- *... and 4 more nodes in this community*
 
 ## Relationships
 
-- [SlowScanBackend](SlowScanBackend.md) (26 shared connections)
-- [BlastResult](BlastResult.md) (18 shared connections)
-- [test_wave1_ledger_rollback_and_concurrency_regressions](test_wave1_ledger_rollback_and_concurrency_regressions.md) (9 shared connections)
-- [test_wave1_compound_actions_deep_edge_cases](test_wave1_compound_actions_deep_edge_cases.md) (4 shared connections)
-- [theme.rs](theme.rs.md) (2 shared connections)
-- [latency_bench.rs](latency_bench.rs.md) (2 shared connections)
-- [RegTreeSnapshot](RegTreeSnapshot.md) (2 shared connections)
-- [.block_telemetry_hosts](block_telemetry_hosts.md) (2 shared connections)
-- [backend.rs](backend.rs.md) (2 shared connections)
-- [Disk Cleaning & Temporary File Purger](Disk_Cleaning_&_Temporary_File_Purger.md) (2 shared connections)
-- [SandboxEnv](SandboxEnv.md) (1 shared connections)
-- [Integration Suite: Tweak Sandbox E2E](Integration_Suite-_Tweak_Sandbox_E2E.md) (1 shared connections)
+- [parse_guid](parse_guid.md) (7 shared connections)
+- [super](super.md) (6 shared connections)
+- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (4 shared connections)
+- [RealBackend](RealBackend.md) (4 shared connections)
+- [updater.rs](updater.rs.md) (3 shared connections)
+- [DriverError](DriverError.md) (3 shared connections)
+- [deserialize](deserialize.md) (2 shared connections)
+- [FeatureInstallState](FeatureInstallState.md) (2 shared connections)
+- [FailAtMutationBackend](FailAtMutationBackend.md) (1 shared connections)
+- [PowerSchemeInfo](PowerSchemeInfo.md) (1 shared connections)
+- [Project Documentation, Architecture & Licensing](Project_Documentation,_Architecture_&_Licensing.md) (1 shared connections)
+- [advanced_matrix.rs](advanced_matrix.rs.md) (1 shared connections)
 
 ## Source Files
 
+- `src/core/risk.rs`
 - `tests/tweak_sandbox_e2e.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 111 (100%)
-- INFERRED: 0 (0%)
+- EXTRACTED: 59 (86%)
+- INFERRED: 10 (14%)
 - AMBIGUOUS: 0 (0%)
 
 ---

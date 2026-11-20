@@ -1,29 +1,36 @@
 # restart_explorer_safely
 
-> 7 nodes · cohesion 0.29
+> 10 nodes · cohesion 0.22
 
 ## Key Concepts
 
-- **restart_explorer_safely()** (5 connections) — `src/tools/explorer_ctrl.rs`
-- **HandleCloser** (4 connections) — `src/tools/explorer_ctrl.rs`
-- **EnvBlockGuard** (3 connections) — `src/tools/explorer_ctrl.rs`
-- **broadcast_shell_settings_changed()** (2 connections) — `src/tools/explorer_ctrl.rs`
-- **HANDLE** (2 connections)
-- **.drop()** (1 connections) — `src/tools/explorer_ctrl.rs`
-- **.drop()** (1 connections) — `src/tools/explorer_ctrl.rs`
+- **elevation.rs** (13 connections) — `src/core/elevation.rs`
+- **closehandle** (4 connections)
+- **is_elevated()** (4 connections) — `src/core/elevation.rs`
+- **openprocesstoken** (2 connections)
+- **check_elevation()** (2 connections) — `src/core/elevation.rs`
+- **token_query** (2 connections)
+- **getcurrentprocess** (1 connections)
+- **gettokeninformation** (1 connections)
+- **token_elevation** (1 connections)
+- **tokenelevation** (1 connections)
 
 ## Relationships
 
-- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (5 shared connections)
-- [elevation.rs](elevation.rs.md) (1 shared connections)
+- [driver_update.rs](driver_update.rs.md) (5 shared connections)
+- [Scandetailkind Appxinstalled Appxinstalledps](Scandetailkind_Appxinstalled_Appxinstalledps.md) (2 shared connections)
+- [State Ledger & Restore Point Engine](State_Ledger_&_Restore_Point_Engine.md) (1 shared connections)
+- [probe_physical_drive](probe_physical_drive.md) (1 shared connections)
+- [clean_exe_path](clean_exe_path.md) (1 shared connections)
+- [in_progress_hud.rs](in_progress_hud.rs.md) (1 shared connections)
 
 ## Source Files
 
-- `src/tools/explorer_ctrl.rs`
+- `src/core/elevation.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 12 (100%)
+- EXTRACTED: 21 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

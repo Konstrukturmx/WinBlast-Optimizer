@@ -6,7 +6,9 @@
 pub mod astar;
 pub mod dijkstra;
 pub mod raven;
+pub mod topological_scheduler;
 
 pub use astar::{AStarPlanner, OptimizationGoal, OptimizationPlan};
 pub use dijkstra::{DijkstraScheduler, ExecutionOrder, ExecutionStep};
 pub use raven::{ConflictResolution, RavenEngine, TweakCriteria};
+pub use topological_scheduler::{schedule_optimizations_topological, MAX_NODES};

@@ -1,63 +1,59 @@
 # System Architecture Changelog
 
-> 34 nodes · cohesion 0.06
+> 36 nodes · cohesion 0.09
 
 ## Key Concepts
 
-- **ActiveView** (45 connections) — `src/app.rs`
-- **AdvancedMatrix** (2 connections) — `src/app.rs`
-- **CoreParking** (2 connections) — `src/app.rs`
-- **EasyDashboard** (2 connections) — `src/app.rs`
-- **GpuTuning** (2 connections) — `src/app.rs`
-- **ALL_VIEWS** (2 connections) — `tests/ui_responsive_e2e.rs`
-- **Advanced Optimization Matrix UI** (1 connections) — `assets/screenshots/advanced_matrix.png`
-- **CPU Core Parking Topology Visualizer UI** (1 connections) — `assets/screenshots/cpu_parking.png`
-- **Easy Mode Telemetry Dashboard UI** (1 connections) — `assets/screenshots/dashboard.png`
-- **GPU Tuning & Vendor Gating UI** (1 connections) — `assets/screenshots/gpu_tuning.png`
-- **.ALL_VIEWS** (1 connections) — `src/app.rs`
-- **AutomationCenter** (1 connections) — `src/app.rs`
-- **BackupCenter** (1 connections) — `src/app.rs`
-- **CleanAndApps** (1 connections) — `src/app.rs`
-- **DiskHealth** (1 connections) — `src/app.rs`
-- **DriverBios** (1 connections) — `src/app.rs`
-- **FaultDiagnostics** (1 connections) — `src/app.rs`
-- **FpsBenchmark** (1 connections) — `src/app.rs`
-- **GameOverlay** (1 connections) — `src/app.rs`
-- **GamePrerequisites** (1 connections) — `src/app.rs`
-- **GameProfiles** (1 connections) — `src/app.rs`
-- **GameSuitability** (1 connections) — `src/app.rs`
-- **GamingStats** (1 connections) — `src/app.rs`
-- **GoalPlanner** (1 connections) — `src/app.rs`
-- **HardwareView** (1 connections) — `src/app.rs`
-- *... and 9 more nodes in this community*
+- **tweak_i18n/mod.rs** (42 connections) — `src/core/tweak_i18n/mod.rs`
+- **lookup_text_table()** (6 connections) — `src/core/tweak_i18n/mod.rs`
+- **localize_category()** (5 connections) — `src/core/tweak_i18n/mod.rs`
+- **localize_optional_feature()** (5 connections) — `src/core/tweak_i18n/mod.rs`
+- **localize_sub_category()** (5 connections) — `src/core/tweak_i18n/mod.rs`
+- **localize_winget()** (5 connections) — `src/core/tweak_i18n/mod.rs`
+- **lookup_pair_table()** (5 connections) — `src/core/tweak_i18n/mod.rs`
+- **non_english_idx()** (5 connections) — `src/core/tweak_i18n/mod.rs`
+- **test_winget_optional_features_and_telemetry_services()** (5 connections) — `src/core/tweak_i18n/mod.rs`
+- **is_privacy_or_telemetry_category()** (4 connections) — `src/core/tweak_i18n/mod.rs`
+- **localize_ledger_token()** (4 connections) — `src/core/tweak_i18n/mod.rs`
+- **localize_power_scheme_name()** (4 connections) — `src/core/tweak_i18n/mod.rs`
+- **localize_telemetry_service()** (4 connections) — `src/core/tweak_i18n/mod.rs`
+- **test_all_10_gaming_latency_ultra_tweaks_localized_all_7_languages()** (4 connections) — `src/core/tweak_i18n/mod.rs`
+- **test_all_32_deep_opt_tweaks_localized_all_7_languages()** (4 connections) — `src/core/tweak_i18n/mod.rs`
+- **test_categories_and_sub_categories()** (4 connections) — `src/core/tweak_i18n/mod.rs`
+- **test_power_schemes_and_ledger_tokens()** (3 connections) — `src/core/tweak_i18n/mod.rs`
+- **tweak_description()** (3 connections) — `src/core/tweak_i18n/mod.rs`
+- **tweak_title()** (3 connections) — `src/core/tweak_i18n/mod.rs`
+- **.tweak_category()** (2 connections) — `src/app.rs`
+- **.tweak_sub_category()** (2 connections) — `src/app.rs`
+- **contains_ascii_ci()** (2 connections) — `src/core/tweak_i18n/mod.rs`
+- **NON_ENGLISH_LANGS** (2 connections) — `src/core/tweak_i18n/mod.rs`
+- **CAT_BROWSERS** (1 connections) — `src/core/tweak_i18n/mod.rs`
+- **CAT_DEVELOPMENT** (1 connections) — `src/core/tweak_i18n/mod.rs`
+- *... and 11 more nodes in this community*
 
 ## Relationships
 
-- [backend.rs](backend.rs.md) (3 shared connections)
-- [ui/mod.rs](ui-mod.rs.md) (2 shared connections)
-- [ThemePalette](ThemePalette.md) (2 shared connections)
-- [GPU Silicon & Hardware Tuning Policies](GPU_Silicon_&_Hardware_Tuning_Policies.md) (2 shared connections)
-- [.navigate](navigate.md) (2 shared connections)
-- [AppState](AppState.md) (1 shared connections)
-- [.Toggle .Set .Apply](Toggle_.Set_.Apply.md) (1 shared connections)
-- [action_button](action_button.md) (1 shared connections)
-- [edge_cases_unorthodox.rs](edge_cases_unorthodox.rs.md) (1 shared connections)
-- [theme.rs](theme.rs.md) (1 shared connections)
-- [app.rs](app.rs.md) (1 shared connections)
+- [ps_runner.rs](ps_runner.rs.md) (12 shared connections)
+- [AppX Package & Modern App Scanner](AppX_Package_&_Modern_App_Scanner.md) (5 shared connections)
+- [AppState](AppState.md) (2 shared connections)
+- [FeatureInstallState](FeatureInstallState.md) (2 shared connections)
+- [Multi-Language Tweak Localization Tables](Multi-Language_Tweak_Localization_Tables.md) (2 shared connections)
+- [FailAtMutationBackend](FailAtMutationBackend.md) (1 shared connections)
+- [super](super.md) (1 shared connections)
+- [SlowScanBackend](SlowScanBackend.md) (1 shared connections)
+- [features_apps.rs](features_apps.rs.md) (1 shared connections)
+- [advanced_matrix.rs](advanced_matrix.rs.md) (1 shared connections)
+- [Disk Cleaning & Temporary File Purger](Disk_Cleaning_&_Temporary_File_Purger.md) (1 shared connections)
 
 ## Source Files
 
-- `assets/screenshots/advanced_matrix.png`
-- `assets/screenshots/cpu_parking.png`
-- `assets/screenshots/dashboard.png`
-- `assets/screenshots/gpu_tuning.png`
 - `src/app.rs`
-- `tests/ui_responsive_e2e.rs`
+- `src/core/tweak_i18n/mod.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 50 (100%)
-- INFERRED: 0 (0%)
+- EXTRACTED: 83 (98%)
+- INFERRED: 2 (2%)
 - AMBIGUOUS: 0 (0%)
 
 ---

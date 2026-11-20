@@ -1,42 +1,28 @@
 # ui/mod.rs
 
-> 9 nodes · cohesion 0.58
+> 3 nodes · cohesion 0.67
 
 ## Key Concepts
 
-- **ui/mod.rs** (29 connections) — `src/ui/mod.rs`
-- **view()** (25 connections) — `src/ui/mod.rs`
-- **build_sidebar()** (11 connections) — `src/ui/mod.rs`
-- **build_dropdown_overlay()** (7 connections) — `src/ui/mod.rs`
-- **El** (7 connections)
-- **mode_tab()** (6 connections) — `src/ui/mod.rs`
-- **nav_button()** (6 connections) — `src/ui/mod.rs`
-- **nav_section_header()** (4 connections) — `src/ui/mod.rs`
-- **Cx** (2 connections)
+- **.set_startup_entry_enabled_by_id()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.set_startup_entry_enabled_by_id()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.set_startup_entry_enabled_by_id()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
 
 ## Relationships
 
-- [.Toggle .Set .Apply](Toggle_.Set_.Apply.md) (20 shared connections)
-- [ThemePalette](ThemePalette.md) (7 shared connections)
-- [AppState](AppState.md) (5 shared connections)
-- [action_button](action_button.md) (5 shared connections)
-- [action_button_guarded](action_button_guarded.md) (3 shared connections)
-- [System Architecture Changelog](System_Architecture_Changelog.md) (2 shared connections)
-- [app.rs](app.rs.md) (2 shared connections)
-- [Reversibility Instant Requireslogoff](Reversibility_Instant_Requireslogoff.md) (2 shared connections)
-- [Language](Language.md) (1 shared connections)
-- [Core UI Internationalization & Text Catalog](Core_UI_Internationalization_&_Text_Catalog.md) (1 shared connections)
-- [diff_modal.rs](diff_modal.rs.md) (1 shared connections)
-- [WinBlastScrollable](WinBlastScrollable.md) (1 shared connections)
+- [WinBlast Optimizer](WinBlast_Optimizer.md) (3 shared connections)
+- [FailAtMutationBackend](FailAtMutationBackend.md) (1 shared connections)
+- [PanickingBackend](PanickingBackend.md) (1 shared connections)
+- [SlowScanBackend](SlowScanBackend.md) (1 shared connections)
 
 ## Source Files
 
-- `src/ui/mod.rs`
+- `tests/tweak_sandbox_e2e.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 71 (93%)
-- INFERRED: 5 (7%)
+- EXTRACTED: 8 (100%)
+- INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 
 ---

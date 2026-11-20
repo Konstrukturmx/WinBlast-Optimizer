@@ -287,13 +287,13 @@ fn test_real_backend_readonly_live_host_audit() {
     // - Preconditions: RealBackend initialized with read-only permissions on host Windows environment.
     // - Equivalence Classes: Host Windows build number (Win10 vs Win11 24H2+), host GPU inventory.
     // - Boundary Conditions: Boundary build 26000 for MPO deprecation check.
-    // - Invariants: Catalog length == 208, scan results count == 208, RealBackend performs zero system mutations.
-    // - Expected Outcome: All 208 tweaks return deterministic valid TweakState without panic or mutation.
+    // - Invariants: Catalog length == 218, scan results count == 218, RealBackend performs zero system mutations.
+    // - Expected Outcome: All 218 tweaks return deterministic valid TweakState without panic or mutation.
     let tweaks = load_embedded_rules();
-    assert_eq!(tweaks.len(), 208, "Expected 208 embedded catalog rules");
+    assert_eq!(tweaks.len(), 218, "Expected 218 embedded catalog rules");
 
     let scan_results = run_full_scan_with(&backend, &tweaks, os.build_number, &os.edition);
-    assert_eq!(scan_results.len(), 208, "Expected 208 scan results");
+    assert_eq!(scan_results.len(), 218, "Expected 218 scan results");
 
     if os.build_number >= 26000 {
         let mpo_res = scan_results

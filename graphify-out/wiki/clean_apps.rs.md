@@ -1,60 +1,50 @@
 # clean_apps.rs
 
-> 24 nodes · cohesion 0.18
+> 24 nodes · cohesion 0.16
 
 ## Key Concepts
 
-- **clean_apps.rs** (32 connections) — `src/ui/views/clean_apps.rs`
-- **advanced_matrix.rs** (23 connections) — `src/ui/views/advanced_matrix.rs`
-- **pill_badge()** (20 connections) — `src/ui/widgets/button.rs`
-- **build_appx_features_body()** (12 connections) — `src/ui/views/clean_apps.rs`
-- **build_disk_cleaner_body()** (12 connections) — `src/ui/views/clean_apps.rs`
-- **build_winget_body()** (12 connections) — `src/ui/views/clean_apps.rs`
-- **view()** (10 connections) — `src/ui/views/advanced_matrix.rs`
-- **view()** (9 connections) — `src/ui/views/clean_apps.rs`
-- **switch_indicator()** (8 connections) — `src/ui/widgets/button.rs`
-- **CleanAppsSubTab** (7 connections) — `src/app.rs`
-- **El** (7 connections)
-- **empty_card()** (6 connections) — `src/ui/views/clean_apps.rs`
-- **sub_tab_btn()** (5 connections) — `src/ui/views/clean_apps.rs`
-- **text_input** (5 connections)
-- **clean_target_label()** (4 connections) — `src/ui/views/clean_apps.rs`
-- **growthspec** (2 connections)
-- **rc** (2 connections)
-- **El** (2 connections)
-- **format_mb()** (2 connections) — `src/ui/views/clean_apps.rs`
-- **btreemap** (1 connections)
-- **btreeset** (1 connections)
-- **AppxFeatures** (1 connections) — `src/app.rs`
-- **DiskCleaner** (1 connections) — `src/app.rs`
-- **WinGetInstaller** (1 connections) — `src/app.rs`
+- **LazyLoader** (19 connections) — `src/hardware/lazy_loader.rs`
+- **LazyPayload** (12 connections) — `src/hardware/lazy_loader.rs`
+- **.spawn_probe()** (10 connections) — `src/hardware/lazy_loader.rs`
+- **background_probe_delivers_payload_without_blocking()** (5 connections) — `src/hardware/lazy_loader.rs`
+- **.is_any_loading()** (5 connections) — `src/hardware/lazy_loader.rs`
+- **.new()** (5 connections) — `src/hardware/lazy_loader.rs`
+- **background_panic_is_contained_and_clears_in_flight_flag()** (4 connections) — `src/hardware/lazy_loader.rs`
+- **.spawn_probe_drivers()** (4 connections) — `src/hardware/lazy_loader.rs`
+- **.try_recv()** (4 connections) — `src/hardware/lazy_loader.rs`
+- **.drain_ready()** (3 connections) — `src/hardware/lazy_loader.rs`
+- **.is_drivers_loading()** (3 connections) — `src/hardware/lazy_loader.rs`
+- **.spawn_probe_bios()** (3 connections) — `src/hardware/lazy_loader.rs`
+- **.spawn_probe_disks()** (3 connections) — `src/hardware/lazy_loader.rs`
+- **.spawn_probe_thermals()** (3 connections) — `src/hardware/lazy_loader.rs`
+- **Drivers** (3 connections) — `src/hardware/lazy_loader.rs`
+- **.default()** (2 connections) — `src/hardware/lazy_loader.rs`
+- **.is_bios_loading()** (2 connections) — `src/hardware/lazy_loader.rs`
+- **.is_disks_loading()** (2 connections) — `src/hardware/lazy_loader.rs`
+- **.is_thermals_loading()** (2 connections) — `src/hardware/lazy_loader.rs`
+- **Bios** (2 connections) — `src/hardware/lazy_loader.rs`
+- **Disks** (2 connections) — `src/hardware/lazy_loader.rs`
+- **Thermals** (2 connections) — `src/hardware/lazy_loader.rs`
+- **try_recv_is_non_blocking_when_empty()** (2 connections) — `src/hardware/lazy_loader.rs`
+- **F** (1 connections)
 
 ## Relationships
 
-- [.Toggle .Set .Apply](Toggle_.Set_.Apply.md) (19 shared connections)
-- [action_button](action_button.md) (15 shared connections)
-- [action_button_guarded](action_button_guarded.md) (14 shared connections)
-- [AppState](AppState.md) (9 shared connections)
-- [ThemePalette](ThemePalette.md) (8 shared connections)
-- [privacy_shield.rs](privacy_shield.rs.md) (6 shared connections)
-- [WinBlastScrollable](WinBlastScrollable.md) (2 shared connections)
-- [enums](enums.md) (2 shared connections)
-- [Core UI Internationalization & Text Catalog](Core_UI_Internationalization_&_Text_Catalog.md) (2 shared connections)
-- [Disk Cleaning & Temporary File Purger](Disk_Cleaning_&_Temporary_File_Purger.md) (2 shared connections)
-- [RealBackend](RealBackend.md) (2 shared connections)
-- [app.rs](app.rs.md) (1 shared connections)
+- [lazy_loader.rs](lazy_loader.rs.md) (10 shared connections)
+- [Language](Language.md) (2 shared connections)
+- [deserialize](deserialize.md) (1 shared connections)
+- [WorkerEvent](WorkerEvent.md) (1 shared connections)
+- [DiskSubsystemReport](DiskSubsystemReport.md) (1 shared connections)
 
 ## Source Files
 
-- `src/app.rs`
-- `src/ui/views/advanced_matrix.rs`
-- `src/ui/views/clean_apps.rs`
-- `src/ui/widgets/button.rs`
+- `src/hardware/lazy_loader.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 113 (83%)
-- INFERRED: 23 (17%)
+- EXTRACTED: 59 (100%)
+- INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 
 ---

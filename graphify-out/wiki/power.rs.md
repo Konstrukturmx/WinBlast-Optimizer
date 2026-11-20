@@ -1,56 +1,58 @@
 # power.rs
 
-> 29 nodes · cohesion 0.08
+> 27 nodes · cohesion 0.13
 
 ## Key Concepts
 
-- **power.rs** (60 connections) — `src/hardware/power.rs`
-- **fallback_scheme_name()** (6 connections) — `src/hardware/power.rs`
-- **set_usb_root_hub_power_saving()** (3 connections) — `src/hardware/power.rs`
-- **resolve_indirect_string()** (2 connections) — `src/hardware/power.rs`
-- **strip_indirect_prefix()** (2 connections) — `src/hardware/power.rs`
-- **test_fallback_scheme_name_indirect_stripping()** (2 connections) — `src/hardware/power.rs`
-- **callntpowerinformation** (1 connections)
-- **getsystempowerstatus** (1 connections)
-- **hlocal** (1 connections)
-- **localfree** (1 connections)
-- **ntstatus** (1 connections)
-- **powerduplicatescheme** (1 connections)
-- **powergetactivescheme** (1 connections)
-- **powerreadacdefaultindex** (1 connections)
-- **powerreadacvalueindex** (1 connections)
-- **powerreaddcdefaultindex** (1 connections)
-- **powerreaddcvalueindex** (1 connections)
-- **powerreadvaluemax** (1 connections)
-- **powerreadvaluemin** (1 connections)
-- **powersetactivescheme** (1 connections)
-- **powerwriteacvalueindex** (1 connections)
-- **powerwritedcvalueindex** (1 connections)
-- **powerwritefriendlyname** (1 connections)
-- **powerwritevaluemax** (1 connections)
-- **powerwritevaluemin** (1 connections)
-- *... and 4 more nodes in this community*
+- **automation.rs** (32 connections) — `src/tools/automation.rs`
+- **MaintenanceTaskKind** (14 connections) — `src/tools/automation.rs`
+- **.task_name()** (6 connections) — `src/tools/automation.rs`
+- **HealthSeverity** (5 connections) — `src/tools/automation.rs`
+- **install_maintenance_task()** (5 connections) — `src/tools/automation.rs`
+- **query_all_maintenance_tasks()** (5 connections) — `src/tools/automation.rs`
+- **SystemHealthAssessment** (5 connections) — `src/tools/automation.rs`
+- **test_iso_29119_maintenance_tasks_specification()** (5 connections) — `src/tools/automation.rs`
+- **is_maintenance_task_installed()** (4 connections) — `src/tools/automation.rs`
+- **MaintenanceTaskStatus** (4 connections) — `src/tools/automation.rs`
+- **assess_system_health()** (3 connections) — `src/tools/automation.rs`
+- **.schedule_frequency()** (3 connections) — `src/tools/automation.rs`
+- **.trigger_time()** (3 connections) — `src/tools/automation.rs`
+- **MemoryTrimResult** (3 connections) — `src/tools/automation.rs`
+- **remove_maintenance_task()** (3 connections) — `src/tools/automation.rs`
+- **SystemHealthIssue** (3 connections) — `src/tools/automation.rs`
+- **test_iso_29119_health_assessment_scoring_and_grades()** (2 connections) — `src/tools/automation.rs`
+- **trim_system_memory_and_cache()** (2 connections) — `src/tools/automation.rs`
+- **Critical** (1 connections) — `src/tools/automation.rs`
+- **Info** (1 connections) — `src/tools/automation.rs`
+- **Warning** (1 connections) — `src/tools/automation.rs`
+- **.all()** (1 connections) — `src/tools/automation.rs`
+- **DailyMemoryPurge** (1 connections) — `src/tools/automation.rs`
+- **.description()** (1 connections) — `src/tools/automation.rs`
+- **TelemetryGuard** (1 connections) — `src/tools/automation.rs`
+- *... and 2 more nodes in this community*
 
 ## Relationships
 
-- [parse_guid](parse_guid.md) (21 shared connections)
-- [super](super.md) (5 shared connections)
-- [HibernationStatus](HibernationStatus.md) (3 shared connections)
-- [WinBlastError](WinBlastError.md) (2 shared connections)
-- [backend.rs](backend.rs.md) (1 shared connections)
-- [parking.rs](parking.rs.md) (1 shared connections)
-- [CoreParkingState](CoreParkingState.md) (1 shared connections)
+- [Project Documentation, Architecture & Licensing](Project_Documentation,_Architecture_&_Licensing.md) (6 shared connections)
+- [AppState](AppState.md) (4 shared connections)
+- [deserialize](deserialize.md) (3 shared connections)
+- [OverallHealthGrade](OverallHealthGrade.md) (2 shared connections)
+- [parse_guid](parse_guid.md) (1 shared connections)
 - [PowerSchemeInfo](PowerSchemeInfo.md) (1 shared connections)
-- [full_telemetry_audit_with](full_telemetry_audit_with.md) (1 shared connections)
+- [privacy_shield.rs](privacy_shield.rs.md) (1 shared connections)
+- [InstalledAppxPackage](InstalledAppxPackage.md) (1 shared connections)
+- [FailAtMutationBackend](FailAtMutationBackend.md) (1 shared connections)
+- [super](super.md) (1 shared connections)
+- [PlatformSecurityInfo](PlatformSecurityInfo.md) (1 shared connections)
 
 ## Source Files
 
-- `src/hardware/power.rs`
+- `src/tools/automation.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 66 (99%)
-- INFERRED: 1 (1%)
+- EXTRACTED: 65 (94%)
+- INFERRED: 4 (6%)
 - AMBIGUOUS: 0 (0%)
 
 ---

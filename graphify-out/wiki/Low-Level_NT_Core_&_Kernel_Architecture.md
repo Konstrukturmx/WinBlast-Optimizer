@@ -15,7 +15,7 @@
 ## Relationships
 
 - [AppState](AppState.md) (1 shared connections)
-- [app.rs](app.rs.md) (1 shared connections)
+- [SlowScanBackend](SlowScanBackend.md) (1 shared connections)
 
 ## Source Files
 

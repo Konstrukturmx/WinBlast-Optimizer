@@ -1,8 +1,8 @@
 # SystemBackend
 
-> God node · 117 connections · `src/core/backend.rs`
+> God node · 122 connections · `src/core/backend.rs`
 
-**Community:** [Integration Suite: Tweak Sandbox E2E](Integration_Suite-_Tweak_Sandbox_E2E.md)
+**Community:** [full_telemetry_audit_with](full_telemetry_audit_with.md)
 
 ## Connections by Relation
 
@@ -21,7 +21,12 @@
 - [app.rs](app.rs.md) `EXTRACTED`
 - engine.rs `EXTRACTED`
 - scanner/mod.rs `EXTRACTED`
-- [restore_point.rs](restore_point.rs.md) `EXTRACTED`
+- real_windows_env.rs `EXTRACTED`
+- [adaptive_tuning.rs](adaptive_tuning.rs.md) `EXTRACTED`
+- restore_point.rs `EXTRACTED`
+- [power_governor.rs](power_governor.rs.md) `EXTRACTED`
+- [boot_config.rs](boot_config.rs.md) `EXTRACTED`
+- [sysprep_engine.rs](sysprep_engine.rs.md) `EXTRACTED`
 - telemetry_scanner.rs `EXTRACTED`
 
 ### method
@@ -50,16 +55,16 @@
 ### references
 - [AppState](AppState.md) `EXTRACTED`
 - rollback_entry_with() `EXTRACTED`
-- [Changelog](Changelog.md) `EXTRACTED`
+- Changelog `EXTRACTED`
 - revert_tweak_with() `EXTRACTED`
 - apply_action_slice_with() `EXTRACTED`
-- scan_single_tweak_with() `EXTRACTED`
 - apply_tweak_with() `EXTRACTED`
+- scan_single_tweak_with() `EXTRACTED`
 - [WinBlast Optimizer — Developer & Architecture Guide](WinBlast_Optimizer_—_Developer_&_Architecture_Guide.md) `EXTRACTED`
 - scan_all_tweaks_parallel_with() `EXTRACTED`
 - CachedScanBackend `EXTRACTED`
-- run_full_scan_with() `EXTRACTED`
 - full_telemetry_audit_with() `EXTRACTED`
+- run_full_scan_with() `EXTRACTED`
 - resolve_dynamic_dword() `EXTRACTED`
 - scan_tweaks_chunked_parallel_with() `EXTRACTED`
 - apply_tweaks_by_id_with() `EXTRACTED`

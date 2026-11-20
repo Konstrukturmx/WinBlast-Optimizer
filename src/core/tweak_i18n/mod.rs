@@ -138,6 +138,8 @@ pub fn tweak_title(id: &str) -> Option<&'static str> {
         "optimize_ntfs_memory_usage" => Some("Aggressive NTFS Paged-Pool Caching"),
         "optimize_object_manager_quota" => Some("Increase Kernel Object Manager Handle Quota"),
         "optimize_timer_resolution_requests" => Some("Allow Applications to Request High Timer Resolution"),
+        "disable_wpbt_execution" => Some("Disable WPBT Firmware Binary Execution"),
+        "service_shutdown_timeout_15s" => Some("Reduce Service Shutdown Timeout to 15s"),
         _ => None,
     }
 }
@@ -186,6 +188,8 @@ pub fn tweak_description(id: &str) -> Option<&'static str> {
         "optimize_ntfs_memory_usage" => Some("Sets NtfsMemoryUsage to 2, instructing the NTFS driver to use a larger paged-pool allocation for directory and metadata caching. This reduces repeated disk reads on volumes with many small files, improving file enumeration and build system performance on systems with ample RAM."),
         "optimize_object_manager_quota" => Some("Raises the Session Manager ObjectDirectories additional kernel object quota threshold, and increases the handle table size limit via SessionPoolSize=48. This prevents handle table exhaustion on systems running many concurrent processes with heavy file handle usage (build systems, IDEs, game launchers with many child processes)."),
         "optimize_timer_resolution_requests" => Some("Sets GlobalTimerResolutionRequests=1 in the Session Manager kernel key, allowing applications to request the maximum platform timer resolution (0.5 ms) system-wide. Without this, Windows may ignore high-resolution timer requests from non-foreground processes, causing timing jitter in background audio engines, game servers, and real-time applications."),
+        "disable_wpbt_execution" => Some("Blocks the Windows Kernel from executing binaries bundled into the motherboard UEFI Windows Platform Binary Table (WPBT)."),
+        "service_shutdown_timeout_15s" => Some("Reduces the OS service termination timeout during shutdown from default 20s to 15s to prevent long shutdown hangs."),
         _ => None,
     }
 }
@@ -1150,9 +1154,9 @@ mod tests {
     ];
 
     #[test]
-    fn test_all_208_tweaks_localized_all_7_languages() {
+    fn test_all_218_tweaks_localized_all_7_languages() {
         let tweaks = load_embedded_rules();
-        assert_eq!(tweaks.len(), 208, "Expected 208 embedded catalog tweaks");
+        assert_eq!(tweaks.len(), 218, "Expected 218 embedded catalog tweaks");
 
         for tweak in &tweaks {
             assert!(
@@ -1343,11 +1347,11 @@ mod tests {
     }
 
     #[test]
-    fn test_all_30_deep_opt_tweaks_localized_all_7_languages() {
+    fn test_all_32_deep_opt_tweaks_localized_all_7_languages() {
         let deep_opt_toml = include_str!("../../../assets/rules/system_deep_opt.toml");
         let catalog = toml::from_str::<crate::core::risk::TweakCatalog>(deep_opt_toml)
             .expect("system_deep_opt.toml should parse cleanly");
-        assert_eq!(catalog.tweaks.len(), 30, "Expected 30 deep optimization tweaks");
+        assert_eq!(catalog.tweaks.len(), 32, "Expected 32 deep optimization tweaks");
 
         for tweak in &catalog.tweaks {
             // English base lookup

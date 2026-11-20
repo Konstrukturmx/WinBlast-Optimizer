@@ -1,50 +1,51 @@
 # Reversibility Instant Requireslogoff
 
-> 18 nodes · cohesion 0.12
+> 17 nodes · cohesion 0.12
 
 ## Key Concepts
 
-- **ColorScheme** (19 connections) — `src/ui/theme.rs`
-- **ThemeMode** (13 connections) — `src/ui/theme.rs`
-- **.new()** (7 connections) — `src/ui/theme.rs`
-- **.default_for()** (4 connections) — `src/ui/theme.rs`
-- **.set_color_scheme()** (2 connections) — `src/app.rs`
-- **.text_key()** (2 connections) — `src/ui/theme.rs`
-- **THEMES** (2 connections) — `tests/ui_responsive_e2e.rs`
-- **.ALL** (1 connections) — `src/ui/theme.rs`
-- **ArcticAurora** (1 connections) — `src/ui/theme.rs`
-- **CrimsonSunset** (1 connections) — `src/ui/theme.rs`
-- **CyberIndigo** (1 connections) — `src/ui/theme.rs`
-- **EmeraldMint** (1 connections) — `src/ui/theme.rs`
-- **.label()** (1 connections) — `src/ui/theme.rs`
-- **MidnightStealth** (1 connections) — `src/ui/theme.rs`
-- **SolarAmber** (1 connections) — `src/ui/theme.rs`
-- **Dark** (1 connections) — `src/ui/theme.rs`
-- **.label()** (1 connections) — `src/ui/theme.rs`
-- **Light** (1 connections) — `src/ui/theme.rs`
+- **edge_cases_unorthodox.rs** (27 connections) — `tests/edge_cases_unorthodox.rs`
+- **EngineMode** (6 connections) — `src/app.rs`
+- **env** (3 connections)
+- **sandboxenv** (3 connections)
+- **test_unorthodox_concurrent_worker_event_stress()** (3 connections) — `tests/edge_cases_unorthodox.rs`
+- **test_unorthodox_extreme_registry_corruption()** (3 connections) — `tests/edge_cases_unorthodox.rs`
+- **test_unorthodox_micro_and_ultrawide_viewports()** (2 connections) — `tests/edge_cases_unorthodox.rs`
+- **appstate** (1 connections)
+- **decode_hex** (1 connections)
+- **encode_hex** (1 connections)
+- **parse_multi_sz_lossless** (1 connections)
+- **Runtime** (1 connections)
+- **Instant** (1 connections) — `src/app.rs`
+- **Normal** (1 connections) — `src/app.rs`
+- **systemthermalsnapshot** (1 connections)
+- **test_unorthodox_hardware_sensor_anomalies()** (1 connections) — `tests/edge_cases_unorthodox.rs`
+- **uithemestyle** (1 connections)
 
 ## Relationships
 
-- [Project History & Release Version Ledger](Project_History_&_Release_Version_Ledger.md) (5 shared connections)
-- [AppState](AppState.md) (4 shared connections)
-- [app.rs](app.rs.md) (2 shared connections)
-- [ui/mod.rs](ui-mod.rs.md) (2 shared connections)
-- [edge_cases_unorthodox.rs](edge_cases_unorthodox.rs.md) (2 shared connections)
-- [Dynamicdwordformula Logicalcorecount Totalraminkb](Dynamicdwordformula_Logicalcorecount_Totalraminkb.md) (2 shared connections)
-- [GPU Silicon & Hardware Tuning Policies](GPU_Silicon_&_Hardware_Tuning_Policies.md) (2 shared connections)
-- [ThemePalette](ThemePalette.md) (2 shared connections)
-- [Core UI Internationalization & Text Catalog](Core_UI_Internationalization_&_Text_Catalog.md) (1 shared connections)
+- [lazy_loader.rs](lazy_loader.rs.md) (3 shared connections)
+- [super](super.md) (3 shared connections)
+- [.take_injected_error](take_injected_error.md) (2 shared connections)
+- [ui_scrollbar_test.rs](ui_scrollbar_test.rs.md) (2 shared connections)
+- [parse_guid](parse_guid.md) (2 shared connections)
+- [CoreParkingState](CoreParkingState.md) (2 shared connections)
+- [AppState](AppState.md) (1 shared connections)
+- [Runtime](Runtime.md) (1 shared connections)
+- [SlowScanBackend](SlowScanBackend.md) (1 shared connections)
+- [sys_inventory.rs](sys_inventory.rs.md) (1 shared connections)
+- [theme.rs](theme.rs.md) (1 shared connections)
+- [ps_runner.rs](ps_runner.rs.md) (1 shared connections)
 
 ## Source Files
 
 - `src/app.rs`
-- `src/ui/theme.rs`
-- `tests/ui_responsive_e2e.rs`
+- `tests/edge_cases_unorthodox.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 40 (98%)
-- INFERRED: 1 (2%)
+- EXTRACTED: 36 (88%)
+- INFERRED: 5 (12%)
 - AMBIGUOUS: 0 (0%)
 
 ---

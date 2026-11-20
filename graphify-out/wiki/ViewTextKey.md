@@ -30,7 +30,7 @@
 - *…and 177 more `case_of` connection(s) not listed (lowest-degree first to go)*
 
 ### contains
-- [view_i18n.rs](view_i18n.rs.md) `EXTRACTED`
+- view_i18n.rs `EXTRACTED`
 - .TOTAL_KEYS `EXTRACTED`
 
 ### imports_from
@@ -42,7 +42,7 @@
 - automation_center.rs `EXTRACTED`
 - views/game_prereqs.rs `EXTRACTED`
 - fault_diagnostics.rs `EXTRACTED`
-- [goal_planner.rs](goal_planner.rs.md) `EXTRACTED`
+- goal_planner.rs `EXTRACTED`
 - [views/network_diag.rs](views-network_diag.rs.md) `EXTRACTED`
 - thermal_monitor.rs `EXTRACTED`
 - views/windows_repair.rs `EXTRACTED`
@@ -56,7 +56,7 @@
 
 ### references
 - tr_view() `EXTRACTED`
-- .tr_v() `INFERRED`
+- .tr_v() `EXTRACTED`
 
 ---
 

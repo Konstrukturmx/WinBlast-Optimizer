@@ -651,3 +651,28 @@ type = "WindowsFeature"
 feature_name = "Browser.InternetExplorer~~~~0.0.11.0"
 kind = "Capability"
 enable = false
+
+# -----------------------------------------------------------------------------
+
+[[tweaks]]
+id = "remove_webexperience_package"
+title = "Remove WebExperienceHost (Taskbar Widgets)"
+category = "Bloatware"
+description = "Deprovisions MicrosoftWindows.Client.WebExperience AppX package systemwide, eliminating background Edge WebView widget processes."
+easy_mode_included = false
+
+[tweaks.os_req]
+min_build = 19041
+editions = ["Home", "Pro", "Enterprise", "Education"]
+
+[tweaks.valuation]
+stability_risk = "Safe"
+performance_gain = 3
+privacy_gain = 2
+reversibility = "RequiresPackageReinstall"
+broken_features = ["Taskbar Widgets and news feeds will be removed"]
+
+[[tweaks.actions]]
+type = "AppXPackage"
+package_family = "MicrosoftWindows.Client.WebExperience_cw5n1h2txyewy"
+

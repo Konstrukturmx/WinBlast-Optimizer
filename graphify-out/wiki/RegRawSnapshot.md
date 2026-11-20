@@ -1,65 +1,59 @@
 # RegRawSnapshot
 
-> 26 nodes · cohesion 0.11
+> 26 nodes · cohesion 0.18
 
 ## Key Concepts
 
-- **FeatureInstallState** (26 connections) — `src/core/risk.rs`
-- **OptionalFeatureKind** (21 connections) — `src/core/risk.rs`
-- **decode_oem_bytes()** (18 connections) — `src/scanner/task_scanner.rs`
-- **dism_error_from_output()** (7 connections) — `src/tools/features_apps.rs`
-- **query_dism_capabilities_locked()** (7 connections) — `src/tools/features_apps.rs`
-- **curated_windows_features_meta()** (6 connections) — `src/tools/features_apps.rs`
-- **query_dism_features_locked()** (6 connections) — `src/tools/features_apps.rs`
-- **set_optional_feature()** (6 connections) — `src/tools/features_apps.rs`
-- **list_optional_features()** (5 connections) — `src/tools/features_apps.rs`
-- **parse_dism_english_state()** (4 connections) — `src/tools/features_apps.rs`
-- **resolve_capability_identity_locked()** (4 connections) — `src/tools/features_apps.rs`
-- **list_restore_points()** (3 connections) — `src/backup/restore_point.rs`
-- **.set_optional_feature()** (3 connections) — `src/core/backend.rs`
-- **.set_optional_feature()** (3 connections) — `src/core/backend.rs`
-- **request_system_reboot()** (2 connections) — `src/tools/explorer_ctrl.rs`
-- **remove_edge_preserve_webview2()** (2 connections) — `src/tools/features_apps.rs`
-- **validate_feature_name()** (2 connections) — `src/tools/features_apps.rs`
-- **run_scheduled_task()** (2 connections) — `src/tools/startup.rs`
-- **Disabled** (1 connections) — `src/core/risk.rs`
-- **DisablePending** (1 connections) — `src/core/risk.rs`
-- **Enabled** (1 connections) — `src/core/risk.rs`
-- **EnablePending** (1 connections) — `src/core/risk.rs`
-- **Removed** (1 connections) — `src/core/risk.rs`
-- **Capability** (1 connections) — `src/core/risk.rs`
-- **OptionalFeature** (1 connections) — `src/core/risk.rs`
+- **SandboxState** (34 connections) — `src/core/backend.rs`
+- **.reg_key()** (14 connections) — `src/core/backend.rs`
+- **.seed_actions_with_vendor()** (14 connections) — `src/core/backend.rs`
+- **.normalize_hive()** (12 connections) — `src/core/backend.rs`
+- **.ensure_tree_path_in_state()** (10 connections) — `src/core/backend.rs`
+- **.reg_delete_value_for_vendor()** (9 connections) — `src/core/backend.rs`
+- **.reg_set_string()** (9 connections) — `src/core/backend.rs`
+- **.resolve_target_paths_in_state()** (9 connections) — `src/core/backend.rs`
+- **.clear_reg_value_in_state()** (8 connections) — `src/core/backend.rs`
+- **.normalize_reg_path()** (8 connections) — `src/core/backend.rs`
+- **.reg_set_binary()** (8 connections) — `src/core/backend.rs`
+- **.reg_set_dword_for_vendor()** (8 connections) — `src/core/backend.rs`
+- **.restore_tree_into_state()** (8 connections) — `src/core/backend.rs`
+- **.write_dword_in_state()** (8 connections) — `src/core/backend.rs`
+- **.write_raw_in_state()** (8 connections) — `src/core/backend.rs`
+- **.reg_delete_tree()** (6 connections) — `src/core/backend.rs`
+- **.reg_get_dword_for_vendor()** (5 connections) — `src/core/backend.rs`
+- **.reg_get_string()** (5 connections) — `src/core/backend.rs`
+- **.reg_snapshot_tree()** (5 connections) — `src/core/backend.rs`
+- **.reg_key_exists()** (4 connections) — `src/core/backend.rs`
+- **.reg_delete_value()** (3 connections) — `src/core/backend.rs`
+- **.reg_get_dword()** (3 connections) — `src/core/backend.rs`
+- **.reg_set_dword()** (3 connections) — `src/core/backend.rs`
+- **.resolve_net_interface_paths_in_state()** (3 connections) — `src/core/backend.rs`
+- **.reg_delete_value_for_vendor()** (2 connections) — `src/core/backend.rs`
 - *... and 1 more nodes in this community*
 
 ## Relationships
 
-- [spawn_guarded_worker](spawn_guarded_worker.md) (16 shared connections)
-- [test_wave1_compound_actions_deep_edge_cases](test_wave1_compound_actions_deep_edge_cases.md) (6 shared connections)
-- [Command Osstr Process.Rs](Command_Osstr_Process.Rs.md) (3 shared connections)
-- [task_scanner.rs](task_scanner.rs.md) (3 shared connections)
-- [restore_point.rs](restore_point.rs.md) (2 shared connections)
-- [.take_injected_error](take_injected_error.md) (2 shared connections)
-- [app.rs](app.rs.md) (2 shared connections)
-- [backend.rs](backend.rs.md) (2 shared connections)
-- [theme.rs](theme.rs.md) (2 shared connections)
-- [Win32 Registry Scanner & Mutator](Win32_Registry_Scanner_&_Mutator.md) (2 shared connections)
-- [full_telemetry_audit_with](full_telemetry_audit_with.md) (2 shared connections)
-- [startup.rs](startup.rs.md) (2 shared connections)
+- [GPU Silicon & Hardware Tuning Policies](GPU_Silicon_&_Hardware_Tuning_Policies.md) (32 shared connections)
+- [reg_mutator.rs](reg_mutator.rs.md) (17 shared connections)
+- [updater.rs](updater.rs.md) (7 shared connections)
+- [State Ledger & Restore Point Engine](State_Ledger_&_Restore_Point_Engine.md) (4 shared connections)
+- [full_telemetry_audit_with](full_telemetry_audit_with.md) (3 shared connections)
+- [enums](enums.md) (3 shared connections)
+- [test_wave1_compound_actions_deep_edge_cases](test_wave1_compound_actions_deep_edge_cases.md) (2 shared connections)
+- [DriverError](DriverError.md) (2 shared connections)
+- [DriverUpdateState](DriverUpdateState.md) (2 shared connections)
+- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (2 shared connections)
+- [spawn_guarded_worker](spawn_guarded_worker.md) (1 shared connections)
+- [Error.Rs Winblasterror Appx](Error.Rs_Winblasterror_Appx.md) (1 shared connections)
 
 ## Source Files
 
-- `src/backup/restore_point.rs`
 - `src/core/backend.rs`
-- `src/core/risk.rs`
-- `src/scanner/task_scanner.rs`
-- `src/tools/explorer_ctrl.rs`
-- `src/tools/features_apps.rs`
-- `src/tools/startup.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 94 (96%)
-- INFERRED: 4 (4%)
+- EXTRACTED: 140 (95%)
+- INFERRED: 8 (5%)
 - AMBIGUOUS: 0 (0%)
 
 ---

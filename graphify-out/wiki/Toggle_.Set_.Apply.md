@@ -1,75 +1,52 @@
 # .Toggle .Set .Apply
 
-> 59 nodes · cohesion 0.10
+> 93 nodes · cohesion 0.02
 
 ## Key Concepts
 
-- **LayoutTier** (66 connections) — `src/ui/mod.rs`
-- **row** (33 connections)
-- **text** (33 connections)
-- **col** (32 connections)
-- **scrollspec** (27 connections)
-- **Color** (24 connections)
-- **driver_bios.rs** (17 connections) — `src/ui/views/driver_bios.rs`
-- **views/gaming_stats.rs** (16 connections) — `src/ui/views/gaming_stats.rs`
-- **automation_center.rs** (15 connections) — `src/ui/views/automation_center.rs`
-- **views/game_prereqs.rs** (15 connections) — `src/ui/views/game_prereqs.rs`
-- **fault_diagnostics.rs** (14 connections) — `src/ui/views/fault_diagnostics.rs`
-- **backup_center.rs** (13 connections) — `src/ui/views/backup_center.rs`
-- **cpu_parking.rs** (13 connections) — `src/ui/views/cpu_parking.rs`
-- **thermal_monitor.rs** (13 connections) — `src/ui/views/thermal_monitor.rs`
-- **views/windows_repair.rs** (13 connections) — `src/ui/views/windows_repair.rs`
-- **disk_health.rs** (12 connections) — `src/ui/views/disk_health.rs`
-- **views/game_overlay.rs** (12 connections) — `src/ui/views/game_overlay.rs`
-- **views/game_profiles.rs** (12 connections) — `src/ui/views/game_profiles.rs`
-- **views/performance_tests.rs** (12 connections) — `src/ui/views/performance_tests.rs`
-- **support_about.rs** (12 connections) — `src/ui/views/support_about.rs`
-- **fps_benchmark.rs** (11 connections) — `src/ui/views/fps_benchmark.rs`
-- **game_suitability.rs** (10 connections) — `src/ui/views/game_suitability.rs`
-- **view()** (9 connections) — `src/ui/views/gaming_stats.rs`
-- **view()** (7 connections) — `src/ui/views/automation_center.rs`
-- **view()** (7 connections) — `src/ui/views/backup_center.rs`
-- *... and 34 more nodes in this community*
+- **StatusMessageSpec** (105 connections) — `src/core/status_i18n.rs`
+- **ActionMessage** (1 connections) — `src/core/status_i18n.rs`
+- **AppxFeatureScanFailed** (1 connections) — `src/core/status_i18n.rs`
+- **AppxFeatureScanned** (1 connections) — `src/core/status_i18n.rs`
+- **AppxFeatureScanning** (1 connections) — `src/core/status_i18n.rs`
+- **AppxUninstalled** (1 connections) — `src/core/status_i18n.rs`
+- **AppxUninstallFailed** (1 connections) — `src/core/status_i18n.rs`
+- **BaselineResetCompleted** (1 connections) — `src/core/status_i18n.rs`
+- **BaselineResetFailed** (1 connections) — `src/core/status_i18n.rs`
+- **BaselineResetting** (1 connections) — `src/core/status_i18n.rs`
+- **BatchApplying** (1 connections) — `src/core/status_i18n.rs`
+- **BatchFailed** (1 connections) — `src/core/status_i18n.rs`
+- **ChangelogCleared** (1 connections) — `src/core/status_i18n.rs`
+- **CoreParkingFailed** (1 connections) — `src/core/status_i18n.rs`
+- **CoreParkingPanic** (1 connections) — `src/core/status_i18n.rs`
+- **CoreParkingRefreshing** (1 connections) — `src/core/status_i18n.rs`
+- **CoreParkingRestored** (1 connections) — `src/core/status_i18n.rs`
+- **CoreParkingRestoring** (1 connections) — `src/core/status_i18n.rs`
+- **CoreParkingUnparked** (1 connections) — `src/core/status_i18n.rs`
+- **CoreParkingUnparking** (1 connections) — `src/core/status_i18n.rs`
+- **DeselectedAll** (1 connections) — `src/core/status_i18n.rs`
+- **DiskCleaned** (1 connections) — `src/core/status_i18n.rs`
+- **DiskCleanFailed** (1 connections) — `src/core/status_i18n.rs`
+- **DiskScanFailed** (1 connections) — `src/core/status_i18n.rs`
+- **DiskScanned** (1 connections) — `src/core/status_i18n.rs`
+- *... and 68 more nodes in this community*
 
 ## Relationships
 
-- [action_button_guarded](action_button_guarded.md) (43 shared connections)
-- [action_button](action_button.md) (42 shared connections)
-- [AppState](AppState.md) (33 shared connections)
-- [ui/mod.rs](ui-mod.rs.md) (20 shared connections)
-- [clean_apps.rs](clean_apps.rs.md) (19 shared connections)
-- [WinBlastScrollable](WinBlastScrollable.md) (16 shared connections)
-- [ThemePalette](ThemePalette.md) (12 shared connections)
-- [privacy_shield.rs](privacy_shield.rs.md) (9 shared connections)
-- [views/network_diag.rs](views-network_diag.rs.md) (7 shared connections)
-- [Core UI Internationalization & Text Catalog](Core_UI_Internationalization_&_Text_Catalog.md) (6 shared connections)
-- [goal_planner.rs](goal_planner.rs.md) (5 shared connections)
-- [diff_modal.rs](diff_modal.rs.md) (4 shared connections)
+- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (6 shared connections)
+- [AppState](AppState.md) (2 shared connections)
+- [ps_runner.rs](ps_runner.rs.md) (2 shared connections)
+- [Win32 Registry Scanner & Mutator](Win32_Registry_Scanner_&_Mutator.md) (2 shared connections)
+- [SlowScanBackend](SlowScanBackend.md) (1 shared connections)
 
 ## Source Files
 
-- `src/ui/mod.rs`
-- `src/ui/views/automation_center.rs`
-- `src/ui/views/backup_center.rs`
-- `src/ui/views/cpu_parking.rs`
-- `src/ui/views/disk_health.rs`
-- `src/ui/views/driver_bios.rs`
-- `src/ui/views/fault_diagnostics.rs`
-- `src/ui/views/fps_benchmark.rs`
-- `src/ui/views/game_overlay.rs`
-- `src/ui/views/game_prereqs.rs`
-- `src/ui/views/game_profiles.rs`
-- `src/ui/views/game_suitability.rs`
-- `src/ui/views/gaming_stats.rs`
-- `src/ui/views/performance_tests.rs`
-- `src/ui/views/support_about.rs`
-- `src/ui/views/thermal_monitor.rs`
-- `src/ui/views/windows_repair.rs`
+- `src/core/status_i18n.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 382 (95%)
-- INFERRED: 22 (5%)
+- EXTRACTED: 105 (100%)
+- INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 
 ---
