@@ -1,0 +1,15 @@
+{
+  "edition": "1.19",
+  "main": "ui/main.slint",
+  "include-paths": [
+    "ui",
+    "assets"
+  ],
+  "library-paths": {
+    "tokens": "ui/tokens",
+    "models": "ui/models",
+    "components": "ui/components",
+    "shell": "ui/shell",
+    "views": "ui/views"
+  }
+}

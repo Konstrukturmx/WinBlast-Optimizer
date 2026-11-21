@@ -4,12 +4,31 @@ version = "1.6.1"
 edition = "2021"
 description = "WinBlast0 – Windows System Optimizer & Debloater"
 
+[features]
+default = ["ui-rune"]
+ui-rune = ["dep:rune", "dep:rune-kit", "dep:rune-motion"]
+ui-slint = ["dep:slint", "dep:slint-build"]
+live-preview = ["slint/live-preview"]
+
 [dependencies]
 # GUI – Rune native GPU-rendered framework & Rune Kit
-rune = { path = "C:/Hive/rune-framework/crates/rune" }
-rune-kit = { path = "C:/Hive/rune-framework/crates/rune-kit" }
-rune-motion = { path = "C:/Hive/rune-framework/crates/rune-motion" }
+rune = { path = "C:/Hive/rune-framework/crates/rune", optional = true }
+rune-kit = { path = "C:/Hive/rune-framework/crates/rune-kit", optional = true }
+rune-motion = { path = "C:/Hive/rune-framework/crates/rune-motion", optional = true }
 crossbeam-channel = "0.5"
+
+# Slint 1.19.0 Declarative GUI Toolkit
+slint = { version = "1.19.0", optional = true, default-features = false, features = [
+    "std",
+    "backend-winit",
+    "renderer-skia",
+    "renderer-skia-software",
+    "renderer-software",
+    "accessibility",
+    "system-tray",
+    "image-default-formats",
+    "compat-1-2",
+] }
 
 # Official Microsoft Win32 Rust bindings (matching rune's 0.62 version)
 windows = { version = "0.62", features = [
@@ -75,10 +94,12 @@ uuid = { version = "1", features = ["v4"] }
 
 [dev-dependencies]
 proptest = "1.6"
+i-slint-backend-testing = "1.19.0"
 
 [build-dependencies]
 embed-manifest = "1.4"
 winres = "0.1"
+slint-build = { version = "1.19.0", optional = true }
 
 [profile.release]
 opt-level = 3

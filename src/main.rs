@@ -2,21 +2,43 @@
 
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use rune::AppSpec;
-use winblast0::{app, core, ui};
+#[cfg(feature = "ui-slint")]
+fn run_slint() {
+    use slint::ComponentHandle;
+    tracing::info!("Initializing WinBlast0 Slint 1.19 Presentation Layer");
+    let window = winblast0::ui_slint::SlintMainWindow::new()
+        .expect("Failed to create Slint MainWindow");
 
-fn main() {
-    // Initialize structured logging
-    tracing_subscriber::fmt::init();
+    let win_handle = window.as_weak();
+    window.on_close_window(move || {
+        if let Some(w) = win_handle.upgrade() {
+            w.hide().unwrap();
+        }
+        std::process::exit(0);
+    });
 
-    tracing::info!("WinBlast0 v{} starting up", env!("CARGO_PKG_VERSION"));
+    let win_handle2 = window.as_weak();
+    window.on_minimize_window(move || {
+        if let Some(w) = win_handle2.upgrade() {
+            w.window().set_minimized(true);
+        }
+    });
 
-    // Verify Administrator elevation
-    if !core::elevation::is_elevated() {
-        tracing::warn!("Process is not elevated. Running in inspection mode.");
-    } else {
-        tracing::info!("Running with Administrator privileges");
-    }
+    let win_handle3 = window.as_weak();
+    window.on_toggle_maximize(move || {
+        if let Some(w) = win_handle3.upgrade() {
+            let is_max = w.window().is_maximized();
+            w.window().set_maximized(!is_max);
+        }
+    });
+
+    window.run().expect("Failed to run Slint event loop");
+}
+
+#[cfg(feature = "ui-rune")]
+fn run_rune() {
+    use rune::AppSpec;
+    use winblast0::{app, ui};
 
     let title = concat!(
         "WinBlast0 v",
@@ -24,7 +46,7 @@ fn main() {
         " — Windows System Optimizer"
     );
     let initial_size = detect_screen_workarea();
-    tracing::info!("Launching WinBlast0 with detected desktop work area: {}x{}", initial_size.0, initial_size.1);
+    tracing::info!("Launching WinBlast0 Rune UI with detected work area: {}x{}", initial_size.0, initial_size.1);
 
     let mut spec = AppSpec::new(
         title,
@@ -50,9 +72,6 @@ fn main() {
         }),
     ];
 
-    // Themed scroll bars are a first-class part of the WinBlast UI, so they stay visible in every
-    // overflowing viewport instead of following Windows' hide-until-scrolling system default.
-    // An explicit `--scroll-bars MODE` on the command line still wins (e.g. for scripted captures).
     let mut argv: Vec<String> = std::env::args().skip(1).collect();
     if !argv.iter().any(|a| a == "--scroll-bars") {
         argv.push("--scroll-bars".to_string());
@@ -62,6 +81,35 @@ fn main() {
         .maximized(true)
         .args(argv)
         .run();
+}
+
+fn main() {
+    // Initialize structured logging
+    tracing_subscriber::fmt::init();
+
+    tracing::info!("WinBlast0 v{} starting up", env!("CARGO_PKG_VERSION"));
+
+    // Verify Administrator elevation
+    if !winblast0::core::elevation::is_elevated() {
+        tracing::warn!("Process is not elevated. Running in inspection mode.");
+    } else {
+        tracing::info!("Running with Administrator privileges");
+    }
+
+    let args: Vec<String> = std::env::args().collect();
+    let prefer_rune = args.iter().any(|a| a == "--ui=rune" || a == "--rune");
+
+    #[cfg(feature = "ui-rune")]
+    if prefer_rune {
+        run_rune();
+        return;
+    }
+
+    #[cfg(feature = "ui-slint")]
+    run_slint();
+
+    #[cfg(all(feature = "ui-rune", not(feature = "ui-slint")))]
+    run_rune();
 }
 
 /// Automatically detect the primary display resolution and return the full desktop work area

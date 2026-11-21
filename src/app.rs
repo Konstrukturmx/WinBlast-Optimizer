@@ -119,6 +119,37 @@ impl ActiveView {
             Self::ALL_VIEWS[idx - 1]
         }
     }
+
+    pub fn name(self) -> &'static str {
+        match self {
+            ActiveView::EasyDashboard => "dashboard",
+            ActiveView::HardwareView => "hardware",
+            ActiveView::DriverBios => "driver_bios",
+            ActiveView::PerformanceTests => "performance_tests",
+            ActiveView::FaultDiagnostics => "fault_diagnostics",
+            ActiveView::LatencyTester => "latency",
+            ActiveView::CoreParking => "cpu_parking",
+            ActiveView::ThermalMonitor => "thermal",
+            ActiveView::DiskHealth => "disk_health",
+            ActiveView::GamingStats => "gaming_stats",
+            ActiveView::FpsBenchmark => "fps_benchmark",
+            ActiveView::NetworkDiag => "network_diag",
+            ActiveView::AdvancedMatrix => "matrix",
+            ActiveView::GoalPlanner => "goal_planner",
+            ActiveView::GameProfiles => "game_profiles",
+            ActiveView::GameOverlay => "game_overlay",
+            ActiveView::GameSuitability => "game_suitability",
+            ActiveView::GamePrerequisites => "game_prereqs",
+            ActiveView::AutomationCenter => "automation",
+            ActiveView::CleanAndApps => "clean_apps",
+            ActiveView::StartupAndTasks => "startup_tasks",
+            ActiveView::WindowsRepair => "windows_repair",
+            ActiveView::BackupCenter => "backup",
+            ActiveView::GpuTuning => "gpu",
+            ActiveView::PrivacyShield => "privacy",
+            ActiveView::SupportAbout => "support_about",
+        }
+    }
 }
 
 /// Sub-tabs inside the Clean & Apps view.

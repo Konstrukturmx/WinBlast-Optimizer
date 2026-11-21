@@ -1,0 +1,39 @@
+// ui/tokens/theme.slint
+// OKLCH Semantic Theme & Material Tokens for WinBlast0
+
+export enum ThemeMode { dark, light, system }
+
+export global Theme {
+    in-out property <bool> dark: true;
+    in-out property <bool> supports-blur: true; // Set false by Rust if software renderer is active
+    in-out property <float> accent-hue: 235.0;  // User-customizable accent seed hue
+
+    // Background elevation layers (OKLCH semantic ramp)
+    out property <color> bg-canvas:       dark ? Colors.oklch(0.15, 0.012, 250) : Colors.oklch(0.97, 0.005, 250);
+    out property <color> bg-surface:      dark ? Colors.oklch(0.19, 0.014, 250) : Colors.oklch(1.00, 0.000, 250);
+    out property <color> bg-elevated:     dark ? Colors.oklch(0.23, 0.015, 250) : Colors.oklch(0.95, 0.006, 250);
+    out property <color> bg-hover:        dark ? Colors.oklch(0.26, 0.016, 250) : Colors.oklch(0.92, 0.008, 250);
+
+    // Translucent glass material surface (adjusts alpha automatically if blur unsupported)
+    out property <color> bg-glass:        dark
+        ? Colors.oklch(0.18, 0.015, 250, supports-blur ? 0.72 : 0.96)
+        : Colors.oklch(0.98, 0.005, 250, supports-blur ? 0.76 : 0.97);
+    out property <length> blur-radius:    supports-blur ? 16px : 0px;
+
+    // Text & Icon hierarchy
+    out property <color> text-primary:    dark ? Colors.oklch(0.95, 0.005, 250) : Colors.oklch(0.16, 0.012, 250);
+    out property <color> text-secondary:  dark ? Colors.oklch(0.72, 0.010, 250) : Colors.oklch(0.45, 0.012, 250);
+    out property <color> text-muted:      dark ? Colors.oklch(0.55, 0.010, 250) : Colors.oklch(0.60, 0.010, 250);
+
+    // Borders & Focus
+    out property <color> border-subtle:   dark ? Colors.oklch(0.28, 0.014, 250) : Colors.oklch(0.86, 0.008, 250);
+    out property <color> border-strong:   dark ? Colors.oklch(0.38, 0.018, 250) : Colors.oklch(0.74, 0.010, 250);
+
+    // Brand & Semantic status colors
+    out property <color> accent:          Colors.oklch(dark ? 0.68 : 0.54, 0.18, accent-hue);
+    out property <color> accent-hover:    Colors.oklch(dark ? 0.74 : 0.48, 0.19, accent-hue);
+    out property <color> success:         Colors.oklch(dark ? 0.72 : 0.56, 0.16, 148);
+    out property <color> warning:         Colors.oklch(dark ? 0.78 : 0.65, 0.16, 75);
+    out property <color> danger:          Colors.oklch(dark ? 0.66 : 0.55, 0.20, 25);
+    out property <color> info:            Colors.oklch(dark ? 0.70 : 0.55, 0.15, 225);
+}

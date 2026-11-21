@@ -1,0 +1,142 @@
+// ui/main.slint
+// WinBlast0 Main Window Root Component in Slint 1.19
+
+import { Scale } from "tokens/scale.slint";
+import { Theme } from "tokens/theme.slint";
+import { Motion } from "tokens/motion.slint";
+
+export { Scale, Theme, Motion }
+
+export component MainWindow inherits Window {
+    title: "WinBlast0 — Windows System Optimizer";
+    default-font-size: Scale.font-md;
+    background: Theme.bg-canvas;
+    preferred-width: 1280px;
+    preferred-height: 800px;
+    min-width: 420px;
+    min-height: 400px;
+    no-frame: true;
+
+    in-out property <string> active-view: "dashboard";
+    in-out property <bool> is-elevated: true;
+    in-out property <string> app-version: "1.6.1";
+
+    callback navigate(string);
+    callback close-window();
+    callback minimize-window();
+    callback toggle-maximize();
+
+    VerticalLayout {
+        padding: 0;
+        spacing: 0;
+
+        // Custom Titlebar Placeholder
+        Rectangle {
+            height: Scale.titlebar-h;
+            background: Theme.bg-surface;
+
+            // Bottom border divider
+            Rectangle {
+                y: parent.height - 1px;
+                height: 1px;
+                background: Theme.border-subtle;
+            }
+
+            HorizontalLayout {
+                padding-left: Scale.space-3;
+                padding-right: Scale.space-3;
+                alignment: space-between;
+
+                HorizontalLayout {
+                    spacing: Scale.space-2;
+                    alignment: start;
+                    Text {
+                        text: "⚡ WinBlast0";
+                        font-size: Scale.font-md;
+                        font-weight: 700;
+                        color: Theme.accent;
+                        vertical-alignment: center;
+                    }
+                    Text {
+                        text: root.app-version;
+                        font-size: Scale.font-xs;
+                        color: Theme.text-muted;
+                        vertical-alignment: center;
+                    }
+                }
+
+                HorizontalLayout {
+                    spacing: Scale.space-1;
+                    alignment: end;
+
+                    Rectangle {
+                        width: Scale.px(32px);
+                        height: Scale.px(28px);
+                        border-radius: Scale.radius-sm;
+                        background: min-touch.has-hover ? Theme.bg-hover : Colors.transparent;
+
+                        Text {
+                            text: "─";
+                            font-size: Scale.font-xs;
+                            color: Theme.text-secondary;
+                            vertical-alignment: center;
+                            horizontal-alignment: center;
+                        }
+                        min-touch := TouchArea {
+                            clicked => { root.minimize-window(); }
+                        }
+                    }
+
+                    Rectangle {
+                        width: Scale.px(32px);
+                        height: Scale.px(28px);
+                        border-radius: Scale.radius-sm;
+                        background: max-touch.has-hover ? Theme.bg-hover : Colors.transparent;
+
+                        Text {
+                            text: "□";
+                            font-size: Scale.font-xs;
+                            color: Theme.text-secondary;
+                            vertical-alignment: center;
+                            horizontal-alignment: center;
+                        }
+                        max-touch := TouchArea {
+                            clicked => { root.toggle-maximize(); }
+                        }
+                    }
+
+                    Rectangle {
+                        width: Scale.px(32px);
+                        height: Scale.px(28px);
+                        border-radius: Scale.radius-sm;
+                        background: close-touch.has-hover ? Theme.danger : Colors.transparent;
+
+                        Text {
+                            text: "✕";
+                            font-size: Scale.font-xs;
+                            color: close-touch.has-hover ? Colors.white : Theme.text-secondary;
+                            vertical-alignment: center;
+                            horizontal-alignment: center;
+                        }
+                        close-touch := TouchArea {
+                            clicked => { root.close-window(); }
+                        }
+                    }
+                }
+            }
+        }
+
+        // Main Body Placeholder
+        Rectangle {
+            background: Theme.bg-canvas;
+
+            Text {
+                text: "WinBlast0 Slint 1.19 Skeleton — Active View: " + root.active-view;
+                font-size: Scale.font-lg;
+                color: Theme.text-primary;
+                horizontal-alignment: center;
+                vertical-alignment: center;
+            }
+        }
+    }
+}

@@ -1,0 +1,40 @@
+// ui/tokens/scale.slint
+// 3-Layer Scaling Architecture for WinBlast0
+export global Scale {
+    // Persisted user preference zoom factor: 0.75 to 2.00 (default 1.00)
+    in-out property <float> factor: 1.0;
+
+    // Clamped helper function for all derived dimensions
+    pure public function px(base: length) -> length {
+        return base * clamp(root.factor, 0.75, 2.0);
+    }
+
+    // Typography ramp (auto-scales with Scale.factor)
+    out property <length> font-xs:    px(11px);
+    out property <length> font-sm:    px(12px);
+    out property <length> font-md:    px(14px);
+    out property <length> font-lg:    px(16px);
+    out property <length> font-xl:    px(20px);
+    out property <length> font-2xl:   px(26px);
+
+    // Spacing scale
+    out property <length> space-1:    px(4px);
+    out property <length> space-2:    px(8px);
+    out property <length> space-3:    px(12px);
+    out property <length> space-4:    px(16px);
+    out property <length> space-5:    px(20px);
+    out property <length> space-6:    px(24px);
+
+    // Radii & Control heights (guarantees accessible hit targets at all scales)
+    out property <length> radius-sm:  px(4px);
+    out property <length> radius-md:  px(8px);
+    out property <length> radius-lg:  px(12px);
+    out property <length> control-sm: px(28px);
+    out property <length> control-md: px(36px);
+    out property <length> control-lg: px(44px);
+    out property <length> icon-sm:    px(14px);
+    out property <length> icon-md:    px(18px);
+    out property <length> icon-lg:    px(24px);
+    out property <length> titlebar-h: px(40px);
+    out property <length> statusbar-h: px(28px);
+}

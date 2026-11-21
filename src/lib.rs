@@ -9,4 +9,9 @@ pub mod graph;
 pub mod hardware;
 pub mod scanner;
 pub mod tools;
+
+#[cfg(feature = "ui-rune")]
 pub mod ui;
+
+#[cfg(feature = "ui-slint")]
+pub mod ui_slint;
