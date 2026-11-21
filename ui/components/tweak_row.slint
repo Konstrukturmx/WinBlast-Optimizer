@@ -107,17 +107,15 @@ export component WbTweakRow inherits Rectangle {
         // Right-hand status, diff inspector, and switch cluster
         HorizontalLayout {
             spacing: Scale.space-sm;
-            alignment: end;
+            alignment: center;
 
             WbBadge {
-                y: (parent.height - self.height) / 2;
                 text: root.is-optimized ? "Optimized" : "Unoptimized";
                 variant: root.is-optimized ? "safe" : "neutral";
                 show-dot: root.is-optimized;
             }
 
             WbButton {
-                y: (parent.height - self.height) / 2;
                 variant: "ghost";
                 text: "Diff";
                 enabled: root.enabled;
@@ -129,7 +127,6 @@ export component WbTweakRow inherits Rectangle {
             }
 
             WbSwitch {
-                y: (parent.height - self.height) / 2;
                 checked: root.is-optimized;
                 enabled: root.enabled;
                 accessible-name: root.title;

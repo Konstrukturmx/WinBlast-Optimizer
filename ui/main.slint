@@ -1,132 +1,235 @@
 // ui/main.slint
 // WinBlast0 Main Window Root Component in Slint 1.19
+// Edition: 1.19 — Production Multi-View Desktop Shell
 
 import { Scale, Theme, Motion } from "theme.slint";
 import { AppTitlebar } from "shell/titlebar.slint";
 import { AppSidebar, NavItemData } from "shell/sidebar.slint";
 import { AppStatusbar } from "shell/statusbar.slint";
-import { WbButton } from "components/button.slint";
-import { WbSwitch } from "components/switch.slint";
-import { WbCard } from "components/card.slint";
-import { WbBadge } from "components/badge.slint";
-import { WbSearchInput } from "components/search_input.slint";
-import { WbProgressBar } from "components/progress_bar.slint";
-import { WbTweakRow } from "components/tweak_row.slint";
-import { WbSparkline } from "components/sparkline.slint";
+
+// Modals & Overlays
+import { WbDiffModal } from "components/diff_modal.slint";
+import { WbInProgressHud } from "components/in_progress_hud.slint";
+
+// View Imports
+import { EasyDashboardView } from "views/easy_dashboard.slint";
+import { AdvancedMatrixView, TweakItemData } from "views/advanced_matrix.slint";
+import { CleanAppsView, CleanCategoryItem, AppxPackageItem } from "views/clean_apps.slint";
+import { StartupTasksView, StartupItemData } from "views/startup_tasks.slint";
+import { GpuTuningView } from "views/gpu_tuning.slint";
+import { CpuParkingView, CoreStateItem } from "views/cpu_parking.slint";
+import { HardwareViewComponent } from "views/hardware_view.slint";
+import { ThermalMonitorView, SensorReading } from "views/thermal_monitor.slint";
+import { DiskHealthView, PhysicalDiskInfo } from "views/disk_health.slint";
+import { DriverBiosView, DriverStatusItem } from "views/driver_bios.slint";
+import { LatencyBenchView } from "views/latency_bench.slint";
+import { FpsBenchmarkView } from "views/fps_benchmark.slint";
+import { GamingStatsView, GameSessionData } from "views/gaming_stats.slint";
+import { NetworkDiagView } from "views/network_diag.slint";
+import { PerformanceTestsView } from "views/performance_tests.slint";
+import { GameProfilesView, GameProfileItem } from "views/game_profiles.slint";
+import { GameOverlayView } from "views/game_overlay.slint";
+import { GameSuitabilityView, GameSpecComparison } from "views/game_suitability.slint";
+import { GamePrereqsView, PrereqItemData } from "views/game_prereqs.slint";
+import { AutomationCenterView, AutomationRuleItem } from "views/automation_center.slint";
+import { GoalPlannerView, GoalPresetItem } from "views/goal_planner.slint";
+import { WindowsRepairView, RepairTaskItem } from "views/windows_repair.slint";
+import { FaultDiagnosticsView, CrashEventItem } from "views/fault_diagnostics.slint";
+import { BackupCenterView, RestorePointItem } from "views/backup_center.slint";
+import { PrivacyShieldView, PrivacyItemData } from "views/privacy_shield.slint";
+import { SupportAboutView } from "views/support_about.slint";
 
 export { Scale, Theme, Motion }
 
 export component MainWindow inherits Window {
-    title: "WinBlast0 — Windows System Optimizer";
+    title: "WinBlast0 — Next-Gen Windows System Optimizer";
     default-font-size: Scale.font-md;
     background: Theme.bg-canvas;
     preferred-width: 1280px;
     preferred-height: 800px;
-    min-width: 420px;
-    min-height: 400px;
+    min-width: 520px;
+    min-height: 480px;
     no-frame: true;
 
+    // Window & View State
     in-out property <string> active-view: "dashboard";
     in-out property <bool> is-elevated: true;
     in-out property <string> app-version: "1.6.1";
     in-out property <bool> is-maximized: false;
 
     // Telemetry & Statusbar properties
-    in-out property <float> cpu-usage: 0.0;
-    in-out property <float> ram-usage: 0.0;
-    in-out property <string> ram-text: "0.0 / 0.0 GB";
+    in-out property <float> cpu-usage: 14.5;
+    in-out property <float> ram-usage: 44.0;
+    in-out property <string> ram-text: "7.0 / 16.0 GB";
     in-out property <bool> reboot-pending: false;
     in-out property <bool> worker-active: false;
     in-out property <string> worker-label: "Ready";
 
+    // Modal state
+    in-out property <bool> diff-modal-open: false;
+    in-out property <bool> hud-active: false;
+    in-out property <string> hud-task-title: "Applying Optimizations";
+    in-out property <string> hud-current-step: "Writing registry policies...";
+    in-out property <float> hud-progress: 0.0;
+
+    // Callbacks to Rust engine
     callback navigate(string);
     callback close-window();
     callback minimize-window();
     callback toggle-maximize();
     callback reboot-system();
     callback search-triggered();
+    callback quick-boost-triggered();
 
-    VerticalLayout {
-        padding: 0;
-        spacing: 0;
+    forward-focus: root-focus;
 
-        // Custom Frameless Titlebar
-        AppTitlebar {
-            app-title: "WinBlast0";
-            version: "v" + root.app-version;
-            is-admin: root.is-elevated;
-            maximized: root.is-maximized;
-
-            minimize-clicked => { root.minimize-window(); }
-            maximize-clicked => { root.toggle-maximize(); }
-            close-clicked => { root.close-window(); }
-            search-clicked => { root.search-triggered(); }
+    root-focus := FocusScope {
+        key-pressed(event) => {
+            if event.modifiers.control && event.text == "k" {
+                root.search-triggered();
+                return accept;
+            }
+            if event.modifiers.control && event.text == "b" {
+                root.quick-boost-triggered();
+                return accept;
+            }
+            if event.text == Key.Escape {
+                if root.diff-modal-open {
+                    root.diff-modal-open = false;
+                    return accept;
+                }
+            }
+            reject
         }
 
-        // Central Body: Sidebar + Main Content View Host
-        HorizontalLayout {
+        VerticalLayout {
             padding: 0;
             spacing: 0;
 
-            AppSidebar {
-                active-view: root.active-view;
-                navigate(target) => {
-                    root.active-view = target;
-                    root.navigate(target);
-                }
+            // Custom Frameless Titlebar
+            AppTitlebar {
+                app-title: "WinBlast0";
+                version: "v" + root.app-version;
+                is-admin: root.is-elevated;
+                maximized: root.is-maximized;
+
+                minimize-clicked => { root.minimize-window(); }
+                maximize-clicked => { root.toggle-maximize(); }
+                close-clicked => { root.close-window(); }
+                search-clicked => { root.search-triggered(); }
             }
 
-            // Central View Host Region
-            Rectangle {
-                clip: true;
-                background: Theme.bg-canvas;
+            // Central Workspace: Sidebar + Central View Host
+            HorizontalLayout {
+                padding: 0;
+                spacing: 0;
 
-                // View content will be mounted here
-                VerticalLayout {
-                    padding: Scale.space-lg;
-                    spacing: Scale.space-md;
+                AppSidebar {
+                    active-view: root.active-view;
+                    navigate(target) => {
+                        root.active-view = target;
+                        root.navigate(target);
+                    }
+                }
 
-                    Rectangle {
-                        background: Theme.bg-surface;
-                        border-radius: Scale.radius-md;
-                        border-width: 1px;
-                        border-color: Theme.border-subtle;
+                // View Host Container (All 26 Views)
+                Rectangle {
+                    clip: true;
+                    background: Theme.bg-canvas;
 
-                        VerticalLayout {
-                            padding: Scale.space-xl;
-                            spacing: Scale.space-md;
-                            alignment: center;
+                    if root.active-view == "dashboard" : EasyDashboardView {
+                        cpu-usage: root.cpu-usage;
+                        ram-usage: root.ram-usage;
+                        ram-text: root.ram-text;
+                        is-admin: root.is-elevated;
+                        quick-boost-clicked => { root.quick-boost-triggered(); }
+                        navigate-to-view(v) => { root.active-view = v; root.navigate(v); }
+                    }
 
-                            Text {
-                                text: "WinBlast0 Slint 1.19 Engine Active";
-                                font-size: Scale.font-xl;
-                                font-weight: 700;
-                                color: Theme.accent;
-                                horizontal-alignment: center;
-                            }
+                    if root.active-view == "matrix" || root.active-view == "tweaks" : AdvancedMatrixView {
+                        inspect-diff(id) => { root.diff-modal-open = true; }
+                    }
 
-                            Text {
-                                text: "Active View: " + root.active-view;
-                                font-size: Scale.font-md;
-                                color: Theme.text-secondary;
-                                horizontal-alignment: center;
-                            }
-                        }
+                    if root.active-view == "clean_apps" || root.active-view == "cleaner" || root.active-view == "debloater" : CleanAppsView {}
+
+                    if root.active-view == "startup_tasks" || root.active-view == "services" : StartupTasksView {}
+
+                    if root.active-view == "gpu" || root.active-view == "gpu-tuning" : GpuTuningView {}
+
+                    if root.active-view == "cpu_parking" : CpuParkingView {}
+
+                    if root.active-view == "hardware" : HardwareViewComponent {}
+
+                    if root.active-view == "thermal" || root.active-view == "telemetry" : ThermalMonitorView {}
+
+                    if root.active-view == "disk_health" : DiskHealthView {}
+
+                    if root.active-view == "driver_bios" : DriverBiosView {}
+
+                    if root.active-view == "latency" : LatencyBenchView {}
+
+                    if root.active-view == "fps_benchmark" : FpsBenchmarkView {}
+
+                    if root.active-view == "gaming_stats" : GamingStatsView {}
+
+                    if root.active-view == "network_diag" || root.active-view == "network" : NetworkDiagView {}
+
+                    if root.active-view == "performance_tests" : PerformanceTestsView {}
+
+                    if root.active-view == "game_profiles" || root.active-view == "profiles" : GameProfilesView {}
+
+                    if root.active-view == "game_overlay" : GameOverlayView {}
+
+                    if root.active-view == "game_suitability" : GameSuitabilityView {}
+
+                    if root.active-view == "game_prereqs" || root.active-view == "game-mode" : GamePrereqsView {}
+
+                    if root.active-view == "automation" : AutomationCenterView {}
+
+                    if root.active-view == "goal_planner" : GoalPlannerView {}
+
+                    if root.active-view == "windows_repair" : WindowsRepairView {}
+
+                    if root.active-view == "fault_diagnostics" : FaultDiagnosticsView {}
+
+                    if root.active-view == "backup" || root.active-view == "restore" : BackupCenterView {}
+
+                    if root.active-view == "privacy" : PrivacyShieldView {}
+
+                    if root.active-view == "support_about" || root.active-view == "settings" : SupportAboutView {
+                        app-version: root.app-version;
+                        zoom-changed(factor) => { Scale.factor = factor; }
+                        dark-toggled(dark) => { Theme.dark = dark; }
                     }
                 }
             }
+
+            // Bottom Real-Time Statusbar
+            AppStatusbar {
+                cpu-percent: root.cpu-usage;
+                ram-percent: root.ram-usage;
+                ram-used-text: root.ram-text;
+                reboot-pending: root.reboot-pending;
+                worker-active: root.worker-active;
+                worker-label: root.worker-label;
+
+                reboot-clicked => { root.reboot-system(); }
+            }
         }
 
-        // Bottom Statusbar
-        AppStatusbar {
-            cpu-percent: root.cpu-usage;
-            ram-percent: root.ram-usage;
-            ram-used-text: root.ram-text;
-            reboot-pending: root.reboot-pending;
-            worker-active: root.worker-active;
-            worker-label: root.worker-label;
+        // Modals Layer
+        if root.diff-modal-open : WbDiffModal {
+            is-open: root.diff-modal-open;
+            close-modal => { root.diff-modal-open = false; }
+            apply-diff => { root.diff-modal-open = false; }
+        }
 
-            reboot-clicked => { root.reboot-system(); }
+        if root.hud-active : WbInProgressHud {
+            is-active: root.hud-active;
+            task-title: root.hud-task-title;
+            current-step: root.hud-current-step;
+            progress: root.hud-progress;
+            cancel-operation => { root.hud-active = false; }
         }
     }
 }

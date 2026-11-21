@@ -1,0 +1,116 @@
+// ui/views/privacy_shield.slint
+// WinBlast0 Windows Telemetry & Privacy Shield in Slint 1.19
+
+import { Scale, Theme } from "../theme.slint";
+import { WbButton } from "../components/button.slint";
+import { WbCard } from "../components/card.slint";
+import { WbBadge } from "../components/badge.slint";
+import { WbSwitch } from "../components/switch.slint";
+
+export struct PrivacyItemData {
+    id: string,
+    title: string,
+    description: string,
+    category: string,
+    enabled: bool,
+}
+
+export component PrivacyShieldView inherits Flickable {
+    in property <int> blocked-trackers-count: 48;
+    in property <[PrivacyItemData]> items: [];
+
+    callback item-toggled(string, bool);
+    callback enable-all-privacy();
+    callback reset-defaults();
+
+    content-height: content.preferred-height;
+
+    content := VerticalLayout {
+        padding: Scale.space-lg;
+        spacing: Scale.space-md;
+
+        // Header Card
+        WbCard {
+            HorizontalLayout {
+                alignment: space-between;
+                VerticalLayout {
+                    spacing: Scale.space-2xs;
+                    Text {
+                        text: "Windows Telemetry & Privacy Shield";
+                        font-size: Scale.font-xl;
+                        font-weight: 700;
+                        color: Theme.text-primary;
+                    }
+                    Text {
+                        text: "Kill diagnostic data uploads, telemetry host endpoints, Cortana, Windows Recall, and Advertising ID tracking.";
+                        font-size: Scale.font-sm;
+                        color: Theme.text-secondary;
+                    }
+                }
+
+                HorizontalLayout {
+                    spacing: Scale.space-sm;
+                    WbButton {
+                        variant: "ghost";
+                        text: "Defaults";
+                        clicked => { root.reset-defaults(); }
+                    }
+                    WbButton {
+                        variant: "primary";
+                        text: "Engage Maximum Shield";
+                        clicked => { root.enable-all-privacy(); }
+                    }
+                }
+            }
+        }
+
+        // Privacy Items List
+        VerticalLayout {
+            spacing: Scale.space-xs;
+
+            for item in root.items: WbCard {
+                HorizontalLayout {
+                    alignment: space-between;
+                    HorizontalLayout {
+                        spacing: Scale.space-md;
+                        alignment: start;
+
+                        WbSwitch {
+                            checked: item.enabled;
+                            toggled(c) => { root.item-toggled(item.id, c); }
+                        }
+
+                        VerticalLayout {
+                            spacing: Scale.space-2xs;
+                            alignment: center;
+                            HorizontalLayout {
+                                spacing: Scale.space-sm;
+                                Text {
+                                    text: item.title;
+                                    font-size: Scale.font-md;
+                                    font-weight: 600;
+                                    color: Theme.text-primary;
+                                }
+                                WbBadge {
+                                    text: item.category;
+                                    variant: "neutral";
+                                }
+                            }
+                            Text {
+                                text: item.description;
+                                font-size: Scale.font-xs;
+                                color: Theme.text-secondary;
+                            }
+                        }
+                    }
+
+                    WbBadge {
+                        text: item.enabled ? "Blocked" : "Allowing";
+                        variant: item.enabled ? "safe" : "moderate";
+                        show-dot: item.enabled;
+                    }
+                }
+            }
+        }
+    }
+}

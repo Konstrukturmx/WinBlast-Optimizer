@@ -1,0 +1,169 @@
+// ui/views/support_about.slint
+// WinBlast0 Support, Settings & Slint Attribution View in Slint 1.19
+
+import { Scale, Theme } from "../theme.slint";
+import { WbButton } from "../components/button.slint";
+import { WbCard } from "../components/card.slint";
+import { WbBadge } from "../components/badge.slint";
+import { WbSwitch } from "../components/switch.slint";
+import { WbProgressBar } from "../components/progress_bar.slint";
+
+export component SupportAboutView inherits Flickable {
+    in property <string> app-version: "1.6.1";
+    in property <string> slint-version: "1.19.0";
+    in property <string> rustc-version: "1.99.0";
+
+    in-out property <float> zoom-scale: 1.0;
+    in-out property <bool> is-dark-theme: true;
+    in-out property <float> accent-hue: 235.0;
+
+    callback check-updates-clicked();
+    callback open-github-clicked();
+    callback reset-preferences-clicked();
+    callback zoom-changed(float);
+    callback dark-toggled(bool);
+
+    content-height: content.preferred-height;
+
+    content := VerticalLayout {
+        padding: Scale.space-lg;
+        spacing: Scale.space-md;
+
+        // About & Branding Card
+        WbCard {
+            VerticalLayout {
+                spacing: Scale.space-md;
+
+                HorizontalLayout {
+                    alignment: space-between;
+                    HorizontalLayout {
+                        spacing: Scale.space-md;
+                        Rectangle {
+                            width: Scale.px(48px);
+                            height: Scale.px(48px);
+                            border-radius: Scale.radius-md;
+                            background: Theme.accent;
+                            Text {
+                                text: "⚡";
+                                font-size: Scale.font-2xl;
+                                horizontal-alignment: center;
+                                vertical-alignment: center;
+                            }
+                        }
+
+                        VerticalLayout {
+                            spacing: Scale.space-2xs;
+                            alignment: center;
+                            Text {
+                                text: "WinBlast0 — Next-Gen Windows System Optimizer";
+                                font-size: Scale.font-xl;
+                                font-weight: 800;
+                                color: Theme.text-primary;
+                            }
+                            Text {
+                                text: "Version " + root.app-version + " • Built with Rust " + root.rustc-version;
+                                font-size: Scale.font-xs;
+                                color: Theme.text-secondary;
+                            }
+                        }
+                    }
+
+                    HorizontalLayout {
+                        spacing: Scale.space-sm;
+                        alignment: end;
+                        WbButton {
+                            variant: "ghost";
+                            text: "GitHub Repository";
+                            clicked => { root.open-github-clicked(); }
+                        }
+                        WbButton {
+                            variant: "primary";
+                            text: "Check for Updates";
+                            clicked => { root.check-updates-clicked(); }
+                        }
+                    }
+                }
+
+                // Licensing & Slint Attribution Badges
+                HorizontalLayout {
+                    spacing: Scale.space-sm;
+                    WbBadge {
+                        text: "MIT License — Free & Open Source";
+                        variant: "safe";
+                    }
+                    WbBadge {
+                        text: "GUI Engine: Slint " + root.slint-version + " (Royalty-Free Desktop)";
+                        variant: "info";
+                        show-dot: true;
+                    }
+                    WbBadge {
+                        text: "100% Authentic Telemetry (No Fabricated Data)";
+                        variant: "neutral";
+                    }
+                }
+            }
+        }
+
+        // Appearance & Display Customization Card
+        WbCard {
+            VerticalLayout {
+                spacing: Scale.space-md;
+                Text { text: "UI APPEARANCE & DISPLAY SCALING"; font-size: Scale.font-xs; font-weight: 700; color: Theme.text-muted; }
+
+                // Theme Mode
+                HorizontalLayout {
+                    alignment: space-between;
+                    VerticalLayout {
+                        spacing: Scale.space-2xs;
+                        Text { text: "Dark Mode Surface"; font-size: Scale.font-sm; color: Theme.text-primary; }
+                        Text { text: "High-contrast dark glass surface styling with OKLCH perceptual tokens."; font-size: Scale.font-xs; color: Theme.text-secondary; }
+                    }
+                    WbSwitch {
+                        checked: root.is-dark-theme;
+                        toggled(c) => {
+                            root.is-dark-theme = c;
+                            root.dark-toggled(c);
+                        }
+                    }
+                }
+
+                // UI Zoom Scaling
+                VerticalLayout {
+                    spacing: Scale.space-2xs;
+                    HorizontalLayout {
+                        alignment: space-between;
+                        Text { text: "Interface Zoom Factor (DPI Scaling)"; font-size: Scale.font-sm; color: Theme.text-primary; }
+                        Text { text: round(root.zoom-scale * 100) + "%"; font-size: Scale.font-sm; font-weight: 700; color: Theme.accent; }
+                    }
+                    HorizontalLayout {
+                        spacing: Scale.space-md;
+                        WbButton {
+                            variant: "ghost";
+                            text: "0.85x";
+                            min-height: Scale.control-sm;
+                            clicked => { root.zoom-scale = 0.85; root.zoom-changed(0.85); }
+                        }
+                        WbButton {
+                            variant: "secondary";
+                            text: "1.00x (Default)";
+                            min-height: Scale.control-sm;
+                            clicked => { root.zoom-scale = 1.00; root.zoom-changed(1.00); }
+                        }
+                        WbButton {
+                            variant: "ghost";
+                            text: "1.25x";
+                            min-height: Scale.control-sm;
+                            clicked => { root.zoom-scale = 1.25; root.zoom-changed(1.25); }
+                        }
+                        WbButton {
+                            variant: "ghost";
+                            text: "1.50x";
+                            min-height: Scale.control-sm;
+                            clicked => { root.zoom-scale = 1.50; root.zoom-changed(1.50); }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

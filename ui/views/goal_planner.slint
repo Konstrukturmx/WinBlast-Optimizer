@@ -1,0 +1,92 @@
+// ui/views/goal_planner.slint
+// WinBlast0 Guided Optimization Goal Planner in Slint 1.19
+
+import { Scale, Theme } from "../theme.slint";
+import { WbButton } from "../components/button.slint";
+import { WbCard } from "../components/card.slint";
+import { WbBadge } from "../components/badge.slint";
+
+export struct GoalPresetItem {
+    id: string,
+    title: string,
+    description: string,
+    included-tweaks: int,
+    risk-profile: string,     // "Safe" | "Performance" | "Aggressive"
+    is-applied: bool,
+}
+
+export component GoalPlannerView inherits Flickable {
+    in property <[GoalPresetItem]> goals: [];
+
+    callback apply-goal(string);
+
+    content-height: content.preferred-height;
+
+    content := VerticalLayout {
+        padding: Scale.space-lg;
+        spacing: Scale.space-md;
+
+        // Header Card
+        WbCard {
+            VerticalLayout {
+                spacing: Scale.space-2xs;
+                Text {
+                    text: "Guided Workload Optimization Goals";
+                    font-size: Scale.font-xl;
+                    font-weight: 700;
+                    color: Theme.text-primary;
+                }
+                Text {
+                    text: "One-click curated presets engineered for specialized hardware workloads and user requirements.";
+                    font-size: Scale.font-sm;
+                    color: Theme.text-secondary;
+                }
+            }
+        }
+
+        // Preset Cards Grid
+        VerticalLayout {
+            spacing: Scale.space-md;
+
+            for g in root.goals: WbCard {
+                HorizontalLayout {
+                    alignment: space-between;
+                    VerticalLayout {
+                        spacing: Scale.space-2xs;
+                        HorizontalLayout {
+                            spacing: Scale.space-sm;
+                            Text {
+                                text: g.title;
+                                font-size: Scale.font-lg;
+                                font-weight: 700;
+                                color: Theme.text-primary;
+                            }
+                            WbBadge {
+                                text: g.risk-profile;
+                                variant: g.risk-profile == "Aggressive" ? "high" : (g.risk-profile == "Performance" ? "moderate" : "safe");
+                            }
+                        }
+                        Text {
+                            text: g.description;
+                            font-size: Scale.font-xs;
+                            color: Theme.text-secondary;
+                            wrap: word-wrap;
+                        }
+                        Text {
+                            text: "Includes " + g.included-tweaks + " specialized system, kernel, and background policy tweaks.";
+                            font-size: Scale.font-2xs;
+                            color: Theme.text-muted;
+                        }
+                    }
+
+                    WbButton {
+                        variant: g.is-applied ? "secondary" : "primary";
+                        text: g.is-applied ? "Applied" : "Apply Goal";
+                        enabled: !g.is-applied;
+                        clicked => { root.apply-goal(g.id); }
+                    }
+                }
+            }
+        }
+    }
+}

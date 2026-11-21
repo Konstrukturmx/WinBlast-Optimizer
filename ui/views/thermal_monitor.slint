@@ -1,0 +1,138 @@
+// ui/views/thermal_monitor.slint
+// WinBlast0 Thermal Sensors & Throttling Monitor in Slint 1.19
+
+import { Scale, Theme } from "../theme.slint";
+import { WbButton } from "../components/button.slint";
+import { WbCard } from "../components/card.slint";
+import { WbBadge } from "../components/badge.slint";
+import { WbProgressBar } from "../components/progress_bar.slint";
+
+export struct SensorReading {
+    name: string,
+    temp-c: float,
+    max-temp-c: float,
+    is-throttling: bool,
+}
+
+export component ThermalMonitorView inherits Flickable {
+    in property <float> cpu-package-temp: 48.5;
+    in property <float> gpu-core-temp: 42.0;
+    in property <float> gpu-hotspot-temp: 51.5;
+    in property <float> gpu-vram-temp: 54.0;
+    in property <bool> is-throttling: false;
+
+    in property <[SensorReading]> sensors: [];
+
+    callback refresh-thermals();
+
+    content-height: content.preferred-height;
+
+    content := VerticalLayout {
+        padding: Scale.space-lg;
+        spacing: Scale.space-md;
+
+        // Header Card
+        WbCard {
+            HorizontalLayout {
+                alignment: space-between;
+                VerticalLayout {
+                    spacing: Scale.space-2xs;
+                    Text {
+                        text: "Thermal Sensor Diagnostics";
+                        font-size: Scale.font-xl;
+                        font-weight: 700;
+                        color: Theme.text-primary;
+                    }
+                    Text {
+                        text: "Live temperature sensor readings and PROCHOT / thermal throttle detection.";
+                        font-size: Scale.font-sm;
+                        color: Theme.text-secondary;
+                    }
+                }
+
+                HorizontalLayout {
+                    spacing: Scale.space-sm;
+                    WbBadge {
+                        text: root.is-throttling ? "THERMAL THROTTLING DETECTED" : "No Throttling (Thermal Headroom OK)";
+                        variant: root.is-throttling ? "high" : "safe";
+                        show-dot: true;
+                    }
+                    WbButton {
+                        variant: "ghost";
+                        text: "Refresh";
+                        clicked => { root.refresh-thermals(); }
+                    }
+                }
+            }
+        }
+
+        // Primary Sensor Gauges Row
+        HorizontalLayout {
+            spacing: Scale.space-md;
+
+            // CPU Package Temp
+            WbCard {
+                horizontal-stretch: 1;
+                VerticalLayout {
+                    spacing: Scale.space-xs;
+                    Text { text: "CPU PACKAGE"; font-size: Scale.font-xs; font-weight: 700; color: Theme.text-muted; }
+                    Text {
+                        text: round(root.cpu-package-temp) + " °C";
+                        font-size: Scale.font-2xl;
+                        font-weight: 800;
+                        color: root.cpu-package-temp >= 85 ? Theme.high : (root.cpu-package-temp >= 70 ? Theme.moderate : Theme.safe);
+                    }
+                    WbProgressBar { progress: clamp(root.cpu-package-temp / 100.0, 0.0, 1.0); }
+                }
+            }
+
+            // GPU Core Temp
+            WbCard {
+                horizontal-stretch: 1;
+                VerticalLayout {
+                    spacing: Scale.space-xs;
+                    Text { text: "GPU CORE"; font-size: Scale.font-xs; font-weight: 700; color: Theme.text-muted; }
+                    Text {
+                        text: round(root.gpu-core-temp) + " °C";
+                        font-size: Scale.font-2xl;
+                        font-weight: 800;
+                        color: root.gpu-core-temp >= 83 ? Theme.high : (root.gpu-core-temp >= 68 ? Theme.moderate : Theme.safe);
+                    }
+                    WbProgressBar { progress: clamp(root.gpu-core-temp / 100.0, 0.0, 1.0); }
+                }
+            }
+
+            // GPU Hotspot Temp
+            WbCard {
+                horizontal-stretch: 1;
+                VerticalLayout {
+                    spacing: Scale.space-xs;
+                    Text { text: "GPU HOTSPOT"; font-size: Scale.font-xs; font-weight: 700; color: Theme.text-muted; }
+                    Text {
+                        text: round(root.gpu-hotspot-temp) + " °C";
+                        font-size: Scale.font-2xl;
+                        font-weight: 800;
+                        color: root.gpu-hotspot-temp >= 95 ? Theme.high : (root.gpu-hotspot-temp >= 80 ? Theme.moderate : Theme.safe);
+                    }
+                    WbProgressBar { progress: clamp(root.gpu-hotspot-temp / 115.0, 0.0, 1.0); }
+                }
+            }
+
+            // GPU VRAM Temp
+            WbCard {
+                horizontal-stretch: 1;
+                VerticalLayout {
+                    spacing: Scale.space-xs;
+                    Text { text: "GPU MEMORY JUNCTION"; font-size: Scale.font-xs; font-weight: 700; color: Theme.text-muted; }
+                    Text {
+                        text: round(root.gpu-vram-temp) + " °C";
+                        font-size: Scale.font-2xl;
+                        font-weight: 800;
+                        color: root.gpu-vram-temp >= 95 ? Theme.high : (root.gpu-vram-temp >= 80 ? Theme.moderate : Theme.safe);
+                    }
+                    WbProgressBar { progress: clamp(root.gpu-vram-temp / 110.0, 0.0, 1.0); }
+                }
+            }
+        }
+    }
+}

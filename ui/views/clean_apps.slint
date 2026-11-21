@@ -1,0 +1,268 @@
+// ui/views/clean_apps.slint
+// WinBlast0 Disk Cleaner & AppX Debloater View in Slint 1.19
+
+import { Scale, Theme } from "../theme.slint";
+import { WbButton } from "../components/button.slint";
+import { WbCard } from "../components/card.slint";
+import { WbBadge } from "../components/badge.slint";
+import { WbProgressBar } from "../components/progress_bar.slint";
+import { WbSwitch } from "../components/switch.slint";
+import { WbSearchInput } from "../components/search_input.slint";
+
+export struct CleanCategoryItem {
+    id: string,
+    name: string,
+    description: string,
+    size-text: string,
+    size-bytes: int,
+    selected: bool,
+}
+
+export struct AppxPackageItem {
+    id: string,
+    name: string,
+    publisher: string,
+    size-text: string,
+    is-protected: bool,
+    selected: bool,
+}
+
+export component CleanAppsView inherits Flickable {
+    in-out property <string> active-tab: "cleaner"; // "cleaner" | "debloater"
+    in-out property <string> search-query: "";
+    in property <bool> is-scanning: false;
+    in property <bool> is-cleaning: false;
+    in property <float> clean-progress: 0.0;
+    in property <string> total-reclaimable-text: "0 B";
+
+    in property <[CleanCategoryItem]> clean-categories: [];
+    in property <[AppxPackageItem]> appx-packages: [];
+
+    callback tab-selected(string);
+    callback scan-disk-clicked();
+    callback clean-disk-clicked();
+    callback category-toggled(string, bool);
+    callback appx-toggled(string, bool);
+    callback uninstall-selected-appx();
+
+    content-height: content.preferred-height;
+
+    content := VerticalLayout {
+        padding: Scale.space-lg;
+        spacing: Scale.space-md;
+
+        // Header Card with Tabs & Actions
+        WbCard {
+            VerticalLayout {
+                spacing: Scale.space-md;
+
+                HorizontalLayout {
+                    alignment: space-between;
+
+                    // Tab Switcher
+                    HorizontalLayout {
+                        spacing: Scale.space-xs;
+                        alignment: start;
+
+                        Rectangle {
+                            height: Scale.control-md;
+                            border-radius: Scale.radius-sm;
+                            background: root.active-tab == "cleaner" ? Theme.accent : Theme.bg-surface;
+                            HorizontalLayout {
+                                padding-left: Scale.space-lg;
+                                padding-right: Scale.space-lg;
+                                alignment: center;
+                                Text {
+                                    text: "🧹 Disk Junk Cleaner";
+                                    font-size: Scale.font-sm;
+                                    font-weight: 700;
+                                    color: root.active-tab == "cleaner" ? Theme.text-on-accent : Theme.text-secondary;
+                                    vertical-alignment: center;
+                                }
+                            }
+                            TouchArea {
+                                mouse-cursor: pointer;
+                                clicked => { root.active-tab = "cleaner"; root.tab-selected("cleaner"); }
+                            }
+                        }
+
+                        Rectangle {
+                            height: Scale.control-md;
+                            border-radius: Scale.radius-sm;
+                            background: root.active-tab == "debloater" ? Theme.accent : Theme.bg-surface;
+                            HorizontalLayout {
+                                padding-left: Scale.space-lg;
+                                padding-right: Scale.space-lg;
+                                alignment: center;
+                                Text {
+                                    text: "📦 AppX Debloater";
+                                    font-size: Scale.font-sm;
+                                    font-weight: 700;
+                                    color: root.active-tab == "debloater" ? Theme.text-on-accent : Theme.text-secondary;
+                                    vertical-alignment: center;
+                                }
+                            }
+                            TouchArea {
+                                mouse-cursor: pointer;
+                                clicked => { root.active-tab = "debloater"; root.tab-selected("debloater"); }
+                            }
+                        }
+                    }
+
+                    // Contextual Action Buttons
+                    HorizontalLayout {
+                        spacing: Scale.space-sm;
+                        alignment: end;
+
+                        if root.active-tab == "cleaner" : HorizontalLayout {
+                            spacing: Scale.space-sm;
+                            WbButton {
+                                variant: "ghost";
+                                text: "Scan Junk";
+                                loading: root.is-scanning;
+                                enabled: !root.is-scanning && !root.is-cleaning;
+                                clicked => { root.scan-disk-clicked(); }
+                            }
+                            WbButton {
+                                variant: "primary";
+                                text: "Clean (" + root.total-reclaimable-text + ")";
+                                loading: root.is-cleaning;
+                                enabled: !root.is-cleaning && !root.is-scanning;
+                                clicked => { root.clean-disk-clicked(); }
+                            }
+                        }
+
+                        if root.active-tab == "debloater" : WbButton {
+                            variant: "danger";
+                            text: "Uninstall Selected";
+                            clicked => { root.uninstall-selected-appx(); }
+                        }
+                    }
+                }
+
+                if root.is-cleaning : VerticalLayout {
+                    spacing: Scale.space-xs;
+                    Text {
+                        text: "Purging selected system caches and junk files...";
+                        font-size: Scale.font-xs;
+                        color: Theme.accent;
+                    }
+                    WbProgressBar {
+                        progress: root.clean-progress;
+                    }
+                }
+            }
+        }
+
+        // Tab Content: Cleaner
+        if root.active-tab == "cleaner" : VerticalLayout {
+            spacing: Scale.space-xs;
+
+            for cat in root.clean-categories: WbCard {
+                HorizontalLayout {
+                    alignment: space-between;
+
+                    HorizontalLayout {
+                        spacing: Scale.space-md;
+                        alignment: start;
+
+                        WbSwitch {
+                            checked: cat.selected;
+                            toggled(c) => { root.category-toggled(cat.id, c); }
+                        }
+
+                        VerticalLayout {
+                            spacing: Scale.space-2xs;
+                            alignment: center;
+                            Text {
+                                text: cat.name;
+                                font-size: Scale.font-md;
+                                font-weight: 600;
+                                color: Theme.text-primary;
+                            }
+                            Text {
+                                text: cat.description;
+                                font-size: Scale.font-xs;
+                                color: Theme.text-secondary;
+                            }
+                        }
+                    }
+
+                    WbBadge {
+                        text: cat.size-text;
+                        variant: cat.size-bytes > 0 ? "moderate" : "neutral";
+                    }
+                }
+            }
+        }
+
+        // Tab Content: AppX Debloater
+        if root.active-tab == "debloater" : VerticalLayout {
+            spacing: Scale.space-sm;
+
+            WbSearchInput {
+                text <=> root.search-query;
+                placeholder: "Filter AppX packages by name or publisher...";
+            }
+
+            VerticalLayout {
+                spacing: Scale.space-xs;
+
+                for pkg in root.appx-packages: WbCard {
+                    HorizontalLayout {
+                        alignment: space-between;
+
+                        HorizontalLayout {
+                            spacing: Scale.space-md;
+                            alignment: start;
+
+                            if !pkg.is-protected : WbSwitch {
+                                checked: pkg.selected;
+                                toggled(c) => { root.appx-toggled(pkg.id, c); }
+                            }
+
+                            if pkg.is-protected : Rectangle {
+                                width: Scale.px(42px);
+                                height: Scale.px(22px);
+                                Text {
+                                    text: "🔒";
+                                    font-size: Scale.font-sm;
+                                    horizontal-alignment: center;
+                                    vertical-alignment: center;
+                                }
+                            }
+
+                            VerticalLayout {
+                                spacing: Scale.space-2xs;
+                                alignment: center;
+                                HorizontalLayout {
+                                    spacing: Scale.space-sm;
+                                    Text {
+                                        text: pkg.name;
+                                        font-size: Scale.font-md;
+                                        font-weight: 600;
+                                        color: Theme.text-primary;
+                                    }
+                                    if pkg.is-protected : WbBadge {
+                                        text: "Protected Core";
+                                        variant: "safe";
+                                    }
+                                }
+                                Text {
+                                    text: pkg.publisher;
+                                    font-size: Scale.font-xs;
+                                    color: Theme.text-secondary;
+                                }
+                            }
+                        }
+
+                        WbBadge {
+                            text: pkg.size-text;
+                            variant: "neutral";
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

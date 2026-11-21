@@ -1,0 +1,79 @@
+// ui/components/in_progress_hud.slint
+// WinBlast0 Non-Blocking Progress HUD Indicator in Slint 1.19
+
+import { Scale, Theme } from "../theme.slint";
+import { WbButton } from "button.slint";
+import { WbProgressBar } from "progress_bar.slint";
+
+export component WbInProgressHud inherits Rectangle {
+    in property <bool> is-active: false;
+    in property <string> task-title: "Applying Optimizations";
+    in property <string> current-step: "Writing registry policy: Disable Telemetry (14/42)...";
+    in property <float> progress: 0.35;
+    in property <bool> can-cancel: true;
+
+    callback cancel-operation();
+
+    width: 100%;
+    height: 100%;
+    background: #00000066;
+    visible: root.is-active;
+
+    // Center HUD Card
+    Rectangle {
+        x: (parent.width - self.width) / 2;
+        y: (parent.height - self.height) / 2;
+        width: min(parent.width - Scale.px(48px), Scale.px(440px));
+        height: content-col.preferred-height + Scale.space-lg * 2;
+        border-radius: Scale.radius-md;
+        background: Theme.bg-surface;
+        border-width: 1px;
+        border-color: Theme.border-strong;
+        drop-shadow-blur: 24px;
+        drop-shadow-color: Theme.shadow-md;
+
+        content-col := VerticalLayout {
+            padding: Scale.space-lg;
+            spacing: Scale.space-md;
+
+            HorizontalLayout {
+                alignment: space-between;
+                Text {
+                    text: root.task-title;
+                    font-size: Scale.font-md;
+                    font-weight: 700;
+                    color: Theme.text-primary;
+                    vertical-alignment: center;
+                }
+                Text {
+                    text: round(root.progress * 100) + "%";
+                    font-size: Scale.font-sm;
+                    font-weight: 700;
+                    color: Theme.accent;
+                    vertical-alignment: center;
+                }
+            }
+
+            WbProgressBar {
+                progress: root.progress;
+            }
+
+            Text {
+                text: root.current-step;
+                font-size: Scale.font-xs;
+                color: Theme.text-secondary;
+                overflow: elide;
+            }
+
+            if root.can-cancel : HorizontalLayout {
+                alignment: end;
+                WbButton {
+                    variant: "ghost";
+                    text: "Cancel";
+                    min-height: Scale.control-sm;
+                    clicked => { root.cancel-operation(); }
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,144 @@
+// ui/views/game_overlay.slint
+// WinBlast0 In-Game Transparent HUD Overlay Configuration in Slint 1.19
+
+import { Scale, Theme } from "../theme.slint";
+import { WbButton } from "../components/button.slint";
+import { WbCard } from "../components/card.slint";
+import { WbBadge } from "../components/badge.slint";
+import { WbSwitch } from "../components/switch.slint";
+
+export component GameOverlayView inherits Flickable {
+    in-out property <bool> overlay-enabled: true;
+    in-out property <string> overlay-position: "Top Left"; // "Top Left" | "Top Right" | "Bottom Left" | "Bottom Right"
+    in-out property <string> toggle-hotkey: "Ctrl + Shift + O";
+
+    in-out property <bool> show-fps: true;
+    in-out property <bool> show-frametime: true;
+    in-out property <bool> show-cpu-temp: true;
+    in-out property <bool> show-gpu-temp: true;
+    in-out property <bool> show-ram-usage: true;
+    in-out property <bool> show-vram-usage: false;
+
+    callback toggle-overlay(bool);
+    callback change-position(string);
+
+    content-height: content.preferred-height;
+
+    content := VerticalLayout {
+        padding: Scale.space-lg;
+        spacing: Scale.space-md;
+
+        // Header Card
+        WbCard {
+            HorizontalLayout {
+                alignment: space-between;
+                VerticalLayout {
+                    spacing: Scale.space-2xs;
+                    Text {
+                        text: "In-Game Hardware HUD Overlay";
+                        font-size: Scale.font-xl;
+                        font-weight: 700;
+                        color: Theme.text-primary;
+                    }
+                    Text {
+                        text: "Lightweight DirectX 11/12 & Vulkan transparent overlay with zero FPS degradation.";
+                        font-size: Scale.font-sm;
+                        color: Theme.text-secondary;
+                    }
+                }
+
+                HorizontalLayout {
+                    spacing: Scale.space-md;
+                    alignment: end;
+                    WbBadge {
+                        text: root.overlay-enabled ? "HUD Active" : "HUD Disabled";
+                        variant: root.overlay-enabled ? "safe" : "neutral";
+                        show-dot: root.overlay-enabled;
+                    }
+                    WbSwitch {
+                        checked: root.overlay-enabled;
+                        toggled(c) => { root.overlay-enabled = c; root.toggle-overlay(c); }
+                    }
+                }
+            }
+        }
+
+        // Overlay Position & Hotkey Settings
+        WbCard {
+            VerticalLayout {
+                spacing: Scale.space-md;
+                Text { text: "SCREEN POSITION & HOTKEY"; font-size: Scale.font-xs; font-weight: 700; color: Theme.text-muted; }
+
+                HorizontalLayout {
+                    alignment: space-between;
+                    Text { text: "HUD Corner Position"; font-size: Scale.font-sm; color: Theme.text-secondary; }
+                    HorizontalLayout {
+                        spacing: Scale.space-xs;
+                        for pos in ["Top Left", "Top Right", "Bottom Left", "Bottom Right"]: Rectangle {
+                            private property <bool> is-active: root.overlay-position == pos;
+                            height: Scale.control-sm;
+                            border-radius: Scale.radius-sm;
+                            background: self.is-active ? Theme.accent : Theme.bg-surface;
+                            HorizontalLayout {
+                                padding-left: Scale.space-sm;
+                                padding-right: Scale.space-sm;
+                                alignment: center;
+                                Text {
+                                    text: pos;
+                                    font-size: Scale.font-xs;
+                                    font-weight: 600;
+                                    color: is-active ? Theme.text-on-accent : Theme.text-secondary;
+                                    vertical-alignment: center;
+                                }
+                            }
+                            TouchArea {
+                                mouse-cursor: pointer;
+                                clicked => { root.overlay-position = pos; root.change-position(pos); }
+                            }
+                        }
+                    }
+                }
+
+                HorizontalLayout {
+                    alignment: space-between;
+                    Text { text: "Toggle Visibility Hotkey"; font-size: Scale.font-sm; color: Theme.text-secondary; }
+                    WbBadge { text: root.toggle-hotkey; variant: "info"; }
+                }
+            }
+        }
+
+        // Displayed Metrics Toggles
+        WbCard {
+            VerticalLayout {
+                spacing: Scale.space-md;
+                Text { text: "VISIBLE HARDWARE METRICS"; font-size: Scale.font-xs; font-weight: 700; color: Theme.text-muted; }
+
+                HorizontalLayout {
+                    alignment: space-between;
+                    Text { text: "Frame Rate (FPS)"; font-size: Scale.font-sm; color: Theme.text-primary; }
+                    WbSwitch { checked <=> root.show-fps; }
+                }
+                HorizontalLayout {
+                    alignment: space-between;
+                    Text { text: "Frame Time Graph (ms)"; font-size: Scale.font-sm; color: Theme.text-primary; }
+                    WbSwitch { checked <=> root.show-frametime; }
+                }
+                HorizontalLayout {
+                    alignment: space-between;
+                    Text { text: "CPU Temperature (°C)"; font-size: Scale.font-sm; color: Theme.text-primary; }
+                    WbSwitch { checked <=> root.show-cpu-temp; }
+                }
+                HorizontalLayout {
+                    alignment: space-between;
+                    Text { text: "GPU Temperature (°C)"; font-size: Scale.font-sm; color: Theme.text-primary; }
+                    WbSwitch { checked <=> root.show-gpu-temp; }
+                }
+                HorizontalLayout {
+                    alignment: space-between;
+                    Text { text: "RAM Utilization (GB)"; font-size: Scale.font-sm; color: Theme.text-primary; }
+                    WbSwitch { checked <=> root.show-ram-usage; }
+                }
+            }
+        }
+    }
+}

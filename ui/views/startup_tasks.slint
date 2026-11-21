@@ -1,0 +1,186 @@
+// ui/views/startup_tasks.slint
+// WinBlast0 Startup & Scheduled Tasks Manager in Slint 1.19
+
+import { Scale, Theme } from "../theme.slint";
+import { WbButton } from "../components/button.slint";
+import { WbCard } from "../components/card.slint";
+import { WbBadge } from "../components/badge.slint";
+import { WbSwitch } from "../components/switch.slint";
+import { WbSearchInput } from "../components/search_input.slint";
+
+export struct StartupItemData {
+    id: string,
+    name: string,
+    command: string,
+    publisher: string,
+    impact: string,          // "high" | "moderate" | "low"
+    is-task: bool,           // false = startup app, true = scheduled task
+    enabled: bool,
+}
+
+export component StartupTasksView inherits Flickable {
+    in-out property <string> filter-type: "all"; // "all" | "apps" | "tasks"
+    in-out property <string> search-query: "";
+    in property <int> total-items: 0;
+    in property <int> disabled-items: 0;
+    in property <[StartupItemData]> items: [];
+
+    callback item-toggled(string, bool);
+    callback disable-high-impact-clicked();
+    callback enable-all-clicked();
+    callback refresh-clicked();
+
+    content-height: content.preferred-height;
+
+    content := VerticalLayout {
+        padding: Scale.space-lg;
+        spacing: Scale.space-md;
+
+        // Control Header
+        WbCard {
+            VerticalLayout {
+                spacing: Scale.space-md;
+
+                HorizontalLayout {
+                    alignment: space-between;
+
+                    VerticalLayout {
+                        spacing: Scale.space-2xs;
+                        Text {
+                            text: "Startup & Background Tasks";
+                            font-size: Scale.font-xl;
+                            font-weight: 700;
+                            color: Theme.text-primary;
+                        }
+                        Text {
+                            text: root.disabled-items + " disabled of " + root.total-items + " autostart entries";
+                            font-size: Scale.font-sm;
+                            color: Theme.text-secondary;
+                        }
+                    }
+
+                    HorizontalLayout {
+                        spacing: Scale.space-sm;
+                        alignment: end;
+
+                        WbButton {
+                            variant: "ghost";
+                            text: "Refresh";
+                            min-height: Scale.control-sm;
+                            clicked => { root.refresh-clicked(); }
+                        }
+
+                        WbButton {
+                            variant: "secondary";
+                            text: "Enable All";
+                            min-height: Scale.control-sm;
+                            clicked => { root.enable-all-clicked(); }
+                        }
+
+                        WbButton {
+                            variant: "primary";
+                            text: "Disable High Impact";
+                            min-height: Scale.control-sm;
+                            clicked => { root.disable-high-impact-clicked(); }
+                        }
+                    }
+                }
+
+                HorizontalLayout {
+                    spacing: Scale.space-md;
+
+                    WbSearchInput {
+                        horizontal-stretch: 1;
+                        text <=> root.search-query;
+                        placeholder: "Filter startup items and scheduled tasks...";
+                    }
+
+                    // Filter mode switcher
+                    HorizontalLayout {
+                        spacing: Scale.space-2xs;
+
+                        for f in ["all", "apps", "tasks"]: Rectangle {
+                            private property <bool> is-active: root.filter-type == f;
+                            height: Scale.control-md;
+                            border-radius: Scale.radius-sm;
+                            background: self.is-active ? Theme.accent : Theme.bg-surface;
+                            HorizontalLayout {
+                                padding-left: Scale.space-md;
+                                padding-right: Scale.space-md;
+                                alignment: center;
+                                Text {
+                                    text: f == "all" ? "All Items" : (f == "apps" ? "Startup Apps" : "Tasks");
+                                    font-size: Scale.font-xs;
+                                    font-weight: 600;
+                                    color: is-active ? Theme.text-on-accent : Theme.text-secondary;
+                                    vertical-alignment: center;
+                                }
+                            }
+                            TouchArea {
+                                mouse-cursor: pointer;
+                                clicked => { root.filter-type = f; }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // Items List
+        VerticalLayout {
+            spacing: Scale.space-xs;
+
+            for item in root.items: WbCard {
+                HorizontalLayout {
+                    alignment: space-between;
+
+                    HorizontalLayout {
+                        spacing: Scale.space-md;
+                        alignment: start;
+
+                        WbSwitch {
+                            checked: item.enabled;
+                            toggled(c) => { root.item-toggled(item.id, c); }
+                        }
+
+                        VerticalLayout {
+                            spacing: Scale.space-2xs;
+                            alignment: center;
+
+                            HorizontalLayout {
+                                spacing: Scale.space-sm;
+                                alignment: start;
+                                Text {
+                                    text: item.name;
+                                    font-size: Scale.font-md;
+                                    font-weight: 600;
+                                    color: Theme.text-primary;
+                                }
+                                WbBadge {
+                                    text: item.is-task ? "Task" : "Registry";
+                                    variant: "neutral";
+                                }
+                                WbBadge {
+                                    text: item.impact + " impact";
+                                    variant: item.impact == "high" ? "high" : (item.impact == "moderate" ? "moderate" : "safe");
+                                }
+                            }
+
+                            Text {
+                                text: item.command;
+                                font-size: Scale.font-xs;
+                                color: Theme.text-muted;
+                                overflow: elide;
+                            }
+                        }
+                    }
+
+                    WbBadge {
+                        text: item.enabled ? "Enabled" : "Disabled";
+                        variant: item.enabled ? "safe" : "neutral";
+                    }
+                }
+            }
+        }
+    }
+}

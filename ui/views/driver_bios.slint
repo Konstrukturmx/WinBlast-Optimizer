@@ -1,0 +1,122 @@
+// ui/views/driver_bios.slint
+// WinBlast0 Driver & BIOS Firmware Diagnostics in Slint 1.19
+
+import { Scale, Theme } from "../theme.slint";
+import { WbButton } from "../components/button.slint";
+import { WbCard } from "../components/card.slint";
+import { WbBadge } from "../components/badge.slint";
+
+export struct DriverStatusItem {
+    name: string,
+    category: string,
+    installed-version: string,
+    driver-date: string,
+    provider: string,
+    is-outdated: bool,
+}
+
+export component DriverBiosView inherits Flickable {
+    in property <string> bios-vendor: "American Megatrends Inc.";
+    in property <string> bios-version: "5013";
+    in property <string> bios-release-date: "03/22/2024";
+    in property <string> smbios-version: "3.3";
+    in property <bool> secure-boot-enabled: true;
+
+    in property <[DriverStatusItem]> drivers: [];
+
+    callback scan-updates-clicked();
+
+    content-height: content.preferred-height;
+
+    content := VerticalLayout {
+        padding: Scale.space-lg;
+        spacing: Scale.space-md;
+
+        // Header Card
+        WbCard {
+            HorizontalLayout {
+                alignment: space-between;
+                VerticalLayout {
+                    spacing: Scale.space-2xs;
+                    Text {
+                        text: "Driver & UEFI BIOS Firmware";
+                        font-size: Scale.font-xl;
+                        font-weight: 700;
+                        color: Theme.text-primary;
+                    }
+                    Text {
+                        text: "Motherboard UEFI SMBIOS revision and critical kernel device driver inventory.";
+                        font-size: Scale.font-sm;
+                        color: Theme.text-secondary;
+                    }
+                }
+                WbButton {
+                    variant: "ghost";
+                    text: "Check Drivers";
+                    clicked => { root.scan-updates-clicked(); }
+                }
+            }
+        }
+
+        // BIOS Firmware Status Card
+        WbCard {
+            VerticalLayout {
+                spacing: Scale.space-sm;
+                HorizontalLayout {
+                    alignment: space-between;
+                    Text { text: "MOTHERBOARD UEFI BIOS FIRMWARE"; font-size: Scale.font-xs; font-weight: 700; color: Theme.text-muted; }
+                    WbBadge {
+                        text: root.secure-boot-enabled ? "Secure Boot Active" : "Secure Boot Disabled";
+                        variant: root.secure-boot-enabled ? "safe" : "moderate";
+                        show-dot: true;
+                    }
+                }
+                HorizontalLayout {
+                    spacing: Scale.space-lg;
+                    VerticalLayout { Text { text: "BIOS Revision"; font-size: Scale.font-xs; color: Theme.text-muted; } Text { text: root.bios-version; font-size: Scale.font-sm; font-weight: 700; color: Theme.text-primary; } }
+                    VerticalLayout { Text { text: "Release Date"; font-size: Scale.font-xs; color: Theme.text-muted; } Text { text: root.bios-release-date; font-size: Scale.font-sm; font-weight: 700; color: Theme.text-primary; } }
+                    VerticalLayout { Text { text: "Vendor"; font-size: Scale.font-xs; color: Theme.text-muted; } Text { text: root.bios-vendor; font-size: Scale.font-sm; font-weight: 700; color: Theme.text-primary; } }
+                    VerticalLayout { Text { text: "SMBIOS Version"; font-size: Scale.font-xs; color: Theme.text-muted; } Text { text: root.smbios-version; font-size: Scale.font-sm; font-weight: 700; color: Theme.text-primary; } }
+                }
+            }
+        }
+
+        // Installed Driver Subsystems
+        VerticalLayout {
+            spacing: Scale.space-xs;
+
+            for d in root.drivers: WbCard {
+                HorizontalLayout {
+                    alignment: space-between;
+                    VerticalLayout {
+                        spacing: Scale.space-2xs;
+                        HorizontalLayout {
+                            spacing: Scale.space-sm;
+                            Text {
+                                text: d.name;
+                                font-size: Scale.font-md;
+                                font-weight: 600;
+                                color: Theme.text-primary;
+                            }
+                            WbBadge {
+                                text: d.category;
+                                variant: "neutral";
+                            }
+                        }
+                        Text {
+                            text: "Version: " + d.installed-version + " (" + d.driver-date + ") — " + d.provider;
+                            font-size: Scale.font-xs;
+                            color: Theme.text-secondary;
+                        }
+                    }
+
+                    WbBadge {
+                        text: d.is-outdated ? "Update Available" : "Up to Date";
+                        variant: d.is-outdated ? "moderate" : "safe";
+                        show-dot: true;
+                    }
+                }
+            }
+        }
+    }
+}

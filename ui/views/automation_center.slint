@@ -1,0 +1,106 @@
+// ui/views/automation_center.slint
+// WinBlast0 Scheduled Automation & Background Maintenance in Slint 1.19
+
+import { Scale, Theme } from "../theme.slint";
+import { WbButton } from "../components/button.slint";
+import { WbCard } from "../components/card.slint";
+import { WbBadge } from "../components/badge.slint";
+import { WbSwitch } from "../components/switch.slint";
+
+export struct AutomationRuleItem {
+    id: string,
+    title: string,
+    description: string,
+    schedule-type: string,    // "Daily" | "Weekly" | "On Idle"
+    last-run: string,
+    enabled: bool,
+}
+
+export component AutomationCenterView inherits Flickable {
+    in property <[AutomationRuleItem]> rules: [];
+
+    callback rule-toggled(string, bool);
+    callback run-all-now();
+
+    content-height: content.preferred-height;
+
+    content := VerticalLayout {
+        padding: Scale.space-lg;
+        spacing: Scale.space-md;
+
+        // Header Card
+        WbCard {
+            HorizontalLayout {
+                alignment: space-between;
+                VerticalLayout {
+                    spacing: Scale.space-2xs;
+                    Text {
+                        text: "Autonomous Optimization & Maintenance Engine";
+                        font-size: Scale.font-xl;
+                        font-weight: 700;
+                        color: Theme.text-primary;
+                    }
+                    Text {
+                        text: "Automated junk collection, memory defragmentation, and tweak persistence schedules.";
+                        font-size: Scale.font-sm;
+                        color: Theme.text-secondary;
+                    }
+                }
+                WbButton {
+                    variant: "primary";
+                    text: "Execute All Now";
+                    clicked => { root.run-all-now(); }
+                }
+            }
+        }
+
+        // Automation Rules List
+        VerticalLayout {
+            spacing: Scale.space-xs;
+
+            for rule in root.rules: WbCard {
+                HorizontalLayout {
+                    alignment: space-between;
+                    HorizontalLayout {
+                        spacing: Scale.space-md;
+                        alignment: start;
+
+                        WbSwitch {
+                            checked: rule.enabled;
+                            toggled(c) => { root.rule-toggled(rule.id, c); }
+                        }
+
+                        VerticalLayout {
+                            spacing: Scale.space-2xs;
+                            alignment: center;
+                            HorizontalLayout {
+                                spacing: Scale.space-sm;
+                                Text {
+                                    text: rule.title;
+                                    font-size: Scale.font-md;
+                                    font-weight: 600;
+                                    color: Theme.text-primary;
+                                }
+                                WbBadge {
+                                    text: rule.schedule-type;
+                                    variant: "info";
+                                }
+                            }
+                            Text {
+                                text: rule.description + " — Last run: " + rule.last-run;
+                                font-size: Scale.font-xs;
+                                color: Theme.text-secondary;
+                            }
+                        }
+                    }
+
+                    WbBadge {
+                        text: rule.enabled ? "Active" : "Disabled";
+                        variant: rule.enabled ? "safe" : "neutral";
+                        show-dot: rule.enabled;
+                    }
+                }
+            }
+        }
+    }
+}

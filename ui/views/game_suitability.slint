@@ -1,0 +1,108 @@
+// ui/views/game_suitability.slint
+// WinBlast0 Hardware Game Suitability Checker in Slint 1.19
+
+import { Scale, Theme } from "../theme.slint";
+import { WbButton } from "../components/button.slint";
+import { WbCard } from "../components/card.slint";
+import { WbBadge } from "../components/badge.slint";
+
+export struct GameSpecComparison {
+    game-title: string,
+    min-cpu: string,
+    rec-cpu: string,
+    min-gpu: string,
+    rec-gpu: string,
+    min-ram-gb: int,
+    rec-ram-gb: int,
+    meets-minimum: bool,
+    meets-recommended: bool,
+    expected-tier: string,    // "Ultra 144+ FPS" | "High 60+ FPS" | "Medium 60 FPS" | "Below Minimum"
+}
+
+export component GameSuitabilityView inherits Flickable {
+    in property <[GameSpecComparison]> games: [];
+
+    callback refresh-suitability();
+
+    content-height: content.preferred-height;
+
+    content := VerticalLayout {
+        padding: Scale.space-lg;
+        spacing: Scale.space-md;
+
+        // Header Card
+        WbCard {
+            HorizontalLayout {
+                alignment: space-between;
+                VerticalLayout {
+                    spacing: Scale.space-2xs;
+                    Text {
+                        text: "Hardware Game Suitability Matrix";
+                        font-size: Scale.font-xl;
+                        font-weight: 700;
+                        color: Theme.text-primary;
+                    }
+                    Text {
+                        text: "Compare installed CPU, GPU, and RAM against official publisher hardware tiers.";
+                        font-size: Scale.font-sm;
+                        color: Theme.text-secondary;
+                    }
+                }
+                WbButton {
+                    variant: "ghost";
+                    text: "Refresh";
+                    clicked => { root.refresh-suitability(); }
+                }
+            }
+        }
+
+        // Games Suitability Cards
+        VerticalLayout {
+            spacing: Scale.space-xs;
+
+            for g in root.games: WbCard {
+                VerticalLayout {
+                    spacing: Scale.space-sm;
+
+                    HorizontalLayout {
+                        alignment: space-between;
+                        Text {
+                            text: g.game-title;
+                            font-size: Scale.font-lg;
+                            font-weight: 700;
+                            color: Theme.text-primary;
+                        }
+
+                        WbBadge {
+                            text: g.expected-tier;
+                            variant: g.meets-recommended ? "safe" : (g.meets-minimum ? "moderate" : "high");
+                            show-dot: true;
+                        }
+                    }
+
+                    HorizontalLayout {
+                        spacing: Scale.space-lg;
+                        VerticalLayout {
+                            horizontal-stretch: 1;
+                            spacing: Scale.space-2xs;
+                            Text { text: "CPU Compatibility"; font-size: Scale.font-xs; color: Theme.text-muted; }
+                            Text { text: g.rec-cpu; font-size: Scale.font-sm; color: Theme.text-secondary; }
+                        }
+                        VerticalLayout {
+                            horizontal-stretch: 1;
+                            spacing: Scale.space-2xs;
+                            Text { text: "GPU Compatibility"; font-size: Scale.font-xs; color: Theme.text-muted; }
+                            Text { text: g.rec-gpu; font-size: Scale.font-sm; color: Theme.text-secondary; }
+                        }
+                        VerticalLayout {
+                            horizontal-stretch: 1;
+                            spacing: Scale.space-2xs;
+                            Text { text: "RAM Requirement"; font-size: Scale.font-xs; color: Theme.text-muted; }
+                            Text { text: g.rec-ram-gb + " GB Recommended"; font-size: Scale.font-sm; color: Theme.text-secondary; }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,131 @@
+// ui/views/game_profiles.slint
+// WinBlast0 Per-Game Custom Tweak Profiles in Slint 1.19
+
+import { Scale, Theme } from "../theme.slint";
+import { WbButton } from "../components/button.slint";
+import { WbCard } from "../components/card.slint";
+import { WbBadge } from "../components/badge.slint";
+import { WbSwitch } from "../components/switch.slint";
+
+export struct GameProfileItem {
+    id: string,
+    title: string,
+    exe-name: string,
+    preset: string,           // "Ultra Low Latency" | "Maximum FPS" | "Balanced"
+    auto-apply: bool,
+    active: bool,
+}
+
+export component GameProfilesView inherits Flickable {
+    in property <[GameProfileItem]> profiles: [];
+
+    callback add-profile-clicked();
+    callback auto-apply-toggled(string, bool);
+    callback activate-profile(string);
+
+    content-height: content.preferred-height;
+
+    content := VerticalLayout {
+        padding: Scale.space-lg;
+        spacing: Scale.space-md;
+
+        // Header Card
+        WbCard {
+            HorizontalLayout {
+                alignment: space-between;
+                VerticalLayout {
+                    spacing: Scale.space-2xs;
+                    Text {
+                        text: "Per-Game Optimization Profiles";
+                        font-size: Scale.font-xl;
+                        font-weight: 700;
+                        color: Theme.text-primary;
+                    }
+                    Text {
+                        text: "Automatically engage custom GPU, CPU priority, and network profiles upon game executable launch.";
+                        font-size: Scale.font-sm;
+                        color: Theme.text-secondary;
+                    }
+                }
+                WbButton {
+                    variant: "primary";
+                    text: "+ Add Game Profile";
+                    clicked => { root.add-profile-clicked(); }
+                }
+            }
+        }
+
+        // Profiles List
+        VerticalLayout {
+            spacing: Scale.space-xs;
+
+            for prof in root.profiles: WbCard {
+                HorizontalLayout {
+                    alignment: space-between;
+                    HorizontalLayout {
+                        spacing: Scale.space-md;
+                        alignment: start;
+
+                        Rectangle {
+                            width: Scale.px(36px);
+                            height: Scale.px(36px);
+                            border-radius: Scale.radius-sm;
+                            background: prof.active ? Theme.accent : Theme.bg-surface;
+                            Text {
+                                text: "🎮";
+                                font-size: Scale.font-md;
+                                horizontal-alignment: center;
+                                vertical-alignment: center;
+                            }
+                        }
+
+                        VerticalLayout {
+                            spacing: Scale.space-2xs;
+                            alignment: center;
+                            HorizontalLayout {
+                                spacing: Scale.space-sm;
+                                Text {
+                                    text: prof.title;
+                                    font-size: Scale.font-md;
+                                    font-weight: 600;
+                                    color: Theme.text-primary;
+                                }
+                                WbBadge {
+                                    text: prof.preset;
+                                    variant: prof.preset == "Ultra Low Latency" ? "high" : "safe";
+                                }
+                            }
+                            Text {
+                                text: prof.exe-name;
+                                font-size: Scale.font-xs;
+                                color: Theme.text-secondary;
+                            }
+                        }
+                    }
+
+                    HorizontalLayout {
+                        spacing: Scale.space-md;
+                        alignment: end;
+
+                        HorizontalLayout {
+                            spacing: Scale.space-xs;
+                            alignment: center;
+                            Text { text: "Auto-Apply"; font-size: Scale.font-xs; color: Theme.text-muted; }
+                            WbSwitch {
+                                checked: prof.auto-apply;
+                                toggled(c) => { root.auto-apply-toggled(prof.id, c); }
+                            }
+                        }
+
+                        WbButton {
+                            variant: prof.active ? "secondary" : "ghost";
+                            text: prof.active ? "Active" : "Activate";
+                            enabled: !prof.active;
+                            clicked => { root.activate-profile(prof.id); }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

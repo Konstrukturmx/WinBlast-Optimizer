@@ -1,0 +1,156 @@
+// ui/views/advanced_matrix.slint
+// WinBlast0 230-Tweak Advanced Matrix View in Slint 1.19
+
+import { Scale, Theme } from "../theme.slint";
+import { WbButton } from "../components/button.slint";
+import { WbCard } from "../components/card.slint";
+import { WbBadge } from "../components/badge.slint";
+import { WbSearchInput } from "../components/search_input.slint";
+import { WbTweakRow } from "../components/tweak_row.slint";
+
+export struct TweakItemData {
+    id: string,
+    title: string,
+    description: string,
+    category: string,
+    risk: string,             // "safe" | "low" | "moderate" | "high"
+    status: string,           // "optimized" | "unoptimized"
+    enabled: bool,
+}
+
+export component AdvancedMatrixView inherits Flickable {
+    in-out property <string> search-query: "";
+    in-out property <string> selected-category: "All";
+    in-out property <string> selected-risk: "All";
+
+    in property <int> total-count: 230;
+    in property <int> optimized-count: 142;
+    in property <[TweakItemData]> tweaks: [];
+
+    callback tweak-toggled(string, bool);
+    callback inspect-diff(string);
+    callback apply-all-safe();
+    callback revert-all();
+    callback refresh-scan();
+
+    content-height: content.preferred-height;
+
+    content := VerticalLayout {
+        padding: Scale.space-lg;
+        spacing: Scale.space-md;
+
+        // Header controls card
+        WbCard {
+            VerticalLayout {
+                spacing: Scale.space-md;
+
+                // Title and bulk actions row
+                HorizontalLayout {
+                    alignment: space-between;
+
+                    VerticalLayout {
+                        spacing: Scale.space-2xs;
+                        Text {
+                            text: "Advanced Optimization Matrix";
+                            font-size: Scale.font-xl;
+                            font-weight: 700;
+                            color: Theme.text-primary;
+                        }
+                        Text {
+                            text: root.optimized-count + " of " + root.total-count + " optimization policies active";
+                            font-size: Scale.font-sm;
+                            color: Theme.text-secondary;
+                        }
+                    }
+
+                    HorizontalLayout {
+                        spacing: Scale.space-sm;
+                        alignment: end;
+
+                        WbButton {
+                            variant: "ghost";
+                            text: "Scan";
+                            min-height: Scale.control-sm;
+                            clicked => { root.refresh-scan(); }
+                        }
+
+                        WbButton {
+                            variant: "secondary";
+                            text: "Revert All";
+                            min-height: Scale.control-sm;
+                            clicked => { root.revert-all(); }
+                        }
+
+                        WbButton {
+                            variant: "primary";
+                            text: "Apply All Safe";
+                            min-height: Scale.control-sm;
+                            clicked => { root.apply-all-safe(); }
+                        }
+                    }
+                }
+
+                // Search input
+                WbSearchInput {
+                    text <=> root.search-query;
+                    placeholder: "Search by tweak name, registry key, group, or keyword...";
+                }
+
+                // Category selector filter row
+                HorizontalLayout {
+                    spacing: Scale.space-xs;
+                    alignment: start;
+
+                    for cat in ["All", "Privacy", "Gaming", "System", "Network", "Hardware", "Explorer", "Security"]: Rectangle {
+                        private property <bool> is-active: root.selected-category == cat;
+                        height: Scale.control-sm;
+                        border-radius: Scale.radius-pill;
+                        background: self.is-active ? Theme.accent : (cat-ta.has-hover ? Theme.bg-surface-hover : Theme.bg-surface);
+                        border-width: 1px;
+                        border-color: self.is-active ? Theme.accent : Theme.border-subtle;
+
+                        HorizontalLayout {
+                            padding-left: Scale.space-md;
+                            padding-right: Scale.space-md;
+                            alignment: center;
+                            Text {
+                                text: cat;
+                                font-size: Scale.font-xs;
+                                font-weight: 600;
+                                color: is-active ? Theme.text-on-accent : Theme.text-secondary;
+                                vertical-alignment: center;
+                            }
+                        }
+
+                        cat-ta := TouchArea {
+                            mouse-cursor: pointer;
+                            clicked => { root.selected-category = cat; }
+                        }
+                    }
+                }
+            }
+        }
+
+        // Tweak list section
+        VerticalLayout {
+            spacing: Scale.space-xs;
+
+            for tweak in root.tweaks: WbTweakRow {
+                title: tweak.title;
+                description: tweak.description;
+                category: tweak.category;
+                risk: tweak.risk;
+                status: tweak.status;
+                enabled: tweak.enabled;
+
+                toggled(checked) => {
+                    root.tweak-toggled(tweak.id, checked);
+                }
+
+                inspect-diff() => {
+                    root.inspect-diff(tweak.id);
+                }
+            }
+        }
+    }
+}

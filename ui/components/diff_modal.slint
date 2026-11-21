@@ -1,0 +1,158 @@
+// ui/components/diff_modal.slint
+// WinBlast0 Registry / System Diff Inspector Modal in Slint 1.19
+
+import { Scale, Theme } from "../theme.slint";
+import { WbButton } from "button.slint";
+import { WbCard } from "card.slint";
+import { WbBadge } from "badge.slint";
+
+export component WbDiffModal inherits Rectangle {
+    in property <bool> is-open: false;
+    in property <string> tweak-title: "Disable Windows Telemetry";
+    in property <string> registry-path: "HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows\\DataCollection";
+    in property <string> value-name: "AllowTelemetry";
+    in property <string> original-value: "DWORD: 3 (Full Telemetry)";
+    in property <string> optimized-value: "DWORD: 0 (Security Only / Disabled)";
+    in property <string> impact-summary: "Prevents background diagnostic data upload to Microsoft telemetry endpoints.";
+
+    callback close-modal();
+    callback apply-diff();
+
+    width: 100%;
+    height: 100%;
+    background: #00000088;
+    visible: root.is-open;
+
+    // Modal Card
+    Rectangle {
+        x: (parent.width - self.width) / 2;
+        y: (parent.height - self.height) / 2;
+        width: min(parent.width - Scale.px(48px), Scale.px(620px));
+        height: min(parent.height - Scale.px(48px), content-col.preferred-height + Scale.space-xl * 2);
+        border-radius: Scale.radius-lg;
+        background: Theme.bg-surface;
+        border-width: 1px;
+        border-color: Theme.border-strong;
+        drop-shadow-blur: 32px;
+        drop-shadow-color: Theme.shadow-lg;
+
+        content-col := VerticalLayout {
+            padding: Scale.space-xl;
+            spacing: Scale.space-lg;
+
+            // Modal Header
+            HorizontalLayout {
+                alignment: space-between;
+                VerticalLayout {
+                    spacing: Scale.space-2xs;
+                    HorizontalLayout {
+                        spacing: Scale.space-sm;
+                        Text {
+                            text: "Policy Diff Inspection";
+                            font-size: Scale.font-lg;
+                            font-weight: 700;
+                            color: Theme.text-primary;
+                        }
+                        WbBadge {
+                            text: "Registry Delta";
+                            variant: "info";
+                        }
+                    }
+                    Text {
+                        text: root.tweak-title;
+                        font-size: Scale.font-sm;
+                        color: Theme.text-secondary;
+                    }
+                }
+
+                WbButton {
+                    variant: "ghost";
+                    text: "✕";
+                    min-width: Scale.px(32px);
+                    min-height: Scale.px(32px);
+                    clicked => { root.close-modal(); }
+                }
+            }
+
+            // Path & Value Key Card
+            Rectangle {
+                border-radius: Scale.radius-sm;
+                background: Theme.bg-canvas;
+                border-width: 1px;
+                border-color: Theme.border-subtle;
+
+                VerticalLayout {
+                    padding: Scale.space-md;
+                    spacing: Scale.space-xs;
+
+                    Text { text: "TARGET REGISTRY HIVE & VALUE"; font-size: Scale.font-2xs; font-weight: 700; color: Theme.text-muted; }
+                    Text { text: root.registry-path; font-size: Scale.font-xs; color: Theme.accent; overflow: elide; }
+                    Text { text: "Value: " + root.value-name; font-size: Scale.font-xs; font-weight: 600; color: Theme.text-primary; }
+                }
+            }
+
+            // Before / After Diff Visualizer
+            HorizontalLayout {
+                spacing: Scale.space-md;
+
+                // Before Card
+                Rectangle {
+                    horizontal-stretch: 1;
+                    border-radius: Scale.radius-sm;
+                    background: Theme.danger.with-alpha(0.08);
+                    border-width: 1px;
+                    border-color: Theme.danger.with-alpha(0.25);
+
+                    VerticalLayout {
+                        padding: Scale.space-md;
+                        spacing: Scale.space-xs;
+                        Text { text: "ORIGINAL STATE (STOCK)"; font-size: Scale.font-2xs; font-weight: 700; color: Theme.danger; }
+                        Text { text: root.original-value; font-size: Scale.font-sm; color: Theme.text-primary; wrap: word-wrap; }
+                    }
+                }
+
+                // After Card
+                Rectangle {
+                    horizontal-stretch: 1;
+                    border-radius: Scale.radius-sm;
+                    background: Theme.safe.with-alpha(0.08);
+                    border-width: 1px;
+                    border-color: Theme.safe.with-alpha(0.25);
+
+                    VerticalLayout {
+                        padding: Scale.space-md;
+                        spacing: Scale.space-xs;
+                        Text { text: "OPTIMIZED STATE (PROPOSED)"; font-size: Scale.font-2xs; font-weight: 700; color: Theme.safe; }
+                        Text { text: root.optimized-value; font-size: Scale.font-sm; color: Theme.text-primary; wrap: word-wrap; }
+                    }
+                }
+            }
+
+            // Impact description
+            Text {
+                text: root.impact-summary;
+                font-size: Scale.font-xs;
+                color: Theme.text-secondary;
+                wrap: word-wrap;
+            }
+
+            // Actions row
+            HorizontalLayout {
+                spacing: Scale.space-sm;
+                alignment: end;
+
+                WbButton {
+                    variant: "secondary";
+                    text: "Dismiss";
+                    clicked => { root.close-modal(); }
+                }
+
+                WbButton {
+                    variant: "primary";
+                    text: "Apply Policy Diff";
+                    clicked => { root.apply-diff(); }
+                }
+            }
+        }
+    }
+}

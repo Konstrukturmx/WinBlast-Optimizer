@@ -1,0 +1,125 @@
+// ui/views/windows_repair.slint
+// WinBlast0 Windows System Integrity & Corruption Repair in Slint 1.19
+
+import { Scale, Theme } from "../theme.slint";
+import { WbButton } from "../components/button.slint";
+import { WbCard } from "../components/card.slint";
+import { WbBadge } from "../components/badge.slint";
+import { WbProgressBar } from "../components/progress_bar.slint";
+
+export struct RepairTaskItem {
+    id: string,
+    name: string,
+    command: string,
+    description: string,
+    is-running: bool,
+    last-result: string,
+}
+
+export component WindowsRepairView inherits Flickable {
+    in property <bool> any-running: false;
+    in property <float> progress: 0.0;
+    in property <string> active-task-label: "";
+
+    in property <[RepairTaskItem]> tasks: [];
+
+    callback run-task(string);
+    callback run-all-repairs();
+
+    content-height: content.preferred-height;
+
+    content := VerticalLayout {
+        padding: Scale.space-lg;
+        spacing: Scale.space-md;
+
+        // Header Card
+        WbCard {
+            HorizontalLayout {
+                alignment: space-between;
+                VerticalLayout {
+                    spacing: Scale.space-2xs;
+                    Text {
+                        text: "Windows Component Store & File Integrity Repair";
+                        font-size: Scale.font-xl;
+                        font-weight: 700;
+                        color: Theme.text-primary;
+                    }
+                    Text {
+                        text: "Direct integration with DISM, System File Checker (SFC), Winsock, and Windows Update cache reset.";
+                        font-size: Scale.font-sm;
+                        color: Theme.text-secondary;
+                    }
+                }
+
+                WbButton {
+                    variant: "primary";
+                    text: root.any-running ? "Repairing..." : "Run Complete Health Scan";
+                    loading: root.any-running;
+                    enabled: !root.any-running;
+                    clicked => { root.run-all-repairs(); }
+                }
+            }
+        }
+
+        if root.any-running : WbCard {
+            VerticalLayout {
+                spacing: Scale.space-xs;
+                Text { text: "Executing: " + root.active-task-label; font-size: Scale.font-xs; color: Theme.accent; }
+                WbProgressBar { progress: root.progress; }
+            }
+        }
+
+        // Repair Tasks List
+        VerticalLayout {
+            spacing: Scale.space-xs;
+
+            for t in root.tasks: WbCard {
+                HorizontalLayout {
+                    alignment: space-between;
+                    VerticalLayout {
+                        spacing: Scale.space-2xs;
+                        HorizontalLayout {
+                            spacing: Scale.space-sm;
+                            Text {
+                                text: t.name;
+                                font-size: Scale.font-md;
+                                font-weight: 600;
+                                color: Theme.text-primary;
+                            }
+                            WbBadge {
+                                text: t.command;
+                                variant: "neutral";
+                            }
+                        }
+                        Text {
+                            text: t.description;
+                            font-size: Scale.font-xs;
+                            color: Theme.text-secondary;
+                        }
+                    }
+
+                    HorizontalLayout {
+                        spacing: Scale.space-md;
+                        alignment: end;
+
+                        if t.last-result != "" : Text {
+                            text: t.last-result;
+                            font-size: Scale.font-xs;
+                            color: Theme.safe;
+                            vertical-alignment: center;
+                        }
+
+                        WbButton {
+                            variant: "secondary";
+                            text: "Run";
+                            loading: t.is-running;
+                            enabled: !root.any-running;
+                            min-height: Scale.control-sm;
+                            clicked => { root.run-task(t.id); }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,422 @@
+// ui/views/easy_dashboard.slint
+// WinBlast0 Easy Dashboard Overview View in Slint 1.19
+
+import { Scale, Theme } from "../theme.slint";
+import { WbButton } from "../components/button.slint";
+import { WbCard } from "../components/card.slint";
+import { WbBadge } from "../components/badge.slint";
+import { WbProgressBar } from "../components/progress_bar.slint";
+import { WbSparkline } from "../components/sparkline.slint";
+
+export component EasyDashboardView inherits Flickable {
+    in property <int> health-score: 85;
+    in property <int> total-tweaks: 230;
+    in property <int> applied-tweaks: 142;
+    in property <bool> is-admin: true;
+    in property <bool> optimizing: false;
+
+    // Hardware Telemetry Snapshots
+    in property <float> cpu-usage: 12.5;
+    in property <float> ram-usage: 44.2;
+    in property <string> ram-text: "7.1 / 16.0 GB";
+    in property <float> gpu-usage: 20.0;
+    in property <float> disk-usage: 35.0;
+    in property <[float]> cpu-history: [10.0, 15.0, 12.0, 18.0, 14.0, 11.0, 22.0, 16.0, 13.0, 12.5];
+
+    // Hardware Specs
+    in property <string> cpu-model: "AMD Ryzen 9 5900X (12C/24T)";
+    in property <string> gpu-model: "NVIDIA GeForce RTX 4080 (16GB)";
+    in property <string> ram-capacity: "32.0 GB DDR4-3600";
+    in property <string> os-version: "Windows 11 Pro 24H2 (Build 26100)";
+
+    // Update Banner
+    in property <bool> update-available: false;
+    in property <string> update-version: "";
+
+    callback quick-boost-clicked();
+    callback scan-system-clicked();
+    callback navigate-to-view(string);
+    callback download-update-clicked();
+
+    content-height: content.preferred-height;
+
+    content := VerticalLayout {
+        padding: Scale.space-lg;
+        spacing: Scale.space-md;
+
+        // Elevation warning banner
+        if !root.is-admin : WbCard {
+            background: Theme.danger.with-alpha(0.12);
+            border-color: Theme.danger.with-alpha(0.3);
+
+            HorizontalLayout {
+                spacing: Scale.space-md;
+                alignment: space-between;
+
+                HorizontalLayout {
+                    spacing: Scale.space-sm;
+                    alignment: start;
+                    Text {
+                        text: "⚠";
+                        font-size: Scale.font-lg;
+                        color: Theme.danger;
+                        vertical-alignment: center;
+                    }
+                    VerticalLayout {
+                        spacing: Scale.space-2xs;
+                        Text {
+                            text: "Administrator Privileges Required";
+                            font-size: Scale.font-md;
+                            font-weight: 700;
+                            color: Theme.text-primary;
+                        }
+                        Text {
+                            text: "Some kernel tweaks, services, and system repair routines require elevation to execute.";
+                            font-size: Scale.font-sm;
+                            color: Theme.text-secondary;
+                        }
+                    }
+                }
+
+                WbButton {
+                    variant: "danger";
+                    text: "Restart as Admin";
+                    min-height: Scale.control-sm;
+                    clicked => { root.quick-boost-clicked(); }
+                }
+            }
+        }
+
+        // Top Hero Card: System Health Gauge & Quick Boost CTA
+        WbCard {
+            elevation: 1;
+
+            HorizontalLayout {
+                spacing: Scale.space-xl;
+                alignment: space-between;
+
+                // Left: Circular health indicator & score
+                HorizontalLayout {
+                    spacing: Scale.space-lg;
+                    alignment: start;
+
+                    Rectangle {
+                        width: Scale.px(84px);
+                        height: Scale.px(84px);
+                        border-radius: Scale.radius-pill;
+                        background: Theme.bg-surface;
+                        border-width: Scale.px(4px);
+                        border-color: root.health-score >= 80 ? Theme.safe : (root.health-score >= 50 ? Theme.moderate : Theme.danger);
+
+                        VerticalLayout {
+                            alignment: center;
+                            spacing: 0;
+                            Text {
+                                text: root.health-score + "%";
+                                font-size: Scale.font-xl;
+                                font-weight: 800;
+                                color: Theme.text-primary;
+                                horizontal-alignment: center;
+                            }
+                            Text {
+                                text: "HEALTH";
+                                font-size: Scale.font-2xs;
+                                font-weight: 700;
+                                color: Theme.text-muted;
+                                horizontal-alignment: center;
+                            }
+                        }
+                    }
+
+                    VerticalLayout {
+                        alignment: center;
+                        spacing: Scale.space-2xs;
+
+                        Text {
+                            text: root.health-score >= 80 ? "System Highly Optimized" : (root.health-score >= 50 ? "System Partially Optimized" : "Optimization Recommended");
+                            font-size: Scale.font-lg;
+                            font-weight: 700;
+                            color: Theme.text-primary;
+                        }
+
+                        Text {
+                            text: root.applied-tweaks + " of " + root.total-tweaks + " optimization policies active";
+                            font-size: Scale.font-sm;
+                            color: Theme.text-secondary;
+                        }
+
+                        HorizontalLayout {
+                            spacing: Scale.space-xs;
+                            alignment: start;
+                            WbBadge {
+                                text: root.health-score >= 80 ? "Peak State" : "Action Needed";
+                                variant: root.health-score >= 80 ? "safe" : "moderate";
+                                show-dot: true;
+                            }
+                            WbBadge {
+                                text: "Zero Telemetry";
+                                variant: "info";
+                            }
+                        }
+                    }
+                }
+
+                // Right: Action buttons
+                HorizontalLayout {
+                    spacing: Scale.space-sm;
+                    alignment: end;
+
+                    WbButton {
+                        variant: "ghost";
+                        text: "Scan System";
+                        enabled: !root.optimizing;
+                        min-height: Scale.control-md;
+                        clicked => { root.scan-system-clicked(); }
+                    }
+
+                    WbButton {
+                        variant: "primary";
+                        text: root.optimizing ? "Optimizing..." : "Quick Boost";
+                        loading: root.optimizing;
+                        enabled: !root.optimizing;
+                        min-height: Scale.control-md;
+                        clicked => { root.quick-boost-clicked(); }
+                    }
+                }
+            }
+        }
+
+        // Live Real-Time Telemetry Row
+        HorizontalLayout {
+            spacing: Scale.space-md;
+            alignment: stretch;
+
+            // CPU Card
+            WbCard {
+                horizontal-stretch: 1;
+
+                VerticalLayout {
+                    spacing: Scale.space-xs;
+                    HorizontalLayout {
+                        alignment: space-between;
+                        Text {
+                            text: "CPU LOAD";
+                            font-size: Scale.font-xs;
+                            font-weight: 700;
+                            color: Theme.text-muted;
+                        }
+                        Text {
+                            text: round(root.cpu-usage) + "%";
+                            font-size: Scale.font-sm;
+                            font-weight: 700;
+                            color: root.cpu-usage >= 80 ? Theme.high : Theme.safe;
+                        }
+                    }
+                    WbSparkline {
+                        values: root.cpu-history;
+                        stroke-color: root.cpu-usage >= 80 ? Theme.high : Theme.accent;
+                    }
+                }
+            }
+
+            // RAM Card
+            WbCard {
+                horizontal-stretch: 1;
+
+                VerticalLayout {
+                    spacing: Scale.space-xs;
+                    HorizontalLayout {
+                        alignment: space-between;
+                        Text {
+                            text: "MEMORY";
+                            font-size: Scale.font-xs;
+                            font-weight: 700;
+                            color: Theme.text-muted;
+                        }
+                        Text {
+                            text: round(root.ram-usage) + "%";
+                            font-size: Scale.font-sm;
+                            font-weight: 700;
+                            color: root.ram-usage >= 85 ? Theme.high : Theme.info;
+                        }
+                    }
+                    WbProgressBar {
+                        progress: root.ram-usage / 100.0;
+                    }
+                    Text {
+                        text: root.ram-text;
+                        font-size: Scale.font-xs;
+                        color: Theme.text-secondary;
+                    }
+                }
+            }
+
+            // GPU Card
+            WbCard {
+                horizontal-stretch: 1;
+
+                VerticalLayout {
+                    spacing: Scale.space-xs;
+                    HorizontalLayout {
+                        alignment: space-between;
+                        Text {
+                            text: "GPU ENGINE";
+                            font-size: Scale.font-xs;
+                            font-weight: 700;
+                            color: Theme.text-muted;
+                        }
+                        Text {
+                            text: round(root.gpu-usage) + "%";
+                            font-size: Scale.font-sm;
+                            font-weight: 700;
+                            color: Theme.accent;
+                        }
+                    }
+                    WbProgressBar {
+                        progress: root.gpu-usage / 100.0;
+                    }
+                    Text {
+                        text: root.gpu-model;
+                        font-size: Scale.font-xs;
+                        color: Theme.text-secondary;
+                        overflow: elide;
+                    }
+                }
+            }
+        }
+
+        // Quick Navigation Launchers Row
+        HorizontalLayout {
+            spacing: Scale.space-md;
+            alignment: stretch;
+
+            WbCard {
+                horizontal-stretch: 1;
+                interactive: true;
+
+                VerticalLayout {
+                    spacing: Scale.space-xs;
+                    Text {
+                        text: "🎮 Gaming Optimization";
+                        font-size: Scale.font-md;
+                        font-weight: 700;
+                        color: Theme.text-primary;
+                    }
+                    Text {
+                        text: "GPU clocks, MSI mode, game DVR blocker, and core parking tuning.";
+                        font-size: Scale.font-xs;
+                        color: Theme.text-secondary;
+                        wrap: word-wrap;
+                    }
+                    WbButton {
+                        variant: "ghost";
+                        text: "Open Gaming";
+                        min-height: Scale.control-sm;
+                        clicked => { root.navigate-to-view("game_profiles"); }
+                    }
+                }
+            }
+
+            WbCard {
+                horizontal-stretch: 1;
+                interactive: true;
+
+                VerticalLayout {
+                    spacing: Scale.space-xs;
+                    Text {
+                        text: "🧹 Deep Junk Cleaner";
+                        font-size: Scale.font-md;
+                        font-weight: 700;
+                        color: Theme.text-primary;
+                    }
+                    Text {
+                        text: "Reclaim GBs of temp files, crash dumps, and Windows update cache safely.";
+                        font-size: Scale.font-xs;
+                        color: Theme.text-secondary;
+                        wrap: word-wrap;
+                    }
+                    WbButton {
+                        variant: "ghost";
+                        text: "Open Cleaner";
+                        min-height: Scale.control-sm;
+                        clicked => { root.navigate-to-view("clean_apps"); }
+                    }
+                }
+            }
+
+            WbCard {
+                horizontal-stretch: 1;
+                interactive: true;
+
+                VerticalLayout {
+                    spacing: Scale.space-xs;
+                    Text {
+                        text: "🛡️ Privacy & Shield";
+                        font-size: Scale.font-md;
+                        font-weight: 700;
+                        color: Theme.text-primary;
+                    }
+                    Text {
+                        text: "Block telemetry endpoints, diagnostics tracking, and background tracking.";
+                        font-size: Scale.font-xs;
+                        color: Theme.text-secondary;
+                        wrap: word-wrap;
+                    }
+                    WbButton {
+                        variant: "ghost";
+                        text: "Open Privacy";
+                        min-height: Scale.control-sm;
+                        clicked => { root.navigate-to-view("privacy"); }
+                    }
+                }
+            }
+        }
+
+        // Hardware Specification Card
+        WbCard {
+            VerticalLayout {
+                spacing: Scale.space-sm;
+
+                Text {
+                    text: "SYSTEM HARDWARE & PLATFORM";
+                    font-size: Scale.font-xs;
+                    font-weight: 700;
+                    color: Theme.text-muted;
+                }
+
+                HorizontalLayout {
+                    spacing: Scale.space-lg;
+                    alignment: stretch;
+
+                    VerticalLayout {
+                        horizontal-stretch: 1;
+                        spacing: Scale.space-2xs;
+                        Text { text: "Processor"; font-size: Scale.font-xs; color: Theme.text-muted; }
+                        Text { text: root.cpu-model; font-size: Scale.font-sm; font-weight: 600; color: Theme.text-primary; }
+                    }
+
+                    VerticalLayout {
+                        horizontal-stretch: 1;
+                        spacing: Scale.space-2xs;
+                        Text { text: "Graphics"; font-size: Scale.font-xs; color: Theme.text-muted; }
+                        Text { text: root.gpu-model; font-size: Scale.font-sm; font-weight: 600; color: Theme.text-primary; }
+                    }
+
+                    VerticalLayout {
+                        horizontal-stretch: 1;
+                        spacing: Scale.space-2xs;
+                        Text { text: "Memory"; font-size: Scale.font-xs; color: Theme.text-muted; }
+                        Text { text: root.ram-capacity; font-size: Scale.font-sm; font-weight: 600; color: Theme.text-primary; }
+                    }
+
+                    VerticalLayout {
+                        horizontal-stretch: 1;
+                        spacing: Scale.space-2xs;
+                        Text { text: "Operating System"; font-size: Scale.font-xs; color: Theme.text-muted; }
+                        Text { text: root.os-version; font-size: Scale.font-sm; font-weight: 600; color: Theme.text-primary; }
+                    }
+                }
+            }
+        }
+    }
+}

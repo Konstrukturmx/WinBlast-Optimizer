@@ -1,0 +1,105 @@
+// ui/views/backup_center.slint
+// WinBlast0 System Restore Points & Registry Snapshot Rollback in Slint 1.19
+
+import { Scale, Theme } from "../theme.slint";
+import { WbButton } from "../components/button.slint";
+import { WbCard } from "../components/card.slint";
+import { WbBadge } from "../components/badge.slint";
+
+export struct RestorePointItem {
+    id: string,
+    description: string,
+    creation-time: string,
+    point-type: string,       // "System Restore Point" | "WinBlast Registry Snapshot"
+}
+
+export component BackupCenterView inherits Flickable {
+    in property <bool> is-creating: false;
+    in property <[RestorePointItem]> restore-points: [];
+
+    callback create-restore-point();
+    callback create-tweak-snapshot();
+    callback restore-point(string);
+
+    content-height: content.preferred-height;
+
+    content := VerticalLayout {
+        padding: Scale.space-lg;
+        spacing: Scale.space-md;
+
+        // Header Card
+        WbCard {
+            HorizontalLayout {
+                alignment: space-between;
+                VerticalLayout {
+                    spacing: Scale.space-2xs;
+                    Text {
+                        text: "System Snapshots & Rollback Recovery";
+                        font-size: Scale.font-xl;
+                        font-weight: 700;
+                        color: Theme.text-primary;
+                    }
+                    Text {
+                        text: "Create atomic Windows VSS System Restore Points and registry backup diffs prior to deep optimizations.";
+                        font-size: Scale.font-sm;
+                        color: Theme.text-secondary;
+                    }
+                }
+
+                HorizontalLayout {
+                    spacing: Scale.space-sm;
+                    WbButton {
+                        variant: "ghost";
+                        text: "Save Tweak Diff";
+                        clicked => { root.create-tweak-snapshot(); }
+                    }
+                    WbButton {
+                        variant: "primary";
+                        text: root.is-creating ? "Creating Point..." : "+ Create Restore Point";
+                        loading: root.is-creating;
+                        clicked => { root.create-restore-point(); }
+                    }
+                }
+            }
+        }
+
+        // Restore Points List
+        VerticalLayout {
+            spacing: Scale.space-xs;
+
+            for pt in root.restore-points: WbCard {
+                HorizontalLayout {
+                    alignment: space-between;
+                    VerticalLayout {
+                        spacing: Scale.space-2xs;
+                        HorizontalLayout {
+                            spacing: Scale.space-sm;
+                            Text {
+                                text: pt.description;
+                                font-size: Scale.font-md;
+                                font-weight: 600;
+                                color: Theme.text-primary;
+                            }
+                            WbBadge {
+                                text: pt.point-type;
+                                variant: "info";
+                            }
+                        }
+                        Text {
+                            text: "Created: " + pt.creation-time;
+                            font-size: Scale.font-xs;
+                            color: Theme.text-secondary;
+                        }
+                    }
+
+                    WbButton {
+                        variant: "secondary";
+                        text: "Restore";
+                        min-height: Scale.control-sm;
+                        clicked => { root.restore-point(pt.id); }
+                    }
+                }
+            }
+        }
+    }
+}

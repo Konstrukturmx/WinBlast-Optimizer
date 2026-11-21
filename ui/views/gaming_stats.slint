@@ -1,0 +1,143 @@
+// ui/views/gaming_stats.slint
+// WinBlast0 Active Gaming Statistics & Session Analytics in Slint 1.19
+
+import { Scale, Theme } from "../theme.slint";
+import { WbButton } from "../components/button.slint";
+import { WbCard } from "../components/card.slint";
+import { WbBadge } from "../components/badge.slint";
+
+export struct GameSessionData {
+    title: string,
+    exe-name: string,
+    playtime-hours: float,
+    last-played: string,
+    avg-fps: int,
+    gpu-temp-peak: int,
+}
+
+export component GamingStatsView inherits Flickable {
+    in property <bool> game-active: false;
+    in property <string> active-game-title: "None (Desktop)";
+    in property <int> total-games-tracked: 8;
+    in property <float> total-playtime-hours: 142.5;
+
+    in property <[GameSessionData]> sessions: [];
+
+    callback refresh-stats();
+
+    content-height: content.preferred-height;
+
+    content := VerticalLayout {
+        padding: Scale.space-lg;
+        spacing: Scale.space-md;
+
+        // Header Card
+        WbCard {
+            HorizontalLayout {
+                alignment: space-between;
+                VerticalLayout {
+                    spacing: Scale.space-2xs;
+                    Text {
+                        text: "Gaming Session Telemetry & Statistics";
+                        font-size: Scale.font-xl;
+                        font-weight: 700;
+                        color: Theme.text-primary;
+                    }
+                    Text {
+                        text: "Hardware utilization history, game process detection, and performance logs.";
+                        font-size: Scale.font-sm;
+                        color: Theme.text-secondary;
+                    }
+                }
+                WbButton {
+                    variant: "ghost";
+                    text: "Refresh";
+                    clicked => { root.refresh-stats(); }
+                }
+            }
+        }
+
+        // Active Game Banner
+        WbCard {
+            HorizontalLayout {
+                alignment: space-between;
+                HorizontalLayout {
+                    spacing: Scale.space-md;
+                    Rectangle {
+                        width: Scale.px(42px);
+                        height: Scale.px(42px);
+                        border-radius: Scale.radius-sm;
+                        background: root.game-active ? Theme.safe : Theme.bg-surface;
+                        Text {
+                            text: "🎮";
+                            font-size: Scale.font-lg;
+                            horizontal-alignment: center;
+                            vertical-alignment: center;
+                        }
+                    }
+                    VerticalLayout {
+                        spacing: Scale.space-2xs;
+                        alignment: center;
+                        Text {
+                            text: root.game-active ? ("ACTIVE: " + root.active-game-title) : "No Game Running Currently";
+                            font-size: Scale.font-md;
+                            font-weight: 700;
+                            color: Theme.text-primary;
+                        }
+                        Text {
+                            text: root.game-active ? "Game Mode boost profile engaged automatically" : "Standby — auto-detects launched DirectX/Vulkan game processes";
+                            font-size: Scale.font-xs;
+                            color: Theme.text-secondary;
+                        }
+                    }
+                }
+
+                WbBadge {
+                    text: root.game-active ? "Game Mode Live" : "Standby";
+                    variant: root.game-active ? "safe" : "neutral";
+                    show-dot: root.game-active;
+                }
+            }
+        }
+
+        // Tracked Games List
+        VerticalLayout {
+            spacing: Scale.space-xs;
+
+            for g in root.sessions: WbCard {
+                HorizontalLayout {
+                    alignment: space-between;
+                    VerticalLayout {
+                        spacing: Scale.space-2xs;
+                        Text {
+                            text: g.title;
+                            font-size: Scale.font-md;
+                            font-weight: 600;
+                            color: Theme.text-primary;
+                        }
+                        Text {
+                            text: g.exe-name + " — Last played " + g.last-played;
+                            font-size: Scale.font-xs;
+                            color: Theme.text-secondary;
+                        }
+                    }
+
+                    HorizontalLayout {
+                        spacing: Scale.space-lg;
+                        alignment: end;
+                        VerticalLayout {
+                            alignment: center;
+                            Text { text: "PLAYTIME"; font-size: Scale.font-2xs; color: Theme.text-muted; }
+                            Text { text: round(g.playtime-hours) + "h"; font-size: Scale.font-sm; font-weight: 700; color: Theme.text-primary; }
+                        }
+                        VerticalLayout {
+                            alignment: center;
+                            Text { text: "AVG FPS"; font-size: Scale.font-2xs; color: Theme.text-muted; }
+                            Text { text: g.avg-fps + ""; font-size: Scale.font-sm; font-weight: 700; color: Theme.safe; }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

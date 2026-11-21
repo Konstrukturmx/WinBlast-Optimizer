@@ -1,0 +1,136 @@
+// ui/views/hardware_view.slint
+// WinBlast0 Hardware Specifications & Architecture Diagnostics in Slint 1.19
+
+import { Scale, Theme } from "../theme.slint";
+import { WbButton } from "../components/button.slint";
+import { WbCard } from "../components/card.slint";
+import { WbBadge } from "../components/badge.slint";
+
+export component HardwareViewComponent inherits Flickable {
+    in property <string> cpu-name: "AMD Ryzen 9 5900X 12-Core Processor";
+    in property <string> cpu-cores: "12 Physical / 24 Logical";
+    in property <string> cpu-base-clock: "3.70 GHz (Boost up to 4.80 GHz)";
+    in property <string> cpu-l3-cache: "64 MB Unified L3 Cache";
+
+    in property <string> gpu-name: "NVIDIA GeForce RTX 4080";
+    in property <string> gpu-vram: "16384 MB GDDR6X (256-bit)";
+    in property <string> gpu-driver: "566.14 WHQL (DCH)";
+    in property <string> gpu-pcie-link: "PCIe 4.0 x16 @ x16 16.0 GT/s";
+
+    in property <string> mobo-name: "ASUSTeK COMPUTER INC. ROG STRIX X570-E GAMING";
+    in property <string> mobo-bios: "Version 5013 (03/22/2024)";
+    in property <string> mobo-chipset: "AMD X570 (Bixby)";
+
+    in property <string> ram-total: "32.0 GB (4x 8GB Modules)";
+    in property <string> ram-speed: "DDR4-3600 (1800 MHz 1:1 FCLK)";
+    in property <string> ram-timings: "CL16-19-19-39 CR1";
+
+    callback copy-specs-clicked();
+    callback refresh-specs-clicked();
+
+    content-height: content.preferred-height;
+
+    content := VerticalLayout {
+        padding: Scale.space-lg;
+        spacing: Scale.space-md;
+
+        // Header Card
+        WbCard {
+            HorizontalLayout {
+                alignment: space-between;
+                VerticalLayout {
+                    spacing: Scale.space-2xs;
+                    Text {
+                        text: "Hardware Architecture & Subsystem Diagnostics";
+                        font-size: Scale.font-xl;
+                        font-weight: 700;
+                        color: Theme.text-primary;
+                    }
+                    Text {
+                        text: "Authentic physical sensor and low-level kernel query readout.";
+                        font-size: Scale.font-sm;
+                        color: Theme.text-secondary;
+                    }
+                }
+                HorizontalLayout {
+                    spacing: Scale.space-sm;
+                    WbButton {
+                        variant: "ghost";
+                        text: "Refresh";
+                        clicked => { root.refresh-specs-clicked(); }
+                    }
+                    WbButton {
+                        variant: "secondary";
+                        text: "Copy Full Report";
+                        clicked => { root.copy-specs-clicked(); }
+                    }
+                }
+            }
+        }
+
+        // Processor Card
+        WbCard {
+            VerticalLayout {
+                spacing: Scale.space-sm;
+                HorizontalLayout {
+                    alignment: space-between;
+                    Text { text: "CENTRAL PROCESSING UNIT (CPU)"; font-size: Scale.font-xs; font-weight: 700; color: Theme.text-muted; }
+                    WbBadge { text: "Authentic Hardware IOCTL"; variant: "safe"; show-dot: true; }
+                }
+                Text { text: root.cpu-name; font-size: Scale.font-lg; font-weight: 700; color: Theme.text-primary; }
+                HorizontalLayout {
+                    spacing: Scale.space-lg;
+                    VerticalLayout { Text { text: "Cores / Threads"; font-size: Scale.font-xs; color: Theme.text-muted; } Text { text: root.cpu-cores; font-size: Scale.font-sm; color: Theme.text-secondary; } }
+                    VerticalLayout { Text { text: "Clock Rating"; font-size: Scale.font-xs; color: Theme.text-muted; } Text { text: root.cpu-base-clock; font-size: Scale.font-sm; color: Theme.text-secondary; } }
+                    VerticalLayout { Text { text: "Cache Hierarchy"; font-size: Scale.font-xs; color: Theme.text-muted; } Text { text: root.cpu-l3-cache; font-size: Scale.font-sm; color: Theme.text-secondary; } }
+                }
+            }
+        }
+
+        // Graphics Card
+        WbCard {
+            VerticalLayout {
+                spacing: Scale.space-sm;
+                HorizontalLayout {
+                    alignment: space-between;
+                    Text { text: "GRAPHICS PROCESSING UNIT (GPU)"; font-size: Scale.font-xs; font-weight: 700; color: Theme.text-muted; }
+                    WbBadge { text: "NVML / DXGI Authentic"; variant: "info"; }
+                }
+                Text { text: root.gpu-name; font-size: Scale.font-lg; font-weight: 700; color: Theme.text-primary; }
+                HorizontalLayout {
+                    spacing: Scale.space-lg;
+                    VerticalLayout { Text { text: "Video Memory"; font-size: Scale.font-xs; color: Theme.text-muted; } Text { text: root.gpu-vram; font-size: Scale.font-sm; color: Theme.text-secondary; } }
+                    VerticalLayout { Text { text: "PCIe Bus Link"; font-size: Scale.font-xs; color: Theme.text-muted; } Text { text: root.gpu-pcie-link; font-size: Scale.font-sm; color: Theme.text-secondary; } }
+                    VerticalLayout { Text { text: "Active Driver"; font-size: Scale.font-xs; color: Theme.text-muted; } Text { text: root.gpu-driver; font-size: Scale.font-sm; color: Theme.text-secondary; } }
+                }
+            }
+        }
+
+        // Motherboard & RAM Row
+        HorizontalLayout {
+            spacing: Scale.space-md;
+
+            WbCard {
+                horizontal-stretch: 1;
+                VerticalLayout {
+                    spacing: Scale.space-sm;
+                    Text { text: "MOTHERBOARD & FIRMWARE"; font-size: Scale.font-xs; font-weight: 700; color: Theme.text-muted; }
+                    Text { text: root.mobo-name; font-size: Scale.font-md; font-weight: 600; color: Theme.text-primary; }
+                    Text { text: root.mobo-bios; font-size: Scale.font-xs; color: Theme.text-secondary; }
+                    Text { text: root.mobo-chipset; font-size: Scale.font-xs; color: Theme.text-muted; }
+                }
+            }
+
+            WbCard {
+                horizontal-stretch: 1;
+                VerticalLayout {
+                    spacing: Scale.space-sm;
+                    Text { text: "SYSTEM MEMORY (RAM)"; font-size: Scale.font-xs; font-weight: 700; color: Theme.text-muted; }
+                    Text { text: root.ram-total; font-size: Scale.font-md; font-weight: 600; color: Theme.text-primary; }
+                    Text { text: root.ram-speed; font-size: Scale.font-xs; color: Theme.text-secondary; }
+                    Text { text: root.ram-timings; font-size: Scale.font-xs; color: Theme.text-muted; }
+                }
+            }
+        }
+    }
+}
