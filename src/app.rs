@@ -426,6 +426,9 @@ pub enum WorkerEvent {
     BiosInfoLoaded(crate::hardware::bios::BiosSystemInfo),
     DiskReportLoaded(crate::hardware::disks::DiskSubsystemReport),
     DriverScanCompleted(Vec<crate::hardware::driver_update::DriverUpdateItem>),
+    AutoTuneCompleted(Result<crate::tools::automation::AutoTuneResult, String>),
+    StartupBatchToggled(Result<(usize, bool), String>),
+    TasksBatchToggled(Result<(usize, bool), String>),
 }
 
 struct WorkerDropGuard<P: FnOnce(String) -> WorkerEvent> {
@@ -588,7 +591,9 @@ pub struct AppState {
 
     // v0.7.0 Startup, Tasks & Services State
     pub startup_entries: Vec<StartupEntry>,
+    pub selected_startup_entries: HashSet<String>,
     pub scheduled_tasks: Vec<LiveScheduledTaskInfo>,
+    pub selected_scheduled_tasks: HashSet<String>,
     pub live_services: Vec<LiveServiceInfo>,
     pub hide_microsoft_tasks: bool,
     pub startup_filter_edit: rune::TextEdit,
@@ -827,7 +832,9 @@ impl AppState {
             appx_scan_inflight: false,
             clean_apps_mutating: false,
             startup_entries: Vec::new(),
+            selected_startup_entries: HashSet::new(),
             scheduled_tasks: Vec::new(),
+            selected_scheduled_tasks: HashSet::new(),
             live_services: Vec::new(),
             hide_microsoft_tasks: true,
             startup_filter_edit: rune::TextEdit::default(),
@@ -1795,6 +1802,58 @@ impl AppState {
             WorkerEvent::DriverScanCompleted(updates) => {
                 self.driver_updates = updates;
                 self.is_driver_scanning = false;
+            }
+            WorkerEvent::AutoTuneCompleted(res) => {
+                self.is_running_automation = false;
+                match res {
+                    Ok(result) => {
+                        self.set_status_spec(StatusMessageSpec::Raw(format!(
+                            "Auto-Tune completed: {} applied, {} failed ({} ms)",
+                            result.tweaks_applied, result.tweaks_failed, result.duration_ms
+                        )));
+                        self.auto_tune_result = Some(result);
+                        self.refresh_system_health();
+                        self.start_scan();
+                        self.assess_system_health();
+                    }
+                    Err(e) => {
+                        self.set_status_spec(StatusMessageSpec::Raw(format!("Auto-Tune failed: {}", e)));
+                    }
+                }
+            }
+            WorkerEvent::StartupBatchToggled(res) => {
+                self.startup_mutating = false;
+                self.sync_startup_tasks_busy();
+                match res {
+                    Ok((count, enable)) => {
+                        self.selected_startup_entries.clear();
+                        self.set_status_spec(StatusMessageSpec::Raw(format!(
+                            "Batch updated {} startup items (enabled: {})",
+                            count, enable
+                        )));
+                        self.scan_startup_and_tasks_async();
+                    }
+                    Err(e) => {
+                        self.set_status_spec(StatusMessageSpec::Raw(format!("Batch startup update failed: {}", e)));
+                    }
+                }
+            }
+            WorkerEvent::TasksBatchToggled(res) => {
+                self.startup_mutating = false;
+                self.sync_startup_tasks_busy();
+                match res {
+                    Ok((count, enable)) => {
+                        self.selected_scheduled_tasks.clear();
+                        self.set_status_spec(StatusMessageSpec::Raw(format!(
+                            "Batch updated {} scheduled tasks (enabled: {})",
+                            count, enable
+                        )));
+                        self.scan_startup_and_tasks_async();
+                    }
+                    Err(e) => {
+                        self.set_status_spec(StatusMessageSpec::Raw(format!("Batch task update failed: {}", e)));
+                    }
+                }
             }
         }
     }
@@ -3398,47 +3457,33 @@ impl AppState {
         }
     }
 
-    /// Apply an optimization preset.
+    /// Apply an optimization preset aligned with AutoTuneProfile algorithms.
     pub fn apply_preset(&mut self, preset: PresetKind) {
         self.selected_tweaks.clear();
         self.staged_transitions.clear();
         let is_normal = self.engine_mode == EngineMode::Normal;
-        let eligible_ids: Vec<String> = self
-            .tweaks
-            .iter()
-            .filter(|t| {
-                t.easy_mode_included
-                    && t.valuation.stability_risk < RiskLevel::High
+        let profile = match preset {
+            PresetKind::Gaming => crate::tools::automation::AutoTuneProfile::GamingLowLatency,
+            PresetKind::ProAudio => crate::tools::automation::AutoTuneProfile::ProAudioDpc,
+            PresetKind::LaptopBattery => crate::tools::automation::AutoTuneProfile::LaptopBatterySaving,
+        };
+        let plan = crate::tools::automation::create_auto_tune_plan(&self.tweaks, profile);
+        for id in plan.recommended_tweak_ids {
+            if let Some(t) = self.tweaks.iter().find(|t| t.id == id) {
+                if (self.mode != AppMode::Easy || t.easy_mode_included)
                     && self.is_tweak_compatible_and_applicable(t)
-                    && match preset {
-                        PresetKind::Gaming => {
-                            t.category.contains("Lag")
-                                || t.category.contains("Hardware")
-                                || t.id.contains("win32_priority")
-                                || t.id.contains("nagle")
-                                || t.id.contains("animation")
-                                || t.id.contains("transparency")
-                                || t.id.contains("mmcss")
-                        }
-                        PresetKind::ProAudio => {
-                            t.id.contains("mmcss")
-                                || t.id.contains("ntfs")
-                                || t.category.contains("OS Settings")
-                        }
-                        PresetKind::LaptopBattery => {
-                            t.id.contains("animation")
-                                || t.id.contains("transparency")
-                                || t.category.contains("Privacy")
+                {
+                    self.selected_tweaks.insert(id.clone());
+                    if is_normal {
+                        let live_optimized = self
+                            .get_tweak_scan(&id)
+                            .map(|r| r.current_state == TweakState::AlreadyOptimized)
+                            .unwrap_or(false);
+                        if !live_optimized {
+                            self.staged_transitions.insert(id, StagedTransition::StageApply);
                         }
                     }
-            })
-            .map(|t| t.id.clone())
-            .collect();
-
-        for id in eligible_ids {
-            self.selected_tweaks.insert(id.clone());
-            if is_normal {
-                self.staged_transitions.insert(id, StagedTransition::StageApply);
+                }
             }
         }
 
@@ -3451,6 +3496,160 @@ impl AppState {
             count: self.selected_tweaks.len(),
         });
         self.refresh_pending_actions();
+
+        if self.engine_mode == EngineMode::Instant && !self.selected_tweaks.is_empty() {
+            self.execute_auto_tune_profile(profile);
+        }
+    }
+
+    /// Select filtered subset of tweaks matching query and category without affecting others (Invariant I1).
+    pub fn select_filtered_tweaks(&mut self, query: &str, category: Option<&str>) {
+        let is_normal = self.engine_mode == EngineMode::Normal;
+        let q = query.trim().to_lowercase();
+        let eligible_ids: Vec<String> = self
+            .tweaks
+            .iter()
+            .filter(|t| {
+                if let Some(cat) = category {
+                    if !t.category.as_str().eq_ignore_ascii_case(cat) {
+                        return false;
+                    }
+                }
+                if !q.is_empty() {
+                    let matches_q = t.title.to_lowercase().contains(&q)
+                        || t.description.to_lowercase().contains(&q)
+                        || t.id.to_lowercase().contains(&q);
+                    if !matches_q {
+                        return false;
+                    }
+                }
+                t.valuation.stability_risk < RiskLevel::High
+                    && (self.mode != AppMode::Easy || t.easy_mode_included)
+                    && self.is_tweak_compatible_and_applicable(t)
+            })
+            .map(|t| t.id.clone())
+            .collect();
+
+        for id in &eligible_ids {
+            self.selected_tweaks.insert(id.clone());
+            if is_normal {
+                let live_optimized = self
+                    .get_tweak_scan(id)
+                    .map(|r| r.current_state == TweakState::AlreadyOptimized)
+                    .unwrap_or(false);
+                if !live_optimized {
+                    self.staged_transitions.insert(id.clone(), StagedTransition::StageApply);
+                }
+            }
+        }
+        self.refresh_pending_actions();
+        self.set_status_spec(StatusMessageSpec::SelectedCount(self.selected_tweaks.len()));
+    }
+
+    /// Deselect filtered subset of tweaks matching query and category (Invariant I1).
+    pub fn deselect_filtered_tweaks(&mut self, query: &str, category: Option<&str>) {
+        let q = query.trim().to_lowercase();
+        let to_remove: Vec<String> = self
+            .tweaks
+            .iter()
+            .filter(|t| {
+                if let Some(cat) = category {
+                    if !t.category.as_str().eq_ignore_ascii_case(cat) {
+                        return false;
+                    }
+                }
+                if !q.is_empty() {
+                    let matches_q = t.title.to_lowercase().contains(&q)
+                        || t.description.to_lowercase().contains(&q)
+                        || t.id.to_lowercase().contains(&q);
+                    if !matches_q {
+                        return false;
+                    }
+                }
+                true
+            })
+            .map(|t| t.id.clone())
+            .collect();
+
+        for id in &to_remove {
+            self.selected_tweaks.remove(id);
+            self.staged_transitions.remove(id);
+        }
+        self.refresh_pending_actions();
+        self.set_status_spec(StatusMessageSpec::SelectedCount(self.selected_tweaks.len()));
+    }
+
+    /// Idempotently toggle selection of an entire category while keeping staged_transitions in sync.
+    pub fn toggle_category_selection(&mut self, tweak_ids: &[String], select: bool) {
+        let is_normal = self.engine_mode == EngineMode::Normal;
+        for id in tweak_ids {
+            if select {
+                self.selected_tweaks.insert(id.clone());
+                if is_normal {
+                    let live_optimized = self
+                        .get_tweak_scan(id)
+                        .map(|r| r.current_state == TweakState::AlreadyOptimized)
+                        .unwrap_or(false);
+                    if !live_optimized {
+                        self.staged_transitions.insert(id.clone(), StagedTransition::StageApply);
+                    }
+                }
+            } else {
+                self.selected_tweaks.remove(id);
+                self.staged_transitions.remove(id);
+            }
+        }
+        self.refresh_pending_actions();
+        self.set_status_spec(StatusMessageSpec::SelectedCount(self.selected_tweaks.len()));
+    }
+
+    /// Revert all currently selected tweaks back to Windows default values.
+    pub fn revert_selected(&mut self) {
+        if self.is_applying || self.is_rolling_back || !self.in_flight_tweaks.is_empty() {
+            return;
+        }
+        match self.engine_mode {
+            EngineMode::Normal => {
+                let selected: Vec<String> = self.selected_tweaks.iter().cloned().collect();
+                if selected.is_empty() {
+                    self.set_status_spec(StatusMessageSpec::NothingStaged);
+                    return;
+                }
+                for id in &selected {
+                    let live_optimized = self
+                        .get_tweak_scan(id)
+                        .map(|r| r.current_state == TweakState::AlreadyOptimized)
+                        .unwrap_or(false);
+                    if live_optimized {
+                        self.staged_transitions.insert(id.clone(), StagedTransition::StageRevert);
+                    } else {
+                        self.staged_transitions.remove(id);
+                    }
+                }
+                self.refresh_pending_actions();
+                self.set_status_spec(StatusMessageSpec::StagedCount(self.staged_transitions.len()));
+            }
+            EngineMode::Instant => {
+                let to_revert: Vec<String> = self
+                    .selected_tweaks
+                    .iter()
+                    .filter(|id| {
+                        self.get_tweak_scan(id)
+                            .map(|r| r.current_state == TweakState::AlreadyOptimized)
+                            .unwrap_or(false)
+                    })
+                    .cloned()
+                    .collect();
+                if to_revert.is_empty() {
+                    self.set_status_spec(StatusMessageSpec::ActionMessage("No selected tweaks require reversion.".into()));
+                    return;
+                }
+                for id in &to_revert {
+                    self.staged_transitions.insert(id.clone(), StagedTransition::StageRevert);
+                }
+                self.apply_selected();
+            }
+        }
     }
 
     /// Toggle a single tweak on or off using the unified engine switch handler.
@@ -3780,6 +3979,20 @@ impl AppState {
         }
     }
 
+    /// Select all cleanup target kinds.
+    pub fn select_all_clean_targets(&mut self) {
+        for t in self.clean_targets.iter_mut() {
+            t.selected = true;
+        }
+    }
+
+    /// Deselect all cleanup target kinds.
+    pub fn deselect_all_clean_targets(&mut self) {
+        for t in self.clean_targets.iter_mut() {
+            t.selected = false;
+        }
+    }
+
     /// Execute deletion of currently checked cleanup targets asynchronously.
     pub fn execute_clean_selected(&mut self) {
         if self.clean_apps_mutating {
@@ -3872,6 +4085,24 @@ impl AppState {
         self.selected_appx.clear();
         for p in &self.installed_appx {
             if matches!(p.safety_tier, AppxSafetyTier::SafeBloat | AppxSafetyTier::AiBloat) {
+                self.selected_appx.insert(p.family_name.clone());
+            }
+        }
+    }
+
+    /// Select AppX packages matching search query. If query is empty, selects all un-protected packages.
+    pub fn select_filtered_appx(&mut self, query: &str) {
+        use crate::tools::features_apps::AppxSafetyTier;
+        let q = query.trim().to_lowercase();
+        self.selected_appx.clear();
+        for p in &self.installed_appx {
+            if p.safety_tier == AppxSafetyTier::ProtectedCore {
+                continue;
+            }
+            if q.is_empty()
+                || p.short_name.to_lowercase().contains(&q)
+                || p.family_name.to_lowercase().contains(&q)
+            {
                 self.selected_appx.insert(p.family_name.clone());
             }
         }
@@ -4231,6 +4462,156 @@ impl AppState {
         );
     }
 
+    /// Toggle selection of a startup entry for batch operations.
+    pub fn toggle_startup_entry_selection(&mut self, id: String) {
+        if !self.selected_startup_entries.remove(&id) {
+            self.selected_startup_entries.insert(id);
+        }
+    }
+
+    /// Select all startup entries matching query, hide_microsoft, and status filter (Invariant I1).
+    pub fn select_all_filtered_startup(&mut self, query: &str, hide_ms: bool, filter: StartupStatusFilter) {
+        let q = query.trim().to_lowercase();
+        self.selected_startup_entries.clear();
+        for e in &self.startup_entries {
+            if hide_ms && e.is_microsoft {
+                continue;
+            }
+            let status_ok = match filter {
+                StartupStatusFilter::All => true,
+                StartupStatusFilter::ActiveOnly => e.enabled,
+                StartupStatusFilter::InactiveOnly => !e.enabled,
+            };
+            if status_ok && (q.is_empty() || e.name.to_lowercase().contains(&q) || e.command.to_lowercase().contains(&q)) {
+                self.selected_startup_entries.insert(e.id.clone());
+            }
+        }
+    }
+
+    /// Deselect all startup entries.
+    pub fn deselect_all_startup(&mut self) {
+        self.selected_startup_entries.clear();
+    }
+
+    /// Batch enable or disable selected startup entries asynchronously via worker.
+    pub fn batch_toggle_selected_startup_async(&mut self, enable: bool) {
+        if self.startup_mutating {
+            return;
+        }
+        let ids: Vec<String> = self.selected_startup_entries.iter().cloned().collect();
+        if ids.is_empty() {
+            return;
+        }
+        self.startup_mutating = true;
+        self.startup_tasks_inflight += 1;
+        self.sync_startup_tasks_busy();
+
+        let backend = Arc::clone(&self.backend);
+        let ledger_path = self.ledger_path.clone();
+        let entries = self.startup_entries.clone();
+        spawn_guarded_worker(
+            self.tx_events.clone(),
+            self.waker.clone(),
+            |msg| WorkerEvent::StartupBatchToggled(Err(format!("Batch startup worker panic: {}", msg))),
+            move |tx| {
+                let mut updated = 0;
+                let ledger = StateLedger::new(&ledger_path).ok();
+                for id in &ids {
+                    if let Some(entry) = entries.iter().find(|e| &e.id == id) {
+                        let prev_enabled = entry.enabled;
+                        if backend.set_startup_entry_enabled(entry, enable).is_ok() {
+                            updated += 1;
+                            if let Some(ref l) = ledger {
+                                let _ = l.record_change(
+                                    &format!("startup_{}", entry.name),
+                                    &format!(
+                                        "StartupApproved:{}",
+                                        crate::core::reg_helpers::escape_pipe(&entry.id)
+                                    ),
+                                    &prev_enabled.to_string(),
+                                    &enable.to_string(),
+                                );
+                            }
+                        }
+                    }
+                }
+                let _ = tx.send(WorkerEvent::StartupBatchToggled(Ok((updated, enable))));
+            },
+        );
+    }
+
+    /// Toggle selection of a scheduled task for batch operations.
+    pub fn toggle_scheduled_task_selection(&mut self, path: String) {
+        if !self.selected_scheduled_tasks.remove(&path) {
+            self.selected_scheduled_tasks.insert(path);
+        }
+    }
+
+    /// Select all scheduled tasks matching query, hide_microsoft, and status filter (Invariant I1).
+    pub fn select_all_filtered_tasks(&mut self, query: &str, hide_ms: bool, filter: StartupStatusFilter) {
+        let q = query.trim().to_lowercase();
+        self.selected_scheduled_tasks.clear();
+        for t in &self.scheduled_tasks {
+            if hide_ms && t.is_microsoft {
+                continue;
+            }
+            let status_ok = match filter {
+                StartupStatusFilter::All => true,
+                StartupStatusFilter::ActiveOnly => t.enabled,
+                StartupStatusFilter::InactiveOnly => !t.enabled,
+            };
+            if status_ok && (q.is_empty() || t.task_name.to_lowercase().contains(&q) || t.task_path.to_lowercase().contains(&q)) {
+                self.selected_scheduled_tasks.insert(t.task_path.clone());
+            }
+        }
+    }
+
+    /// Deselect all scheduled tasks.
+    pub fn deselect_all_tasks(&mut self) {
+        self.selected_scheduled_tasks.clear();
+    }
+
+    /// Batch enable or disable selected scheduled tasks asynchronously via worker.
+    pub fn batch_toggle_selected_tasks_async(&mut self, enable: bool) {
+        if self.startup_mutating {
+            return;
+        }
+        let paths: Vec<String> = self.selected_scheduled_tasks.iter().cloned().collect();
+        if paths.is_empty() {
+            return;
+        }
+        self.startup_mutating = true;
+        self.startup_tasks_inflight += 1;
+        self.sync_startup_tasks_busy();
+
+        let backend = Arc::clone(&self.backend);
+        let ledger_path = self.ledger_path.clone();
+        spawn_guarded_worker(
+            self.tx_events.clone(),
+            self.waker.clone(),
+            |msg| WorkerEvent::TasksBatchToggled(Err(format!("Batch tasks worker panic: {}", msg))),
+            move |tx| {
+                let mut updated = 0;
+                let ledger = StateLedger::new(&ledger_path).ok();
+                for task_path in &paths {
+                    let prev_enabled = backend.get_task_enabled(task_path).unwrap_or(!enable);
+                    if backend.set_scheduled_task_enabled(task_path, enable).is_ok() {
+                        updated += 1;
+                        if let Some(ref l) = ledger {
+                            let _ = l.record_change(
+                                "scheduled_task_batch_toggle",
+                                &format!("ScheduledTask:{}", task_path),
+                                &prev_enabled.to_string(),
+                                &enable.to_string(),
+                            );
+                        }
+                    }
+                }
+                let _ = tx.send(WorkerEvent::TasksBatchToggled(Ok((updated, enable))));
+            },
+        );
+    }
+
     /// Update a live Win32 service startup mode (`2=Auto, 3=Manual, 4=Disabled`) with Core OS service protection.
     pub fn set_live_service_start_async(&mut self, service_name: String, start_type: u32) {
         if start_type == 4 && crate::tools::startup::is_protected_core_service(&service_name) {
@@ -4440,44 +4821,55 @@ impl AppState {
         self.execute_auto_tune_profile(profile);
     }
 
+    pub fn assess_system_health(&mut self) {
+        self.refresh_system_health();
+    }
+
     pub fn execute_auto_tune_profile(&mut self, profile: crate::tools::automation::AutoTuneProfile) {
+        if self.is_running_automation {
+            return;
+        }
         self.is_running_automation = true;
         let plan = crate::tools::automation::create_auto_tune_plan(&self.tweaks, profile);
-        let start = std::time::Instant::now();
-        let mut applied = 0;
-        let mut failed = 0;
+        let tweaks = self.tweaks.clone();
+        let backend = Arc::clone(&self.backend);
+        let ledger_path = self.ledger_path.clone();
 
-        let ledger = crate::backup::state_ledger::StateLedger::new(&self.ledger_path).ok();
-        for id in &plan.recommended_tweak_ids {
-            if let Some(tweak) = self.tweaks.iter().find(|t| &t.id == id) {
-                if let Some(ref l) = ledger {
-                    match crate::executor::engine::apply_tweak_with(tweak, l, &*self.backend) {
-                        Ok(_) => applied += 1,
-                        Err(_) => failed += 1,
+        spawn_guarded_worker(
+            self.tx_events.clone(),
+            self.waker.clone(),
+            |msg| WorkerEvent::AutoTuneCompleted(Err(format!("Auto-Tune worker panic: {}", msg))),
+            move |tx| {
+                let start = std::time::Instant::now();
+                let mut applied = 0;
+                let mut failed = 0;
+                let ledger = crate::backup::state_ledger::StateLedger::new(&ledger_path).ok();
+                for id in &plan.recommended_tweak_ids {
+                    if let Some(tweak) = tweaks.iter().find(|t| &t.id == id) {
+                        if let Some(ref l) = ledger {
+                            match crate::executor::engine::apply_tweak_with(tweak, l, &*backend) {
+                                Ok(_) => applied += 1,
+                                Err(_) => failed += 1,
+                            }
+                        } else {
+                            failed += 1;
+                        }
                     }
-                } else {
-                    failed += 1;
                 }
-            }
-        }
-
-        let duration_ms = start.elapsed().as_millis() as u64;
-        self.auto_tune_result = Some(crate::tools::automation::AutoTuneResult {
-            profile,
-            tweaks_applied: applied,
-            tweaks_failed: failed,
-            duration_ms,
-            message: format!(
-                "Successfully applied {} optimizations in {} ms ({} failed/skipped).",
-                applied, duration_ms, failed
-            ),
-        });
-
-        self.refresh_system_health();
-        self.is_running_automation = false;
-        if let Some(ref w) = self.waker {
-            w();
-        }
+                let duration_ms = start.elapsed().as_millis() as u64;
+                let res = crate::tools::automation::AutoTuneResult {
+                    profile,
+                    tweaks_applied: applied,
+                    tweaks_failed: failed,
+                    duration_ms,
+                    message: format!(
+                        "Successfully applied {} optimizations in {} ms ({} failed/skipped).",
+                        applied, duration_ms, failed
+                    ),
+                };
+                let _ = tx.send(WorkerEvent::AutoTuneCompleted(Ok(res)));
+            },
+        );
     }
 
     pub fn trim_system_memory_and_cache(&mut self) {

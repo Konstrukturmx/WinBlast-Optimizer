@@ -207,6 +207,9 @@ fn build_startup_apps_list(s: &AppState, p: &ThemePalette, tier: LayoutTier) -> 
                         )
                     };
 
+                    let is_selected = s.selected_startup_entries.contains(&e.id);
+                    let sel_id = e.id.clone();
+
                     col()
                         .w_full()
                         .min_w(0.0)
@@ -229,6 +232,13 @@ fn build_startup_apps_list(s: &AppState, p: &ThemePalette, tier: LayoutTier) -> 
                                         .grow(1.0)
                                         .items_center()
                                         .gap(8.0)
+                                        .child(action_button(
+                                            if is_selected { "☑" } else { "☐" },
+                                            if is_selected { p.accent.alpha(0.18) } else { p.bg_card },
+                                            if is_selected { p.accent } else { p.text_muted },
+                                            p,
+                                            move |s| s.toggle_startup_entry_selection(sel_id.clone()),
+                                        ))
                                         .child(switch_toggle_with(
                                             e.enabled,
                                             s.startup_tasks_busy,
@@ -378,6 +388,8 @@ fn build_tasks_list(s: &AppState, p: &ThemePalette, tier: LayoutTier) -> El {
                     let target = !t.enabled;
                     let path_toggle = t.task_path.clone();
                     let path_run = t.task_path.clone();
+                    let is_selected = s.selected_scheduled_tasks.contains(&t.task_path);
+                    let sel_path = t.task_path.clone();
 
                     col()
                         .w_full()
@@ -396,23 +408,37 @@ fn build_tasks_list(s: &AppState, p: &ThemePalette, tier: LayoutTier) -> El {
                                 .justify_between()
                                 .gaps(6.0, 10.0)
                                 .child(
-                                    col()
+                                    row()
                                         .grow(1.0)
                                         .min_w(140.0)
-                                        .gap(2.0)
+                                        .items_center()
+                                        .gap(8.0)
+                                        .child(action_button(
+                                            if is_selected { "☑" } else { "☐" },
+                                            if is_selected { p.accent.alpha(0.18) } else { p.bg_card },
+                                            if is_selected { p.accent } else { p.text_muted },
+                                            p,
+                                            move |s| s.toggle_scheduled_task_selection(sel_path.clone()),
+                                        ))
                                         .child(
-                                            text(&t.task_name)
-                                                .font(rune::tok::type_::SECTION)
-                                                .color(p.text_primary)
-                                                .shrink()
-                                                .truncate(),
-                                        )
-                                        .child(
-                                            text(&t.task_path)
-                                                .font(rune::tok::type_::LABEL)
-                                                .color(p.text_muted)
-                                                .shrink()
-                                                .truncate(),
+                                            col()
+                                                .grow(1.0)
+                                                .min_w(100.0)
+                                                .gap(2.0)
+                                                .child(
+                                                    text(&t.task_name)
+                                                        .font(rune::tok::type_::SECTION)
+                                                        .color(p.text_primary)
+                                                        .shrink()
+                                                        .truncate(),
+                                                )
+                                                .child(
+                                                    text(&t.task_path)
+                                                        .font(rune::tok::type_::LABEL)
+                                                        .color(p.text_muted)
+                                                        .shrink()
+                                                        .truncate(),
+                                                ),
                                         ),
                                 )
                                 .child(
@@ -741,6 +767,95 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
                         .shrink()
                         .flex_wrap()
                         .gaps(6.0, 6.0)
+                        .child(match s.startup_sub_tab {
+                            StartupTasksSubTab::StartupApps => {
+                                let sel_count = s.selected_startup_entries.len();
+                                row()
+                                    .min_w(0.0)
+                                    .shrink()
+                                    .flex_wrap()
+                                    .gaps(6.0, 6.0)
+                                    .child(action_button(
+                                        s.tr(TextKey::SelectAll),
+                                        p.btn_secondary,
+                                        p.text_primary,
+                                        p,
+                                        |s| {
+                                            let q = s.startup_filter_edit.text.clone();
+                                            let hide_ms = s.hide_microsoft_tasks;
+                                            let filter = s.startup_status_filter;
+                                            s.select_all_filtered_startup(&q, hide_ms, filter);
+                                        },
+                                    ))
+                                    .child(action_button(
+                                        s.tr(TextKey::DeselectAll),
+                                        p.btn_secondary,
+                                        p.text_secondary,
+                                        p,
+                                        |s| s.deselect_all_startup(),
+                                    ))
+                                    .child(action_button_guarded(
+                                        if sel_count == 0 { "Disable Selected".to_string() } else { format!("Disable Selected ({})", sel_count) },
+                                        p.warning.alpha(0.18),
+                                        p.warning,
+                                        !s.startup_tasks_busy && sel_count > 0,
+                                        p,
+                                        |s| s.batch_toggle_selected_startup_async(false),
+                                    ))
+                                    .child(action_button_guarded(
+                                        if sel_count == 0 { "Enable Selected".to_string() } else { format!("Enable Selected ({})", sel_count) },
+                                        p.btn_secondary,
+                                        p.accent,
+                                        !s.startup_tasks_busy && sel_count > 0,
+                                        p,
+                                        |s| s.batch_toggle_selected_startup_async(true),
+                                    ))
+                            }
+                            StartupTasksSubTab::ScheduledTasks => {
+                                let sel_count = s.selected_scheduled_tasks.len();
+                                row()
+                                    .min_w(0.0)
+                                    .shrink()
+                                    .flex_wrap()
+                                    .gaps(6.0, 6.0)
+                                    .child(action_button(
+                                        s.tr(TextKey::SelectAll),
+                                        p.btn_secondary,
+                                        p.text_primary,
+                                        p,
+                                        |s| {
+                                            let q = s.startup_filter_edit.text.clone();
+                                            let hide_ms = s.hide_microsoft_tasks;
+                                            let filter = s.startup_status_filter;
+                                            s.select_all_filtered_tasks(&q, hide_ms, filter);
+                                        },
+                                    ))
+                                    .child(action_button(
+                                        s.tr(TextKey::DeselectAll),
+                                        p.btn_secondary,
+                                        p.text_secondary,
+                                        p,
+                                        |s| s.deselect_all_tasks(),
+                                    ))
+                                    .child(action_button_guarded(
+                                        if sel_count == 0 { "Disable Selected".to_string() } else { format!("Disable Selected ({})", sel_count) },
+                                        p.warning.alpha(0.18),
+                                        p.warning,
+                                        !s.startup_tasks_busy && sel_count > 0,
+                                        p,
+                                        |s| s.batch_toggle_selected_tasks_async(false),
+                                    ))
+                                    .child(action_button_guarded(
+                                        if sel_count == 0 { "Enable Selected".to_string() } else { format!("Enable Selected ({})", sel_count) },
+                                        p.btn_secondary,
+                                        p.accent,
+                                        !s.startup_tasks_busy && sel_count > 0,
+                                        p,
+                                        |s| s.batch_toggle_selected_tasks_async(true),
+                                    ))
+                            }
+                            StartupTasksSubTab::Services => row().min_w(0.0).shrink(),
+                        })
                         .child(action_button(
                             format!(
                                 "{} {}",

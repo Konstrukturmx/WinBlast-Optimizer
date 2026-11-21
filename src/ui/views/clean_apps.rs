@@ -118,6 +118,20 @@ fn build_disk_cleaner_body(s: &AppState, p: &ThemePalette, tier: LayoutTier) -> 
                 .shrink()
                 .flex_wrap()
                 .gaps(8.0, 8.0)
+                .child(action_button(
+                    s.tr(TextKey::SelectAll),
+                    p.btn_secondary,
+                    p.text_primary,
+                    p,
+                    |s| s.select_all_clean_targets(),
+                ))
+                .child(action_button(
+                    s.tr(TextKey::DeselectAll),
+                    p.btn_secondary,
+                    p.text_primary,
+                    p,
+                    |s| s.deselect_all_clean_targets(),
+                ))
                 .child(action_button_guarded(
                     s.tr(TextKey::ScanCleanupTargets),
                     p.btn_secondary,
@@ -383,6 +397,16 @@ fn build_appx_features_body(s: &AppState, p: &ThemePalette, tier: LayoutTier) ->
                             s.tr(TextKey::SelectAll),
                             p.btn_secondary,
                             p.text_primary,
+                            p,
+                            |s| {
+                                let q = s.appx_filter_edit.text.clone();
+                                s.select_filtered_appx(&q);
+                            },
+                        ))
+                        .child(action_button(
+                            "Select Safe & AI",
+                            p.btn_secondary,
+                            p.accent,
                             p,
                             |s| s.select_safe_and_ai_appx(),
                         ))

@@ -3441,8 +3441,11 @@ fn test_iso_29119_automation_engine_workflows() {
             assert!(twk.valuation.stability_risk <= max_risk);
         }
 
-        // Execute auto-tune profile in sandbox
+        // Execute auto-tune profile in sandbox (non-blocking async worker)
         state.execute_auto_tune_profile(profile);
+        drain_until(&mut state, Duration::from_secs(5), "autotune execution", |s| {
+            s.auto_tune_result.is_some() && !s.is_running_automation
+        });
         let result = state.auto_tune_result.as_ref().expect("Auto-tune result must be populated");
         assert_eq!(result.profile, profile);
         assert!(!result.message.is_empty());

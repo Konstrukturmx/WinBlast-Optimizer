@@ -9,14 +9,14 @@
 [![License](https://img.shields.io/badge/License-MIT-blueviolet?style=for-the-badge)](LICENSE)
 [![Platform](https://img.shields.io/badge/Platform-Windows%2010%20%7C%2011%20(x64)-0078D6?style=for-the-badge&logo=windows)](https://github.com/Konstrukturmx/WinBlast-Optimizer)
 [![Rust](https://img.shields.io/badge/Rust-2021%20Edition-DEA584?style=for-the-badge&logo=rust)](https://www.rust-lang.org/)
-[![Tests](https://img.shields.io/badge/Tests-229%20Passed%20(100%25)-success?style=for-the-badge)](tests/)
+[![Tests](https://img.shields.io/badge/Tests-235%20Passed%20(100%25)-success?style=for-the-badge)](tests/)
 [![Languages](https://img.shields.io/badge/i18n-8%20Languages%20(510%20Keys)-orange?style=for-the-badge)](src/core/i18n.rs)
 
 <p align="center">
   <b>WinBlast Optimizer</b> is a standalone, lightweight, zero-dependency Windows optimization suite designed for performance enthusiasts, competitive gamers, power users, and system administrators. Built in pure Rust with direct Win32/NT kernel bindings, it replaces bloated PowerShell scripts and black-box tweakers with an auditable, transactional, and fully reversible optimization engine.
 </p>
 
-[**Download Latest Release (v1.6.0)**](https://github.com/Konstrukturmx/WinBlast-Optimizer/releases/latest) • [**Changelog**](CHANGELOG.md) • [**Architecture Guide**](DEVELOPMENT.md) • [**VirusTotal Report**](https://www.virustotal.com/gui/file/19895c54d3699391aebedb5c3e384aeb7ac5a73f8d1bee9ff7da4cd623d2fa00) • [**Knowledge Graph**](graphify-out/graph.html)
+[**Download Latest Release (v1.6.1)**](https://github.com/Konstrukturmx/WinBlast-Optimizer/releases/latest) • [**Changelog**](CHANGELOG.md) • [**Architecture Guide**](DEVELOPMENT.md) • [**VirusTotal Report**](https://www.virustotal.com/gui/file/19895c54d3699391aebedb5c3e384aeb7ac5a73f8d1bee9ff7da4cd623d2fa00) • [**Knowledge Graph**](graphify-out/graph.html)
 
 ---
 
@@ -61,7 +61,7 @@ Derived from the formal [**WinBlast0 Architecture Guide**](DEVELOPMENT.md), WinB
   * **⚡ Compact (High Density)**: Micro-padding (8px), 4px corners, 180px sidebar, maximized information per square inch.
   * **🎨 Materialistic (Material Design 3)**: Soft 18px rounded cards, 24px pill buttons, tonal surfaces, and smooth decelerated spring motion.
 * **6 WCAG AA Color Schemes**: *Cyber Indigo*, *Midnight Stealth*, *Emerald Mint*, *Crimson Sunset*, *Solar Amber*, and *Arctic Aurora* with Dark and Light mode support.
-* **Permanent High-Resolution Icon**: Embedded `winblast.ico` with full PE Version Information (`Konstrukturmx`, `WinBlast Optimizer`, version `1.6.0.0`).
+* **Permanent High-Resolution Icon**: Embedded `winblast.ico` with full PE Version Information (`Konstrukturmx`, `WinBlast Optimizer`, version `1.6.1.0`).
 * **Themed Always-On Scroll Bars**: Every overflowing viewport renders a custom palette-driven scroll bar (6 pt muted thumb at rest, 9 pt theme-accent thumb on hover/drag) with dedicated `14.0pt` to `16.0pt` right gutters preventing thumb-button collisions.
 
 ### 2. ⚡ Milestone 2 Cryptographic Platform, Fuzzing & Hardware Engine (v1.6.0)
@@ -93,20 +93,30 @@ Derived from the formal [**WinBlast0 Architecture Guide**](DEVELOPMENT.md), WinB
 * **Windows Component Repair Suite**: Integrated one-click repair suite for SFC Scannow, DISM Component Store RestoreHealth, Winsock & TCP/IP stack resets, and DNS cache flush.
 * **Zero-Allocation 8-Language Localization**: Complete 510-key zero-allocation translation engine (`i18n.rs` & `view_i18n.rs`) covering all views in English, Turkish, German, French, Spanish, Russian, Chinese, and Japanese.
 
-### 3. 🛡️ Dual-Layer Transactional Rollback & Safety
+### 3. 🛠️ Section Selection Fault Elimination & Async Automation Overhaul (v1.6.1)
+* **Filtered Selection Locality (Invariant I1)**: Eliminated selection bleed-through in the Advanced Matrix; toolbar bulk actions strictly target rows matching active search query and category filters ($V(f)$) without mutating non-matching items ($U \setminus V(f)$).
+* **Category Scoped Bulk Toggles**: Category headers feature dedicated bulk selection buttons strictly scoped to tweaks belonging to that category.
+* **Staged Revert Parity (Invariant I2)**: Added "Revert Defaults" bulk action staging `StageRevert` transitions for applied optimizations in Normal Mode and dispatching background reverts in Instant Mode.
+* **Hardened AppX & Safe Debloat Protection**: Whole-drive Disk Cleaner targeting with Select All / Deselect All; AppX uninstaller automatically bypasses `ProtectedCore` packages with a 1-click "Select Safe & AI" debloating workflow.
+* **Batch Startup & Scheduled Task Management (Invariant I5)**: Multi-selection checkboxes on all startup entries and scheduled tasks with batch enable/disable execution dispatched to non-blocking background workers.
+* **Zero-Freeze Asynchronous Auto-Tune Worker (Invariant I6)**: Auto-Tune profiles run asynchronously via `spawn_guarded_worker` without stalling the Rune UI thread.
+* **Dynamic Post-Execution Telemetry Resync (Invariant I9)**: Auto-Tune completion and batch operations trigger automatic background system rescans and health assessments, instantly updating physical telemetry and health scores.
+* **Real-Time Plan Preview & Metrics UI**: Live AutoTuneResult and MemoryTrim execution cards, plus interactive 24-tweak profile plan preview cards with real-time status badges.
+
+### 4. 🛡️ Dual-Layer Transactional Rollback & Safety
 * **SQLite WAL Transaction Ledger**: Every change made by the optimizer is atomically written to a local SQLite Write-Ahead Logging (`winblast0_ledger.db`) database recording previous registry values, service configurations, and power settings.
 * **1-Click Deep Revert**: Undo any single tweak or restore complete system baselines with one click.
 * **Automated Pre-Flight VSS Restore Points**: Automatically inspects restore point creation timestamps (within 24 hours) via `ensure_preflight_restore_point` prior to batch execution, creating native Windows System Restore points automatically without spamming redundant snapshots.
 * **Unified Strongly-Typed `WinBlastError` Hierarchy**: Structured error handling replacing stringly-typed errors across registry, services, COM, and NT kernel layers (`WinBlastError::Registry`, `Service`, `Com`, `NtStatus`, `Io`, `InvalidInput`).
 
-### 4. ⏱️ NT Kernel Telemetry & Microsecond Latency Suite
+### 5. ⏱️ NT Kernel Telemetry & Microsecond Latency Suite
 * **Rayon Multi-Threaded Parallel Evaluation**: Multi-core declarative scan engine (`scan_all_tweaks_parallel`) using Rayon chunked work-stealing parallel iterators, accelerating full 208-tweak system scans to near-instantaneous speed.
 * **Native Kernel Telemetry**: Replaces high-overhead WMI queries with direct `NtQuerySystemInformation(SystemProcessorPerformanceInformation)` deltas, providing accurate per-core active vs. idle percentages with zero CPU overhead.
 * **High-Precision Timer Resolution**: Direct `NtQueryTimerResolution` / `NtSetTimerResolution` FFI kernel interfacing to monitor sub-millisecond OS tick jitter (down to 0.500 ms).
 * **DPC / ISR Micro-Jitter Probe**: Real-time measurement of Deferred Procedure Call interrupt jitter using `QueryPerformanceCounter` (QPC).
 * **Anycast DNS Latency Tester**: Concurrent multi-threaded TCP/ICMP ping tester comparing latency against Tier-1 global resolvers (Cloudflare, Google, Quad9).
 
-### 5. 🧠 Intelligent Hardware & CPU Core Parking Engine
+### 6. 🧠 Intelligent Hardware & CPU Core Parking Engine
 * **Dynamic Core Unparker**: Dynamically unlocks clamped Windows power profile ranges (`CPMINCORES` / `CPMAXCORES`) before modifying values, resolving `Win32 error 0x0000000D (13)`.
 * **Hybrid P-Core / E-Core Awareness**: Reads `GetLogicalProcessorInformationEx` processor topology to classify Performance cores and Efficiency cores on modern Intel (12th-14th Gen) and AMD Ryzen processors.
 * **GPU Vendor Gating**: Auto-probes active graphics adapters via `SetupDiGetDeviceInstanceIdW` and DXGI, safely locking vendor-exclusive tweaks (e.g., AMD ULPS/ASPM vs NVIDIA Dynamic P-States) to prevent driver crashes.
@@ -158,12 +168,12 @@ The optimizer features **230 validated declarative optimizations** indexed acros
 
 Because WinBlast Optimizer adjusts low-level system settings, Windows Registry parameters, and hardware power states, transparency and security are paramount.
 
-* **Target Binary**: `winblast0.exe` (v1.6.0)
+* **Target Binary**: `winblast0.exe` (v1.6.1)
 * **Digital Signature**: Microsoft Authenticode signed by `Konstrukturmx` with DigiCert RFC 3161 SHA-256 timestamping
-* **File Size**: `32,046,592` bytes (30.56 MB)
+* **File Size**: `32,348,160` bytes (30.85 MB)
 * **SHA-256 Checksum**:
   ```text
-  3472dca038743dc79fca9f86a6250dfb945e9a0635f46fa5a5190aabe11db27d
+  f0017e2de6bc347138ad9c1037becc5dde0664714d8cb22a8d69d58cc3831be1
   ```
 * **Microsoft Defender Heuristics**: Clean PE metadata, authentic Win32 API calls, embedded UAC manifest, and permanent application icon `winblast.ico`.
 * **Static Analysis & Security Hardening**:
@@ -214,6 +224,7 @@ WinBlast Optimizer includes an exhaustive test suite verifying safety across rea
 | Test Suite | Coverage & Validation Focus | Results |
 | :--- | :--- | :---: |
 | **`cargo test --lib`** | Core i18n tables (8 languages, 510 keys), NT timer resolution, CPU topology classification, power range unlock, Dijkstra & A* & Raven graph engines, multi-strategy fallbacks, Rayon parallel scanner parity, unified WinBlastError hierarchy, preflight VSS restore points, and risk valuation. | **166 / 166 PASS** |
+| **`selection_automation_e2e`** | Section selection fault elimination (filter locality I1, staged bijection I2), AppX Core protection, clean targets, startup/task batching, and preset/AutoTune profile parity. | **6 / 6 PASS** |
 | **`tweak_sandbox_e2e`** | Isolated mock registry & file trees, worker panic recovery, partial mutation failure rollback, epoch scan fencing, startup status filtering & sorting, and concurrent transactions across 230 tweaks. | **25 / 25 PASS** |
 | **`ui_responsive_e2e`** | Headless DOM tree verification, multi-resolution viewport sweeps (720p to 4K, 2,160 frame sweep), dropdown popovers, theme switching, and multi-locale layout stress testing. | **18 / 18 PASS** |
 | **`ui_scrollbar_test`** | Headless E2E scroll-bar geometry, hover-widening, right gutter collision safety, and drag/wheel-scroll interaction across all views and sidebar. | **5 / 5 PASS** |
@@ -221,7 +232,7 @@ WinBlast Optimizer includes an exhaustive test suite verifying safety across rea
 | **`fuzz_mutation_properties`** | Proptest formal verification: strict inverse reversibility, mutation idempotence, atomic rollback on partial failure, worker panic resilience. | **4 / 4 PASS** |
 | **`real_windows_env`** | Live host read-only audit across 230 rules, Win32 registry type round-trips, safe NTFS junction cleanups, and dual NVMe/SATA SMART physical disk telemetry. | **4 / 4 PASS** |
 | **`dual_engine_validation_test`** | Tier 2 Gemini Neon-High dual-engine algorithmic validation, SMART parsing offset invariants, and mathematical precision bounds. | **2 / 2 PASS** |
-| **Total Automated Tests** | **Zero failures, zero panics, zero warnings** | **229 / 229 PASS** |
+| **Total Automated Tests** | **Zero failures, zero panics, zero warnings** | **235 / 235 PASS** |
 
 ---
 

@@ -116,14 +116,22 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
                     p.btn_secondary,
                     p.text_primary,
                     p,
-                    |s| s.select_all(),
+                    |s| {
+                        let q = s.search_edit.text.clone();
+                        let cat = s.selected_category.clone();
+                        s.select_filtered_tweaks(&q, cat.as_deref());
+                    },
                 ))
                 .child(action_button(
                     s.tr(TextKey::DeselectAll),
                     p.btn_secondary,
                     p.text_primary,
                     p,
-                    |s| s.deselect_all(),
+                    |s| {
+                        let q = s.search_edit.text.clone();
+                        let cat = s.selected_category.clone();
+                        s.deselect_filtered_tweaks(&q, cat.as_deref());
+                    },
                 ))
                 .child(action_button_guarded(
                     if s.is_scanning {
@@ -150,6 +158,18 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
                     !s.is_applying && !s.is_rolling_back,
                     p,
                     |s| s.apply_selected(),
+                ))
+                .child(action_button_guarded(
+                    if s.selected_tweaks.is_empty() {
+                        "Revert Defaults".to_string()
+                    } else {
+                        format!("Revert Defaults ({})", s.selected_tweaks.len())
+                    },
+                    p.warning.alpha(0.18),
+                    p.warning,
+                    !s.is_applying && !s.is_rolling_back && !s.selected_tweaks.is_empty(),
+                    p,
+                    |s| s.revert_selected(),
                 ))
                 .child(action_button(
                     s.tr(TextKey::PreviewDiff),
@@ -468,17 +488,7 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
                     p.bg_card,
                     if all_selected_in_cat { p.warning } else { p.accent },
                     p,
-                    move |s| {
-                        if all_selected_in_cat {
-                            for id in &cat_tweaks_copy {
-                                s.selected_tweaks.remove(id);
-                            }
-                        } else {
-                            for id in &cat_tweaks_copy {
-                                s.selected_tweaks.insert(id.clone());
-                            }
-                        }
-                    },
+                    move |s| s.toggle_category_selection(&cat_tweaks_copy, !all_selected_in_cat),
                 ),
             );
 

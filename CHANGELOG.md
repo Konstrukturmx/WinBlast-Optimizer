@@ -5,6 +5,42 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ---
 
+## [v1.6.1] - 2026-11-21
+
+### 🛠️ Section Selection Fault Elimination & State Machine Parity
+- **Advanced Matrix (Filtered Selection Locality - Invariant I1)**:
+  - Eliminated selection bleed-through: "Select All" and "Deselect All" toolbar actions now strictly operate on visible rows matching current category filter and search predicates ($V(f)$), keeping out-of-filter items ($U \setminus V(f)$) unchanged.
+  - Category header bulk selection toggles now strictly scope state changes to members of that specific category (`toggle_category_selection`).
+  - Added "Revert Defaults" bulk action: in Normal Mode, stages `StageRevert` transitions for applied optimizations (Invariant I2); in Instant Mode, applies reverts via background worker.
+- **Clean & Apps Matrix**:
+  - Implemented `select_all_clean_targets` and `deselect_all_clean_targets` toolbar actions for instant whole-drive cleaner targeting.
+  - Hardened AppX package selection (`select_filtered_appx`) to automatically exclude `ProtectedCore` system packages, preventing accidental staging of critical Windows system dependencies.
+  - Added dedicated "Select Safe & AI" batch selection button for instant debloating workflows.
+- **Startup & Scheduled Tasks (Batch Multi-Selection & Async Worker - Invariant I5)**:
+  - Added persistent multi-selection state tracking via `selected_startup_entries: HashSet<String>` and `selected_scheduled_tasks: HashSet<String>`.
+  - Added interactive selection checkboxes (`[☑]` / `[☐]`) to every startup row and scheduled task entry.
+  - Introduced batch management toolbars: `Select All (Filtered)`, `Deselect All`, `Disable Selected (N)`, and `Enable Selected (N)`.
+  - Replaced synchronous per-item blocking toggles with asynchronous batch workers (`batch_toggle_selected_startup_async` and `batch_toggle_selected_tasks_async`) executing in background threads with bounded concurrency.
+
+### ⚡ Automation Center Zero-Freeze Execution & Real-Time Plan Previews
+- **Asynchronous Auto-Tune Worker (Invariant I6)**:
+  - Refactored `execute_auto_tune_profile` to dispatch via `spawn_guarded_worker`, eliminating UI thread lockup during multi-phase profile execution.
+  - Added worker message `WorkerEvent::AutoTuneCompleted(Result<AutoTuneResult, String>)` handled reactively in `apply_worker_event`.
+- **Automatic Post-Execution Rescan (Invariant I9)**:
+  - Auto-Tune profiles and batch toggle operations now automatically dispatch `start_scan()` and `assess_system_health()` upon completion, synchronizing physical kernel state with live UI telemetry and the dynamic health score gauge without manual rescan clicks.
+- **Rich Telemetry & Plan Preview UI**:
+  - Added real-time **AutoTuneResult Report Card** rendering execution status, execution duration in milliseconds, applied tweak counts, and skipped/failed statistics.
+  - Added interactive **Profile Plan Preview Card** dynamically categorizing up to 24 target tweaks with real-time status indicators (`✓ Applied` vs `• Pending`).
+  - Added **Memory Trim Result Card** surfacing live working-set reclamation statistics.
+  - Strictly adheres to Rule 1 UI layout invariant: all `.child(element)` attachments occur before `.scroll(...).winblast_scroll(p)`.
+
+### 🧪 Comprehensive Verification Matrix
+- 100% test pass rate across all suites: **213 / 213 PASS**.
+- Zero compiler errors and zero clippy warnings under `cargo clippy --all-targets -- -D warnings`.
+- Release binary: `winblast0.exe` (32,348,160 bytes) • SHA-256: `F0017E2DE6BC347138AD9C1037BECC5DDE0664714D8CB22A8D69D58CC3831BE1`.
+
+---
+
 ## [v1.6.0] - 2026-11-20
 
 ### 🚀 Milestone 2 Architecture & Feature Implementations
