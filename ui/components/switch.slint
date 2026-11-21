@@ -1,0 +1,103 @@
+// ui/components/switch.slint
+import { Scale, Theme } from "../theme.slint";
+
+export component WbSwitch inherits Rectangle {
+    in-out property <bool> checked: false;
+    in property <bool> enabled: true;
+    in property <string> accessible-name: "Toggle setting";
+
+    callback toggled(bool);
+
+    private property <length> track-w: Scale.px(42px);
+    private property <length> track-h: Scale.px(22px);
+    private property <length> thumb-size: Scale.px(16px);
+    private property <length> thumb-inset: Scale.px(3px);
+
+    width: root.track-w;
+    height: root.track-h;
+    border-radius: Scale.radius-pill;
+    background: root.checked ? Theme.accent : Theme.bg-surface-active;
+    border-width: 1px;
+    border-color: root.checked ? Theme.accent-hover : Theme.border-default;
+    opacity: root.enabled ? 1.0 : 0.45;
+
+    accessible-role: switch;
+    accessible-label: root.accessible-name;
+    accessible-checked: root.checked;
+    accessible-enabled: root.enabled;
+
+    forward-focus: focus-scope;
+
+    animate background, border-color, opacity {
+        duration: 200ms;
+        easing: spring(0.2);
+    }
+
+    // Keyboard focus halo
+    Rectangle {
+        visible: focus-scope.has-focus && root.enabled;
+        x: -2px;
+        y: -2px;
+        width: parent.width + 4px;
+        height: parent.height + 4px;
+        border-radius: Scale.radius-pill;
+        border-width: 2px;
+        border-color: Theme.border-focus;
+        background: transparent;
+    }
+
+    // Animated pill thumb
+    thumb := Rectangle {
+        private property <length> stretch: ta.pressed && root.enabled ? Scale.px(3px) : 0px;
+
+        width: root.thumb-size + self.stretch;
+        height: root.thumb-size;
+        y: (parent.height - self.height) / 2;
+        x: root.checked
+            ? parent.width - self.width - root.thumb-inset
+            : root.thumb-inset;
+        border-radius: Scale.radius-pill;
+        background: root.checked ? Theme.text-on-accent : Theme.neutral;
+        drop-shadow-blur: Scale.px(4px);
+        drop-shadow-offset-y: Scale.px(1px);
+        drop-shadow-color: Theme.shadow-sm;
+
+        animate x, width, background {
+            duration: 240ms;
+            easing: spring(0.2);
+        }
+    }
+
+    focus-scope := FocusScope {
+        enabled: root.enabled;
+        key-pressed(event) => {
+            if (event.text == Key.Return || event.text == " ") {
+                root.checked = !root.checked;
+                root.toggled(root.checked);
+                accept
+            } else {
+                reject
+            }
+        }
+    }
+
+    ta := TouchArea {
+        enabled: root.enabled;
+        mouse-cursor: root.enabled ? pointer : not-allowed;
+        clicked => {
+            if (root.enabled) {
+                root.checked = !root.checked;
+                root.toggled(root.checked);
+            }
+        }
+    }
+
+    states [
+        hover-checked when ta.has-hover && root.checked && root.enabled : {
+            root.background: Theme.accent-hover;
+        }
+        hover-unchecked when ta.has-hover && !root.checked && root.enabled : {
+            root.border-color: Theme.border-strong;
+        }
+    ]
+}

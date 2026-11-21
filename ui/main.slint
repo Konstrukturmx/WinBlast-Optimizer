@@ -1,9 +1,18 @@
 // ui/main.slint
 // WinBlast0 Main Window Root Component in Slint 1.19
 
-import { Scale } from "tokens/scale.slint";
-import { Theme } from "tokens/theme.slint";
-import { Motion } from "tokens/motion.slint";
+import { Scale, Theme, Motion } from "theme.slint";
+import { AppTitlebar } from "shell/titlebar.slint";
+import { AppSidebar, NavItemData } from "shell/sidebar.slint";
+import { AppStatusbar } from "shell/statusbar.slint";
+import { WbButton } from "components/button.slint";
+import { WbSwitch } from "components/switch.slint";
+import { WbCard } from "components/card.slint";
+import { WbBadge } from "components/badge.slint";
+import { WbSearchInput } from "components/search_input.slint";
+import { WbProgressBar } from "components/progress_bar.slint";
+import { WbTweakRow } from "components/tweak_row.slint";
+import { WbSparkline } from "components/sparkline.slint";
 
 export { Scale, Theme, Motion }
 
@@ -20,123 +29,104 @@ export component MainWindow inherits Window {
     in-out property <string> active-view: "dashboard";
     in-out property <bool> is-elevated: true;
     in-out property <string> app-version: "1.6.1";
+    in-out property <bool> is-maximized: false;
+
+    // Telemetry & Statusbar properties
+    in-out property <float> cpu-usage: 0.0;
+    in-out property <float> ram-usage: 0.0;
+    in-out property <string> ram-text: "0.0 / 0.0 GB";
+    in-out property <bool> reboot-pending: false;
+    in-out property <bool> worker-active: false;
+    in-out property <string> worker-label: "Ready";
 
     callback navigate(string);
     callback close-window();
     callback minimize-window();
     callback toggle-maximize();
+    callback reboot-system();
+    callback search-triggered();
 
     VerticalLayout {
         padding: 0;
         spacing: 0;
 
-        // Custom Titlebar Placeholder
-        Rectangle {
-            height: Scale.titlebar-h;
-            background: Theme.bg-surface;
+        // Custom Frameless Titlebar
+        AppTitlebar {
+            app-title: "WinBlast0";
+            version: "v" + root.app-version;
+            is-admin: root.is-elevated;
+            maximized: root.is-maximized;
 
-            // Bottom border divider
-            Rectangle {
-                y: parent.height - 1px;
-                height: 1px;
-                background: Theme.border-subtle;
+            minimize-clicked => { root.minimize-window(); }
+            maximize-clicked => { root.toggle-maximize(); }
+            close-clicked => { root.close-window(); }
+            search-clicked => { root.search-triggered(); }
+        }
+
+        // Central Body: Sidebar + Main Content View Host
+        HorizontalLayout {
+            padding: 0;
+            spacing: 0;
+
+            AppSidebar {
+                active-view: root.active-view;
+                navigate(target) => {
+                    root.active-view = target;
+                    root.navigate(target);
+                }
             }
 
-            HorizontalLayout {
-                padding-left: Scale.space-3;
-                padding-right: Scale.space-3;
-                alignment: space-between;
+            // Central View Host Region
+            Rectangle {
+                clip: true;
+                background: Theme.bg-canvas;
 
-                HorizontalLayout {
-                    spacing: Scale.space-2;
-                    alignment: start;
-                    Text {
-                        text: "⚡ WinBlast0";
-                        font-size: Scale.font-md;
-                        font-weight: 700;
-                        color: Theme.accent;
-                        vertical-alignment: center;
-                    }
-                    Text {
-                        text: root.app-version;
-                        font-size: Scale.font-xs;
-                        color: Theme.text-muted;
-                        vertical-alignment: center;
-                    }
-                }
-
-                HorizontalLayout {
-                    spacing: Scale.space-1;
-                    alignment: end;
+                // View content will be mounted here
+                VerticalLayout {
+                    padding: Scale.space-lg;
+                    spacing: Scale.space-md;
 
                     Rectangle {
-                        width: Scale.px(32px);
-                        height: Scale.px(28px);
-                        border-radius: Scale.radius-sm;
-                        background: min-touch.has-hover ? Theme.bg-hover : Colors.transparent;
+                        background: Theme.bg-surface;
+                        border-radius: Scale.radius-md;
+                        border-width: 1px;
+                        border-color: Theme.border-subtle;
 
-                        Text {
-                            text: "─";
-                            font-size: Scale.font-xs;
-                            color: Theme.text-secondary;
-                            vertical-alignment: center;
-                            horizontal-alignment: center;
-                        }
-                        min-touch := TouchArea {
-                            clicked => { root.minimize-window(); }
-                        }
-                    }
+                        VerticalLayout {
+                            padding: Scale.space-xl;
+                            spacing: Scale.space-md;
+                            alignment: center;
 
-                    Rectangle {
-                        width: Scale.px(32px);
-                        height: Scale.px(28px);
-                        border-radius: Scale.radius-sm;
-                        background: max-touch.has-hover ? Theme.bg-hover : Colors.transparent;
+                            Text {
+                                text: "WinBlast0 Slint 1.19 Engine Active";
+                                font-size: Scale.font-xl;
+                                font-weight: 700;
+                                color: Theme.accent;
+                                horizontal-alignment: center;
+                            }
 
-                        Text {
-                            text: "□";
-                            font-size: Scale.font-xs;
-                            color: Theme.text-secondary;
-                            vertical-alignment: center;
-                            horizontal-alignment: center;
-                        }
-                        max-touch := TouchArea {
-                            clicked => { root.toggle-maximize(); }
-                        }
-                    }
-
-                    Rectangle {
-                        width: Scale.px(32px);
-                        height: Scale.px(28px);
-                        border-radius: Scale.radius-sm;
-                        background: close-touch.has-hover ? Theme.danger : Colors.transparent;
-
-                        Text {
-                            text: "✕";
-                            font-size: Scale.font-xs;
-                            color: close-touch.has-hover ? Colors.white : Theme.text-secondary;
-                            vertical-alignment: center;
-                            horizontal-alignment: center;
-                        }
-                        close-touch := TouchArea {
-                            clicked => { root.close-window(); }
+                            Text {
+                                text: "Active View: " + root.active-view;
+                                font-size: Scale.font-md;
+                                color: Theme.text-secondary;
+                                horizontal-alignment: center;
+                            }
                         }
                     }
                 }
             }
         }
 
-        // Main Body Placeholder
-        Rectangle {
-            background: Theme.bg-canvas;
+        // Bottom Statusbar
+        AppStatusbar {
+            cpu-percent: root.cpu-usage;
+            ram-percent: root.ram-usage;
+            ram-used-text: root.ram-text;
+            reboot-pending: root.reboot-pending;
+            worker-active: root.worker-active;
+            worker-label: root.worker-label;
 
-            Text {
-                text: "WinBlast0 Slint 1.19 Skeleton — Active View: " + root.active-view;
-                font-size: Scale.font-lg;
-                color: Theme.text-primary;
-                horizontal-alignment: center;
-                vertical-alignment: center;
-            }
+            reboot-clicked => { root.reboot-system(); }
         }
     }
 }

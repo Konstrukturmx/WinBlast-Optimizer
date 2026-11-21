@@ -9,31 +9,80 @@ export global Theme {
     in-out property <float> accent-hue: 235.0;  // User-customizable accent seed hue
 
     // Background elevation layers (OKLCH semantic ramp)
-    out property <color> bg-canvas:       dark ? Colors.oklch(0.15, 0.012, 250) : Colors.oklch(0.97, 0.005, 250);
-    out property <color> bg-surface:      dark ? Colors.oklch(0.19, 0.014, 250) : Colors.oklch(1.00, 0.000, 250);
-    out property <color> bg-elevated:     dark ? Colors.oklch(0.23, 0.015, 250) : Colors.oklch(0.95, 0.006, 250);
-    out property <color> bg-hover:        dark ? Colors.oklch(0.26, 0.016, 250) : Colors.oklch(0.92, 0.008, 250);
+    out property <color> bg-canvas:         dark ? Colors.oklch(0.15, 0.012, 250) : Colors.oklch(0.97, 0.005, 250);
+    out property <color> bg-surface:        dark ? Colors.oklch(0.19, 0.014, 250) : Colors.oklch(1.00, 0.000, 250);
+    out property <color> bg-surface-hover:  dark ? Colors.oklch(0.24, 0.016, 250) : Colors.oklch(0.92, 0.008, 250);
+    out property <color> bg-surface-active: dark ? Colors.oklch(0.28, 0.018, 250) : Colors.oklch(0.88, 0.010, 250);
+    out property <color> bg-elevated:       dark ? Colors.oklch(0.23, 0.015, 250) : Colors.oklch(0.95, 0.006, 250);
+    out property <color> bg-hover:          dark ? Colors.oklch(0.26, 0.016, 250) : Colors.oklch(0.92, 0.008, 250);
+    out property <color> bg-input:          dark ? Colors.oklch(0.13, 0.012, 250) : Colors.oklch(0.99, 0.002, 250);
 
     // Translucent glass material surface (adjusts alpha automatically if blur unsupported)
     out property <color> bg-glass:        dark
         ? Colors.oklch(0.18, 0.015, 250, supports-blur ? 0.72 : 0.96)
         : Colors.oklch(0.98, 0.005, 250, supports-blur ? 0.76 : 0.97);
+    out property <color> bg-glass-strong: dark
+        ? Colors.oklch(0.16, 0.015, 250, supports-blur ? 0.88 : 0.98)
+        : Colors.oklch(0.99, 0.005, 250, supports-blur ? 0.90 : 0.99);
     out property <length> blur-radius:    supports-blur ? 16px : 0px;
 
     // Text & Icon hierarchy
     out property <color> text-primary:    dark ? Colors.oklch(0.95, 0.005, 250) : Colors.oklch(0.16, 0.012, 250);
     out property <color> text-secondary:  dark ? Colors.oklch(0.72, 0.010, 250) : Colors.oklch(0.45, 0.012, 250);
     out property <color> text-muted:      dark ? Colors.oklch(0.55, 0.010, 250) : Colors.oklch(0.60, 0.010, 250);
+    out property <color> text-on-accent:  #ffffff;
+    out property <color> text-on-danger:  #ffffff;
 
     // Borders & Focus
     out property <color> border-subtle:   dark ? Colors.oklch(0.28, 0.014, 250) : Colors.oklch(0.86, 0.008, 250);
+    out property <color> border-default:  dark ? Colors.oklch(0.33, 0.016, 250) : Colors.oklch(0.80, 0.009, 250);
     out property <color> border-strong:   dark ? Colors.oklch(0.38, 0.018, 250) : Colors.oklch(0.74, 0.010, 250);
+    out property <color> border-focus:    Colors.oklch(dark ? 0.68 : 0.54, 0.18, accent-hue, 0.8);
 
     // Brand & Semantic status colors
     out property <color> accent:          Colors.oklch(dark ? 0.68 : 0.54, 0.18, accent-hue);
     out property <color> accent-hover:    Colors.oklch(dark ? 0.74 : 0.48, 0.19, accent-hue);
+    out property <color> accent-pressed:  Colors.oklch(dark ? 0.60 : 0.42, 0.19, accent-hue);
+    out property <color> accent-subtle:   Colors.oklch(dark ? 0.68 : 0.54, 0.18, accent-hue, 0.15);
+
+    out property <color> danger:          Colors.oklch(dark ? 0.66 : 0.55, 0.20, 25);
+    out property <color> danger-hover:    Colors.oklch(dark ? 0.72 : 0.49, 0.20, 25);
+    out property <color> danger-pressed:  Colors.oklch(dark ? 0.58 : 0.43, 0.20, 25);
+
+    // Semantic & Risk status colors
+    out property <color> safe:            Colors.oklch(dark ? 0.72 : 0.56, 0.16, 148);
+    out property <color> safe-bg:         Colors.oklch(dark ? 0.72 : 0.56, 0.16, 148, 0.14);
+    out property <color> safe-border:     Colors.oklch(dark ? 0.72 : 0.56, 0.16, 148, 0.35);
+
+    out property <color> low:             Colors.oklch(dark ? 0.72 : 0.56, 0.14, 180);
+    out property <color> low-bg:          Colors.oklch(dark ? 0.72 : 0.56, 0.14, 180, 0.14);
+    out property <color> low-border:      Colors.oklch(dark ? 0.72 : 0.56, 0.14, 180, 0.35);
+
+    out property <color> moderate:        Colors.oklch(dark ? 0.78 : 0.65, 0.16, 75);
+    out property <color> moderate-bg:     Colors.oklch(dark ? 0.78 : 0.65, 0.16, 75, 0.14);
+    out property <color> moderate-border: Colors.oklch(dark ? 0.78 : 0.65, 0.16, 75, 0.35);
+
+    out property <color> high:            Colors.oklch(dark ? 0.66 : 0.55, 0.20, 25);
+    out property <color> high-bg:         Colors.oklch(dark ? 0.66 : 0.55, 0.20, 25, 0.14);
+    out property <color> high-border:     Colors.oklch(dark ? 0.66 : 0.55, 0.20, 25, 0.35);
+
+    out property <color> info:            Colors.oklch(dark ? 0.70 : 0.55, 0.15, 225);
+    out property <color> info-bg:         Colors.oklch(dark ? 0.70 : 0.55, 0.15, 225, 0.14);
+    out property <color> info-border:     Colors.oklch(dark ? 0.70 : 0.55, 0.15, 225, 0.35);
+
+    out property <color> neutral:         Colors.oklch(dark ? 0.75 : 0.45, 0.015, 250);
+    out property <color> neutral-bg:      Colors.oklch(dark ? 0.75 : 0.45, 0.015, 250, 0.15);
+    out property <color> neutral-border:  Colors.oklch(dark ? 0.75 : 0.45, 0.015, 250, 0.25);
+
     out property <color> success:         Colors.oklch(dark ? 0.72 : 0.56, 0.16, 148);
     out property <color> warning:         Colors.oklch(dark ? 0.78 : 0.65, 0.16, 75);
-    out property <color> danger:          Colors.oklch(dark ? 0.66 : 0.55, 0.20, 25);
-    out property <color> info:            Colors.oklch(dark ? 0.70 : 0.55, 0.15, 225);
+
+    // Elevation Shadows
+    out property <color> shadow-sm: #00000040;
+    out property <color> shadow-md: #00000066;
+    out property <color> shadow-lg: #00000099;
+
+    // Window Caption Close
+    out property <color> caption-close-hover:   #e81123;
+    out property <color> caption-close-pressed: #c50f1f;
 }

@@ -1,0 +1,138 @@
+// ui/components/search_input.slint
+import { Scale, Theme } from "../theme.slint";
+
+export component WbSearchInput inherits Rectangle {
+    in-out property <string> text: "";
+    in property <string> placeholder: "Search tweaks, policies, services...";
+    in property <bool> enabled: true;
+
+    callback changed(string);
+    callback accepted(string);
+
+    min-height: Scale.control-md;
+    border-radius: Scale.radius-sm;
+    background: Theme.bg-input;
+    border-width: 1px;
+    border-color: input.has-focus ? Theme.border-focus : Theme.border-default;
+    opacity: root.enabled ? 1.0 : 0.45;
+
+    accessible-role: text-input;
+    accessible-label: root.placeholder;
+    accessible-enabled: root.enabled;
+
+    forward-focus: input;
+
+    animate border-color, background {
+        duration: 160ms;
+        easing: spring(0.1);
+    }
+
+    HorizontalLayout {
+        padding-left: Scale.space-sm;
+        padding-right: Scale.space-xs;
+        spacing: Scale.space-xs;
+        alignment: stretch;
+
+        // Magnifying glass vector icon
+        Rectangle {
+            width: Scale.px(18px);
+            background: transparent;
+
+            Path {
+                width: Scale.px(14px);
+                height: Scale.px(14px);
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+                viewbox-x: 0;
+                viewbox-y: 0;
+                viewbox-width: 24;
+                viewbox-height: 24;
+                commands: "M 11 4 A 7 7 0 1 0 11 18 A 7 7 0 1 0 11 4 Z M 20 20 L 16.2 16.2";
+                stroke: input.has-focus ? Theme.accent : Theme.text-muted;
+                stroke-width: 2px;
+                fill: transparent;
+            }
+        }
+
+        // Input field + placeholder overlay
+        Rectangle {
+            horizontal-stretch: 1;
+            clip: true;
+            background: transparent;
+
+            if root.text == "" : Text {
+                width: 100%;
+                height: 100%;
+                text: root.placeholder;
+                color: Theme.text-muted;
+                font-size: Scale.font-md;
+                vertical-alignment: center;
+                overflow: elide;
+            }
+
+            input := TextInput {
+                width: 100%;
+                height: 100%;
+                text <=> root.text;
+                enabled: root.enabled;
+                single-line: true;
+                color: Theme.text-primary;
+                font-size: Scale.font-md;
+                selection-background-color: Theme.accent-subtle;
+                selection-foreground-color: Theme.text-primary;
+                vertical-alignment: center;
+
+                edited => {
+                    root.changed(self.text);
+                }
+
+                accepted => {
+                    root.accepted(self.text);
+                }
+            }
+        }
+
+        // Clear button (visible only when non-empty)
+        if root.text != "" && root.enabled : Rectangle {
+            width: Scale.px(24px);
+            height: Scale.px(24px);
+            y: (parent.height - self.height) / 2;
+            border-radius: Scale.radius-xs;
+            background: clear-ta.pressed ? Theme.bg-surface-active :
+                        clear-ta.has-hover ? Theme.bg-surface-hover :
+                                             transparent;
+
+            accessible-role: button;
+            accessible-label: "Clear search";
+
+            animate background {
+                duration: 140ms;
+                easing: spring(0.1);
+            }
+
+            Path {
+                width: Scale.px(10px);
+                height: Scale.px(10px);
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+                viewbox-x: 0;
+                viewbox-y: 0;
+                viewbox-width: 16;
+                viewbox-height: 16;
+                commands: "M 3 3 L 13 13 M 13 3 L 3 13";
+                stroke: clear-ta.has-hover ? Theme.text-primary : Theme.text-secondary;
+                stroke-width: 1.8px;
+                fill: transparent;
+            }
+
+            clear-ta := TouchArea {
+                mouse-cursor: pointer;
+                clicked => {
+                    root.text = "";
+                    root.changed("");
+                    input.focus();
+                }
+            }
+        }
+    }
+}

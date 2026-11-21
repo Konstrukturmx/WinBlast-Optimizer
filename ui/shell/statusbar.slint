@@ -1,0 +1,174 @@
+// ui/shell/statusbar.slint
+import { Scale, Theme } from "../theme.slint";
+import { WbBadge } from "../components/badge.slint";
+
+export component AppStatusbar inherits Rectangle {
+    in property <float> cpu-percent: 0.0;        // 0.0..100.0
+    in property <float> ram-percent: 0.0;        // 0.0..100.0
+    in property <string> ram-used-text: "0.0 / 0.0 GB";
+    in property <bool> reboot-pending: false;
+    in property <bool> worker-active: false;
+    in property <string> worker-label: "Applying optimizations...";
+
+    callback reboot-clicked();
+
+    private property <float> cpu-clamped: clamp(root.cpu-percent, 0.0, 100.0);
+    private property <float> ram-clamped: clamp(root.ram-percent, 0.0, 100.0);
+    private property <float> spin-phase: mod(animation-tick() / 1ms, 900) / 900;
+
+    height: Scale.statusbar-height;
+    background: Theme.bg-glass-strong;
+    backdrop-blur: Theme.blur-radius;
+
+    // Top hairline divider
+    Rectangle {
+        y: 0px;
+        width: 100%;
+        height: 1px;
+        background: Theme.border-subtle;
+    }
+
+    HorizontalLayout {
+        padding-left: Scale.space-md;
+        padding-right: Scale.space-md;
+        spacing: Scale.space-lg;
+        alignment: space-between;
+
+        // Left: Live CPU & RAM telemetry strip
+        HorizontalLayout {
+            spacing: Scale.space-lg;
+            alignment: start;
+
+            // CPU Metric
+            HorizontalLayout {
+                spacing: Scale.space-xs;
+                alignment: start;
+
+                Rectangle {
+                    width: Scale.px(6px);
+                    height: Scale.px(6px);
+                    y: (parent.height - self.height) / 2;
+                    border-radius: Scale.radius-pill;
+                    background:
+                        root.cpu-clamped >= 85 ? Theme.high :
+                        root.cpu-clamped >= 60 ? Theme.moderate :
+                                                 Theme.safe;
+                }
+
+                Text {
+                    text: "CPU " + round(root.cpu-clamped) + "%";
+                    color: Theme.text-secondary;
+                    font-size: Scale.font-xs;
+                    font-weight: 600;
+                    vertical-alignment: center;
+                }
+            }
+
+            // Separator
+            Rectangle {
+                width: 1px;
+                height: Scale.px(12px);
+                y: (parent.height - self.height) / 2;
+                background: Theme.border-subtle;
+            }
+
+            // RAM Metric
+            HorizontalLayout {
+                spacing: Scale.space-xs;
+                alignment: start;
+
+                Rectangle {
+                    width: Scale.px(6px);
+                    height: Scale.px(6px);
+                    y: (parent.height - self.height) / 2;
+                    border-radius: Scale.radius-pill;
+                    background:
+                        root.ram-clamped >= 85 ? Theme.high :
+                        root.ram-clamped >= 70 ? Theme.moderate :
+                                                 Theme.info;
+                }
+
+                Text {
+                    text: "RAM " + round(root.ram-clamped) + "% (" + root.ram-used-text + ")";
+                    color: Theme.text-secondary;
+                    font-size: Scale.font-xs;
+                    font-weight: 600;
+                    vertical-alignment: center;
+                }
+            }
+        }
+
+        // Right: Active worker spinner & pending reboot badge
+        HorizontalLayout {
+            spacing: Scale.space-md;
+            alignment: end;
+
+            if root.worker-active : HorizontalLayout {
+                spacing: Scale.space-xs;
+                alignment: center;
+
+                Rectangle {
+                    width: Scale.px(13px);
+                    height: Scale.px(13px);
+                    y: (parent.height - self.height) / 2;
+                    background: transparent;
+
+                    Rectangle {
+                        width: parent.width;
+                        height: parent.height;
+                        border-radius: parent.width / 2;
+                        border-width: Scale.px(1.8px);
+                        border-color: Theme.accent.with-alpha(0.28);
+                        background: transparent;
+                    }
+
+                    Rectangle {
+                        private property <angle> theta: root.spin-phase * 360deg;
+                        x: (parent.width - self.width) / 2 + cos(self.theta) * (parent.width / 2 - Scale.px(2px));
+                        y: (parent.height - self.height) / 2 + sin(self.theta) * (parent.height / 2 - Scale.px(2px));
+                        width: Scale.px(3.5px);
+                        height: Scale.px(3.5px);
+                        border-radius: Scale.radius-pill;
+                        background: Theme.accent;
+                    }
+                }
+
+                Text {
+                    text: root.worker-label;
+                    color: Theme.text-primary;
+                    font-size: Scale.font-xs;
+                    font-weight: 500;
+                    vertical-alignment: center;
+                }
+            }
+
+            if !root.worker-active : Text {
+                text: "Ready";
+                color: Theme.text-muted;
+                font-size: Scale.font-xs;
+                vertical-alignment: center;
+            }
+
+            if root.reboot-pending : Rectangle {
+                height: Scale.px(20px);
+                y: (parent.height - self.height) / 2;
+                border-radius: Scale.radius-pill;
+                background: transparent;
+
+                WbBadge {
+                    height: Scale.px(20px);
+                    text: "Reboot Required";
+                    variant: "moderate";
+                    show-dot: true;
+                }
+
+                TouchArea {
+                    mouse-cursor: pointer;
+                    clicked => {
+                        root.reboot-clicked();
+                    }
+                }
+            }
+        }
+    }
+}

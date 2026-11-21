@@ -1,0 +1,142 @@
+// ui/components/tweak_row.slint
+import { Scale, Theme } from "../theme.slint";
+import { WbBadge } from "badge.slint";
+import { WbButton } from "button.slint";
+import { WbSwitch } from "switch.slint";
+
+export component WbTweakRow inherits Rectangle {
+    in property <string> title: "";
+    in property <string> description: "";
+    in property <string> category: "";
+    in property <string> risk: "safe";          // "safe" | "low" | "moderate" | "high"
+    in property <string> status: "unoptimized"; // "optimized" | "unoptimized"
+    in property <bool> enabled: true;
+
+    callback toggled(bool);
+    callback inspect-diff();
+
+    private property <bool> is-optimized: root.status == "optimized";
+
+    private property <string> risk-label:
+        root.risk == "safe"     ? "SAFE" :
+        root.risk == "low"      ? "LOW" :
+        root.risk == "moderate" ? "MODERATE" :
+                                  "HIGH";
+
+    min-height: Scale.px(68px);
+    border-radius: Scale.radius-md;
+    background: row-ta.has-hover ? Theme.bg-surface-hover : Theme.bg-surface;
+    border-width: 1px;
+    border-color: root.is-optimized
+        ? Theme.safe-border
+        : (row-ta.has-hover ? Theme.border-default : Theme.border-subtle);
+
+    animate background, border-color {
+        duration: 180ms;
+        easing: spring(0.1);
+    }
+
+    // Hover background tracker (sits behind interactive controls)
+    row-ta := TouchArea {
+        mouse-cursor: default;
+    }
+
+    // Status accent strip on left edge
+    Rectangle {
+        x: 0px;
+        y: Scale.space-sm;
+        width: Scale.px(3px);
+        height: max(0px, parent.height - Scale.space-sm * 2);
+        border-radius: Scale.radius-pill;
+        background: root.is-optimized ? Theme.safe : Theme.border-default;
+
+        animate background {
+            duration: 200ms;
+            easing: spring(0.2);
+        }
+    }
+
+    HorizontalLayout {
+        padding-left: Scale.space-lg;
+        padding-right: Scale.space-md;
+        padding-top: Scale.space-md;
+        padding-bottom: Scale.space-md;
+        spacing: Scale.space-md;
+        alignment: stretch;
+
+        // Primary metadata column
+        VerticalLayout {
+            horizontal-stretch: 1;
+            spacing: Scale.space-2xs;
+            alignment: center;
+
+            HorizontalLayout {
+                spacing: Scale.space-sm;
+                alignment: start;
+
+                Text {
+                    text: root.title;
+                    color: Theme.text-primary;
+                    font-size: Scale.font-md;
+                    font-weight: 600;
+                    vertical-alignment: center;
+                    overflow: elide;
+                }
+
+                if root.category != "" : WbBadge {
+                    text: root.category;
+                    variant: "neutral";
+                }
+
+                WbBadge {
+                    text: root.risk-label;
+                    variant: root.risk;
+                    show-dot: true;
+                }
+            }
+
+            if root.description != "" : Text {
+                text: root.description;
+                color: Theme.text-secondary;
+                font-size: Scale.font-sm;
+                wrap: word-wrap;
+                overflow: elide;
+            }
+        }
+
+        // Right-hand status, diff inspector, and switch cluster
+        HorizontalLayout {
+            spacing: Scale.space-sm;
+            alignment: end;
+
+            WbBadge {
+                y: (parent.height - self.height) / 2;
+                text: root.is-optimized ? "Optimized" : "Unoptimized";
+                variant: root.is-optimized ? "safe" : "neutral";
+                show-dot: root.is-optimized;
+            }
+
+            WbButton {
+                y: (parent.height - self.height) / 2;
+                variant: "ghost";
+                text: "Diff";
+                enabled: root.enabled;
+                min-height: Scale.control-sm;
+                min-width: Scale.px(56px);
+                clicked => {
+                    root.inspect-diff();
+                }
+            }
+
+            WbSwitch {
+                y: (parent.height - self.height) / 2;
+                checked: root.is-optimized;
+                enabled: root.enabled;
+                accessible-name: root.title;
+                toggled(next) => {
+                    root.toggled(next);
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,299 @@
+// ui/shell/titlebar.slint
+import { Scale, Theme } from "../theme.slint";
+import { WbBadge } from "../components/badge.slint";
+
+component CaptionButton inherits Rectangle {
+    in property <string> kind: "minimize"; // "minimize" | "maximize" | "restore" | "close"
+    in property <string> label: "";
+    callback clicked();
+
+    width: Scale.px(46px);
+    height: Scale.titlebar-height;
+    background: transparent;
+
+    accessible-role: button;
+    accessible-label: root.label;
+
+    animate background {
+        duration: 120ms;
+        easing: spring(0.1);
+    }
+
+    // Minimize glyph
+    if root.kind == "minimize" : Path {
+        width: Scale.px(10px);
+        height: Scale.px(10px);
+        x: (parent.width - self.width) / 2;
+        y: (parent.height - self.height) / 2;
+        viewbox-x: 0;
+        viewbox-y: 0;
+        viewbox-width: 12;
+        viewbox-height: 12;
+        commands: "M 1 6 L 11 6";
+        stroke: Theme.text-secondary;
+        stroke-width: 1.4px;
+        fill: transparent;
+    }
+
+    // Maximize glyph
+    if root.kind == "maximize" : Path {
+        width: Scale.px(10px);
+        height: Scale.px(10px);
+        x: (parent.width - self.width) / 2;
+        y: (parent.height - self.height) / 2;
+        viewbox-x: 0;
+        viewbox-y: 0;
+        viewbox-width: 12;
+        viewbox-height: 12;
+        commands: "M 1.5 1.5 L 10.5 1.5 L 10.5 10.5 L 1.5 10.5 Z";
+        stroke: Theme.text-secondary;
+        stroke-width: 1.3px;
+        fill: transparent;
+    }
+
+    // Restore glyph
+    if root.kind == "restore" : Path {
+        width: Scale.px(10px);
+        height: Scale.px(10px);
+        x: (parent.width - self.width) / 2;
+        y: (parent.height - self.height) / 2;
+        viewbox-x: 0;
+        viewbox-y: 0;
+        viewbox-width: 12;
+        viewbox-height: 12;
+        commands: "M 3.5 1.5 L 10.5 1.5 L 10.5 8.5 M 1.5 3.5 L 8.5 3.5 L 8.5 10.5 L 1.5 10.5 Z";
+        stroke: Theme.text-secondary;
+        stroke-width: 1.25px;
+        fill: transparent;
+    }
+
+    // Close glyph
+    if root.kind == "close" : Path {
+        width: Scale.px(10px);
+        height: Scale.px(10px);
+        x: (parent.width - self.width) / 2;
+        y: (parent.height - self.height) / 2;
+        viewbox-x: 0;
+        viewbox-y: 0;
+        viewbox-width: 12;
+        viewbox-height: 12;
+        commands: "M 1.5 1.5 L 10.5 10.5 M 10.5 1.5 L 1.5 10.5";
+        stroke: ta.has-hover ? Theme.text-on-danger : Theme.text-secondary;
+        stroke-width: 1.4px;
+        fill: transparent;
+    }
+
+    ta := TouchArea {
+        mouse-cursor: pointer;
+        clicked => {
+            root.clicked();
+        }
+    }
+
+    states [
+        close-pressed when root.kind == "close" && ta.pressed : {
+            root.background: Theme.caption-close-pressed;
+        }
+        close-hover when root.kind == "close" && ta.has-hover : {
+            root.background: Theme.caption-close-hover;
+        }
+        pressed when ta.pressed : {
+            root.background: Theme.bg-surface-active;
+        }
+        hover when ta.has-hover : {
+            root.background: Theme.bg-surface-hover;
+        }
+    ]
+}
+
+export component AppTitlebar inherits Rectangle {
+    in property <image> logo-icon;
+    in property <string> app-title: "WinBlast-Optimizer";
+    in property <string> version: "v1.0.0";
+    in property <bool> is-admin: true;
+    in property <bool> maximized: false;
+
+    callback search-clicked();
+    callback minimize-clicked();
+    callback maximize-clicked();
+    callback close-clicked();
+
+    height: Scale.titlebar-height;
+    background: Theme.bg-glass-strong;
+    backdrop-blur: Theme.blur-radius;
+
+    // Bottom hairline divider
+    Rectangle {
+        y: parent.height - 1px;
+        width: 100%;
+        height: 1px;
+        background: Theme.border-subtle;
+    }
+
+    // Native frameless window drag region across the full titlebar surface
+    WindowMoveArea {
+        width: 100%;
+        height: 100%;
+    }
+
+    HorizontalLayout {
+        padding-left: Scale.space-md;
+        padding-right: 0px;
+        spacing: Scale.space-sm;
+        alignment: space-between;
+
+        // Left: Brand identity, version, and UAC admin indicator
+        HorizontalLayout {
+            spacing: Scale.space-sm;
+            alignment: start;
+
+            if root.logo-icon.width > 0 : Image {
+                source: root.logo-icon;
+                width: Scale.px(18px);
+                height: Scale.px(18px);
+                y: (parent.height - self.height) / 2;
+                image-fit: contain;
+            }
+
+            if root.logo-icon.width == 0 : Rectangle {
+                width: Scale.px(18px);
+                height: Scale.px(18px);
+                y: (parent.height - self.height) / 2;
+                border-radius: Scale.radius-xs;
+                background: Theme.accent;
+
+                Path {
+                    width: Scale.px(11px);
+                    height: Scale.px(11px);
+                    x: (parent.width - self.width) / 2;
+                    y: (parent.height - self.height) / 2;
+                    viewbox-x: 0;
+                    viewbox-y: 0;
+                    viewbox-width: 16;
+                    viewbox-height: 16;
+                    commands: "M 9 1 L 2 9 L 8 9 L 7 15 L 14 7 L 8 7 Z";
+                    fill: Theme.text-on-accent;
+                }
+            }
+
+            Text {
+                text: root.app-title;
+                color: Theme.text-primary;
+                font-size: Scale.font-md;
+                font-weight: 700;
+                vertical-alignment: center;
+            }
+
+            Text {
+                text: root.version;
+                color: Theme.text-muted;
+                font-size: Scale.font-xs;
+                font-weight: 500;
+                vertical-alignment: center;
+            }
+
+            WbBadge {
+                y: (parent.height - self.height) / 2;
+                text: root.is-admin ? "UAC ADMIN" : "STANDARD";
+                variant: root.is-admin ? "moderate" : "neutral";
+                show-dot: root.is-admin;
+            }
+        }
+
+        // Right: Quick-search command button + native Windows caption controls
+        HorizontalLayout {
+            spacing: Scale.space-sm;
+            alignment: end;
+
+            Rectangle {
+                height: Scale.px(26px);
+                min-width: Scale.px(180px);
+                y: (parent.height - self.height) / 2;
+                border-radius: Scale.radius-sm;
+                background: search-ta.pressed ? Theme.bg-surface-active :
+                            search-ta.has-hover ? Theme.bg-surface-hover :
+                                                  Theme.bg-input;
+                border-width: 1px;
+                border-color: search-ta.has-hover ? Theme.border-default : Theme.border-subtle;
+
+                accessible-role: button;
+                accessible-label: "Quick search";
+
+                animate background, border-color {
+                    duration: 150ms;
+                    easing: spring(0.1);
+                }
+
+                HorizontalLayout {
+                    padding-left: Scale.space-sm;
+                    padding-right: Scale.space-sm;
+                    spacing: Scale.space-xs;
+                    alignment: space-between;
+
+                    HorizontalLayout {
+                        spacing: Scale.space-xs;
+                        alignment: start;
+
+                        Path {
+                            width: Scale.px(12px);
+                            height: Scale.px(12px);
+                            y: (parent.height - self.height) / 2;
+                            viewbox-x: 0;
+                            viewbox-y: 0;
+                            viewbox-width: 24;
+                            viewbox-height: 24;
+                            commands: "M 11 4 A 7 7 0 1 0 11 18 A 7 7 0 1 0 11 4 Z M 20 20 L 16.2 16.2";
+                            stroke: Theme.text-muted;
+                            stroke-width: 2px;
+                            fill: transparent;
+                        }
+
+                        Text {
+                            text: "Search tweaks...";
+                            color: Theme.text-muted;
+                            font-size: Scale.font-xs;
+                            vertical-alignment: center;
+                        }
+                    }
+
+                    Text {
+                        text: "Ctrl+K";
+                        color: Theme.text-muted;
+                        font-size: Scale.font-2xs;
+                        font-weight: 600;
+                        vertical-alignment: center;
+                    }
+                }
+
+                search-ta := TouchArea {
+                    mouse-cursor: pointer;
+                    clicked => {
+                        root.search-clicked();
+                    }
+                }
+            }
+
+            HorizontalLayout {
+                spacing: 0px;
+
+                CaptionButton {
+                    kind: "minimize";
+                    label: "Minimize";
+                    clicked => { root.minimize-clicked(); }
+                }
+
+                CaptionButton {
+                    kind: root.maximized ? "restore" : "maximize";
+                    label: root.maximized ? "Restore window" : "Maximize window";
+                    clicked => { root.maximize-clicked(); }
+                }
+
+                CaptionButton {
+                    kind: "close";
+                    label: "Close";
+                    clicked => { root.close-clicked(); }
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,177 @@
+// ui/components/button.slint
+import { Scale, Theme } from "../theme.slint";
+
+export component WbButton inherits Rectangle {
+    in property <string> variant: "primary"; // "primary" | "secondary" | "ghost" | "danger"
+    in property <string> text: "";
+    in property <image> icon;
+    in property <bool> enabled: true;
+    in property <bool> loading: false;
+
+    callback clicked();
+
+    private property <bool> interactive: root.enabled && !root.loading;
+    private property <float> spin-phase: mod(animation-tick() / 1ms, 900) / 900;
+
+    private property <color> default-bg:
+        root.variant == "primary"   ? Theme.accent :
+        root.variant == "secondary" ? Theme.bg-elevated :
+        root.variant == "danger"    ? Theme.danger :
+                                      transparent;
+
+    private property <color> hover-bg:
+        root.variant == "primary"   ? Theme.accent-hover :
+        root.variant == "secondary" ? Theme.bg-surface-hover :
+        root.variant == "danger"    ? Theme.danger-hover :
+                                      Theme.bg-surface-hover;
+
+    private property <color> pressed-bg:
+        root.variant == "primary"   ? Theme.accent-pressed :
+        root.variant == "secondary" ? Theme.bg-surface-active :
+        root.variant == "danger"    ? Theme.danger-pressed :
+                                      Theme.bg-surface-active;
+
+    private property <color> default-border:
+        root.variant == "secondary" ? Theme.border-default :
+        root.variant == "ghost"     ? transparent :
+                                      transparent;
+
+    private property <color> hover-border:
+        root.variant == "secondary" ? Theme.border-strong :
+        root.variant == "ghost"     ? Theme.border-subtle :
+                                      transparent;
+
+    private property <color> fg-color:
+        root.variant == "primary" ? Theme.text-on-accent :
+        root.variant == "danger"  ? Theme.text-on-danger :
+                                    Theme.text-primary;
+
+    min-height: Scale.control-md;
+    min-width: root.text != "" ? Scale.px(72px) : Scale.control-md;
+    border-radius: Scale.radius-sm;
+    background: root.default-bg;
+    border-width: root.variant == "secondary" || root.variant == "ghost" ? 1px : 0px;
+    border-color: root.default-border;
+    opacity: 1.0;
+
+    accessible-role: button;
+    accessible-label: root.text;
+    accessible-enabled: root.interactive;
+
+    forward-focus: focus-scope;
+
+    animate background, border-color, opacity {
+        duration: 180ms;
+        easing: spring(0.1);
+    }
+
+    // Keyboard focus ring
+    Rectangle {
+        visible: focus-scope.has-focus && root.interactive;
+        x: -2px;
+        y: -2px;
+        width: parent.width + 4px;
+        height: parent.height + 4px;
+        border-radius: root.border-radius + 2px;
+        border-width: 2px;
+        border-color: Theme.border-focus;
+        background: transparent;
+    }
+
+    focus-scope := FocusScope {
+        enabled: root.interactive;
+        key-pressed(event) => {
+            if (event.text == Key.Return || event.text == " ") {
+                root.clicked();
+                accept
+            } else {
+                reject
+            }
+        }
+    }
+
+    HorizontalLayout {
+        padding-left: root.text != "" ? Scale.space-md : Scale.space-sm;
+        padding-right: root.text != "" ? Scale.space-md : Scale.space-sm;
+        padding-top: Scale.space-xs;
+        padding-bottom: Scale.space-xs;
+        spacing: Scale.space-sm;
+        alignment: center;
+
+        if root.loading : Rectangle {
+            width: Scale.px(14px);
+            height: Scale.px(14px);
+            background: transparent;
+
+            // Smooth pulsing arc-ring spinner driven by frame clock
+            Rectangle {
+                width: parent.width;
+                height: parent.height;
+                border-radius: parent.width / 2;
+                border-width: Scale.px(2px);
+                border-color: root.fg-color.with-alpha(0.25);
+                background: transparent;
+            }
+
+            Rectangle {
+                private property <angle> theta: root.spin-phase * 360deg;
+                x: (parent.width - self.width) / 2 + cos(self.theta) * (parent.width / 2 - Scale.px(2px));
+                y: (parent.height - self.height) / 2 + sin(self.theta) * (parent.height / 2 - Scale.px(2px));
+                width: Scale.px(4px);
+                height: Scale.px(4px);
+                border-radius: Scale.radius-pill;
+                background: root.fg-color;
+            }
+        }
+
+        if !root.loading && root.icon.width > 0 : Image {
+            source: root.icon;
+            width: Scale.px(15px);
+            height: Scale.px(15px);
+            image-fit: contain;
+            colorize: root.fg-color;
+            vertical-alignment: center;
+        }
+
+        if root.text != "" : Text {
+            text: root.text;
+            color: root.fg-color;
+            font-size: Scale.font-md;
+            font-weight: 600;
+            vertical-alignment: center;
+            horizontal-alignment: center;
+            overflow: elide;
+        }
+    }
+
+    ta := TouchArea {
+        enabled: root.interactive;
+        mouse-cursor: root.interactive ? pointer : not-allowed;
+        clicked => {
+            if (root.interactive) {
+                root.clicked();
+            }
+        }
+    }
+
+    // Default restoration occurs automatically when no state predicate holds
+    states [
+        disabled when !root.enabled : {
+            root.opacity: 0.42;
+            root.background: root.default-bg;
+            root.border-color: root.default-border;
+        }
+        loading when root.loading : {
+            root.opacity: 0.82;
+            root.background: root.default-bg;
+        }
+        pressed when ta.pressed : {
+            root.background: root.pressed-bg;
+            root.border-color: root.hover-border;
+        }
+        hover when ta.has-hover : {
+            root.background: root.hover-bg;
+            root.border-color: root.hover-border;
+        }
+    ]
+}

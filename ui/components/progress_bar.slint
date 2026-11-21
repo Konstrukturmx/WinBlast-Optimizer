@@ -1,0 +1,59 @@
+// ui/components/progress_bar.slint
+import { Scale, Theme } from "../theme.slint";
+
+export component WbProgressBar inherits Rectangle {
+    in property <float> progress: 0.0; // Clamped 0.0..1.0
+    in property <bool> indeterminate: false;
+    in property <color> bar-color: Theme.accent;
+
+    private property <float> clamped: clamp(root.progress, 0.0, 1.0);
+    private property <float> ind-phase: mod(animation-tick() / 1ms, 1400) / 1400;
+
+    height: Scale.px(6px);
+    min-width: Scale.px(64px);
+    border-radius: Scale.radius-pill;
+    background: Theme.bg-surface-active;
+    clip: true;
+
+    accessible-role: progress-indicator;
+    accessible-value-minimum: 0;
+    accessible-value-maximum: 100;
+    accessible-value: root.indeterminate ? "0" : (round(root.clamped * 100) + "%");
+
+    // Determinate fill bar with smooth spring ease
+    if !root.indeterminate : Rectangle {
+        x: 0px;
+        y: 0px;
+        height: parent.height;
+        width: parent.width * root.clamped;
+        border-radius: Scale.radius-pill;
+        background: @linear-gradient(
+            90deg,
+            root.bar-color 0%,
+            root.bar-color.brighter(0.18) 100%
+        );
+
+        animate width {
+            duration: 280ms;
+            easing: spring(0.2);
+        }
+    }
+
+    // Indeterminate sweeping pill driven by frame-synced animation-tick()
+    if root.indeterminate : Rectangle {
+        private property <float> eased: 0.5 - 0.5 * cos(root.ind-phase * 180deg);
+        private property <length> pill-w: max(Scale.px(32px), parent.width * 0.34);
+
+        y: 0px;
+        height: parent.height;
+        width: self.pill-w;
+        x: -self.pill-w + (parent.width + self.pill-w) * self.eased;
+        border-radius: Scale.radius-pill;
+        background: @linear-gradient(
+            90deg,
+            root.bar-color.with-alpha(0.35) 0%,
+            root.bar-color 50%,
+            root.bar-color.with-alpha(0.35) 100%
+        );
+    }
+}

@@ -1,0 +1,66 @@
+// ui/components/badge.slint
+import { Scale, Theme } from "../theme.slint";
+
+export component WbBadge inherits Rectangle {
+    in property <string> text: "";
+    // "safe" | "low" | "moderate" | "high" | "info" | "neutral"
+    in property <string> variant: "neutral";
+    in property <bool> show-dot: false;
+
+    private property <color> fg-color:
+        root.variant == "safe"     ? Theme.safe :
+        root.variant == "low"      ? Theme.low :
+        root.variant == "moderate" ? Theme.moderate :
+        root.variant == "high"     ? Theme.high :
+        root.variant == "info"     ? Theme.info :
+                                     Theme.neutral;
+
+    private property <color> fill-color:
+        root.variant == "safe"     ? Theme.safe-bg :
+        root.variant == "low"      ? Theme.low-bg :
+        root.variant == "moderate" ? Theme.moderate-bg :
+        root.variant == "high"     ? Theme.high-bg :
+        root.variant == "info"     ? Theme.info-bg :
+                                     Theme.neutral-bg;
+
+    private property <color> stroke-color:
+        root.variant == "safe"     ? Theme.safe-border :
+        root.variant == "low"      ? Theme.low-border :
+        root.variant == "moderate" ? Theme.moderate-border :
+        root.variant == "high"     ? Theme.high-border :
+        root.variant == "info"     ? Theme.info-border :
+                                     Theme.neutral-border;
+
+    height: Scale.px(22px);
+    border-radius: Scale.radius-pill;
+    background: root.fill-color;
+    border-width: 1px;
+    border-color: root.stroke-color;
+
+    accessible-role: AccessibleRole.text;
+    accessible-label: root.text;
+
+    HorizontalLayout {
+        padding-left: Scale.space-sm;
+        padding-right: Scale.space-sm;
+        spacing: Scale.space-2xs;
+        alignment: center;
+
+        if root.show-dot : Rectangle {
+            width: Scale.px(6px);
+            height: Scale.px(6px);
+            y: (parent.height - self.height) / 2;
+            border-radius: Scale.radius-pill;
+            background: root.fg-color;
+        }
+
+        Text {
+            text: root.text;
+            color: root.fg-color;
+            font-size: Scale.font-xs;
+            font-weight: 600;
+            vertical-alignment: center;
+            letter-spacing: 0.3px;
+        }
+    }
+}
