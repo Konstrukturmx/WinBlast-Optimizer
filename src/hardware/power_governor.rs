@@ -7,9 +7,9 @@
 //! - Laptop: Preserves Fast Startup (`HiberbootEnabled = 1`) for mobile wake speed, configuring
 //!   efficient aggressive race-to-idle boost profiles (`PERFBOOSTMODE = 5`).
 
-use serde::{Deserialize, Serialize};
 use crate::core::backend::SystemBackend;
 use crate::core::error::WinBlastError;
+use serde::{Deserialize, Serialize};
 
 /// Detected hardware form factor.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
@@ -43,7 +43,9 @@ pub fn probe_system_form_factor() -> FormFactor {
         // 128 = No system battery (Desktop)
         // 255 = Unknown status (typically Desktop on AC without smart battery)
         // 1, 2, 4 = High, Low, Critical (Laptop battery present)
-        if status.BatteryFlag == 128 || (status.BatteryFlag == 255 && status.BatteryLifePercent == 255) {
+        if status.BatteryFlag == 128
+            || (status.BatteryFlag == 255 && status.BatteryLifePercent == 255)
+        {
             FormFactor::Desktop
         } else if status.BatteryFlag & 128 == 0 && status.BatteryLifePercent <= 100 {
             FormFactor::Laptop
@@ -96,7 +98,11 @@ pub fn apply_chassis_governor<B: SystemBackend>(
     profile: &ChassisProfile,
 ) -> Result<(), WinBlastError> {
     // 1. Fast Startup registry configuration
-    let hiberboot_val = if profile.fast_startup_enabled { 1u32 } else { 0u32 };
+    let hiberboot_val = if profile.fast_startup_enabled {
+        1u32
+    } else {
+        0u32
+    };
     backend.reg_set_dword(
         "HKLM",
         "SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Power",

@@ -32,16 +32,16 @@ pub struct StorageMediumInfo {
 /// Detects whether the volume on the given drive letter incurs a seek penalty.
 #[cfg(windows)]
 pub fn probe_volume_seek_penalty(drive_letter: char) -> Option<bool> {
+    use std::mem::size_of;
     use windows::core::PCWSTR;
     use windows::Win32::Storage::FileSystem::{
         CreateFileW, FILE_SHARE_READ, FILE_SHARE_WRITE, OPEN_EXISTING,
     };
     use windows::Win32::System::Ioctl::{
-        IOCTL_STORAGE_QUERY_PROPERTY, PropertyStandardQuery,
-        StorageDeviceSeekPenaltyProperty, DEVICE_SEEK_PENALTY_DESCRIPTOR, STORAGE_PROPERTY_QUERY,
+        PropertyStandardQuery, StorageDeviceSeekPenaltyProperty, DEVICE_SEEK_PENALTY_DESCRIPTOR,
+        IOCTL_STORAGE_QUERY_PROPERTY, STORAGE_PROPERTY_QUERY,
     };
     use windows::Win32::System::IO::DeviceIoControl;
-    use std::mem::size_of;
 
     let path_utf16: Vec<u16> = format!("\\\\.\\{}:", drive_letter)
         .encode_utf16()

@@ -125,8 +125,10 @@ impl BiosSystemInfo {
                                 info.display_drivers.push(DisplayDriverInfo {
                                     gpu_name: name,
                                     driver_version: version,
-                                    driver_date: date.unwrap_or_else(|_| "Unknown Date".to_string()),
-                                    provider: prov.unwrap_or_else(|_| "Microsoft / Vendor".to_string()),
+                                    driver_date: date
+                                        .unwrap_or_else(|_| "Unknown Date".to_string()),
+                                    provider: prov
+                                        .unwrap_or_else(|_| "Microsoft / Vendor".to_string()),
                                     inf_path: inf.unwrap_or_else(|_| sub.clone()),
                                 });
                             }

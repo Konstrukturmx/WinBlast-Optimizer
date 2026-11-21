@@ -89,7 +89,10 @@ pub(crate) fn query_win32_core_topology(total_logical_hint: usize) -> Option<Win
     if unsafe {
         GetLogicalProcessorInformationEx(
             RelationProcessorCore,
-            Some(buf.as_mut_ptr().cast::<SYSTEM_LOGICAL_PROCESSOR_INFORMATION_EX>()),
+            Some(
+                buf.as_mut_ptr()
+                    .cast::<SYSTEM_LOGICAL_PROCESSOR_INFORMATION_EX>(),
+            ),
             &mut len,
         )
     }
@@ -113,7 +116,8 @@ pub(crate) fn query_win32_core_topology(total_logical_hint: usize) -> Option<Win
     let min_proc_record_size = processor_offset + std::mem::size_of::<PROCESSOR_RELATIONSHIP>();
 
     while offset + 8 <= valid_len {
-        let ptr = unsafe { buf.as_ptr().add(offset) as *const SYSTEM_LOGICAL_PROCESSOR_INFORMATION_EX };
+        let ptr =
+            unsafe { buf.as_ptr().add(offset) as *const SYSTEM_LOGICAL_PROCESSOR_INFORMATION_EX };
         let rel = unsafe { (*ptr).Relationship };
         let size = unsafe { (*ptr).Size } as usize;
         if size < 8 || offset + size > valid_len {
@@ -125,7 +129,8 @@ pub(crate) fn query_win32_core_topology(total_logical_hint: usize) -> Option<Win
             let needed_size = min_proc_record_size
                 + g_cnt.saturating_sub(1) * std::mem::size_of::<GROUP_AFFINITY>();
             if size >= needed_size && g_cnt > 0 {
-                let masks = unsafe { std::slice::from_raw_parts(proc_rel.GroupMask.as_ptr(), g_cnt) };
+                let masks =
+                    unsafe { std::slice::from_raw_parts(proc_rel.GroupMask.as_ptr(), g_cnt) };
                 let mut logical_indices = Vec::new();
                 for ga in masks {
                     let base = group_bases.get(ga.Group as usize).copied().unwrap_or(0);
@@ -244,7 +249,8 @@ mod tests {
         assert_eq!(ultra.logical_core_types[8], "E-Core");
 
         // Uniform non-hybrid CPU (single EfficiencyClass = 0)
-        let uniform_recs: Vec<(u8, Vec<usize>)> = (0..8).map(|i| (0u8, vec![i * 2, i * 2 + 1])).collect();
+        let uniform_recs: Vec<(u8, Vec<usize>)> =
+            (0..8).map(|i| (0u8, vec![i * 2, i * 2 + 1])).collect();
         let ryzen = classify_efficiency_records(&uniform_recs, 16).unwrap();
         assert!(!ryzen.has_hybrid);
         assert_eq!(ryzen.physical_cores, 8);

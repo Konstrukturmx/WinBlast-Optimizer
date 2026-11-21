@@ -220,7 +220,9 @@ fn test_all_embedded_tweaks_full_sandbox_lifecycle() {
         }
 
         match tweak.valuation.reversibility {
-            Reversibility::Instant | Reversibility::RequiresReboot | Reversibility::RequiresLogoff => {
+            Reversibility::Instant
+            | Reversibility::RequiresReboot
+            | Reversibility::RequiresLogoff => {
                 // 4. Rollback every created LedgerEntry -> NotOptimized
                 for entry in &history_after_apply {
                     if let Err(e) = rollback_entry_with(entry, &ledger, &sbx) {
@@ -394,10 +396,12 @@ fn tweaks_scope_overlap(a: &TweakDefinition, b: &TweakDefinition) -> bool {
 
     let edition_overlap = a.os_req.editions.is_empty()
         || b.os_req.editions.is_empty()
-        || a.os_req
-            .editions
-            .iter()
-            .any(|ae| b.os_req.editions.iter().any(|be| ae.eq_ignore_ascii_case(be)));
+        || a.os_req.editions.iter().any(|ae| {
+            b.os_req
+                .editions
+                .iter()
+                .any(|be| ae.eq_ignore_ascii_case(be))
+        });
     if !edition_overlap {
         return false;
     }
@@ -423,7 +427,12 @@ fn tweaks_scope_overlap(a: &TweakDefinition, b: &TweakDefinition) -> bool {
 #[test]
 fn test_catalog_integrity_audit() {
     let tweaks = load_embedded_rules();
-    assert_eq!(tweaks.len(), 230, "Expected 230 tweaks, found {}", tweaks.len());
+    assert_eq!(
+        tweaks.len(),
+        230,
+        "Expected 230 tweaks, found {}",
+        tweaks.len()
+    );
 
     // 1. Zero duplicate IDs & non-empty actions & no opt==def contradictions
     let mut seen_ids = HashSet::new();
@@ -483,7 +492,10 @@ fn test_catalog_integrity_audit() {
                         path.trim().to_lowercase(),
                         name.trim().to_lowercase(),
                     );
-                    dword_targets.entry(key).or_default().push((t, *optimized_value));
+                    dword_targets
+                        .entry(key)
+                        .or_default()
+                        .push((t, *optimized_value));
                 }
                 TweakAction::RegistryString {
                     hive,
@@ -543,7 +555,11 @@ fn test_catalog_integrity_audit() {
                         "Tweak '{}' uses banned HKCR hive!",
                         t.id
                     );
-                    assert!(*min_length > *byte_index, "Tweak '{}' min_length too small", t.id);
+                    assert!(
+                        *min_length > *byte_index,
+                        "Tweak '{}' min_length too small",
+                        t.id
+                    );
                     if (optimized_bits & bit_mask) == (default_bits & bit_mask) {
                         same_opt_def.push(format!("{} -> BinaryBit no-op", t.id));
                     }
@@ -617,10 +633,12 @@ fn test_catalog_integrity_audit() {
                         normalize_guid_str(subgroup_guid),
                         normalize_guid_str(setting_guid),
                     );
-                    pwr_targets
-                        .entry(key)
-                        .or_default()
-                        .push((t, *optimized_ac, *optimized_dc, *scope));
+                    pwr_targets.entry(key).or_default().push((
+                        t,
+                        *optimized_ac,
+                        *optimized_dc,
+                        *scope,
+                    ));
                 }
                 TweakAction::ServiceState {
                     service_name,
@@ -634,7 +652,10 @@ fn test_catalog_integrity_audit() {
                         ));
                     }
                     let key = service_name.trim().to_lowercase();
-                    svc_targets.entry(key).or_default().push((t, *target_start_type));
+                    svc_targets
+                        .entry(key)
+                        .or_default()
+                        .push((t, *target_start_type));
                 }
                 TweakAction::ScheduledTask { task_path, enable } => {
                     let key = normalize_task_path(task_path);
@@ -663,7 +684,10 @@ fn test_catalog_integrity_audit() {
                         .unwrap_or(feature_name)
                         .trim()
                         .to_ascii_lowercase();
-                    feat_targets.entry((*kind, prefix)).or_default().push((t, *enable));
+                    feat_targets
+                        .entry((*kind, prefix))
+                        .or_default()
+                        .push((t, *enable));
                 }
             }
         }
@@ -759,14 +783,22 @@ fn test_catalog_integrity_audit() {
                 let (ta, ac_a, dc_a, scope_a) = entries[i];
                 let (tb, ac_b, dc_b, scope_b) = entries[j];
                 if ta.id != tb.id && tweaks_scope_overlap(ta, tb) {
-                    let touches_ac_a =
-                        matches!(scope_a, PowerTargetScope::AcOnly | PowerTargetScope::AcAndDc);
-                    let touches_ac_b =
-                        matches!(scope_b, PowerTargetScope::AcOnly | PowerTargetScope::AcAndDc);
-                    let touches_dc_a =
-                        matches!(scope_a, PowerTargetScope::DcOnly | PowerTargetScope::AcAndDc);
-                    let touches_dc_b =
-                        matches!(scope_b, PowerTargetScope::DcOnly | PowerTargetScope::AcAndDc);
+                    let touches_ac_a = matches!(
+                        scope_a,
+                        PowerTargetScope::AcOnly | PowerTargetScope::AcAndDc
+                    );
+                    let touches_ac_b = matches!(
+                        scope_b,
+                        PowerTargetScope::AcOnly | PowerTargetScope::AcAndDc
+                    );
+                    let touches_dc_a = matches!(
+                        scope_a,
+                        PowerTargetScope::DcOnly | PowerTargetScope::AcAndDc
+                    );
+                    let touches_dc_b = matches!(
+                        scope_b,
+                        PowerTargetScope::DcOnly | PowerTargetScope::AcAndDc
+                    );
                     if (touches_ac_a && touches_ac_b && ac_a != ac_b)
                         || (touches_dc_a && touches_dc_b && dc_a != dc_b)
                     {
@@ -856,7 +888,10 @@ fn test_app_state_normal_mode_low_build_select_all_and_batch_apply() {
     sbx.seed_all_tweaks(&tweaks);
 
     let mut state = AppState::new_with_backend(Arc::new(sbx));
-    assert!(state.is_scanning, "Non-blocking startup must enter initial scanning state without blocking");
+    assert!(
+        state.is_scanning,
+        "Non-blocking startup must enter initial scanning state without blocking"
+    );
     state.start_scan();
     drain_until(
         &mut state,
@@ -896,12 +931,19 @@ fn test_app_state_normal_mode_low_build_select_all_and_batch_apply() {
     state.select_all();
     assert!(!state.selected_tweaks.is_empty());
     for id in &state.selected_tweaks {
-        assert!(!win11_ids.contains(id), "Easy select_all included NotApplicable tweak {}", id);
+        assert!(
+            !win11_ids.contains(id),
+            "Easy select_all included NotApplicable tweak {}",
+            id
+        );
         let sr = state.get_tweak_scan(id).unwrap();
         assert!(sr.easy_mode_included);
         assert!(sr.risk.stability_risk < winblast0::core::risk::RiskLevel::High);
         assert_ne!(sr.current_state, TweakState::NotApplicable);
-        assert_eq!(state.staged_transitions.get(id), Some(&StagedTransition::StageApply));
+        assert_eq!(
+            state.staged_transitions.get(id),
+            Some(&StagedTransition::StageApply)
+        );
     }
 
     // Advanced mode select_all skips NotApplicable and High/Extreme risk opt-in tweaks
@@ -947,7 +989,12 @@ fn test_app_state_normal_mode_low_build_select_all_and_batch_apply() {
         &mut state,
         Duration::from_secs(10),
         "Normal Mode apply_selected + follow-up scan",
-        |s| !s.is_scanning && s.selected_tweaks.is_empty() && s.staged_transitions.is_empty() && !s.ledger_history.is_empty(),
+        |s| {
+            !s.is_scanning
+                && s.selected_tweaks.is_empty()
+                && s.staged_transitions.is_empty()
+                && !s.ledger_history.is_empty()
+        },
     );
 
     assert!(
@@ -978,12 +1025,9 @@ fn test_app_state_instant_mode_error_unlocks_in_flight_tweaks() {
 
     let mut state = AppState::new_with_backend(Arc::new(sbx.clone()));
     state.start_scan();
-    drain_until(
-        &mut state,
-        Duration::from_secs(5),
-        "initial scan",
-        |s| !s.is_scanning && !s.scan_results.is_empty(),
-    );
+    drain_until(&mut state, Duration::from_secs(5), "initial scan", |s| {
+        !s.is_scanning && !s.scan_results.is_empty()
+    });
     state.toggle_engine_mode();
     assert_eq!(state.engine_mode, EngineMode::Instant);
 
@@ -1045,12 +1089,9 @@ fn test_app_state_export_import_profile_staging_sync() {
 
     let mut state = AppState::new_with_backend(Arc::new(sbx));
     state.start_scan();
-    drain_until(
-        &mut state,
-        Duration::from_secs(5),
-        "initial scan",
-        |s| !s.is_scanning && !s.scan_results.is_empty(),
-    );
+    drain_until(&mut state, Duration::from_secs(5), "initial scan", |s| {
+        !s.is_scanning && !s.scan_results.is_empty()
+    });
     assert_eq!(state.engine_mode, EngineMode::Normal);
 
     let sample_ids: Vec<String> = state
@@ -1163,7 +1204,9 @@ fn test_real_win32_hkcu_reg_sz_and_cleanup() {
     };
 
     let hkcu = RegKey::predef(HKEY_CURRENT_USER);
-    let (key, _) = match hkcu.create_subkey_with_flags(&scratch_path, KEY_READ | KEY_WRITE | KEY_WOW64_64KEY) {
+    let (key, _) = match hkcu
+        .create_subkey_with_flags(&scratch_path, KEY_READ | KEY_WRITE | KEY_WOW64_64KEY)
+    {
         Ok(k) => k,
         Err(e) if e.kind() == std::io::ErrorKind::PermissionDenied => {
             eprintln!("Skipping HKCU scratch test: sandbox restricted HKCU write access: {e}");
@@ -1236,7 +1279,6 @@ fn test_real_win32_hkcu_reg_sz_and_cleanup() {
     );
 }
 
-
 #[test]
 fn test_multi_gpu_0000_amd_and_0001_nvidia_isolation() {
     let tweaks = load_embedded_rules();
@@ -1248,8 +1290,10 @@ fn test_multi_gpu_0000_amd_and_0001_nvidia_isolation() {
         }))
         .expect("Expected NVIDIA Class-subkey tweak in catalog");
 
-    let amd_class_path = "SYSTEM\\CurrentControlSet\\Control\\Class\\{4d36e968-e325-11ce-bfc1-08002be10318}\\0000";
-    let nvidia_class_path = "SYSTEM\\CurrentControlSet\\Control\\Class\\{4d36e968-e325-11ce-bfc1-08002be10318}\\0001";
+    let amd_class_path =
+        "SYSTEM\\CurrentControlSet\\Control\\Class\\{4d36e968-e325-11ce-bfc1-08002be10318}\\0000";
+    let nvidia_class_path =
+        "SYSTEM\\CurrentControlSet\\Control\\Class\\{4d36e968-e325-11ce-bfc1-08002be10318}\\0001";
 
     {
         let mut st = sbx.inner.write().unwrap();
@@ -1273,8 +1317,22 @@ fn test_multi_gpu_0000_amd_and_0001_nvidia_isolation() {
                 dedicated_vram_mb: 24576,
             },
         ];
-        st.registry.insert(("HKLM".to_string(), nvidia_class_path.to_lowercase(), "disabledynamicpstate".to_string()), 0);
-        st.registry.insert(("HKLM".to_string(), amd_class_path.to_lowercase(), "enableulps".to_string()), 1);
+        st.registry.insert(
+            (
+                "HKLM".to_string(),
+                nvidia_class_path.to_lowercase(),
+                "disabledynamicpstate".to_string(),
+            ),
+            0,
+        );
+        st.registry.insert(
+            (
+                "HKLM".to_string(),
+                amd_class_path.to_lowercase(),
+                "enableulps".to_string(),
+            ),
+            1,
+        );
     }
 
     let ledger_dir = winblast0::core::backend::SandboxTempDir::new();
@@ -1287,9 +1345,36 @@ fn test_multi_gpu_0000_amd_and_0001_nvidia_isolation() {
     // Verify 0001 was mutated and 0000 was NOT touched by NVIDIA key
     {
         let st = sbx.inner.read().unwrap();
-        assert_eq!(st.registry.get(&("HKLM".to_string(), nvidia_class_path.to_lowercase(), "disabledynamicpstate".to_string())).copied(), Some(1));
-        assert_eq!(st.registry.get(&("HKLM".to_string(), amd_class_path.to_lowercase(), "disabledynamicpstate".to_string())).copied(), None);
-        assert_eq!(st.registry.get(&("HKLM".to_string(), amd_class_path.to_lowercase(), "enableulps".to_string())).copied(), Some(1));
+        assert_eq!(
+            st.registry
+                .get(&(
+                    "HKLM".to_string(),
+                    nvidia_class_path.to_lowercase(),
+                    "disabledynamicpstate".to_string()
+                ))
+                .copied(),
+            Some(1)
+        );
+        assert_eq!(
+            st.registry
+                .get(&(
+                    "HKLM".to_string(),
+                    amd_class_path.to_lowercase(),
+                    "disabledynamicpstate".to_string()
+                ))
+                .copied(),
+            None
+        );
+        assert_eq!(
+            st.registry
+                .get(&(
+                    "HKLM".to_string(),
+                    amd_class_path.to_lowercase(),
+                    "enableulps".to_string()
+                ))
+                .copied(),
+            Some(1)
+        );
     }
 
     // Revert must cleanly restore 0001
@@ -1297,7 +1382,16 @@ fn test_multi_gpu_0000_amd_and_0001_nvidia_isolation() {
         .expect("Reverting NVIDIA tweak should succeed");
     {
         let st = sbx.inner.read().unwrap();
-        assert_eq!(st.registry.get(&("HKLM".to_string(), nvidia_class_path.to_lowercase(), "disabledynamicpstate".to_string())).copied(), Some(0));
+        assert_eq!(
+            st.registry
+                .get(&(
+                    "HKLM".to_string(),
+                    nvidia_class_path.to_lowercase(),
+                    "disabledynamicpstate".to_string()
+                ))
+                .copied(),
+            Some(0)
+        );
     }
 }
 
@@ -1310,51 +1404,89 @@ fn test_sandbox_clean_apps_startup_features_power_and_autounattend() {
     {
         let mut st = sbx.inner.write().unwrap();
         st.onedrive_kfm_path = Some("Desktop -> C:\\Users\\Test\\OneDrive\\Desktop".to_string());
-        st.appx_packages.insert("Microsoft.SecHealthUI_8wekyb3d8bbwe".to_string());
-        st.appx_packages.insert("Microsoft.BingWeather_8wekyb3d8bbwe".to_string());
+        st.appx_packages
+            .insert("Microsoft.SecHealthUI_8wekyb3d8bbwe".to_string());
+        st.appx_packages
+            .insert("Microsoft.BingWeather_8wekyb3d8bbwe".to_string());
     }
 
     let mut state = AppState::new_with_backend(Arc::new(sbx.clone()));
     state.start_scan();
-    drain_until(&mut state, Duration::from_secs(5), "scan", |s| !s.is_scanning && !s.scan_results.is_empty());
+    drain_until(&mut state, Duration::from_secs(5), "scan", |s| {
+        !s.is_scanning && !s.scan_results.is_empty()
+    });
 
     // 1. Verify optimization_progress excludes NotApplicable
     assert!(state.optimization_progress() >= 0.0 && state.optimization_progress() <= 1.0);
 
     // 2. Disk Cleanup flow
     state.scan_clean_targets_async();
-    drain_until(&mut state, Duration::from_secs(5), "clean scan", |s| !s.clean_targets.is_empty());
+    drain_until(&mut state, Duration::from_secs(5), "clean scan", |s| {
+        !s.clean_targets.is_empty()
+    });
     state.execute_clean_selected();
-    drain_until(&mut state, Duration::from_secs(5), "clean exec", |s| s.last_clean_report.is_some());
+    drain_until(&mut state, Duration::from_secs(5), "clean exec", |s| {
+        s.last_clean_report.is_some()
+    });
     assert!(state.last_clean_report.as_ref().unwrap().total_freed_bytes > 0);
 
     // 3. AppX ProtectedCore lock + Batch Remove + DISM Feature Toggle + OneDrive KFM Safety
     state.scan_appx_and_features_async();
-    drain_until(&mut state, Duration::from_secs(5), "appx load", |s| !s.installed_appx.is_empty());
+    drain_until(&mut state, Duration::from_secs(5), "appx load", |s| {
+        !s.installed_appx.is_empty()
+    });
     assert!(state.onedrive_kfm_warning.is_some());
 
     state.select_safe_and_ai_appx();
-    assert!(!state.selected_appx.iter().any(|f| f.eq_ignore_ascii_case("Microsoft.SecHealthUI_8wekyb3d8bbwe")));
-    assert!(state.selected_appx.iter().any(|f| f.eq_ignore_ascii_case("Microsoft.BingWeather_8wekyb3d8bbwe")));
+    assert!(!state
+        .selected_appx
+        .iter()
+        .any(|f| f.eq_ignore_ascii_case("Microsoft.SecHealthUI_8wekyb3d8bbwe")));
+    assert!(state
+        .selected_appx
+        .iter()
+        .any(|f| f.eq_ignore_ascii_case("Microsoft.BingWeather_8wekyb3d8bbwe")));
     state.remove_selected_appx_async();
-    drain_until(&mut state, Duration::from_secs(5), "appx remove", |s| s.selected_appx.is_empty() && !s.clean_apps_busy);
-    assert!(state.installed_appx.iter().any(|p| p.family_name.eq_ignore_ascii_case("Microsoft.SecHealthUI_8wekyb3d8bbwe")));
+    drain_until(&mut state, Duration::from_secs(5), "appx remove", |s| {
+        s.selected_appx.is_empty() && !s.clean_apps_busy
+    });
+    assert!(state.installed_appx.iter().any(|p| p
+        .family_name
+        .eq_ignore_ascii_case("Microsoft.SecHealthUI_8wekyb3d8bbwe")));
 
     // OneDrive must refuse when KFM active
     state.uninstall_onedrive_async();
-    drain_until(&mut state, Duration::from_secs(5), "onedrive kfm block", |s| !s.clean_apps_busy);
-    assert!(state.status_message.to_lowercase().contains("kfm") || state.status_message.to_lowercase().contains("blocked"));
+    drain_until(
+        &mut state,
+        Duration::from_secs(5),
+        "onedrive kfm block",
+        |s| !s.clean_apps_busy,
+    );
+    assert!(
+        state.status_message.to_lowercase().contains("kfm")
+            || state.status_message.to_lowercase().contains("blocked")
+    );
 
     // Feature toggle
-    state.toggle_optional_feature_async("Recall".to_string(), winblast0::core::risk::OptionalFeatureKind::OptionalFeature, false);
-    drain_until(&mut state, Duration::from_secs(5), "feature toggle", |s| !s.clean_apps_busy);
+    state.toggle_optional_feature_async(
+        "Recall".to_string(),
+        winblast0::core::risk::OptionalFeatureKind::OptionalFeature,
+        false,
+    );
+    drain_until(&mut state, Duration::from_secs(5), "feature toggle", |s| {
+        !s.clean_apps_busy
+    });
 
     // 4. Startup & Core Service Protection
     state.scan_startup_and_tasks_async();
-    drain_until(&mut state, Duration::from_secs(5), "startup scan", |s| !s.startup_entries.is_empty() && !s.live_services.is_empty());
+    drain_until(&mut state, Duration::from_secs(5), "startup scan", |s| {
+        !s.startup_entries.is_empty() && !s.live_services.is_empty()
+    });
     let first_startup = state.startup_entries[0].id.clone();
     state.toggle_startup_entry_async(first_startup, false);
-    drain_until(&mut state, Duration::from_secs(5), "startup toggle", |s| !s.startup_tasks_busy);
+    drain_until(&mut state, Duration::from_secs(5), "startup toggle", |s| {
+        !s.startup_tasks_busy
+    });
 
     // Protected Core Service refusal
     state.set_live_service_start_async("wuauserv".to_string(), 4);
@@ -1363,19 +1495,22 @@ fn test_sandbox_clean_apps_startup_features_power_and_autounattend() {
     // 5. Power & Autounattend Export inside SandboxTempDir
     state.activate_winblast_ultimate_power_plan();
     state.toggle_hibernation(false);
-    drain_until(&mut state, Duration::from_secs(5), "power", |s| !s.power_schemes.is_empty() && !s.hibernation_status.hibernation_enabled);
+    drain_until(&mut state, Duration::from_secs(5), "power", |s| {
+        !s.power_schemes.is_empty() && !s.hibernation_status.hibernation_enabled
+    });
 
     state.export_autounattend_xml();
-    let exported = state.unattend_last_export.as_ref().expect("autounattend.xml export path missing");
+    let exported = state
+        .unattend_last_export
+        .as_ref()
+        .expect("autounattend.xml export path missing");
     let xml = std::fs::read_to_string(exported).expect("Failed to read exported autounattend.xml");
     assert!(xml.contains("<unattend") && xml.contains("BypassTPMCheck"));
 }
 
 #[test]
 fn test_wave1_ledger_rollback_and_concurrency_regressions() {
-    use winblast0::core::risk::{
-        OsRequirement, RiskLevel, RiskValuation, TweakDefinition,
-    };
+    use winblast0::core::risk::{OsRequirement, RiskLevel, RiskValuation, TweakDefinition};
 
     let sbx = SandboxEnv::new();
     let ledger = StateLedger::new(&sbx.default_ledger_path()).expect("ledger init failed");
@@ -1385,21 +1520,45 @@ fn test_wave1_ledger_rollback_and_concurrency_regressions() {
     {
         let mut st = sbx.inner.write().unwrap();
         st.hosts_content = "127.0.0.1 custom-local.dev\r\n".to_string();
-        st.tasks.insert(normalize_task_path(r"\Microsoft\Windows\Autochk\Proxy"), true);
+        st.tasks.insert(
+            normalize_task_path(r"\Microsoft\Windows\Autochk\Proxy"),
+            true,
+        );
         st.registry.insert(
-            ("HKLM".to_string(), r"system\currentcontrolset\control\prioritycontrol".to_string(), "win32priorityseparation".to_string()),
+            (
+                "HKLM".to_string(),
+                r"system\currentcontrolset\control\prioritycontrol".to_string(),
+                "win32priorityseparation".to_string(),
+            ),
             2,
         );
     }
 
     // 1. LedgerEntry::is_reversible accuracy + non-reversible Rollback errors
-    let clean_id = ledger.record_change("disk_cleanup", "CleanTargets:Execute", "2 targets", "10 MB").unwrap();
-    let appx_batch_id = ledger.record_change("appx_batch_remove", "AppXBatch:RemoveAllUsers", "1 selected", "1 removed").unwrap();
-    let app_od_id = ledger.record_change("app_onedrive_remove", "App:OneDrive", "Installed", "Removed").unwrap();
+    let clean_id = ledger
+        .record_change("disk_cleanup", "CleanTargets:Execute", "2 targets", "10 MB")
+        .unwrap();
+    let appx_batch_id = ledger
+        .record_change(
+            "appx_batch_remove",
+            "AppXBatch:RemoveAllUsers",
+            "1 selected",
+            "1 removed",
+        )
+        .unwrap();
+    let app_od_id = ledger
+        .record_change(
+            "app_onedrive_remove",
+            "App:OneDrive",
+            "Installed",
+            "Removed",
+        )
+        .unwrap();
 
     // 2. GpuMsi roundtrip preserves msi + priority
     let orig_gpu = &sbx.inner.read().unwrap().gpus[0].clone();
-    sbx.set_gpu_msi_mode(&gpu_pnp, !orig_gpu.msi_enabled, 3).unwrap();
+    sbx.set_gpu_msi_mode(&gpu_pnp, !orig_gpu.msi_enabled, 3)
+        .unwrap();
     let msi_id = ledger
         .record_change(
             "gpu_msi_mode",
@@ -1411,7 +1570,8 @@ fn test_wave1_ledger_rollback_and_concurrency_regressions() {
 
     // 3. WindowsFeature roundtrip
     let feat_name = "Recall";
-    sbx.set_optional_feature(feat_name, OptionalFeatureKind::OptionalFeature, false).unwrap();
+    sbx.set_optional_feature(feat_name, OptionalFeatureKind::OptionalFeature, false)
+        .unwrap();
     let feat_id = ledger
         .record_change(
             "feature_Recall",
@@ -1434,10 +1594,17 @@ fn test_wave1_ledger_rollback_and_concurrency_regressions() {
         .unwrap();
 
     // 5. HostsBlock roundtrip removes only WinBlast0 blocklist
-    let added = sbx.block_telemetry_hosts(&["vortex.data.microsoft.com"]).unwrap();
+    let added = sbx
+        .block_telemetry_hosts(&["vortex.data.microsoft.com"])
+        .unwrap();
     assert_eq!(added, 1);
     let hosts_id = ledger
-        .record_change("privacy_hosts_block", "HostsBlock:TelemetryDomains", "unblocked", "+1 blocked")
+        .record_change(
+            "privacy_hosts_block",
+            "HostsBlock:TelemetryDomains",
+            "unblocked",
+            "+1 blocked",
+        )
         .unwrap();
 
     // 6. PowerCfg ActiveScheme, Hibernation, UsbPowerSaving roundtrips
@@ -1445,25 +1612,49 @@ fn test_wave1_ledger_rollback_and_concurrency_regressions() {
     let ult_scheme = sbx.create_and_activate_performance_plan().unwrap();
     assert_ne!(orig_scheme, ult_scheme);
     let pwr_scheme_id = ledger
-        .record_change("power_ultimate_plan", "PowerCfg:UltimateScheme", &orig_scheme, &ult_scheme)
+        .record_change(
+            "power_ultimate_plan",
+            "PowerCfg:UltimateScheme",
+            &orig_scheme,
+            &ult_scheme,
+        )
         .unwrap();
     sbx.set_hibernation_enabled(false).unwrap();
     let pwr_hib_id = ledger
-        .record_change("power_hibernation", "PowerCfg:Hibernation", "enabled", "disabled")
+        .record_change(
+            "power_hibernation",
+            "PowerCfg:Hibernation",
+            "enabled",
+            "disabled",
+        )
         .unwrap();
     sbx.set_usb_power_saving_enabled(false).unwrap();
     let pwr_usb_id = ledger
-        .record_change("power_usb_hub_idle", "PowerCfg:UsbPowerSaving", "enabled", "disabled")
+        .record_change(
+            "power_usb_hub_idle",
+            "PowerCfg:UsbPowerSaving",
+            "enabled",
+            "disabled",
+        )
         .unwrap();
 
     // 7. StartupApproved roundtrip by ID
-    let startup_entry = sbx.list_startup_entries().unwrap().into_iter().next().unwrap();
+    let startup_entry = sbx
+        .list_startup_entries()
+        .unwrap()
+        .into_iter()
+        .next()
+        .unwrap();
     let orig_startup_en = startup_entry.enabled;
-    sbx.set_startup_entry_enabled(&startup_entry, !orig_startup_en).unwrap();
+    sbx.set_startup_entry_enabled(&startup_entry, !orig_startup_en)
+        .unwrap();
     let startup_id = ledger
         .record_change(
             "startup_test",
-            &format!("StartupApproved:{}", winblast0::core::reg_helpers::escape_pipe(&startup_entry.id)),
+            &format!(
+                "StartupApproved:{}",
+                winblast0::core::reg_helpers::escape_pipe(&startup_entry.id)
+            ),
             &orig_startup_en.to_string(),
             &(!orig_startup_en).to_string(),
         )
@@ -1472,21 +1663,46 @@ fn test_wave1_ledger_rollback_and_concurrency_regressions() {
     let history = ledger.get_history().unwrap();
     for id in [clean_id, appx_batch_id, app_od_id] {
         let entry = history.iter().find(|e| e.id == id).unwrap();
-        assert!(!entry.is_reversible(), "Expected {} to be non-reversible", entry.action_type);
-        let err = rollback_entry_with(entry, &ledger, &sbx).expect_err("Non-reversible entry must fail rollback");
-        assert!(matches!(err, WinBlastError::Rollback(_)), "Expected WinBlastError::Rollback, got {:?}", err);
+        assert!(
+            !entry.is_reversible(),
+            "Expected {} to be non-reversible",
+            entry.action_type
+        );
+        let err = rollback_entry_with(entry, &ledger, &sbx)
+            .expect_err("Non-reversible entry must fail rollback");
+        assert!(
+            matches!(err, WinBlastError::Rollback(_)),
+            "Expected WinBlastError::Rollback, got {:?}",
+            err
+        );
     }
 
-    for id in [msi_id, feat_id, task_id, hosts_id, pwr_scheme_id, pwr_hib_id, pwr_usb_id, startup_id] {
+    for id in [
+        msi_id,
+        feat_id,
+        task_id,
+        hosts_id,
+        pwr_scheme_id,
+        pwr_hib_id,
+        pwr_usb_id,
+        startup_id,
+    ] {
         let entry = history.iter().find(|e| e.id == id).unwrap();
-        assert!(entry.is_reversible(), "Expected {} to be reversible", entry.action_type);
+        assert!(
+            entry.is_reversible(),
+            "Expected {} to be reversible",
+            entry.action_type
+        );
         rollback_entry_with(entry, &ledger, &sbx)
             .unwrap_or_else(|e| panic!("Rollback failed for {}: {}", entry.action_type, e));
     }
 
     let gpus_after = sbx.detect_gpus();
     assert_eq!(gpus_after[0].msi_enabled, orig_gpu.msi_enabled);
-    assert_eq!(gpus_after[0].interrupt_priority, orig_gpu.interrupt_priority);
+    assert_eq!(
+        gpus_after[0].interrupt_priority,
+        orig_gpu.interrupt_priority
+    );
     assert_eq!(sbx.get_task_enabled(task_path), Some(true));
     assert_eq!(sbx.get_active_power_scheme().unwrap(), orig_scheme);
     assert!(sbx.query_hibernation_status().hibernation_enabled);
@@ -1494,18 +1710,33 @@ fn test_wave1_ledger_rollback_and_concurrency_regressions() {
     assert!(hosts_after.contains("127.0.0.1 custom-local.dev"));
     assert!(!hosts_after.contains("WinBlast0 Telemetry Blocklist"));
     assert!(!hosts_after.contains("vortex.data.microsoft.com"));
-    let st_after = sbx.list_startup_entries().unwrap().into_iter().find(|e| e.id == startup_entry.id).unwrap();
+    let st_after = sbx
+        .list_startup_entries()
+        .unwrap()
+        .into_iter()
+        .find(|e| e.id == startup_entry.id)
+        .unwrap();
     assert_eq!(st_after.enabled, orig_startup_en);
 
     // 8. Out-of-order RegistryBinaryBit rollback preserves sibling bits and later bit writes
-    sbx.reg_set_binary("HKCU", r"Control Panel\Desktop", "UserPreferencesMask", &[0x01, 0x00, 0x00, 0x00]).unwrap();
+    sbx.reg_set_binary(
+        "HKCU",
+        r"Control Panel\Desktop",
+        "UserPreferencesMask",
+        &[0x01, 0x00, 0x00, 0x00],
+    )
+    .unwrap();
     let mk_bit_tweak = |id: &str, mask: u8, opt: u8| TweakDefinition {
         id: id.to_string(),
         title: id.to_string(),
         category: "UX".to_string(),
         description: String::new(),
         easy_mode_included: false,
-        os_req: OsRequirement { min_build: 19041, max_build: None, editions: vec![] },
+        os_req: OsRequirement {
+            min_build: 19041,
+            max_build: None,
+            editions: vec![],
+        },
         valuation: RiskValuation {
             stability_risk: RiskLevel::Safe,
             performance_gain: 0,
@@ -1537,20 +1768,31 @@ fn test_wave1_ledger_rollback_and_concurrency_regressions() {
     let t2 = mk_bit_tweak("bit_10", 0x10, 0x10);
     apply_tweak_with(&t1, &ledger, &sbx).unwrap();
     apply_tweak_with(&t2, &ledger, &sbx).unwrap();
-    assert_eq!(sbx.reg_get_binary("HKCU", r"Control Panel\Desktop", "UserPreferencesMask").unwrap()[0], 0x15);
+    assert_eq!(
+        sbx.reg_get_binary("HKCU", r"Control Panel\Desktop", "UserPreferencesMask")
+            .unwrap()[0],
+        0x15
+    );
     let bit_hist = ledger.get_history().unwrap();
     let e1 = bit_hist.iter().find(|e| e.tweak_id == "bit_04").unwrap();
     rollback_entry_with(e1, &ledger, &sbx).unwrap();
-    assert_eq!(sbx.reg_get_binary("HKCU", r"Control Panel\Desktop", "UserPreferencesMask").unwrap()[0], 0x11);
+    assert_eq!(
+        sbx.reg_get_binary("HKCU", r"Control Panel\Desktop", "UserPreferencesMask")
+            .unwrap()[0],
+        0x11
+    );
 
     // 9. navigate(CleanAndApps) starts BOTH disk clean scan and AppX/feature scan
     let sbx_ui = SandboxEnv::new();
     sbx_ui.seed_all_tweaks(&load_embedded_rules());
     let mut state = AppState::new_with_backend(Arc::new(sbx_ui));
     state.navigate(ActiveView::CleanAndApps);
-    drain_until(&mut state, Duration::from_secs(5), "clean & apps concurrent init", |s| {
-        !s.clean_targets.is_empty() && !s.installed_appx.is_empty() && !s.is_clean_apps_busy()
-    });
+    drain_until(
+        &mut state,
+        Duration::from_secs(5),
+        "clean & apps concurrent init",
+        |s| !s.clean_targets.is_empty() && !s.installed_appx.is_empty() && !s.is_clean_apps_busy(),
+    );
 
     // 10. import_profile filters unknown tweak IDs cleanly
     let prof_path = state.profile_path.clone();
@@ -1563,7 +1805,10 @@ fn test_wave1_ledger_rollback_and_concurrency_regressions() {
     )
     .unwrap();
     state.import_profile();
-    assert!(state.selected_tweaks.contains("disable_hibernation") || !state.selected_tweaks.contains("nonexistent_bogus_tweak_id"));
+    assert!(
+        state.selected_tweaks.contains("disable_hibernation")
+            || !state.selected_tweaks.contains("nonexistent_bogus_tweak_id")
+    );
     assert!(!state.selected_tweaks.contains("nonexistent_bogus_tweak_id"));
 }
 
@@ -1595,11 +1840,21 @@ impl FailAtMutationBackend {
 }
 
 impl SystemBackend for FailAtMutationBackend {
-    fn is_elevated(&self) -> bool { self.inner.is_elevated() }
-    fn detect_os(&self) -> BlastResult<WindowsInfo> { self.inner.detect_os() }
-    fn default_ledger_path(&self) -> std::path::PathBuf { self.inner.default_ledger_path() }
-    fn default_profile_path(&self) -> std::path::PathBuf { self.inner.default_profile_path() }
-    fn reg_get_dword(&self, h: &str, p: &str, n: &str) -> Option<u32> { self.inner.reg_get_dword(h, p, n) }
+    fn is_elevated(&self) -> bool {
+        self.inner.is_elevated()
+    }
+    fn detect_os(&self) -> BlastResult<WindowsInfo> {
+        self.inner.detect_os()
+    }
+    fn default_ledger_path(&self) -> std::path::PathBuf {
+        self.inner.default_ledger_path()
+    }
+    fn default_profile_path(&self) -> std::path::PathBuf {
+        self.inner.default_profile_path()
+    }
+    fn reg_get_dword(&self, h: &str, p: &str, n: &str) -> Option<u32> {
+        self.inner.reg_get_dword(h, p, n)
+    }
     fn reg_set_dword(&self, h: &str, p: &str, n: &str, v: u32) -> BlastResult<()> {
         self.maybe_arm_error();
         self.inner.reg_set_dword(h, p, n, v)
@@ -1608,24 +1863,44 @@ impl SystemBackend for FailAtMutationBackend {
         self.maybe_arm_error();
         self.inner.reg_delete_value(h, p, n)
     }
-    fn reg_get_string(&self, h: &str, p: &str, n: &str, gv: Option<&str>) -> Option<RegStringValue> {
+    fn reg_get_string(
+        &self,
+        h: &str,
+        p: &str,
+        n: &str,
+        gv: Option<&str>,
+    ) -> Option<RegStringValue> {
         self.inner.reg_get_string(h, p, n, gv)
     }
-    fn reg_set_string(&self, h: &str, p: &str, n: &str, v: &str, e: bool, gv: Option<&str>) -> BlastResult<()> {
+    fn reg_set_string(
+        &self,
+        h: &str,
+        p: &str,
+        n: &str,
+        v: &str,
+        e: bool,
+        gv: Option<&str>,
+    ) -> BlastResult<()> {
         self.maybe_arm_error();
         self.inner.reg_set_string(h, p, n, v, e, gv)
     }
-    fn reg_get_binary(&self, h: &str, p: &str, n: &str) -> Option<Vec<u8>> { self.inner.reg_get_binary(h, p, n) }
+    fn reg_get_binary(&self, h: &str, p: &str, n: &str) -> Option<Vec<u8>> {
+        self.inner.reg_get_binary(h, p, n)
+    }
     fn reg_set_binary(&self, h: &str, p: &str, n: &str, b: &[u8]) -> BlastResult<()> {
         self.maybe_arm_error();
         self.inner.reg_set_binary(h, p, n, b)
     }
-    fn reg_get_raw(&self, h: &str, p: &str, n: &str) -> Option<RegRawSnapshot> { self.inner.reg_get_raw(h, p, n) }
+    fn reg_get_raw(&self, h: &str, p: &str, n: &str) -> Option<RegRawSnapshot> {
+        self.inner.reg_get_raw(h, p, n)
+    }
     fn reg_set_raw(&self, h: &str, p: &str, n: &str, r: &RegRawSnapshot) -> BlastResult<()> {
         self.maybe_arm_error();
         self.inner.reg_set_raw(h, p, n, r)
     }
-    fn reg_key_exists(&self, h: &str, p: &str) -> bool { self.inner.reg_key_exists(h, p) }
+    fn reg_key_exists(&self, h: &str, p: &str) -> bool {
+        self.inner.reg_key_exists(h, p)
+    }
     fn reg_snapshot_tree(&self, h: &str, p: &str) -> BlastResult<Option<RegTreeSnapshot>> {
         self.inner.reg_snapshot_tree(h, p)
     }
@@ -1636,97 +1911,197 @@ impl SystemBackend for FailAtMutationBackend {
     fn reg_restore_tree(&self, h: &str, p: &str, s: &RegTreeSnapshot) -> BlastResult<()> {
         self.inner.reg_restore_tree(h, p, s)
     }
-    fn total_physical_ram_kb(&self) -> u64 { self.inner.total_physical_ram_kb() }
-    fn logical_core_count(&self) -> u32 { self.inner.logical_core_count() }
-    fn detect_platform_security(&self) -> PlatformSecurityInfo { self.inner.detect_platform_security() }
-    fn get_active_power_scheme(&self) -> BlastResult<String> { self.inner.get_active_power_scheme() }
-    fn list_power_schemes(&self) -> Vec<PowerSchemeInfo> { self.inner.list_power_schemes() }
-    fn set_active_power_scheme(&self, s: &str) -> BlastResult<()> { self.inner.set_active_power_scheme(s) }
+    fn total_physical_ram_kb(&self) -> u64 {
+        self.inner.total_physical_ram_kb()
+    }
+    fn logical_core_count(&self) -> u32 {
+        self.inner.logical_core_count()
+    }
+    fn detect_platform_security(&self) -> PlatformSecurityInfo {
+        self.inner.detect_platform_security()
+    }
+    fn get_active_power_scheme(&self) -> BlastResult<String> {
+        self.inner.get_active_power_scheme()
+    }
+    fn list_power_schemes(&self) -> Vec<PowerSchemeInfo> {
+        self.inner.list_power_schemes()
+    }
+    fn set_active_power_scheme(&self, s: &str) -> BlastResult<()> {
+        self.inner.set_active_power_scheme(s)
+    }
     fn create_and_activate_performance_plan(&self) -> BlastResult<String> {
         self.inner.create_and_activate_performance_plan()
     }
-    fn read_power_setting_index(&self, sc: Option<&str>, sg: &str, st: &str) -> BlastResult<(u32, u32)> {
+    fn read_power_setting_index(
+        &self,
+        sc: Option<&str>,
+        sg: &str,
+        st: &str,
+    ) -> BlastResult<(u32, u32)> {
         self.inner.read_power_setting_index(sc, sg, st)
     }
-    fn write_power_setting_index(&self, sc: Option<&str>, sg: &str, st: &str, ac: Option<u32>, dc: Option<u32>, uh: bool) -> BlastResult<()> {
+    fn write_power_setting_index(
+        &self,
+        sc: Option<&str>,
+        sg: &str,
+        st: &str,
+        ac: Option<u32>,
+        dc: Option<u32>,
+        uh: bool,
+    ) -> BlastResult<()> {
         self.maybe_arm_error();
         self.inner.write_power_setting_index(sc, sg, st, ac, dc, uh)
     }
-    fn query_hibernation_status(&self) -> HibernationStatus { self.inner.query_hibernation_status() }
+    fn query_hibernation_status(&self) -> HibernationStatus {
+        self.inner.query_hibernation_status()
+    }
     fn set_hibernation_enabled(&self, e: bool) -> BlastResult<HibernationStatus> {
         self.inner.set_hibernation_enabled(e)
     }
     fn set_usb_root_hub_power_saving(&self, d: bool) -> BlastResult<usize> {
         self.inner.set_usb_root_hub_power_saving(d)
     }
-    fn get_service_start_type(&self, s: &str) -> Option<u32> { self.inner.get_service_start_type(s) }
+    fn get_service_start_type(&self, s: &str) -> Option<u32> {
+        self.inner.get_service_start_type(s)
+    }
     fn set_service_start_type(&self, s: &str, st: u32) -> BlastResult<()> {
         self.maybe_arm_error();
         self.inner.set_service_start_type(s, st)
     }
-    fn load_task_cache(&self) -> TaskCache { self.inner.load_task_cache() }
-    fn get_task_enabled(&self, p: &str) -> Option<bool> { self.inner.get_task_enabled(p) }
+    fn load_task_cache(&self) -> TaskCache {
+        self.inner.load_task_cache()
+    }
+    fn get_task_enabled(&self, p: &str) -> Option<bool> {
+        self.inner.get_task_enabled(p)
+    }
     fn set_scheduled_task_enabled(&self, p: &str, e: bool) -> BlastResult<()> {
         self.maybe_arm_error();
         self.inner.set_scheduled_task_enabled(p, e)
     }
-    fn load_appx_cache(&self) -> AppxCache { self.inner.load_appx_cache() }
+    fn load_appx_cache(&self) -> AppxCache {
+        self.inner.load_appx_cache()
+    }
     fn remove_appx_package(&self, p: &str) -> BlastResult<()> {
         self.maybe_arm_error();
         self.inner.remove_appx_package(p)
     }
-    fn read_hosts_file(&self) -> Option<String> { self.inner.read_hosts_file() }
-    fn write_hosts_file(&self, c: &str) -> BlastResult<()> { self.inner.write_hosts_file(c) }
-    fn block_telemetry_hosts(&self, h: &[&str]) -> BlastResult<usize> { self.inner.block_telemetry_hosts(h) }
-    fn list_restore_points(&self) -> BlastResult<Vec<RestorePoint>> { self.inner.list_restore_points() }
-    fn create_restore_point(&self, d: &str) -> BlastResult<()> { self.inner.create_restore_point(d) }
-    fn detect_cpu(&self) -> CpuInfo { self.inner.detect_cpu() }
-    fn detect_gpus(&self) -> Vec<DetectedGpu> { self.inner.detect_gpus() }
+    fn read_hosts_file(&self) -> Option<String> {
+        self.inner.read_hosts_file()
+    }
+    fn write_hosts_file(&self, c: &str) -> BlastResult<()> {
+        self.inner.write_hosts_file(c)
+    }
+    fn block_telemetry_hosts(&self, h: &[&str]) -> BlastResult<usize> {
+        self.inner.block_telemetry_hosts(h)
+    }
+    fn list_restore_points(&self) -> BlastResult<Vec<RestorePoint>> {
+        self.inner.list_restore_points()
+    }
+    fn create_restore_point(&self, d: &str) -> BlastResult<()> {
+        self.inner.create_restore_point(d)
+    }
+    fn detect_cpu(&self) -> CpuInfo {
+        self.inner.detect_cpu()
+    }
+    fn detect_gpus(&self) -> Vec<DetectedGpu> {
+        self.inner.detect_gpus()
+    }
     fn set_gpu_msi_mode(&self, id: &str, e: bool, pr: u32) -> std::io::Result<()> {
         self.inner.set_gpu_msi_mode(id, e, pr)
     }
-    fn is_hags_enabled(&self) -> bool { self.inner.is_hags_enabled() }
-    fn set_hags(&self, e: bool) -> std::io::Result<()> { self.inner.set_hags(e) }
-    fn is_mpo_disabled(&self) -> bool { self.inner.is_mpo_disabled() }
-    fn set_mpo_disabled(&self, d: bool) -> std::io::Result<()> { self.inner.set_mpo_disabled(d) }
-    fn detect_core_parking(&self) -> CoreParkingState { self.inner.detect_core_parking() }
-    fn unpark_all_cores(&self) -> BlastResult<()> { self.inner.unpark_all_cores() }
-    fn restore_stock_parking(&self) -> BlastResult<()> { self.inner.restore_stock_parking() }
-    fn capture_latency(&self) -> LatencySnapshot { self.inner.capture_latency() }
-    fn run_latency_benchmark(&self, s: &str) -> LatencyBenchmarkSnapshot { self.inner.run_latency_benchmark(s) }
-    fn create_metrics_sampler(&self, m: usize) -> Box<dyn MetricsSampler> { self.inner.create_metrics_sampler(m) }
-    fn scan_clean_targets(&self) -> Vec<CleanTargetScan> { self.inner.scan_clean_targets() }
+    fn is_hags_enabled(&self) -> bool {
+        self.inner.is_hags_enabled()
+    }
+    fn set_hags(&self, e: bool) -> std::io::Result<()> {
+        self.inner.set_hags(e)
+    }
+    fn is_mpo_disabled(&self) -> bool {
+        self.inner.is_mpo_disabled()
+    }
+    fn set_mpo_disabled(&self, d: bool) -> std::io::Result<()> {
+        self.inner.set_mpo_disabled(d)
+    }
+    fn detect_core_parking(&self) -> CoreParkingState {
+        self.inner.detect_core_parking()
+    }
+    fn unpark_all_cores(&self) -> BlastResult<()> {
+        self.inner.unpark_all_cores()
+    }
+    fn restore_stock_parking(&self) -> BlastResult<()> {
+        self.inner.restore_stock_parking()
+    }
+    fn capture_latency(&self) -> LatencySnapshot {
+        self.inner.capture_latency()
+    }
+    fn run_latency_benchmark(&self, s: &str) -> LatencyBenchmarkSnapshot {
+        self.inner.run_latency_benchmark(s)
+    }
+    fn create_metrics_sampler(&self, m: usize) -> Box<dyn MetricsSampler> {
+        self.inner.create_metrics_sampler(m)
+    }
+    fn scan_clean_targets(&self) -> Vec<CleanTargetScan> {
+        self.inner.scan_clean_targets()
+    }
     fn execute_clean_targets(&self, k: &[CleanTargetKind]) -> BlastResult<CleanExecutionReport> {
         self.inner.execute_clean_targets(k)
     }
-    fn list_installed_appx_detailed(&self) -> Vec<InstalledAppxPackage> { self.inner.list_installed_appx_detailed() }
+    fn list_installed_appx_detailed(&self) -> Vec<InstalledAppxPackage> {
+        self.inner.list_installed_appx_detailed()
+    }
     fn remove_appx_batch(&self, f: &[String], rp: bool) -> BlastResult<usize> {
         self.inner.remove_appx_batch(f, rp)
     }
     fn list_optional_features(&self) -> BlastResult<Vec<WindowsOptionalFeature>> {
         self.inner.list_optional_features()
     }
-    fn set_optional_feature(&self, n: &str, k: OptionalFeatureKind, e: bool) -> BlastResult<FeatureInstallState> {
+    fn set_optional_feature(
+        &self,
+        n: &str,
+        k: OptionalFeatureKind,
+        e: bool,
+    ) -> BlastResult<FeatureInstallState> {
         self.maybe_arm_error();
         self.inner.set_optional_feature(n, k, e)
     }
-    fn check_onedrive_kfm_active(&self) -> Option<String> { self.inner.check_onedrive_kfm_active() }
-    fn uninstall_onedrive_safe(&self) -> BlastResult<String> { self.inner.uninstall_onedrive_safe() }
-    fn remove_edge_preserve_webview2(&self) -> BlastResult<String> { self.inner.remove_edge_preserve_webview2() }
-    fn winget_install_package(&self, p: &str) -> BlastResult<String> { self.inner.winget_install_package(p) }
-    fn list_startup_entries(&self) -> BlastResult<Vec<StartupEntry>> { self.inner.list_startup_entries() }
+    fn check_onedrive_kfm_active(&self) -> Option<String> {
+        self.inner.check_onedrive_kfm_active()
+    }
+    fn uninstall_onedrive_safe(&self) -> BlastResult<String> {
+        self.inner.uninstall_onedrive_safe()
+    }
+    fn remove_edge_preserve_webview2(&self) -> BlastResult<String> {
+        self.inner.remove_edge_preserve_webview2()
+    }
+    fn winget_install_package(&self, p: &str) -> BlastResult<String> {
+        self.inner.winget_install_package(p)
+    }
+    fn list_startup_entries(&self) -> BlastResult<Vec<StartupEntry>> {
+        self.inner.list_startup_entries()
+    }
     fn set_startup_entry_enabled(&self, e: &StartupEntry, en: bool) -> BlastResult<()> {
         self.inner.set_startup_entry_enabled(e, en)
     }
     fn set_startup_entry_enabled_by_id(&self, id: &str, en: bool) -> BlastResult<()> {
         self.inner.set_startup_entry_enabled_by_id(id, en)
     }
-    fn list_live_services(&self) -> BlastResult<Vec<LiveServiceInfo>> { self.inner.list_live_services() }
-    fn list_live_tasks(&self) -> Vec<LiveScheduledTaskInfo> { self.inner.list_live_tasks() }
-    fn run_scheduled_task(&self, p: &str) -> BlastResult<()> { self.inner.run_scheduled_task(p) }
-    fn restart_explorer_safely(&self) -> BlastResult<String> { self.inner.restart_explorer_safely() }
-    fn broadcast_shell_settings_changed(&self) { self.inner.broadcast_shell_settings_changed() }
-    fn request_system_reboot(&self) -> BlastResult<()> { self.inner.request_system_reboot() }
+    fn list_live_services(&self) -> BlastResult<Vec<LiveServiceInfo>> {
+        self.inner.list_live_services()
+    }
+    fn list_live_tasks(&self) -> Vec<LiveScheduledTaskInfo> {
+        self.inner.list_live_tasks()
+    }
+    fn run_scheduled_task(&self, p: &str) -> BlastResult<()> {
+        self.inner.run_scheduled_task(p)
+    }
+    fn restart_explorer_safely(&self) -> BlastResult<String> {
+        self.inner.restart_explorer_safely()
+    }
+    fn broadcast_shell_settings_changed(&self) {
+        self.inner.broadcast_shell_settings_changed()
+    }
+    fn request_system_reboot(&self) -> BlastResult<()> {
+        self.inner.request_system_reboot()
+    }
 }
 
 use winblast0::core::risk::FeatureInstallState;
@@ -1806,16 +2181,30 @@ fn test_atomic_partial_failure_rollback_and_partially_optimized_lifecycle() {
     assert!(err.to_string().contains("Injected fault at mutation #2"));
 
     // Action 0 must have been atomically rolled back to default (0), Actions 1 & 2 untouched
-    assert_eq!(sbx.reg_get_dword("HKCU", r"Software\WinBlast0Test\Atomic", "FirstValue"), Some(0));
     assert_eq!(
-        sbx.reg_get_string("HKCU", r"Software\WinBlast0Test\Atomic", "SecondString", None)
-            .map(|s| s.value),
+        sbx.reg_get_dword("HKCU", r"Software\WinBlast0Test\Atomic", "FirstValue"),
+        Some(0)
+    );
+    assert_eq!(
+        sbx.reg_get_string(
+            "HKCU",
+            r"Software\WinBlast0Test\Atomic",
+            "SecondString",
+            None
+        )
+        .map(|s| s.value),
         Some("stock".to_string())
     );
-    assert_eq!(sbx.reg_get_dword("HKCU", r"Software\WinBlast0Test\Atomic", "ThirdValue"), Some(10));
+    assert_eq!(
+        sbx.reg_get_dword("HKCU", r"Software\WinBlast0Test\Atomic", "ThirdValue"),
+        Some(10)
+    );
     let hist = ledger.get_history().unwrap();
     assert_eq!(hist.len(), 1);
-    assert!(hist[0].rolled_back, "First action's ledger entry must be marked rolled_back after atomic failure");
+    assert!(
+        hist[0].rolled_back,
+        "First action's ledger entry must be marked rolled_back after atomic failure"
+    );
     assert_eq!(
         scan_single_tweak_with(&sbx, &multi_tweak, 26100, "Pro").current_state,
         TweakState::NotOptimized
@@ -1878,7 +2267,10 @@ fn test_atomic_partial_failure_rollback_and_partially_optimized_lifecycle() {
         !s.is_scanning && !s.scan_results.is_empty()
     });
     assert_eq!(
-        state.get_tweak_scan("enable_directx_windowed_game_optimizations").unwrap().current_state,
+        state
+            .get_tweak_scan("enable_directx_windowed_game_optimizations")
+            .unwrap()
+            .current_state,
         TweakState::PartiallyOptimized
     );
     assert!(
@@ -1887,7 +2279,9 @@ fn test_atomic_partial_failure_rollback_and_partially_optimized_lifecycle() {
     );
     state.handle_switch_click("enable_directx_windowed_game_optimizations".into());
     assert_eq!(
-        state.staged_transitions.get("enable_directx_windowed_game_optimizations"),
+        state
+            .staged_transitions
+            .get("enable_directx_windowed_game_optimizations"),
         Some(&StagedTransition::StageApply)
     );
     state.apply_selected();
@@ -1915,26 +2309,54 @@ fn test_wave1_compound_actions_deep_edge_cases() {
         reg_type: 11,
         hex_bytes: "8096980000000000".to_string(),
     };
-    sbx.reg_set_raw("HKCU", r"Software\Microsoft\Siuf\Rules", "PeriodInNanoSeconds", &qword_snap)
-        .unwrap();
-    assert_eq!(scan_single_tweak_with(&sbx, &del_tweak, 26100, "Pro").current_state, TweakState::NotOptimized);
+    sbx.reg_set_raw(
+        "HKCU",
+        r"Software\Microsoft\Siuf\Rules",
+        "PeriodInNanoSeconds",
+        &qword_snap,
+    )
+    .unwrap();
+    assert_eq!(
+        scan_single_tweak_with(&sbx, &del_tweak, 26100, "Pro").current_state,
+        TweakState::NotOptimized
+    );
     assert_eq!(apply_tweak_with(&del_tweak, &ledger, &sbx).unwrap(), 1);
-    assert!(sbx.reg_get_raw("HKCU", r"Software\Microsoft\Siuf\Rules", "PeriodInNanoSeconds").is_none());
-    assert_eq!(scan_single_tweak_with(&sbx, &del_tweak, 26100, "Pro").current_state, TweakState::AlreadyOptimized);
+    assert!(sbx
+        .reg_get_raw(
+            "HKCU",
+            r"Software\Microsoft\Siuf\Rules",
+            "PeriodInNanoSeconds"
+        )
+        .is_none());
+    assert_eq!(
+        scan_single_tweak_with(&sbx, &del_tweak, 26100, "Pro").current_state,
+        TweakState::AlreadyOptimized
+    );
     let del_entry = ledger.get_history().unwrap().pop().unwrap();
     rollback_entry_with(&del_entry, &ledger, &sbx).unwrap();
     assert_eq!(
-        sbx.reg_get_raw("HKCU", r"Software\Microsoft\Siuf\Rules", "PeriodInNanoSeconds"),
+        sbx.reg_get_raw(
+            "HKCU",
+            r"Software\Microsoft\Siuf\Rules",
+            "PeriodInNanoSeconds"
+        ),
         Some(qword_snap)
     );
 
     // 2. RegistryDeleteTree shallow-root / HKCR guards + recursive RegTreeSnapshot restore
-    assert!(sbx.reg_delete_tree("HKCU", r"Software\App").is_err(), "Shallow 2-segment path must fail");
     assert!(
-        sbx.reg_delete_tree("HKLM", r"SOFTWARE\Microsoft\OnlyThree").is_err(),
+        sbx.reg_delete_tree("HKCU", r"Software\App").is_err(),
+        "Shallow 2-segment path must fail"
+    );
+    assert!(
+        sbx.reg_delete_tree("HKLM", r"SOFTWARE\Microsoft\OnlyThree")
+            .is_err(),
         "Protected branch < 4 segments must fail"
     );
-    assert!(sbx.reg_delete_tree("HKCR", r"CLSID\Foo\Bar\Baz").is_err(), "HKCR tree delete must fail");
+    assert!(
+        sbx.reg_delete_tree("HKCR", r"CLSID\Foo\Bar\Baz").is_err(),
+        "HKCR tree delete must fail"
+    );
 
     let deep_tree = RegTreeSnapshot {
         subkey: String::new(),
@@ -1958,11 +2380,10 @@ fn test_wave1_compound_actions_deep_edge_cases() {
         }],
     };
     let tree_path = r"Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32";
-    sbx.inner
-        .write()
-        .unwrap()
-        .reg_trees
-        .insert(("HKCU".to_string(), tree_path.to_lowercase()), deep_tree.clone());
+    sbx.inner.write().unwrap().reg_trees.insert(
+        ("HKCU".to_string(), tree_path.to_lowercase()),
+        deep_tree.clone(),
+    );
     let tree_tweak = make_synth_tweak(
         "del_tree_test",
         Reversibility::RequiresLogoff,
@@ -1971,19 +2392,38 @@ fn test_wave1_compound_actions_deep_edge_cases() {
             path: tree_path.into(),
         }],
     );
-    assert_eq!(scan_single_tweak_with(&sbx, &tree_tweak, 26100, "Pro").current_state, TweakState::NotOptimized);
+    assert_eq!(
+        scan_single_tweak_with(&sbx, &tree_tweak, 26100, "Pro").current_state,
+        TweakState::NotOptimized
+    );
     apply_tweak_with(&tree_tweak, &ledger, &sbx).unwrap();
     assert!(!sbx.reg_key_exists("HKCU", tree_path));
-    assert_eq!(scan_single_tweak_with(&sbx, &tree_tweak, 26100, "Pro").current_state, TweakState::AlreadyOptimized);
-    let tree_entry = ledger.get_history().unwrap().into_iter().find(|e| e.tweak_id == "del_tree_test").unwrap();
+    assert_eq!(
+        scan_single_tweak_with(&sbx, &tree_tweak, 26100, "Pro").current_state,
+        TweakState::AlreadyOptimized
+    );
+    let tree_entry = ledger
+        .get_history()
+        .unwrap()
+        .into_iter()
+        .find(|e| e.tweak_id == "del_tree_test")
+        .unwrap();
     rollback_entry_with(&tree_entry, &ledger, &sbx).unwrap();
-    assert_eq!(sbx.reg_snapshot_tree("HKCU", tree_path).unwrap(), Some(deep_tree));
+    assert_eq!(
+        sbx.reg_snapshot_tree("HKCU", tree_path).unwrap(),
+        Some(deep_tree)
+    );
 
     // 3. RegistryBinaryBit: >=24 byte offset, sibling bit preservation, create_if_missing true/false
     let mut long_buf = vec![0xAAu8; 32];
     long_buf[24] = 0b1101_1011; // bit 0x08 is set, siblings preserved
-    sbx.reg_set_binary("HKCU", r"Software\WinBlast0Test\Binary", "LongMask", &long_buf)
-        .unwrap();
+    sbx.reg_set_binary(
+        "HKCU",
+        r"Software\WinBlast0Test\Binary",
+        "LongMask",
+        &long_buf,
+    )
+    .unwrap();
     let bin_long_tweak = make_synth_tweak(
         "bin_byte24",
         Reversibility::Instant,
@@ -2000,10 +2440,18 @@ fn test_wave1_compound_actions_deep_edge_cases() {
             default_full_hex: None,
         }],
     );
-    assert_eq!(scan_single_tweak_with(&sbx, &bin_long_tweak, 26100, "Pro").current_state, TweakState::NotOptimized);
+    assert_eq!(
+        scan_single_tweak_with(&sbx, &bin_long_tweak, 26100, "Pro").current_state,
+        TweakState::NotOptimized
+    );
     apply_tweak_with(&bin_long_tweak, &ledger, &sbx).unwrap();
-    let after_apply_bin = sbx.reg_get_binary("HKCU", r"Software\WinBlast0Test\Binary", "LongMask").unwrap();
-    assert_eq!(after_apply_bin[24], 0b1101_0011, "Only target bit 0x08 should clear on byte 24");
+    let after_apply_bin = sbx
+        .reg_get_binary("HKCU", r"Software\WinBlast0Test\Binary", "LongMask")
+        .unwrap();
+    assert_eq!(
+        after_apply_bin[24], 0b1101_0011,
+        "Only target bit 0x08 should clear on byte 24"
+    );
     assert_eq!(after_apply_bin[23], 0xAA);
     assert_eq!(after_apply_bin[25], 0xAA);
 
@@ -2044,19 +2492,29 @@ fn test_wave1_compound_actions_deep_edge_cases() {
     );
     apply_tweak_with(&bin_create, &ledger, &sbx).unwrap();
     assert_eq!(
-        sbx.reg_get_binary("HKCU", r"Software\WinBlast0Test\Binary", "CreatedFromHex").unwrap()[4],
+        sbx.reg_get_binary("HKCU", r"Software\WinBlast0Test\Binary", "CreatedFromHex")
+            .unwrap()[4],
         0x10
     );
-    let create_entry = ledger.get_history().unwrap().into_iter().find(|e| e.tweak_id == "bin_create_missing").unwrap();
+    let create_entry = ledger
+        .get_history()
+        .unwrap()
+        .into_iter()
+        .find(|e| e.tweak_id == "bin_create_missing")
+        .unwrap();
     rollback_entry_with(&create_entry, &ledger, &sbx).unwrap();
     assert!(
-        sbx.reg_get_binary("HKCU", r"Software\WinBlast0Test\Binary", "CreatedFromHex").is_none(),
+        sbx.reg_get_binary("HKCU", r"Software\WinBlast0Test\Binary", "CreatedFromHex")
+            .is_none(),
         "Rolling back create_if_missing binary should remove newly created value"
     );
 
     // 4. CompositeStringKey preserves unrelated AutoHDR=1; and per-game entries across apply/rollback/revert
     let tweaks = load_embedded_rules();
-    let dx_tweak = tweaks.iter().find(|t| t.id == "enable_directx_windowed_game_optimizations").unwrap();
+    let dx_tweak = tweaks
+        .iter()
+        .find(|t| t.id == "enable_directx_windowed_game_optimizations")
+        .unwrap();
     sbx.reg_set_string(
         "HKCU",
         r"Software\Microsoft\DirectX\UserGpuPreferences",
@@ -2066,67 +2524,129 @@ fn test_wave1_compound_actions_deep_edge_cases() {
         None,
     )
     .unwrap();
-    assert_eq!(scan_single_tweak_with(&sbx, dx_tweak, 26100, "Pro").current_state, TweakState::NotOptimized);
+    assert_eq!(
+        scan_single_tweak_with(&sbx, dx_tweak, 26100, "Pro").current_state,
+        TweakState::NotOptimized
+    );
     apply_tweak_with(dx_tweak, &ledger, &sbx).unwrap();
     let dx_val = sbx
-        .reg_get_string("HKCU", r"Software\Microsoft\DirectX\UserGpuPreferences", "DirectXUserGlobalSettings", None)
+        .reg_get_string(
+            "HKCU",
+            r"Software\Microsoft\DirectX\UserGpuPreferences",
+            "DirectXUserGlobalSettings",
+            None,
+        )
         .unwrap()
         .value;
-    assert!(dx_val.contains("AutoHDR=1"), "AutoHDR=1 was lost: {}", dx_val);
+    assert!(
+        dx_val.contains("AutoHDR=1"),
+        "AutoHDR=1 was lost: {}",
+        dx_val
+    );
     assert!(dx_val.contains(r"C:\Games\Shooter.exe=GpuPreference=2"));
     assert!(dx_val.contains("SwapEffectUpgradeEnable=1"));
     assert!(dx_val.contains("VRROptimizeEnable=1"));
-    assert_eq!(scan_single_tweak_with(&sbx, dx_tweak, 26100, "Pro").current_state, TweakState::AlreadyOptimized);
+    assert_eq!(
+        scan_single_tweak_with(&sbx, dx_tweak, 26100, "Pro").current_state,
+        TweakState::AlreadyOptimized
+    );
 
-    for e in ledger.get_history().unwrap().into_iter().filter(|e| e.tweak_id == dx_tweak.id && !e.rolled_back) {
+    for e in ledger
+        .get_history()
+        .unwrap()
+        .into_iter()
+        .filter(|e| e.tweak_id == dx_tweak.id && !e.rolled_back)
+    {
         rollback_entry_with(&e, &ledger, &sbx).unwrap();
     }
     let dx_rb = sbx
-        .reg_get_string("HKCU", r"Software\Microsoft\DirectX\UserGpuPreferences", "DirectXUserGlobalSettings", None)
+        .reg_get_string(
+            "HKCU",
+            r"Software\Microsoft\DirectX\UserGpuPreferences",
+            "DirectXUserGlobalSettings",
+            None,
+        )
         .unwrap()
         .value;
-    assert!(dx_rb.contains("AutoHDR=1"), "AutoHDR=1 lost on rollback: {}", dx_rb);
+    assert!(
+        dx_rb.contains("AutoHDR=1"),
+        "AutoHDR=1 lost on rollback: {}",
+        dx_rb
+    );
     assert!(dx_rb.contains("SwapEffectUpgradeEnable=0"));
     assert!(!dx_rb.contains("VRROptimizeEnable=1"));
 
     // 5. RegistryDynamicDword: >= 48 GB / 64 GB RAM no-overflow + clamp verification
-    let svchost_tweak = tweaks.iter().find(|t| t.id == "consolidate_svchost_split_threshold").unwrap();
+    let svchost_tweak = tweaks
+        .iter()
+        .find(|t| t.id == "consolidate_svchost_split_threshold")
+        .unwrap();
     {
         sbx.inner.write().unwrap().total_ram_kb = 48 * 1024 * 1024; // 48 GB
     }
     sbx.seed_tweak_defaults_for_tweak(svchost_tweak);
-    assert_eq!(resolve_dynamic_dword(&sbx, DynamicDwordFormula::TotalRamInKb), 50_331_648);
+    assert_eq!(
+        resolve_dynamic_dword(&sbx, DynamicDwordFormula::TotalRamInKb),
+        50_331_648
+    );
     apply_tweak_with(svchost_tweak, &ledger, &sbx).unwrap();
     assert_eq!(
-        sbx.reg_get_dword("HKLM", r"SYSTEM\CurrentControlSet\Control", "SvcHostSplitThresholdInKB"),
+        sbx.reg_get_dword(
+            "HKLM",
+            r"SYSTEM\CurrentControlSet\Control",
+            "SvcHostSplitThresholdInKB"
+        ),
         Some(50_331_648)
     );
-    assert_eq!(scan_single_tweak_with(&sbx, svchost_tweak, 26100, "Pro").current_state, TweakState::AlreadyOptimized);
+    assert_eq!(
+        scan_single_tweak_with(&sbx, svchost_tweak, 26100, "Pro").current_state,
+        TweakState::AlreadyOptimized
+    );
 
     {
         sbx.inner.write().unwrap().total_ram_kb = 64 * 1024 * 1024; // 64 GB
     }
-    assert_eq!(resolve_dynamic_dword(&sbx, DynamicDwordFormula::TotalRamInKb), 67_108_864);
-    assert_eq!(resolve_dynamic_dword(&sbx, DynamicDwordFormula::TotalRamInKbPlusMargin), 68_157_440);
+    assert_eq!(
+        resolve_dynamic_dword(&sbx, DynamicDwordFormula::TotalRamInKb),
+        67_108_864
+    );
+    assert_eq!(
+        resolve_dynamic_dword(&sbx, DynamicDwordFormula::TotalRamInKbPlusMargin),
+        68_157_440
+    );
     apply_tweak_with(svchost_tweak, &ledger, &sbx).unwrap();
     assert_eq!(
-        sbx.reg_get_dword("HKLM", r"SYSTEM\CurrentControlSet\Control", "SvcHostSplitThresholdInKB"),
+        sbx.reg_get_dword(
+            "HKLM",
+            r"SYSTEM\CurrentControlSet\Control",
+            "SvcHostSplitThresholdInKB"
+        ),
         Some(67_108_864)
     );
     {
         sbx.inner.write().unwrap().total_ram_kb = 5_000_000_000; // >4 TiB in KB -> must clamp, never overflow
     }
-    assert_eq!(resolve_dynamic_dword(&sbx, DynamicDwordFormula::TotalRamInKb), u32::MAX);
+    assert_eq!(
+        resolve_dynamic_dword(&sbx, DynamicDwordFormula::TotalRamInKb),
+        u32::MAX
+    );
 
     // 6. PowerCfgSetting: optional unsupported GUID tolerance vs all-absent failure
-    let pwr_tweak = tweaks.iter().find(|t| t.id == "power_settings_pcie_usb_nvme_epb").unwrap();
+    let pwr_tweak = tweaks
+        .iter()
+        .find(|t| t.id == "power_settings_pcie_usb_nvme_epb")
+        .unwrap();
     let pure_pwr_actions: Vec<TweakAction> = pwr_tweak
         .actions
         .iter()
         .filter(|a| matches!(a, TweakAction::PowerCfgSetting { .. }))
         .cloned()
         .collect();
-    let pure_pwr_tweak = make_synth_tweak("pure_pwr_absent_err", Reversibility::Instant, pure_pwr_actions);
+    let pure_pwr_tweak = make_synth_tweak(
+        "pure_pwr_absent_err",
+        Reversibility::Instant,
+        pure_pwr_actions,
+    );
     let sbx_pwr = SandboxEnv::new();
     let pwr_ledger = StateLedger::in_memory().unwrap();
     // Without seeding ANY power setting on a pure-PowerCfgSetting tweak, all-absent must return Err rather than Ok(0)
@@ -2147,7 +2667,11 @@ fn test_wave1_compound_actions_deep_edge_cases() {
     let feat_ledger = StateLedger::in_memory().unwrap();
     // Seed versioned capability `App.StepsRecorder~~~~0.0.1.0` Enabled (already in curated defaults, ensure Enabled)
     sbx_feat
-        .set_optional_feature("App.StepsRecorder~~~~0.0.1.0", OptionalFeatureKind::Capability, true)
+        .set_optional_feature(
+            "App.StepsRecorder~~~~0.0.1.0",
+            OptionalFeatureKind::Capability,
+            true,
+        )
         .unwrap();
     let short_feat_tweak = make_synth_tweak(
         "winfeat_short_prefix",
@@ -2177,32 +2701,51 @@ fn test_wave1_presets_policy_locked_winget_appx_and_autounattend_permutations() 
     sbx.seed_all_tweaks(&tweaks);
 
     // Insert a policy-locked startup entry
-    sbx.inner.write().unwrap().startup_entries.push(StartupEntry {
-        id: "HKLM|Policy|LockedUpdater".to_string(),
-        name: "LockedUpdater".to_string(),
-        command: "\"C:\\Program Files\\Corp\\Agent.exe\"".to_string(),
-        source: StartupSource::RegistryHklmRun,
-        enabled: true,
-        location: "HKLM\\Software\\Policies\\Microsoft\\Windows\\Explorer\\Run".to_string(),
-        hive: "HKLM".to_string(),
-        reg_path: "Software\\Policies\\Microsoft\\Windows\\Explorer\\Run".to_string(),
-        approved_subkey: None,
-        is_wow64: false,
-        policy_locked: true,
-        is_microsoft: false,
-    });
+    sbx.inner
+        .write()
+        .unwrap()
+        .startup_entries
+        .push(StartupEntry {
+            id: "HKLM|Policy|LockedUpdater".to_string(),
+            name: "LockedUpdater".to_string(),
+            command: "\"C:\\Program Files\\Corp\\Agent.exe\"".to_string(),
+            source: StartupSource::RegistryHklmRun,
+            enabled: true,
+            location: "HKLM\\Software\\Policies\\Microsoft\\Windows\\Explorer\\Run".to_string(),
+            hive: "HKLM".to_string(),
+            reg_path: "Software\\Policies\\Microsoft\\Windows\\Explorer\\Run".to_string(),
+            approved_subkey: None,
+            is_wow64: false,
+            policy_locked: true,
+            is_microsoft: false,
+        });
 
     let mut state = AppState::new_with_backend(Arc::new(sbx.clone()));
     state.start_scan();
     state.scan_startup_and_tasks_async();
-    drain_until(&mut state, Duration::from_secs(5), "init scan & startup", |s| {
-        !s.is_scanning && !s.scan_results.is_empty() && s.startup_entries.iter().any(|e| e.policy_locked)
-    });
+    drain_until(
+        &mut state,
+        Duration::from_secs(5),
+        "init scan & startup",
+        |s| {
+            !s.is_scanning
+                && !s.scan_results.is_empty()
+                && s.startup_entries.iter().any(|e| e.policy_locked)
+        },
+    );
 
     // 1. Presets (Gaming, ProAudio, LaptopBattery)
-    for preset in [PresetKind::Gaming, PresetKind::ProAudio, PresetKind::LaptopBattery] {
+    for preset in [
+        PresetKind::Gaming,
+        PresetKind::ProAudio,
+        PresetKind::LaptopBattery,
+    ] {
         state.apply_preset(preset);
-        assert!(!state.selected_tweaks.is_empty(), "{:?} preset selected 0 tweaks", preset);
+        assert!(
+            !state.selected_tweaks.is_empty(),
+            "{:?} preset selected 0 tweaks",
+            preset
+        );
         assert_eq!(state.staged_transitions.len(), state.selected_tweaks.len());
         assert!(!state.pending_actions.is_empty());
         for id in &state.selected_tweaks {
@@ -2215,11 +2758,17 @@ fn test_wave1_presets_policy_locked_winget_appx_and_autounattend_permutations() 
 
     // 2. policy_locked startup toggle refusal
     state.toggle_startup_entry_async("HKLM|Policy|LockedUpdater".to_string(), false);
-    drain_until(&mut state, Duration::from_secs(5), "policy locked refusal", |s| {
-        !s.startup_tasks_busy && s.status_message.to_lowercase().contains("policy locked")
-    });
+    drain_until(
+        &mut state,
+        Duration::from_secs(5),
+        "policy locked refusal",
+        |s| !s.startup_tasks_busy && s.status_message.to_lowercase().contains("policy locked"),
+    );
     assert!(
-        state.status_message.to_lowercase().contains("policy locked"),
+        state
+            .status_message
+            .to_lowercase()
+            .contains("policy locked"),
         "Expected Policy locked status, got {:?}",
         state.status_message
     );
@@ -2229,7 +2778,10 @@ fn test_wave1_presets_policy_locked_winget_appx_and_autounattend_permutations() 
         .into_iter()
         .find(|e| e.id == "HKLM|Policy|LockedUpdater")
         .unwrap();
-    assert!(locked_entry.enabled, "Policy-locked startup entry must remain enabled");
+    assert!(
+        locked_entry.enabled,
+        "Policy-locked startup entry must remain enabled"
+    );
 
     // 3. ProtectedCore-only remove_appx_batch refusal
     let core_err_sbx = sbx
@@ -2275,12 +2827,20 @@ fn test_wave1_presets_policy_locked_winget_appx_and_autounattend_permutations() 
     assert!(xml.contains("<TimeZone>UTC</TimeZone>"));
     assert!(!xml.contains("BypassTPMCheck"));
     assert!(!xml.contains("<ProtectYourPC>3</ProtectYourPC>"));
-    assert!(xml.contains("&amp;"), "Escaped ampersand expected in autounattend XML");
-    assert!(!xml.contains("<tag>"), "Unescaped <tag> must never leak into autounattend XML");
+    assert!(
+        xml.contains("&amp;"),
+        "Escaped ampersand expected in autounattend XML"
+    );
+    assert!(
+        !xml.contains("<tag>"),
+        "Unescaped <tag> must never leak into autounattend XML"
+    );
 
     // 5. WinGet ID validation (never spawns live winget.exe on invalid IDs; Notepad++.Notepad++ allowed)
     assert!(
-        CURATED_WINGET_APPS.iter().any(|a| a.id == "Notepad++.Notepad++"),
+        CURATED_WINGET_APPS
+            .iter()
+            .any(|a| a.id == "Notepad++.Notepad++"),
         "Curated WinGet catalog should include Notepad++.Notepad++"
     );
     for app in CURATED_WINGET_APPS {
@@ -2293,7 +2853,15 @@ fn test_wave1_presets_policy_locked_winget_appx_and_autounattend_permutations() 
         );
     }
     assert!(sbx.winget_install_package("Notepad++.Notepad++").is_ok());
-    for bad in ["", "   ", "Notepad.Notepad & calc", "pkg;whoami", "pkg|cmd", "pkg\n--silent", "$(calc)"] {
+    for bad in [
+        "",
+        "   ",
+        "Notepad.Notepad & calc",
+        "pkg;whoami",
+        "pkg|cmd",
+        "pkg\n--silent",
+        "$(calc)",
+    ] {
         assert!(
             features_apps::winget_install_package(bad).is_err(),
             "RealBackend winget_install_package must reject invalid/injection ID {:?}",
@@ -2334,11 +2902,21 @@ impl PanickingBackend {
 }
 
 impl SystemBackend for PanickingBackend {
-    fn is_elevated(&self) -> bool { self.inner.is_elevated() }
-    fn detect_os(&self) -> BlastResult<WindowsInfo> { self.inner.detect_os() }
-    fn default_ledger_path(&self) -> std::path::PathBuf { self.inner.default_ledger_path() }
-    fn default_profile_path(&self) -> std::path::PathBuf { self.inner.default_profile_path() }
-    fn reg_get_dword(&self, h: &str, p: &str, n: &str) -> Option<u32> { self.inner.reg_get_dword(h, p, n) }
+    fn is_elevated(&self) -> bool {
+        self.inner.is_elevated()
+    }
+    fn detect_os(&self) -> BlastResult<WindowsInfo> {
+        self.inner.detect_os()
+    }
+    fn default_ledger_path(&self) -> std::path::PathBuf {
+        self.inner.default_ledger_path()
+    }
+    fn default_profile_path(&self) -> std::path::PathBuf {
+        self.inner.default_profile_path()
+    }
+    fn reg_get_dword(&self, h: &str, p: &str, n: &str) -> Option<u32> {
+        self.inner.reg_get_dword(h, p, n)
+    }
     fn reg_set_dword(&self, h: &str, p: &str, n: &str, v: u32) -> BlastResult<()> {
         if self.panic_apply.load(std::sync::atomic::Ordering::SeqCst) {
             panic!("Injected apply panic in reg_set_dword");
@@ -2351,63 +2929,127 @@ impl SystemBackend for PanickingBackend {
     fn reg_get_dword_for_vendor(&self, h: &str, p: &str, n: &str, gv: Option<&str>) -> Option<u32> {
         self.inner.reg_get_dword_for_vendor(h, p, n, gv)
     }
-    fn reg_set_dword_for_vendor(&self, h: &str, p: &str, n: &str, v: u32, gv: Option<&str>) -> BlastResult<()> {
+    fn reg_set_dword_for_vendor(
+        &self,
+        h: &str,
+        p: &str,
+        n: &str,
+        v: u32,
+        gv: Option<&str>,
+    ) -> BlastResult<()> {
         if self.panic_apply.load(std::sync::atomic::Ordering::SeqCst) {
             panic!("Injected apply panic in reg_set_dword_for_vendor");
         }
         self.inner.reg_set_dword_for_vendor(h, p, n, v, gv)
     }
-    fn reg_delete_value_for_vendor(&self, h: &str, p: &str, n: &str, gv: Option<&str>) -> BlastResult<()> {
+    fn reg_delete_value_for_vendor(
+        &self,
+        h: &str,
+        p: &str,
+        n: &str,
+        gv: Option<&str>,
+    ) -> BlastResult<()> {
         self.inner.reg_delete_value_for_vendor(h, p, n, gv)
     }
-    fn reg_get_string(&self, h: &str, p: &str, n: &str, gv: Option<&str>) -> Option<RegStringValue> {
+    fn reg_get_string(
+        &self,
+        h: &str,
+        p: &str,
+        n: &str,
+        gv: Option<&str>,
+    ) -> Option<RegStringValue> {
         self.inner.reg_get_string(h, p, n, gv)
     }
-    fn reg_set_string(&self, h: &str, p: &str, n: &str, v: &str, e: bool, gv: Option<&str>) -> BlastResult<()> {
+    fn reg_set_string(
+        &self,
+        h: &str,
+        p: &str,
+        n: &str,
+        v: &str,
+        e: bool,
+        gv: Option<&str>,
+    ) -> BlastResult<()> {
         if self.panic_apply.load(std::sync::atomic::Ordering::SeqCst) {
             panic!("Injected apply panic in reg_set_string");
         }
         self.inner.reg_set_string(h, p, n, v, e, gv)
     }
-    fn reg_get_binary(&self, h: &str, p: &str, n: &str) -> Option<Vec<u8>> { self.inner.reg_get_binary(h, p, n) }
+    fn reg_get_binary(&self, h: &str, p: &str, n: &str) -> Option<Vec<u8>> {
+        self.inner.reg_get_binary(h, p, n)
+    }
     fn reg_set_binary(&self, h: &str, p: &str, n: &str, b: &[u8]) -> BlastResult<()> {
         self.inner.reg_set_binary(h, p, n, b)
     }
-    fn reg_get_raw(&self, h: &str, p: &str, n: &str) -> Option<RegRawSnapshot> { self.inner.reg_get_raw(h, p, n) }
+    fn reg_get_raw(&self, h: &str, p: &str, n: &str) -> Option<RegRawSnapshot> {
+        self.inner.reg_get_raw(h, p, n)
+    }
     fn reg_set_raw(&self, h: &str, p: &str, n: &str, r: &RegRawSnapshot) -> BlastResult<()> {
         self.inner.reg_set_raw(h, p, n, r)
     }
-    fn reg_key_exists(&self, h: &str, p: &str) -> bool { self.inner.reg_key_exists(h, p) }
+    fn reg_key_exists(&self, h: &str, p: &str) -> bool {
+        self.inner.reg_key_exists(h, p)
+    }
     fn reg_snapshot_tree(&self, h: &str, p: &str) -> BlastResult<Option<RegTreeSnapshot>> {
         self.inner.reg_snapshot_tree(h, p)
     }
-    fn reg_delete_tree(&self, h: &str, p: &str) -> BlastResult<()> { self.inner.reg_delete_tree(h, p) }
+    fn reg_delete_tree(&self, h: &str, p: &str) -> BlastResult<()> {
+        self.inner.reg_delete_tree(h, p)
+    }
     fn reg_restore_tree(&self, h: &str, p: &str, s: &RegTreeSnapshot) -> BlastResult<()> {
         self.inner.reg_restore_tree(h, p, s)
     }
-    fn total_physical_ram_kb(&self) -> u64 { self.inner.total_physical_ram_kb() }
-    fn logical_core_count(&self) -> u32 { self.inner.logical_core_count() }
-    fn detect_platform_security(&self) -> PlatformSecurityInfo { self.inner.detect_platform_security() }
-    fn get_active_power_scheme(&self) -> BlastResult<String> { self.inner.get_active_power_scheme() }
-    fn list_power_schemes(&self) -> Vec<PowerSchemeInfo> { self.inner.list_power_schemes() }
-    fn set_active_power_scheme(&self, s: &str) -> BlastResult<()> { self.inner.set_active_power_scheme(s) }
+    fn total_physical_ram_kb(&self) -> u64 {
+        self.inner.total_physical_ram_kb()
+    }
+    fn logical_core_count(&self) -> u32 {
+        self.inner.logical_core_count()
+    }
+    fn detect_platform_security(&self) -> PlatformSecurityInfo {
+        self.inner.detect_platform_security()
+    }
+    fn get_active_power_scheme(&self) -> BlastResult<String> {
+        self.inner.get_active_power_scheme()
+    }
+    fn list_power_schemes(&self) -> Vec<PowerSchemeInfo> {
+        self.inner.list_power_schemes()
+    }
+    fn set_active_power_scheme(&self, s: &str) -> BlastResult<()> {
+        self.inner.set_active_power_scheme(s)
+    }
     fn create_and_activate_performance_plan(&self) -> BlastResult<String> {
         self.inner.create_and_activate_performance_plan()
     }
-    fn read_power_setting_index(&self, sc: Option<&str>, sg: &str, st: &str) -> BlastResult<(u32, u32)> {
+    fn read_power_setting_index(
+        &self,
+        sc: Option<&str>,
+        sg: &str,
+        st: &str,
+    ) -> BlastResult<(u32, u32)> {
         self.inner.read_power_setting_index(sc, sg, st)
     }
-    fn write_power_setting_index(&self, sc: Option<&str>, sg: &str, st: &str, ac: Option<u32>, dc: Option<u32>, uh: bool) -> BlastResult<()> {
+    fn write_power_setting_index(
+        &self,
+        sc: Option<&str>,
+        sg: &str,
+        st: &str,
+        ac: Option<u32>,
+        dc: Option<u32>,
+        uh: bool,
+    ) -> BlastResult<()> {
         self.inner.write_power_setting_index(sc, sg, st, ac, dc, uh)
     }
-    fn query_hibernation_status(&self) -> HibernationStatus { self.inner.query_hibernation_status() }
+    fn query_hibernation_status(&self) -> HibernationStatus {
+        self.inner.query_hibernation_status()
+    }
     fn set_hibernation_enabled(&self, e: bool) -> BlastResult<HibernationStatus> {
         self.inner.set_hibernation_enabled(e)
     }
     fn set_usb_root_hub_power_saving(&self, d: bool) -> BlastResult<usize> {
         self.inner.set_usb_root_hub_power_saving(d)
     }
-    fn get_service_start_type(&self, s: &str) -> Option<u32> { self.inner.get_service_start_type(s) }
+    fn get_service_start_type(&self, s: &str) -> Option<u32> {
+        self.inner.get_service_start_type(s)
+    }
     fn set_service_start_type(&self, s: &str, st: u32) -> BlastResult<()> {
         self.inner.set_service_start_type(s, st)
     }
@@ -2417,39 +3059,80 @@ impl SystemBackend for PanickingBackend {
         }
         self.inner.load_task_cache()
     }
-    fn get_task_enabled(&self, p: &str) -> Option<bool> { self.inner.get_task_enabled(p) }
+    fn get_task_enabled(&self, p: &str) -> Option<bool> {
+        self.inner.get_task_enabled(p)
+    }
     fn set_scheduled_task_enabled(&self, p: &str, e: bool) -> BlastResult<()> {
         self.inner.set_scheduled_task_enabled(p, e)
     }
-    fn load_appx_cache(&self) -> AppxCache { self.inner.load_appx_cache() }
-    fn remove_appx_package(&self, p: &str) -> BlastResult<()> { self.inner.remove_appx_package(p) }
-    fn read_hosts_file(&self) -> Option<String> { self.inner.read_hosts_file() }
-    fn write_hosts_file(&self, c: &str) -> BlastResult<()> { self.inner.write_hosts_file(c) }
-    fn block_telemetry_hosts(&self, h: &[&str]) -> BlastResult<usize> { self.inner.block_telemetry_hosts(h) }
-    fn list_restore_points(&self) -> BlastResult<Vec<RestorePoint>> { self.inner.list_restore_points() }
-    fn create_restore_point(&self, d: &str) -> BlastResult<()> { self.inner.create_restore_point(d) }
-    fn detect_cpu(&self) -> CpuInfo { self.inner.detect_cpu() }
-    fn detect_gpus(&self) -> Vec<DetectedGpu> { self.inner.detect_gpus() }
+    fn load_appx_cache(&self) -> AppxCache {
+        self.inner.load_appx_cache()
+    }
+    fn remove_appx_package(&self, p: &str) -> BlastResult<()> {
+        self.inner.remove_appx_package(p)
+    }
+    fn read_hosts_file(&self) -> Option<String> {
+        self.inner.read_hosts_file()
+    }
+    fn write_hosts_file(&self, c: &str) -> BlastResult<()> {
+        self.inner.write_hosts_file(c)
+    }
+    fn block_telemetry_hosts(&self, h: &[&str]) -> BlastResult<usize> {
+        self.inner.block_telemetry_hosts(h)
+    }
+    fn list_restore_points(&self) -> BlastResult<Vec<RestorePoint>> {
+        self.inner.list_restore_points()
+    }
+    fn create_restore_point(&self, d: &str) -> BlastResult<()> {
+        self.inner.create_restore_point(d)
+    }
+    fn detect_cpu(&self) -> CpuInfo {
+        self.inner.detect_cpu()
+    }
+    fn detect_gpus(&self) -> Vec<DetectedGpu> {
+        self.inner.detect_gpus()
+    }
     fn set_gpu_msi_mode(&self, id: &str, e: bool, pr: u32) -> std::io::Result<()> {
         self.inner.set_gpu_msi_mode(id, e, pr)
     }
-    fn is_hags_enabled(&self) -> bool { self.inner.is_hags_enabled() }
-    fn set_hags(&self, e: bool) -> std::io::Result<()> { self.inner.set_hags(e) }
-    fn is_mpo_disabled(&self) -> bool { self.inner.is_mpo_disabled() }
-    fn set_mpo_disabled(&self, d: bool) -> std::io::Result<()> { self.inner.set_mpo_disabled(d) }
-    fn detect_core_parking(&self) -> CoreParkingState { self.inner.detect_core_parking() }
-    fn unpark_all_cores(&self) -> BlastResult<()> { self.inner.unpark_all_cores() }
-    fn restore_stock_parking(&self) -> BlastResult<()> { self.inner.restore_stock_parking() }
-    fn capture_latency(&self) -> LatencySnapshot { self.inner.capture_latency() }
+    fn is_hags_enabled(&self) -> bool {
+        self.inner.is_hags_enabled()
+    }
+    fn set_hags(&self, e: bool) -> std::io::Result<()> {
+        self.inner.set_hags(e)
+    }
+    fn is_mpo_disabled(&self) -> bool {
+        self.inner.is_mpo_disabled()
+    }
+    fn set_mpo_disabled(&self, d: bool) -> std::io::Result<()> {
+        self.inner.set_mpo_disabled(d)
+    }
+    fn detect_core_parking(&self) -> CoreParkingState {
+        self.inner.detect_core_parking()
+    }
+    fn unpark_all_cores(&self) -> BlastResult<()> {
+        self.inner.unpark_all_cores()
+    }
+    fn restore_stock_parking(&self) -> BlastResult<()> {
+        self.inner.restore_stock_parking()
+    }
+    fn capture_latency(&self) -> LatencySnapshot {
+        self.inner.capture_latency()
+    }
     fn run_latency_benchmark(&self, s: &str) -> LatencyBenchmarkSnapshot {
         if self.panic_latency.load(std::sync::atomic::Ordering::SeqCst) {
             panic!("Injected latency panic in run_latency_benchmark");
         }
         self.inner.run_latency_benchmark(s)
     }
-    fn create_metrics_sampler(&self, m: usize) -> Box<dyn MetricsSampler> { self.inner.create_metrics_sampler(m) }
+    fn create_metrics_sampler(&self, m: usize) -> Box<dyn MetricsSampler> {
+        self.inner.create_metrics_sampler(m)
+    }
     fn scan_clean_targets(&self) -> Vec<CleanTargetScan> {
-        if self.panic_clean_scan.load(std::sync::atomic::Ordering::SeqCst) {
+        if self
+            .panic_clean_scan
+            .load(std::sync::atomic::Ordering::SeqCst)
+        {
             panic!("Injected clean scan panic in scan_clean_targets");
         }
         self.inner.scan_clean_targets()
@@ -2466,15 +3149,31 @@ impl SystemBackend for PanickingBackend {
     fn list_optional_features(&self) -> BlastResult<Vec<WindowsOptionalFeature>> {
         self.inner.list_optional_features()
     }
-    fn set_optional_feature(&self, n: &str, k: OptionalFeatureKind, e: bool) -> BlastResult<FeatureInstallState> {
+    fn set_optional_feature(
+        &self,
+        n: &str,
+        k: OptionalFeatureKind,
+        e: bool,
+    ) -> BlastResult<FeatureInstallState> {
         self.inner.set_optional_feature(n, k, e)
     }
-    fn check_onedrive_kfm_active(&self) -> Option<String> { self.inner.check_onedrive_kfm_active() }
-    fn uninstall_onedrive_safe(&self) -> BlastResult<String> { self.inner.uninstall_onedrive_safe() }
-    fn remove_edge_preserve_webview2(&self) -> BlastResult<String> { self.inner.remove_edge_preserve_webview2() }
-    fn winget_install_package(&self, p: &str) -> BlastResult<String> { self.inner.winget_install_package(p) }
+    fn check_onedrive_kfm_active(&self) -> Option<String> {
+        self.inner.check_onedrive_kfm_active()
+    }
+    fn uninstall_onedrive_safe(&self) -> BlastResult<String> {
+        self.inner.uninstall_onedrive_safe()
+    }
+    fn remove_edge_preserve_webview2(&self) -> BlastResult<String> {
+        self.inner.remove_edge_preserve_webview2()
+    }
+    fn winget_install_package(&self, p: &str) -> BlastResult<String> {
+        self.inner.winget_install_package(p)
+    }
     fn list_startup_entries(&self) -> BlastResult<Vec<StartupEntry>> {
-        if self.panic_startup_list.load(std::sync::atomic::Ordering::SeqCst) {
+        if self
+            .panic_startup_list
+            .load(std::sync::atomic::Ordering::SeqCst)
+        {
             panic!("Injected startup list panic in list_startup_entries");
         }
         self.inner.list_startup_entries()
@@ -2485,12 +3184,24 @@ impl SystemBackend for PanickingBackend {
     fn set_startup_entry_enabled_by_id(&self, id: &str, en: bool) -> BlastResult<()> {
         self.inner.set_startup_entry_enabled_by_id(id, en)
     }
-    fn list_live_services(&self) -> BlastResult<Vec<LiveServiceInfo>> { self.inner.list_live_services() }
-    fn list_live_tasks(&self) -> Vec<LiveScheduledTaskInfo> { self.inner.list_live_tasks() }
-    fn run_scheduled_task(&self, p: &str) -> BlastResult<()> { self.inner.run_scheduled_task(p) }
-    fn restart_explorer_safely(&self) -> BlastResult<String> { self.inner.restart_explorer_safely() }
-    fn broadcast_shell_settings_changed(&self) { self.inner.broadcast_shell_settings_changed() }
-    fn request_system_reboot(&self) -> BlastResult<()> { self.inner.request_system_reboot() }
+    fn list_live_services(&self) -> BlastResult<Vec<LiveServiceInfo>> {
+        self.inner.list_live_services()
+    }
+    fn list_live_tasks(&self) -> Vec<LiveScheduledTaskInfo> {
+        self.inner.list_live_tasks()
+    }
+    fn run_scheduled_task(&self, p: &str) -> BlastResult<()> {
+        self.inner.run_scheduled_task(p)
+    }
+    fn restart_explorer_safely(&self) -> BlastResult<String> {
+        self.inner.restart_explorer_safely()
+    }
+    fn broadcast_shell_settings_changed(&self) {
+        self.inner.broadcast_shell_settings_changed()
+    }
+    fn request_system_reboot(&self) -> BlastResult<()> {
+        self.inner.request_system_reboot()
+    }
 }
 
 #[test]
@@ -2514,9 +3225,12 @@ fn test_worker_panic_recovery_releases_all_inflight_flags() {
     mock.panic_scan.store(true, Ordering::SeqCst);
     state.force_scan();
     assert!(state.is_scanning);
-    drain_until(&mut state, Duration::from_secs(5), "scan panic recovery", |s| {
-        !s.is_scanning
-    });
+    drain_until(
+        &mut state,
+        Duration::from_secs(5),
+        "scan panic recovery",
+        |s| !s.is_scanning,
+    );
     assert!(
         state.status_message.contains("scan failed") || state.status_message.contains("panic"),
         "Unexpected status after scan panic: {:?}",
@@ -2573,12 +3287,17 @@ fn test_worker_panic_recovery_releases_all_inflight_flags() {
     assert!(state.status_message.contains("panic") || state.status_message.contains("Error"));
     mock.panic_apply.store(false, Ordering::SeqCst);
     state.apply_selected();
-    drain_until(&mut state, Duration::from_secs(5), "post-panic batch apply", |s| {
-        !s.is_applying
-            && !s.is_scanning
-            && s.get_tweak_scan(&target_id)
-                .is_some_and(|r| r.current_state == TweakState::AlreadyOptimized)
-    });
+    drain_until(
+        &mut state,
+        Duration::from_secs(5),
+        "post-panic batch apply",
+        |s| {
+            !s.is_applying
+                && !s.is_scanning
+                && s.get_tweak_scan(&target_id)
+                    .is_some_and(|r| r.current_state == TweakState::AlreadyOptimized)
+        },
+    );
 
     // 3. run_latency_benchmark panic -> is_benchmarking_latency released & recovers
     mock.panic_latency.store(true, Ordering::SeqCst);
@@ -2611,9 +3330,12 @@ fn test_worker_panic_recovery_releases_all_inflight_flags() {
     );
     mock.panic_clean_scan.store(false, Ordering::SeqCst);
     state.scan_clean_targets_async();
-    drain_until(&mut state, Duration::from_secs(5), "post-panic clean scan", |s| {
-        !s.clean_apps_busy && !s.clean_targets.is_empty()
-    });
+    drain_until(
+        &mut state,
+        Duration::from_secs(5),
+        "post-panic clean scan",
+        |s| !s.clean_apps_busy && !s.clean_targets.is_empty(),
+    );
 
     // 5. list_startup_entries panic -> startup_tasks_busy released & recovers
     mock.panic_startup_list.store(true, Ordering::SeqCst);
@@ -2627,9 +3349,12 @@ fn test_worker_panic_recovery_releases_all_inflight_flags() {
     );
     mock.panic_startup_list.store(false, Ordering::SeqCst);
     state.scan_startup_and_tasks_async();
-    drain_until(&mut state, Duration::from_secs(5), "post-panic startup scan", |s| {
-        !s.startup_tasks_busy && !s.startup_entries.is_empty()
-    });
+    drain_until(
+        &mut state,
+        Duration::from_secs(5),
+        "post-panic startup scan",
+        |s| !s.startup_tasks_busy && !s.startup_entries.is_empty(),
+    );
 }
 
 struct SlowScanBackend {
@@ -2653,7 +3378,10 @@ impl SlowScanBackend {
         let (lock, cvar) = &self.entered;
         let guard = lock.lock().unwrap();
         let (guard, res) = cvar.wait_timeout_while(guard, timeout, |e| !*e).unwrap();
-        assert!(*guard && !res.timed_out(), "Timed out waiting for slow scan gate entry");
+        assert!(
+            *guard && !res.timed_out(),
+            "Timed out waiting for slow scan gate entry"
+        );
     }
 
     fn release_scan(&self) {
@@ -2665,11 +3393,21 @@ impl SlowScanBackend {
 }
 
 impl SystemBackend for SlowScanBackend {
-    fn is_elevated(&self) -> bool { self.inner.is_elevated() }
-    fn detect_os(&self) -> BlastResult<WindowsInfo> { self.inner.detect_os() }
-    fn default_ledger_path(&self) -> std::path::PathBuf { self.inner.default_ledger_path() }
-    fn default_profile_path(&self) -> std::path::PathBuf { self.inner.default_profile_path() }
-    fn reg_get_dword(&self, h: &str, p: &str, n: &str) -> Option<u32> { self.inner.reg_get_dword(h, p, n) }
+    fn is_elevated(&self) -> bool {
+        self.inner.is_elevated()
+    }
+    fn detect_os(&self) -> BlastResult<WindowsInfo> {
+        self.inner.detect_os()
+    }
+    fn default_ledger_path(&self) -> std::path::PathBuf {
+        self.inner.default_ledger_path()
+    }
+    fn default_profile_path(&self) -> std::path::PathBuf {
+        self.inner.default_profile_path()
+    }
+    fn reg_get_dword(&self, h: &str, p: &str, n: &str) -> Option<u32> {
+        self.inner.reg_get_dword(h, p, n)
+    }
     fn reg_set_dword(&self, h: &str, p: &str, n: &str, v: u32) -> BlastResult<()> {
         self.inner.reg_set_dword(h, p, n, v)
     }
@@ -2679,62 +3417,129 @@ impl SystemBackend for SlowScanBackend {
     fn reg_get_dword_for_vendor(&self, h: &str, p: &str, n: &str, gv: Option<&str>) -> Option<u32> {
         self.inner.reg_get_dword_for_vendor(h, p, n, gv)
     }
-    fn reg_set_dword_for_vendor(&self, h: &str, p: &str, n: &str, v: u32, gv: Option<&str>) -> BlastResult<()> {
+    fn reg_set_dword_for_vendor(
+        &self,
+        h: &str,
+        p: &str,
+        n: &str,
+        v: u32,
+        gv: Option<&str>,
+    ) -> BlastResult<()> {
         self.inner.reg_set_dword_for_vendor(h, p, n, v, gv)
     }
-    fn reg_delete_value_for_vendor(&self, h: &str, p: &str, n: &str, gv: Option<&str>) -> BlastResult<()> {
+    fn reg_delete_value_for_vendor(
+        &self,
+        h: &str,
+        p: &str,
+        n: &str,
+        gv: Option<&str>,
+    ) -> BlastResult<()> {
         self.inner.reg_delete_value_for_vendor(h, p, n, gv)
     }
-    fn reg_get_string(&self, h: &str, p: &str, n: &str, gv: Option<&str>) -> Option<RegStringValue> {
+    fn reg_get_string(
+        &self,
+        h: &str,
+        p: &str,
+        n: &str,
+        gv: Option<&str>,
+    ) -> Option<RegStringValue> {
         self.inner.reg_get_string(h, p, n, gv)
     }
-    fn reg_set_string(&self, h: &str, p: &str, n: &str, v: &str, e: bool, gv: Option<&str>) -> BlastResult<()> {
+    fn reg_set_string(
+        &self,
+        h: &str,
+        p: &str,
+        n: &str,
+        v: &str,
+        e: bool,
+        gv: Option<&str>,
+    ) -> BlastResult<()> {
         self.inner.reg_set_string(h, p, n, v, e, gv)
     }
-    fn reg_get_binary(&self, h: &str, p: &str, n: &str) -> Option<Vec<u8>> { self.inner.reg_get_binary(h, p, n) }
+    fn reg_get_binary(&self, h: &str, p: &str, n: &str) -> Option<Vec<u8>> {
+        self.inner.reg_get_binary(h, p, n)
+    }
     fn reg_set_binary(&self, h: &str, p: &str, n: &str, b: &[u8]) -> BlastResult<()> {
         self.inner.reg_set_binary(h, p, n, b)
     }
-    fn reg_get_raw(&self, h: &str, p: &str, n: &str) -> Option<RegRawSnapshot> { self.inner.reg_get_raw(h, p, n) }
+    fn reg_get_raw(&self, h: &str, p: &str, n: &str) -> Option<RegRawSnapshot> {
+        self.inner.reg_get_raw(h, p, n)
+    }
     fn reg_set_raw(&self, h: &str, p: &str, n: &str, r: &RegRawSnapshot) -> BlastResult<()> {
         self.inner.reg_set_raw(h, p, n, r)
     }
-    fn reg_key_exists(&self, h: &str, p: &str) -> bool { self.inner.reg_key_exists(h, p) }
+    fn reg_key_exists(&self, h: &str, p: &str) -> bool {
+        self.inner.reg_key_exists(h, p)
+    }
     fn reg_snapshot_tree(&self, h: &str, p: &str) -> BlastResult<Option<RegTreeSnapshot>> {
         self.inner.reg_snapshot_tree(h, p)
     }
-    fn reg_delete_tree(&self, h: &str, p: &str) -> BlastResult<()> { self.inner.reg_delete_tree(h, p) }
+    fn reg_delete_tree(&self, h: &str, p: &str) -> BlastResult<()> {
+        self.inner.reg_delete_tree(h, p)
+    }
     fn reg_restore_tree(&self, h: &str, p: &str, s: &RegTreeSnapshot) -> BlastResult<()> {
         self.inner.reg_restore_tree(h, p, s)
     }
-    fn total_physical_ram_kb(&self) -> u64 { self.inner.total_physical_ram_kb() }
-    fn logical_core_count(&self) -> u32 { self.inner.logical_core_count() }
-    fn detect_platform_security(&self) -> PlatformSecurityInfo { self.inner.detect_platform_security() }
-    fn get_active_power_scheme(&self) -> BlastResult<String> { self.inner.get_active_power_scheme() }
-    fn list_power_schemes(&self) -> Vec<PowerSchemeInfo> { self.inner.list_power_schemes() }
-    fn set_active_power_scheme(&self, s: &str) -> BlastResult<()> { self.inner.set_active_power_scheme(s) }
+    fn total_physical_ram_kb(&self) -> u64 {
+        self.inner.total_physical_ram_kb()
+    }
+    fn logical_core_count(&self) -> u32 {
+        self.inner.logical_core_count()
+    }
+    fn detect_platform_security(&self) -> PlatformSecurityInfo {
+        self.inner.detect_platform_security()
+    }
+    fn get_active_power_scheme(&self) -> BlastResult<String> {
+        self.inner.get_active_power_scheme()
+    }
+    fn list_power_schemes(&self) -> Vec<PowerSchemeInfo> {
+        self.inner.list_power_schemes()
+    }
+    fn set_active_power_scheme(&self, s: &str) -> BlastResult<()> {
+        self.inner.set_active_power_scheme(s)
+    }
     fn create_and_activate_performance_plan(&self) -> BlastResult<String> {
         self.inner.create_and_activate_performance_plan()
     }
-    fn read_power_setting_index(&self, sc: Option<&str>, sg: &str, st: &str) -> BlastResult<(u32, u32)> {
+    fn read_power_setting_index(
+        &self,
+        sc: Option<&str>,
+        sg: &str,
+        st: &str,
+    ) -> BlastResult<(u32, u32)> {
         self.inner.read_power_setting_index(sc, sg, st)
     }
-    fn write_power_setting_index(&self, sc: Option<&str>, sg: &str, st: &str, ac: Option<u32>, dc: Option<u32>, uh: bool) -> BlastResult<()> {
+    fn write_power_setting_index(
+        &self,
+        sc: Option<&str>,
+        sg: &str,
+        st: &str,
+        ac: Option<u32>,
+        dc: Option<u32>,
+        uh: bool,
+    ) -> BlastResult<()> {
         self.inner.write_power_setting_index(sc, sg, st, ac, dc, uh)
     }
-    fn query_hibernation_status(&self) -> HibernationStatus { self.inner.query_hibernation_status() }
+    fn query_hibernation_status(&self) -> HibernationStatus {
+        self.inner.query_hibernation_status()
+    }
     fn set_hibernation_enabled(&self, e: bool) -> BlastResult<HibernationStatus> {
         self.inner.set_hibernation_enabled(e)
     }
     fn set_usb_root_hub_power_saving(&self, d: bool) -> BlastResult<usize> {
         self.inner.set_usb_root_hub_power_saving(d)
     }
-    fn get_service_start_type(&self, s: &str) -> Option<u32> { self.inner.get_service_start_type(s) }
+    fn get_service_start_type(&self, s: &str) -> Option<u32> {
+        self.inner.get_service_start_type(s)
+    }
     fn set_service_start_type(&self, s: &str, st: u32) -> BlastResult<()> {
         self.inner.set_service_start_type(s, st)
     }
     fn load_task_cache(&self) -> TaskCache {
-        if self.gate_armed.swap(false, std::sync::atomic::Ordering::SeqCst) {
+        if self
+            .gate_armed
+            .swap(false, std::sync::atomic::Ordering::SeqCst)
+        {
             {
                 let (lock, cvar) = &self.entered;
                 *lock.lock().unwrap() = true;
@@ -2748,35 +3553,75 @@ impl SystemBackend for SlowScanBackend {
         }
         self.inner.load_task_cache()
     }
-    fn get_task_enabled(&self, p: &str) -> Option<bool> { self.inner.get_task_enabled(p) }
+    fn get_task_enabled(&self, p: &str) -> Option<bool> {
+        self.inner.get_task_enabled(p)
+    }
     fn set_scheduled_task_enabled(&self, p: &str, e: bool) -> BlastResult<()> {
         self.inner.set_scheduled_task_enabled(p, e)
     }
-    fn load_appx_cache(&self) -> AppxCache { self.inner.load_appx_cache() }
-    fn remove_appx_package(&self, p: &str) -> BlastResult<()> { self.inner.remove_appx_package(p) }
-    fn read_hosts_file(&self) -> Option<String> { self.inner.read_hosts_file() }
-    fn write_hosts_file(&self, c: &str) -> BlastResult<()> { self.inner.write_hosts_file(c) }
-    fn block_telemetry_hosts(&self, h: &[&str]) -> BlastResult<usize> { self.inner.block_telemetry_hosts(h) }
-    fn list_restore_points(&self) -> BlastResult<Vec<RestorePoint>> { self.inner.list_restore_points() }
-    fn create_restore_point(&self, d: &str) -> BlastResult<()> { self.inner.create_restore_point(d) }
-    fn detect_cpu(&self) -> CpuInfo { self.inner.detect_cpu() }
-    fn detect_gpus(&self) -> Vec<DetectedGpu> { self.inner.detect_gpus() }
+    fn load_appx_cache(&self) -> AppxCache {
+        self.inner.load_appx_cache()
+    }
+    fn remove_appx_package(&self, p: &str) -> BlastResult<()> {
+        self.inner.remove_appx_package(p)
+    }
+    fn read_hosts_file(&self) -> Option<String> {
+        self.inner.read_hosts_file()
+    }
+    fn write_hosts_file(&self, c: &str) -> BlastResult<()> {
+        self.inner.write_hosts_file(c)
+    }
+    fn block_telemetry_hosts(&self, h: &[&str]) -> BlastResult<usize> {
+        self.inner.block_telemetry_hosts(h)
+    }
+    fn list_restore_points(&self) -> BlastResult<Vec<RestorePoint>> {
+        self.inner.list_restore_points()
+    }
+    fn create_restore_point(&self, d: &str) -> BlastResult<()> {
+        self.inner.create_restore_point(d)
+    }
+    fn detect_cpu(&self) -> CpuInfo {
+        self.inner.detect_cpu()
+    }
+    fn detect_gpus(&self) -> Vec<DetectedGpu> {
+        self.inner.detect_gpus()
+    }
     fn set_gpu_msi_mode(&self, id: &str, e: bool, pr: u32) -> std::io::Result<()> {
         self.inner.set_gpu_msi_mode(id, e, pr)
     }
-    fn is_hags_enabled(&self) -> bool { self.inner.is_hags_enabled() }
-    fn set_hags(&self, e: bool) -> std::io::Result<()> { self.inner.set_hags(e) }
-    fn is_mpo_disabled(&self) -> bool { self.inner.is_mpo_disabled() }
-    fn set_mpo_disabled(&self, d: bool) -> std::io::Result<()> { self.inner.set_mpo_disabled(d) }
-    fn detect_core_parking(&self) -> CoreParkingState { self.inner.detect_core_parking() }
-    fn unpark_all_cores(&self) -> BlastResult<()> { self.inner.unpark_all_cores() }
-    fn restore_stock_parking(&self) -> BlastResult<()> { self.inner.restore_stock_parking() }
-    fn capture_latency(&self) -> LatencySnapshot { self.inner.capture_latency() }
+    fn is_hags_enabled(&self) -> bool {
+        self.inner.is_hags_enabled()
+    }
+    fn set_hags(&self, e: bool) -> std::io::Result<()> {
+        self.inner.set_hags(e)
+    }
+    fn is_mpo_disabled(&self) -> bool {
+        self.inner.is_mpo_disabled()
+    }
+    fn set_mpo_disabled(&self, d: bool) -> std::io::Result<()> {
+        self.inner.set_mpo_disabled(d)
+    }
+    fn detect_core_parking(&self) -> CoreParkingState {
+        self.inner.detect_core_parking()
+    }
+    fn unpark_all_cores(&self) -> BlastResult<()> {
+        self.inner.unpark_all_cores()
+    }
+    fn restore_stock_parking(&self) -> BlastResult<()> {
+        self.inner.restore_stock_parking()
+    }
+    fn capture_latency(&self) -> LatencySnapshot {
+        self.inner.capture_latency()
+    }
     fn run_latency_benchmark(&self, s: &str) -> LatencyBenchmarkSnapshot {
         self.inner.run_latency_benchmark(s)
     }
-    fn create_metrics_sampler(&self, m: usize) -> Box<dyn MetricsSampler> { self.inner.create_metrics_sampler(m) }
-    fn scan_clean_targets(&self) -> Vec<CleanTargetScan> { self.inner.scan_clean_targets() }
+    fn create_metrics_sampler(&self, m: usize) -> Box<dyn MetricsSampler> {
+        self.inner.create_metrics_sampler(m)
+    }
+    fn scan_clean_targets(&self) -> Vec<CleanTargetScan> {
+        self.inner.scan_clean_targets()
+    }
     fn execute_clean_targets(&self, k: &[CleanTargetKind]) -> BlastResult<CleanExecutionReport> {
         self.inner.execute_clean_targets(k)
     }
@@ -2789,26 +3634,53 @@ impl SystemBackend for SlowScanBackend {
     fn list_optional_features(&self) -> BlastResult<Vec<WindowsOptionalFeature>> {
         self.inner.list_optional_features()
     }
-    fn set_optional_feature(&self, n: &str, k: OptionalFeatureKind, e: bool) -> BlastResult<FeatureInstallState> {
+    fn set_optional_feature(
+        &self,
+        n: &str,
+        k: OptionalFeatureKind,
+        e: bool,
+    ) -> BlastResult<FeatureInstallState> {
         self.inner.set_optional_feature(n, k, e)
     }
-    fn check_onedrive_kfm_active(&self) -> Option<String> { self.inner.check_onedrive_kfm_active() }
-    fn uninstall_onedrive_safe(&self) -> BlastResult<String> { self.inner.uninstall_onedrive_safe() }
-    fn remove_edge_preserve_webview2(&self) -> BlastResult<String> { self.inner.remove_edge_preserve_webview2() }
-    fn winget_install_package(&self, p: &str) -> BlastResult<String> { self.inner.winget_install_package(p) }
-    fn list_startup_entries(&self) -> BlastResult<Vec<StartupEntry>> { self.inner.list_startup_entries() }
+    fn check_onedrive_kfm_active(&self) -> Option<String> {
+        self.inner.check_onedrive_kfm_active()
+    }
+    fn uninstall_onedrive_safe(&self) -> BlastResult<String> {
+        self.inner.uninstall_onedrive_safe()
+    }
+    fn remove_edge_preserve_webview2(&self) -> BlastResult<String> {
+        self.inner.remove_edge_preserve_webview2()
+    }
+    fn winget_install_package(&self, p: &str) -> BlastResult<String> {
+        self.inner.winget_install_package(p)
+    }
+    fn list_startup_entries(&self) -> BlastResult<Vec<StartupEntry>> {
+        self.inner.list_startup_entries()
+    }
     fn set_startup_entry_enabled(&self, e: &StartupEntry, en: bool) -> BlastResult<()> {
         self.inner.set_startup_entry_enabled(e, en)
     }
     fn set_startup_entry_enabled_by_id(&self, id: &str, en: bool) -> BlastResult<()> {
         self.inner.set_startup_entry_enabled_by_id(id, en)
     }
-    fn list_live_services(&self) -> BlastResult<Vec<LiveServiceInfo>> { self.inner.list_live_services() }
-    fn list_live_tasks(&self) -> Vec<LiveScheduledTaskInfo> { self.inner.list_live_tasks() }
-    fn run_scheduled_task(&self, p: &str) -> BlastResult<()> { self.inner.run_scheduled_task(p) }
-    fn restart_explorer_safely(&self) -> BlastResult<String> { self.inner.restart_explorer_safely() }
-    fn broadcast_shell_settings_changed(&self) { self.inner.broadcast_shell_settings_changed() }
-    fn request_system_reboot(&self) -> BlastResult<()> { self.inner.request_system_reboot() }
+    fn list_live_services(&self) -> BlastResult<Vec<LiveServiceInfo>> {
+        self.inner.list_live_services()
+    }
+    fn list_live_tasks(&self) -> Vec<LiveScheduledTaskInfo> {
+        self.inner.list_live_tasks()
+    }
+    fn run_scheduled_task(&self, p: &str) -> BlastResult<()> {
+        self.inner.run_scheduled_task(p)
+    }
+    fn restart_explorer_safely(&self) -> BlastResult<String> {
+        self.inner.restart_explorer_safely()
+    }
+    fn broadcast_shell_settings_changed(&self) {
+        self.inner.broadcast_shell_settings_changed()
+    }
+    fn request_system_reboot(&self) -> BlastResult<()> {
+        self.inner.request_system_reboot()
+    }
 }
 
 #[test]
@@ -2843,7 +3715,8 @@ fn test_epoch_and_stale_scan_fencing_preserves_instant_mutation() {
         .clone();
 
     // Start slow scan and wait until it has already scanned `target_id` as NotOptimized and paused at load_task_cache
-    slow.gate_armed.store(true, std::sync::atomic::Ordering::SeqCst);
+    slow.gate_armed
+        .store(true, std::sync::atomic::Ordering::SeqCst);
     state.force_scan();
     assert!(state.is_scanning);
     slow.wait_until_scan_paused(Duration::from_secs(5));
@@ -2860,7 +3733,10 @@ fn test_epoch_and_stale_scan_fencing_preserves_instant_mutation() {
                     .is_some_and(|r| r.current_state == TweakState::AlreadyOptimized)
         },
     );
-    assert!(state.is_scanning, "Slow scan must still be in-flight before gate release");
+    assert!(
+        state.is_scanning,
+        "Slow scan must still be in-flight before gate release"
+    );
 
     // Release slow scan -> ScanCompleted arrives carrying stale NotOptimized for `target_id`
     slow.release_scan();
@@ -2901,7 +3777,8 @@ fn test_mode_transitions_select_all_and_diff_modal_separation() {
     {
         // Single NVIDIA GPU only (so AMD & Intel tweaks are foreign/incompatible)
         let mut st = sbx.inner.write().unwrap();
-        st.gpus.retain(|g| g.vendor == winblast0::hardware::gpu::GpuVendor::Nvidia);
+        st.gpus
+            .retain(|g| g.vendor == winblast0::hardware::gpu::GpuVendor::Nvidia);
     }
     sbx.seed_all_tweaks(&tweaks);
 
@@ -2952,11 +3829,16 @@ fn test_mode_transitions_select_all_and_diff_modal_separation() {
 
     // Next switch click in Instant mode applies from live state
     state.handle_switch_click(sample_id.clone());
-    drain_until(&mut state, Duration::from_secs(5), "Instant toggle apply", |s| {
-        !s.in_flight_tweaks.contains(&sample_id)
-            && s.get_tweak_scan(&sample_id)
-                .is_some_and(|r| r.current_state == TweakState::AlreadyOptimized)
-    });
+    drain_until(
+        &mut state,
+        Duration::from_secs(5),
+        "Instant toggle apply",
+        |s| {
+            !s.in_flight_tweaks.contains(&sample_id)
+                && s.get_tweak_scan(&sample_id)
+                    .is_some_and(|r| r.current_state == TweakState::AlreadyOptimized)
+        },
+    );
     assert!(state.is_switch_active(&sample_id));
 
     // Switch back to Normal mode
@@ -2968,13 +3850,12 @@ fn test_mode_transitions_select_all_and_diff_modal_separation() {
     assert_eq!(state.mode, AppMode::Advanced);
     state.select_all();
 
-    let has_advanced_non_high = state.selected_tweaks.iter().any(|id| {
-        state
-            .tweaks
-            .iter()
-            .find(|t| &t.id == id)
-            .is_some_and(|t| !t.easy_mode_included && t.valuation.stability_risk < RiskLevel::High)
-    });
+    let has_advanced_non_high =
+        state.selected_tweaks.iter().any(|id| {
+            state.tweaks.iter().find(|t| &t.id == id).is_some_and(|t| {
+                !t.easy_mode_included && t.valuation.stability_risk < RiskLevel::High
+            })
+        });
     assert!(
         has_advanced_non_high,
         "Advanced select_all must include Advanced non-High compatible tweaks"
@@ -3078,9 +3959,9 @@ fn validate_balanced_xml(xml: &str) {
         }
         if let Some(closing) = tag_body.strip_prefix('/') {
             let close_name = closing.split_whitespace().next().unwrap_or("");
-            let expected = stack
-                .pop()
-                .unwrap_or_else(|| panic!("Unexpected closing tag </{}> with empty stack", close_name));
+            let expected = stack.pop().unwrap_or_else(|| {
+                panic!("Unexpected closing tag </{}> with empty stack", close_name)
+            });
             assert_eq!(
                 expected, close_name,
                 "Mismatched XML closing tag: expected </{}>, got </{}>",
@@ -3093,11 +3974,7 @@ fn validate_balanced_xml(xml: &str) {
         }
         idx = gt + 1;
     }
-    assert!(
-        stack.is_empty(),
-        "Unclosed XML tags remaining: {:?}",
-        stack
-    );
+    assert!(stack.is_empty(), "Unclosed XML tags remaining: {:?}", stack);
 }
 
 #[test]
@@ -3112,7 +3989,10 @@ fn test_tools_appx_hosts_and_autounattend_edge_cases() {
 
     let cool = pkgs
         .iter()
-        .find(|p| p.family_name.eq_ignore_ascii_case("My_Cool_App_8wekyb3d8bbwe"))
+        .find(|p| {
+            p.family_name
+                .eq_ignore_ascii_case("My_Cool_App_8wekyb3d8bbwe")
+        })
         .expect("My_Cool_App family normalization failed");
     assert!(cool.short_name.eq_ignore_ascii_case("My_Cool_App"));
     assert_eq!(cool.publisher, "Microsoft");
@@ -3126,7 +4006,10 @@ fn test_tools_appx_hosts_and_autounattend_edge_cases() {
 
     let core = pkgs
         .iter()
-        .find(|p| p.family_name.eq_ignore_ascii_case("Microsoft.SecHealthUI_8wekyb3d8bbwe"))
+        .find(|p| {
+            p.family_name
+                .eq_ignore_ascii_case("Microsoft.SecHealthUI_8wekyb3d8bbwe")
+        })
         .expect("Missing SecHealthUI");
     assert_eq!(
         core.safety_tier,
@@ -3145,7 +4028,11 @@ fn test_tools_appx_hosts_and_autounattend_edge_cases() {
     );
     let (after_block, added) = winblast0::executor::ps_runner::block_telemetry_hosts_in_content(
         bom_hosts,
-        &["vortex.data.microsoft.com", "telemetry.nvidia.com", "gfe.nvidia.com"],
+        &[
+            "vortex.data.microsoft.com",
+            "telemetry.nvidia.com",
+            "gfe.nvidia.com",
+        ],
     );
     assert_eq!(
         added, 1,
@@ -3281,7 +4168,11 @@ fn test_appx_cache_evaluate_package_with_underscores_regression() {
 #[test]
 fn test_driver_sandbox_lifecycle_e2e() {
     let res = winblast0::hardware::driver_update::test_driver_sandbox_lifecycle();
-    assert!(res.is_ok(), "Driver sandbox lifecycle failed: {:?}", res.err());
+    assert!(
+        res.is_ok(),
+        "Driver sandbox lifecycle failed: {:?}",
+        res.err()
+    );
     let msg = res.unwrap();
     assert!(msg.contains("Virtual Sandbox Test Driver"));
 }
@@ -3354,7 +4245,11 @@ fn test_iso_29119_game_prerequisites_cascade_and_detection() {
     // 1. Initial scan
     state.scan_game_prereqs();
     assert!(!state.is_prereqs_scanning);
-    assert_eq!(state.game_prereqs.len(), 10, "Expected exactly 10 game prerequisites");
+    assert_eq!(
+        state.game_prereqs.len(),
+        10,
+        "Expected exactly 10 game prerequisites"
+    );
 
     let ids: Vec<String> = state.game_prereqs.iter().map(|p| p.id.clone()).collect();
     assert!(ids.contains(&"directx_june2010".to_string()));
@@ -3369,30 +4264,62 @@ fn test_iso_29119_game_prerequisites_cascade_and_detection() {
     assert!(ids.contains(&"xna_framework_4".to_string()));
 
     // 2. Cascade installation of single item via Tier 3 direct URL fallback
-    if let Some(item) = state.game_prereqs.iter_mut().find(|p| p.id == "directx_june2010") {
+    if let Some(item) = state
+        .game_prereqs
+        .iter_mut()
+        .find(|p| p.id == "directx_june2010")
+    {
         item.winget_id = None;
         item.choco_id = None;
     }
     state.install_game_prereq("directx_june2010".to_string());
-    assert!(state.prereq_install_in_flight.is_none(), "Lock must be released");
-    let dx_item = state.game_prereqs.iter().find(|p| p.id == "directx_june2010").unwrap();
-    assert!(dx_item.status_message.contains("portal") || dx_item.status_message.contains("DirectX"));
+    assert!(
+        state.prereq_install_in_flight.is_none(),
+        "Lock must be released"
+    );
+    let dx_item = state
+        .game_prereqs
+        .iter()
+        .find(|p| p.id == "directx_june2010")
+        .unwrap();
+    assert!(
+        dx_item.status_message.contains("portal") || dx_item.status_message.contains("DirectX")
+    );
 
     // 3. Error recovery on total source failure (empty URL and no package managers)
-    if let Some(item) = state.game_prereqs.iter_mut().find(|p| p.id == "xna_framework_4") {
+    if let Some(item) = state
+        .game_prereqs
+        .iter_mut()
+        .find(|p| p.id == "xna_framework_4")
+    {
         item.winget_id = None;
         item.choco_id = None;
         item.direct_url = String::new();
     }
     state.install_game_prereq("xna_framework_4".to_string());
-    assert!(state.prereq_install_in_flight.is_none(), "Lock must be released on failure");
-    let xna_item = state.game_prereqs.iter().find(|p| p.id == "xna_framework_4").unwrap();
-    assert_eq!(xna_item.state, winblast0::tools::game_prereqs::PrereqInstallState::Failed);
-    assert!(xna_item.status_message.contains("failed") || xna_item.status_message.contains("Failed"));
+    assert!(
+        state.prereq_install_in_flight.is_none(),
+        "Lock must be released on failure"
+    );
+    let xna_item = state
+        .game_prereqs
+        .iter()
+        .find(|p| p.id == "xna_framework_4")
+        .unwrap();
+    assert_eq!(
+        xna_item.state,
+        winblast0::tools::game_prereqs::PrereqInstallState::Failed
+    );
+    assert!(
+        xna_item.status_message.contains("failed") || xna_item.status_message.contains("Failed")
+    );
 
     // 4. Fault tolerance: invalid prerequisite ID
     state.install_game_prereq("nonexistent_mock_prereq_999".to_string());
-    assert!(state.prereq_install_in_flight.is_none(), "Lock must release even for non-existent ID");
+    assert!(
+        state.prereq_install_in_flight.is_none(),
+        "Lock must release even for non-existent ID"
+    );
 }
 
 /// ISO 29119-3 / 29119-4 Test Case Specification:
@@ -3420,16 +4347,25 @@ fn test_iso_29119_automation_engine_workflows() {
 
     // 1. System Health Assessment Workflow
     state.refresh_system_health();
-    let health = state.system_health_assessment.as_ref().expect("Health assessment must be populated");
+    let health = state
+        .system_health_assessment
+        .as_ref()
+        .expect("Health assessment must be populated");
     assert!(health.score <= 100);
     assert!(health.overall_score <= 100);
     assert!(!health.grade.badge_text().is_empty());
-    assert_eq!(health.recommended_actions.len(), health.detected_issues.len());
+    assert_eq!(
+        health.recommended_actions.len(),
+        health.detected_issues.len()
+    );
 
     // 2. 1-Click Auto-Tune Engine Workflows across all 4 profiles
     for &profile in AutoTuneProfile::all() {
         state.generate_auto_tune_plan(profile);
-        let plan = state.auto_tune_plan.as_ref().expect("Auto-tune plan must be generated");
+        let plan = state
+            .auto_tune_plan
+            .as_ref()
+            .expect("Auto-tune plan must be generated");
         assert_eq!(plan.profile, profile);
         assert!(plan.total_tweaks_to_apply > 0);
         assert!(plan.estimated_latency_improvement_pct > 0);
@@ -3437,16 +4373,26 @@ fn test_iso_29119_automation_engine_workflows() {
         // Verify risk constraints
         let max_risk = profile.target_risk_level();
         for tid in &plan.recommended_tweak_ids {
-            let twk = state.tweaks.iter().find(|t| &t.id == tid).expect("Tweak must exist");
+            let twk = state
+                .tweaks
+                .iter()
+                .find(|t| &t.id == tid)
+                .expect("Tweak must exist");
             assert!(twk.valuation.stability_risk <= max_risk);
         }
 
         // Execute auto-tune profile in sandbox (non-blocking async worker)
         state.execute_auto_tune_profile(profile);
-        drain_until(&mut state, Duration::from_secs(5), "autotune execution", |s| {
-            s.auto_tune_result.is_some() && !s.is_running_automation
-        });
-        let result = state.auto_tune_result.as_ref().expect("Auto-tune result must be populated");
+        drain_until(
+            &mut state,
+            Duration::from_secs(5),
+            "autotune execution",
+            |s| s.auto_tune_result.is_some() && !s.is_running_automation,
+        );
+        let result = state
+            .auto_tune_result
+            .as_ref()
+            .expect("Auto-tune result must be populated");
         assert_eq!(result.profile, profile);
         assert!(!result.message.is_empty());
         assert!(!state.is_running_automation);
@@ -3454,7 +4400,11 @@ fn test_iso_29119_automation_engine_workflows() {
 
     // 3. Scheduled Maintenance Task Management Workflow
     state.refresh_maintenance_tasks();
-    assert_eq!(state.maintenance_tasks.len(), 3, "Expected 3 scheduled maintenance tasks");
+    assert_eq!(
+        state.maintenance_tasks.len(),
+        3,
+        "Expected 3 scheduled maintenance tasks"
+    );
     let kinds: Vec<MaintenanceTaskKind> = state.maintenance_tasks.iter().map(|t| t.kind).collect();
     assert!(kinds.contains(&MaintenanceTaskKind::DailyMemoryPurge));
     assert!(kinds.contains(&MaintenanceTaskKind::WeeklyTempCleaner));
@@ -3463,7 +4413,10 @@ fn test_iso_29119_automation_engine_workflows() {
     // 4. Automated Memory & Cache Trim Workflow
     state.execute_memory_trim();
     assert!(!state.is_running_automation);
-    let trim_res = state.last_memory_trim_result.as_ref().expect("Memory trim result must be populated");
+    let trim_res = state
+        .last_memory_trim_result
+        .as_ref()
+        .expect("Memory trim result must be populated");
     assert!(!trim_res.message.is_empty());
 }
 
@@ -3550,15 +4503,27 @@ fn test_iso_25010_fault_tolerance_concurrency_and_corruption_recovery() {
     let temp_dir = std::env::temp_dir();
     let corrupt_cases: &[(&str, &[u8])] = &[
         // Case 1: Raw binary garbage (non-JSON)
-        ("corrupt_raw_binary.wb0", &[0xDE, 0xAD, 0xBE, 0xEF, 0x00, 0xFF, 0xFE, 0xFD]),
+        (
+            "corrupt_raw_binary.wb0",
+            &[0xDE, 0xAD, 0xBE, 0xEF, 0x00, 0xFF, 0xFE, 0xFD],
+        ),
         // Case 2: Truncated JSON
-        ("corrupt_truncated.wb0", b"{\"version\": 1, \"name\": \"Truncated Profile\", \"selected_tweak_ids\": [\"tweak_"),
+        (
+            "corrupt_truncated.wb0",
+            b"{\"version\": 1, \"name\": \"Truncated Profile\", \"selected_tweak_ids\": [\"tweak_",
+        ),
         // Case 3: Empty JSON object
         ("corrupt_empty.wb0", b"{}"),
         // Case 4: Type mismatch (number instead of array)
-        ("corrupt_type_mismatch.wb0", b"{\"name\": 12345, \"selected_tweak_ids\": \"not_an_array\"}"),
+        (
+            "corrupt_type_mismatch.wb0",
+            b"{\"name\": 12345, \"selected_tweak_ids\": \"not_an_array\"}",
+        ),
         // Case 5: Extremely deeply nested brackets
-        ("corrupt_nested.wb0", b"[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]"),
+        (
+            "corrupt_nested.wb0",
+            b"[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]",
+        ),
     ];
 
     for (filename, bytes) in corrupt_cases {
@@ -3577,7 +4542,9 @@ fn test_iso_25010_fault_tolerance_concurrency_and_corruption_recovery() {
         state.profile_path = corrupt_path.clone();
         state.import_profile();
         assert!(
-            state.status_message.contains("failed") || state.status_message.contains("Failed") || state.status_message.contains("error"),
+            state.status_message.contains("failed")
+                || state.status_message.contains("Failed")
+                || state.status_message.contains("error"),
             "Expected failure status message for '{}', got: {:?}",
             filename,
             state.status_message
@@ -3680,21 +4647,45 @@ fn test_iso_29119_dashboard_i18n_translations_all_languages() {
     );
 
     // Verify Quick Actions buttons
-    assert_eq!(I18n::translate(Language::English, TextKey::DashboardQaFpsBtn), "Open Matrix");
-    assert_eq!(I18n::translate(Language::Turkish, TextKey::DashboardQaFpsBtn), "Matrise Git");
-    assert_eq!(I18n::translate(Language::German, TextKey::DashboardQaFpsBtn), "Matrix öffnen");
-    assert_eq!(I18n::translate(Language::French, TextKey::DashboardQaFpsBtn), "Ouvrir la matrice");
-    assert_eq!(I18n::translate(Language::Spanish, TextKey::DashboardQaFpsBtn), "Ir a la matriz");
-    assert_eq!(I18n::translate(Language::Russian, TextKey::DashboardQaFpsBtn), "Открыть матрицу");
-    assert_eq!(I18n::translate(Language::Chinese, TextKey::DashboardQaFpsBtn), "转到矩阵");
-    assert_eq!(I18n::translate(Language::Japanese, TextKey::DashboardQaFpsBtn), "マトリクスを開く");
+    assert_eq!(
+        I18n::translate(Language::English, TextKey::DashboardQaFpsBtn),
+        "Open Matrix"
+    );
+    assert_eq!(
+        I18n::translate(Language::Turkish, TextKey::DashboardQaFpsBtn),
+        "Matrise Git"
+    );
+    assert_eq!(
+        I18n::translate(Language::German, TextKey::DashboardQaFpsBtn),
+        "Matrix öffnen"
+    );
+    assert_eq!(
+        I18n::translate(Language::French, TextKey::DashboardQaFpsBtn),
+        "Ouvrir la matrice"
+    );
+    assert_eq!(
+        I18n::translate(Language::Spanish, TextKey::DashboardQaFpsBtn),
+        "Ir a la matriz"
+    );
+    assert_eq!(
+        I18n::translate(Language::Russian, TextKey::DashboardQaFpsBtn),
+        "Открыть матрицу"
+    );
+    assert_eq!(
+        I18n::translate(Language::Chinese, TextKey::DashboardQaFpsBtn),
+        "转到矩阵"
+    );
+    assert_eq!(
+        I18n::translate(Language::Japanese, TextKey::DashboardQaFpsBtn),
+        "マトリクスを開く"
+    );
 }
 
 #[test]
 fn test_startup_sorting_filtering_and_dropdown_state_transitions() {
+    use std::sync::Arc;
     use winblast0::app::{ActiveDropdown, AppState, StartupSortMode, StartupStatusFilter};
     use winblast0::tools::startup::StartupEntry;
-    use std::sync::Arc;
 
     let sbx = SandboxEnv::new();
     let mut state = AppState::new_with_backend(Arc::new(sbx));
@@ -3746,20 +4737,28 @@ fn test_startup_sorting_filtering_and_dropdown_state_transitions() {
 
     // Filter by Active Only
     state.startup_status_filter = StartupStatusFilter::ActiveOnly;
-    let active_count = state.startup_entries.iter().filter(|e| match state.startup_status_filter {
-        StartupStatusFilter::All => true,
-        StartupStatusFilter::ActiveOnly => e.enabled,
-        StartupStatusFilter::InactiveOnly => !e.enabled,
-    }).count();
+    let active_count = state
+        .startup_entries
+        .iter()
+        .filter(|e| match state.startup_status_filter {
+            StartupStatusFilter::All => true,
+            StartupStatusFilter::ActiveOnly => e.enabled,
+            StartupStatusFilter::InactiveOnly => !e.enabled,
+        })
+        .count();
     assert_eq!(active_count, 1);
 
     // Filter by Inactive Only
     state.startup_status_filter = StartupStatusFilter::InactiveOnly;
-    let inactive_count = state.startup_entries.iter().filter(|e| match state.startup_status_filter {
-        StartupStatusFilter::All => true,
-        StartupStatusFilter::ActiveOnly => e.enabled,
-        StartupStatusFilter::InactiveOnly => !e.enabled,
-    }).count();
+    let inactive_count = state
+        .startup_entries
+        .iter()
+        .filter(|e| match state.startup_status_filter {
+            StartupStatusFilter::All => true,
+            StartupStatusFilter::ActiveOnly => e.enabled,
+            StartupStatusFilter::InactiveOnly => !e.enabled,
+        })
+        .count();
     assert_eq!(inactive_count, 1);
 
     // Verify NetworkDiagnostics default contains 10 DNS providers
@@ -3772,5 +4771,8 @@ fn test_startup_sorting_filtering_and_dropdown_state_transitions() {
 
     // Verify Diagnostics remediation methods exist and don't panic
     let report = winblast0::tools::diagnostics::FaultDiagnosticsReport::scan();
-    assert!(report.pending_reboot.pending_files.is_empty() || !report.pending_reboot.pending_files.is_empty());
+    assert!(
+        report.pending_reboot.pending_files.is_empty()
+            || !report.pending_reboot.pending_files.is_empty()
+    );
 }

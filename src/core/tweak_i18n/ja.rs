@@ -1417,18 +1417,30 @@ pub fn lookup(id: &str) -> Option<LocalizedTweakText> {
 #[allow(dead_code)]
 pub fn tweak_title(id: &str) -> Option<&'static str> {
     match id {
-        "disable_dwm_animations_per_process" => Some("プロセスごとの DWM トランジションアニメーションを無効化"),
-        "disable_dwm_composition_throttle" => Some("デスクトップウィンドウマネージャーのコンポジション調整を無効化"),
+        "disable_dwm_animations_per_process" => {
+            Some("プロセスごとの DWM トランジションアニメーションを無効化")
+        }
+        "disable_dwm_composition_throttle" => {
+            Some("デスクトップウィンドウマネージャーのコンポジション調整を無効化")
+        }
         "disable_kernel_mitigations_audit" => Some("カーネル緩和策の監査モードを無効化"),
         "disable_llmnr_protocol" => Some("LLMNR 名前解決プロトコルを無効化"),
         "disable_memory_compression" => Some("メモリ圧縮エンジンを無効化"),
         "disable_netbios_over_tcp" => Some("NetBIOS over TCP/IP を無効化"),
-        "disable_ntfs_encryption_driver" => Some("NTFS 暗号化ファイルシステム (EFS) ドライバを無効化"),
-        "disable_page_file_encryption" => Some("ページファイルの暗号化およびシャットダウン時の消去を無効化"),
+        "disable_ntfs_encryption_driver" => {
+            Some("NTFS 暗号化ファイルシステム (EFS) ドライバを無効化")
+        }
+        "disable_page_file_encryption" => {
+            Some("ページファイルの暗号化およびシャットダウン時の消去を無効化")
+        }
         "disable_processor_idle_demote_threshold" => Some("プロセッサのアイドル状態降格を無効化"),
         "disable_rss_base_cpu" => Some("ネットワーク負荷分散のための RSS ベース CPU を設定"),
-        "disable_spectre_meltdown_mitigations" => Some("Spectre / Meltdown CPU 脆弱性緩和策を無効化"),
-        "disable_threaded_dpc_optimization" => Some("スレッド化 DPC を無効化して割り込みレイテンシを短縮"),
+        "disable_spectre_meltdown_mitigations" => {
+            Some("Spectre / Meltdown CPU 脆弱性緩和策を無効化")
+        }
+        "disable_threaded_dpc_optimization" => {
+            Some("スレッド化 DPC を無効化して割り込みレイテンシを短縮")
+        }
         "disable_windows_search_indexer" => Some("Windows 検索インデクサーサービスを無効化"),
         "enable_hardware_task_offload" => Some("TCP/IP ハードウェアタスクオフロードを有効化"),
         "enable_large_ntfs_frs" => Some("大容量 NTFS ファイルレコードセグメントを有効化"),
@@ -1436,27 +1448,51 @@ pub fn tweak_title(id: &str) -> Option<&'static str> {
         "increase_gpu_tdr_timeout" => Some("GPU タイムアウト検出・回復 (TDR) 遅延時間を延長"),
         "increase_irp_stack_size" => Some("ネットワーク / ディスク IO 用 IRP スタックサイズを増加"),
         "increase_max_connections_per_server" => Some("サーバーあたりの最大 HTTP 接続数を増加"),
-        "increase_nonpaged_pool_quota" => Some("ドライバの安定性向上のため非ページプールクォータを拡張"),
-        "optimize_additional_critical_worker_threads" => Some("追加のカーネルワーカーワーカースレッドを増強"),
+        "increase_nonpaged_pool_quota" => {
+            Some("ドライバの安定性向上のため非ページプールクォータを拡張")
+        }
+        "optimize_additional_critical_worker_threads" => {
+            Some("追加のカーネルワーカーワーカースレッドを増強")
+        }
         "optimize_default_ttl" => Some("最適なデフォルト IP パケット TTL を設定"),
         "optimize_disk_io_page_lock_limit" => Some("大容量転送向け IO ページロック制限を拡張"),
-        "optimize_dns_cache_parameters" => Some("DNS クライアントのキャッシュサイズと TTL を最適化"),
-        "optimize_gpu_preemption_level" => Some("GPU スケジューラをコンピュート専用プリエンプションに設定"),
-        "optimize_interrupt_steering" => Some("割り込みアフィニティおよびステアリングポリシーを最適化"),
-        "optimize_mmcss_proaudio_scheduling" => Some("MMCSS Pro Audio — 最大スケジューリング優先度"),
+        "optimize_dns_cache_parameters" => {
+            Some("DNS クライアントのキャッシュサイズと TTL を最適化")
+        }
+        "optimize_gpu_preemption_level" => {
+            Some("GPU スケジューラをコンピュート専用プリエンプションに設定")
+        }
+        "optimize_interrupt_steering" => {
+            Some("割り込みアフィニティおよびステアリングポリシーを最適化")
+        }
+        "optimize_mmcss_proaudio_scheduling" => {
+            Some("MMCSS Pro Audio — 最大スケジューリング優先度")
+        }
         "optimize_ntfs_memory_usage" => Some("NTFS ページプールの積極的キャッシュを有効化"),
-        "optimize_object_manager_quota" => Some("カーネルオブジェクトマネージャーのハンドルクォータを拡張"),
-        "optimize_timer_resolution_requests" => Some("アプリケーションによる高解像度タイマー要求を許可"),
-                "disable_driver_search_order_probing" => Some("Windows Update によるドライバー検索プローブを無効化"),
+        "optimize_object_manager_quota" => {
+            Some("カーネルオブジェクトマネージャーのハンドルクォータを拡張")
+        }
+        "optimize_timer_resolution_requests" => {
+            Some("アプリケーションによる高解像度タイマー要求を許可")
+        }
+        "disable_driver_search_order_probing" => {
+            Some("Windows Update によるドライバー検索プローブを無効化")
+        }
         "disable_fast_user_switching" => Some("ユーザーの簡易切り替えを無効化"),
         "disable_ip_source_routing" => Some("IP ソースルーティングを無効化"),
         "disable_netsh_teredo_tunneling" => Some("Teredo IPv6 移行トンネリングを無効化"),
-        "disable_network_adapter_power_saving" => Some("NDIS ネットワークアダプターの PnP 省電力を無効化"),
-        "disable_remote_desktop_udp" => Some("リモートデスクトップクライアントの UDP トランスポートを無効化"),
+        "disable_network_adapter_power_saving" => {
+            Some("NDIS ネットワークアダプターの PnP 省電力を無効化")
+        }
+        "disable_remote_desktop_udp" => {
+            Some("リモートデスクトップクライアントの UDP トランスポートを無効化")
+        }
         "disable_smart_card_service" => Some("スマートカードサービス (SCardSvr) を無効化"),
         "optimize_kerberos_ticket_cache" => Some("Kerberos 最大トークンサイズバッファを最適化"),
         "optimize_tcp_syn_attack_protection" => Some("TCP SYN アタック保護を有効化"),
-        "optimize_usb_selective_suspend_hub" => Some("グローバル USB ハブのセレクティブサスペンドを無効化"),
+        "optimize_usb_selective_suspend_hub" => {
+            Some("グローバル USB ハブのセレクティブサスペンドを無効化")
+        }
         _ => lookup(id).map(|t| t.title),
     }
 }

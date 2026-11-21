@@ -118,10 +118,11 @@ impl FaultDiagnosticsReport {
         }
 
         // Pending File Rename Operations (Session Manager)
-        if let Ok(sm_key) =
-            hklm.open_subkey("SYSTEM\\CurrentControlSet\\Control\\Session Manager")
+        if let Ok(sm_key) = hklm.open_subkey("SYSTEM\\CurrentControlSet\\Control\\Session Manager")
         {
-            let non_empty: Vec<String> = if let Ok(list) = sm_key.get_value::<Vec<String>, _>("PendingFileRenameOperations") {
+            let non_empty: Vec<String> = if let Ok(list) =
+                sm_key.get_value::<Vec<String>, _>("PendingFileRenameOperations")
+            {
                 list.into_iter().filter(|s| !s.trim().is_empty()).collect()
             } else if let Ok(val) = sm_key.get_raw_value("PendingFileRenameOperations") {
                 parse_multi_sz_lossless(&val.bytes)
@@ -171,11 +172,14 @@ impl FaultDiagnosticsReport {
     /// Clear pending file rename operations in Windows registry (requires elevation).
     pub fn clear_pending_renames() -> Result<(), String> {
         let hklm = RegKey::predef(HKEY_LOCAL_MACHINE);
-        let sm_key = hklm.open_subkey_with_flags(
-            "SYSTEM\\CurrentControlSet\\Control\\Session Manager",
-            KEY_SET_VALUE,
-        ).map_err(|e| format!("Failed to open Session Manager key: {e}"))?;
-        sm_key.delete_value("PendingFileRenameOperations")
+        let sm_key = hklm
+            .open_subkey_with_flags(
+                "SYSTEM\\CurrentControlSet\\Control\\Session Manager",
+                KEY_SET_VALUE,
+            )
+            .map_err(|e| format!("Failed to open Session Manager key: {e}"))?;
+        sm_key
+            .delete_value("PendingFileRenameOperations")
             .map_err(|e| format!("Failed to clear PendingFileRenameOperations: {e}"))?;
         Ok(())
     }
@@ -195,7 +199,13 @@ impl FaultDiagnosticsReport {
     /// Restart Windows to finalize pending installations.
     pub fn restart_system() -> Result<(), String> {
         crate::core::process::SilentCommand::new("shutdown.exe")
-            .args(["/r", "/t", "5", "/c", "WinBlast0: Rebooting to finalize updates"])
+            .args([
+                "/r",
+                "/t",
+                "5",
+                "/c",
+                "WinBlast0: Rebooting to finalize updates",
+            ])
             .spawn()
             .map(|_| ())
             .map_err(|e| format!("Failed to initiate restart: {e}"))

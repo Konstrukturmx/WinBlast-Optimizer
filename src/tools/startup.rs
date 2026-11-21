@@ -166,7 +166,9 @@ fn read_startup_approved_enabled(hive: HKEY, subkey: &str, name: &str) -> bool {
 /// Build the standard Windows Task Manager 12-byte `StartupApproved` binary payload.
 pub fn encode_startup_approved_bytes(enable: bool) -> Vec<u8> {
     if enable {
-        vec![0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]
+        vec![
+            0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+        ]
     } else {
         // 0x03 disabled + current UTC Windows FILETIME (8 bytes LE)
         let unix_secs = chrono::Utc::now().timestamp().max(0) as u64;
@@ -270,7 +272,11 @@ fn scan_run_key(
                 "{}\\{}{}",
                 hive_name,
                 subpath,
-                if is_wow64 && is_run_once { " (WOW6432)" } else { "" }
+                if is_wow64 && is_run_once {
+                    " (WOW6432)"
+                } else {
+                    ""
+                }
             ),
             hive: hive_name.to_string(),
             reg_path: subpath.to_string(),
@@ -335,7 +341,8 @@ fn scan_uwp_startup_tasks(entries: &mut Vec<StartupEntry>) {
             continue;
         };
         for task_id in fam_key.enum_keys().filter_map(|k| k.ok()) {
-            let Ok(tk) = fam_key.open_subkey_with_flags(&task_id, KEY_READ | KEY_WOW64_64KEY) else {
+            let Ok(tk) = fam_key.open_subkey_with_flags(&task_id, KEY_READ | KEY_WOW64_64KEY)
+            else {
                 continue;
             };
             let Ok(state): std::result::Result<u32, _> = tk.get_value("State") else {
@@ -478,7 +485,8 @@ pub fn set_startup_entry_enabled(entry: &StartupEntry, enable: bool) -> Result<(
                 .create_subkey_with_flags(&entry.reg_path, KEY_READ | KEY_WRITE | KEY_WOW64_64KEY)
                 .map_err(WinBlastError::from_reg_err)?;
             let state: u32 = if enable { 2 } else { 1 };
-            k.set_value("State", &state).map_err(WinBlastError::from_reg_err)?;
+            k.set_value("State", &state)
+                .map_err(WinBlastError::from_reg_err)?;
             Ok(())
         }
         StartupSource::ScheduledTaskLogon => {
@@ -560,8 +568,8 @@ fn enum_scm_services_by_type(
 ) -> std::result::Result<HashMap<String, ScmServiceRecord>, windows::core::Error> {
     use windows::Win32::Foundation::ERROR_MORE_DATA;
     use windows::Win32::System::Services::{
-        EnumServicesStatusExW, ENUM_SERVICE_STATUS_PROCESSW, SC_ENUM_PROCESS_INFO,
-        SERVICE_RUNNING, SERVICE_STATE_ALL,
+        EnumServicesStatusExW, ENUM_SERVICE_STATUS_PROCESSW, SC_ENUM_PROCESS_INFO, SERVICE_RUNNING,
+        SERVICE_STATE_ALL,
     };
 
     let mut map = HashMap::new();
@@ -730,8 +738,13 @@ fn resolve_indirect_display_string(raw: &str) -> Option<String> {
     let src_w: Vec<u16> = trimmed.encode_utf16().chain(std::iter::once(0)).collect();
     let mut out_buf = [0u16; 512];
     unsafe { SHLoadIndirectString(PCWSTR(src_w.as_ptr()), &mut out_buf, None) }.ok()?;
-    let nul_pos = out_buf.iter().position(|&c| c == 0).unwrap_or(out_buf.len());
-    let resolved = String::from_utf16_lossy(&out_buf[..nul_pos]).trim().to_string();
+    let nul_pos = out_buf
+        .iter()
+        .position(|&c| c == 0)
+        .unwrap_or(out_buf.len());
+    let resolved = String::from_utf16_lossy(&out_buf[..nul_pos])
+        .trim()
+        .to_string();
     if resolved.is_empty() || resolved.starts_with('@') {
         None
     } else {
@@ -785,13 +798,14 @@ pub fn list_live_services() -> Result<Vec<LiveServiceInfo>> {
 
     let scm_opt = unsafe { OpenSCManagerW(None, None, SC_MANAGER_ENUMERATE_SERVICE) }.ok();
     let scm_guard = scm_opt.map(ScHandleGuard);
-    let scm_map = scm_opt
-        .map(query_scm_win32_services)
-        .unwrap_or_default();
+    let scm_map = scm_opt.map(query_scm_win32_services).unwrap_or_default();
 
     let hklm = RegKey::predef(HKEY_LOCAL_MACHINE);
     let svc_root = hklm
-        .open_subkey_with_flags("SYSTEM\\CurrentControlSet\\Services", KEY_READ | KEY_WOW64_64KEY)
+        .open_subkey_with_flags(
+            "SYSTEM\\CurrentControlSet\\Services",
+            KEY_READ | KEY_WOW64_64KEY,
+        )
         .map_err(WinBlastError::from_reg_err)?;
 
     let mut list = Vec::new();
@@ -907,7 +921,9 @@ pub fn run_scheduled_task(task_path: &str) -> Result<()> {
     let out = SilentCommand::new("schtasks")
         .args(["/Run", "/TN", task_path])
         .output()
-        .map_err(|e| WinBlastError::ScheduledTask(format!("Failed to run task {}: {}", task_path, e)))?;
+        .map_err(|e| {
+            WinBlastError::ScheduledTask(format!("Failed to run task {}: {}", task_path, e))
+        })?;
     if !out.status.success() {
         let stderr = crate::scanner::task_scanner::decode_oem_bytes(&out.stderr);
         return Err(WinBlastError::ScheduledTask(format!(

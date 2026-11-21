@@ -161,7 +161,9 @@ impl Ord for AStarNode {
         let self_f = self.g_cost + self.h_cost;
         let other_f = other.g_cost + other.h_cost;
         // Min-heap: lower f-cost has higher priority
-        other_f.cmp(&self_f).then_with(|| other.g_cost.cmp(&self.g_cost))
+        other_f
+            .cmp(&self_f)
+            .then_with(|| other.g_cost.cmp(&self.g_cost))
     }
 }
 
@@ -181,11 +183,7 @@ impl AStarPlanner {
 
     /// Run A* heuristic search to discover the optimal collection of tweaks
     /// that achieves `goal` with minimal cumulative risk and disruption.
-    pub fn plan(
-        &self,
-        goal: &OptimizationGoal,
-        candidates: &[TweakCandidate],
-    ) -> OptimizationPlan {
+    pub fn plan(&self, goal: &OptimizationGoal, candidates: &[TweakCandidate]) -> OptimizationPlan {
         if candidates.is_empty() {
             return OptimizationPlan {
                 goal_name: goal.name.clone(),
@@ -228,15 +226,27 @@ impl AStarPlanner {
         let perf_w = goal.min_perf_gain.max(1) as f32;
         let priv_w = goal.min_privacy_gain.max(1) as f32;
         valid_candidates.sort_by(|a, b| {
-            let cost_a = 1.0 + (a.risk_weight as f32 * 3.0) + if a.requires_reboot { 5.0 } else { 0.0 };
-            let cost_b = 1.0 + (b.risk_weight as f32 * 3.0) + if b.requires_reboot { 5.0 } else { 0.0 };
+            let cost_a =
+                1.0 + (a.risk_weight as f32 * 3.0) + if a.requires_reboot { 5.0 } else { 0.0 };
+            let cost_b =
+                1.0 + (b.risk_weight as f32 * 3.0) + if b.requires_reboot { 5.0 } else { 0.0 };
             let val_a = (a.perf_gain as f32 * perf_w + a.privacy_gain as f32 * priv_w) / cost_a;
             let val_b = (b.perf_gain as f32 * perf_w + b.privacy_gain as f32 * priv_w) / cost_b;
             val_b.partial_cmp(&val_a).unwrap_or(Ordering::Equal)
         });
 
-        let max_perf_step = valid_candidates.iter().map(|c| c.perf_gain).max().unwrap_or(1).max(1);
-        let max_priv_step = valid_candidates.iter().map(|c| c.privacy_gain).max().unwrap_or(1).max(1);
+        let max_perf_step = valid_candidates
+            .iter()
+            .map(|c| c.perf_gain)
+            .max()
+            .unwrap_or(1)
+            .max(1);
+        let max_priv_step = valid_candidates
+            .iter()
+            .map(|c| c.privacy_gain)
+            .max()
+            .unwrap_or(1)
+            .max(1);
 
         // Admissible heuristic function: lower bound on remaining steps to meet both targets
         let heuristic = |perf: u32, priv_score: u32| -> u32 {
@@ -270,7 +280,9 @@ impl AStarPlanner {
         // 64-bit packed state signature: (candidate_idx << 32) | ((perf & 0xFFFF) << 16) | (priv & 0xFFFF)
         #[inline(always)]
         fn pack_state(perf: u32, priv_score: u32, idx: usize) -> u64 {
-            ((idx as u64) << 32) | (((perf.min(0xFFFF)) as u64) << 16) | ((priv_score.min(0xFFFF)) as u64)
+            ((idx as u64) << 32)
+                | (((perf.min(0xFFFF)) as u64) << 16)
+                | ((priv_score.min(0xFFFF)) as u64)
         }
 
         while let Some(current) = open_set.pop() {
@@ -280,13 +292,19 @@ impl AStarPlanner {
             }
 
             // Check if goal conditions are satisfied
-            if current.current_perf >= goal.min_perf_gain && current.current_priv >= goal.min_privacy_gain {
+            if current.current_perf >= goal.min_perf_gain
+                && current.current_priv >= goal.min_privacy_gain
+            {
                 best_plan = Some(current);
                 break;
             }
 
             // Track state signature: (perf, priv, candidate_idx)
-            let state_sig = pack_state(current.current_perf, current.current_priv, current.candidate_idx);
+            let state_sig = pack_state(
+                current.current_perf,
+                current.current_priv,
+                current.candidate_idx,
+            );
             if !visited_states.insert(state_sig) {
                 continue;
             }
@@ -306,7 +324,8 @@ impl AStarPlanner {
             let next_reboots = current.reboots + (if candidate.requires_reboot { 1 } else { 0 });
 
             // Step cost: risk penalty + reboot friction
-            let step_cost = 1 + candidate.risk_weight * 3 + (if candidate.requires_reboot { 5 } else { 0 });
+            let step_cost =
+                1 + candidate.risk_weight * 3 + (if candidate.requires_reboot { 5 } else { 0 });
             let next_g = current.g_cost + step_cost;
             let next_h = heuristic(next_perf, next_priv);
 
@@ -426,7 +445,9 @@ mod tests {
         assert!(plan.satisfied_goal);
         assert!(plan.achieved_perf_gain >= goal.min_perf_gain);
         assert!(plan.selected_tweak_ids.contains(&"hags".to_string()));
-        assert!(plan.selected_tweak_ids.contains(&"win32_priority".to_string()));
+        assert!(plan
+            .selected_tweak_ids
+            .contains(&"win32_priority".to_string()));
     }
 
     #[test]
@@ -463,7 +484,9 @@ mod tests {
 
         let plan = planner.plan(&goal, &candidates);
         assert!(plan.satisfied_goal);
-        assert!(!plan.selected_tweak_ids.contains(&"heavy_reboot_tweak".to_string()));
+        assert!(!plan
+            .selected_tweak_ids
+            .contains(&"heavy_reboot_tweak".to_string()));
         assert_eq!(plan.reboots_needed, 0);
     }
 }

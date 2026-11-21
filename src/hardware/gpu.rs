@@ -149,7 +149,10 @@ struct DevInfoGuard(windows::Win32::Devices::DeviceAndDriverInstallation::HDEVIN
 impl Drop for DevInfoGuard {
     fn drop(&mut self) {
         unsafe {
-            let _ = windows::Win32::Devices::DeviceAndDriverInstallation::SetupDiDestroyDeviceInfoList(self.0);
+            let _ =
+                windows::Win32::Devices::DeviceAndDriverInstallation::SetupDiDestroyDeviceInfoList(
+                    self.0,
+                );
         }
     }
 }
@@ -165,7 +168,9 @@ fn present_display_class_subkeys() -> Vec<(String, String)> {
 
     const GUID_DEVCLASS_DISPLAY: GUID = GUID::from_u128(0x4d36e968_e325_11ce_bfc1_08002be10318);
     let mut result: Vec<(String, String)> = Vec::new();
-    let Ok(hdev) = (unsafe { SetupDiGetClassDevsW(Some(&GUID_DEVCLASS_DISPLAY), None, None, DIGCF_PRESENT) }) else {
+    let Ok(hdev) =
+        (unsafe { SetupDiGetClassDevsW(Some(&GUID_DEVCLASS_DISPLAY), None, None, DIGCF_PRESENT) })
+    else {
         return result;
     };
     let _guard = DevInfoGuard(hdev);
@@ -233,7 +238,10 @@ fn present_display_class_subkeys() -> Vec<(String, String)> {
                         }
                         .is_ok()
                         {
-                            let end = big_buf.iter().position(|&w| w == 0).unwrap_or(big_buf.len());
+                            let end = big_buf
+                                .iter()
+                                .position(|&w| w == 0)
+                                .unwrap_or(big_buf.len());
                             String::from_utf16_lossy(&big_buf[..end]).trim().to_string()
                         } else {
                             String::new()
@@ -242,7 +250,9 @@ fn present_display_class_subkeys() -> Vec<(String, String)> {
                         String::new()
                     };
 
-                    if let Some(existing) = result.iter_mut().find(|(s, _)| s.eq_ignore_ascii_case(sub)) {
+                    if let Some(existing) =
+                        result.iter_mut().find(|(s, _)| s.eq_ignore_ascii_case(sub))
+                    {
                         if existing.1.is_empty() && !instance_id.is_empty() {
                             existing.1 = instance_id;
                         }
@@ -349,7 +359,10 @@ pub fn resolve_gpu_class_path_for_vendor(
                     None => vendor == GpuVendor::Nvidia || vendor == GpuVendor::Amd,
                 };
                 if is_match {
-                    matched.push(format!("{}\\{}{}", DISPLAY_CLASS_PREFIX, subkey_name, suffix));
+                    matched.push(format!(
+                        "{}\\{}{}",
+                        DISPLAY_CLASS_PREFIX, subkey_name, suffix
+                    ));
                 }
             }
         }
@@ -472,7 +485,11 @@ pub fn detect_gpus() -> Vec<DetectedGpu> {
             let vendor = detect_vendor(vendor_hint, &name);
 
             // Avoid duplicate entries if registry mirrors the same device instance ID
-            if !pnp_id.is_empty() && gpus.iter().any(|g: &DetectedGpu| g.pnp_instance_id == pnp_id) {
+            if !pnp_id.is_empty()
+                && gpus
+                    .iter()
+                    .any(|g: &DetectedGpu| g.pnp_instance_id == pnp_id)
+            {
                 continue;
             }
 
@@ -502,11 +519,7 @@ pub fn detect_gpus() -> Vec<DetectedGpu> {
 }
 
 /// Enable or disable MSI mode and set interrupt priority for a GPU.
-pub fn set_gpu_msi_mode(
-    pnp_instance_id: &str,
-    enable: bool,
-    priority: u32,
-) -> std::io::Result<()> {
+pub fn set_gpu_msi_mode(pnp_instance_id: &str, enable: bool, priority: u32) -> std::io::Result<()> {
     let pnp_clean = pnp_instance_id.trim();
     if pnp_clean.is_empty() {
         return Err(std::io::Error::new(
@@ -569,7 +582,14 @@ pub fn set_hags(enable: bool) -> std::io::Result<()> {
         )
         .or_else(|_| hklm.create_subkey("SYSTEM\\CurrentControlSet\\Control\\GraphicsDrivers"))?;
     key.set_value("HwSchMode", &(if enable { 2u32 } else { 1u32 }))?;
-    tracing::info!("HAGS set to {}", if enable { "enabled (2)" } else { "disabled (1)" });
+    tracing::info!(
+        "HAGS set to {}",
+        if enable {
+            "enabled (2)"
+        } else {
+            "disabled (1)"
+        }
+    );
     Ok(())
 }
 
@@ -600,7 +620,14 @@ pub fn set_mpo_disabled(disable: bool) -> std::io::Result<()> {
     } else {
         let _ = key.delete_value("OverlayTestMode");
     }
-    tracing::info!("MPO {}", if disable { "disabled (5)" } else { "restored (default)" });
+    tracing::info!(
+        "MPO {}",
+        if disable {
+            "disabled (5)"
+        } else {
+            "restored (default)"
+        }
+    );
     Ok(())
 }
 
@@ -610,14 +637,29 @@ mod tests {
 
     #[test]
     fn test_detect_vendor_no_false_positive_ati() {
-        assert_eq!(detect_vendor("", "Workstation Display Adapter"), GpuVendor::Unknown);
-        assert_eq!(detect_vendor("", "Virtualization Graphics Controller"), GpuVendor::Unknown);
-        assert_eq!(detect_vendor("", "NVIDIA Corporation Display"), GpuVendor::Nvidia);
+        assert_eq!(
+            detect_vendor("", "Workstation Display Adapter"),
+            GpuVendor::Unknown
+        );
+        assert_eq!(
+            detect_vendor("", "Virtualization Graphics Controller"),
+            GpuVendor::Unknown
+        );
+        assert_eq!(
+            detect_vendor("", "NVIDIA Corporation Display"),
+            GpuVendor::Nvidia
+        );
         assert_eq!(detect_vendor("", "ATI Radeon HD 5870"), GpuVendor::Amd);
         assert_eq!(detect_vendor("", "ATI-Graphics Controller"), GpuVendor::Amd);
         assert_eq!(detect_vendor("", "ATI"), GpuVendor::Amd);
-        assert_eq!(detect_vendor("", "Advanced Micro Devices, Inc."), GpuVendor::Amd);
-        assert_eq!(detect_vendor("PCI\\VEN_1002&DEV_744C", "Display"), GpuVendor::Amd);
+        assert_eq!(
+            detect_vendor("", "Advanced Micro Devices, Inc."),
+            GpuVendor::Amd
+        );
+        assert_eq!(
+            detect_vendor("PCI\\VEN_1002&DEV_744C", "Display"),
+            GpuVendor::Amd
+        );
         assert_eq!(detect_vendor("1002", ""), GpuVendor::Amd);
     }
 }

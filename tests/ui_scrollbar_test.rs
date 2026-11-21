@@ -3,8 +3,8 @@
 //! Verifies that the themed scroll bars are attached, visible, correctly sized, and
 //! interactive across WinBlast scrollable viewports (content views + the sidebar).
 
-use std::sync::Arc;
 use rune::{Env, Runtime, ScrollBars};
+use std::sync::Arc;
 use winblast0::app::{ActiveView, AppState};
 use winblast0::core::backend::SandboxEnv;
 use winblast0::core::risk::load_embedded_rules;
@@ -316,21 +316,37 @@ fn test_iso_29119_driver_section_scrollbar_bounds_and_filtering() {
 
     // 1. Verify populated multi-item initial state (Display, Network, Audio)
     let initial_elements = rt.elements();
-    let has_rtx = initial_elements.iter().any(|e| !e.exiting && e.text.as_deref().is_some_and(|t| t.contains("RTX 4090")));
-    let has_wifi = initial_elements.iter().any(|e| !e.exiting && e.text.as_deref().is_some_and(|t| t.contains("Intel Wi-Fi")));
-    let has_realtek = initial_elements.iter().any(|e| !e.exiting && e.text.as_deref().is_some_and(|t| t.contains("Realtek")));
-    assert!(has_rtx && has_wifi && has_realtek, "All 3 seeded drivers must render initially");
+    let has_rtx = initial_elements
+        .iter()
+        .any(|e| !e.exiting && e.text.as_deref().is_some_and(|t| t.contains("RTX 4090")));
+    let has_wifi = initial_elements
+        .iter()
+        .any(|e| !e.exiting && e.text.as_deref().is_some_and(|t| t.contains("Intel Wi-Fi")));
+    let has_realtek = initial_elements
+        .iter()
+        .any(|e| !e.exiting && e.text.as_deref().is_some_and(|t| t.contains("Realtek")));
+    assert!(
+        has_rtx && has_wifi && has_realtek,
+        "All 3 seeded drivers must render initially"
+    );
 
     // 2. Category Filter: Display
     rt.update(|s, _| {
-        s.driver_category_filter = Some(winblast0::hardware::driver_update::DriverCategory::Display);
+        s.driver_category_filter =
+            Some(winblast0::hardware::driver_update::DriverCategory::Display);
     });
     rt.settle_all();
     frames(&mut rt, 2);
     let display_elements = rt.elements();
-    assert!(display_elements.iter().any(|e| !e.exiting && e.text.as_deref().is_some_and(|t| t.contains("RTX 4090"))));
-    assert!(!display_elements.iter().any(|e| !e.exiting && e.text.as_deref().is_some_and(|t| t.contains("Intel Wi-Fi"))));
-    assert!(!display_elements.iter().any(|e| !e.exiting && e.text.as_deref().is_some_and(|t| t.contains("Realtek"))));
+    assert!(display_elements
+        .iter()
+        .any(|e| !e.exiting && e.text.as_deref().is_some_and(|t| t.contains("RTX 4090"))));
+    assert!(!display_elements
+        .iter()
+        .any(|e| !e.exiting && e.text.as_deref().is_some_and(|t| t.contains("Intel Wi-Fi"))));
+    assert!(!display_elements
+        .iter()
+        .any(|e| !e.exiting && e.text.as_deref().is_some_and(|t| t.contains("Realtek"))));
 
     // 3. Category Filter: Usb (Zero matching items)
     rt.update(|s, _| {
@@ -339,7 +355,10 @@ fn test_iso_29119_driver_section_scrollbar_bounds_and_filtering() {
     rt.settle_all();
     frames(&mut rt, 2);
     let usb_elements = rt.elements();
-    assert!(usb_elements.iter().any(|e| !e.exiting && e.text.as_deref().is_some_and(|t| t.contains("No devices match the current category or search filter."))));
+    assert!(usb_elements.iter().any(|e| !e.exiting
+        && e.text.as_deref().is_some_and(
+            |t| t.contains("No devices match the current category or search filter.")
+        )));
 
     // 4. Reset Category Filter and apply Search Filter: "wi-fi"
     rt.update(|s, _| {
@@ -349,8 +368,12 @@ fn test_iso_29119_driver_section_scrollbar_bounds_and_filtering() {
     rt.settle_all();
     frames(&mut rt, 2);
     let search_elements = rt.elements();
-    assert!(!search_elements.iter().any(|e| !e.exiting && e.text.as_deref().is_some_and(|t| t.contains("RTX 4090"))));
-    assert!(search_elements.iter().any(|e| !e.exiting && e.text.as_deref().is_some_and(|t| t.contains("Intel Wi-Fi"))));
+    assert!(!search_elements
+        .iter()
+        .any(|e| !e.exiting && e.text.as_deref().is_some_and(|t| t.contains("RTX 4090"))));
+    assert!(search_elements
+        .iter()
+        .any(|e| !e.exiting && e.text.as_deref().is_some_and(|t| t.contains("Intel Wi-Fi"))));
 
     // 5. Search Filter: No match "nonexistent_hardware"
     rt.update(|s, _| {
@@ -359,7 +382,10 @@ fn test_iso_29119_driver_section_scrollbar_bounds_and_filtering() {
     rt.settle_all();
     frames(&mut rt, 2);
     let no_match_elements = rt.elements();
-    assert!(no_match_elements.iter().any(|e| !e.exiting && e.text.as_deref().is_some_and(|t| t.contains("No devices match the current category or search filter."))));
+    assert!(no_match_elements.iter().any(|e| !e.exiting
+        && e.text.as_deref().is_some_and(
+            |t| t.contains("No devices match the current category or search filter.")
+        )));
 
     // 6. Zero items state (empty list entirely)
     rt.update(|s, _| {
@@ -369,33 +395,40 @@ fn test_iso_29119_driver_section_scrollbar_bounds_and_filtering() {
     rt.settle_all();
     frames(&mut rt, 2);
     let empty_elements = rt.elements();
-    assert!(empty_elements.iter().any(|e| !e.exiting && e.text.as_deref().is_some_and(|t| t.contains("Click 'Scan Drivers Online' or 'Test Sandbox Driver'"))));
+    assert!(empty_elements.iter().any(|e| !e.exiting
+        && e.text
+            .as_deref()
+            .is_some_and(|t| t.contains("Click 'Scan Drivers Online' or 'Test Sandbox Driver'"))));
 
     // 7. Scrollbar container bounds: populate with 20 items to exceed max_h(460.0)
     rt.update(|s, _| {
         for i in 0..20 {
-            s.driver_updates.push(winblast0::hardware::driver_update::DriverUpdateItem {
-                id: format!("device_{}", i),
-                name: format!("Simulated Device {}", i),
-                category: winblast0::hardware::driver_update::DriverCategory::Storage,
-                hardware_id: format!("PCI\\VEN_TEST&DEV_{:04X}", i),
-                current_version: "1.0.0".to_string(),
-                latest_version: "2.0.0".to_string(),
-                provider: "TestProvider".to_string(),
-                release_date: "2024-01-01".to_string(),
-                download_url: "https://example.com".to_string(),
-                download_size_mb: 25.0,
-                state: winblast0::hardware::driver_update::DriverUpdateState::UpdateAvailable,
-                status_message: "Test".to_string(),
-                inf_path: "test.inf".to_string(),
-                is_whql_signed: true,
-                compatible_os_builds: vec![26100],
-            });
+            s.driver_updates
+                .push(winblast0::hardware::driver_update::DriverUpdateItem {
+                    id: format!("device_{}", i),
+                    name: format!("Simulated Device {}", i),
+                    category: winblast0::hardware::driver_update::DriverCategory::Storage,
+                    hardware_id: format!("PCI\\VEN_TEST&DEV_{:04X}", i),
+                    current_version: "1.0.0".to_string(),
+                    latest_version: "2.0.0".to_string(),
+                    provider: "TestProvider".to_string(),
+                    release_date: "2024-01-01".to_string(),
+                    download_url: "https://example.com".to_string(),
+                    download_size_mb: 25.0,
+                    state: winblast0::hardware::driver_update::DriverUpdateState::UpdateAvailable,
+                    status_message: "Test".to_string(),
+                    inf_path: "test.inf".to_string(),
+                    is_whql_signed: true,
+                    compatible_os_builds: vec![26100],
+                });
         }
     });
     rt.settle_all();
     frames(&mut rt, 2);
 
     let thumbs = thumb_rects(&rt);
-    assert!(thumbs.len() >= 2, "Overflowing driver container must attach scroll-bar thumb");
+    assert!(
+        thumbs.len() >= 2,
+        "Overflowing driver container must attach scroll-bar thumb"
+    );
 }

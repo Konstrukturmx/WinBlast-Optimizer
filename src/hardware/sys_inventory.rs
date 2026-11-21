@@ -127,7 +127,9 @@ fn read_smbios_string(table_data: &[u8], strings_offset: usize, index: u8) -> St
             .map(|rel| cur + rel)
             .unwrap_or(table_data.len());
         if idx == index {
-            return String::from_utf8_lossy(&table_data[cur..end]).trim().to_string();
+            return String::from_utf8_lossy(&table_data[cur..end])
+                .trim()
+                .to_string();
         }
         cur = end + 1;
         idx = idx.saturating_add(1);
@@ -158,7 +160,8 @@ pub fn query_ram_dimms() -> Vec<RamDimmInfo> {
         return Vec::new();
     }
     let mut buf = vec![0u8; size as usize];
-    let written = (unsafe { GetSystemFirmwareTable(RSMB, 0, Some(&mut buf)) } as usize).min(buf.len());
+    let written =
+        (unsafe { GetSystemFirmwareTable(RSMB, 0, Some(&mut buf)) } as usize).min(buf.len());
     if written < 8 {
         return Vec::new();
     }
@@ -302,7 +305,8 @@ fn probe_drive_media_kind(letter: char) -> DriveMediaKind {
                 None,
             )
         };
-        if ok_full.is_ok() && bytes_ret as usize >= std::mem::size_of::<STORAGE_DEVICE_DESCRIPTOR>() {
+        if ok_full.is_ok() && bytes_ret as usize >= std::mem::size_of::<STORAGE_DEVICE_DESCRIPTOR>()
+        {
             let desc = unsafe {
                 std::ptr::read_unaligned(buf.as_ptr() as *const STORAGE_DEVICE_DESCRIPTOR)
             };
@@ -333,7 +337,8 @@ fn probe_drive_media_kind(letter: char) -> DriveMediaKind {
             None,
         )
     };
-    if ok_seek.is_ok() && bytes_ret >= std::mem::size_of::<DEVICE_SEEK_PENALTY_DESCRIPTOR>() as u32 {
+    if ok_seek.is_ok() && bytes_ret >= std::mem::size_of::<DEVICE_SEEK_PENALTY_DESCRIPTOR>() as u32
+    {
         return if seek_desc.IncursSeekPenalty {
             DriveMediaKind::Hdd
         } else {
@@ -411,7 +416,8 @@ pub fn query_storage_volumes() -> Vec<StorageVolumeInfo> {
         let gb = 1024.0 * 1024.0 * 1024.0;
         let total_gb = total_bytes as f64 / gb;
         let free_gb = free_avail as f64 / gb;
-        let used_pct = (((total_bytes.saturating_sub(free_avail)) as f64 / total_bytes as f64) * 100.0)
+        let used_pct = (((total_bytes.saturating_sub(free_avail)) as f64 / total_bytes as f64)
+            * 100.0)
             .clamp(0.0, 100.0) as f32;
 
         vols.push(StorageVolumeInfo {
@@ -538,11 +544,17 @@ pub fn detect_platform_security_info() -> PlatformSecurityInfo {
         let vbs_live = ium_live || hvci_live || secure_kernel_running.unwrap_or(false);
         (vbs_live, hvci_live)
     } else {
-        (secure_kernel_running.unwrap_or(vbs_configured), hvci_configured)
+        (
+            secure_kernel_running.unwrap_or(vbs_configured),
+            hvci_configured,
+        )
     };
 
     let (motherboard, bios_version) = hklm
-        .open_subkey_with_flags("HARDWARE\\DESCRIPTION\\System\\BIOS", KEY_READ | KEY_WOW64_64KEY)
+        .open_subkey_with_flags(
+            "HARDWARE\\DESCRIPTION\\System\\BIOS",
+            KEY_READ | KEY_WOW64_64KEY,
+        )
         .map(|k| {
             let mfg: String = k.get_value("BaseBoardManufacturer").unwrap_or_default();
             let prod: String = k.get_value("BaseBoardProduct").unwrap_or_default();
@@ -567,10 +579,19 @@ pub fn detect_platform_security_info() -> PlatformSecurityInfo {
     let ram_dimms = query_ram_dimms();
     let ram_summary = if !ram_dimms.is_empty() {
         let total_gb: u64 = ram_dimms.iter().map(|d| d.capacity_mb).sum::<u64>() / 1024;
-        let ddr = ram_dimms.first().map(|d| d.ddr_type.as_str()).unwrap_or("DRAM");
+        let ddr = ram_dimms
+            .first()
+            .map(|d| d.ddr_type.as_str())
+            .unwrap_or("DRAM");
         let speed = ram_dimms.first().map(|d| d.speed_mts).unwrap_or(0);
         if speed > 0 {
-            format!("{} GB {} @ {} MT/s ({} DIMMs)", total_gb, ddr, speed, ram_dimms.len())
+            format!(
+                "{} GB {} @ {} MT/s ({} DIMMs)",
+                total_gb,
+                ddr,
+                speed,
+                ram_dimms.len()
+            )
         } else {
             format!("{} GB {} ({} DIMMs)", total_gb, ddr, ram_dimms.len())
         }
@@ -603,9 +624,16 @@ mod tests {
     #[test]
     fn test_ram_and_platform_inventory_nonblocking() {
         let kb = total_physical_ram_kb();
-        assert!(kb > 512 * 1024, "Expected > 512 MB physical RAM, got {} KiB", kb);
+        assert!(
+            kb > 512 * 1024,
+            "Expected > 512 MB physical RAM, got {} KiB",
+            kb
+        );
         let info = detect_platform_security_info();
         assert!(!info.firmware_mode.is_empty());
-        assert!(!info.volumes.is_empty(), "Expected at least one fixed storage volume");
+        assert!(
+            !info.volumes.is_empty(),
+            "Expected at least one fixed storage volume"
+        );
     }
 }

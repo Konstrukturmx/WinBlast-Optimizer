@@ -6,13 +6,17 @@
 fn run_slint() {
     use slint::ComponentHandle;
     tracing::info!("Initializing WinBlast0 Slint 1.19 Presentation Layer");
-    let window = winblast0::ui_slint::SlintMainWindow::new()
-        .expect("Failed to create Slint MainWindow");
+    let window =
+        winblast0::ui_slint::SlintMainWindow::new().expect("Failed to create Slint MainWindow");
+
+    let bridge = winblast0::ui_slint::bridge::SlintBridge::new(window.clone_strong());
+    let state = winblast0::app::AppState::new();
+    bridge.sync_from_state(&state);
 
     let win_handle = window.as_weak();
     window.on_close_window(move || {
         if let Some(w) = win_handle.upgrade() {
-            w.hide().unwrap();
+            let _ = w.hide();
         }
         std::process::exit(0);
     });
@@ -46,14 +50,13 @@ fn run_rune() {
         " — Windows System Optimizer"
     );
     let initial_size = detect_screen_workarea();
-    tracing::info!("Launching WinBlast0 Rune UI with detected work area: {}x{}", initial_size.0, initial_size.1);
-
-    let mut spec = AppSpec::new(
-        title,
-        initial_size,
-        app::AppState::new,
-        ui::view,
+    tracing::info!(
+        "Launching WinBlast0 Rune UI with detected work area: {}x{}",
+        initial_size.0,
+        initial_size.1
     );
+
+    let mut spec = AppSpec::new(title, initial_size, app::AppState::new, ui::view);
     spec.min_size = Some((420.0, 400.0));
     spec.setup = Some(app::AppState::setup);
     spec.poll = Some(app::AppState::poll);
@@ -77,10 +80,7 @@ fn run_rune() {
         argv.push("--scroll-bars".to_string());
         argv.push("always".to_string());
     }
-    rune::App::new(spec)
-        .maximized(true)
-        .args(argv)
-        .run();
+    rune::App::new(spec).maximized(true).args(argv).run();
 }
 
 fn main() {
@@ -118,8 +118,8 @@ fn main() {
 fn detect_screen_workarea() -> (f32, f32) {
     use windows::Win32::Foundation::RECT;
     use windows::Win32::UI::WindowsAndMessaging::{
-        SystemParametersInfoW, SPI_GETWORKAREA, SYSTEM_PARAMETERS_INFO_UPDATE_FLAGS,
-        GetSystemMetrics, SM_CXSCREEN, SM_CYSCREEN,
+        GetSystemMetrics, SystemParametersInfoW, SM_CXSCREEN, SM_CYSCREEN, SPI_GETWORKAREA,
+        SYSTEM_PARAMETERS_INFO_UPDATE_FLAGS,
     };
 
     let mut rect = RECT::default();

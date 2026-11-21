@@ -9,7 +9,8 @@
 [![License](https://img.shields.io/badge/License-MIT-blueviolet?style=for-the-badge)](LICENSE)
 [![Platform](https://img.shields.io/badge/Platform-Windows%2010%20%7C%2011%20(x64)-0078D6?style=for-the-badge&logo=windows)](https://github.com/Konstrukturmx/WinBlast-Optimizer)
 [![Rust](https://img.shields.io/badge/Rust-2021%20Edition-DEA584?style=for-the-badge&logo=rust)](https://www.rust-lang.org/)
-[![Tests](https://img.shields.io/badge/Tests-235%20Passed%20(100%25)-success?style=for-the-badge)](tests/)
+[![Tests](https://img.shields.io/badge/Tests-240%20Passed%20(100%25)-success?style=for-the-badge)](tests/)
+[![Slint](https://img.shields.io/badge/GUI-Slint%201.19%20(wgpu%20femtovg)-00D4AA?style=for-the-badge)](https://slint.dev/)
 [![Languages](https://img.shields.io/badge/i18n-8%20Languages%20(510%20Keys)-orange?style=for-the-badge)](src/core/i18n.rs)
 
 <p align="center">
@@ -52,9 +53,14 @@
 
 Derived from the formal [**WinBlast0 Architecture Guide**](DEVELOPMENT.md), WinBlast Optimizer is engineered with four fundamental pillars:
 
-### 1. 🦀 Pure-Rust Rune Engine & 5 Full UI Themes
-* **GPU-Accelerated Rendering**: Custom immediate-mode Rune GUI with hardware V-Sync synchronization and fluid 60 FPS spring animations.
-* **5 Distinct UI Theme Styles**: Full design layout, typography weights, corner radii, borders, and spring animations:
+### 1. ⚡ Next-Gen Slint 1.19 Declarative GUI Engine & Dual-Build Architecture
+* **Slint 1.19 Declarative UI (`ui-slint`)**: Replaces legacy imperative widgets with Slint 1.19 declarative components (`slint-project.json`, Edition `1.19`).
+* **Hardware-Accelerated Rasterization**: Backed by `renderer-femtovg-wgpu` (GPU wgpu pipeline) with automatic zero-glitch fallback to `renderer-software` on virtual machines or headless hosts.
+* **26 Full Feature Views**: 1:1 parity migration covering Dashboard, 230-Tweak Matrix, Deep Junk Cleaner, AppX Debloater, GPU Silicon Tuning, CPU Core Parking, DPC Latency, SMART Disk Health, and more.
+* **Strangler-Fig Dual-Build**: Default build targets the ultra-modern Slint engine (`cargo run`), while retaining the legacy Rune engine via `--ui=rune` for 100% backwards compatibility.
+* **Accessible & Scalable**: 3-layer DPI scaling ramp (`Scale.px(...)`, 0.75x to 2.0x zoom), OKLCH semantic theme tokens with backdrop-blur glass elevation, and screen reader accessibility.
+* **License Compliance**: Includes official Slint Royalty-Free Desktop License attribution (`AboutSlint` in Support & About view).
+* **Legacy Engine Support**: Still supports the custom immediate-mode Rune GUI with hardware V-Sync synchronization and 5 theme styles when launching with `--ui=rune`:
   * **💎 Glassy (Mica / Acrylic)**: Translucent frosted glass fills, luminous glow borders (`border_accent`), 12px pill radiuses, and bouncy spring motion.
   * **📐 Minimalistic (Flat Swiss)**: Razor-sharp 1px monochromatic borders, zero elevation, 0px card radius, and instantaneous transitions.
   * **🖥️ Classic (Win2000 Retro)**: Workstation aesthetic with 2px beveled borders, tactile snap animations, and high functional density.

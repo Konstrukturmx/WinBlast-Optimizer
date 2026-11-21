@@ -54,7 +54,11 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                 .gaps(8.0, 8.0)
                 .child(
                     action_button_guarded(
-                        if s.is_prereqs_scanning { s.tr(TextKey::Scanning) } else { s.tr(TextKey::GamePrereqsScan) },
+                        if s.is_prereqs_scanning {
+                            s.tr(TextKey::Scanning)
+                        } else {
+                            s.tr(TextKey::GamePrereqsScan)
+                        },
                         p.btn_secondary,
                         p.text_primary,
                         !s.is_prereqs_scanning,
@@ -92,8 +96,16 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                 .radius(style.card_radius().min(8.0))
                 .fill(p.card_fill_styled(style))
                 .border(style.border_width(), p.border_styled(style))
-                .child(text(s.tr_v(ViewTextKey::GamePrereqsTotalTracked)).font(rune::tok::type_::LABEL).color(p.text_secondary))
-                .child(text(format!("{}", total)).font(rune::tok::type_::TITLE).color(p.text_primary)),
+                .child(
+                    text(s.tr_v(ViewTextKey::GamePrereqsTotalTracked))
+                        .font(rune::tok::type_::LABEL)
+                        .color(p.text_secondary),
+                )
+                .child(
+                    text(format!("{}", total))
+                        .font(rune::tok::type_::TITLE)
+                        .color(p.text_primary),
+                ),
         )
         .child(
             col()
@@ -103,8 +115,16 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                 .radius(style.card_radius().min(8.0))
                 .fill(p.card_fill_styled(style))
                 .border(style.border_width(), p.border_styled(style))
-                .child(text(s.tr_v(ViewTextKey::GamePrereqsVerified)).font(rune::tok::type_::LABEL).color(p.success))
-                .child(text(format!("{}", installed_count)).font(rune::tok::type_::TITLE).color(p.success)),
+                .child(
+                    text(s.tr_v(ViewTextKey::GamePrereqsVerified))
+                        .font(rune::tok::type_::LABEL)
+                        .color(p.success),
+                )
+                .child(
+                    text(format!("{}", installed_count))
+                        .font(rune::tok::type_::TITLE)
+                        .color(p.success),
+                ),
         )
         .child(
             col()
@@ -114,8 +134,24 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                 .radius(style.card_radius().min(8.0))
                 .fill(p.card_fill_styled(style))
                 .border(style.border_width(), p.border_styled(style))
-                .child(text(s.tr_v(ViewTextKey::GamePrereqsMissing)).font(rune::tok::type_::LABEL).color(if missing_count > 0 { p.warning } else { p.text_secondary }))
-                .child(text(format!("{}", missing_count)).font(rune::tok::type_::TITLE).color(if missing_count > 0 { p.warning } else { p.text_secondary })),
+                .child(
+                    text(s.tr_v(ViewTextKey::GamePrereqsMissing))
+                        .font(rune::tok::type_::LABEL)
+                        .color(if missing_count > 0 {
+                            p.warning
+                        } else {
+                            p.text_secondary
+                        }),
+                )
+                .child(
+                    text(format!("{}", missing_count))
+                        .font(rune::tok::type_::TITLE)
+                        .color(if missing_count > 0 {
+                            p.warning
+                        } else {
+                            p.text_secondary
+                        }),
+                ),
         );
 
     // Filter Bar with Text Input
@@ -140,7 +176,10 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                     text_input(&s.prereq_filter_edit, rune::tok::type_::BODY)
                         .key("prereq_search_input")
                         .single_line()
-                        .placeholder("Filter runtimes (e.g. DirectX, C++, Vulkan, .NET)...", p.text_muted)
+                        .placeholder(
+                            "Filter runtimes (e.g. DirectX, C++, Vulkan, .NET)...",
+                            p.text_muted,
+                        )
                         .color(p.text_primary)
                         .on_edit(|s: &mut AppState| &mut s.prereq_filter_edit)
                         .grow(1.0)
@@ -196,10 +235,7 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                 PrereqInstallState::Failed => ("Failed ✘", p.danger),
             };
 
-            let ver_text = item
-                .installed_version
-                .as_deref()
-                .unwrap_or("Not Detected");
+            let ver_text = item.installed_version.as_deref().unwrap_or("Not Detected");
 
             let card = row()
                 .w_full()
@@ -233,7 +269,11 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                         .child(
                             text(format!("Version: {}", ver_text))
                                 .font(rune::tok::type_::LABEL)
-                                .color(if item.installed { p.success } else { p.text_secondary }),
+                                .color(if item.installed {
+                                    p.success
+                                } else {
+                                    p.text_secondary
+                                }),
                         )
                         .child(
                             text(&item.status_message)
@@ -263,8 +303,16 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                         } else {
                             "Install Runtime"
                         },
-                        if item.installed { p.btn_secondary } else { p.accent },
-                        if item.installed { p.text_primary } else { Color::WHITE },
+                        if item.installed {
+                            p.btn_secondary
+                        } else {
+                            p.accent
+                        },
+                        if item.installed {
+                            p.text_primary
+                        } else {
+                            Color::WHITE
+                        },
                         !is_busy && s.prereq_install_in_flight.is_none(),
                         p,
                         move |s| s.install_game_prereq(item_id.clone()),
@@ -277,11 +325,7 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
         }
     }
 
-    let list_container = col()
-        .w_full()
-        .min_w(0.0)
-        .padding(4.0)
-        .child(list_col);
+    let list_container = col().w_full().min_w(0.0).padding(4.0).child(list_col);
 
     col()
         .w_full()
@@ -303,6 +347,8 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                 .child(filter_bar)
                 .child(list_container),
         )
-        .scroll(ScrollSpec { stick_bottom: false })
+        .scroll(ScrollSpec {
+            stick_bottom: false,
+        })
         .winblast_scroll(p)
 }

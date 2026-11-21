@@ -42,7 +42,8 @@ fn test_dual_engine_topological_scheduler_end_to_end() {
         false, // Node 4
     ];
 
-    let result = schedule_optimizations_topological(num_nodes, &dependencies, &weights, &reboot_required);
+    let result =
+        schedule_optimizations_topological(num_nodes, &dependencies, &weights, &reboot_required);
     assert!(result.is_ok(), "Scheduler should resolve cycle and succeed");
 
     let order = result.unwrap();

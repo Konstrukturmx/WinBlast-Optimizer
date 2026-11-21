@@ -94,8 +94,7 @@ pub fn progress_bar_indeterminate(label: &str, color: Color, p: &ThemePalette) -
                 .border(p.border_width, p.border)
                 .items_center()
                 .child(
-                    el()
-                        .w_frac(0.40)
+                    el().w_frac(0.40)
                         .h_full()
                         .radius(radius)
                         .fill(color)
@@ -107,10 +106,7 @@ pub fn progress_bar_indeterminate(label: &str, color: Color, p: &ThemePalette) -
 /// Multi-segment progress bar distributing 100% capacity across colored categories.
 ///
 /// `segments`: slice of `(fraction_0_to_1, color, label)`.
-pub fn progress_bar_segmented(
-    segments: &[(f32, Color, &'static str)],
-    p: &ThemePalette,
-) -> El {
+pub fn progress_bar_segmented(segments: &[(f32, Color, &'static str)], p: &ThemePalette) -> El {
     let radius = match p.theme_style {
         UiThemeStyle::Minimalistic => 0.0,
         UiThemeStyle::Classic => 1.0,
@@ -126,8 +122,7 @@ pub fn progress_bar_segmented(
         let clean_frac = frac.clamp(0.0, 1.0);
         if clean_frac > 0.0 {
             segment_bars.push(
-                el()
-                    .w_frac(clean_frac)
+                el().w_frac(clean_frac)
                     .h_full()
                     .fill(col_segment)
                     .motion(p.motion),
@@ -141,9 +136,12 @@ pub fn progress_bar_segmented(
                 .items_center()
                 .gap(4.0)
                 .child(
-                    el()
-                        .size(8.0, 8.0)
-                        .radius(if p.theme_style == UiThemeStyle::Minimalistic { 0.0 } else { 4.0 })
+                    el().size(8.0, 8.0)
+                        .radius(if p.theme_style == UiThemeStyle::Minimalistic {
+                            0.0
+                        } else {
+                            4.0
+                        })
                         .fill(col_segment),
                 )
                 .child(
@@ -204,16 +202,14 @@ pub fn progress_bar_styled(
     };
 
     let fill_el = if show_glow && p.theme_style == UiThemeStyle::Glassy {
-        el()
-            .w_frac(clean_val)
+        el().w_frac(clean_val)
             .h_full()
             .radius(radius)
             .fill(color)
             .border(1.0, rgba(1.0, 1.0, 1.0, 0.4))
             .motion(p.motion)
     } else {
-        el()
-            .w_frac(clean_val)
+        el().w_frac(clean_val)
             .h_full()
             .radius(radius)
             .fill(color)

@@ -17,7 +17,11 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
     let p = s.palette();
     let _style = s.theme_style;
     let parking = &s.core_parking;
-    let min_core_w = if tier == LayoutTier::Compact { 170.0 } else { 210.0 };
+    let min_core_w = if tier == LayoutTier::Compact {
+        170.0
+    } else {
+        210.0
+    };
 
     let header_card = row()
         .w_full()
@@ -254,7 +258,14 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
                 .padding(10.0)
                 .radius(6.0)
                 .fill(p.bg_card)
-                .border(1.0, if is_parked { p.border } else { p.accent.alpha(0.35) })
+                .border(
+                    1.0,
+                    if is_parked {
+                        p.border
+                    } else {
+                        p.accent.alpha(0.35)
+                    },
+                )
                 .hover(p.bg_card_hover)
                 .motion(p.motion)
                 .gap(5.0)
@@ -292,24 +303,22 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
                         .color(p.text_muted),
                 )
                 .child(
-                    el()
-                        .w_full()
-                        .h(4.0)
-                        .radius(2.0)
-                        .fill(p.bg_primary)
-                        .child(
-                            el()
-                                .w_frac(usage_frac)
-                                .h_full()
-                                .radius(2.0)
-                                .fill(if is_parked { p.warning } else { p.accent })
-                                .motion(p.motion),
-                        ),
+                    el().w_full().h(4.0).radius(2.0).fill(p.bg_primary).child(
+                        el().w_frac(usage_frac)
+                            .h_full()
+                            .radius(2.0)
+                            .fill(if is_parked { p.warning } else { p.accent })
+                            .motion(p.motion),
+                    ),
                 ),
         );
     }
 
-    let pad = if tier == LayoutTier::Compact { 10.0 } else { p.card_padding };
+    let pad = if tier == LayoutTier::Compact {
+        10.0
+    } else {
+        p.card_padding
+    };
     col()
         .key("cpu_parking_viewport")
         .w_full()
@@ -319,7 +328,9 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
         .padding(pad)
         .pr(14.0)
         .gap(12.0)
-        .scroll(ScrollSpec { stick_bottom: false })
+        .scroll(ScrollSpec {
+            stick_bottom: false,
+        })
         .child(header_card)
         .child(actions_card)
         .child(stats_bar)

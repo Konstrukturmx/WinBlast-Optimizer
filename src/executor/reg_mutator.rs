@@ -3,8 +3,8 @@
 use winreg::enums::*;
 use winreg::RegKey;
 
-pub use crate::core::reg_helpers::is_known_numeric_reg_sz;
 use crate::core::error::{Result, WinBlastError};
+pub use crate::core::reg_helpers::is_known_numeric_reg_sz;
 use crate::scanner::registry_scanner::{
     create_subkey_64, open_subkey_flags_64, resolve_hive, resolve_target_paths,
 };
@@ -237,19 +237,16 @@ pub fn set_raw(
 pub fn delete_tree(hive: &str, path: &str) -> Result<()> {
     crate::core::reg_helpers::validate_registry_mutation_path(hive, path, true)?;
     let clean = path.trim().trim_matches(['\\', '/']);
-    let (parent_path, leaf_name) = clean.rsplit_once('\\').ok_or_else(|| {
-        WinBlastError::TweakFailed(format!("Invalid tree path '{}'", path))
-    })?;
+    let (parent_path, leaf_name) = clean
+        .rsplit_once('\\')
+        .ok_or_else(|| WinBlastError::TweakFailed(format!("Invalid tree path '{}'", path)))?;
     let root = resolve_hive(hive)?;
-    let parent_key = match open_subkey_flags_64(
-        &root,
-        parent_path,
-        KEY_READ | KEY_WRITE | REG_DELETE_RIGHT,
-    ) {
-        Ok(k) => k,
-        Err(e) if e.kind() == std::io::ErrorKind::NotFound => return Ok(()),
-        Err(e) => return Err(WinBlastError::from_reg_err(e)),
-    };
+    let parent_key =
+        match open_subkey_flags_64(&root, parent_path, KEY_READ | KEY_WRITE | REG_DELETE_RIGHT) {
+            Ok(k) => k,
+            Err(e) if e.kind() == std::io::ErrorKind::NotFound => return Ok(()),
+            Err(e) => return Err(WinBlastError::from_reg_err(e)),
+        };
 
     let leaf_w: Vec<u16> = leaf_name.encode_utf16().chain(std::iter::once(0)).collect();
     let status = unsafe {

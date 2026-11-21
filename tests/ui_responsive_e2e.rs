@@ -45,11 +45,7 @@ const ALL_VIEWS: &[ActiveView] = &[
     ActiveView::AutomationCenter,
 ];
 
-const VERBOSE_LOCALES: &[Language] = &[
-    Language::Turkish,
-    Language::German,
-    Language::Russian,
-];
+const VERBOSE_LOCALES: &[Language] = &[Language::Turkish, Language::German, Language::Russian];
 
 const THEMES: &[ThemeMode] = &[ThemeMode::Dark, ThemeMode::Light];
 const SCALES: &[f32] = &[1.0, 1.25, 1.5];
@@ -66,8 +62,8 @@ fn build_populated_sandbox_state() -> AppState {
         st.gpus = vec![
             DetectedGpu {
                 name: "NVIDIA GeForce RTX 4090 (Sandbox)".to_string(),
-                pnp_instance_id:
-                    "PCI\\VEN_10DE&DEV_2684&SUBSYS_000010DE&REV_A1\\4&1234567&0&0008".to_string(),
+                pnp_instance_id: "PCI\\VEN_10DE&DEV_2684&SUBSYS_000010DE&REV_A1\\4&1234567&0&0008"
+                    .to_string(),
                 msi_enabled: true,
                 interrupt_priority: 2,
                 vendor: GpuVendor::Nvidia,
@@ -76,8 +72,8 @@ fn build_populated_sandbox_state() -> AppState {
             },
             DetectedGpu {
                 name: "AMD Radeon RX 7900 XTX (Sandbox)".to_string(),
-                pnp_instance_id:
-                    "PCI\\VEN_1002&DEV_744C&SUBSYS_00001002&REV_C8\\4&7654321&0&0008".to_string(),
+                pnp_instance_id: "PCI\\VEN_1002&DEV_744C&SUBSYS_00001002&REV_C8\\4&7654321&0&0008"
+                    .to_string(),
                 msi_enabled: false,
                 interrupt_priority: 1,
                 vendor: GpuVendor::Amd,
@@ -116,15 +112,18 @@ fn build_populated_sandbox_state() -> AppState {
             display_name: "Steam Client Service".to_string(),
             start_type: 3,
             is_running: false,
-            binary_path: "C:\\Program Files (x86)\\Common Files\\Steam\\SteamService.exe".to_string(),
+            binary_path: "C:\\Program Files (x86)\\Common Files\\Steam\\SteamService.exe"
+                .to_string(),
             is_protected_core: false,
             is_microsoft: false,
         });
     }
 
-    let bench_before = winblast0::core::backend::SystemBackend::run_latency_benchmark(&sbx, "BEFORE");
+    let bench_before =
+        winblast0::core::backend::SystemBackend::run_latency_benchmark(&sbx, "BEFORE");
     let bench_after = winblast0::core::backend::SystemBackend::run_latency_benchmark(&sbx, "AFTER");
-    let restore_points = winblast0::core::backend::SystemBackend::list_restore_points(&sbx).unwrap_or_default();
+    let restore_points =
+        winblast0::core::backend::SystemBackend::list_restore_points(&sbx).unwrap_or_default();
     let audit = full_telemetry_audit_with(&sbx);
 
     let mut state = AppState::new_with_backend(Arc::new(sbx));
@@ -175,12 +174,19 @@ fn settle_frames(rt: &mut Runtime<AppState>) {
 
 /// Click an element by key or key-path in window points.
 fn click_key(rt: &mut Runtime<AppState>, key: &str) {
-    let (mut x, mut y) = rt
-        .find(key)
-        .unwrap_or_else(|| panic!("Could not find element with key {:?} at viewport {:?}", key, rt.viewport));
+    let (mut x, mut y) = rt.find(key).unwrap_or_else(|| {
+        panic!(
+            "Could not find element with key {:?} at viewport {:?}",
+            key, rt.viewport
+        )
+    });
     if y >= rt.viewport.1 || y < 0.0 {
         let scroll_delta = y - rt.viewport.1 * 0.5;
-        rt.wheel(x.clamp(10.0, rt.viewport.0 - 10.0), rt.viewport.1 * 0.5, -scroll_delta);
+        rt.wheel(
+            x.clamp(10.0, rt.viewport.0 - 10.0),
+            rt.viewport.1 * 0.5,
+            -scroll_delta,
+        );
         settle_frames(rt);
         if let Some((nx, ny)) = rt.find(key) {
             x = nx;
@@ -262,7 +268,11 @@ fn assert_frame_clean(
 ) {
     let vp_w = rt.viewport.0;
     let els = rt.elements();
-    assert!(!els.is_empty(), "{}: expected non-empty element tree", context);
+    assert!(
+        !els.is_empty(),
+        "{}: expected non-empty element tree",
+        context
+    );
 
     let mut sibling_keys: std::collections::HashMap<Option<usize>, HashSet<String>> =
         std::collections::HashMap::new();
@@ -358,9 +368,27 @@ fn assert_frame_clean(
             continue;
         };
         let max_row_h = match vr_key.as_str() {
-            "services_virtual_rows" => if is_compact { 140.0 } else { 76.0 },
-            "startup_virtual_rows" | "tasks_virtual_rows" => if is_compact { 116.0 } else { 72.0 },
-            "appx_virtual_rows" => if is_compact { 104.0 } else { 72.0 },
+            "services_virtual_rows" => {
+                if is_compact {
+                    140.0
+                } else {
+                    76.0
+                }
+            }
+            "startup_virtual_rows" | "tasks_virtual_rows" => {
+                if is_compact {
+                    116.0
+                } else {
+                    72.0
+                }
+            }
+            "appx_virtual_rows" => {
+                if is_compact {
+                    104.0
+                } else {
+                    72.0
+                }
+            }
             _ => continue,
         };
 
@@ -433,7 +461,10 @@ fn assert_clean_appx_compact_vertical_geometry(
 ) {
     let vp_h = rt.viewport.1;
     let els = rt.elements();
-    if let Some(sc) = els.iter().find(|e| !e.exiting && e.key.as_deref() == Some("appx_scroll")) {
+    if let Some(sc) = els
+        .iter()
+        .find(|e| !e.exiting && e.key.as_deref() == Some("appx_scroll"))
+    {
         if !sc.rect.iter().all(|v| v.is_finite()) || sc.rect[3] < 200.0 {
             let msg = format!(
                 "[{}] Compact AppX 'appx_scroll' collapsed or non-finite: rect={:?} vp_h={}",
@@ -445,7 +476,10 @@ fn assert_clean_appx_compact_vertical_geometry(
             failures.push(msg);
         }
     } else {
-        let msg = format!("[{}] Missing 'appx_scroll' in CleanAndApps/AppxFeatures compact layout", context);
+        let msg = format!(
+            "[{}] Missing 'appx_scroll' in CleanAndApps/AppxFeatures compact layout",
+            context
+        );
         unique_issues
             .entry(("CompactAppxVertical".to_string(), "appx_scroll".to_string()))
             .or_insert_with(|| msg.clone());
@@ -456,9 +490,15 @@ fn assert_clean_appx_compact_vertical_geometry(
         .iter()
         .any(|e| !e.exiting && e.key.as_deref() == Some("appx_virtual_rows") && e.rect[3] > 0.0);
     if !has_appx_vr {
-        let msg = format!("[{}] Expected non-zero height 'appx_virtual_rows' in Compact AppxFeatures", context);
+        let msg = format!(
+            "[{}] Expected non-zero height 'appx_virtual_rows' in Compact AppxFeatures",
+            context
+        );
         unique_issues
-            .entry(("CompactAppxVertical".to_string(), "appx_virtual_rows".to_string()))
+            .entry((
+                "CompactAppxVertical".to_string(),
+                "appx_virtual_rows".to_string(),
+            ))
             .or_insert_with(|| msg.clone());
         failures.push(msg);
     }
@@ -470,7 +510,10 @@ fn assert_clean_appx_compact_vertical_geometry(
             && e.rect[3] > 0.0
     });
     if !has_feature_row {
-        let msg = format!("[{}] Expected rendered 'feat_*' rows in Compact AppxFeatures", context);
+        let msg = format!(
+            "[{}] Expected rendered 'feat_*' rows in Compact AppxFeatures",
+            context
+        );
         unique_issues
             .entry(("CompactAppxVertical".to_string(), "feat_rows".to_string()))
             .or_insert_with(|| msg.clone());
@@ -516,8 +559,17 @@ fn test_ui_responsive_matrix_all_viewports_views_themes_locales_scales() {
                                 vp_w, vp_h, scale, theme, view_tab, sub
                             );
                             let vname = format!("{:?}/{:?}", view_tab, sub);
-                            assert_frame_clean(&rt, &vname, &ctx, &mut failures, &mut unique_issues);
-                            if vp_w == 420.0 && vp_h == 400.0 && sub == CleanAppsSubTab::AppxFeatures {
+                            assert_frame_clean(
+                                &rt,
+                                &vname,
+                                &ctx,
+                                &mut failures,
+                                &mut unique_issues,
+                            );
+                            if vp_w == 420.0
+                                && vp_h == 400.0
+                                && sub == CleanAppsSubTab::AppxFeatures
+                            {
                                 assert_clean_appx_compact_vertical_geometry(
                                     &rt,
                                     &ctx,
@@ -540,7 +592,13 @@ fn test_ui_responsive_matrix_all_viewports_views_themes_locales_scales() {
                                 vp_w, vp_h, scale, theme, view_tab, sub
                             );
                             let vname = format!("{:?}/{:?}", view_tab, sub);
-                            assert_frame_clean(&rt, &vname, &ctx, &mut failures, &mut unique_issues);
+                            assert_frame_clean(
+                                &rt,
+                                &vname,
+                                &ctx,
+                                &mut failures,
+                                &mut unique_issues,
+                            );
                         }
                     }
                     _ => {
@@ -549,7 +607,13 @@ fn test_ui_responsive_matrix_all_viewports_views_themes_locales_scales() {
                             "vp={}x{} scale={} theme={:?} lang=English view={:?}",
                             vp_w, vp_h, scale, theme, view_tab
                         );
-                        assert_frame_clean(&rt, &format!("{:?}", view_tab), &ctx, &mut failures, &mut unique_issues);
+                        assert_frame_clean(
+                            &rt,
+                            &format!("{:?}", view_tab),
+                            &ctx,
+                            &mut failures,
+                            &mut unique_issues,
+                        );
                     }
                 }
             }
@@ -557,12 +621,21 @@ fn test_ui_responsive_matrix_all_viewports_views_themes_locales_scales() {
     }
 
     // 2. Verbose Locales (Turkish, German, Russian) & DPI Scales (1.0, 1.25, 1.5) across representative viewports & ALL 8 views + sub-tabs
-    let locale_viewports = [(420.0, 400.0), (800.0, 600.0), (1366.0, 768.0), (3840.0, 2160.0)];
+    let locale_viewports = [
+        (420.0, 400.0),
+        (800.0, 600.0),
+        (1366.0, 768.0),
+        (3840.0, 2160.0),
+    ];
     for &lang in VERBOSE_LOCALES {
         for &scale in SCALES {
             for &(vp_w, vp_h) in &locale_viewports {
                 rt.set_viewport((vp_w, vp_h), scale);
-                let theme = if scale == 1.25 { ThemeMode::Light } else { ThemeMode::Dark };
+                let theme = if scale == 1.25 {
+                    ThemeMode::Light
+                } else {
+                    ThemeMode::Dark
+                };
                 rt.set_system_dark(theme == ThemeMode::Dark);
                 rt.update(|s, _| {
                     s.theme_mode = theme;
@@ -589,8 +662,17 @@ fn test_ui_responsive_matrix_all_viewports_views_themes_locales_scales() {
                                     vp_w, vp_h, scale, theme, lang, view_tab, sub
                                 );
                                 let vname = format!("{:?}/{:?}", view_tab, sub);
-                                assert_frame_clean(&rt, &vname, &ctx, &mut failures, &mut unique_issues);
-                                if vp_w == 420.0 && vp_h == 400.0 && sub == CleanAppsSubTab::AppxFeatures {
+                                assert_frame_clean(
+                                    &rt,
+                                    &vname,
+                                    &ctx,
+                                    &mut failures,
+                                    &mut unique_issues,
+                                );
+                                if vp_w == 420.0
+                                    && vp_h == 400.0
+                                    && sub == CleanAppsSubTab::AppxFeatures
+                                {
                                     assert_clean_appx_compact_vertical_geometry(
                                         &rt,
                                         &ctx,
@@ -613,7 +695,13 @@ fn test_ui_responsive_matrix_all_viewports_views_themes_locales_scales() {
                                     vp_w, vp_h, scale, theme, lang, view_tab, sub
                                 );
                                 let vname = format!("{:?}/{:?}", view_tab, sub);
-                                assert_frame_clean(&rt, &vname, &ctx, &mut failures, &mut unique_issues);
+                                assert_frame_clean(
+                                    &rt,
+                                    &vname,
+                                    &ctx,
+                                    &mut failures,
+                                    &mut unique_issues,
+                                );
                             }
                         }
                         _ => {
@@ -622,7 +710,13 @@ fn test_ui_responsive_matrix_all_viewports_views_themes_locales_scales() {
                                 "vp={}x{} scale={} theme={:?} lang={:?} view={:?}",
                                 vp_w, vp_h, scale, theme, lang, view_tab
                             );
-                            assert_frame_clean(&rt, &format!("{:?}", view_tab), &ctx, &mut failures, &mut unique_issues);
+                            assert_frame_clean(
+                                &rt,
+                                &format!("{:?}", view_tab),
+                                &ctx,
+                                &mut failures,
+                                &mut unique_issues,
+                            );
                         }
                     }
                 }
@@ -657,7 +751,10 @@ fn test_ui_responsive_matrix_all_viewports_views_themes_locales_scales() {
         assert_frame_clean(
             &rt,
             "DrawerChangelog+Sidebar",
-            &format!("drawer_changelog+sidebar vp={}x{} scale={} {:?} {:?}", vp_w, vp_h, scale, theme, lang),
+            &format!(
+                "drawer_changelog+sidebar vp={}x{} scale={} {:?} {:?}",
+                vp_w, vp_h, scale, theme, lang
+            ),
             &mut failures,
             &mut unique_issues,
         );
@@ -672,7 +769,10 @@ fn test_ui_responsive_matrix_all_viewports_views_themes_locales_scales() {
         assert_frame_clean(
             &rt,
             "ModalDiff+Changelog",
-            &format!("modal_diff_preview+changelog vp={}x{} scale={} {:?} {:?}", vp_w, vp_h, scale, theme, lang),
+            &format!(
+                "modal_diff_preview+changelog vp={}x{} scale={} {:?} {:?}",
+                vp_w, vp_h, scale, theme, lang
+            ),
             &mut failures,
             &mut unique_issues,
         );
@@ -683,7 +783,11 @@ fn test_ui_responsive_matrix_all_viewports_views_themes_locales_scales() {
         "Found {} total UI layout/key/overflow failures ({} unique (view, path) entries):\n{}",
         failures.len(),
         unique_issues.len(),
-        unique_issues.values().cloned().collect::<Vec<_>>().join("\n")
+        unique_issues
+            .values()
+            .cloned()
+            .collect::<Vec<_>>()
+            .join("\n")
     );
 }
 
@@ -705,7 +809,13 @@ fn test_ui_live_viewport_sweep_and_compact_nav_menu_interaction() {
     for &(w, h) in &sweep {
         rt.set_viewport((w, h), 1.0);
         settle_frames(&mut rt);
-        assert_frame_clean(&rt, "LiveSweep", &format!("live_sweep {}x{}", w, h), &mut failures, &mut unique_issues);
+        assert_frame_clean(
+            &rt,
+            "LiveSweep",
+            &format!("live_sweep {}x{}", w, h),
+            &mut failures,
+            &mut unique_issues,
+        );
     }
 
     // Resize down to Compact 420x400 and test interactive navigation drawer toggle -> GpuTuning
@@ -720,7 +830,13 @@ fn test_ui_live_viewport_sweep_and_compact_nav_menu_interaction() {
         rt.state.sidebar_open,
         "Clicking 'nav_menu_toggle' at 420x400 must open sidebar drawer"
     );
-    assert_frame_clean(&rt, "DrawerOpen", "compact_420x400_drawer_open", &mut failures, &mut unique_issues);
+    assert_frame_clean(
+        &rt,
+        "DrawerOpen",
+        "compact_420x400_drawer_open",
+        &mut failures,
+        &mut unique_issues,
+    );
 
     // Click GPU Tuning nav button inside the opened drawer
     click_key(&mut rt, "nav_gpu");
@@ -733,18 +849,36 @@ fn test_ui_live_viewport_sweep_and_compact_nav_menu_interaction() {
         !rt.state.sidebar_open,
         "Navigating via 'nav_gpu' must auto-close the compact drawer"
     );
-    assert_frame_clean(&rt, "AfterNavGpu", "compact_420x400_after_nav_gpu", &mut failures, &mut unique_issues);
+    assert_frame_clean(
+        &rt,
+        "AfterNavGpu",
+        "compact_420x400_after_nav_gpu",
+        &mut failures,
+        &mut unique_issues,
+    );
 
     // Click Clean & Apps (tab 9) and Startup & Tasks (tab 10) inside 420x400 compact drawer
     click_key(&mut rt, "nav_menu_toggle");
     click_key(&mut rt, "nav_clean_apps");
     assert_eq!(rt.state.active_view, ActiveView::CleanAndApps);
     assert_eq!(rt.state.clean_sub_tab, CleanAppsSubTab::DiskCleaner);
-    assert_frame_clean(&rt, "CompactCleanApps", "compact_420x400_clean_apps", &mut failures, &mut unique_issues);
+    assert_frame_clean(
+        &rt,
+        "CompactCleanApps",
+        "compact_420x400_clean_apps",
+        &mut failures,
+        &mut unique_issues,
+    );
 
     click_key(&mut rt, "sub_clean_appx");
     assert_eq!(rt.state.clean_sub_tab, CleanAppsSubTab::AppxFeatures);
-    assert_frame_clean(&rt, "CompactCleanAppx", "compact_420x400_clean_appx", &mut failures, &mut unique_issues);
+    assert_frame_clean(
+        &rt,
+        "CompactCleanAppx",
+        "compact_420x400_clean_appx",
+        &mut failures,
+        &mut unique_issues,
+    );
     assert_clean_appx_compact_vertical_geometry(
         &rt,
         "compact_420x400_clean_appx",
@@ -753,7 +887,13 @@ fn test_ui_live_viewport_sweep_and_compact_nav_menu_interaction() {
     );
     click_key(&mut rt, "sub_clean_winget");
     assert_eq!(rt.state.clean_sub_tab, CleanAppsSubTab::WinGetInstaller);
-    assert_frame_clean(&rt, "CompactCleanWinGet", "compact_420x400_clean_winget", &mut failures, &mut unique_issues);
+    assert_frame_clean(
+        &rt,
+        "CompactCleanWinGet",
+        "compact_420x400_clean_winget",
+        &mut failures,
+        &mut unique_issues,
+    );
     click_key(&mut rt, "sub_clean_disk");
     assert_eq!(rt.state.clean_sub_tab, CleanAppsSubTab::DiskCleaner);
 
@@ -761,14 +901,32 @@ fn test_ui_live_viewport_sweep_and_compact_nav_menu_interaction() {
     click_key(&mut rt, "nav_startup_tasks");
     assert_eq!(rt.state.active_view, ActiveView::StartupAndTasks);
     assert_eq!(rt.state.startup_sub_tab, StartupTasksSubTab::StartupApps);
-    assert_frame_clean(&rt, "CompactStartupApps", "compact_420x400_startup_apps", &mut failures, &mut unique_issues);
+    assert_frame_clean(
+        &rt,
+        "CompactStartupApps",
+        "compact_420x400_startup_apps",
+        &mut failures,
+        &mut unique_issues,
+    );
 
     click_key(&mut rt, "sub_startup_tasks");
     assert_eq!(rt.state.startup_sub_tab, StartupTasksSubTab::ScheduledTasks);
-    assert_frame_clean(&rt, "CompactStartupTasks", "compact_420x400_startup_tasks", &mut failures, &mut unique_issues);
+    assert_frame_clean(
+        &rt,
+        "CompactStartupTasks",
+        "compact_420x400_startup_tasks",
+        &mut failures,
+        &mut unique_issues,
+    );
     click_key(&mut rt, "sub_startup_services");
     assert_eq!(rt.state.startup_sub_tab, StartupTasksSubTab::Services);
-    assert_frame_clean(&rt, "CompactStartupServices", "compact_420x400_startup_services", &mut failures, &mut unique_issues);
+    assert_frame_clean(
+        &rt,
+        "CompactStartupServices",
+        "compact_420x400_startup_services",
+        &mut failures,
+        &mut unique_issues,
+    );
     click_key(&mut rt, "sub_startup_apps");
     assert_eq!(rt.state.startup_sub_tab, StartupTasksSubTab::StartupApps);
 
@@ -792,8 +950,7 @@ fn test_ui_live_viewport_sweep_and_compact_nav_menu_interaction() {
     let was_clean_selected = rt.state.clean_targets[0].selected;
     click_key(&mut rt, &first_clean_sw);
     assert_eq!(
-        rt.state.clean_targets[0].selected,
-        !was_clean_selected,
+        rt.state.clean_targets[0].selected, !was_clean_selected,
         "Clicking '{}' must toggle clean target selection",
         first_clean_sw
     );
@@ -807,12 +964,18 @@ fn test_ui_live_viewport_sweep_and_compact_nav_menu_interaction() {
     assert_eq!(rt.state.clean_sub_tab, CleanAppsSubTab::AppxFeatures);
 
     // Filter to SafeBloat BingWeather via Turkish dotless 'ı' ("bıng" -> "bing")
-    assert!(rt.find("appx_search_input").is_some(), "Missing appx_search_input");
+    assert!(
+        rt.find("appx_search_input").is_some(),
+        "Missing appx_search_input"
+    );
     let safe_appx = rt
         .state
         .installed_appx
         .iter()
-        .find(|p| p.family_name.eq_ignore_ascii_case("Microsoft.BingWeather_8wekyb3d8bbwe"))
+        .find(|p| {
+            p.family_name
+                .eq_ignore_ascii_case("Microsoft.BingWeather_8wekyb3d8bbwe")
+        })
         .expect("Missing BingWeather AppX entry")
         .family_name
         .clone();
@@ -820,7 +983,10 @@ fn test_ui_live_viewport_sweep_and_compact_nav_menu_interaction() {
         .state
         .installed_appx
         .iter()
-        .find(|p| p.family_name.eq_ignore_ascii_case("Microsoft.SecHealthUI_8wekyb3d8bbwe"))
+        .find(|p| {
+            p.family_name
+                .eq_ignore_ascii_case("Microsoft.SecHealthUI_8wekyb3d8bbwe")
+        })
         .expect("Missing SecHealthUI AppX entry")
         .family_name
         .clone();
@@ -879,7 +1045,10 @@ fn test_ui_live_viewport_sweep_and_compact_nav_menu_interaction() {
     // C) Clean & Apps -> WinGet switch click (`wg_sw_*`) & Turkish İ search (`winget_search_input`)
     click_key(&mut rt, "sub_clean_winget");
     assert_eq!(rt.state.clean_sub_tab, CleanAppsSubTab::WinGetInstaller);
-    assert!(rt.find("winget_search_input").is_some(), "Missing winget_search_input");
+    assert!(
+        rt.find("winget_search_input").is_some(),
+        "Missing winget_search_input"
+    );
     let was_7z_sel = rt.state.selected_winget.contains("7zip.7zip");
     click_key(&mut rt, "wg_sw_7zip.7zip");
     assert_eq!(
@@ -896,11 +1065,15 @@ fn test_ui_live_viewport_sweep_and_compact_nav_menu_interaction() {
     settle_frames(&mut rt);
     let els_wg_tr = rt.elements();
     assert!(
-        els_wg_tr.iter().any(|e| !e.exiting && e.key.as_deref() == Some("wg_Git.Git")),
+        els_wg_tr
+            .iter()
+            .any(|e| !e.exiting && e.key.as_deref() == Some("wg_Git.Git")),
         "Turkish İ filter 'GİT' should render wg_Git.Git"
     );
     assert!(
-        !els_wg_tr.iter().any(|e| !e.exiting && e.key.as_deref() == Some("wg_7zip.7zip")),
+        !els_wg_tr
+            .iter()
+            .any(|e| !e.exiting && e.key.as_deref() == Some("wg_7zip.7zip")),
         "Turkish İ filter 'GİT' should hide wg_7zip.7zip"
     );
     rt.update(|s, _| s.winget_filter_edit.text.clear());
@@ -911,7 +1084,10 @@ fn test_ui_live_viewport_sweep_and_compact_nav_menu_interaction() {
         s.startup_sub_tab = StartupTasksSubTab::StartupApps;
     });
     settle_frames(&mut rt);
-    assert!(rt.find("startup_search_input").is_some(), "Missing startup_search_input");
+    assert!(
+        rt.find("startup_search_input").is_some(),
+        "Missing startup_search_input"
+    );
     let discord_id = "HKCU|Run|DiscordUpdater";
     let discord_before = rt
         .state
@@ -1032,7 +1208,11 @@ fn test_ui_live_viewport_sweep_and_compact_nav_menu_interaction() {
         "Found {} failures ({} unique) during live sweep & compact nav interaction:\n{}",
         failures.len(),
         unique_issues.len(),
-        unique_issues.values().cloned().collect::<Vec<_>>().join("\n")
+        unique_issues
+            .values()
+            .cloned()
+            .collect::<Vec<_>>()
+            .join("\n")
     );
 }
 
@@ -1144,7 +1324,8 @@ fn test_ui_v08_not_applicable_diff_modal_privacy_cores_and_protected_appx() {
     let deadline = std::time::Instant::now() + std::time::Duration::from_secs(5);
     while std::time::Instant::now() < deadline {
         state.drain_worker_events();
-        if !state.is_scanning && !state.scan_results.is_empty() && !state.installed_appx.is_empty() {
+        if !state.is_scanning && !state.scan_results.is_empty() && !state.installed_appx.is_empty()
+        {
             break;
         }
         std::thread::sleep(std::time::Duration::from_millis(5));
@@ -1155,7 +1336,10 @@ fn test_ui_v08_not_applicable_diff_modal_privacy_cores_and_protected_appx() {
         "disable_mpo must be NotApplicable on build 26300"
     );
     assert_eq!(
-        state.get_tweak_scan(&revert_tweak.id).unwrap().current_state,
+        state
+            .get_tweak_scan(&revert_tweak.id)
+            .unwrap()
+            .current_state,
         TweakState::AlreadyOptimized
     );
     assert_eq!(
@@ -1173,7 +1357,13 @@ fn test_ui_v08_not_applicable_diff_modal_privacy_cores_and_protected_appx() {
         s.search_edit.text = "disable_mpo".to_string();
     });
     settle_frames(&mut rt);
-    assert_frame_clean(&rt, "NotApplicableFilter", "v08_not_applicable", &mut failures, &mut unique_issues);
+    assert_frame_clean(
+        &rt,
+        "NotApplicableFilter",
+        "v08_not_applicable",
+        &mut failures,
+        &mut unique_issues,
+    );
 
     let not_app_label = rt.state.tr(TextKey::StatusNotApplicable).to_string();
     let els_na = rt.elements();
@@ -1183,9 +1373,9 @@ fn test_ui_v08_not_applicable_diff_modal_privacy_cores_and_protected_appx() {
             .any(|e| !e.exiting && e.text.as_deref() == Some(not_app_label.as_str())),
         "Expected StatusNotApplicable badge for disable_mpo in AdvancedMatrix"
     );
-    let has_switch_knob_shell = els_na.iter().any(|e| {
-        !e.exiting && (e.rect[2] - 36.0).abs() < 0.5 && (e.rect[3] - 20.0).abs() < 0.5
-    });
+    let has_switch_knob_shell = els_na
+        .iter()
+        .any(|e| !e.exiting && (e.rect[2] - 36.0).abs() < 0.5 && (e.rect[3] - 20.0).abs() < 0.5);
     assert!(
         !has_switch_knob_shell,
         "NotApplicable tweak must NOT render a 36x20 clickable switch_toggle"
@@ -1225,9 +1415,10 @@ fn test_ui_v08_not_applicable_diff_modal_privacy_cores_and_protected_appx() {
     let revert_prefix = format!("[{}]", rt.state.tr(TextKey::RevertLabel));
     assert!(rt.state.show_diff_preview && rt.state.inspected_tweak.is_some());
     assert!(
-        !rt.elements()
-            .iter()
-            .any(|e| !e.exiting && e.text.as_deref().is_some_and(|t| t.starts_with(&revert_prefix))),
+        !rt.elements().iter().any(|e| !e.exiting
+            && e.text
+                .as_deref()
+                .is_some_and(|t| t.starts_with(&revert_prefix))),
         "inspect_tweak modal must not show [Revert] prefix"
     );
 
@@ -1239,13 +1430,20 @@ fn test_ui_v08_not_applicable_diff_modal_privacy_cores_and_protected_appx() {
     let preview_lbl = rt.state.tr(TextKey::PreviewDiff).to_string();
     click_text(&mut rt, &preview_lbl, true);
     assert!(rt.state.show_diff_preview && rt.state.inspected_tweak.is_none());
-    assert_frame_clean(&rt, "DiffModalRevert", "v08_diff_modal_revert", &mut failures, &mut unique_issues);
+    assert_frame_clean(
+        &rt,
+        "DiffModalRevert",
+        "v08_diff_modal_revert",
+        &mut failures,
+        &mut unique_issues,
+    );
 
     let els_diff = rt.elements();
     assert!(
-        els_diff
-            .iter()
-            .any(|e| !e.exiting && e.text.as_deref().is_some_and(|t| t.starts_with(&revert_prefix))),
+        els_diff.iter().any(|e| !e.exiting
+            && e.text
+                .as_deref()
+                .is_some_and(|t| t.starts_with(&revert_prefix))),
         "open_diff_preview with StageRevert must render '{}' badge header",
         revert_prefix
     );
@@ -1255,7 +1453,12 @@ fn test_ui_v08_not_applicable_diff_modal_privacy_cores_and_protected_appx() {
     let def_lbl = rt.state.tr(TextKey::DiffDefaultLabel).to_string();
     let revert_hdr_idx = els_diff
         .iter()
-        .position(|e| !e.exiting && e.text.as_deref().is_some_and(|t| t.starts_with(&revert_prefix)))
+        .position(|e| {
+            !e.exiting
+                && e.text
+                    .as_deref()
+                    .is_some_and(|t| t.starts_with(&revert_prefix))
+        })
         .expect("Missing [Revert] header element");
     let card_idx = els_diff[revert_hdr_idx]
         .parent
@@ -1289,7 +1492,13 @@ fn test_ui_v08_not_applicable_diff_modal_privacy_cores_and_protected_appx() {
     for &(w, h) in &[(420.0, 400.0), (1280.0, 720.0)] {
         rt.set_viewport((w, h), 1.0);
         settle_frames(&mut rt);
-        assert_frame_clean(&rt, "PrivacyAuditBtn", &format!("privacy_{}x{}", w, h), &mut failures, &mut unique_issues);
+        assert_frame_clean(
+            &rt,
+            "PrivacyAuditBtn",
+            &format!("privacy_{}x{}", w, h),
+            &mut failures,
+            &mut unique_issues,
+        );
         let run_audit_lbl = rt.state.tr(TextKey::RunAuditBtn).to_string();
         assert!(
             rt.elements().iter().any(|e| {
@@ -1306,7 +1515,10 @@ fn test_ui_v08_not_applicable_diff_modal_privacy_cores_and_protected_appx() {
     let run_audit_lbl = rt.state.tr(TextKey::RunAuditBtn).to_string();
     click_text(&mut rt, &run_audit_lbl, true);
     drain_state_workers(&mut rt, |s| s.telemetry_audit.is_some());
-    assert!(rt.elements().iter().any(|e| !e.exiting && e.text.as_deref() == Some(run_audit_lbl.as_str())));
+    assert!(rt
+        .elements()
+        .iter()
+        .any(|e| !e.exiting && e.text.as_deref() == Some(run_audit_lbl.as_str())));
 
     // 4. CoreParking renders single-numbered cores (no "Core #0 #0") and HardwareView renders >8 cores + live latency
     rt.update(|s, _| {
@@ -1342,11 +1554,19 @@ fn test_ui_v08_not_applicable_diff_modal_privacy_cores_and_protected_appx() {
     for &(w, h) in &[(420.0, 400.0), (1280.0, 960.0)] {
         rt.set_viewport((w, h), 1.0);
         settle_frames(&mut rt);
-        assert_frame_clean(&rt, "CoreParking16", &format!("parking_{}x{}", w, h), &mut failures, &mut unique_issues);
+        assert_frame_clean(
+            &rt,
+            "CoreParking16",
+            &format!("parking_{}x{}", w, h),
+            &mut failures,
+            &mut unique_issues,
+        );
         let els_cp = rt.elements();
         for expected in ["P-Core #0", "P-Core #7", "E-Core #8", "E-Core #15"] {
             assert!(
-                els_cp.iter().any(|e| !e.exiting && e.text.as_deref() == Some(expected)),
+                els_cp
+                    .iter()
+                    .any(|e| !e.exiting && e.text.as_deref() == Some(expected)),
                 "Missing core card '{}' at {}x{}",
                 expected,
                 w,
@@ -1371,7 +1591,13 @@ fn test_ui_v08_not_applicable_diff_modal_privacy_cores_and_protected_appx() {
     for &(w, h) in &[(420.0, 400.0), (1280.0, 960.0)] {
         rt.set_viewport((w, h), 1.0);
         settle_frames(&mut rt);
-        assert_frame_clean(&rt, "Hardware16Cores", &format!("hardware_{}x{}", w, h), &mut failures, &mut unique_issues);
+        assert_frame_clean(
+            &rt,
+            "Hardware16Cores",
+            &format!("hardware_{}x{}", w, h),
+            &mut failures,
+            &mut unique_issues,
+        );
         let els_hw = rt.elements();
         for expected in ["C0:", "C8:", "C15:"] {
             assert!(
@@ -1403,19 +1629,39 @@ fn test_ui_v08_not_applicable_diff_modal_privacy_cores_and_protected_appx() {
         s.clean_sub_tab = CleanAppsSubTab::AppxFeatures;
         s.appx_filter_edit.text.clear();
     });
-    for &(w, h) in &[(420.0, 400.0), (640.0, 480.0), (800.0, 600.0), (1366.0, 768.0), (1920.0, 1080.0), (3840.0, 2160.0)] {
+    for &(w, h) in &[
+        (420.0, 400.0),
+        (640.0, 480.0),
+        (800.0, 600.0),
+        (1366.0, 768.0),
+        (1920.0, 1080.0),
+        (3840.0, 2160.0),
+    ] {
         rt.update(|s, _| s.appx_filter_edit.text.clear());
         rt.set_viewport((w, h), 1.0);
         settle_frames(&mut rt);
-        assert_frame_clean(&rt, "ProtectedCoreAppxUnfiltered", &format!("appx_unfiltered_{}x{}", w, h), &mut failures, &mut unique_issues);
+        assert_frame_clean(
+            &rt,
+            "ProtectedCoreAppxUnfiltered",
+            &format!("appx_unfiltered_{}x{}", w, h),
+            &mut failures,
+            &mut unique_issues,
+        );
 
         rt.update(|s, _| s.appx_filter_edit.text = "SecHealthUI".to_string());
         settle_frames(&mut rt);
-        assert_frame_clean(&rt, "ProtectedCoreAppx", &format!("appx_lock_{}x{}", w, h), &mut failures, &mut unique_issues);
+        assert_frame_clean(
+            &rt,
+            "ProtectedCoreAppx",
+            &format!("appx_lock_{}x{}", w, h),
+            &mut failures,
+            &mut unique_issues,
+        );
         assert!(
-            rt.elements()
-                .iter()
-                .any(|e| !e.exiting && e.rect[2] > 0.0 && e.rect[3] > 0.0 && e.text.as_deref() == Some("🔒")),
+            rt.elements().iter().any(|e| !e.exiting
+                && e.rect[2] > 0.0
+                && e.rect[3] > 0.0
+                && e.text.as_deref() == Some("🔒")),
             "ProtectedCore AppX row must render lock indicator '🔒' at {}x{}",
             w,
             h
@@ -1427,7 +1673,10 @@ fn test_ui_v08_not_applicable_diff_modal_privacy_cores_and_protected_appx() {
         .state
         .installed_appx
         .iter()
-        .find(|p| p.family_name.eq_ignore_ascii_case("Microsoft.SecHealthUI_8wekyb3d8bbwe"))
+        .find(|p| {
+            p.family_name
+                .eq_ignore_ascii_case("Microsoft.SecHealthUI_8wekyb3d8bbwe")
+        })
         .expect("Missing SecHealthUI")
         .family_name
         .clone();
@@ -1439,7 +1688,11 @@ fn test_ui_v08_not_applicable_diff_modal_privacy_cores_and_protected_appx() {
         "Found {} UI regression failures ({} unique):\n{}",
         failures.len(),
         unique_issues.len(),
-        unique_issues.values().cloned().collect::<Vec<_>>().join("\n")
+        unique_issues
+            .values()
+            .cloned()
+            .collect::<Vec<_>>()
+            .join("\n")
     );
 }
 
@@ -1492,8 +1745,16 @@ fn init_cpu_parking_state() -> AppState {
         cores.push(winblast0::hardware::parking::CoreStatus {
             core_index: i,
             is_parked: i >= 12,
-            usage_pct: if i >= 12 { 0.0 } else { 18.0 + ((i * 5) % 40) as f32 },
-            core_type_label: if i < 8 { "P-Core".to_string() } else { "E-Core".to_string() },
+            usage_pct: if i >= 12 {
+                0.0
+            } else {
+                18.0 + ((i * 5) % 40) as f32
+            },
+            core_type_label: if i < 8 {
+                "P-Core".to_string()
+            } else {
+                "E-Core".to_string()
+            },
         });
     }
     s.core_parking = winblast0::hardware::parking::CoreParkingState {
@@ -1769,8 +2030,18 @@ fn test_ui_theme_style_selector_button_clicks_all_tiers() {
         // Click theme_style_selector -> strictly opens dropdown without changing theme
         click_key(&mut rt, "theme_style_selector");
         settle_frames(&mut rt);
-        assert_eq!(rt.state.active_dropdown, ActiveDropdown::ThemeStyle, "Failed at vp {}x{}", w, h);
-        assert_eq!(rt.state.theme_style, UiThemeStyle::Glassy, "Theme must not change on trigger button click");
+        assert_eq!(
+            rt.state.active_dropdown,
+            ActiveDropdown::ThemeStyle,
+            "Failed at vp {}x{}",
+            w,
+            h
+        );
+        assert_eq!(
+            rt.state.theme_style,
+            UiThemeStyle::Glassy,
+            "Theme must not change on trigger button click"
+        );
 
         // Selecting Minimalistic from dropdown changes theme and closes dropdown
         click_key(&mut rt, "dropdown_theme_Minimalistic");
@@ -1817,7 +2088,10 @@ fn test_ui_dropdown_anchoring_and_header_height_stability() {
 
         // Dropdown card must be mounted
         let drop_pos = rt.find("topbar_dropdown_card");
-        assert!(drop_pos.is_some(), "topbar_dropdown_card must be visible when dropdown active");
+        assert!(
+            drop_pos.is_some(),
+            "topbar_dropdown_card must be visible when dropdown active"
+        );
 
         // Close dropdown
         click_key(&mut rt, "topbar_lang_btn");
@@ -1837,7 +2111,10 @@ fn test_driver_bios_no_card_overlap() {
     settle_frames(&mut rt);
 
     // Verify driver updates scroll container exists and is bounded
-    assert!(rt.find("driver_updates_scroll").is_some(), "driver_updates_scroll must exist");
+    assert!(
+        rt.find("driver_updates_scroll").is_some(),
+        "driver_updates_scroll must exist"
+    );
 }
 
 #[test]
@@ -1862,9 +2139,20 @@ fn test_rule_no_child_after_winblast_scroll() {
                             for (idx, line) in content.lines().enumerate() {
                                 if line.contains("winblast_scroll") {
                                     // Check if next lines contain .child
-                                    let rest = &content.lines().skip(idx).take(4).collect::<Vec<_>>().join(" ");
-                                    if rest.contains("winblast_scroll") && rest.contains(".child(") {
-                                        violations.push(format!("{}:{}: {}", path.display(), idx + 1, line.trim()));
+                                    let rest = &content
+                                        .lines()
+                                        .skip(idx)
+                                        .take(4)
+                                        .collect::<Vec<_>>()
+                                        .join(" ");
+                                    if rest.contains("winblast_scroll") && rest.contains(".child(")
+                                    {
+                                        violations.push(format!(
+                                            "{}:{}: {}",
+                                            path.display(),
+                                            idx + 1,
+                                            line.trim()
+                                        ));
                                     }
                                 }
                             }
@@ -1886,7 +2174,10 @@ fn test_rule_no_child_after_winblast_scroll() {
 #[test]
 fn test_thermal_telemetry_sensors_probe() {
     let snapshot = winblast0::hardware::thermal::SystemThermalSnapshot::read();
-    assert!(!snapshot.status_message.is_empty(), "Thermal status message must be populated");
+    assert!(
+        !snapshot.status_message.is_empty(),
+        "Thermal status message must be populated"
+    );
     // Ensure sensor readings are non-panicking and physically bounded
     if snapshot.sensors_available {
         assert!(snapshot.cpu_package_temp_c >= 0.0 && snapshot.cpu_package_temp_c < 125.0);
@@ -1894,22 +2185,57 @@ fn test_thermal_telemetry_sensors_probe() {
     }
 }
 
-
 #[test]
 fn test_hardware_view_power_schemes_no_overlap() {
     let mut state = build_populated_sandbox_state();
     state.navigate(ActiveView::HardwareView);
     // Add 9 power schemes like on host
     state.power_schemes = vec![
-        winblast0::hardware::power::PowerSchemeInfo { guid: "1".into(), friendly_name: "Balanced".into(), is_active: false },
-        winblast0::hardware::power::PowerSchemeInfo { guid: "2".into(), friendly_name: "High Performance Overlay".into(), is_active: false },
-        winblast0::hardware::power::PowerSchemeInfo { guid: "3".into(), friendly_name: "Revision - Ultra Performance".into(), is_active: false },
-        winblast0::hardware::power::PowerSchemeInfo { guid: "4".into(), friendly_name: "WinBlast0 Ultimate Performance".into(), is_active: true },
-        winblast0::hardware::power::PowerSchemeInfo { guid: "5".into(), friendly_name: "High Performance".into(), is_active: false },
-        winblast0::hardware::power::PowerSchemeInfo { guid: "6".into(), friendly_name: "Better Battery-life Overlay".into(), is_active: false },
-        winblast0::hardware::power::PowerSchemeInfo { guid: "7".into(), friendly_name: "Power Saver".into(), is_active: false },
-        winblast0::hardware::power::PowerSchemeInfo { guid: "8".into(), friendly_name: "Max Performance Overlay".into(), is_active: false },
-        winblast0::hardware::power::PowerSchemeInfo { guid: "9".into(), friendly_name: "Ultimate Performance".into(), is_active: false },
+        winblast0::hardware::power::PowerSchemeInfo {
+            guid: "1".into(),
+            friendly_name: "Balanced".into(),
+            is_active: false,
+        },
+        winblast0::hardware::power::PowerSchemeInfo {
+            guid: "2".into(),
+            friendly_name: "High Performance Overlay".into(),
+            is_active: false,
+        },
+        winblast0::hardware::power::PowerSchemeInfo {
+            guid: "3".into(),
+            friendly_name: "Revision - Ultra Performance".into(),
+            is_active: false,
+        },
+        winblast0::hardware::power::PowerSchemeInfo {
+            guid: "4".into(),
+            friendly_name: "WinBlast0 Ultimate Performance".into(),
+            is_active: true,
+        },
+        winblast0::hardware::power::PowerSchemeInfo {
+            guid: "5".into(),
+            friendly_name: "High Performance".into(),
+            is_active: false,
+        },
+        winblast0::hardware::power::PowerSchemeInfo {
+            guid: "6".into(),
+            friendly_name: "Better Battery-life Overlay".into(),
+            is_active: false,
+        },
+        winblast0::hardware::power::PowerSchemeInfo {
+            guid: "7".into(),
+            friendly_name: "Power Saver".into(),
+            is_active: false,
+        },
+        winblast0::hardware::power::PowerSchemeInfo {
+            guid: "8".into(),
+            friendly_name: "Max Performance Overlay".into(),
+            is_active: false,
+        },
+        winblast0::hardware::power::PowerSchemeInfo {
+            guid: "9".into(),
+            friendly_name: "Ultimate Performance".into(),
+            is_active: false,
+        },
     ];
     let mut rt = Runtime::new(state, ui::view, (1280.0, 800.0), Env::new(true, 1.0));
     settle_frames(&mut rt);
@@ -1925,5 +2251,3 @@ fn test_hardware_view_power_schemes_no_overlap() {
         scheme_pos.1
     );
 }
-
-

@@ -2,10 +2,10 @@
 //!
 //! Measures live socket connection latency against major DNS resolvers and queries real network interfaces.
 
+use crate::core::process::SilentCommand;
+use serde::{Deserialize, Serialize};
 use std::net::{SocketAddr, TcpStream, UdpSocket};
 use std::time::{Duration, Instant};
-use serde::{Deserialize, Serialize};
-use crate::core::process::SilentCommand;
 
 /// DNS server probe test result with provider metadata.
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -44,16 +44,66 @@ pub fn query_local_ip() -> String {
 
 /// Default catalog of the world's leading public and secure DNS providers.
 const DNS_CATALOG: [(&str, &str, &str, &str); 10] = [
-    ("Cloudflare DNS", "1.1.1.1", "1.0.0.1", "Ultra-Low Latency & Privacy"),
-    ("Google Public DNS", "8.8.8.8", "8.8.4.4", "Global Anycast & Reliability"),
-    ("Quad9 DNS", "9.9.9.9", "149.112.112.112", "Malware Threat Shield & Zero Logs"),
-    ("AdGuard DNS", "94.140.14.14", "94.140.15.15", "Ad & Tracker Blocking"),
-    ("OpenDNS (Cisco)", "208.67.222.222", "208.67.220.220", "Enterprise Security & Phishing Filter"),
-    ("Control D", "76.76.2.0", "76.76.10.0", "High-Performance Anycast"),
-    ("CleanBrowsing", "185.228.168.9", "185.228.169.9", "Security & Malware Filtering"),
-    ("Mullvad DNS", "194.242.2.2", "193.19.108.2", "Zero-Log Strict Privacy"),
-    ("Level3 / Lumen", "4.2.2.1", "4.2.2.2", "Tier-1 Backbone Routing"),
-    ("Comodo Secure DNS", "8.26.56.26", "8.20.247.20", "Real-Time Cyber Threat Filter"),
+    (
+        "Cloudflare DNS",
+        "1.1.1.1",
+        "1.0.0.1",
+        "Ultra-Low Latency & Privacy",
+    ),
+    (
+        "Google Public DNS",
+        "8.8.8.8",
+        "8.8.4.4",
+        "Global Anycast & Reliability",
+    ),
+    (
+        "Quad9 DNS",
+        "9.9.9.9",
+        "149.112.112.112",
+        "Malware Threat Shield & Zero Logs",
+    ),
+    (
+        "AdGuard DNS",
+        "94.140.14.14",
+        "94.140.15.15",
+        "Ad & Tracker Blocking",
+    ),
+    (
+        "OpenDNS (Cisco)",
+        "208.67.222.222",
+        "208.67.220.220",
+        "Enterprise Security & Phishing Filter",
+    ),
+    (
+        "Control D",
+        "76.76.2.0",
+        "76.76.10.0",
+        "High-Performance Anycast",
+    ),
+    (
+        "CleanBrowsing",
+        "185.228.168.9",
+        "185.228.169.9",
+        "Security & Malware Filtering",
+    ),
+    (
+        "Mullvad DNS",
+        "194.242.2.2",
+        "193.19.108.2",
+        "Zero-Log Strict Privacy",
+    ),
+    (
+        "Level3 / Lumen",
+        "4.2.2.1",
+        "4.2.2.2",
+        "Tier-1 Backbone Routing",
+    ),
+    (
+        "Comodo Secure DNS",
+        "8.26.56.26",
+        "8.20.247.20",
+        "Real-Time Cyber Threat Filter",
+    ),
 ];
 
 impl Default for NetworkDiagnostics {
@@ -182,7 +232,10 @@ if ($adapter) {{
             .map_err(|e| format!("Failed to configure DNS: {e}"))?;
 
         if out.status.success() {
-            Ok(format!("Configured primary DNS: {} and secondary: {}", primary, secondary))
+            Ok(format!(
+                "Configured primary DNS: {} and secondary: {}",
+                primary, secondary
+            ))
         } else {
             Err("Failed to set DNS servers on active adapter.".to_string())
         }

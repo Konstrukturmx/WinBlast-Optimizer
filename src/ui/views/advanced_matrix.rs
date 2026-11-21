@@ -1,9 +1,9 @@
 //! Advanced Tweak Matrix in Rune — live search input, category pills, multi-axis risk metrics,
 //! and responsive wrapping row geometry inside one outer scroll container.
 
-use std::collections::{BTreeMap, BTreeSet};
 use rune::color::Color;
 use rune::{col, el, row, text, text_input, El, ScrollSpec};
+use std::collections::{BTreeMap, BTreeSet};
 
 use crate::app::AppState;
 use crate::core::i18n::{I18n, TextKey};
@@ -151,7 +151,11 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
                     } else if s.selected_tweaks.is_empty() {
                         s.tr(TextKey::ApplySelected).to_string()
                     } else {
-                        format!("{} ({})", s.tr(TextKey::ApplySelected), s.selected_tweaks.len())
+                        format!(
+                            "{} ({})",
+                            s.tr(TextKey::ApplySelected),
+                            s.selected_tweaks.len()
+                        )
                     },
                     p.success,
                     Color::WHITE,
@@ -267,26 +271,27 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
                 .min_w(0.0),
         );
 
-    let mut filter_chips = row()
-        .w_full()
-        .min_w(0.0)
-        .flex_wrap()
-        .gaps(6.0, 6.0)
-        .child(action_button(
-            s.tr(TextKey::CategoryAll),
-            if s.selected_category.is_none() {
-                p.accent
-            } else {
-                p.btn_secondary
-            },
-            if s.selected_category.is_none() {
-                Color::WHITE
-            } else {
-                p.text_primary
-            },
-            p,
-            |s| s.selected_category = None,
-        ));
+    let mut filter_chips =
+        row()
+            .w_full()
+            .min_w(0.0)
+            .flex_wrap()
+            .gaps(6.0, 6.0)
+            .child(action_button(
+                s.tr(TextKey::CategoryAll),
+                if s.selected_category.is_none() {
+                    p.accent
+                } else {
+                    p.btn_secondary
+                },
+                if s.selected_category.is_none() {
+                    Color::WHITE
+                } else {
+                    p.text_primary
+                },
+                p,
+                |s| s.selected_category = None,
+            ));
 
     for cat in &cats {
         let cat_name = (*cat).to_string();
@@ -359,21 +364,51 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
                         .color(p.text_muted)
                         .shrink(),
                 )
-                .child(action_button(s.tr(TextKey::RiskSafe), p.success.alpha(0.18), p.success, p, |s| {
-                    s.search_edit.text = "safe".to_string();
-                }))
-                .child(action_button(s.tr(TextKey::RiskLow), p.accent.alpha(0.18), p.accent, p, |s| {
-                    s.search_edit.text = "low".to_string();
-                }))
-                .child(action_button(s.tr(TextKey::RiskCaution), p.warning.alpha(0.20), p.warning, p, |s| {
-                    s.search_edit.text = "moderate".to_string();
-                }))
-                .child(action_button(s.tr(TextKey::RiskHigh), p.warning.alpha(0.28), p.warning, p, |s| {
-                    s.search_edit.text = "high".to_string();
-                }))
-                .child(action_button(s.tr(TextKey::RiskExtreme), p.danger.alpha(0.28), p.danger, p, |s| {
-                    s.search_edit.text = "extreme".to_string();
-                })),
+                .child(action_button(
+                    s.tr(TextKey::RiskSafe),
+                    p.success.alpha(0.18),
+                    p.success,
+                    p,
+                    |s| {
+                        s.search_edit.text = "safe".to_string();
+                    },
+                ))
+                .child(action_button(
+                    s.tr(TextKey::RiskLow),
+                    p.accent.alpha(0.18),
+                    p.accent,
+                    p,
+                    |s| {
+                        s.search_edit.text = "low".to_string();
+                    },
+                ))
+                .child(action_button(
+                    s.tr(TextKey::RiskCaution),
+                    p.warning.alpha(0.20),
+                    p.warning,
+                    p,
+                    |s| {
+                        s.search_edit.text = "moderate".to_string();
+                    },
+                ))
+                .child(action_button(
+                    s.tr(TextKey::RiskHigh),
+                    p.warning.alpha(0.28),
+                    p.warning,
+                    p,
+                    |s| {
+                        s.search_edit.text = "high".to_string();
+                    },
+                ))
+                .child(action_button(
+                    s.tr(TextKey::RiskExtreme),
+                    p.danger.alpha(0.28),
+                    p.danger,
+                    p,
+                    |s| {
+                        s.search_edit.text = "extreme".to_string();
+                    },
+                )),
         );
 
     // Batch Action Toolbar
@@ -394,9 +429,12 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
                 .items_center()
                 .child(text("⚡").font(rune::tok::type_::LABEL))
                 .child(
-                    text(format!("Toplu İşlemler ({} Seçili)", s.selected_tweaks.len()))
-                        .font(rune::tok::type_::LABEL)
-                        .color(p.text_primary),
+                    text(format!(
+                        "Toplu İşlemler ({} Seçili)",
+                        s.selected_tweaks.len()
+                    ))
+                    .font(rune::tok::type_::LABEL)
+                    .color(p.text_primary),
                 ),
         )
         .child(
@@ -411,7 +449,11 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
                     } else if s.selected_tweaks.is_empty() {
                         s.tr(TextKey::ApplySelected).to_string()
                     } else {
-                        format!("{} ({})", s.tr(TextKey::ApplySelected), s.selected_tweaks.len())
+                        format!(
+                            "{} ({})",
+                            s.tr(TextKey::ApplySelected),
+                            s.selected_tweaks.len()
+                        )
                     },
                     p.success,
                     Color::WHITE,
@@ -469,28 +511,34 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
                 row()
                     .items_center()
                     .gap(6.0)
+                    .child(text("▾").font(rune::tok::type_::LABEL).color(p.accent))
                     .child(
-                        text("▾")
-                            .font(rune::tok::type_::LABEL)
-                            .color(p.accent),
-                    )
-                    .child(
-                        text(format!("📂  {} ({})", s.tweak_category(cat), cat_items.len()))
-                            .font(rune::tok::type_::TITLE)
-                            .color(p.accent)
-                            .shrink()
-                            .wrap(),
+                        text(format!(
+                            "📂  {} ({})",
+                            s.tweak_category(cat),
+                            cat_items.len()
+                        ))
+                        .font(rune::tok::type_::TITLE)
+                        .color(p.accent)
+                        .shrink()
+                        .wrap(),
                     ),
             )
-            .child(
-                action_button(
-                    if all_selected_in_cat { "Deselect Category" } else { s.tr(TextKey::SelectAllCategory) },
-                    p.bg_card,
-                    if all_selected_in_cat { p.warning } else { p.accent },
-                    p,
-                    move |s| s.toggle_category_selection(&cat_tweaks_copy, !all_selected_in_cat),
-                ),
-            );
+            .child(action_button(
+                if all_selected_in_cat {
+                    "Deselect Category"
+                } else {
+                    s.tr(TextKey::SelectAllCategory)
+                },
+                p.bg_card,
+                if all_selected_in_cat {
+                    p.warning
+                } else {
+                    p.accent
+                },
+                p,
+                move |s| s.toggle_category_selection(&cat_tweaks_copy, !all_selected_in_cat),
+            ));
 
         let mut items_col = col().w_full().min_w(0.0).gap(6.0);
         let mut sorted_items = cat_items.clone();
@@ -543,10 +591,18 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
                 .min_w(0.0)
                 .padding(p.card_padding.min(10.0))
                 .radius(p.card_radius.min(6.0))
-                .fill(if is_active { p.bg_card_hover } else { p.bg_card })
+                .fill(if is_active {
+                    p.bg_card_hover
+                } else {
+                    p.bg_card
+                })
                 .border(
                     p.border_width,
-                    if is_active { p.accent.alpha(0.35) } else { p.border },
+                    if is_active {
+                        p.accent.alpha(0.35)
+                    } else {
+                        p.border
+                    },
                 )
                 .hover(p.bg_card_hover)
                 .motion(p.motion)
@@ -577,18 +633,26 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
                         .gap(8.0)
                         .items_center()
                         .child(
-                            text(format!("{} +{}", s.tr(TextKey::PerfShort), sr.risk.performance_gain))
-                                .font(rune::tok::type_::LABEL)
-                                .color(p.success)
-                                .shrink()
-                                .wrap(),
+                            text(format!(
+                                "{} +{}",
+                                s.tr(TextKey::PerfShort),
+                                sr.risk.performance_gain
+                            ))
+                            .font(rune::tok::type_::LABEL)
+                            .color(p.success)
+                            .shrink()
+                            .wrap(),
                         )
                         .child(
-                            text(format!("{} +{}", s.tr(TextKey::PrivShort), sr.risk.privacy_gain))
-                                .font(rune::tok::type_::LABEL)
-                                .color(p.accent)
-                                .shrink()
-                                .wrap(),
+                            text(format!(
+                                "{} +{}",
+                                s.tr(TextKey::PrivShort),
+                                sr.risk.privacy_gain
+                            ))
+                            .font(rune::tok::type_::LABEL)
+                            .color(p.accent)
+                            .shrink()
+                            .wrap(),
                         ),
                 )
                 .child(badge)
@@ -658,7 +722,11 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
         );
     }
 
-    let pad = if tier == LayoutTier::Compact { 10.0 } else { 14.0 };
+    let pad = if tier == LayoutTier::Compact {
+        10.0
+    } else {
+        14.0
+    };
     col()
         .key("advanced_matrix_viewport")
         .w_full()
@@ -668,7 +736,9 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
         .padding(pad)
         .pr(14.0)
         .gap(12.0)
-        .scroll(ScrollSpec { stick_bottom: false })
+        .scroll(ScrollSpec {
+            stick_bottom: false,
+        })
         .child(header_card)
         .child(presets_card)
         .child(batch_toolbar)

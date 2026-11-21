@@ -122,10 +122,16 @@ mod tests {
     #[test]
     fn test_error_formatting() {
         let reg_err = WinBlastError::Registry(2, "File not found".into());
-        assert_eq!(reg_err.to_string(), "Win32 Registry Error (2): File not found");
+        assert_eq!(
+            reg_err.to_string(),
+            "Win32 Registry Error (2): File not found"
+        );
 
         let svc_err = WinBlastError::Service(1060, "Service does not exist".into());
-        assert_eq!(svc_err.to_string(), "Service Control Manager Error (1060): Service does not exist");
+        assert_eq!(
+            svc_err.to_string(),
+            "Service Control Manager Error (1060): Service does not exist"
+        );
 
         let com_err = WinBlastError::Com(-2147467259); // 0x80004005
         assert!(com_err.to_string().contains("HRESULT 0x80004005"));
@@ -136,7 +142,8 @@ mod tests {
         let input_err = WinBlastError::InvalidInput("Malformed path".into());
         assert_eq!(input_err.to_string(), "Invalid Input: Malformed path");
 
-        let io_err: WinBlastError = std::io::Error::new(std::io::ErrorKind::PermissionDenied, "Access denied").into();
+        let io_err: WinBlastError =
+            std::io::Error::new(std::io::ErrorKind::PermissionDenied, "Access denied").into();
         assert!(matches!(io_err, WinBlastError::Io(_)));
     }
 

@@ -107,7 +107,10 @@ pub struct AutoTuneResult {
 }
 
 /// Evaluates the tweak catalog and creates a tailored auto-tune plan for the given profile.
-pub fn create_auto_tune_plan(catalog: &[TweakDefinition], profile: AutoTuneProfile) -> AutoTunePlan {
+pub fn create_auto_tune_plan(
+    catalog: &[TweakDefinition],
+    profile: AutoTuneProfile,
+) -> AutoTunePlan {
     let mut recommended = Vec::new();
     let max_risk = profile.target_risk_level();
 
@@ -247,7 +250,9 @@ pub fn assess_system_health() -> SystemHealthAssessment {
 
     // 1. Check Network Throttling Index
     let hklm = RegKey::predef(HKEY_LOCAL_MACHINE);
-    if let Ok(key) = hklm.open_subkey("SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile") {
+    if let Ok(key) = hklm
+        .open_subkey("SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile")
+    {
         let throttling: Result<u32, _> = key.get_value("NetworkThrottlingIndex");
         if throttling.unwrap_or(10) != 0xFFFFFFFF {
             gaming_score = gaming_score.saturating_sub(15);
@@ -342,7 +347,9 @@ pub fn assess_system_health() -> SystemHealthAssessment {
     }
 
     // 6. Check Memory Management (DisablePagingExecutive)
-    if let Ok(key) = hklm.open_subkey("SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management") {
+    if let Ok(key) =
+        hklm.open_subkey("SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management")
+    {
         let paging_exec: Result<u32, _> = key.get_value("DisablePagingExecutive");
         if paging_exec.unwrap_or(0) == 0 {
             memory_score = memory_score.saturating_sub(15);
@@ -366,14 +373,23 @@ pub fn assess_system_health() -> SystemHealthAssessment {
         _ => OverallHealthGrade::Suboptimal,
     };
 
-    let recommended_actions = issues
-        .iter()
-        .map(|i| i.resolution_action.clone())
-        .collect();
+    let recommended_actions = issues.iter().map(|i| i.resolution_action.clone()).collect();
 
-    let telemetry_grade = if privacy_score > 80 { "Protected".to_string() } else { "Leaking".to_string() };
-    let dpc_grade = if gaming_score > 80 { "Ultra-Low".to_string() } else { "Elevated".to_string() };
-    let bloat_grade = if storage_score > 80 { "Clean".to_string() } else { "Bloated".to_string() };
+    let telemetry_grade = if privacy_score > 80 {
+        "Protected".to_string()
+    } else {
+        "Leaking".to_string()
+    };
+    let dpc_grade = if gaming_score > 80 {
+        "Ultra-Low".to_string()
+    } else {
+        "Elevated".to_string()
+    };
+    let bloat_grade = if storage_score > 80 {
+        "Clean".to_string()
+    } else {
+        "Bloated".to_string()
+    };
 
     SystemHealthAssessment {
         score: overall_score,
@@ -427,9 +443,15 @@ impl MaintenanceTaskKind {
 
     pub fn description(&self) -> &'static str {
         match self {
-            Self::DailyMemoryPurge => "Trims process working sets and flushes standby page caches daily at 04:00 AM.",
-            Self::WeeklyTempCleaner => "Cleans temporary user and system caches every Sunday at 03:00 AM.",
-            Self::TelemetryGuard => "Re-verifies DiagTrack and WER services remain disabled after Windows Updates.",
+            Self::DailyMemoryPurge => {
+                "Trims process working sets and flushes standby page caches daily at 04:00 AM."
+            }
+            Self::WeeklyTempCleaner => {
+                "Cleans temporary user and system caches every Sunday at 03:00 AM."
+            }
+            Self::TelemetryGuard => {
+                "Re-verifies DiagTrack and WER services remain disabled after Windows Updates."
+            }
         }
     }
 
@@ -514,7 +536,10 @@ pub fn install_maintenance_task(kind: MaintenanceTaskKind) -> Result<(), String>
 
     match status {
         Ok(s) if s.success() => Ok(()),
-        Ok(s) => Err(format!("schtasks failed with exit code: {}", s.code().unwrap_or(-1))),
+        Ok(s) => Err(format!(
+            "schtasks failed with exit code: {}",
+            s.code().unwrap_or(-1)
+        )),
         Err(e) => Err(format!("Failed to execute schtasks: {}", e)),
     }
 }
@@ -528,7 +553,10 @@ pub fn remove_maintenance_task(kind: MaintenanceTaskKind) -> Result<(), String> 
 
     match status {
         Ok(s) if s.success() => Ok(()),
-        Ok(s) => Err(format!("schtasks delete failed with exit code: {}", s.code().unwrap_or(-1))),
+        Ok(s) => Err(format!(
+            "schtasks delete failed with exit code: {}",
+            s.code().unwrap_or(-1)
+        )),
         Err(e) => Err(format!("Failed to remove task: {}", e)),
     }
 }
@@ -544,7 +572,11 @@ pub fn query_all_maintenance_tasks() -> Vec<MaintenanceTaskStatus> {
                 is_installed: installed,
                 task_name: kind.task_name().to_string(),
                 schedule: format!("{} at {}", kind.schedule_frequency(), kind.trigger_time()),
-                last_run_result: if installed { Some("Active".to_string()) } else { None },
+                last_run_result: if installed {
+                    Some("Active".to_string())
+                } else {
+                    None
+                },
             }
         })
         .collect()
@@ -618,7 +650,10 @@ pub fn trim_system_memory_and_cache() -> MemoryTrimResult {
             processes_trimmed: 0,
             duration_ms,
             success: false,
-            message: format!("PowerShell memory trim exited with code {}", out.status.code().unwrap_or(-1)),
+            message: format!(
+                "PowerShell memory trim exited with code {}",
+                out.status.code().unwrap_or(-1)
+            ),
         },
         Err(e) => MemoryTrimResult {
             freed_mb_estimated: 0.0,
@@ -649,7 +684,10 @@ mod tests {
         assert_eq!(profiles.len(), 4, "Expected exactly 4 auto-tune profiles");
 
         for &p in profiles {
-            assert!(!p.display_name().is_empty(), "Display name must not be empty");
+            assert!(
+                !p.display_name().is_empty(),
+                "Display name must not be empty"
+            );
             assert!(!p.description().is_empty(), "Description must not be empty");
             assert!(!p.icon().is_empty(), "Icon must not be empty");
             assert!(
@@ -671,7 +709,11 @@ mod tests {
     #[test]
     fn test_iso_29119_auto_tune_plan_generation_all_profiles() {
         let catalog = load_embedded_rules();
-        assert_eq!(catalog.len(), 230, "Catalog must contain exactly 230 tweaks");
+        assert_eq!(
+            catalog.len(),
+            230,
+            "Catalog must contain exactly 230 tweaks"
+        );
 
         for &profile in AutoTuneProfile::all() {
             let plan = create_auto_tune_plan(&catalog, profile);
@@ -689,7 +731,11 @@ mod tests {
             let max_allowed = profile.target_risk_level();
             let mut seen = std::collections::HashSet::new();
             for tid in &plan.recommended_tweak_ids {
-                assert!(seen.insert(tid.clone()), "Duplicate tweak ID in plan: {}", tid);
+                assert!(
+                    seen.insert(tid.clone()),
+                    "Duplicate tweak ID in plan: {}",
+                    tid
+                );
                 let tweak = catalog.iter().find(|t| &t.id == tid).unwrap_or_else(|| {
                     panic!("Recommended tweak '{}' not found in catalog", tid);
                 });
@@ -767,15 +813,27 @@ mod tests {
         let mut names = std::collections::HashSet::new();
         for &t in tasks {
             let name = t.task_name();
-            assert!(name.starts_with("WinBlast_"), "Task name must start with WinBlast_");
+            assert!(
+                name.starts_with("WinBlast_"),
+                "Task name must start with WinBlast_"
+            );
             assert!(names.insert(name), "Task name '{}' must be unique", name);
             assert!(!t.description().is_empty());
 
             let freq = t.schedule_frequency();
-            assert!(freq == "DAILY" || freq == "WEEKLY", "Invalid frequency: {}", freq);
+            assert!(
+                freq == "DAILY" || freq == "WEEKLY",
+                "Invalid frequency: {}",
+                freq
+            );
 
             let time = t.trigger_time();
-            assert_eq!(time.len(), 5, "Trigger time must be HH:MM format, got {}", time);
+            assert_eq!(
+                time.len(),
+                5,
+                "Trigger time must be HH:MM format, got {}",
+                time
+            );
             assert!(time.contains(':'), "Trigger time must contain ':'");
         }
 

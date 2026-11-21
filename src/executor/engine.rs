@@ -5,8 +5,8 @@ use crate::backup::state_ledger::{LedgerEntry, StateLedger};
 use crate::core::backend::{is_unsupported_power_guid_error, RealBackend, SystemBackend};
 use crate::core::error::{Result, WinBlastError};
 use crate::core::reg_helpers::{
-    decode_hex, escape_pipe, format_pipe_reg_target, merge_composite_pair,
-    parse_pipe_reg_target, unescape_pipe, RegRawSnapshot, RegTreeSnapshot,
+    decode_hex, escape_pipe, format_pipe_reg_target, merge_composite_pair, parse_pipe_reg_target,
+    unescape_pipe, RegRawSnapshot, RegTreeSnapshot,
 };
 use crate::core::risk::{OptionalFeatureKind, PowerTargetScope, TweakAction, TweakDefinition};
 
@@ -54,7 +54,11 @@ fn ensure_tweak_compatible(tweak: &TweakDefinition, backend: &dyn SystemBackend)
         )));
     }
     if tweak.gpu_vendor.is_some() {
-        let vendors: Vec<_> = backend.detect_gpus().into_iter().map(|g| g.vendor).collect();
+        let vendors: Vec<_> = backend
+            .detect_gpus()
+            .into_iter()
+            .map(|g| g.vendor)
+            .collect();
         if !tweak.is_gpu_vendor_compatible(&vendors) {
             return Err(WinBlastError::Hardware(format!(
                 "Tweak '{}' requires a {} GPU",
@@ -66,7 +70,11 @@ fn ensure_tweak_compatible(tweak: &TweakDefinition, backend: &dyn SystemBackend)
     Ok(())
 }
 
-fn rollback_recorded_ids(recorded_ids: Vec<i64>, ledger: &StateLedger, backend: &dyn SystemBackend) {
+fn rollback_recorded_ids(
+    recorded_ids: Vec<i64>,
+    ledger: &StateLedger,
+    backend: &dyn SystemBackend,
+) {
     if recorded_ids.is_empty() {
         return;
     }
@@ -105,10 +113,21 @@ fn format_composite_action_key(prefix: &str, meta_in: CompositeKeyMeta<'_>) -> S
     format!("{}CompositeStringKey:{}", prefix, meta)
 }
 
-fn format_dword_action_key(prefix: &str, hive: &str, path: &str, name: &str, vendor_ref: Option<&str>) -> String {
+fn format_dword_action_key(
+    prefix: &str,
+    hive: &str,
+    path: &str,
+    name: &str,
+    vendor_ref: Option<&str>,
+) -> String {
     let base_tgt = format_pipe_reg_target(hive, path, name);
     match vendor_ref {
-        Some(v) if !v.trim().is_empty() => format!("{}RegistryDword:{}|vendor={}", prefix, base_tgt, escape_pipe(v)),
+        Some(v) if !v.trim().is_empty() => format!(
+            "{}RegistryDword:{}|vendor={}",
+            prefix,
+            base_tgt,
+            escape_pipe(v)
+        ),
         _ => format!("{}RegistryDword:{}", prefix, base_tgt),
     }
 }
@@ -138,7 +157,13 @@ fn apply_action_slice_with(
                     ..
                 } => {
                     let prev = backend.reg_get_dword_for_vendor(hive, path, name, vendor_ref);
-                    backend.reg_set_dword_for_vendor(hive, path, name, *optimized_value, vendor_ref)?;
+                    backend.reg_set_dword_for_vendor(
+                        hive,
+                        path,
+                        name,
+                        *optimized_value,
+                        vendor_ref,
+                    )?;
                     let action_key = format_dword_action_key("", hive, path, name, vendor_ref);
                     let orig_str = prev
                         .map(|v| v.to_string())
@@ -170,7 +195,14 @@ fn apply_action_slice_with(
                         backend.reg_delete_value_for_vendor(hive, path, name, vendor_ref)?;
                         ABSENT_SENTINEL.to_string()
                     } else {
-                        backend.reg_set_string(hive, path, name, optimized_value, *expand_sz, vendor_ref)?;
+                        backend.reg_set_string(
+                            hive,
+                            path,
+                            name,
+                            optimized_value,
+                            *expand_sz,
+                            vendor_ref,
+                        )?;
                         if *expand_sz {
                             format!("expand_sz:{}", optimized_value)
                         } else {
@@ -179,7 +211,9 @@ fn apply_action_slice_with(
                     };
                     let base_tgt = format_pipe_reg_target(hive, path, name);
                     let action_key = match vendor_ref {
-                        Some(v) if !v.trim().is_empty() => format!("RegistryString:{}|vendor={}", base_tgt, escape_pipe(v)),
+                        Some(v) if !v.trim().is_empty() => {
+                            format!("RegistryString:{}|vendor={}", base_tgt, escape_pipe(v))
+                        }
                         _ => format!("RegistryString:{}", base_tgt),
                     };
                     let id = ledger.record_change(&tweak.id, &action_key, &orig_str, &new_str)?;
@@ -193,8 +227,12 @@ fn apply_action_slice_with(
                         Some(snap) => serde_json::to_string(&snap)?,
                         None => ABSENT_SENTINEL.to_string(),
                     };
-                    let action_key = format!("RegistryDelete:{}", format_pipe_reg_target(hive, path, name));
-                    let id = ledger.record_change(&tweak.id, &action_key, &orig_str, ABSENT_SENTINEL)?;
+                    let action_key = format!(
+                        "RegistryDelete:{}",
+                        format_pipe_reg_target(hive, path, name)
+                    );
+                    let id =
+                        ledger.record_change(&tweak.id, &action_key, &orig_str, ABSENT_SENTINEL)?;
                     recorded_ids.push(id);
                     applied += 1;
                 }
@@ -205,8 +243,10 @@ fn apply_action_slice_with(
                         Some(tree) => serde_json::to_string(&tree)?,
                         None => ABSENT_SENTINEL.to_string(),
                     };
-                    let action_key = format!("RegistryDeleteTree:{}\\{}", hive.trim(), escape_pipe(path));
-                    let id = ledger.record_change(&tweak.id, &action_key, &orig_str, ABSENT_SENTINEL)?;
+                    let action_key =
+                        format!("RegistryDeleteTree:{}\\{}", hive.trim(), escape_pipe(path));
+                    let id =
+                        ledger.record_change(&tweak.id, &action_key, &orig_str, ABSENT_SENTINEL)?;
                     recorded_ids.push(id);
                     applied += 1;
                 }
@@ -229,7 +269,11 @@ fn apply_action_slice_with(
                             if b.len() < req {
                                 return Err(WinBlastError::TweakFailed(format!(
                                     "Binary value {}\\{}\\{} shorter than {} bytes (len={})",
-                                    hive, path, name, req, b.len()
+                                    hive,
+                                    path,
+                                    name,
+                                    req,
+                                    b.len()
                                 )));
                             }
                             let orig = format!("{}|{}", bit_mask, b[*byte_index] & *bit_mask);
@@ -258,7 +302,8 @@ fn apply_action_slice_with(
                             }
                         }
                     };
-                    bytes[*byte_index] = (bytes[*byte_index] & !bit_mask) | (optimized_bits & bit_mask);
+                    bytes[*byte_index] =
+                        (bytes[*byte_index] & !bit_mask) | (optimized_bits & bit_mask);
                     let new_masked = format!("{}|{}", bit_mask, bytes[*byte_index] & *bit_mask);
                     backend.reg_set_binary(hive, path, name, &bytes)?;
                     let action_key = format!(
@@ -266,7 +311,8 @@ fn apply_action_slice_with(
                         format_pipe_reg_target(hive, path, name),
                         byte_index
                     );
-                    let id = ledger.record_change(&tweak.id, &action_key, &orig_masked, &new_masked)?;
+                    let id =
+                        ledger.record_change(&tweak.id, &action_key, &orig_masked, &new_masked)?;
                     recorded_ids.push(id);
                     applied += 1;
                 }
@@ -335,8 +381,16 @@ fn apply_action_slice_with(
                     let orig_str = prev
                         .map(|v| v.to_string())
                         .unwrap_or_else(|| ABSENT_SENTINEL.to_string());
-                    let action_key = format!("RegistryDynamicDword:{}", format_pipe_reg_target(hive, path, name));
-                    let id = ledger.record_change(&tweak.id, &action_key, &orig_str, &target.to_string())?;
+                    let action_key = format!(
+                        "RegistryDynamicDword:{}",
+                        format_pipe_reg_target(hive, path, name)
+                    );
+                    let id = ledger.record_change(
+                        &tweak.id,
+                        &action_key,
+                        &orig_str,
+                        &target.to_string(),
+                    )?;
                     recorded_ids.push(id);
                     applied += 1;
                 }
@@ -351,7 +405,9 @@ fn apply_action_slice_with(
                     ..
                 } => {
                     let resolved_scheme = match scheme_guid {
-                        Some(s) if !s.trim().is_empty() => crate::hardware::power::normalize_guid_str(s),
+                        Some(s) if !s.trim().is_empty() => {
+                            crate::hardware::power::normalize_guid_str(s)
+                        }
                         _ => backend.get_active_power_scheme()?,
                     };
                     let (prev_ac, prev_dc) = match backend.read_power_setting_index(
@@ -373,16 +429,18 @@ fn apply_action_slice_with(
                         }
                         Err(e) => return Err(e),
                     };
-                    let ac_opt = if matches!(scope, PowerTargetScope::AcOnly | PowerTargetScope::AcAndDc) {
-                        Some(*optimized_ac)
-                    } else {
-                        None
-                    };
-                    let dc_opt = if matches!(scope, PowerTargetScope::DcOnly | PowerTargetScope::AcAndDc) {
-                        Some(*optimized_dc)
-                    } else {
-                        None
-                    };
+                    let ac_opt =
+                        if matches!(scope, PowerTargetScope::AcOnly | PowerTargetScope::AcAndDc) {
+                            Some(*optimized_ac)
+                        } else {
+                            None
+                        };
+                    let dc_opt =
+                        if matches!(scope, PowerTargetScope::DcOnly | PowerTargetScope::AcAndDc) {
+                            Some(*optimized_dc)
+                        } else {
+                            None
+                        };
                     if let Err(e) = backend.write_power_setting_index(
                         Some(&resolved_scheme),
                         subgroup_guid,
@@ -429,7 +487,10 @@ fn apply_action_slice_with(
                         backend
                             .reg_get_dword(
                                 "HKLM",
-                                &format!("SYSTEM\\CurrentControlSet\\Services\\{}", service_name.trim()),
+                                &format!(
+                                    "SYSTEM\\CurrentControlSet\\Services\\{}",
+                                    service_name.trim()
+                                ),
                                 "DelayedAutostart",
                             )
                             .unwrap_or(0)
@@ -471,7 +532,8 @@ fn apply_action_slice_with(
                 TweakAction::AppXPackage { package_family } => {
                     backend.remove_appx_package(package_family)?;
                     let action_key = format!("AppXPackage:{}", package_family);
-                    let id = ledger.record_change(&tweak.id, &action_key, "installed", "removed")?;
+                    let id =
+                        ledger.record_change(&tweak.id, &action_key, "installed", "removed")?;
                     recorded_ids.push(id);
                     applied += 1;
                 }
@@ -504,7 +566,8 @@ fn apply_action_slice_with(
                         })
                         .unwrap_or(!*enable);
                     backend.set_optional_feature(feature_name, *kind, *enable)?;
-                    let action_key = format!("WindowsFeature:{:?}|{}", kind, escape_pipe(feature_name));
+                    let action_key =
+                        format!("WindowsFeature:{:?}|{}", kind, escape_pipe(feature_name));
                     let id = ledger.record_change(
                         &tweak.id,
                         &action_key,
@@ -601,7 +664,10 @@ pub fn apply_tweaks_by_id_with(
 
     // Automated pre-flight VSS restore point check (within last 24 hours)
     if let Err(e) = backend.ensure_preflight_restore_point("WinBlast Pre-Optimization Checkpoint") {
-        tracing::warn!("Pre-flight system restore point check/creation skipped or failed: {}", e);
+        tracing::warn!(
+            "Pre-flight system restore point check/creation skipped or failed: {}",
+            e
+        );
     }
 
     // 1. Check for mutual conflicts via Raven engine
@@ -640,9 +706,18 @@ pub fn apply_tweaks_by_id_with(
     // 2. Schedule execution sequence via Dijkstra shortest-path / topological scheduler
     let scheduler = crate::graph::dijkstra::DijkstraScheduler::new();
     let tweak_tuples = all_tweaks.iter().map(|t| {
-        let requires_reboot = t.valuation.reversibility == crate::core::risk::Reversibility::RequiresReboot;
-        let touches_services = t.actions.iter().any(|a| matches!(a, TweakAction::ServiceState { .. }));
-        (t.id.as_str(), t.prerequisites.as_slice(), requires_reboot, touches_services)
+        let requires_reboot =
+            t.valuation.reversibility == crate::core::risk::Reversibility::RequiresReboot;
+        let touches_services = t
+            .actions
+            .iter()
+            .any(|a| matches!(a, TweakAction::ServiceState { .. }));
+        (
+            t.id.as_str(),
+            t.prerequisites.as_slice(),
+            requires_reboot,
+            touches_services,
+        )
     });
 
     let execution_order = scheduler.schedule_execution(tweak_tuples, &active_ids);
@@ -702,9 +777,16 @@ pub fn revert_tweak_with(
                         .map(|v| v.to_string())
                         .unwrap_or_else(|| ABSENT_SENTINEL.to_string());
 
-                    backend.reg_set_dword_for_vendor(hive, path, name, *default_value, vendor_ref)?;
+                    backend.reg_set_dword_for_vendor(
+                        hive,
+                        path,
+                        name,
+                        *default_value,
+                        vendor_ref,
+                    )?;
 
-                    let action_key = format_dword_action_key("Revert:", hive, path, name, vendor_ref);
+                    let action_key =
+                        format_dword_action_key("Revert:", hive, path, name, vendor_ref);
                     let id = ledger.record_change(
                         &tweak.id,
                         &action_key,
@@ -733,7 +815,14 @@ pub fn revert_tweak_with(
                         backend.reg_delete_value_for_vendor(hive, path, name, vendor_ref)?;
                         ABSENT_SENTINEL.to_string()
                     } else {
-                        backend.reg_set_string(hive, path, name, default_value, *expand_sz, vendor_ref)?;
+                        backend.reg_set_string(
+                            hive,
+                            path,
+                            name,
+                            default_value,
+                            *expand_sz,
+                            vendor_ref,
+                        )?;
                         if *expand_sz {
                             format!("expand_sz:{}", default_value)
                         } else {
@@ -742,36 +831,62 @@ pub fn revert_tweak_with(
                     };
                     let base_tgt = format_pipe_reg_target(hive, path, name);
                     let action_key = match vendor_ref {
-                        Some(v) if !v.trim().is_empty() => format!("RegistryString:{}|vendor={}", base_tgt, escape_pipe(v)),
+                        Some(v) if !v.trim().is_empty() => {
+                            format!("RegistryString:{}|vendor={}", base_tgt, escape_pipe(v))
+                        }
                         _ => format!("RegistryString:{}", base_tgt),
                     };
-                    let id = ledger.record_change(&tweak.id, &format!("Revert:{}", action_key), &orig_str, &new_str)?;
+                    let id = ledger.record_change(
+                        &tweak.id,
+                        &format!("Revert:{}", action_key),
+                        &orig_str,
+                        &new_str,
+                    )?;
                     recorded_ids.push(id);
                     reverted += 1;
                 }
                 TweakAction::RegistryDelete { hive, path, name } => {
-                    let action_key = format!("RegistryDelete:{}", format_pipe_reg_target(hive, path, name));
+                    let action_key = format!(
+                        "RegistryDelete:{}",
+                        format_pipe_reg_target(hive, path, name)
+                    );
                     let history = ledger.get_history()?;
-                    if let Some(prior) = history.iter().find(|e| e.tweak_id == tweak.id && e.action_type == action_key && !e.rolled_back) {
+                    if let Some(prior) = history.iter().find(|e| {
+                        e.tweak_id == tweak.id && e.action_type == action_key && !e.rolled_back
+                    }) {
                         if prior.original_value != ABSENT_SENTINEL {
                             let snap: RegRawSnapshot = serde_json::from_str(&prior.original_value)?;
                             backend.reg_set_raw(hive, path, name, &snap)?;
                         }
-                        let id = ledger.record_change(&tweak.id, &format!("Revert:{}", action_key), ABSENT_SENTINEL, &prior.original_value)?;
+                        let id = ledger.record_change(
+                            &tweak.id,
+                            &format!("Revert:{}", action_key),
+                            ABSENT_SENTINEL,
+                            &prior.original_value,
+                        )?;
                         recorded_ids.push(id);
                         consumed_prior_ids.push(prior.id);
                         reverted += 1;
                     }
                 }
                 TweakAction::RegistryDeleteTree { hive, path } => {
-                    let action_key = format!("RegistryDeleteTree:{}\\{}", hive.trim(), escape_pipe(path));
+                    let action_key =
+                        format!("RegistryDeleteTree:{}\\{}", hive.trim(), escape_pipe(path));
                     let history = ledger.get_history()?;
-                    if let Some(prior) = history.iter().find(|e| e.tweak_id == tweak.id && e.action_type == action_key && !e.rolled_back) {
+                    if let Some(prior) = history.iter().find(|e| {
+                        e.tweak_id == tweak.id && e.action_type == action_key && !e.rolled_back
+                    }) {
                         if prior.original_value != ABSENT_SENTINEL {
-                            let tree: RegTreeSnapshot = serde_json::from_str(&prior.original_value)?;
+                            let tree: RegTreeSnapshot =
+                                serde_json::from_str(&prior.original_value)?;
                             backend.reg_restore_tree(hive, path, &tree)?;
                         }
-                        let id = ledger.record_change(&tweak.id, &format!("Revert:{}", action_key), ABSENT_SENTINEL, &prior.original_value)?;
+                        let id = ledger.record_change(
+                            &tweak.id,
+                            &format!("Revert:{}", action_key),
+                            ABSENT_SENTINEL,
+                            &prior.original_value,
+                        )?;
                         recorded_ids.push(id);
                         consumed_prior_ids.push(prior.id);
                         reverted += 1;
@@ -795,7 +910,11 @@ pub fn revert_tweak_with(
                             if b.len() < req {
                                 return Err(WinBlastError::TweakFailed(format!(
                                     "Binary value {}\\{}\\{} shorter than {} bytes (len={})",
-                                    hive, path, name, req, b.len()
+                                    hive,
+                                    path,
+                                    name,
+                                    req,
+                                    b.len()
                                 )));
                             }
                             let cur = format!("{}|{}", bit_mask, b[*byte_index] & *bit_mask);
@@ -824,7 +943,8 @@ pub fn revert_tweak_with(
                             }
                         }
                     };
-                    bytes[*byte_index] = (bytes[*byte_index] & !bit_mask) | (default_bits & bit_mask);
+                    bytes[*byte_index] =
+                        (bytes[*byte_index] & !bit_mask) | (default_bits & bit_mask);
                     let new_masked = format!("{}|{}", bit_mask, bytes[*byte_index] & *bit_mask);
                     backend.reg_set_binary(hive, path, name, &bytes)?;
                     let action_key = format!(
@@ -905,8 +1025,16 @@ pub fn revert_tweak_with(
                         .map(|v| v.to_string())
                         .unwrap_or_else(|| ABSENT_SENTINEL.to_string());
                     backend.reg_set_dword(hive, path, name, *default_value)?;
-                    let action_key = format!("RegistryDynamicDword:{}", format_pipe_reg_target(hive, path, name));
-                    let id = ledger.record_change(&tweak.id, &format!("Revert:{}", action_key), &current_val, &default_value.to_string())?;
+                    let action_key = format!(
+                        "RegistryDynamicDword:{}",
+                        format_pipe_reg_target(hive, path, name)
+                    );
+                    let id = ledger.record_change(
+                        &tweak.id,
+                        &format!("Revert:{}", action_key),
+                        &current_val,
+                        &default_value.to_string(),
+                    )?;
                     recorded_ids.push(id);
                     reverted += 1;
                 }
@@ -920,7 +1048,9 @@ pub fn revert_tweak_with(
                     ..
                 } => {
                     let resolved_scheme = match scheme_guid {
-                        Some(s) if !s.trim().is_empty() => crate::hardware::power::normalize_guid_str(s),
+                        Some(s) if !s.trim().is_empty() => {
+                            crate::hardware::power::normalize_guid_str(s)
+                        }
                         _ => backend.get_active_power_scheme()?,
                     };
                     let (prev_ac, prev_dc) = match backend.read_power_setting_index(
@@ -942,16 +1072,18 @@ pub fn revert_tweak_with(
                         }
                         Err(e) => return Err(e),
                     };
-                    let ac_opt = if matches!(scope, PowerTargetScope::AcOnly | PowerTargetScope::AcAndDc) {
-                        Some(*default_ac)
-                    } else {
-                        None
-                    };
-                    let dc_opt = if matches!(scope, PowerTargetScope::DcOnly | PowerTargetScope::AcAndDc) {
-                        Some(*default_dc)
-                    } else {
-                        None
-                    };
+                    let ac_opt =
+                        if matches!(scope, PowerTargetScope::AcOnly | PowerTargetScope::AcAndDc) {
+                            Some(*default_ac)
+                        } else {
+                            None
+                        };
+                    let dc_opt =
+                        if matches!(scope, PowerTargetScope::DcOnly | PowerTargetScope::AcAndDc) {
+                            Some(*default_dc)
+                        } else {
+                            None
+                        };
                     if let Err(e) = backend.write_power_setting_index(
                         Some(&resolved_scheme),
                         subgroup_guid,
@@ -1000,7 +1132,10 @@ pub fn revert_tweak_with(
                         backend
                             .reg_get_dword(
                                 "HKLM",
-                                &format!("SYSTEM\\CurrentControlSet\\Services\\{}", service_name.trim()),
+                                &format!(
+                                    "SYSTEM\\CurrentControlSet\\Services\\{}",
+                                    service_name.trim()
+                                ),
                                 "DelayedAutostart",
                             )
                             .unwrap_or(0)
@@ -1076,7 +1211,8 @@ pub fn revert_tweak_with(
                     );
                     let revert_to = !*enable;
                     backend.set_optional_feature(feature_name, *kind, revert_to)?;
-                    let action_key = format!("WindowsFeature:{:?}|{}", kind, escape_pipe(feature_name));
+                    let action_key =
+                        format!("WindowsFeature:{:?}|{}", kind, escape_pipe(feature_name));
                     let id = ledger.record_change(
                         &tweak.id,
                         &format!("Revert:{}", action_key),
@@ -1124,14 +1260,26 @@ pub fn revert_tweaks_by_id_with(
 
     // Automated pre-flight VSS restore point check (within last 24 hours)
     if let Err(e) = backend.ensure_preflight_restore_point("WinBlast Pre-Optimization Checkpoint") {
-        tracing::warn!("Pre-flight system restore point check/creation skipped or failed: {}", e);
+        tracing::warn!(
+            "Pre-flight system restore point check/creation skipped or failed: {}",
+            e
+        );
     }
 
     let scheduler = crate::graph::dijkstra::DijkstraScheduler::new();
     let tweak_tuples = all_tweaks.iter().map(|t| {
-        let requires_reboot = t.valuation.reversibility == crate::core::risk::Reversibility::RequiresReboot;
-        let touches_services = t.actions.iter().any(|a| matches!(a, TweakAction::ServiceState { .. }));
-        (t.id.as_str(), t.prerequisites.as_slice(), requires_reboot, touches_services)
+        let requires_reboot =
+            t.valuation.reversibility == crate::core::risk::Reversibility::RequiresReboot;
+        let touches_services = t
+            .actions
+            .iter()
+            .any(|a| matches!(a, TweakAction::ServiceState { .. }));
+        (
+            t.id.as_str(),
+            t.prerequisites.as_slice(),
+            requires_reboot,
+            touches_services,
+        )
     });
 
     let execution_order = scheduler.schedule_execution(tweak_tuples, tweak_ids);
@@ -1170,10 +1318,15 @@ pub fn rollback_entry_with(
         return Ok(());
     }
 
-    let raw_action = entry.action_type.strip_prefix("Revert:").unwrap_or(&entry.action_type);
+    let raw_action = entry
+        .action_type
+        .strip_prefix("Revert:")
+        .unwrap_or(&entry.action_type);
     let parts: Vec<&str> = raw_action.splitn(2, ':').collect();
     if parts.is_empty() {
-        return Err(WinBlastError::invalid_input("Empty action_type in ledger entry"));
+        return Err(WinBlastError::invalid_input(
+            "Empty action_type in ledger entry",
+        ));
     }
 
     let kind = parts[0];
@@ -1214,7 +1367,10 @@ pub fn rollback_entry_with(
                 backend.reg_delete_value_for_vendor(&hive, &path, &name, vendor_ref)?;
             } else {
                 let original_val: u32 = entry.original_value.parse().map_err(|_| {
-                    WinBlastError::invalid_input(format!("Invalid original value: {}", entry.original_value))
+                    WinBlastError::invalid_input(format!(
+                        "Invalid original value: {}",
+                        entry.original_value
+                    ))
                 })?;
                 backend.reg_set_dword_for_vendor(&hive, &path, &name, original_val, vendor_ref)?;
             }
@@ -1233,7 +1389,14 @@ pub fn rollback_entry_with(
             } else if let Some(s) = entry.original_value.strip_prefix("sz:") {
                 backend.reg_set_string(&hive, &path, &name, s, false, vendor_ref)?;
             } else {
-                backend.reg_set_string(&hive, &path, &name, &entry.original_value, false, vendor_ref)?;
+                backend.reg_set_string(
+                    &hive,
+                    &path,
+                    &name,
+                    &entry.original_value,
+                    false,
+                    vendor_ref,
+                )?;
             }
         }
         "RegistryDelete" => {
@@ -1263,16 +1426,25 @@ pub fn rollback_entry_with(
                 let base = format!("{}|{}", segs[0], segs[1]);
                 let (hive, path, name) = parse_pipe_reg_target(&base)?;
                 let byte_index: usize = segs[2].parse().map_err(|_| {
-                    WinBlastError::invalid_input(format!("Invalid byte_index in RegistryBinaryBit target: {}", target))
+                    WinBlastError::invalid_input(format!(
+                        "Invalid byte_index in RegistryBinaryBit target: {}",
+                        target
+                    ))
                 })?;
                 if entry.original_value == ABSENT_SENTINEL {
                     backend.reg_delete_value(&hive, &path, &name)?;
                 } else if let Some((mask_s, bits_s)) = entry.original_value.split_once('|') {
                     let bit_mask: u8 = mask_s.parse().map_err(|_| {
-                        WinBlastError::TweakFailed(format!("Invalid bit_mask in RegistryBinaryBit: {}", entry.original_value))
+                        WinBlastError::TweakFailed(format!(
+                            "Invalid bit_mask in RegistryBinaryBit: {}",
+                            entry.original_value
+                        ))
                     })?;
                     let orig_bits: u8 = bits_s.parse().map_err(|_| {
-                        WinBlastError::TweakFailed(format!("Invalid orig_bits in RegistryBinaryBit: {}", entry.original_value))
+                        WinBlastError::TweakFailed(format!(
+                            "Invalid orig_bits in RegistryBinaryBit: {}",
+                            entry.original_value
+                        ))
                     })?;
                     let Some(mut live_bytes) = backend.reg_get_binary(&hive, &path, &name) else {
                         // Tolerate out-of-order Backup Center rollback when another entry already deleted the value
@@ -1295,7 +1467,8 @@ pub fn rollback_entry_with(
                             live_bytes.len()
                         )));
                     }
-                    live_bytes[byte_index] = (live_bytes[byte_index] & !bit_mask) | (orig_bits & bit_mask);
+                    live_bytes[byte_index] =
+                        (live_bytes[byte_index] & !bit_mask) | (orig_bits & bit_mask);
                     backend.reg_set_binary(&hive, &path, &name, &live_bytes)?;
                 } else if let Some(hex) = entry.original_value.strip_prefix("hex:") {
                     let orig_bytes = decode_hex(hex)?;
@@ -1380,7 +1553,10 @@ pub fn rollback_entry_with(
                 backend.reg_delete_value(&hive, &path, &name)?;
             } else {
                 let original_val: u32 = entry.original_value.parse().map_err(|_| {
-                    WinBlastError::TweakFailed(format!("Invalid original value: {}", entry.original_value))
+                    WinBlastError::TweakFailed(format!(
+                        "Invalid original value: {}",
+                        entry.original_value
+                    ))
                 })?;
                 backend.reg_set_dword(&hive, &path, &name, original_val)?;
             }
@@ -1391,7 +1567,10 @@ pub fn rollback_entry_with(
             let subgroup = segs.next().unwrap_or_default();
             let setting = segs.next().unwrap_or_default();
             if scheme.is_empty() || subgroup.is_empty() || setting.is_empty() {
-                return Err(WinBlastError::TweakFailed(format!("Invalid PowerCfg target: {}", target)));
+                return Err(WinBlastError::TweakFailed(format!(
+                    "Invalid PowerCfg target: {}",
+                    target
+                )));
             }
             let (ac, dc) = parse_power_indices(&entry.original_value);
             if ac.is_none() && dc.is_none() {
@@ -1441,12 +1620,23 @@ pub fn rollback_entry_with(
                         (entry.original_value.trim(), false)
                     };
                 let original_start: u32 = start_str.parse().map_err(|_| {
-                    WinBlastError::TweakFailed(format!("Invalid original service start: {}", entry.original_value))
+                    WinBlastError::TweakFailed(format!(
+                        "Invalid original service start: {}",
+                        entry.original_value
+                    ))
                 })?;
                 if was_delayed && original_start == 2 {
-                    let svc_path = format!("SYSTEM\\CurrentControlSet\\Services\\{}", service_name.trim());
-                    if let Err(e) = backend.reg_set_dword("HKLM", &svc_path, "DelayedAutostart", 1) {
-                        tracing::warn!("Failed to restore DelayedAutostart for {}: {}", service_name, e);
+                    let svc_path = format!(
+                        "SYSTEM\\CurrentControlSet\\Services\\{}",
+                        service_name.trim()
+                    );
+                    if let Err(e) = backend.reg_set_dword("HKLM", &svc_path, "DelayedAutostart", 1)
+                    {
+                        tracing::warn!(
+                            "Failed to restore DelayedAutostart for {}: {}",
+                            service_name,
+                            e
+                        );
                     }
                 }
                 backend.set_service_start_type(service_name, original_start)?;
@@ -1482,7 +1672,9 @@ pub fn rollback_entry_with(
         "StartupApproved" => {
             let entry_id = unescape_pipe(target);
             if entry_id.is_empty() {
-                return Err(WinBlastError::Rollback("Missing startup entry ID".to_string()));
+                return Err(WinBlastError::Rollback(
+                    "Missing startup entry ID".to_string(),
+                ));
             }
             let orig_en = if let Ok(b) = entry.original_value.parse::<bool>() {
                 b
@@ -1531,53 +1723,62 @@ pub fn rollback_entry_with(
                 )));
             }
         },
-        "HostsBlock" | "GpuHags" | "GpuMpo" | "GpuMsi" | "CoreParking" => {
-            match kind {
-                "HostsBlock" => {
-                    crate::executor::ps_runner::unblock_telemetry_hosts_with(backend)?;
-                }
-                "GpuHags" => {
-                    let orig_hags = entry.original_value == "true";
-                    backend.set_hags(orig_hags).map_err(WinBlastError::Io)?;
-                }
-                "GpuMpo" => {
-                    let orig_mpo = entry.original_value == "true";
-                    backend.set_mpo_disabled(orig_mpo).map_err(WinBlastError::Io)?;
-                }
-                "GpuMsi" => {
-                    if target.is_empty() {
-                        return Err(WinBlastError::Rollback("Missing GPU PnP device ID".to_string()));
-                    }
-                    let (msi, prio) = if let Some((msi_s, prio_s)) = entry.original_value.split_once('|') {
-                        (
-                            msi_s.eq_ignore_ascii_case("true") || msi_s.eq_ignore_ascii_case("enabled"),
-                            prio_s.parse().unwrap_or(2),
-                        )
-                    } else {
-                        (
-                            entry.original_value.eq_ignore_ascii_case("enabled")
-                                || entry.original_value.eq_ignore_ascii_case("true"),
-                            2,
-                        )
-                    };
-                    backend.set_gpu_msi_mode(target, msi, prio).map_err(WinBlastError::Io)?;
-                }
-                "CoreParking" => {
-                    if let Some(snap) =
-                        crate::hardware::parking::ParkingSnapshot::deserialize(&entry.original_value)
-                    {
-                        backend.apply_parking_snapshot(&snap)?;
-                    } else if entry.original_value == "unparked" {
-                        backend.unpark_all_cores()?;
-                    } else {
-                        backend.restore_stock_parking()?;
-                    }
-                }
-                _ => {}
+        "HostsBlock" | "GpuHags" | "GpuMpo" | "GpuMsi" | "CoreParking" => match kind {
+            "HostsBlock" => {
+                crate::executor::ps_runner::unblock_telemetry_hosts_with(backend)?;
             }
-        }
+            "GpuHags" => {
+                let orig_hags = entry.original_value == "true";
+                backend.set_hags(orig_hags).map_err(WinBlastError::Io)?;
+            }
+            "GpuMpo" => {
+                let orig_mpo = entry.original_value == "true";
+                backend
+                    .set_mpo_disabled(orig_mpo)
+                    .map_err(WinBlastError::Io)?;
+            }
+            "GpuMsi" => {
+                if target.is_empty() {
+                    return Err(WinBlastError::Rollback(
+                        "Missing GPU PnP device ID".to_string(),
+                    ));
+                }
+                let (msi, prio) = if let Some((msi_s, prio_s)) =
+                    entry.original_value.split_once('|')
+                {
+                    (
+                        msi_s.eq_ignore_ascii_case("true") || msi_s.eq_ignore_ascii_case("enabled"),
+                        prio_s.parse().unwrap_or(2),
+                    )
+                } else {
+                    (
+                        entry.original_value.eq_ignore_ascii_case("enabled")
+                            || entry.original_value.eq_ignore_ascii_case("true"),
+                        2,
+                    )
+                };
+                backend
+                    .set_gpu_msi_mode(target, msi, prio)
+                    .map_err(WinBlastError::Io)?;
+            }
+            "CoreParking" => {
+                if let Some(snap) =
+                    crate::hardware::parking::ParkingSnapshot::deserialize(&entry.original_value)
+                {
+                    backend.apply_parking_snapshot(&snap)?;
+                } else if entry.original_value == "unparked" {
+                    backend.unpark_all_cores()?;
+                } else {
+                    backend.restore_stock_parking()?;
+                }
+            }
+            _ => {}
+        },
         _ => {
-            return Err(WinBlastError::TweakFailed(format!("Unknown action type in ledger: {}", kind)));
+            return Err(WinBlastError::TweakFailed(format!(
+                "Unknown action type in ledger: {}",
+                kind
+            )));
         }
     }
 
@@ -1700,20 +1901,34 @@ mod tests {
             conflicts_with: Vec::new(),
         };
 
-        assert_eq!(sbx.reg_get_dword("HKCU", "Software\\WinBlast0_Test", "TransientKey"), None);
+        assert_eq!(
+            sbx.reg_get_dword("HKCU", "Software\\WinBlast0_Test", "TransientKey"),
+            None
+        );
         apply_tweak_with(&tweak, &ledger, &sbx).unwrap();
-        assert_eq!(sbx.reg_get_dword("HKCU", "Software\\WinBlast0_Test", "TransientKey"), Some(1));
+        assert_eq!(
+            sbx.reg_get_dword("HKCU", "Software\\WinBlast0_Test", "TransientKey"),
+            Some(1)
+        );
 
         let hist = ledger.get_history().unwrap();
         rollback_entry_with(&hist[0], &ledger, &sbx).unwrap();
-        assert_eq!(sbx.reg_get_dword("HKCU", "Software\\WinBlast0_Test", "TransientKey"), None);
+        assert_eq!(
+            sbx.reg_get_dword("HKCU", "Software\\WinBlast0_Test", "TransientKey"),
+            None
+        );
     }
 
     #[test]
     fn test_batch1_engine_edge_cases_and_atomic_revert() {
-        use crate::core::risk::{OptionalFeatureKind, OsRequirement, Reversibility, RiskLevel, RiskValuation};
+        use crate::core::risk::{
+            OptionalFeatureKind, OsRequirement, Reversibility, RiskLevel, RiskValuation,
+        };
 
-        let mk_tweak = |id: &str, min_build: u32, gpu_vendor: Option<&str>, actions: Vec<TweakAction>| TweakDefinition {
+        let mk_tweak = |id: &str,
+                        min_build: u32,
+                        gpu_vendor: Option<&str>,
+                        actions: Vec<TweakAction>| TweakDefinition {
             id: id.into(),
             title: id.into(),
             category: "OS Settings".into(),
@@ -1746,7 +1961,8 @@ mod tests {
         {
             let mut st = sbx.inner.write().unwrap();
             st.os_info.build_number = 19041;
-            st.gpus.retain(|g| g.vendor == crate::hardware::gpu::GpuVendor::Nvidia);
+            st.gpus
+                .retain(|g| g.vendor == crate::hardware::gpu::GpuVendor::Nvidia);
         }
         let ledger = StateLedger::in_memory().unwrap();
         let win11_tweak = mk_tweak(
@@ -1802,9 +2018,13 @@ mod tests {
                 },
             ],
         );
-        sbx.reg_set_dword("HKCU", "Software\\WinBlast0_Test", "Step0", 1).unwrap();
+        sbx.reg_set_dword("HKCU", "Software\\WinBlast0_Test", "Step0", 1)
+            .unwrap();
         assert!(revert_tweak_with(&rev_fail_tweak, &ledger, &sbx).is_err());
-        assert_eq!(sbx.reg_get_dword("HKCU", "Software\\WinBlast0_Test", "Step0"), Some(1));
+        assert_eq!(
+            sbx.reg_get_dword("HKCU", "Software\\WinBlast0_Test", "Step0"),
+            Some(1)
+        );
         assert!(ledger.get_history().unwrap().iter().all(|e| e.rolled_back));
 
         // 3. RegistryDelete revert marks consumed prior snapshot rolled_back = 1
@@ -1871,7 +2091,11 @@ mod tests {
             ],
         );
         revert_tweak_with(&bin_tweak, &ledger, &sbx).unwrap();
-        assert_eq!(sbx.reg_get_binary("HKCU", "Software\\WinBlast0_Test", "MaskVal").unwrap()[0], 0x9e);
+        assert_eq!(
+            sbx.reg_get_binary("HKCU", "Software\\WinBlast0_Test", "MaskVal")
+                .unwrap()[0],
+            0x9e
+        );
         // Now delete MaskVal via rolling back first entry (__ABSENT__), then roll back second entry out-of-order
         let bin_entries: Vec<_> = ledger
             .get_history()
@@ -1881,12 +2105,21 @@ mod tests {
             .collect();
         // Reverse order (oldest first -> original_value == __ABSENT__ deletes MaskVal)
         rollback_entry_with(&bin_entries[1], &ledger, &sbx).unwrap();
-        assert!(sbx.reg_get_binary("HKCU", "Software\\WinBlast0_Test", "MaskVal").is_none());
+        assert!(sbx
+            .reg_get_binary("HKCU", "Software\\WinBlast0_Test", "MaskVal")
+            .is_none());
         rollback_entry_with(&bin_entries[0], &ledger, &sbx).unwrap();
 
         // 5. CompositeStringKey with `#` in path/name/entry_key + existing empty "" preservation + pipe RegistryDword
-        sbx.reg_set_string("HKCU", "Software\\Test#Hash", "Val#Pipe|Name", "", false, None)
-            .unwrap();
+        sbx.reg_set_string(
+            "HKCU",
+            "Software\\Test#Hash",
+            "Val#Pipe|Name",
+            "",
+            false,
+            None,
+        )
+        .unwrap();
         let comp_tweak = mk_tweak(
             "comp_hash_empty",
             19041,
@@ -1964,7 +2197,11 @@ mod tests {
             let mut st = sbx.inner.write().unwrap();
             st.services.insert("mapsbroker".into(), 2);
             st.registry.insert(
-                ("HKLM".into(), "system\\currentcontrolset\\services\\mapsbroker".into(), "delayedautostart".into()),
+                (
+                    "HKLM".into(),
+                    "system\\currentcontrolset\\services\\mapsbroker".into(),
+                    "delayedautostart".into(),
+                ),
                 1,
             );
         }
@@ -1986,12 +2223,20 @@ mod tests {
             .find(|e| e.tweak_id == "svc_delayed")
             .unwrap();
         assert_eq!(svc_entry.original_value, "2|delayed=1");
-        sbx.reg_delete_value("HKLM", "SYSTEM\\CurrentControlSet\\Services\\MapsBroker", "DelayedAutostart")
-            .unwrap();
+        sbx.reg_delete_value(
+            "HKLM",
+            "SYSTEM\\CurrentControlSet\\Services\\MapsBroker",
+            "DelayedAutostart",
+        )
+        .unwrap();
         rollback_entry_with(&svc_entry, &ledger, &sbx).unwrap();
         assert_eq!(sbx.get_service_start_type("MapsBroker"), Some(2));
         assert_eq!(
-            sbx.reg_get_dword("HKLM", "SYSTEM\\CurrentControlSet\\Services\\MapsBroker", "DelayedAutostart"),
+            sbx.reg_get_dword(
+                "HKLM",
+                "SYSTEM\\CurrentControlSet\\Services\\MapsBroker",
+                "DelayedAutostart"
+            ),
             Some(1)
         );
     }
@@ -2139,7 +2384,12 @@ mod tests {
         assert_eq!(applied_count, 1);
 
         // Verify fallback action took effect in sandbox backend
-        let val = sbx.reg_get_dword_for_vendor("HKLM", r"SOFTWARE\WinBlastTest\FallbackWorking", "FallbackApplied", None);
+        let val = sbx.reg_get_dword_for_vendor(
+            "HKLM",
+            r"SOFTWARE\WinBlastTest\FallbackWorking",
+            "FallbackApplied",
+            None,
+        );
         assert_eq!(val, Some(42));
 
         // Verify ledger recorded the fallback mutation

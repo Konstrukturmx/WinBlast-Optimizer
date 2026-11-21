@@ -366,22 +366,22 @@ mod tests {
     #[test]
     fn test_composite_string_merge_preserves_siblings() {
         let initial = "VRROptimizeEnable=0;OtherCustomFlag=42;";
-        let (after_swap, prev1) =
-            merge_composite_pair(Some(initial), "SwapEffectUpgradeEnable", "1", ";", "=", true);
+        let (after_swap, prev1) = merge_composite_pair(
+            Some(initial),
+            "SwapEffectUpgradeEnable",
+            "1",
+            ";",
+            "=",
+            true,
+        );
         assert_eq!(prev1, None);
         assert_eq!(
             after_swap,
             "VRROptimizeEnable=0;OtherCustomFlag=42;SwapEffectUpgradeEnable=1;"
         );
 
-        let (after_vrr, prev2) = merge_composite_pair(
-            Some(&after_swap),
-            "vrroptimizeenable",
-            "1",
-            ";",
-            "=",
-            true,
-        );
+        let (after_vrr, prev2) =
+            merge_composite_pair(Some(&after_swap), "vrroptimizeenable", "1", ";", "=", true);
         assert_eq!(prev2.as_deref(), Some("0"));
         assert_eq!(
             read_composite_entry(&after_vrr, "VRROptimizeEnable", ";", "=").as_deref(),
@@ -405,8 +405,14 @@ mod tests {
 
         // Deduplicates stale duplicate keys cleanly
         let dup_raw = "SwapEffectUpgradeEnable=0;Other=1;swapeffectupgradeenable=2;";
-        let (deduped, prev_dup) =
-            merge_composite_pair(Some(dup_raw), "SwapEffectUpgradeEnable", "1", ";", "=", true);
+        let (deduped, prev_dup) = merge_composite_pair(
+            Some(dup_raw),
+            "SwapEffectUpgradeEnable",
+            "1",
+            ";",
+            "=",
+            true,
+        );
         assert_eq!(prev_dup.as_deref(), Some("0"));
         assert_eq!(deduped, "SwapEffectUpgradeEnable=1;Other=1;");
     }
@@ -419,7 +425,8 @@ mod tests {
         assert_eq!(p, "Software\\Classes\\CLSID\\{test}");
         assert_eq!(n, "");
 
-        let tgt2 = format_pipe_reg_target("HKLM", "SOFTWARE\\Test#Hash", "C:\\Path|Pipe#2\\app.exe");
+        let tgt2 =
+            format_pipe_reg_target("HKLM", "SOFTWARE\\Test#Hash", "C:\\Path|Pipe#2\\app.exe");
         assert!(!tgt2.contains('#'));
         let (h2, p2, n2) = parse_pipe_reg_target(&tgt2).unwrap();
         assert_eq!(h2, "HKLM");
@@ -436,41 +443,95 @@ mod tests {
         assert!(validate_registry_mutation_path("HKCR", "*\\shell\\Test", false).is_err());
         assert!(validate_registry_mutation_path("HKCU", "   ", false).is_err());
         assert!(validate_registry_mutation_path("HKCU", "\\\\\\\\", false).is_err());
-        assert!(validate_registry_mutation_path("HKCU", "Software\\Microsoft\\Windows", true).is_err());
-        assert!(validate_registry_mutation_path("HKLM", "SOFTWARE\\Microsoft\\Windows\\CurrentVersion", true).is_err());
-        assert!(validate_registry_mutation_path("HKLM", "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion", true).is_err());
-        assert!(validate_registry_mutation_path("HKLM", "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies", true).is_err());
-        assert!(validate_registry_mutation_path("HKLM", "SYSTEM\\CurrentControlSet\\Services", true).is_err());
-        assert!(validate_registry_mutation_path("HKLM", "SYSTEM\\CurrentControlSet\\Services\\Tcpip", true).is_err());
-        assert!(validate_registry_mutation_path("HKLM", "SYSTEM\\CurrentControlSet\\Control", true).is_err());
-        assert!(validate_registry_mutation_path("HKLM", "SYSTEM\\CurrentControlSet\\Control\\Session Manager", true).is_err());
         assert!(
-            validate_registry_mutation_path(
-                "HKCU",
-                "Software\\Classes\\CLSID\\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}",
-                true
-            )
-            .is_ok()
+            validate_registry_mutation_path("HKCU", "Software\\Microsoft\\Windows", true).is_err()
         );
-        assert!(
-            validate_registry_mutation_path(
-                "HKLM",
-                "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\SampleApp",
-                true
-            )
-            .is_ok()
-        );
+        assert!(validate_registry_mutation_path(
+            "HKLM",
+            "SOFTWARE\\Microsoft\\Windows\\CurrentVersion",
+            true
+        )
+        .is_err());
+        assert!(validate_registry_mutation_path(
+            "HKLM",
+            "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion",
+            true
+        )
+        .is_err());
+        assert!(validate_registry_mutation_path(
+            "HKLM",
+            "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies",
+            true
+        )
+        .is_err());
+        assert!(validate_registry_mutation_path(
+            "HKLM",
+            "SYSTEM\\CurrentControlSet\\Services",
+            true
+        )
+        .is_err());
+        assert!(validate_registry_mutation_path(
+            "HKLM",
+            "SYSTEM\\CurrentControlSet\\Services\\Tcpip",
+            true
+        )
+        .is_err());
+        assert!(validate_registry_mutation_path(
+            "HKLM",
+            "SYSTEM\\CurrentControlSet\\Control",
+            true
+        )
+        .is_err());
+        assert!(validate_registry_mutation_path(
+            "HKLM",
+            "SYSTEM\\CurrentControlSet\\Control\\Session Manager",
+            true
+        )
+        .is_err());
+        assert!(validate_registry_mutation_path(
+            "HKCU",
+            "Software\\Classes\\CLSID\\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}",
+            true
+        )
+        .is_ok());
+        assert!(validate_registry_mutation_path(
+            "HKLM",
+            "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\SampleApp",
+            true
+        )
+        .is_ok());
     }
 
     #[test]
     fn test_known_numeric_reg_sz() {
-        assert!(is_known_numeric_reg_sz(" Control Panel\\Desktop\\ ", "MenuShowDelay"));
-        assert!(is_known_numeric_reg_sz("Control Panel\\Desktop", "LowLevelHooksTimeout"));
-        assert!(is_known_numeric_reg_sz("Control Panel\\Desktop\\WindowMetrics", "PaddedBorderWidth"));
-        assert!(is_known_numeric_reg_sz("Control Panel\\Keyboard", "InitialKeyboardIndicators"));
-        assert!(is_known_numeric_reg_sz("Control Panel\\Mouse", "DoubleClickSpeed"));
-        assert!(is_known_numeric_reg_sz("Control Panel\\Accessibility\\StickyKeys", "Flags"));
-        assert!(is_known_numeric_reg_sz("Control Panel\\Accessibility\\Keyboard Response", "AutoRepeatRate"));
+        assert!(is_known_numeric_reg_sz(
+            " Control Panel\\Desktop\\ ",
+            "MenuShowDelay"
+        ));
+        assert!(is_known_numeric_reg_sz(
+            "Control Panel\\Desktop",
+            "LowLevelHooksTimeout"
+        ));
+        assert!(is_known_numeric_reg_sz(
+            "Control Panel\\Desktop\\WindowMetrics",
+            "PaddedBorderWidth"
+        ));
+        assert!(is_known_numeric_reg_sz(
+            "Control Panel\\Keyboard",
+            "InitialKeyboardIndicators"
+        ));
+        assert!(is_known_numeric_reg_sz(
+            "Control Panel\\Mouse",
+            "DoubleClickSpeed"
+        ));
+        assert!(is_known_numeric_reg_sz(
+            "Control Panel\\Accessibility\\StickyKeys",
+            "Flags"
+        ));
+        assert!(is_known_numeric_reg_sz(
+            "Control Panel\\Accessibility\\Keyboard Response",
+            "AutoRepeatRate"
+        ));
         assert!(!is_known_numeric_reg_sz("Software\\Test", "MenuShowDelay"));
     }
 }

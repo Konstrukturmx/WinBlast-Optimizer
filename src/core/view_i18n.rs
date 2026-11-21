@@ -1963,7 +1963,9 @@ mod tests {
             assert!(!tr_view(lang, ViewTextKey::FaultTitle).trim().is_empty());
             assert!(!tr_view(lang, ViewTextKey::PerfTitle).trim().is_empty());
             assert!(!tr_view(lang, ViewTextKey::RepairTitle).trim().is_empty());
-            assert!(!tr_view(lang, ViewTextKey::GamingStatsTitle).trim().is_empty());
+            assert!(!tr_view(lang, ViewTextKey::GamingStatsTitle)
+                .trim()
+                .is_empty());
             assert!(!tr_view(lang, ViewTextKey::NetDiagTitle).trim().is_empty());
         }
     }

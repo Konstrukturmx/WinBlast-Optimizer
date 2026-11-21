@@ -4,9 +4,9 @@
 //! and network packet round-trip time & jitter against Tier-1 global anycast DNS nodes
 //! (Cloudflare 1.1.1.1, Google 8.8.8.8, Quad9 9.9.9.9).
 
+use serde::{Deserialize, Serialize};
 use std::net::{SocketAddr, TcpStream};
 use std::time::{Duration, Instant};
-use serde::{Deserialize, Serialize};
 
 use super::monitor::query_nt_timer_resolution;
 
@@ -20,15 +20,24 @@ pub struct PingTarget {
 pub const PING_TARGETS: [PingTarget; 3] = [
     PingTarget {
         name: "Cloudflare (1.1.1.1)",
-        addr: SocketAddr::new(std::net::IpAddr::V4(std::net::Ipv4Addr::new(1, 1, 1, 1)), 53),
+        addr: SocketAddr::new(
+            std::net::IpAddr::V4(std::net::Ipv4Addr::new(1, 1, 1, 1)),
+            53,
+        ),
     },
     PingTarget {
         name: "Google (8.8.8.8)",
-        addr: SocketAddr::new(std::net::IpAddr::V4(std::net::Ipv4Addr::new(8, 8, 8, 8)), 53),
+        addr: SocketAddr::new(
+            std::net::IpAddr::V4(std::net::Ipv4Addr::new(8, 8, 8, 8)),
+            53,
+        ),
     },
     PingTarget {
         name: "Quad9 (9.9.9.9)",
-        addr: SocketAddr::new(std::net::IpAddr::V4(std::net::Ipv4Addr::new(9, 9, 9, 9)), 53),
+        addr: SocketAddr::new(
+            std::net::IpAddr::V4(std::net::Ipv4Addr::new(9, 9, 9, 9)),
+            53,
+        ),
     },
 ];
 
@@ -190,14 +199,16 @@ pub fn run_full_latency_benchmark(stage: &str) -> LatencyBenchmarkSnapshot {
         }
         handles
             .into_iter()
-            .map(|h| h.join().unwrap_or_else(|_| TargetPingResult {
-                name: "Probe Thread Panic".to_string(),
-                rtt_min_ms: 0.0,
-                rtt_avg_ms: 0.0,
-                rtt_max_ms: 0.0,
-                jitter_ms: 0.0,
-                packet_loss_pct: 100.0,
-            }))
+            .map(|h| {
+                h.join().unwrap_or_else(|_| TargetPingResult {
+                    name: "Probe Thread Panic".to_string(),
+                    rtt_min_ms: 0.0,
+                    rtt_avg_ms: 0.0,
+                    rtt_max_ms: 0.0,
+                    jitter_ms: 0.0,
+                    packet_loss_pct: 100.0,
+                })
+            })
             .collect::<Vec<_>>()
     });
 

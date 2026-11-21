@@ -1,6 +1,6 @@
 // build.rs — Embeds UAC manifest, Windows icon & PE metadata
-use embed_manifest::{embed_manifest, new_manifest};
 use embed_manifest::manifest::ExecutionLevel::{AsInvoker, HighestAvailable};
+use embed_manifest::{embed_manifest, new_manifest};
 
 fn main() {
     println!("cargo:rerun-if-env-changed=WINBLAST_SKIP_MANIFEST");
@@ -11,8 +11,7 @@ fn main() {
 
     #[cfg(feature = "ui-slint")]
     {
-        let config = slint_build::CompilerConfiguration::new()
-            .with_style("fluent-dark".into());
+        let config = slint_build::CompilerConfiguration::new().with_style("fluent-dark".into());
         slint_build::compile_with_config("slint-project.json", config)
             .expect("Failed to compile Slint 1.19 project");
     }
@@ -22,13 +21,19 @@ fn main() {
         let mut res = winres::WindowsResource::new();
         res.set_icon("assets/winblast.ico");
         res.set("CompanyName", "Konstrukturmx");
-        res.set("FileDescription", "WinBlast Optimizer — Windows System Optimizer & Hardware Latency Engine");
-        res.set("FileVersion", "1.6.1.0");
+        res.set(
+            "FileDescription",
+            "WinBlast Optimizer — Windows System Optimizer & Hardware Latency Engine",
+        );
+        res.set("FileVersion", "1.7.0.0");
         res.set("InternalName", "winblast0");
-        res.set("LegalCopyright", "Copyright © 2026 Konstrukturmx. Licensed under the MIT License.");
+        res.set(
+            "LegalCopyright",
+            "Copyright © 2026 Konstrukturmx. Licensed under the MIT License.",
+        );
         res.set("OriginalFilename", "winblast0.exe");
         res.set("ProductName", "WinBlast Optimizer");
-        res.set("ProductVersion", "1.6.1.0");
+        res.set("ProductVersion", "1.7.0.0");
         if let Err(e) = res.compile() {
             eprintln!("Warning: Failed to compile Windows resource: {e}");
         }
@@ -44,12 +49,8 @@ fn main() {
                 AsInvoker
             };
 
-            embed_manifest(
-                new_manifest("WinBlast0.Optimizer")
-                    .requested_execution_level(level),
-            )
-            .expect("Failed to embed UAC manifest");
+            embed_manifest(new_manifest("WinBlast0.Optimizer").requested_execution_level(level))
+                .expect("Failed to embed UAC manifest");
         }
     }
 }
-

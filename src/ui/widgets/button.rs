@@ -157,7 +157,13 @@ pub fn action_button_icon_only(
         .min_w(0.0)
         .shrink()
         .size(28.0, 28.0)
-        .radius(if p.theme_style == crate::ui::theme::UiThemeStyle::Materialistic { 14.0 } else { p.btn_radius })
+        .radius(
+            if p.theme_style == crate::ui::theme::UiThemeStyle::Materialistic {
+                14.0
+            } else {
+                p.btn_radius
+            },
+        )
         .fill(bg)
         .hover(hover_bg)
         .press(p.accent_press)
@@ -242,17 +248,46 @@ fn switch_visual_shell(active: bool, in_flight: bool, p: &ThemePalette) -> El {
 
     let knob = el()
         .size(16.0, 16.0)
-        .radius(if p.theme_style == crate::ui::theme::UiThemeStyle::Minimalistic { 1.0 } else { 8.0 })
+        .radius(
+            if p.theme_style == crate::ui::theme::UiThemeStyle::Minimalistic {
+                1.0
+            } else {
+                8.0
+            },
+        )
         .fill(knob_fill)
-        .border(1.0, if p.is_dark { Color::TRANSPARENT } else { p.border })
+        .border(
+            1.0,
+            if p.is_dark {
+                Color::TRANSPARENT
+            } else {
+                p.border
+            },
+        )
         .absolute(if active { 18.0 } else { 2.0 }, 2.0);
 
-    el()
-        .size(36.0, 20.0)
-        .radius(if p.theme_style == crate::ui::theme::UiThemeStyle::Minimalistic { 2.0 } else { 10.0 })
+    el().size(36.0, 20.0)
+        .radius(
+            if p.theme_style == crate::ui::theme::UiThemeStyle::Minimalistic {
+                2.0
+            } else {
+                10.0
+            },
+        )
         .fill(track_fill)
-        .hover(if active { p.accent_hover } else { p.btn_secondary_hover })
-        .border(p.border_width, if active { p.border_accent } else { p.border_hover })
+        .hover(if active {
+            p.accent_hover
+        } else {
+            p.btn_secondary_hover
+        })
+        .border(
+            p.border_width,
+            if active {
+                p.border_accent
+            } else {
+                p.border_hover
+            },
+        )
         .motion(p.motion)
         .child(knob)
 }
@@ -287,7 +322,12 @@ pub fn switch_indicator(
 }
 
 /// Adaptive key-value row (stacks vertically on `Compact` width and wraps long hardware/PnP strings).
-pub fn kv_row(key: impl Into<String>, value: impl Into<String>, compact: bool, p: &ThemePalette) -> El {
+pub fn kv_row(
+    key: impl Into<String>,
+    value: impl Into<String>,
+    compact: bool,
+    p: &ThemePalette,
+) -> El {
     let k = key.into();
     let v = value.into();
 

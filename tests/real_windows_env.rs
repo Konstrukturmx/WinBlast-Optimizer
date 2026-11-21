@@ -121,7 +121,11 @@ fn test_real_backend_readonly_live_host_audit() {
         "Expected Windows 11 build >= 22000, got {}",
         os.build_number
     );
-    assert!(os.is_win11, "Expected is_win11 == true on build {}", os.build_number);
+    assert!(
+        os.is_win11,
+        "Expected is_win11 == true on build {}",
+        os.build_number
+    );
     assert_ne!(os.edition, "Unknown", "OS edition must not be Unknown");
     assert_ne!(
         os.display_version, "Unknown",
@@ -188,7 +192,10 @@ fn test_real_backend_readonly_live_host_audit() {
         GpuVendor::Unknown
     );
     assert_eq!(
-        gpu::detect_vendor("ROOT\\BASICDISPLAY\\0000", "Microsoft Basic Display Adapter"),
+        gpu::detect_vendor(
+            "ROOT\\BASICDISPLAY\\0000",
+            "Microsoft Basic Display Adapter"
+        ),
         GpuVendor::Unknown
     );
 
@@ -205,8 +212,14 @@ fn test_real_backend_readonly_live_host_audit() {
         cpu.physical_cores
     );
     if cpu.has_hybrid_topology {
-        assert!(cpu.p_core_count > 0, "Hybrid CPU must report p_core_count > 0");
-        assert!(cpu.e_core_count > 0, "Hybrid CPU must report e_core_count > 0");
+        assert!(
+            cpu.p_core_count > 0,
+            "Hybrid CPU must report p_core_count > 0"
+        );
+        assert!(
+            cpu.e_core_count > 0,
+            "Hybrid CPU must report e_core_count > 0"
+        );
         assert_eq!(
             cpu.p_core_count + cpu.e_core_count,
             cpu.physical_cores,
@@ -253,7 +266,9 @@ fn test_real_backend_readonly_live_host_audit() {
             schemes
         );
         assert!(
-            schemes.iter().all(|s| !s.friendly_name.trim().is_empty() && !s.guid.trim().is_empty()),
+            schemes
+                .iter()
+                .all(|s| !s.friendly_name.trim().is_empty() && !s.guid.trim().is_empty()),
             "Power schemes must have non-empty friendly_name and guid: {:?}",
             schemes
         );
@@ -370,7 +385,6 @@ fn test_real_backend_readonly_live_host_audit() {
     );
 }
 
-
 #[test]
 fn test_real_win32_registry_types_numeric_sz_binary_and_tree_roundtrip() {
     let root_subkey = format!("Software\\WinBlast0_TestEnv_{}", Uuid::new_v4());
@@ -380,14 +394,15 @@ fn test_real_win32_registry_types_numeric_sz_binary_and_tree_roundtrip() {
     let backend = RealBackend;
 
     let hkcu = RegKey::predef(HKEY_CURRENT_USER);
-    let (key, _) = match hkcu.create_subkey_with_flags(&root_subkey, KEY_READ | KEY_WRITE | KEY_WOW64_64KEY) {
-        Ok(k) => k,
-        Err(e) if e.kind() == std::io::ErrorKind::PermissionDenied => {
-            eprintln!("Skipping HKCU test: sandbox restricted HKCU write access: {e}");
-            return;
-        }
-        Err(e) => panic!("Failed to create isolated HKCU test key: {e}"),
-    };
+    let (key, _) =
+        match hkcu.create_subkey_with_flags(&root_subkey, KEY_READ | KEY_WRITE | KEY_WOW64_64KEY) {
+            Ok(k) => k,
+            Err(e) if e.kind() == std::io::ErrorKind::PermissionDenied => {
+                eprintln!("Skipping HKCU test: sandbox restricted HKCU write access: {e}");
+                return;
+            }
+            Err(e) => panic!("Failed to create isolated HKCU test key: {e}"),
+        };
 
     // 1. read_dword_from_key (via RealBackend::reg_get_dword & registry_scanner::get_dword):
     //    Returns None on "Hello", "0x26", >u32::MAX QWORD, REG_BINARY; reads neg/pos decimal SZ, QWORD<=u32::MAX, REG_DWORD.
@@ -425,20 +440,38 @@ fn test_real_win32_registry_types_numeric_sz_binary_and_tree_roundtrip() {
     )
     .unwrap();
 
-    assert_eq!(backend.reg_get_dword("HKCU", &root_subkey, "StrHello"), None);
-    assert_eq!(registry_scanner::get_dword("HKCU", &root_subkey, "StrHex"), None);
-    assert_eq!(backend.reg_get_dword("HKCU", &root_subkey, "QwordTooBig"), None);
-    assert_eq!(backend.reg_get_dword("HKCU", &root_subkey, "QwordSmall"), Some(777));
+    assert_eq!(
+        backend.reg_get_dword("HKCU", &root_subkey, "StrHello"),
+        None
+    );
+    assert_eq!(
+        registry_scanner::get_dword("HKCU", &root_subkey, "StrHex"),
+        None
+    );
+    assert_eq!(
+        backend.reg_get_dword("HKCU", &root_subkey, "QwordTooBig"),
+        None
+    );
+    assert_eq!(
+        backend.reg_get_dword("HKCU", &root_subkey, "QwordSmall"),
+        Some(777)
+    );
     assert_eq!(
         backend.reg_get_dword("HKCU", &root_subkey, "StrNeg"),
         Some((-12i32) as u32)
     );
-    assert_eq!(backend.reg_get_dword("HKCU", &root_subkey, "StrPos"), Some(400));
+    assert_eq!(
+        backend.reg_get_dword("HKCU", &root_subkey, "StrPos"),
+        Some(400)
+    );
     assert_eq!(
         backend.reg_get_dword("HKCU", &root_subkey, "RealDword"),
         Some(0xCAFE_BABE)
     );
-    assert_eq!(backend.reg_get_dword("HKCU", &root_subkey, "ExpandNum"), Some(88));
+    assert_eq!(
+        backend.reg_get_dword("HKCU", &root_subkey, "ExpandNum"),
+        Some(88)
+    );
 
     // 2. write_dword_or_numeric_sz (via RealBackend::reg_set_dword & reg_mutator::set_dword):
     //    Preserves REG_SZ, negative "-12", and REG_EXPAND_SZ, plus verify is_known_numeric_reg_sz normalization.
@@ -448,7 +481,10 @@ fn test_real_win32_registry_types_numeric_sz_binary_and_tree_roundtrip() {
     let raw_pos = key.get_raw_value("StrPos").unwrap();
     assert_eq!(raw_pos.vtype, REG_SZ, "StrPos must stay REG_SZ");
     assert_eq!(key.get_value::<String, _>("StrPos").unwrap(), "250");
-    assert_eq!(backend.reg_get_dword("HKCU", &root_subkey, "StrPos"), Some(250));
+    assert_eq!(
+        backend.reg_get_dword("HKCU", &root_subkey, "StrPos"),
+        Some(250)
+    );
 
     reg_mutator::set_dword("HKCU", &root_subkey, "StrNeg", (-24i32) as u32)
         .expect("set_dword StrNeg failed");
@@ -464,12 +500,24 @@ fn test_real_win32_registry_types_numeric_sz_binary_and_tree_roundtrip() {
         .reg_set_dword("HKCU", &root_subkey, "ExpandNum", 95)
         .expect("reg_set_dword ExpandNum failed");
     let raw_exp = key.get_raw_value("ExpandNum").unwrap();
-    assert_eq!(raw_exp.vtype, REG_EXPAND_SZ, "ExpandNum must stay REG_EXPAND_SZ");
-    assert_eq!(backend.reg_get_dword("HKCU", &root_subkey, "ExpandNum"), Some(95));
+    assert_eq!(
+        raw_exp.vtype, REG_EXPAND_SZ,
+        "ExpandNum must stay REG_EXPAND_SZ"
+    );
+    assert_eq!(
+        backend.reg_get_dword("HKCU", &root_subkey, "ExpandNum"),
+        Some(95)
+    );
 
     // Normalization checks for is_known_numeric_reg_sz
-    assert!(is_known_numeric_reg_sz(r"\Control Panel\Desktop\", "MenuShowDelay"));
-    assert!(is_known_numeric_reg_sz(r"control panel\desktop", "menushowdelay"));
+    assert!(is_known_numeric_reg_sz(
+        r"\Control Panel\Desktop\",
+        "MenuShowDelay"
+    ));
+    assert!(is_known_numeric_reg_sz(
+        r"control panel\desktop",
+        "menushowdelay"
+    ));
     assert!(is_known_numeric_reg_sz(
         r"\Control Panel\Desktop\WindowMetrics\",
         "BorderWidth"
@@ -478,9 +526,18 @@ fn test_real_win32_registry_types_numeric_sz_binary_and_tree_roundtrip() {
         r"Control Panel\Desktop\WindowMetrics",
         "PaddedBorderWidth"
     ));
-    assert!(is_known_numeric_reg_sz(r"Control Panel\Desktop\WindowMetrics", "MinAnimate"));
-    assert!(is_known_numeric_reg_sz(r"Control Panel\Keyboard", "KeyboardSpeed"));
-    assert!(is_known_numeric_reg_sz(r"Control Panel\Mouse", "MouseHoverTime"));
+    assert!(is_known_numeric_reg_sz(
+        r"Control Panel\Desktop\WindowMetrics",
+        "MinAnimate"
+    ));
+    assert!(is_known_numeric_reg_sz(
+        r"Control Panel\Keyboard",
+        "KeyboardSpeed"
+    ));
+    assert!(is_known_numeric_reg_sz(
+        r"Control Panel\Mouse",
+        "MouseHoverTime"
+    ));
     assert!(is_known_numeric_reg_sz(
         r"Control Panel\Accessibility\Keyboard Response",
         "AutoRepeatDelay"
@@ -518,9 +575,18 @@ fn test_real_win32_registry_types_numeric_sz_binary_and_tree_roundtrip() {
 
     // Populate Target root
     backend
-        .reg_set_string("HKCU", &tree_path, "(Default)", "RootDefaultValue", false, None)
+        .reg_set_string(
+            "HKCU",
+            &tree_path,
+            "(Default)",
+            "RootDefaultValue",
+            false,
+            None,
+        )
         .unwrap();
-    backend.reg_set_dword("HKCU", &tree_path, "TreeDword", 4242).unwrap();
+    backend
+        .reg_set_dword("HKCU", &tree_path, "TreeDword", 4242)
+        .unwrap();
     backend
         .reg_set_raw(
             "HKCU",
@@ -535,7 +601,14 @@ fn test_real_win32_registry_types_numeric_sz_binary_and_tree_roundtrip() {
         )
         .unwrap();
     backend
-        .reg_set_string("HKCU", &tree_path, "TreeSz", "Hello Win32 Tree", false, None)
+        .reg_set_string(
+            "HKCU",
+            &tree_path,
+            "TreeSz",
+            "Hello Win32 Tree",
+            false,
+            None,
+        )
         .unwrap();
     backend
         .reg_set_string(
@@ -548,18 +621,32 @@ fn test_real_win32_registry_types_numeric_sz_binary_and_tree_roundtrip() {
         )
         .unwrap();
     backend
-        .reg_set_binary("HKCU", &tree_path, "TreeBinary", &[0xDE, 0xAD, 0xBE, 0xEF, 0x55])
+        .reg_set_binary(
+            "HKCU",
+            &tree_path,
+            "TreeBinary",
+            &[0xDE, 0xAD, 0xBE, 0xEF, 0x55],
+        )
         .unwrap();
 
     // Also test "@" alias for (Default) on NestedChild AND literal named "@" value directly in Win32
     backend
-        .reg_set_string("HKCU", &child_path, "@", "ChildDefaultViaAtAlias", false, None)
+        .reg_set_string(
+            "HKCU",
+            &child_path,
+            "@",
+            "ChildDefaultViaAtAlias",
+            false,
+            None,
+        )
         .unwrap();
     backend
         .reg_set_dword("HKCU", &child_path, "ChildDword", 99)
         .unwrap();
 
-    let (gc_key, _) = match hkcu.create_subkey_with_flags(&grandchild_path, KEY_READ | KEY_WRITE | KEY_WOW64_64KEY) {
+    let (gc_key, _) = match hkcu
+        .create_subkey_with_flags(&grandchild_path, KEY_READ | KEY_WRITE | KEY_WOW64_64KEY)
+    {
         Ok(k) => k,
         Err(e) if e.kind() == std::io::ErrorKind::PermissionDenied => {
             eprintln!("Skipping HKCU test: sandbox restricted HKCU write access: {e}");
@@ -611,9 +698,14 @@ fn test_real_win32_registry_types_numeric_sz_binary_and_tree_roundtrip() {
             .map(|v| (v.value, v.expand_sz)),
         Some(("RootDefaultValue".to_string(), false))
     );
-    assert_eq!(backend.reg_get_dword("HKCU", &tree_path, "TreeDword"), Some(4242));
     assert_eq!(
-        backend.reg_get_raw("HKCU", &tree_path, "TreeQword").map(|r| r.reg_type),
+        backend.reg_get_dword("HKCU", &tree_path, "TreeDword"),
+        Some(4242)
+    );
+    assert_eq!(
+        backend
+            .reg_get_raw("HKCU", &tree_path, "TreeQword")
+            .map(|r| r.reg_type),
         Some(11)
     );
     assert_eq!(
@@ -635,7 +727,10 @@ fn test_real_win32_registry_types_numeric_sz_binary_and_tree_roundtrip() {
     let gc_ro = hkcu
         .open_subkey_with_flags(&grandchild_path, KEY_READ | KEY_WOW64_64KEY)
         .unwrap();
-    assert_eq!(gc_ro.get_value::<String, _>("").unwrap(), "GrandChildDefault");
+    assert_eq!(
+        gc_ro.get_value::<String, _>("").unwrap(),
+        "GrandChildDefault"
+    );
     assert_eq!(gc_ro.get_value::<String, _>("@").unwrap(), "LiteralAtValue");
     assert_eq!(gc_ro.get_value::<String, _>("DeepSz").unwrap(), "DeepValue");
 }
@@ -645,8 +740,8 @@ fn test_ntfs_junction_and_readonly_cleanup_sandbox() {
     // Child-process isolation mode: only executed when spawned explicitly by this test
     // with TMP & TEMP strictly pointing at the synthetic sandbox <cleanup_dir>.
     if let Ok(expected_dir) = std::env::var("WINBLAST_CLEAN_ISOLATED_DIR") {
-        let actual_temp = fs::canonicalize(std::env::temp_dir())
-            .expect("canonicalize std::env::temp_dir failed");
+        let actual_temp =
+            fs::canonicalize(std::env::temp_dir()).expect("canonicalize std::env::temp_dir failed");
         let expected_canon = fs::canonicalize(&expected_dir)
             .expect("canonicalize WINBLAST_CLEAN_ISOLATED_DIR failed");
         assert_eq!(
@@ -731,7 +826,9 @@ fn test_ntfs_junction_and_readonly_cleanup_sandbox() {
         .expect("Failed to invoke cmd /C mklink /J");
     if !mklink_out.status.success() {
         let err_str = String::from_utf8_lossy(&mklink_out.stderr);
-        if err_str.to_lowercase().contains("access is denied") || err_str.to_lowercase().contains("erişim engellendi") {
+        if err_str.to_lowercase().contains("access is denied")
+            || err_str.to_lowercase().contains("erişim engellendi")
+        {
             eprintln!("Skipping NTFS junction test: sandbox or un-elevated token does not permit mklink /J: {err_str}");
             return;
         }
@@ -792,8 +889,14 @@ fn test_ntfs_junction_and_readonly_cleanup_sandbox() {
     // Assert normal & read-only temp files in cleanup_dir were removed cleanly, and .net preserved
     assert!(!normal_tmp.exists(), "normal.tmp should have been deleted");
     assert!(!ro_tmp.exists(), "readonly.tmp should have been deleted");
-    assert!(!nested_ro_tmp.exists(), "nested_ro.tmp should have been deleted");
-    assert!(!sub_dir.exists(), "empty sub_temp directory should have been removed");
+    assert!(
+        !nested_ro_tmp.exists(),
+        "nested_ro.tmp should have been deleted"
+    );
+    assert!(
+        !sub_dir.exists(),
+        "empty sub_temp directory should have been removed"
+    );
     assert_eq!(
         fs::read(&dotnet_file).expect(".net/app/runtime.dll should be preserved!"),
         b"keep-dotnet-singlefile"
@@ -805,9 +908,22 @@ fn test_real_windows_disk_and_thermal_telemetry() {
     let report = winblast0::hardware::disks::DiskSubsystemReport::probe();
     println!("Found {} physical drives on host:", report.drives.len());
     for drv in &report.drives {
-        println!("Drive {}: {} ({}) -> {:.1} GB, Health: {}%, Temp: {:.1}°C, TBW: {:.2} TB, POH: {} h",
-            drv.index, drv.model, drv.interface_type, drv.total_size_gb, drv.health_percentage, drv.temperature_c, drv.lifetime_writes_tb, drv.power_on_hours);
-        assert!(drv.total_size_gb > 0.0, "Physical drive {} size must not be 0.0 GB! Got {:.1} GB", drv.index, drv.total_size_gb);
+        println!(
+            "Drive {}: {} ({}) -> {:.1} GB, Health: {}%, Temp: {:.1}°C, TBW: {:.2} TB, POH: {} h",
+            drv.index,
+            drv.model,
+            drv.interface_type,
+            drv.total_size_gb,
+            drv.health_percentage,
+            drv.temperature_c,
+            drv.lifetime_writes_tb,
+            drv.power_on_hours
+        );
+        assert!(
+            drv.total_size_gb > 0.0,
+            "Physical drive {} size must not be 0.0 GB! Got {:.1} GB",
+            drv.index,
+            drv.total_size_gb
+        );
     }
 }
-

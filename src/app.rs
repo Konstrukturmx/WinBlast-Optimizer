@@ -27,7 +27,9 @@ use crate::hardware::net_latency::LatencyBenchmarkSnapshot;
 use crate::hardware::parking::CoreParkingState;
 use crate::hardware::power::{HibernationStatus, PowerSchemeInfo};
 use crate::hardware::sys_inventory::{PlatformSecurityInfo, RamDimmInfo, StorageVolumeInfo};
-use crate::scanner::telemetry_scanner::{full_telemetry_audit_with, TelemetryAuditResult, KNOWN_TELEMETRY_SERVICES, TELEMETRY_HOSTS};
+use crate::scanner::telemetry_scanner::{
+    full_telemetry_audit_with, TelemetryAuditResult, KNOWN_TELEMETRY_SERVICES, TELEMETRY_HOSTS,
+};
 use crate::scanner::{
     scan_all_tweaks_parallel_with, scan_single_tweak_with, ScanResult, TweakState,
 };
@@ -736,7 +738,10 @@ impl AppState {
 
         let rules_dir = std::path::Path::new("assets/rules");
         let tweaks = load_rules_with_fallback(Some(rules_dir));
-        tracing::info!("Loaded {} tweak definitions into state machine", tweaks.len());
+        tracing::info!(
+            "Loaded {} tweak definitions into state machine",
+            tweaks.len()
+        );
 
         let is_elevated = backend.is_elevated();
         let os_info = backend.detect_os().ok();
@@ -842,12 +847,18 @@ impl AppState {
             baseline_reset_inflight: false,
             pending_post_baseline: false,
             status_spec: StatusMessageSpec::ScanningStart,
-            status_message: status_i18n::localize_status(language, &StatusMessageSpec::ScanningStart),
+            status_message: status_i18n::localize_status(
+                language,
+                &StatusMessageSpec::ScanningStart,
+            ),
             current_epoch: 0,
             show_changelog: false,
             hidden_tweaks: HashSet::new(),
             progress: 0.1,
-            progress_message: Some(status_i18n::localize_status(language, &StatusMessageSpec::ScanningStart)),
+            progress_message: Some(status_i18n::localize_status(
+                language,
+                &StatusMessageSpec::ScanningStart,
+            )),
             clean_targets: Vec::new(),
             last_clean_report: None,
             installed_appx: Vec::new(),
@@ -971,7 +982,10 @@ impl AppState {
                 let mut thermal_counter = 0u32;
                 loop {
                     let metrics = monitor.sample();
-                    if tx_monitor.send(WorkerEvent::MetricsSnapshot(metrics)).is_err() {
+                    if tx_monitor
+                        .send(WorkerEvent::MetricsSnapshot(metrics))
+                        .is_err()
+                    {
                         break;
                     }
                     thermal_counter += 1;
@@ -981,7 +995,9 @@ impl AppState {
                         let _ = tx_monitor.send(WorkerEvent::ThermalSnapshot(snapshot));
                     }
                     waker_monitor();
-                    let sleep_ms = interval_holder.load(std::sync::atomic::Ordering::Relaxed).max(250);
+                    let sleep_ms = interval_holder
+                        .load(std::sync::atomic::Ordering::Relaxed)
+                        .max(250);
                     std::thread::sleep(std::time::Duration::from_millis(sleep_ms));
                 }
             }));
@@ -1059,7 +1075,11 @@ impl AppState {
 
             // Idle throttle: if user idle > 3.0s and telemetry delta < 1.0%, throttle to 5 FPS (200 ms interval)
             let idle_duration = now - self.last_interaction_secs;
-            if idle_duration > 3.0 && delta_cpu < 1.0 && delta_ram < 1.0 && now - self.last_render_secs < 0.20 {
+            if idle_duration > 3.0
+                && delta_cpu < 1.0
+                && delta_ram < 1.0
+                && now - self.last_render_secs < 0.20
+            {
                 return false;
             }
 
@@ -1216,7 +1236,9 @@ impl AppState {
                     self.set_status_spec(StatusMessageSpec::ScanCompleted(self.scan_results.len()));
 
                     if self.initial_baseline.is_none() {
-                        if let (Ok(l), Some(ref m)) = (StateLedger::new(&self.ledger_path), &self.realtime_metrics) {
+                        if let (Ok(l), Some(ref m)) =
+                            (StateLedger::new(&self.ledger_path), &self.realtime_metrics)
+                        {
                             let opt_count = self
                                 .scan_results
                                 .iter()
@@ -1356,10 +1378,17 @@ impl AppState {
                             }
                         }
                     }
-                    self.core_parking.parked_count =
-                        self.core_parking.cores.iter().filter(|c| c.is_parked).count();
-                    self.core_parking.unparked_count =
-                        self.core_parking.cores.len().saturating_sub(self.core_parking.parked_count);
+                    self.core_parking.parked_count = self
+                        .core_parking
+                        .cores
+                        .iter()
+                        .filter(|c| c.is_parked)
+                        .count();
+                    self.core_parking.unparked_count = self
+                        .core_parking
+                        .cores
+                        .len()
+                        .saturating_sub(self.core_parking.parked_count);
                 }
 
                 self.realtime_metrics = Some(metrics);
@@ -1477,7 +1506,10 @@ impl AppState {
                     }
                     Err(err) => {
                         let restoring = err.contains("restor") || err.contains("Restor");
-                        self.set_status_spec(StatusMessageSpec::CoreParkingFailed { restoring, err });
+                        self.set_status_spec(StatusMessageSpec::CoreParkingFailed {
+                            restoring,
+                            err,
+                        });
                     }
                 }
             }
@@ -1525,7 +1557,9 @@ impl AppState {
                 match res {
                     Ok(disabled_count) => {
                         self.refresh_ledger();
-                        self.set_status_spec(StatusMessageSpec::TelemetryServicesNeutralized(disabled_count));
+                        self.set_status_spec(StatusMessageSpec::TelemetryServicesNeutralized(
+                            disabled_count,
+                        ));
                         self.run_telemetry_audit();
                     }
                     Err(e) => {
@@ -1545,7 +1579,11 @@ impl AppState {
                     }
                 }
                 self.clean_targets = targets;
-                let mb = self.clean_targets.iter().map(|t| t.reclaimable_bytes).sum::<u64>() as f64
+                let mb = self
+                    .clean_targets
+                    .iter()
+                    .map(|t| t.reclaimable_bytes)
+                    .sum::<u64>() as f64
                     / (1024.0 * 1024.0);
                 self.set_status_spec(StatusMessageSpec::DiskScanned {
                     count: self.clean_targets.len(),
@@ -1590,11 +1628,8 @@ impl AppState {
                 self.installed_appx = appx;
                 self.optional_features = features;
                 self.onedrive_kfm_warning = kfm_warn;
-                self.selected_appx.retain(|id| {
-                    self.installed_appx
-                        .iter()
-                        .any(|p| &p.family_name == id)
-                });
+                self.selected_appx
+                    .retain(|id| self.installed_appx.iter().any(|p| &p.family_name == id));
                 self.set_status_spec(StatusMessageSpec::AppxFeatureScanned {
                     appx: self.installed_appx.len(),
                     features: self.optional_features.len(),
@@ -1646,7 +1681,10 @@ impl AppState {
                         });
                     }
                     Err(e) => {
-                        self.set_status_spec(StatusMessageSpec::FeatureUpdateFailed { name, err: e });
+                        self.set_status_spec(StatusMessageSpec::FeatureUpdateFailed {
+                            name,
+                            err: e,
+                        });
                     }
                 }
             }
@@ -1757,12 +1795,10 @@ impl AppState {
                     Err(err) => self.set_status_spec(StatusMessageSpec::PowerPlanError(err)),
                 }
             }
-            WorkerEvent::ExplorerRestarted(res) => {
-                match res {
-                    Ok(_) => self.set_status_spec(StatusMessageSpec::ExplorerRestartedOk),
-                    Err(err) => self.set_status_spec(StatusMessageSpec::ExplorerRestartError(err)),
-                }
-            }
+            WorkerEvent::ExplorerRestarted(res) => match res {
+                Ok(_) => self.set_status_spec(StatusMessageSpec::ExplorerRestartedOk),
+                Err(err) => self.set_status_spec(StatusMessageSpec::ExplorerRestartError(err)),
+            },
             WorkerEvent::BaselineReset(res) => {
                 self.baseline_reset_inflight = false;
                 match res {
@@ -1789,7 +1825,9 @@ impl AppState {
                     Ok(Some(info)) => {
                         let tag = info.tag_name.clone();
                         self.update_status = UpdateStatus::Available(info);
-                        self.set_status_spec(StatusMessageSpec::Raw(format!("New release {tag} found! Downloading update...")));
+                        self.set_status_spec(StatusMessageSpec::Raw(format!(
+                            "New release {tag} found! Downloading update..."
+                        )));
                         // Auto-download and replace as requested
                         self.download_and_install_update();
                     }
@@ -1799,25 +1837,30 @@ impl AppState {
                     }
                     Err(e) => {
                         self.update_status = UpdateStatus::Failed(e.clone());
-                        self.set_status_spec(StatusMessageSpec::Raw(format!("Update check failed: {e}")));
+                        self.set_status_spec(StatusMessageSpec::Raw(format!(
+                            "Update check failed: {e}"
+                        )));
                     }
                 }
             }
-            WorkerEvent::UpdateDownloadCompleted(res) => {
-                match res {
-                    Ok(path) => {
-                        self.update_status = UpdateStatus::ReadyToRestart { new_binary_path: path.clone() };
-                        self.set_status("Update downloaded. Applying and restarting WinBlast0...");
-                        if let Err(e) = crate::core::updater::apply_and_restart(&path) {
-                            self.update_status = UpdateStatus::Failed(format!("Failed to auto-restart: {e}"));
-                        }
-                    }
-                    Err(e) => {
-                        self.update_status = UpdateStatus::Failed(e.clone());
-                        self.set_status_spec(StatusMessageSpec::Raw(format!("Update download failed: {e}")));
+            WorkerEvent::UpdateDownloadCompleted(res) => match res {
+                Ok(path) => {
+                    self.update_status = UpdateStatus::ReadyToRestart {
+                        new_binary_path: path.clone(),
+                    };
+                    self.set_status("Update downloaded. Applying and restarting WinBlast0...");
+                    if let Err(e) = crate::core::updater::apply_and_restart(&path) {
+                        self.update_status =
+                            UpdateStatus::Failed(format!("Failed to auto-restart: {e}"));
                     }
                 }
-            }
+                Err(e) => {
+                    self.update_status = UpdateStatus::Failed(e.clone());
+                    self.set_status_spec(StatusMessageSpec::Raw(format!(
+                        "Update download failed: {e}"
+                    )));
+                }
+            },
             WorkerEvent::ThermalSnapshot(snapshot) => {
                 self.thermal_snapshot = Some(snapshot);
                 self.is_thermal_scanning = false;
@@ -1848,7 +1891,10 @@ impl AppState {
                         self.assess_system_health();
                     }
                     Err(e) => {
-                        self.set_status_spec(StatusMessageSpec::Raw(format!("Auto-Tune failed: {}", e)));
+                        self.set_status_spec(StatusMessageSpec::Raw(format!(
+                            "Auto-Tune failed: {}",
+                            e
+                        )));
                     }
                 }
             }
@@ -1865,7 +1911,10 @@ impl AppState {
                         self.scan_startup_and_tasks_async();
                     }
                     Err(e) => {
-                        self.set_status_spec(StatusMessageSpec::Raw(format!("Batch startup update failed: {}", e)));
+                        self.set_status_spec(StatusMessageSpec::Raw(format!(
+                            "Batch startup update failed: {}",
+                            e
+                        )));
                     }
                 }
             }
@@ -1882,7 +1931,10 @@ impl AppState {
                         self.scan_startup_and_tasks_async();
                     }
                     Err(e) => {
-                        self.set_status_spec(StatusMessageSpec::Raw(format!("Batch task update failed: {}", e)));
+                        self.set_status_spec(StatusMessageSpec::Raw(format!(
+                            "Batch task update failed: {}",
+                            e
+                        )));
                     }
                 }
             }
@@ -2020,11 +2072,7 @@ impl AppState {
 
     /// Retrieve localized scan detail string.
     pub fn scan_detail_text(&self, sr: &ScanResult) -> String {
-        status_i18n::localize_scan_detail(
-            self.language,
-            sr.detail_kind.as_ref(),
-            &sr.status_detail,
-        )
+        status_i18n::localize_scan_detail(self.language, sr.detail_kind.as_ref(), &sr.status_detail)
     }
 
     /// Set UI interface language.
@@ -2045,13 +2093,15 @@ impl AppState {
     /// Set theme mode (Dark or Light) and immediately rebuild theme palette.
     pub fn set_theme_mode(&mut self, mode: ThemeMode) {
         self.theme_mode = mode;
-        self.theme_palette = ThemePalette::new(self.theme_mode, self.color_scheme, self.theme_style);
+        self.theme_palette =
+            ThemePalette::new(self.theme_mode, self.color_scheme, self.theme_style);
     }
 
     /// Set brand accent color scheme.
     pub fn set_color_scheme(&mut self, scheme: ColorScheme) {
         self.color_scheme = scheme;
-        self.theme_palette = ThemePalette::new(self.theme_mode, self.color_scheme, self.theme_style);
+        self.theme_palette =
+            ThemePalette::new(self.theme_mode, self.color_scheme, self.theme_style);
     }
 
     /// Set complete UI theme layout & geometry style (Minimalistic, Classic, Glassy, Compact, Materialistic).
@@ -2067,12 +2117,14 @@ impl AppState {
 
     /// Read active telemetry update interval in milliseconds.
     pub fn telemetry_interval_ms(&self) -> u64 {
-        self.telemetry_interval_ms.load(std::sync::atomic::Ordering::Relaxed)
+        self.telemetry_interval_ms
+            .load(std::sync::atomic::Ordering::Relaxed)
     }
 
     /// Update telemetry interval in milliseconds (clamped to 250..10000 ms).
     pub fn set_telemetry_interval_ms(&mut self, ms: u64) {
-        self.telemetry_interval_ms.store(ms.clamp(250, 10000), std::sync::atomic::Ordering::Relaxed);
+        self.telemetry_interval_ms
+            .store(ms.clamp(250, 10000), std::sync::atomic::Ordering::Relaxed);
     }
 
     /// Read active telemetry update interval in fractional seconds.
@@ -2217,7 +2269,9 @@ impl AppState {
         spawn_guarded_worker(
             tx,
             waker,
-            |_err| WorkerEvent::DiskReportLoaded(crate::hardware::disks::DiskSubsystemReport::default()),
+            |_err| {
+                WorkerEvent::DiskReportLoaded(crate::hardware::disks::DiskSubsystemReport::default())
+            },
             |tx| {
                 let report = crate::hardware::disks::DiskSubsystemReport::probe();
                 let _ = tx.send(WorkerEvent::DiskReportLoaded(report));
@@ -2236,7 +2290,11 @@ impl AppState {
         spawn_guarded_worker(
             tx,
             waker,
-            |_err| WorkerEvent::ThermalSnapshot(crate::hardware::thermal::SystemThermalSnapshot::default()),
+            |_err| {
+                WorkerEvent::ThermalSnapshot(
+                    crate::hardware::thermal::SystemThermalSnapshot::default(),
+                )
+            },
             |tx| {
                 let snap = crate::hardware::thermal::SystemThermalSnapshot::read();
                 let _ = tx.send(WorkerEvent::ThermalSnapshot(snap));
@@ -2261,11 +2319,18 @@ impl AppState {
     pub fn test_sandbox_driver_install(&mut self) {
         self.driver_install_in_flight = Some("virtual_test_sandbox_driver".to_string());
         let staging_dir = std::env::temp_dir().join("winblast_driver_sandbox");
-        if let Some(item) = self.driver_updates.iter_mut().find(|d| d.id == "virtual_test_sandbox_driver") {
+        if let Some(item) = self
+            .driver_updates
+            .iter_mut()
+            .find(|d| d.id == "virtual_test_sandbox_driver")
+        {
             let _ = crate::hardware::driver_update::download_and_install_driver(item, &staging_dir);
         } else {
             let mut item = crate::hardware::driver_update::create_sandbox_test_item();
-            let _ = crate::hardware::driver_update::download_and_install_driver(&mut item, &staging_dir);
+            let _ = crate::hardware::driver_update::download_and_install_driver(
+                &mut item,
+                &staging_dir,
+            );
             self.driver_updates.push(item);
         }
         self.driver_install_in_flight = None;
@@ -2372,11 +2437,16 @@ impl AppState {
         let url = match &release.download_url {
             Some(u) => u.clone(),
             None => {
-                self.update_status = UpdateStatus::Failed("No release asset binary available for download.".to_string());
+                self.update_status = UpdateStatus::Failed(
+                    "No release asset binary available for download.".to_string(),
+                );
                 return;
             }
         };
-        let asset_name = release.asset_name.clone().unwrap_or_else(|| "WinBlast0.exe".to_string());
+        let asset_name = release
+            .asset_name
+            .clone()
+            .unwrap_or_else(|| "WinBlast0.exe".to_string());
 
         self.update_status = UpdateStatus::Downloading { progress_pct: 10.0 };
         let tx = self.tx_events.clone();
@@ -2404,7 +2474,10 @@ impl AppState {
     /// Open GitHub new issue URL in default browser for bug reports.
     pub fn open_bug_report(&self) {
         let _ = crate::core::process::SilentCommand::new("rundll32")
-            .args(["url.dll,FileProtocolHandler", "https://github.com/Konstrukturmx/WinBlast-Optimizer/issues/new"])
+            .args([
+                "url.dll,FileProtocolHandler",
+                "https://github.com/Konstrukturmx/WinBlast-Optimizer/issues/new",
+            ])
             .spawn();
     }
 
@@ -2549,7 +2622,10 @@ impl AppState {
             self.waker.clone(),
             |msg| WorkerEvent::CoreParkingActionCompleted {
                 state: None,
-                msg: Err(format!("Failed to restore core parking (worker panic): {}", msg)),
+                msg: Err(format!(
+                    "Failed to restore core parking (worker panic): {}",
+                    msg
+                )),
             },
             move |tx| {
                 let prev_snap = {
@@ -2679,7 +2755,11 @@ impl AppState {
 
         let backend = Arc::clone(&self.backend);
         let tweaks = Arc::clone(&self.tweaks);
-        let build = self.os_info.as_ref().map(|o| o.build_number).unwrap_or(19041);
+        let build = self
+            .os_info
+            .as_ref()
+            .map(|o| o.build_number)
+            .unwrap_or(19041);
         let edition = self
             .os_info
             .as_ref()
@@ -2772,7 +2852,9 @@ impl AppState {
                     self.selected_tweaks.insert(tweak_id);
                 }
                 self.refresh_pending_actions();
-                self.set_status_spec(StatusMessageSpec::StagedCount(self.staged_transitions.len()));
+                self.set_status_spec(StatusMessageSpec::StagedCount(
+                    self.staged_transitions.len(),
+                ));
             }
             EngineMode::Instant => {
                 self.in_flight_tweaks.insert(tweak_id.clone());
@@ -2788,7 +2870,11 @@ impl AppState {
                 let ledger_path = self.ledger_path.clone();
                 let epoch = self.current_epoch;
                 let panic_id = tweak_def.id.clone();
-                let build = self.os_info.as_ref().map(|o| o.build_number).unwrap_or(19041);
+                let build = self
+                    .os_info
+                    .as_ref()
+                    .map(|o| o.build_number)
+                    .unwrap_or(19041);
                 let edition = self
                     .os_info
                     .as_ref()
@@ -2823,9 +2909,13 @@ impl AppState {
                         };
 
                         let res = if target_active {
-                            crate::executor::engine::apply_tweak_with(&tweak_def, &ledger, &*backend)
+                            crate::executor::engine::apply_tweak_with(
+                                &tweak_def, &ledger, &*backend,
+                            )
                         } else {
-                            crate::executor::engine::revert_tweak_with(&tweak_def, &ledger, &*backend)
+                            crate::executor::engine::revert_tweak_with(
+                                &tweak_def, &ledger, &*backend,
+                            )
                         };
 
                         match res {
@@ -2872,25 +2962,26 @@ impl AppState {
             self.waker.clone(),
             |msg| WorkerEvent::BaselineReset(Err(format!("Baseline reset panic: {}", msg))),
             move |tx| {
-                let res = (|| -> Result<(Option<SystemBaseline>, Option<SystemBaseline>), String> {
-                    let ledger = StateLedger::new(&ledger_path)
-                        .map_err(|e| format!("Failed to open ledger: {}", e))?;
-                    let snap = backend.capture_latency();
-                    ledger
-                        .reset_baseline(
-                            snap.total_ram_mb,
-                            snap.used_ram_mb,
-                            snap.process_count,
-                            snap.thread_count,
-                            snap.timer_resolution_ns,
-                            opt_count,
-                            "User Reset Baseline",
-                        )
-                        .map_err(|e| format!("Failed to reset baseline: {}", e))?;
-                    let initial = ledger.get_initial_baseline().ok().flatten();
-                    let latest = ledger.get_latest_baseline().ok().flatten();
-                    Ok((initial, latest))
-                })();
+                let res =
+                    (|| -> Result<(Option<SystemBaseline>, Option<SystemBaseline>), String> {
+                        let ledger = StateLedger::new(&ledger_path)
+                            .map_err(|e| format!("Failed to open ledger: {}", e))?;
+                        let snap = backend.capture_latency();
+                        ledger
+                            .reset_baseline(
+                                snap.total_ram_mb,
+                                snap.used_ram_mb,
+                                snap.process_count,
+                                snap.thread_count,
+                                snap.timer_resolution_ns,
+                                opt_count,
+                                "User Reset Baseline",
+                            )
+                            .map_err(|e| format!("Failed to reset baseline: {}", e))?;
+                        let initial = ledger.get_initial_baseline().ok().flatten();
+                        let latest = ledger.get_latest_baseline().ok().flatten();
+                        Ok((initial, latest))
+                    })();
                 let _ = tx.send(WorkerEvent::BaselineReset(res));
             },
         );
@@ -2945,19 +3036,13 @@ impl AppState {
                     let mut count = 0usize;
                     if !to_revert.is_empty() {
                         count += crate::executor::engine::revert_tweaks_by_id_with(
-                            &to_revert,
-                            &tweaks,
-                            &ledger,
-                            &*backend,
+                            &to_revert, &tweaks, &ledger, &*backend,
                         )
                         .map_err(|e| format!("Revert error: {}", e))?;
                     }
                     if !to_apply.is_empty() {
                         count += crate::executor::engine::apply_tweaks_by_id_with(
-                            &to_apply,
-                            &tweaks,
-                            &ledger,
-                            &*backend,
+                            &to_apply, &tweaks, &ledger, &*backend,
                         )
                         .map_err(|e| format!("Apply error: {}", e))?;
                     }
@@ -2972,7 +3057,8 @@ impl AppState {
     /// validate Pareto dominance with Raven, and sequence dependencies via Dijkstra.
     pub fn solve_current_goal(&mut self) {
         let planner = crate::graph::astar::AStarPlanner::new();
-        let candidates: Vec<crate::graph::astar::TweakCandidate> = self.tweaks
+        let candidates: Vec<crate::graph::astar::TweakCandidate> = self
+            .tweaks
             .iter()
             .filter(|t| {
                 if let Some(sr) = self.get_tweak_scan(&t.id) {
@@ -2990,7 +3076,8 @@ impl AppState {
                     crate::core::risk::RiskLevel::High => 4,
                     crate::core::risk::RiskLevel::Extreme => 8,
                 };
-                let requires_reboot = t.valuation.reversibility == crate::core::risk::Reversibility::RequiresReboot;
+                let requires_reboot =
+                    t.valuation.reversibility == crate::core::risk::Reversibility::RequiresReboot;
                 crate::graph::astar::TweakCandidate {
                     id: t.id.clone(),
                     category: t.category.clone(),
@@ -3005,7 +3092,8 @@ impl AppState {
         let plan = planner.plan(&self.active_goal, &candidates);
 
         let raven = crate::graph::raven::RavenEngine::default();
-        let raven_candidates: Vec<crate::graph::raven::TweakCriteria> = self.tweaks
+        let raven_candidates: Vec<crate::graph::raven::TweakCriteria> = self
+            .tweaks
             .iter()
             .filter(|t| plan.selected_tweak_ids.contains(&t.id))
             .map(|t| {
@@ -3039,9 +3127,18 @@ impl AppState {
 
         let scheduler = crate::graph::dijkstra::DijkstraScheduler::new();
         let tweak_tuples = self.tweaks.iter().map(|t| {
-            let requires_reboot = t.valuation.reversibility == crate::core::risk::Reversibility::RequiresReboot;
-            let touches_services = t.actions.iter().any(|a| matches!(a, TweakAction::ServiceState { .. }));
-            (t.id.as_str(), t.prerequisites.as_slice(), requires_reboot, touches_services)
+            let requires_reboot =
+                t.valuation.reversibility == crate::core::risk::Reversibility::RequiresReboot;
+            let touches_services = t
+                .actions
+                .iter()
+                .any(|a| matches!(a, TweakAction::ServiceState { .. }));
+            (
+                t.id.as_str(),
+                t.prerequisites.as_slice(),
+                requires_reboot,
+                touches_services,
+            )
         });
 
         let execution_order = scheduler.schedule_execution(tweak_tuples, &sanitized_ids);
@@ -3055,10 +3152,14 @@ impl AppState {
             let count = plan.selected_tweak_ids.len();
             for id in &plan.selected_tweak_ids {
                 self.selected_tweaks.insert(id.clone());
-                self.staged_transitions.insert(id.clone(), StagedTransition::StageApply);
+                self.staged_transitions
+                    .insert(id.clone(), StagedTransition::StageApply);
             }
             self.refresh_pending_actions();
-            self.set_status(format!("{} A* plan tweak'i başarıyla aşamalandırıldı.", count));
+            self.set_status(format!(
+                "{} A* plan tweak'i başarıyla aşamalandırıldı.",
+                count
+            ));
         }
     }
 
@@ -3235,7 +3336,10 @@ impl AppState {
                         );
                     }
                 }
-                let _ = tx.send(WorkerEvent::HagsUpdated { enable, result: res });
+                let _ = tx.send(WorkerEvent::HagsUpdated {
+                    enable,
+                    result: res,
+                });
             },
         );
     }
@@ -3383,7 +3487,12 @@ impl AppState {
         spawn_guarded_worker(
             self.tx_events.clone(),
             self.waker.clone(),
-            |msg| WorkerEvent::TelemetryServicesNeutralized(Err(format!("Service neutralize panic: {}", msg))),
+            |msg| {
+                WorkerEvent::TelemetryServicesNeutralized(Err(format!(
+                    "Service neutralize panic: {}",
+                    msg
+                )))
+            },
             move |tx| {
                 let mut disabled_count = 0usize;
                 let ledger = StateLedger::new(&ledger_path).ok();
@@ -3402,13 +3511,19 @@ impl AppState {
                         }
                     }
                 }
-                let _ = tx.send(WorkerEvent::TelemetryServicesNeutralized(Ok(disabled_count)));
+                let _ = tx.send(WorkerEvent::TelemetryServicesNeutralized(Ok(
+                    disabled_count,
+                )));
             },
         );
     }
 
     fn is_tweak_compatible_and_applicable(&self, t: &TweakDefinition) -> bool {
-        let build = self.os_info.as_ref().map(|o| o.build_number).unwrap_or(19041);
+        let build = self
+            .os_info
+            .as_ref()
+            .map(|o| o.build_number)
+            .unwrap_or(19041);
         let edition = self
             .os_info
             .as_ref()
@@ -3441,7 +3556,9 @@ impl AppState {
         let path = self.profile_path.clone();
         match export_profile(&path, &selected_ids) {
             Ok(()) => {
-                self.set_status_spec(StatusMessageSpec::ProfileSaved(path.to_string_lossy().to_string()));
+                self.set_status_spec(StatusMessageSpec::ProfileSaved(
+                    path.to_string_lossy().to_string(),
+                ));
             }
             Err(e) => {
                 self.set_status_spec(StatusMessageSpec::ProfileSaveFailed(e.to_string()));
@@ -3469,7 +3586,8 @@ impl AppState {
                     if compatible_ids.contains(&id) {
                         self.selected_tweaks.insert(id.clone());
                         if self.engine_mode == EngineMode::Normal {
-                            self.staged_transitions.insert(id, StagedTransition::StageApply);
+                            self.staged_transitions
+                                .insert(id, StagedTransition::StageApply);
                         }
                         count += 1;
                     } else {
@@ -3496,7 +3614,9 @@ impl AppState {
         let profile = match preset {
             PresetKind::Gaming => crate::tools::automation::AutoTuneProfile::GamingLowLatency,
             PresetKind::ProAudio => crate::tools::automation::AutoTuneProfile::ProAudioDpc,
-            PresetKind::LaptopBattery => crate::tools::automation::AutoTuneProfile::LaptopBatterySaving,
+            PresetKind::LaptopBattery => {
+                crate::tools::automation::AutoTuneProfile::LaptopBatterySaving
+            }
         };
         let plan = crate::tools::automation::create_auto_tune_plan(&self.tweaks, profile);
         for id in plan.recommended_tweak_ids {
@@ -3511,7 +3631,8 @@ impl AppState {
                             .map(|r| r.current_state == TweakState::AlreadyOptimized)
                             .unwrap_or(false);
                         if !live_optimized {
-                            self.staged_transitions.insert(id, StagedTransition::StageApply);
+                            self.staged_transitions
+                                .insert(id, StagedTransition::StageApply);
                         }
                     }
                 }
@@ -3569,7 +3690,8 @@ impl AppState {
                     .map(|r| r.current_state == TweakState::AlreadyOptimized)
                     .unwrap_or(false);
                 if !live_optimized {
-                    self.staged_transitions.insert(id.clone(), StagedTransition::StageApply);
+                    self.staged_transitions
+                        .insert(id.clone(), StagedTransition::StageApply);
                 }
             }
         }
@@ -3622,7 +3744,8 @@ impl AppState {
                         .map(|r| r.current_state == TweakState::AlreadyOptimized)
                         .unwrap_or(false);
                     if !live_optimized {
-                        self.staged_transitions.insert(id.clone(), StagedTransition::StageApply);
+                        self.staged_transitions
+                            .insert(id.clone(), StagedTransition::StageApply);
                     }
                 }
             } else {
@@ -3652,13 +3775,16 @@ impl AppState {
                         .map(|r| r.current_state == TweakState::AlreadyOptimized)
                         .unwrap_or(false);
                     if live_optimized {
-                        self.staged_transitions.insert(id.clone(), StagedTransition::StageRevert);
+                        self.staged_transitions
+                            .insert(id.clone(), StagedTransition::StageRevert);
                     } else {
                         self.staged_transitions.remove(id);
                     }
                 }
                 self.refresh_pending_actions();
-                self.set_status_spec(StatusMessageSpec::StagedCount(self.staged_transitions.len()));
+                self.set_status_spec(StatusMessageSpec::StagedCount(
+                    self.staged_transitions.len(),
+                ));
             }
             EngineMode::Instant => {
                 let to_revert: Vec<String> = self
@@ -3672,11 +3798,14 @@ impl AppState {
                     .cloned()
                     .collect();
                 if to_revert.is_empty() {
-                    self.set_status_spec(StatusMessageSpec::ActionMessage("No selected tweaks require reversion.".into()));
+                    self.set_status_spec(StatusMessageSpec::ActionMessage(
+                        "No selected tweaks require reversion.".into(),
+                    ));
                     return;
                 }
                 for id in &to_revert {
-                    self.staged_transitions.insert(id.clone(), StagedTransition::StageRevert);
+                    self.staged_transitions
+                        .insert(id.clone(), StagedTransition::StageRevert);
                 }
                 self.apply_selected();
             }
@@ -3801,7 +3930,12 @@ impl AppState {
                 let msg = match backend.set_active_power_scheme(&guid) {
                     Ok(()) => {
                         if let Ok(l) = StateLedger::new(&ledger_path) {
-                            let _ = l.record_change("power_active_scheme", "PowerCfg:ActiveScheme", &prev, &guid);
+                            let _ = l.record_change(
+                                "power_active_scheme",
+                                "PowerCfg:ActiveScheme",
+                                &prev,
+                                &guid,
+                            );
                         }
                         Ok(format!("Activated power scheme {}.", guid))
                     }
@@ -3842,7 +3976,12 @@ impl AppState {
                 let msg = match backend.create_and_activate_performance_plan() {
                     Ok(guid) => {
                         if let Ok(l) = StateLedger::new(&ledger_path) {
-                            let _ = l.record_change("power_ultimate_plan", "PowerCfg:UltimateScheme", &prev, &guid);
+                            let _ = l.record_change(
+                                "power_ultimate_plan",
+                                "PowerCfg:UltimateScheme",
+                                &prev,
+                                &guid,
+                            );
                         }
                         Ok(format!("WinBlast0 Ultimate Performance active ({}).", guid))
                     }
@@ -3894,7 +4033,11 @@ impl AppState {
                             new_hib,
                             Ok(format!(
                                 "Hibernation {}.",
-                                if enable { "enabled" } else { "disabled (hiberfil.sys freed)" }
+                                if enable {
+                                    "enabled"
+                                } else {
+                                    "disabled (hiberfil.sys freed)"
+                                }
                             )),
                         )
                     }
@@ -3939,24 +4082,29 @@ impl AppState {
                     .read_power_setting_index(None, USB_SUB, USB_SET)
                     .map(|(ac, _)| ac != 0)
                     .unwrap_or(disable_power_saving);
-                let msg = match backend.set_usb_power_saving_enabled(!disable_power_saving) {
-                    Ok(n) => {
-                        if let Ok(l) = StateLedger::new(&ledger_path) {
-                            let _ = l.record_change(
-                                "power_usb_hub_idle",
-                                "PowerCfg:UsbPowerSaving",
-                                if prev_enabled { "enabled" } else { "disabled" },
-                                if disable_power_saving { "disabled" } else { "enabled" },
-                            );
-                        }
-                        Ok(format!(
+                let msg =
+                    match backend.set_usb_power_saving_enabled(!disable_power_saving) {
+                        Ok(n) => {
+                            if let Ok(l) = StateLedger::new(&ledger_path) {
+                                let _ = l.record_change(
+                                    "power_usb_hub_idle",
+                                    "PowerCfg:UsbPowerSaving",
+                                    if prev_enabled { "enabled" } else { "disabled" },
+                                    if disable_power_saving {
+                                        "disabled"
+                                    } else {
+                                        "enabled"
+                                    },
+                                );
+                            }
+                            Ok(format!(
                             "Updated {} USB Root Hub controller power states (power saving {}).",
                             n,
                             if disable_power_saving { "disabled" } else { "enabled" }
                         ))
-                    }
-                    Err(e) => Err(format!("USB power update failed: {}", e)),
-                };
+                        }
+                        Err(e) => Err(format!("USB power update failed: {}", e)),
+                    };
                 let schemes = backend.list_power_schemes();
                 let hib = backend.query_hibernation_status();
                 let _ = tx.send(WorkerEvent::PowerActionCompleted {
@@ -4049,7 +4197,9 @@ impl AppState {
             self.waker.clone(),
             |msg| WorkerEvent::CleanExecuted(Err(format!("Cleanup worker panic: {}", msg))),
             move |tx| {
-                let res = backend.execute_clean_targets(&kinds).map_err(|e| e.to_string());
+                let res = backend
+                    .execute_clean_targets(&kinds)
+                    .map_err(|e| e.to_string());
                 if let Ok(ref rep) = res {
                     if let Ok(l) = StateLedger::new(&ledger_path) {
                         let _ = l.record_change(
@@ -4101,7 +4251,9 @@ impl AppState {
             .installed_appx
             .iter()
             .find(|p| p.family_name == family)
-            .is_some_and(|p| p.safety_tier == crate::tools::features_apps::AppxSafetyTier::ProtectedCore);
+            .is_some_and(|p| {
+                p.safety_tier == crate::tools::features_apps::AppxSafetyTier::ProtectedCore
+            });
         if is_core {
             return;
         }
@@ -4115,7 +4267,10 @@ impl AppState {
         use crate::tools::features_apps::AppxSafetyTier;
         self.selected_appx.clear();
         for p in &self.installed_appx {
-            if matches!(p.safety_tier, AppxSafetyTier::SafeBloat | AppxSafetyTier::AiBloat) {
+            if matches!(
+                p.safety_tier,
+                AppxSafetyTier::SafeBloat | AppxSafetyTier::AiBloat
+            ) {
                 self.selected_appx.insert(p.family_name.clone());
             }
         }
@@ -4158,7 +4313,9 @@ impl AppState {
             self.waker.clone(),
             |msg| WorkerEvent::AppxBatchRemoved(Err(format!("AppX worker panic: {}", msg))),
             move |tx| {
-                let res = backend.remove_appx_batch(&fams, true).map_err(|e| e.to_string());
+                let res = backend
+                    .remove_appx_batch(&fams, true)
+                    .map_err(|e| e.to_string());
                 if let Ok(n) = res {
                     if let Ok(l) = StateLedger::new(&ledger_path) {
                         let _ = l.record_change(
@@ -4175,7 +4332,12 @@ impl AppState {
     }
 
     /// Enable or disable a Windows Optional Feature / Capability cleanly via serialized DISM worker.
-    pub fn toggle_optional_feature_async(&mut self, name: String, kind: OptionalFeatureKind, enable: bool) {
+    pub fn toggle_optional_feature_async(
+        &mut self,
+        name: String,
+        kind: OptionalFeatureKind,
+        enable: bool,
+    ) {
         if self.clean_apps_mutating {
             return;
         }
@@ -4273,7 +4435,12 @@ impl AppState {
                 let res = backend.uninstall_onedrive_safe().map_err(|e| e.to_string());
                 if res.is_ok() {
                     if let Ok(l) = StateLedger::new(&ledger_path) {
-                        let _ = l.record_change("app_onedrive_remove", "App:OneDrive", "Installed", "Removed (KFM Checked)");
+                        let _ = l.record_change(
+                            "app_onedrive_remove",
+                            "App:OneDrive",
+                            "Installed",
+                            "Removed (KFM Checked)",
+                        );
                     }
                 }
                 let _ = tx.send(WorkerEvent::OneDriveEdgeResult(res));
@@ -4296,10 +4463,17 @@ impl AppState {
             self.waker.clone(),
             |msg| WorkerEvent::OneDriveEdgeResult(Err(format!("Edge worker panic: {}", msg))),
             move |tx| {
-                let res = backend.remove_edge_preserve_webview2().map_err(|e| e.to_string());
+                let res = backend
+                    .remove_edge_preserve_webview2()
+                    .map_err(|e| e.to_string());
                 if res.is_ok() {
                     if let Ok(l) = StateLedger::new(&ledger_path) {
-                        let _ = l.record_change("app_edge_remove", "App:EdgeBrowser", "Installed", "Removed (WebView2 Preserved)");
+                        let _ = l.record_change(
+                            "app_edge_remove",
+                            "App:EdgeBrowser",
+                            "Installed",
+                            "Removed (WebView2 Preserved)",
+                        );
                     }
                 }
                 let _ = tx.send(WorkerEvent::OneDriveEdgeResult(res));
@@ -4341,7 +4515,10 @@ impl AppState {
                     }
                 }
                 let res = if errs.is_empty() {
-                    Ok(format!("Successfully installed {} WinGet packages.", ok_count))
+                    Ok(format!(
+                        "Successfully installed {} WinGet packages.",
+                        ok_count
+                    ))
                 } else {
                     Err(format!(
                         "Installed {}/{} packages; errors: {}",
@@ -4501,7 +4678,12 @@ impl AppState {
     }
 
     /// Select all startup entries matching query, hide_microsoft, and status filter (Invariant I1).
-    pub fn select_all_filtered_startup(&mut self, query: &str, hide_ms: bool, filter: StartupStatusFilter) {
+    pub fn select_all_filtered_startup(
+        &mut self,
+        query: &str,
+        hide_ms: bool,
+        filter: StartupStatusFilter,
+    ) {
         let q = query.trim().to_lowercase();
         self.selected_startup_entries.clear();
         for e in &self.startup_entries {
@@ -4513,7 +4695,11 @@ impl AppState {
                 StartupStatusFilter::ActiveOnly => e.enabled,
                 StartupStatusFilter::InactiveOnly => !e.enabled,
             };
-            if status_ok && (q.is_empty() || e.name.to_lowercase().contains(&q) || e.command.to_lowercase().contains(&q)) {
+            if status_ok
+                && (q.is_empty()
+                    || e.name.to_lowercase().contains(&q)
+                    || e.command.to_lowercase().contains(&q))
+            {
                 self.selected_startup_entries.insert(e.id.clone());
             }
         }
@@ -4543,7 +4729,12 @@ impl AppState {
         spawn_guarded_worker(
             self.tx_events.clone(),
             self.waker.clone(),
-            |msg| WorkerEvent::StartupBatchToggled(Err(format!("Batch startup worker panic: {}", msg))),
+            |msg| {
+                WorkerEvent::StartupBatchToggled(Err(format!(
+                    "Batch startup worker panic: {}",
+                    msg
+                )))
+            },
             move |tx| {
                 let mut updated = 0;
                 let ledger = StateLedger::new(&ledger_path).ok();
@@ -4579,7 +4770,12 @@ impl AppState {
     }
 
     /// Select all scheduled tasks matching query, hide_microsoft, and status filter (Invariant I1).
-    pub fn select_all_filtered_tasks(&mut self, query: &str, hide_ms: bool, filter: StartupStatusFilter) {
+    pub fn select_all_filtered_tasks(
+        &mut self,
+        query: &str,
+        hide_ms: bool,
+        filter: StartupStatusFilter,
+    ) {
         let q = query.trim().to_lowercase();
         self.selected_scheduled_tasks.clear();
         for t in &self.scheduled_tasks {
@@ -4591,7 +4787,11 @@ impl AppState {
                 StartupStatusFilter::ActiveOnly => t.enabled,
                 StartupStatusFilter::InactiveOnly => !t.enabled,
             };
-            if status_ok && (q.is_empty() || t.task_name.to_lowercase().contains(&q) || t.task_path.to_lowercase().contains(&q)) {
+            if status_ok
+                && (q.is_empty()
+                    || t.task_name.to_lowercase().contains(&q)
+                    || t.task_path.to_lowercase().contains(&q))
+            {
                 self.selected_scheduled_tasks.insert(t.task_path.clone());
             }
         }
@@ -4626,7 +4826,10 @@ impl AppState {
                 let ledger = StateLedger::new(&ledger_path).ok();
                 for task_path in &paths {
                     let prev_enabled = backend.get_task_enabled(task_path).unwrap_or(!enable);
-                    if backend.set_scheduled_task_enabled(task_path, enable).is_ok() {
+                    if backend
+                        .set_scheduled_task_enabled(task_path, enable)
+                        .is_ok()
+                    {
                         updated += 1;
                         if let Some(ref l) = ledger {
                             let _ = l.record_change(
@@ -4663,7 +4866,10 @@ impl AppState {
             |msg| WorkerEvent::ServiceLiveUpdated(Err(format!("Service worker panic: {}", msg))),
             move |tx| {
                 let res = match backend.get_service_start_type(&service_name) {
-                    None => Err(format!("Service '{}' not found or inaccessible.", service_name)),
+                    None => Err(format!(
+                        "Service '{}' not found or inaccessible.",
+                        service_name
+                    )),
                     Some(prev) => match backend.set_service_start_type(&service_name, start_type) {
                         Ok(()) => {
                             if let Ok(l) = StateLedger::new(&ledger_path) {
@@ -4674,7 +4880,10 @@ impl AppState {
                                     &start_type.to_string(),
                                 );
                             }
-                            Ok(format!("Service '{}' start mode set to {}.", service_name, start_type))
+                            Ok(format!(
+                                "Service '{}' start mode set to {}.",
+                                service_name, start_type
+                            ))
                         }
                         Err(e) => Err(format!("Service '{}' error: {}", service_name, e)),
                     },
@@ -4856,7 +5065,10 @@ impl AppState {
         self.refresh_system_health();
     }
 
-    pub fn execute_auto_tune_profile(&mut self, profile: crate::tools::automation::AutoTuneProfile) {
+    pub fn execute_auto_tune_profile(
+        &mut self,
+        profile: crate::tools::automation::AutoTuneProfile,
+    ) {
         if self.is_running_automation {
             return;
         }

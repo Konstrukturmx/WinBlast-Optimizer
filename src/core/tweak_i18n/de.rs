@@ -1205,46 +1205,92 @@ pub fn lookup(id: &str) -> Option<LocalizedTweakText> {
 #[allow(dead_code)]
 pub fn tweak_title(id: &str) -> Option<&'static str> {
     match id {
-        "disable_dwm_animations_per_process" => Some("DWM-Übergangsanimationen pro Prozess deaktivieren"),
+        "disable_dwm_animations_per_process" => {
+            Some("DWM-Übergangsanimationen pro Prozess deaktivieren")
+        }
         "disable_dwm_composition_throttle" => Some("DWM-Kompositionsdrosselung deaktivieren"),
-        "disable_kernel_mitigations_audit" => Some("Überwachungsmodus für Kernel-Schutzmaßnahmen deaktivieren"),
+        "disable_kernel_mitigations_audit" => {
+            Some("Überwachungsmodus für Kernel-Schutzmaßnahmen deaktivieren")
+        }
         "disable_llmnr_protocol" => Some("LLMNR-Namensauflösungsprotokoll deaktivieren"),
         "disable_memory_compression" => Some("Speicherkomprimierungs-Engine deaktivieren"),
         "disable_netbios_over_tcp" => Some("NetBIOS über TCP/IP deaktivieren"),
-        "disable_ntfs_encryption_driver" => Some("NTFS-Dateiverschlüsselungstreiber (EFS) deaktivieren"),
-        "disable_page_file_encryption" => Some("Auslagerungsdatei-Verschlüsselung & Löschen beim Herunterfahren deaktivieren"),
-        "disable_processor_idle_demote_threshold" => Some("Prozessor-Ruhezustands-Herabstufung deaktivieren"),
+        "disable_ntfs_encryption_driver" => {
+            Some("NTFS-Dateiverschlüsselungstreiber (EFS) deaktivieren")
+        }
+        "disable_page_file_encryption" => {
+            Some("Auslagerungsdatei-Verschlüsselung & Löschen beim Herunterfahren deaktivieren")
+        }
+        "disable_processor_idle_demote_threshold" => {
+            Some("Prozessor-Ruhezustands-Herabstufung deaktivieren")
+        }
         "disable_rss_base_cpu" => Some("RSS-Basis-CPU für Netzwerklastverteilung festlegen"),
-        "disable_spectre_meltdown_mitigations" => Some("Spectre- & Meltdown-CPU-Schutzmaßnahmen deaktivieren"),
-        "disable_threaded_dpc_optimization" => Some("Threaded DPC für geringere Interrupt-Latenz deaktivieren"),
+        "disable_spectre_meltdown_mitigations" => {
+            Some("Spectre- & Meltdown-CPU-Schutzmaßnahmen deaktivieren")
+        }
+        "disable_threaded_dpc_optimization" => {
+            Some("Threaded DPC für geringere Interrupt-Latenz deaktivieren")
+        }
         "disable_windows_search_indexer" => Some("Windows Search-Indizierungsdienst deaktivieren"),
         "enable_hardware_task_offload" => Some("TCP/IP-Hardware-Aufgabenabladung aktivieren"),
         "enable_large_ntfs_frs" => Some("Große NTFS-Dateidatensatzsegmente aktivieren"),
-        "enable_ultimate_performance_plan" => Some("Ultimative Leistung-Energiesparplan aktivieren"),
-        "increase_gpu_tdr_timeout" => Some("GPU-Timeout-Erkennungs- und Wiederherstellungsverzögerung erhöhen"),
-        "increase_irp_stack_size" => Some("IRP-Stapelgröße für Netzwerk- und Festplatten-E/A erhöhen"),
-        "increase_max_connections_per_server" => Some("Maximale HTTP-Verbindungen pro Server erhöhen"),
-        "increase_nonpaged_pool_quota" => Some("Nicht-ausgelagertes Pool-Kontingent für Treiberstabilität erhöhen"),
-        "optimize_additional_critical_worker_threads" => Some("Zusätzliche Kernel-Worker-Threads erhöhen"),
+        "enable_ultimate_performance_plan" => {
+            Some("Ultimative Leistung-Energiesparplan aktivieren")
+        }
+        "increase_gpu_tdr_timeout" => {
+            Some("GPU-Timeout-Erkennungs- und Wiederherstellungsverzögerung erhöhen")
+        }
+        "increase_irp_stack_size" => {
+            Some("IRP-Stapelgröße für Netzwerk- und Festplatten-E/A erhöhen")
+        }
+        "increase_max_connections_per_server" => {
+            Some("Maximale HTTP-Verbindungen pro Server erhöhen")
+        }
+        "increase_nonpaged_pool_quota" => {
+            Some("Nicht-ausgelagertes Pool-Kontingent für Treiberstabilität erhöhen")
+        }
+        "optimize_additional_critical_worker_threads" => {
+            Some("Zusätzliche Kernel-Worker-Threads erhöhen")
+        }
         "optimize_default_ttl" => Some("Optimalen Standard-IP-Paket-TTL-Wert festlegen"),
-        "optimize_disk_io_page_lock_limit" => Some("E/A-Seitensperrgrenze für größere Datentransfers erhöhen"),
+        "optimize_disk_io_page_lock_limit" => {
+            Some("E/A-Seitensperrgrenze für größere Datentransfers erhöhen")
+        }
         "optimize_dns_cache_parameters" => Some("DNS-Client-Cache-Größe und TTL optimieren"),
-        "optimize_gpu_preemption_level" => Some("GPU-Scheduler auf reine Compute-Präemption einstellen"),
-        "optimize_interrupt_steering" => Some("Interrupt-Affinität und Steering-Richtlinie optimieren"),
-        "optimize_mmcss_proaudio_scheduling" => Some("MMCSS Pro Audio — Maximale Scheduling-Priorität"),
+        "optimize_gpu_preemption_level" => {
+            Some("GPU-Scheduler auf reine Compute-Präemption einstellen")
+        }
+        "optimize_interrupt_steering" => {
+            Some("Interrupt-Affinität und Steering-Richtlinie optimieren")
+        }
+        "optimize_mmcss_proaudio_scheduling" => {
+            Some("MMCSS Pro Audio — Maximale Scheduling-Priorität")
+        }
         "optimize_ntfs_memory_usage" => Some("Aggressives NTFS Paged-Pool-Caching"),
-        "optimize_object_manager_quota" => Some("Handle-Kontingent des Kernel-Objekt-Managers erhöhen"),
-        "optimize_timer_resolution_requests" => Some("Anwendungsanfragen nach hoher Timer-Auflösung erlauben"),
-                "disable_driver_search_order_probing" => Some("Windows Update-Treibersuche im Hintergrund deaktivieren"),
+        "optimize_object_manager_quota" => {
+            Some("Handle-Kontingent des Kernel-Objekt-Managers erhöhen")
+        }
+        "optimize_timer_resolution_requests" => {
+            Some("Anwendungsanfragen nach hoher Timer-Auflösung erlauben")
+        }
+        "disable_driver_search_order_probing" => {
+            Some("Windows Update-Treibersuche im Hintergrund deaktivieren")
+        }
         "disable_fast_user_switching" => Some("Schnelle Benutzerumschaltung deaktivieren"),
         "disable_ip_source_routing" => Some("IP-Quell-Routing (Source Routing) deaktivieren"),
         "disable_netsh_teredo_tunneling" => Some("Teredo IPv6-Übergangs-Tunneling deaktivieren"),
-        "disable_network_adapter_power_saving" => Some("NDIS-Netzwerkadapter-PnP-Energiesparen deaktivieren"),
-        "disable_remote_desktop_udp" => Some("UDP-Transport für Remote Desktop-Client deaktivieren"),
+        "disable_network_adapter_power_saving" => {
+            Some("NDIS-Netzwerkadapter-PnP-Energiesparen deaktivieren")
+        }
+        "disable_remote_desktop_udp" => {
+            Some("UDP-Transport für Remote Desktop-Client deaktivieren")
+        }
         "disable_smart_card_service" => Some("Smartcard-Dienst (SCardSvr) deaktivieren"),
         "optimize_kerberos_ticket_cache" => Some("Kerberos-MaxTokenSize-Puffer optimieren"),
         "optimize_tcp_syn_attack_protection" => Some("TCP-SYN-Angriffsschutz aktivieren"),
-        "optimize_usb_selective_suspend_hub" => Some("Globales selektives USB-Energiesparen deaktivieren"),
+        "optimize_usb_selective_suspend_hub" => {
+            Some("Globales selektives USB-Energiesparen deaktivieren")
+        }
         _ => lookup(id).map(|t| t.title),
     }
 }

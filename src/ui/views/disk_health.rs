@@ -16,7 +16,11 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
     let style = s.theme_style;
     let report = s.disk_report.clone().unwrap_or_default();
 
-    let trim_color = if report.global_trim_active { p.success } else { p.warning };
+    let trim_color = if report.global_trim_active {
+        p.success
+    } else {
+        p.warning
+    };
 
     col()
         .w_full()
@@ -50,16 +54,29 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                     row()
                         .gap(8.0)
                         .child(
-                            action_button(s.tr_v(ViewTextKey::DiskRefreshBtn), p.btn_secondary, p.text_primary, p, |s| {
-                                s.scan_disk_health_async();
-                            })
+                            action_button(
+                                s.tr_v(ViewTextKey::DiskRefreshBtn),
+                                p.btn_secondary,
+                                p.text_primary,
+                                p,
+                                |s| {
+                                    s.scan_disk_health_async();
+                                },
+                            )
                             .radius(style.btn_radius()),
                         )
                         .child(
-                            action_button(s.tr_v(ViewTextKey::DiskTrimAllBtn), p.accent, Color::WHITE, p, |s| {
-                                let _ = crate::hardware::disks::DiskSubsystemReport::run_trim_all();
-                                s.scan_disk_health_async();
-                            })
+                            action_button(
+                                s.tr_v(ViewTextKey::DiskTrimAllBtn),
+                                p.accent,
+                                Color::WHITE,
+                                p,
+                                |s| {
+                                    let _ =
+                                        crate::hardware::disks::DiskSubsystemReport::run_trim_all();
+                                    s.scan_disk_health_async();
+                                },
+                            )
                             .radius(style.btn_radius()),
                         ),
                 ),
@@ -135,18 +152,25 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                                                 .color(p.text_primary),
                                         )
                                         .child(
-                                            text(format!("{} • {:.1} GB", drv.interface_type, drv.total_size_gb))
-                                                .font(rune::tok::type_::BODY)
-                                                .color(p.text_muted),
+                                            text(format!(
+                                                "{} • {:.1} GB",
+                                                drv.interface_type, drv.total_size_gb
+                                            ))
+                                            .font(rune::tok::type_::BODY)
+                                            .color(p.text_muted),
                                         ),
                                 )
                                 .child(
                                     col()
                                         .min_w(130.0)
                                         .child(
-                                            text(format!("{}: {}%", s.tr_v(ViewTextKey::DiskHealthStatus), drv.health_percentage))
-                                                .font(rune::tok::type_::LABEL)
-                                                .color(health_color),
+                                            text(format!(
+                                                "{}: {}%",
+                                                s.tr_v(ViewTextKey::DiskHealthStatus),
+                                                drv.health_percentage
+                                            ))
+                                            .font(rune::tok::type_::LABEL)
+                                            .color(health_color),
                                         )
                                         .child(
                                             text(&drv.status)
@@ -160,14 +184,22 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                                 .gaps(14.0, 4.0)
                                 .flex_wrap()
                                 .child(
-                                    text(format!("{}: {:.1} TB", s.tr_v(ViewTextKey::DiskLifetimeWrites), drv.lifetime_writes_tb))
-                                        .font(rune::tok::type_::BODY)
-                                        .color(p.text_secondary),
+                                    text(format!(
+                                        "{}: {:.1} TB",
+                                        s.tr_v(ViewTextKey::DiskLifetimeWrites),
+                                        drv.lifetime_writes_tb
+                                    ))
+                                    .font(rune::tok::type_::BODY)
+                                    .color(p.text_secondary),
                                 )
                                 .child(
-                                    text(format!("{}: {} h", s.tr_v(ViewTextKey::DiskPowerOnHours), drv.power_on_hours))
-                                        .font(rune::tok::type_::BODY)
-                                        .color(p.text_secondary),
+                                    text(format!(
+                                        "{}: {} h",
+                                        s.tr_v(ViewTextKey::DiskPowerOnHours),
+                                        drv.power_on_hours
+                                    ))
+                                    .font(rune::tok::type_::BODY)
+                                    .color(p.text_secondary),
                                 )
                                 .child(
                                     text(format!("{:.0}°C", drv.temperature_c))
@@ -177,5 +209,8 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                         )
                 })),
         )
-        .scroll(ScrollSpec { stick_bottom: false }).winblast_scroll(p)
+        .scroll(ScrollSpec {
+            stick_bottom: false,
+        })
+        .winblast_scroll(p)
 }

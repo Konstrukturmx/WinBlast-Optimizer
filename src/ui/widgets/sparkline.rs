@@ -22,8 +22,7 @@ pub fn sparkline_with_palette(
 
     for _ in 0..pad_count {
         bars.push(
-            el()
-                .grow(1.0)
+            el().grow(1.0)
                 .min_w(2.0)
                 .max_w(12.0)
                 .h(2.0)
@@ -47,11 +46,7 @@ pub fn sparkline_with_palette(
         let is_peak = has_range && (clean_val - max_val).abs() < 0.05 && max_val > 5.0;
 
         // Gradient simulation: dual layer with semi-transparent base and saturated tip
-        let fill_col = if is_peak {
-            p.warning
-        } else {
-            chart_color
-        };
+        let fill_col = if is_peak { p.warning } else { chart_color };
 
         bars.push(
             col()
@@ -64,8 +59,7 @@ pub fn sparkline_with_palette(
                 .hover(fill_col)
                 .motion(p.motion)
                 .child(
-                    el()
-                        .w_full()
+                    el().w_full()
                         .h((bar_h * 0.35).max(2.0))
                         .radius(1.0)
                         .fill(fill_col),
@@ -88,7 +82,11 @@ pub fn sparkline_with_palette(
             .child(
                 text(format!("▲ {:.0}%", max_val.max(0.0)))
                     .font(rune::tok::type_::LABEL)
-                    .color(if max_val > 80.0 { p.warning } else { p.text_secondary })
+                    .color(if max_val > 80.0 {
+                        p.warning
+                    } else {
+                        p.text_secondary
+                    })
                     .shrink(),
             )
     } else {

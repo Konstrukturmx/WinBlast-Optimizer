@@ -6,7 +6,9 @@
 
 use serde::{Deserialize, Serialize};
 
-use crate::core::risk::{display_reg_value_name, normalize_reg_value_name, TweakAction, TweakDefinition};
+use crate::core::risk::{
+    display_reg_value_name, normalize_reg_value_name, TweakAction, TweakDefinition,
+};
 
 /// Target Windows processor architecture for `autounattend.xml` components.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Serialize, Deserialize)]
@@ -248,78 +250,153 @@ pub fn generate_autounattend_xml(
             }
             for action in &tweak.actions {
                 match action {
-                    TweakAction::RegistryDword { hive, path, name, optimized_value, .. } => {
+                    TweakAction::RegistryDword {
+                        hive,
+                        path,
+                        name,
+                        optimized_value,
+                        ..
+                    } => {
                         let norm_name = normalize_reg_value_name(name);
-                        let is_sz = crate::core::reg_helpers::is_known_numeric_reg_sz(path, norm_name);
+                        let is_sz =
+                            crate::core::reg_helpers::is_known_numeric_reg_sz(path, norm_name);
                         let reg_ty = if is_sz { "REG_SZ" } else { "REG_DWORD" };
                         let val_str = if is_sz && (*optimized_value as i32) < 0 {
                             (*optimized_value as i32).to_string()
                         } else {
                             optimized_value.to_string()
                         };
-                        if hive.eq_ignore_ascii_case("HKLM") || hive.eq_ignore_ascii_case("HKEY_LOCAL_MACHINE") {
-                            if let Some(cmd) = format_reg_add_cmd(hive, path, name, reg_ty, &val_str, false) {
+                        if hive.eq_ignore_ascii_case("HKLM")
+                            || hive.eq_ignore_ascii_case("HKEY_LOCAL_MACHINE")
+                        {
+                            if let Some(cmd) =
+                                format_reg_add_cmd(hive, path, name, reg_ty, &val_str, false)
+                            {
                                 specialize_cmds.push((format!("WB0_{}", tweak.id), cmd));
                             }
-                        } else if hive.eq_ignore_ascii_case("HKCU") || hive.eq_ignore_ascii_case("HKEY_CURRENT_USER") {
-                            if let Some(c) = format_reg_add_cmd(hive, path, name, reg_ty, &val_str, true) {
+                        } else if hive.eq_ignore_ascii_case("HKCU")
+                            || hive.eq_ignore_ascii_case("HKEY_CURRENT_USER")
+                        {
+                            if let Some(c) =
+                                format_reg_add_cmd(hive, path, name, reg_ty, &val_str, true)
+                            {
                                 hkcu_default_cmds.push(c);
                             }
-                            if let Some(c) = format_reg_add_cmd(hive, path, name, reg_ty, &val_str, false) {
-                                first_logon_cmds.push((format!("WB0_{}_{}", tweak.id, display_reg_value_name(name)), c));
+                            if let Some(c) =
+                                format_reg_add_cmd(hive, path, name, reg_ty, &val_str, false)
+                            {
+                                first_logon_cmds.push((
+                                    format!("WB0_{}_{}", tweak.id, display_reg_value_name(name)),
+                                    c,
+                                ));
                             }
                         }
                     }
-                    TweakAction::RegistryString { hive, path, name, optimized_value, expand_sz, .. } => {
+                    TweakAction::RegistryString {
+                        hive,
+                        path,
+                        name,
+                        optimized_value,
+                        expand_sz,
+                        ..
+                    } => {
                         if optimized_value == "__ABSENT__" {
-                            if hive.eq_ignore_ascii_case("HKLM") || hive.eq_ignore_ascii_case("HKEY_LOCAL_MACHINE") {
+                            if hive.eq_ignore_ascii_case("HKLM")
+                                || hive.eq_ignore_ascii_case("HKEY_LOCAL_MACHINE")
+                            {
                                 if let Some(cmd) = format_reg_delete_cmd(hive, path, name, false) {
                                     specialize_cmds.push((format!("WB0_{}", tweak.id), cmd));
                                 }
-                            } else if hive.eq_ignore_ascii_case("HKCU") || hive.eq_ignore_ascii_case("HKEY_CURRENT_USER") {
+                            } else if hive.eq_ignore_ascii_case("HKCU")
+                                || hive.eq_ignore_ascii_case("HKEY_CURRENT_USER")
+                            {
                                 if let Some(c) = format_reg_delete_cmd(hive, path, name, true) {
                                     hkcu_default_cmds.push(c);
                                 }
                                 if let Some(c) = format_reg_delete_cmd(hive, path, name, false) {
-                                    first_logon_cmds.push((format!("WB0_{}_{}", tweak.id, display_reg_value_name(name)), c));
+                                    first_logon_cmds.push((
+                                        format!(
+                                            "WB0_{}_{}",
+                                            tweak.id,
+                                            display_reg_value_name(name)
+                                        ),
+                                        c,
+                                    ));
                                 }
                             }
                             continue;
                         }
-                        let ty = if *expand_sz { "REG_EXPAND_SZ" } else { "REG_SZ" };
-                        if hive.eq_ignore_ascii_case("HKLM") || hive.eq_ignore_ascii_case("HKEY_LOCAL_MACHINE") {
-                            if let Some(cmd) = format_reg_add_cmd(hive, path, name, ty, optimized_value, false) {
+                        let ty = if *expand_sz {
+                            "REG_EXPAND_SZ"
+                        } else {
+                            "REG_SZ"
+                        };
+                        if hive.eq_ignore_ascii_case("HKLM")
+                            || hive.eq_ignore_ascii_case("HKEY_LOCAL_MACHINE")
+                        {
+                            if let Some(cmd) =
+                                format_reg_add_cmd(hive, path, name, ty, optimized_value, false)
+                            {
                                 specialize_cmds.push((format!("WB0_{}", tweak.id), cmd));
                             }
-                        } else if hive.eq_ignore_ascii_case("HKCU") || hive.eq_ignore_ascii_case("HKEY_CURRENT_USER") {
-                            if let Some(c) = format_reg_add_cmd(hive, path, name, ty, optimized_value, true) {
+                        } else if hive.eq_ignore_ascii_case("HKCU")
+                            || hive.eq_ignore_ascii_case("HKEY_CURRENT_USER")
+                        {
+                            if let Some(c) =
+                                format_reg_add_cmd(hive, path, name, ty, optimized_value, true)
+                            {
                                 hkcu_default_cmds.push(c);
                             }
-                            if let Some(c) = format_reg_add_cmd(hive, path, name, ty, optimized_value, false) {
-                                first_logon_cmds.push((format!("WB0_{}_{}", tweak.id, display_reg_value_name(name)), c));
+                            if let Some(c) =
+                                format_reg_add_cmd(hive, path, name, ty, optimized_value, false)
+                            {
+                                first_logon_cmds.push((
+                                    format!("WB0_{}_{}", tweak.id, display_reg_value_name(name)),
+                                    c,
+                                ));
                             }
                         }
                     }
                     TweakAction::RegistryDelete { hive, path, name } => {
-                        if hive.eq_ignore_ascii_case("HKLM") || hive.eq_ignore_ascii_case("HKEY_LOCAL_MACHINE") {
+                        if hive.eq_ignore_ascii_case("HKLM")
+                            || hive.eq_ignore_ascii_case("HKEY_LOCAL_MACHINE")
+                        {
                             if let Some(cmd) = format_reg_delete_cmd(hive, path, name, false) {
                                 specialize_cmds.push((format!("WB0_{}", tweak.id), cmd));
                             }
-                        } else if hive.eq_ignore_ascii_case("HKCU") || hive.eq_ignore_ascii_case("HKEY_CURRENT_USER") {
+                        } else if hive.eq_ignore_ascii_case("HKCU")
+                            || hive.eq_ignore_ascii_case("HKEY_CURRENT_USER")
+                        {
                             if let Some(c) = format_reg_delete_cmd(hive, path, name, true) {
                                 hkcu_default_cmds.push(c);
                             }
                             if let Some(c) = format_reg_delete_cmd(hive, path, name, false) {
-                                first_logon_cmds.push((format!("WB0_{}_{}", tweak.id, display_reg_value_name(name)), c));
+                                first_logon_cmds.push((
+                                    format!("WB0_{}_{}", tweak.id, display_reg_value_name(name)),
+                                    c,
+                                ));
                             }
                         }
                     }
-                    TweakAction::ServiceState { service_name, target_start_type, .. } => {
+                    TweakAction::ServiceState {
+                        service_name,
+                        target_start_type,
+                        ..
+                    } => {
                         let svc_clean = service_name.trim().trim_matches('\\');
                         if !svc_clean.is_empty() && !svc_clean.contains('\0') {
-                            let svc_path = format!("SYSTEM\\CurrentControlSet\\Services\\{}", svc_clean);
-                            if let Some(cmd) = format_reg_add_cmd("HKLM", &svc_path, "Start", "REG_DWORD", &target_start_type.to_string(), false) {
-                                specialize_cmds.push((format!("WB0_{}_{}", tweak.id, svc_clean), cmd));
+                            let svc_path =
+                                format!("SYSTEM\\CurrentControlSet\\Services\\{}", svc_clean);
+                            if let Some(cmd) = format_reg_add_cmd(
+                                "HKLM",
+                                &svc_path,
+                                "Start",
+                                "REG_DWORD",
+                                &target_start_type.to_string(),
+                                false,
+                            ) {
+                                specialize_cmds
+                                    .push((format!("WB0_{}_{}", tweak.id, svc_clean), cmd));
                             }
                         }
                     }
@@ -368,7 +445,10 @@ pub fn generate_autounattend_xml(
         "    <component name=\"Microsoft-Windows-Shell-Setup\" processorArchitecture=\"{}\" publicKeyToken=\"31bf3856ad364e35\" language=\"neutral\" versionScope=\"nonSxS\">\n",
         arch
     ));
-    xml.push_str(&format!("      <ComputerName>{}</ComputerName>\n", escape_xml(&comp_name)));
+    xml.push_str(&format!(
+        "      <ComputerName>{}</ComputerName>\n",
+        escape_xml(&comp_name)
+    ));
     if opts.auto_timezone_utc {
         xml.push_str("      <TimeZone>UTC</TimeZone>\n");
     }
@@ -436,9 +516,14 @@ pub fn generate_autounattend_xml(
     if opts.bypass_msa_oobe {
         let user_clean = sanitize_local_user(&opts.default_local_user, &comp_name);
         xml.push_str("      <UserAccounts>\n        <LocalAccounts>\n          <LocalAccount wcm:action=\"add\">\n");
-        xml.push_str(&format!("            <Name>{}</Name>\n", escape_xml(&user_clean)));
+        xml.push_str(&format!(
+            "            <Name>{}</Name>\n",
+            escape_xml(&user_clean)
+        ));
         xml.push_str("            <Group>Administrators</Group>\n            <Password><Value></Value><PlainText>true</PlainText></Password>\n");
-        xml.push_str("          </LocalAccount>\n        </LocalAccounts>\n      </UserAccounts>\n");
+        xml.push_str(
+            "          </LocalAccount>\n        </LocalAccounts>\n      </UserAccounts>\n",
+        );
     }
     if !first_logon_cmds.is_empty() {
         xml.push_str("      <FirstLogonCommands>\n");
@@ -521,7 +606,9 @@ mod tests {
         let xml = generate_autounattend_xml(&opts, &[&safe_tweak, &unsafe_tweak]);
         assert!(xml.contains("BypassTPMCheck"));
         assert!(xml.contains("AllowA&amp;B"));
-        assert!(xml.contains("reg.exe load HKU\\DefaultUser %SystemDrive%\\Users\\Default\\NTUSER.DAT"));
+        assert!(
+            xml.contains("reg.exe load HKU\\DefaultUser %SystemDrive%\\Users\\Default\\NTUSER.DAT")
+        );
         assert!(xml.contains("/ve /t REG_SZ"));
         assert!(!xml.contains("test_unsafe"));
     }

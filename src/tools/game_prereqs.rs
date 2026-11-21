@@ -254,7 +254,8 @@ fn detect_directx_legacy() -> (bool, Option<String>) {
 
 fn detect_vcredist_2015_2022_x64() -> (bool, Option<String>) {
     let hklm = RegKey::predef(HKEY_LOCAL_MACHINE);
-    if let Ok(key) = hklm.open_subkey("SOFTWARE\\Microsoft\\VisualStudio\\14.0\\VC\\Runtimes\\x64") {
+    if let Ok(key) = hklm.open_subkey("SOFTWARE\\Microsoft\\VisualStudio\\14.0\\VC\\Runtimes\\x64")
+    {
         let installed: Result<u32, _> = key.get_value("Installed");
         let version: Result<String, _> = key.get_value("Version");
         if installed.unwrap_or(0) == 1 {
@@ -291,7 +292,10 @@ fn detect_vcredist_2015_2022_x86() -> (bool, Option<String>) {
 
 fn detect_vcredist_all_in_one() -> (bool, Option<String>) {
     let s32 = get_system32_path();
-    let winsxs = s32.parent().map(|p| p.join("WinSxS")).unwrap_or_else(|| PathBuf::from("C:\\Windows\\WinSxS"));
+    let winsxs = s32
+        .parent()
+        .map(|p| p.join("WinSxS"))
+        .unwrap_or_else(|| PathBuf::from("C:\\Windows\\WinSxS"));
     // Check multiple legacy VC runtime DLLs
     let has_2005 = s32.join("msvcr80.dll").exists() || winsxs.exists();
     let has_2008 = s32.join("msvcr90.dll").exists();
@@ -457,7 +461,10 @@ pub fn install_prereq_cascade(item: &mut GamePrerequisiteItem) -> Result<String,
 
     // Tier 3: Direct Official Website Launch
     if !item.direct_url.is_empty() {
-        item.status_message = format!("Package managers unavailable. Opening official portal: {}", item.direct_url);
+        item.status_message = format!(
+            "Package managers unavailable. Opening official portal: {}",
+            item.direct_url
+        );
         let _ = SilentCommand::new("rundll32")
             .args(["url.dll,FileProtocolHandler", &item.direct_url])
             .spawn();
@@ -470,7 +477,8 @@ pub fn install_prereq_cascade(item: &mut GamePrerequisiteItem) -> Result<String,
     }
 
     item.state = PrereqInstallState::Failed;
-    item.status_message = "Installation failed: No available package source or download URL".to_string();
+    item.status_message =
+        "Installation failed: No available package source or download URL".to_string();
     Err(item.status_message.clone())
 }
 
@@ -492,12 +500,36 @@ mod tests {
         assert_eq!(items.len(), 10, "Expected exactly 10 gaming prerequisites");
         let mut ids = std::collections::HashSet::new();
         for item in &items {
-            assert!(ids.insert(item.id.clone()), "Duplicate prerequisite ID: {}", item.id);
-            assert!(!item.name.is_empty(), "Name must not be empty for {}", item.id);
-            assert!(!item.category.is_empty(), "Category must not be empty for {}", item.id);
-            assert!(!item.description.is_empty(), "Description must not be empty for {}", item.id);
-            assert!(item.direct_url.starts_with("https://"), "Direct URL must be HTTPS for {}", item.id);
-            assert!(!item.status_message.is_empty(), "Status message must not be empty for {}", item.id);
+            assert!(
+                ids.insert(item.id.clone()),
+                "Duplicate prerequisite ID: {}",
+                item.id
+            );
+            assert!(
+                !item.name.is_empty(),
+                "Name must not be empty for {}",
+                item.id
+            );
+            assert!(
+                !item.category.is_empty(),
+                "Category must not be empty for {}",
+                item.id
+            );
+            assert!(
+                !item.description.is_empty(),
+                "Description must not be empty for {}",
+                item.id
+            );
+            assert!(
+                item.direct_url.starts_with("https://"),
+                "Direct URL must be HTTPS for {}",
+                item.id
+            );
+            assert!(
+                !item.status_message.is_empty(),
+                "Status message must not be empty for {}",
+                item.id
+            );
             assert_eq!(item.is_installed(), item.installed);
             if item.installed {
                 assert_eq!(item.state, PrereqInstallState::Installed);
@@ -518,7 +550,9 @@ mod tests {
     #[test]
     fn test_iso_29119_runtime_detection_heuristics_execution() {
         let (dx, dx_ver) = detect_directx_legacy();
-        if dx { assert!(dx_ver.is_some()); }
+        if dx {
+            assert!(dx_ver.is_some());
+        }
 
         let (vc64, _vc64_ver) = detect_vcredist_2015_2022_x64();
         let (vc86, _vc86_ver) = detect_vcredist_2015_2022_x86();
@@ -591,7 +625,10 @@ mod tests {
         };
 
         let res = install_prereq_cascade(&mut item);
-        assert!(res.is_err(), "Expected Err when no installation sources are available");
+        assert!(
+            res.is_err(),
+            "Expected Err when no installation sources are available"
+        );
         assert_eq!(item.state, PrereqInstallState::Failed);
         assert!(item.status_message.contains("Installation failed"));
     }
@@ -608,7 +645,8 @@ mod tests {
     fn test_iso_29119_serde_roundtrip() {
         let items = scan_game_prereqs();
         let json = serde_json::to_string(&items).expect("Serialization failed");
-        let decoded: Vec<GamePrerequisiteItem> = serde_json::from_str(&json).expect("Deserialization failed");
+        let decoded: Vec<GamePrerequisiteItem> =
+            serde_json::from_str(&json).expect("Deserialization failed");
         assert_eq!(items.len(), decoded.len());
         for (orig, dec) in items.iter().zip(decoded.iter()) {
             assert_eq!(orig.id, dec.id);

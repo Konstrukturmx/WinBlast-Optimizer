@@ -42,7 +42,10 @@ fn test_unorthodox_multi_sz_odd_byte_lengths_and_corruptions() {
 
     // 4. Odd-length 17 bytes (corrupted registry payload)
     // "C:\test\0" is 8 chars * 2 = 16 bytes, plus trailing 1 rogue byte
-    let mut data: Vec<u8> = "C:\\test\0".encode_utf16().flat_map(|u| u.to_le_bytes()).collect();
+    let mut data: Vec<u8> = "C:\\test\0"
+        .encode_utf16()
+        .flat_map(|u| u.to_le_bytes())
+        .collect();
     data.push(0xEE); // rogue 17th byte
     assert_eq!(data.len(), 17);
     let res = parse_multi_sz_lossless(&data);
@@ -50,12 +53,18 @@ fn test_unorthodox_multi_sz_odd_byte_lengths_and_corruptions() {
 
     // 5. Buffer with missing trailing double-null
     // Windows expects \0\0 at the end; corrupt buffer has only one or none
-    let data_no_term: Vec<u8> = "FileOne\0FileTwo".encode_utf16().flat_map(|u| u.to_le_bytes()).collect();
+    let data_no_term: Vec<u8> = "FileOne\0FileTwo"
+        .encode_utf16()
+        .flat_map(|u| u.to_le_bytes())
+        .collect();
     let res = parse_multi_sz_lossless(&data_no_term);
     assert_eq!(res, vec!["FileOne".to_string(), "FileTwo".to_string()]);
 
     // 6. Buffer with consecutive multiple nulls and empty strings
-    let data_nulls: Vec<u8> = "\0\0\0A\0\0\0B\0\0\0\0".encode_utf16().flat_map(|u| u.to_le_bytes()).collect();
+    let data_nulls: Vec<u8> = "\0\0\0A\0\0\0B\0\0\0\0"
+        .encode_utf16()
+        .flat_map(|u| u.to_le_bytes())
+        .collect();
     let res = parse_multi_sz_lossless(&data_nulls);
     assert_eq!(res, vec!["A".to_string(), "B".to_string()]);
 
@@ -68,7 +77,10 @@ fn test_unorthodox_multi_sz_odd_byte_lengths_and_corruptions() {
 
     // 8. Large buffer (10,000 characters) with odd trailing byte
     let long_str: String = "X".repeat(10_000);
-    let mut long_bytes: Vec<u8> = long_str.encode_utf16().flat_map(|u| u.to_le_bytes()).collect();
+    let mut long_bytes: Vec<u8> = long_str
+        .encode_utf16()
+        .flat_map(|u| u.to_le_bytes())
+        .collect();
     long_bytes.push(0xAB);
     let res = parse_multi_sz_lossless(&long_bytes);
     assert_eq!(res.len(), 1);
@@ -206,7 +218,9 @@ fn test_unorthodox_concurrent_worker_event_stress() {
     let tweaks = load_embedded_rules();
     sbx.seed_all_tweaks(&tweaks);
 
-    let state = Arc::new(std::sync::RwLock::new(AppState::new_with_backend(sbx.clone())));
+    let state = Arc::new(std::sync::RwLock::new(AppState::new_with_backend(
+        sbx.clone(),
+    )));
     let stop_signal = Arc::new(AtomicBool::new(false));
 
     let mut handles = Vec::new();
@@ -264,7 +278,11 @@ fn test_unorthodox_concurrent_worker_event_stress() {
                 }
                 {
                     let mut s = state.write().unwrap();
-                    s.theme_mode = if i % 2 == 0 { ThemeMode::Dark } else { ThemeMode::Light };
+                    s.theme_mode = if i % 2 == 0 {
+                        ThemeMode::Dark
+                    } else {
+                        ThemeMode::Light
+                    };
                     s.theme_style = styles[i % styles.len()];
                     s.color_scheme = ColorScheme::CyberIndigo;
                 }
@@ -292,7 +310,11 @@ fn test_unorthodox_concurrent_worker_event_stress() {
                 }
                 {
                     let mut s = state.write().unwrap();
-                    s.engine_mode = if i % 2 == 0 { EngineMode::Instant } else { EngineMode::Normal };
+                    s.engine_mode = if i % 2 == 0 {
+                        EngineMode::Instant
+                    } else {
+                        EngineMode::Normal
+                    };
                     s.active_view = views[i % views.len()];
                 }
                 thread::yield_now();
@@ -316,6 +338,8 @@ fn test_unorthodox_concurrent_worker_event_stress() {
 
     // Wait for all workers to complete cleanly
     for handle in handles {
-        handle.join().expect("Worker thread panicked during concurrent stress test");
+        handle
+            .join()
+            .expect("Worker thread panicked during concurrent stress test");
     }
 }

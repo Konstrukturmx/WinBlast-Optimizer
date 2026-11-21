@@ -1205,46 +1205,98 @@ pub fn lookup(id: &str) -> Option<LocalizedTweakText> {
 #[allow(dead_code)]
 pub fn tweak_title(id: &str) -> Option<&'static str> {
     match id {
-        "disable_dwm_animations_per_process" => Some("Desactivar animaciones de transición por proceso de DWM"),
-        "disable_dwm_composition_throttle" => Some("Desactivar limitación de composición del Administrador de ventanas de escritorio"),
-        "disable_kernel_mitigations_audit" => Some("Desactivar modo de auditoría de mitigaciones del kernel"),
+        "disable_dwm_animations_per_process" => {
+            Some("Desactivar animaciones de transición por proceso de DWM")
+        }
+        "disable_dwm_composition_throttle" => {
+            Some("Desactivar limitación de composición del Administrador de ventanas de escritorio")
+        }
+        "disable_kernel_mitigations_audit" => {
+            Some("Desactivar modo de auditoría de mitigaciones del kernel")
+        }
         "disable_llmnr_protocol" => Some("Desactivar protocolo de resolución de nombres LLMNR"),
         "disable_memory_compression" => Some("Desactivar motor de compresión de memoria"),
         "disable_netbios_over_tcp" => Some("Desactivar NetBIOS a través de TCP/IP"),
-        "disable_ntfs_encryption_driver" => Some("Desactivar controlador de cifrado del sistema de archivos NTFS (EFS)"),
-        "disable_page_file_encryption" => Some("Desactivar cifrado de archivo de paginación y borrado al apagar"),
-        "disable_processor_idle_demote_threshold" => Some("Desactivar degradación de estados de inactividad del procesador"),
+        "disable_ntfs_encryption_driver" => {
+            Some("Desactivar controlador de cifrado del sistema de archivos NTFS (EFS)")
+        }
+        "disable_page_file_encryption" => {
+            Some("Desactivar cifrado de archivo de paginación y borrado al apagar")
+        }
+        "disable_processor_idle_demote_threshold" => {
+            Some("Desactivar degradación de estados de inactividad del procesador")
+        }
         "disable_rss_base_cpu" => Some("Establecer CPU base RSS para distribución de carga de red"),
-        "disable_spectre_meltdown_mitigations" => Some("Desactivar mitigaciones de vulnerabilidad de CPU Spectre/Meltdown"),
-        "disable_threaded_dpc_optimization" => Some("Desactivar DPC en subprocesos para menor latencia de interrupciones"),
-        "disable_windows_search_indexer" => Some("Desactivar servicio de indización de Windows Search"),
+        "disable_spectre_meltdown_mitigations" => {
+            Some("Desactivar mitigaciones de vulnerabilidad de CPU Spectre/Meltdown")
+        }
+        "disable_threaded_dpc_optimization" => {
+            Some("Desactivar DPC en subprocesos para menor latencia de interrupciones")
+        }
+        "disable_windows_search_indexer" => {
+            Some("Desactivar servicio de indización de Windows Search")
+        }
         "enable_hardware_task_offload" => Some("Habilitar descarga de tareas de hardware TCP/IP"),
         "enable_large_ntfs_frs" => Some("Habilitar segmentos grandes de registro de archivos NTFS"),
         "enable_ultimate_performance_plan" => Some("Activar plan de energía de máximo rendimiento"),
-        "increase_gpu_tdr_timeout" => Some("Aumentar retraso de detección y recuperación de tiempo de espera de GPU"),
+        "increase_gpu_tdr_timeout" => {
+            Some("Aumentar retraso de detección y recuperación de tiempo de espera de GPU")
+        }
         "increase_irp_stack_size" => Some("Aumentar tamaño de pila IRP para E/S de red y disco"),
-        "increase_max_connections_per_server" => Some("Aumentar el máximo de conexiones HTTP por servidor"),
-        "increase_nonpaged_pool_quota" => Some("Aumentar cuota del grupo no paginado para estabilidad de controladores"),
-        "optimize_additional_critical_worker_threads" => Some("Aumentar subprocesos de trabajo adicionales del kernel"),
+        "increase_max_connections_per_server" => {
+            Some("Aumentar el máximo de conexiones HTTP por servidor")
+        }
+        "increase_nonpaged_pool_quota" => {
+            Some("Aumentar cuota del grupo no paginado para estabilidad de controladores")
+        }
+        "optimize_additional_critical_worker_threads" => {
+            Some("Aumentar subprocesos de trabajo adicionales del kernel")
+        }
         "optimize_default_ttl" => Some("Establecer TTL óptimo predeterminado de paquetes IP"),
-        "optimize_disk_io_page_lock_limit" => Some("Aumentar límite de bloqueo de páginas de E/S para transferencias grandes"),
+        "optimize_disk_io_page_lock_limit" => {
+            Some("Aumentar límite de bloqueo de páginas de E/S para transferencias grandes")
+        }
         "optimize_dns_cache_parameters" => Some("Optimizar tamaño de caché y TTL del cliente DNS"),
-        "optimize_gpu_preemption_level" => Some("Configurar programador de GPU para preferencia solo de cómputo"),
-        "optimize_interrupt_steering" => Some("Optimizar afinidad de interrupciones y directiva de direccionamiento"),
-        "optimize_mmcss_proaudio_scheduling" => Some("MMCSS Pro Audio — Máxima prioridad de programación"),
+        "optimize_gpu_preemption_level" => {
+            Some("Configurar programador de GPU para preferencia solo de cómputo")
+        }
+        "optimize_interrupt_steering" => {
+            Some("Optimizar afinidad de interrupciones y directiva de direccionamiento")
+        }
+        "optimize_mmcss_proaudio_scheduling" => {
+            Some("MMCSS Pro Audio — Máxima prioridad de programación")
+        }
         "optimize_ntfs_memory_usage" => Some("Caché agresiva de grupo paginado NTFS"),
-        "optimize_object_manager_quota" => Some("Aumentar cuota de identificadores del Administrador de objetos del kernel"),
-        "optimize_timer_resolution_requests" => Some("Permitir que las aplicaciones soliciten alta resolución de temporizador"),
-                "disable_driver_search_order_probing" => Some("Desactivar sondeo de búsqueda de controladores en Windows Update"),
+        "optimize_object_manager_quota" => {
+            Some("Aumentar cuota de identificadores del Administrador de objetos del kernel")
+        }
+        "optimize_timer_resolution_requests" => {
+            Some("Permitir que las aplicaciones soliciten alta resolución de temporizador")
+        }
+        "disable_driver_search_order_probing" => {
+            Some("Desactivar sondeo de búsqueda de controladores en Windows Update")
+        }
         "disable_fast_user_switching" => Some("Desactivar cambio rápido de usuario"),
         "disable_ip_source_routing" => Some("Desactivar enrutamiento de origen IP"),
-        "disable_netsh_teredo_tunneling" => Some("Desactivar tunelización de transición Teredo IPv6"),
-        "disable_network_adapter_power_saving" => Some("Desactivar ahorro de energía PnP del adaptador de red NDIS"),
-        "disable_remote_desktop_udp" => Some("Desactivar transporte UDP del cliente de Escritorio remoto"),
-        "disable_smart_card_service" => Some("Desactivar servicio de tarjeta inteligente (SCardSvr)"),
-        "optimize_kerberos_ticket_cache" => Some("Optimizar búfer de tamaño máximo de token Kerberos"),
+        "disable_netsh_teredo_tunneling" => {
+            Some("Desactivar tunelización de transición Teredo IPv6")
+        }
+        "disable_network_adapter_power_saving" => {
+            Some("Desactivar ahorro de energía PnP del adaptador de red NDIS")
+        }
+        "disable_remote_desktop_udp" => {
+            Some("Desactivar transporte UDP del cliente de Escritorio remoto")
+        }
+        "disable_smart_card_service" => {
+            Some("Desactivar servicio de tarjeta inteligente (SCardSvr)")
+        }
+        "optimize_kerberos_ticket_cache" => {
+            Some("Optimizar búfer de tamaño máximo de token Kerberos")
+        }
         "optimize_tcp_syn_attack_protection" => Some("Habilitar protección contra ataques TCP SYN"),
-        "optimize_usb_selective_suspend_hub" => Some("Desactivar suspensión selectiva global de concentradores USB"),
+        "optimize_usb_selective_suspend_hub" => {
+            Some("Desactivar suspensión selectiva global de concentradores USB")
+        }
         _ => lookup(id).map(|t| t.title),
     }
 }

@@ -1,11 +1,11 @@
 [package]
 name = "winblast0"
-version = "1.6.1"
+version = "1.7.0"
 edition = "2021"
 description = "WinBlast0 – Windows System Optimizer & Debloater"
 
 [features]
-default = ["ui-rune"]
+default = ["ui-slint", "ui-rune"]
 ui-rune = ["dep:rune", "dep:rune-kit", "dep:rune-motion"]
 ui-slint = ["dep:slint", "dep:slint-build"]
 live-preview = ["slint/live-preview"]
@@ -94,6 +94,8 @@ uuid = { version = "1", features = ["v4"] }
 [dev-dependencies]
 proptest = "1.6"
 i-slint-backend-testing = "1.19.0"
+rune = { path = "C:/Hive/rune-framework/crates/rune" }
+rune-kit = { path = "C:/Hive/rune-framework/crates/rune-kit" }
 
 [build-dependencies]
 embed-manifest = "1.4"

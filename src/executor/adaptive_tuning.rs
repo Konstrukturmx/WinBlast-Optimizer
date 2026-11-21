@@ -6,10 +6,10 @@
 //! 2. Setting a fixed static pagefile (InitialSize == MaximumSize) on the primary drive,
 //!    completely eliminating dynamic NTFS pagefile expansion hitches during gaming.
 
-use serde::{Deserialize, Serialize};
 use crate::core::backend::SystemBackend;
 use crate::core::error::WinBlastError;
 use crate::hardware::storage::StorageMediumInfo;
+use serde::{Deserialize, Serialize};
 
 /// Physical RAM statistics.
 #[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize)]
@@ -21,8 +21,8 @@ pub struct MemoryStats {
 /// Query total physical RAM via Win32 `GlobalMemoryStatusEx`.
 #[cfg(windows)]
 pub fn query_physical_ram() -> MemoryStats {
-    use windows::Win32::System::SystemInformation::{GlobalMemoryStatusEx, MEMORYSTATUSEX};
     use std::mem::size_of;
+    use windows::Win32::System::SystemInformation::{GlobalMemoryStatusEx, MEMORYSTATUSEX};
 
     let mut mem = MEMORYSTATUSEX {
         dwLength: size_of::<MEMORYSTATUSEX>() as u32,
@@ -64,7 +64,10 @@ pub struct AdaptiveTuningConfig {
 }
 
 /// Evaluates optimal adaptive storage and memory tuning parameters.
-pub fn evaluate_adaptive_tuning(storage: &StorageMediumInfo, memory: &MemoryStats) -> AdaptiveTuningConfig {
+pub fn evaluate_adaptive_tuning(
+    storage: &StorageMediumInfo,
+    memory: &MemoryStats,
+) -> AdaptiveTuningConfig {
     // Rule 1: SysMain & MMAgent
     // If Solid State Drive AND RAM >= 16 GB -> Disable SysMain and MMAgent prelaunch to eliminate write amplification.
     // If HDD or RAM < 16 GB -> Keep SysMain in delayed-auto mode.
@@ -113,7 +116,12 @@ pub fn apply_adaptive_tuning<B: SystemBackend>(
 
         // Run PowerShell Disable-MMAgent -ApplicationPreLaunch
         let _ = crate::core::process::SilentCommand::new("powershell.exe")
-            .args(["-NoProfile", "-NonInteractive", "-Command", "Disable-MMAgent -ApplicationPreLaunch -ErrorAction SilentlyContinue"])
+            .args([
+                "-NoProfile",
+                "-NonInteractive",
+                "-Command",
+                "Disable-MMAgent -ApplicationPreLaunch -ErrorAction SilentlyContinue",
+            ])
             .output();
     } else {
         // Delayed auto-start
@@ -134,7 +142,10 @@ pub fn apply_adaptive_tuning<B: SystemBackend>(
 
     // 2. Configure Static Anti-Stutter Pagefile (Initial == Maximum)
     // Multi-SZ PagingFiles entry in HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management
-    let pagefile_spec = format!("{}:\\pagefile.sys {} {}", drive_letter, config.recommended_static_pagefile_mb, config.recommended_static_pagefile_mb);
+    let pagefile_spec = format!(
+        "{}:\\pagefile.sys {} {}",
+        drive_letter, config.recommended_static_pagefile_mb, config.recommended_static_pagefile_mb
+    );
     backend.reg_set_string(
         "HKLM",
         "SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management",
@@ -216,12 +227,14 @@ mod tests {
         let res = apply_adaptive_tuning(&sandbox, &config, 'C');
         assert!(res.is_ok());
 
-        let pfiles = sandbox.reg_get_string(
-            "HKLM",
-            "SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management",
-            "PagingFiles",
-            None,
-        ).map(|s| s.value);
+        let pfiles = sandbox
+            .reg_get_string(
+                "HKLM",
+                "SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management",
+                "PagingFiles",
+                None,
+            )
+            .map(|s| s.value);
         assert_eq!(pfiles, Some("C:\\pagefile.sys 12288 12288".to_string()));
     }
 }

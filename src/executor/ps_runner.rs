@@ -33,7 +33,9 @@ pub fn remove_appx_package(package_family: &str) -> crate::core::error::Result<(
     let output = crate::core::process::SilentCommand::new("powershell")
         .args(["-NoProfile", "-NonInteractive", "-Command", &script])
         .output()
-        .map_err(|e| crate::core::error::WinBlastError::AppX(format!("PowerShell AppX error: {}", e)))?;
+        .map_err(|e| {
+            crate::core::error::WinBlastError::AppX(format!("PowerShell AppX error: {}", e))
+        })?;
 
     if !output.status.success() {
         let stderr = String::from_utf8_lossy(&output.stderr);
@@ -105,15 +107,14 @@ fn find_exact_marker_line(content: &str, target: &str, start_offset: usize) -> O
 /// Pure content helper parsing uncommented `0.0.0.0`/`127.0.0.1`/`::1`/`::` rules and appending only genuinely
 /// unblocked telemetry hosts with Windows CRLF formatting inside a marked `# WinBlast0 Telemetry Blocklist` section.
 pub fn block_telemetry_hosts_in_content(existing: &str, hosts: &[&str]) -> (String, usize) {
-    let already_blocked = crate::scanner::telemetry_scanner::parse_blocked_hosts_from_content(existing);
+    let already_blocked =
+        crate::scanner::telemetry_scanner::parse_blocked_hosts_from_content(existing);
     let mut updated = existing.to_string();
     let mut added = 0usize;
     let mut to_append = String::new();
 
     for host in hosts {
-        let is_already_blocked = already_blocked
-            .iter()
-            .any(|b| b.eq_ignore_ascii_case(host));
+        let is_already_blocked = already_blocked.iter().any(|b| b.eq_ignore_ascii_case(host));
         if !is_already_blocked {
             to_append.push_str(&format!("0.0.0.0 {}\r\n", host));
             added += 1;
@@ -153,7 +154,8 @@ pub fn unblock_telemetry_hosts_in_content(existing: &str) -> (String, bool) {
     let Some(header_idx) = find_exact_marker_line(existing, HOSTS_BLOCK_HEADER, 0) else {
         return (existing.to_string(), false);
     };
-    let has_exact_footer = find_exact_marker_line(existing, HOSTS_BLOCK_FOOTER, header_idx).is_some();
+    let has_exact_footer =
+        find_exact_marker_line(existing, HOSTS_BLOCK_FOOTER, header_idx).is_some();
 
     let mut out = String::with_capacity(existing.len());
     let mut in_section = false;
@@ -232,7 +234,10 @@ pub fn block_telemetry_hosts(hosts: &[&str]) -> crate::core::error::Result<usize
 
 /// Add an outbound block firewall rule via PowerShell.
 #[allow(dead_code)]
-pub fn add_firewall_block_rule(rule_name: &str, remote_address: &str) -> crate::core::error::Result<()> {
+pub fn add_firewall_block_rule(
+    rule_name: &str,
+    remote_address: &str,
+) -> crate::core::error::Result<()> {
     let script = format!(
         "New-NetFirewallRule -DisplayName '{}' -Direction Outbound -Action Block -RemoteAddress '{}' -ErrorAction SilentlyContinue",
         rule_name.replace('\'', "''"),

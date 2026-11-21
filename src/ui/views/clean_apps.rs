@@ -33,7 +33,11 @@ fn sub_tab_btn(
         .py(6.0)
         .radius(p.btn_radius)
         .fill(if active { p.accent } else { p.bg_primary })
-        .hover(if active { p.accent_hover } else { p.bg_card_hover })
+        .hover(if active {
+            p.accent_hover
+        } else {
+            p.bg_card_hover
+        })
         .border(p.border_width, if active { p.accent } else { p.border })
         .motion(p.motion)
         .center()
@@ -141,7 +145,11 @@ fn build_disk_cleaner_body(s: &AppState, p: &ThemePalette, tier: LayoutTier) -> 
                     |s| s.scan_clean_targets_async(),
                 ))
                 .child(action_button_guarded(
-                    format!("{} ({})", s.tr(TextKey::CleanSelectedNow), format_mb(selected_reclaimable)),
+                    format!(
+                        "{} ({})",
+                        s.tr(TextKey::CleanSelectedNow),
+                        format_mb(selected_reclaimable)
+                    ),
                     p.accent,
                     Color::WHITE,
                     !s.clean_apps_busy,
@@ -156,11 +164,15 @@ fn build_disk_cleaner_body(s: &AppState, p: &ThemePalette, tier: LayoutTier) -> 
                 .flex_wrap()
                 .gaps(8.0, 10.0)
                 .child(
-                    text(format!("{}: {}", s.tr(TextKey::TotalReclaimable), format_mb(total_reclaimable)))
-                        .font(rune::tok::type_::LABEL)
-                        .color(p.accent)
-                        .shrink()
-                        .wrap(),
+                    text(format!(
+                        "{}: {}",
+                        s.tr(TextKey::TotalReclaimable),
+                        format_mb(total_reclaimable)
+                    ))
+                    .font(rune::tok::type_::LABEL)
+                    .color(p.accent)
+                    .shrink()
+                    .wrap(),
                 )
                 .child(
                     text(format!("{}: {}", s.tr(TextKey::LastCleaned), last_freed))
@@ -193,12 +205,16 @@ fn build_disk_cleaner_body(s: &AppState, p: &ThemePalette, tier: LayoutTier) -> 
                     .border(1.0, p.warning.alpha(0.45))
                     .gap(4.0)
                     .child(
-                        text(format!("{}: {}", s.tr(TextKey::CleanErrorLabel), errs.join(" · ")))
-                            .font(rune::tok::type_::LABEL)
-                            .color(p.warning)
-                            .shrink()
-                            .wrap()
-                            .wrap_anywhere(),
+                        text(format!(
+                            "{}: {}",
+                            s.tr(TextKey::CleanErrorLabel),
+                            errs.join(" · ")
+                        ))
+                        .font(rune::tok::type_::LABEL)
+                        .color(p.warning)
+                        .shrink()
+                        .wrap()
+                        .wrap_anywhere(),
                     ),
             );
         }
@@ -255,8 +271,19 @@ fn build_disk_cleaner_body(s: &AppState, p: &ThemePalette, tier: LayoutTier) -> 
                 .min_w(0.0)
                 .padding(10.0)
                 .radius(6.0)
-                .fill(if t.selected { p.bg_card_hover } else { p.bg_card })
-                .border(1.0, if t.selected { p.accent.alpha(0.35) } else { p.border })
+                .fill(if t.selected {
+                    p.bg_card_hover
+                } else {
+                    p.bg_card
+                })
+                .border(
+                    1.0,
+                    if t.selected {
+                        p.accent.alpha(0.35)
+                    } else {
+                        p.border
+                    },
+                )
                 .hover(p.bg_card_hover)
                 .motion(p.motion)
                 .flex_wrap()
@@ -288,7 +315,11 @@ fn build_disk_cleaner_body(s: &AppState, p: &ThemePalette, tier: LayoutTier) -> 
                                 s.tr(TextKey::FilesUnit)
                             ))
                             .font(rune::tok::type_::LABEL)
-                            .color(if t.reclaimable_bytes > 0 { p.accent } else { p.text_muted })
+                            .color(if t.reclaimable_bytes > 0 {
+                                p.accent
+                            } else {
+                                p.text_muted
+                            })
                             .shrink()
                             .wrap(),
                         ),
@@ -310,7 +341,9 @@ fn build_disk_cleaner_body(s: &AppState, p: &ThemePalette, tier: LayoutTier) -> 
             .min_w(0.0)
             .min_h(100.0)
             .pr(14.0)
-            .scroll(ScrollSpec { stick_bottom: false })
+            .scroll(ScrollSpec {
+                stick_bottom: false,
+            })
             .child(list_col)
             .winblast_scroll(p)
     };
@@ -379,7 +412,11 @@ fn build_appx_features_body(s: &AppState, p: &ThemePalette, tier: LayoutTier) ->
                             |s| s.scan_appx_and_features_async(),
                         ))
                         .child(action_button_guarded(
-                            format!("{} ({})", s.tr(TextKey::RemoveSelectedAppx), s.selected_appx.len()),
+                            format!(
+                                "{} ({})",
+                                s.tr(TextKey::RemoveSelectedAppx),
+                                s.selected_appx.len()
+                            ),
                             p.danger,
                             Color::WHITE,
                             !s.clean_apps_busy,
@@ -482,7 +519,11 @@ fn build_appx_features_body(s: &AppState, p: &ThemePalette, tier: LayoutTier) ->
     let k_idxs = Rc::clone(&filtered_appx_idxs);
     let b_idxs = Rc::clone(&filtered_appx_idxs);
     let count = filtered_appx_idxs.len();
-    let row_h = if tier == LayoutTier::Compact { 104.0 } else { 72.0 };
+    let row_h = if tier == LayoutTier::Compact {
+        104.0
+    } else {
+        72.0
+    };
 
     let appx_panel = if count == 0 {
         empty_card(
@@ -499,7 +540,9 @@ fn build_appx_features_body(s: &AppState, p: &ThemePalette, tier: LayoutTier) ->
             .w_full()
             .min_w(0.0)
             .pr(14.0)
-            .scroll(ScrollSpec { stick_bottom: false });
+            .scroll(ScrollSpec {
+                stick_bottom: false,
+            });
         sc = if tier == LayoutTier::Compact {
             sc.h(220.0)
         } else {
@@ -544,11 +587,7 @@ fn build_appx_features_body(s: &AppState, p: &ThemePalette, tier: LayoutTier) ->
                                 .fill(p.danger.alpha(0.16))
                                 .border(1.0, p.danger.alpha(0.45))
                                 .center()
-                                .child(
-                                    text("🔒")
-                                        .font(rune::tok::type_::LABEL)
-                                        .color(p.danger),
-                                )
+                                .child(text("🔒").font(rune::tok::type_::LABEL).color(p.danger))
                         } else {
                             switch_indicator(selected, s.clean_apps_busy, sw_key, p)
                         };
@@ -680,11 +719,14 @@ fn build_appx_features_body(s: &AppState, p: &ThemePalette, tier: LayoutTier) ->
                             .min_w(160.0)
                             .gap(2.0)
                             .child({
-                                let (disp_name, _) = crate::core::tweak_i18n::localize_optional_feature(
-                                    s.language,
-                                    &feat.name,
-                                )
-                                .unwrap_or((feat.display_name.as_str(), feat.description.as_str()));
+                                let (disp_name, _) =
+                                    crate::core::tweak_i18n::localize_optional_feature(
+                                        s.language, &feat.name,
+                                    )
+                                    .unwrap_or((
+                                        feat.display_name.as_str(),
+                                        feat.description.as_str(),
+                                    ));
                                 text(disp_name)
                                     .font(rune::tok::type_::BODY)
                                     .color(p.text_primary)
@@ -692,11 +734,14 @@ fn build_appx_features_body(s: &AppState, p: &ThemePalette, tier: LayoutTier) ->
                                     .wrap()
                             })
                             .child({
-                                let (_, disp_desc) = crate::core::tweak_i18n::localize_optional_feature(
-                                    s.language,
-                                    &feat.name,
-                                )
-                                .unwrap_or((feat.display_name.as_str(), feat.description.as_str()));
+                                let (_, disp_desc) =
+                                    crate::core::tweak_i18n::localize_optional_feature(
+                                        s.language, &feat.name,
+                                    )
+                                    .unwrap_or((
+                                        feat.display_name.as_str(),
+                                        feat.description.as_str(),
+                                    ));
                                 text(disp_desc)
                                     .font(rune::tok::type_::LABEL)
                                     .color(p.text_muted)
@@ -726,10 +771,20 @@ fn build_appx_features_body(s: &AppState, p: &ThemePalette, tier: LayoutTier) ->
                                     s.tr(TextKey::ToggleEnable)
                                 },
                                 if enabled { p.btn_secondary } else { p.accent },
-                                if enabled { p.text_primary } else { Color::WHITE },
+                                if enabled {
+                                    p.text_primary
+                                } else {
+                                    Color::WHITE
+                                },
                                 !s.clean_apps_busy,
                                 p,
-                                move |s| s.toggle_optional_feature_async(f_name.clone(), f_kind, target_enable),
+                                move |s| {
+                                    s.toggle_optional_feature_async(
+                                        f_name.clone(),
+                                        f_kind,
+                                        target_enable,
+                                    )
+                                },
                             )),
                     ),
             );
@@ -746,7 +801,9 @@ fn build_appx_features_body(s: &AppState, p: &ThemePalette, tier: LayoutTier) ->
             .min_w(0.0)
             .pr(14.0)
             .clip_soft(0.0)
-            .scroll(ScrollSpec { stick_bottom: false })
+            .scroll(ScrollSpec {
+                stick_bottom: false,
+            })
             .child(feat_col)
             .winblast_scroll(p)
     };
@@ -867,12 +924,9 @@ fn build_winget_body(s: &AppState, p: &ThemePalette, tier: LayoutTier) -> El {
             let app_id = app.id.to_string();
             let row_key = format!("wg_{}", app.id);
             let sw_key = format!("wg_sw_{}", app.id);
-            let app_desc = crate::core::tweak_i18n::localize_winget(
-                s.language,
-                app.id,
-            )
-            .map(|(_, d)| d)
-            .unwrap_or(app.description);
+            let app_desc = crate::core::tweak_i18n::localize_winget(s.language, app.id)
+                .map(|(_, d)| d)
+                .unwrap_or(app.description);
             let loc_cat = crate::core::tweak_i18n::localize_winget(s.language, app.id)
                 .map(|(c, _)| c)
                 .unwrap_or(app.category);
@@ -932,7 +986,9 @@ fn build_winget_body(s: &AppState, p: &ThemePalette, tier: LayoutTier) -> El {
                 .min_w(0.0)
                 .min_h(100.0)
                 .pr(14.0)
-                .scroll(ScrollSpec { stick_bottom: false })
+                .scroll(ScrollSpec {
+                    stick_bottom: false,
+                })
                 .child(cards)
                 .winblast_scroll(p)
         }
@@ -955,7 +1011,11 @@ fn build_winget_body(s: &AppState, p: &ThemePalette, tier: LayoutTier) -> El {
 pub fn view(s: &AppState, tier: LayoutTier) -> El {
     let p = s.palette();
     let _style = s.theme_style;
-    let pad = if tier == LayoutTier::Compact { 10.0 } else { p.card_padding };
+    let pad = if tier == LayoutTier::Compact {
+        10.0
+    } else {
+        p.card_padding
+    };
 
     let mut header_title_row = row()
         .w_full()
@@ -972,7 +1032,8 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
                 .wrap(),
         );
     if s.clean_apps_busy {
-        header_title_row = header_title_row.child(pill_badge(s.tr(TextKey::BusyWorking), p.accent, p));
+        header_title_row =
+            header_title_row.child(pill_badge(s.tr(TextKey::BusyWorking), p.accent, p));
     }
 
     let header = col()
@@ -1033,7 +1094,12 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
         .child(body);
 
     if tier == LayoutTier::Compact {
-        outer.key("clean_apps_compact_viewport").scroll(ScrollSpec { stick_bottom: false }).winblast_scroll(p)
+        outer
+            .key("clean_apps_compact_viewport")
+            .scroll(ScrollSpec {
+                stick_bottom: false,
+            })
+            .winblast_scroll(p)
     } else {
         outer
     }

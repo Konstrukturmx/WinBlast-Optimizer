@@ -54,11 +54,7 @@ fn render_incompatible_card(
                 .flex_wrap()
                 .gap(6.0)
                 .items_center()
-                .child(
-                    text("⚠")
-                        .font(rune::tok::type_::LABEL)
-                        .color(amber_warning),
-                )
+                .child(text("⚠").font(rune::tok::type_::LABEL).color(amber_warning))
                 .child(
                     text(s.tr(TextKey::NotSupportedOnSystem))
                         .font(rune::tok::type_::SECTION)
@@ -117,12 +113,16 @@ fn render_incompatible_card(
                         ),
                 )
                 .child(
-                    text(format!("{} {}", req_vendor, s.tr(TextKey::GpuRequiredAlert)))
-                        .font(rune::tok::type_::BODY)
-                        .color(p.text_primary)
-                        .shrink()
-                        .wrap()
-                        .wrap_anywhere(),
+                    text(format!(
+                        "{} {}",
+                        req_vendor,
+                        s.tr(TextKey::GpuRequiredAlert)
+                    ))
+                    .font(rune::tok::type_::BODY)
+                    .color(p.text_primary)
+                    .shrink()
+                    .wrap()
+                    .wrap_anywhere(),
                 ),
         )
         .child(
@@ -166,7 +166,8 @@ fn render_compatible_card(
         Some(sr) => tweak_state_meta(&sr.current_state, s),
         None => (s.tr(TextKey::StatusReady), p.text_muted),
     };
-    let is_not_applicable = scan_res.is_some_and(|sr| sr.current_state == TweakState::NotApplicable);
+    let is_not_applicable =
+        scan_res.is_some_and(|sr| sr.current_state == TweakState::NotApplicable);
     let switch_ctrl = if is_not_applicable {
         pill_badge(s.tr(TextKey::StatusNotApplicable), p.text_muted, p)
     } else {
@@ -183,7 +184,14 @@ fn render_compatible_card(
         .padding(p.card_padding)
         .radius(p.card_radius)
         .fill(p.bg_card)
-        .border(1.0, if is_active { p.accent.alpha(0.6) } else { p.border })
+        .border(
+            1.0,
+            if is_active {
+                p.accent.alpha(0.6)
+            } else {
+                p.border
+            },
+        )
         .hover(p.bg_card_hover)
         .motion(p.motion)
         .gap(10.0)
@@ -250,13 +258,16 @@ fn render_compatible_card(
                 ),
         )
         .child(
-            text(s.tweak_description(&tweak.id, &tweak.description).to_string())
-                .font(rune::tok::type_::BODY)
-                .color(p.text_secondary)
-                .shrink()
-                .wrap()
-                .wrap_anywhere()
-                .min_h(48.0),
+            text(
+                s.tweak_description(&tweak.id, &tweak.description)
+                    .to_string(),
+            )
+            .font(rune::tok::type_::BODY)
+            .color(p.text_secondary)
+            .shrink()
+            .wrap()
+            .wrap_anywhere()
+            .min_h(48.0),
         )
         .child(
             row()
@@ -421,8 +432,16 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
             } else {
                 s.tr(TextKey::EnableHags)
             },
-            if hags_enabled { p.btn_secondary } else { p.accent },
-            if hags_enabled { p.text_primary } else { Color::WHITE },
+            if hags_enabled {
+                p.btn_secondary
+            } else {
+                p.accent
+            },
+            if hags_enabled {
+                p.text_primary
+            } else {
+                Color::WHITE
+            },
             !s.hags_inflight && !s.is_rolling_back,
             p,
             move |s| s.toggle_hags(!hags_enabled),
@@ -506,8 +525,16 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
                         } else {
                             s.tr(TextKey::DisableMpoFix)
                         },
-                        if mpo_disabled { p.btn_secondary } else { p.accent },
-                        if mpo_disabled { p.text_primary } else { Color::WHITE },
+                        if mpo_disabled {
+                            p.btn_secondary
+                        } else {
+                            p.accent
+                        },
+                        if mpo_disabled {
+                            p.text_primary
+                        } else {
+                            Color::WHITE
+                        },
                         !s.mpo_inflight && !s.is_rolling_back,
                         p,
                         move |s| s.toggle_mpo(!mpo_disabled),
@@ -516,17 +543,13 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
         p,
     );
 
-    let mut msi_section = col()
-        .gap(10.0)
-        .w_full()
-        .min_w(0.0)
-        .child(
-            text(s.tr(TextKey::PcieMsiTitle))
-                .font(rune::tok::type_::TITLE)
-                .color(p.accent)
-                .shrink()
-                .wrap(),
-        );
+    let mut msi_section = col().gap(10.0).w_full().min_w(0.0).child(
+        text(s.tr(TextKey::PcieMsiTitle))
+            .font(rune::tok::type_::TITLE)
+            .color(p.accent)
+            .shrink()
+            .wrap(),
+    );
 
     if s.gpus.is_empty() {
         msi_section = msi_section.child(
@@ -543,7 +566,11 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
             } else {
                 s.tr(TextKey::MsiDisabledStatus)
             };
-            let msi_color = if gpu.msi_enabled { p.success } else { p.warning };
+            let msi_color = if gpu.msi_enabled {
+                p.success
+            } else {
+                p.warning
+            };
 
             let pnp_id = gpu.pnp_instance_id.clone();
             let pnp_valid = !pnp_id.trim().is_empty();
@@ -580,24 +607,48 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
                 )
                 .child(action_button_guarded(
                     s.tr(TextKey::PriorityLow),
-                    if current_priority == 1 { p.accent } else { p.btn_secondary },
-                    if current_priority == 1 { Color::WHITE } else { p.text_primary },
+                    if current_priority == 1 {
+                        p.accent
+                    } else {
+                        p.btn_secondary
+                    },
+                    if current_priority == 1 {
+                        Color::WHITE
+                    } else {
+                        p.text_primary
+                    },
                     can_edit_msi,
                     p,
                     move |s| s.toggle_gpu_msi(p1.clone(), msi_en, 1),
                 ))
                 .child(action_button_guarded(
                     s.tr(TextKey::PriorityNormal),
-                    if current_priority == 2 { p.accent } else { p.btn_secondary },
-                    if current_priority == 2 { Color::WHITE } else { p.text_primary },
+                    if current_priority == 2 {
+                        p.accent
+                    } else {
+                        p.btn_secondary
+                    },
+                    if current_priority == 2 {
+                        Color::WHITE
+                    } else {
+                        p.text_primary
+                    },
                     can_edit_msi,
                     p,
                     move |s| s.toggle_gpu_msi(p2.clone(), msi_en, 2),
                 ))
                 .child(action_button_guarded(
                     s.tr(TextKey::PriorityHigh),
-                    if current_priority == 3 { p.accent } else { p.btn_secondary },
-                    if current_priority == 3 { Color::WHITE } else { p.text_primary },
+                    if current_priority == 3 {
+                        p.accent
+                    } else {
+                        p.btn_secondary
+                    },
+                    if current_priority == 3 {
+                        Color::WHITE
+                    } else {
+                        p.text_primary
+                    },
                     can_edit_msi,
                     p,
                     move |s| s.toggle_gpu_msi(p3.clone(), msi_en, 3),
@@ -613,7 +664,12 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
                 .w_full()
                 .min_w(0.0)
                 .gap(8.0)
-                .child(kv_row(s.tr(TextKey::AdapterName), gpu.name.clone(), compact, p))
+                .child(kv_row(
+                    s.tr(TextKey::AdapterName),
+                    gpu.name.clone(),
+                    compact,
+                    p,
+                ))
                 .child(kv_row(s.tr(TextKey::DevicePnpId), pnp_display, compact, p))
                 .child(
                     row()
@@ -701,13 +757,7 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
             let is_active = s.is_switch_active(&tweak.id);
             let in_flight = s.in_flight_tweaks.contains(&tweak.id);
             cards.push(render_compatible_card(
-                tweak,
-                scan_res,
-                is_active,
-                in_flight,
-                s,
-                p,
-                min_card_w,
+                tweak, scan_res, is_active, in_flight, s, p, min_card_w,
             ));
         }
     }
@@ -755,7 +805,11 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
                 .children(cards),
         );
 
-    let pad = if tier == LayoutTier::Compact { 10.0 } else { 14.0 };
+    let pad = if tier == LayoutTier::Compact {
+        10.0
+    } else {
+        14.0
+    };
     col()
         .key("gpu_tuning_viewport")
         .w_full()
@@ -765,7 +819,9 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
         .padding(pad)
         .pr(14.0)
         .gap(14.0)
-        .scroll(ScrollSpec { stick_bottom: false })
+        .scroll(ScrollSpec {
+            stick_bottom: false,
+        })
         .child(header)
         .child(hardware_banner)
         .child(display_engine_card)

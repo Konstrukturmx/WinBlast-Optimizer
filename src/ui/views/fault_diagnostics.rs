@@ -16,7 +16,10 @@ use crate::ui::LayoutTier;
 pub fn view(s: &AppState, _tier: LayoutTier) -> El {
     let p = s.palette();
     let style = s.theme_style;
-    let report = s.fault_report.clone().unwrap_or_else(FaultDiagnosticsReport::scan);
+    let report = s
+        .fault_report
+        .clone()
+        .unwrap_or_else(FaultDiagnosticsReport::scan);
 
     col()
         .w_full()

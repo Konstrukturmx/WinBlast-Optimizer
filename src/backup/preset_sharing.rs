@@ -55,34 +55,91 @@ const MIN_PACKAGE_LEN: usize = HEADER_LEN + DIGEST_LEN + 1;
 /// Exhaustive error taxonomy for encoding, decoding, verification, and dry-run.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum PresetError {
-    PackageTooLarge { actual: usize, max: usize },
+    PackageTooLarge {
+        actual: usize,
+        max: usize,
+    },
     UnexpectedEof,
-    TrailingBytes { extra: usize },
-    InvalidMagic { found: [u8; 4] },
-    UnsupportedRevision { found: u32, expected: u32 },
-    PayloadLengthMismatch { declared: usize, consumed: usize },
+    TrailingBytes {
+        extra: usize,
+    },
+    InvalidMagic {
+        found: [u8; 4],
+    },
+    UnsupportedRevision {
+        found: u32,
+        expected: u32,
+    },
+    PayloadLengthMismatch {
+        declared: usize,
+        consumed: usize,
+    },
     InvalidUtf8,
-    EmptyField { field: &'static str },
-    FieldTooLong { field: &'static str, actual: usize, max: usize },
-    InvalidIdentifier { field: &'static str, value: String },
-    InvalidControlChar { field: &'static str },
-    CollectionTooLarge { field: &'static str, actual: usize, max: usize },
-    InvalidEnumTag { field: &'static str, tag: u8 },
-    InvalidGuardRange { min_os_build: u32, max_os_build: u32 },
-    DuplicateTweakId { tweak_id: String },
+    EmptyField {
+        field: &'static str,
+    },
+    FieldTooLong {
+        field: &'static str,
+        actual: usize,
+        max: usize,
+    },
+    InvalidIdentifier {
+        field: &'static str,
+        value: String,
+    },
+    InvalidControlChar {
+        field: &'static str,
+    },
+    CollectionTooLarge {
+        field: &'static str,
+        actual: usize,
+        max: usize,
+    },
+    InvalidEnumTag {
+        field: &'static str,
+        tag: u8,
+    },
+    InvalidGuardRange {
+        min_os_build: u32,
+        max_os_build: u32,
+    },
+    DuplicateTweakId {
+        tweak_id: String,
+    },
     NonCanonicalOverrideOrder,
-    OrphanedOverride { tweak_id: String, param_name: String },
+    OrphanedOverride {
+        tweak_id: String,
+        param_name: String,
+    },
     DigestMismatch,
     MissingRequiredSignature,
     InvalidPublicKey,
     InvalidSignatureEncoding,
     SignatureVerificationFailed,
-    OsBuildIncompatible { current: u32, min: Option<u32>, max: Option<u32> },
-    GpuVendorIncompatible { required: GpuVendor, detected: String },
-    UnknownTweakId { tweak_id: String },
-    DependencyUnsatisfied { tweak_id: String, missing_dependency: String },
-    ConflictingTweaks { tweak_a: String, tweak_b: String },
-    ExecutionFailed { tweak_id: String, reason: String },
+    OsBuildIncompatible {
+        current: u32,
+        min: Option<u32>,
+        max: Option<u32>,
+    },
+    GpuVendorIncompatible {
+        required: GpuVendor,
+        detected: String,
+    },
+    UnknownTweakId {
+        tweak_id: String,
+    },
+    DependencyUnsatisfied {
+        tweak_id: String,
+        missing_dependency: String,
+    },
+    ConflictingTweaks {
+        tweak_a: String,
+        tweak_b: String,
+    },
+    ExecutionFailed {
+        tweak_id: String,
+        reason: String,
+    },
 }
 
 impl fmt::Display for PresetError {
@@ -93,13 +150,19 @@ impl fmt::Display for PresetError {
             }
             Self::UnexpectedEof => write!(f, "unexpected end of binary package"),
             Self::TrailingBytes { extra } => {
-                write!(f, "unexpected {extra} trailing byte(s) after package trailer")
+                write!(
+                    f,
+                    "unexpected {extra} trailing byte(s) after package trailer"
+                )
             }
             Self::InvalidMagic { found } => {
                 write!(f, "invalid package magic: expected WBP1, found {found:?}")
             }
             Self::UnsupportedRevision { found, expected } => {
-                write!(f, "unsupported format revision {found} (expected {expected})")
+                write!(
+                    f,
+                    "unsupported format revision {found} (expected {expected})"
+                )
             }
             Self::PayloadLengthMismatch { declared, consumed } => {
                 write!(f, "payload length mismatch: header declared {declared} bytes, decoder consumed {consumed}")
@@ -116,26 +179,44 @@ impl fmt::Display for PresetError {
                 write!(f, "field '{field}' contains disallowed control characters")
             }
             Self::CollectionTooLarge { field, actual, max } => {
-                write!(f, "collection '{field}' count {actual} exceeds maximum {max}")
+                write!(
+                    f,
+                    "collection '{field}' count {actual} exceeds maximum {max}"
+                )
             }
             Self::InvalidEnumTag { field, tag } => {
                 write!(f, "invalid discriminant {tag} for '{field}'")
             }
-            Self::InvalidGuardRange { min_os_build, max_os_build } => {
-                write!(f, "invalid OS build guard range: min ({min_os_build}) > max ({max_os_build})")
+            Self::InvalidGuardRange {
+                min_os_build,
+                max_os_build,
+            } => {
+                write!(
+                    f,
+                    "invalid OS build guard range: min ({min_os_build}) > max ({max_os_build})"
+                )
             }
             Self::DuplicateTweakId { tweak_id } => {
                 write!(f, "duplicate tweak ID '{tweak_id}' in ordered sequence")
             }
             Self::NonCanonicalOverrideOrder => {
-                write!(f, "parameter overrides are not in strictly ascending canonical key order")
+                write!(
+                    f,
+                    "parameter overrides are not in strictly ascending canonical key order"
+                )
             }
-            Self::OrphanedOverride { tweak_id, param_name } => {
+            Self::OrphanedOverride {
+                tweak_id,
+                param_name,
+            } => {
                 write!(f, "override '{tweak_id}.{param_name}' references a tweak ID not present in preset")
             }
             Self::DigestMismatch => write!(f, "SHA-256 payload digest verification failed"),
             Self::MissingRequiredSignature => {
-                write!(f, "signature policy requires an Ed25519 signature, but package is unsigned")
+                write!(
+                    f,
+                    "signature policy requires an Ed25519 signature, but package is unsigned"
+                )
             }
             Self::InvalidPublicKey => write!(f, "invalid or malformed Ed25519 public key"),
             Self::InvalidSignatureEncoding => {
@@ -145,22 +226,37 @@ impl fmt::Display for PresetError {
                 write!(f, "Ed25519 signature verification failed")
             }
             Self::OsBuildIncompatible { current, min, max } => {
-                write!(f, "OS build {current} does not satisfy preset requirement ({min:?}..={max:?})")
+                write!(
+                    f,
+                    "OS build {current} does not satisfy preset requirement ({min:?}..={max:?})"
+                )
             }
             Self::GpuVendorIncompatible { required, detected } => {
-                write!(f, "GPU vendor {detected} does not match required {required:?}")
+                write!(
+                    f,
+                    "GPU vendor {detected} does not match required {required:?}"
+                )
             }
             Self::UnknownTweakId { tweak_id } => {
-                write!(f, "tweak ID '{tweak_id}' does not exist in the loaded rules catalog")
+                write!(
+                    f,
+                    "tweak ID '{tweak_id}' does not exist in the loaded rules catalog"
+                )
             }
-            Self::DependencyUnsatisfied { tweak_id, missing_dependency } => {
+            Self::DependencyUnsatisfied {
+                tweak_id,
+                missing_dependency,
+            } => {
                 write!(f, "tweak '{tweak_id}' requires prerequisite '{missing_dependency}' which is not scheduled earlier in preset")
             }
             Self::ConflictingTweaks { tweak_a, tweak_b } => {
                 write!(f, "preset contains mutually exclusive conflicting tweaks: '{tweak_a}' and '{tweak_b}'")
             }
             Self::ExecutionFailed { tweak_id, reason } => {
-                write!(f, "dry-run simulation failed on tweak '{tweak_id}': {reason}")
+                write!(
+                    f,
+                    "dry-run simulation failed on tweak '{tweak_id}': {reason}"
+                )
             }
         }
     }
@@ -334,8 +430,20 @@ impl PresetPackage {
             });
         }
 
-        validate_text_field("metadata.title", &self.metadata.title, MAX_TITLE_LEN, false, false)?;
-        validate_text_field("metadata.author", &self.metadata.author, MAX_AUTHOR_LEN, false, false)?;
+        validate_text_field(
+            "metadata.title",
+            &self.metadata.title,
+            MAX_TITLE_LEN,
+            false,
+            false,
+        )?;
+        validate_text_field(
+            "metadata.author",
+            &self.metadata.author,
+            MAX_AUTHOR_LEN,
+            false,
+            false,
+        )?;
         validate_text_field(
             "metadata.description",
             &self.metadata.description,
@@ -442,7 +550,10 @@ impl PresetPackage {
             return Err(PresetError::DigestMismatch);
         }
 
-        let sig_bytes = self.signature.as_ref().ok_or(PresetError::MissingRequiredSignature)?;
+        let sig_bytes = self
+            .signature
+            .as_ref()
+            .ok_or(PresetError::MissingRequiredSignature)?;
         let sig = Signature::from_bytes(sig_bytes);
         let transcript = build_signing_transcript(self.format_revision, &computed);
         public_key
@@ -458,14 +569,17 @@ impl PresetPackage {
             return Err(PresetError::DigestMismatch);
         }
 
-        let payload_len_u32 = u32::try_from(payload.len()).map_err(|_| {
-            PresetError::PackageTooLarge {
+        let payload_len_u32 =
+            u32::try_from(payload.len()).map_err(|_| PresetError::PackageTooLarge {
                 actual: payload.len(),
                 max: MAX_PACKAGE_BYTES,
-            }
-        })?;
+            })?;
 
-        let sig_bytes = if self.signature.is_some() { SIGNATURE_LEN } else { 0 };
+        let sig_bytes = if self.signature.is_some() {
+            SIGNATURE_LEN
+        } else {
+            0
+        };
         let total_len = HEADER_LEN
             .checked_add(payload.len())
             .and_then(|v| v.checked_add(DIGEST_LEN))
@@ -668,7 +782,10 @@ impl PresetPackage {
         for _ in 0..override_count {
             let tweak_id = reader.read_string("override.tweak_id", MAX_TWEAK_ID_LEN)?;
             let param_name = reader.read_string("override.param_name", MAX_PARAM_KEY_LEN)?;
-            let key = OverrideKey { tweak_id, param_name };
+            let key = OverrideKey {
+                tweak_id,
+                param_name,
+            };
 
             if let Some(ref prev) = prev_key {
                 if key <= *prev {
@@ -689,8 +806,12 @@ impl PresetPackage {
                 },
                 2 => ParamValue::I64(reader.read_i64()?),
                 3 => ParamValue::U64(reader.read_u64()?),
-                4 => ParamValue::Str(reader.read_string("override.value.str", MAX_PARAM_STRING_LEN)?),
-                5 => ParamValue::Bytes(reader.read_bytes("override.value.bytes", MAX_PARAM_BYTES_LEN)?),
+                4 => {
+                    ParamValue::Str(reader.read_string("override.value.str", MAX_PARAM_STRING_LEN)?)
+                }
+                5 => ParamValue::Bytes(
+                    reader.read_bytes("override.value.bytes", MAX_PARAM_BYTES_LEN)?,
+                ),
                 tag => {
                     return Err(PresetError::InvalidEnumTag {
                         field: "override.value.tag",
@@ -840,10 +961,12 @@ pub fn simulate_preset_dry_run(
     preset.validate()?;
 
     // 1. Check OS Build guards if detected
-    let os_info = sandbox.detect_os().map_err(|e| PresetError::ExecutionFailed {
-        tweak_id: "guards".to_string(),
-        reason: format!("failed to detect OS: {e}"),
-    })?;
+    let os_info = sandbox
+        .detect_os()
+        .map_err(|e| PresetError::ExecutionFailed {
+            tweak_id: "guards".to_string(),
+            reason: format!("failed to detect OS: {e}"),
+        })?;
 
     if let Some(min) = preset.guards.min_os_build {
         if os_info.build_number < min {
@@ -874,11 +997,12 @@ pub fn simulate_preset_dry_run(
     let mut unresolvable_conflicts = Vec::new();
 
     for tweak_id in &preset.tweak_ids {
-        let tweak = tweak_map.get(tweak_id.as_str()).ok_or_else(|| {
-            PresetError::UnknownTweakId {
-                tweak_id: tweak_id.clone(),
-            }
-        })?;
+        let tweak =
+            tweak_map
+                .get(tweak_id.as_str())
+                .ok_or_else(|| PresetError::UnknownTweakId {
+                    tweak_id: tweak_id.clone(),
+                })?;
 
         // Check prerequisites
         for prereq in &tweak.prerequisites {
@@ -932,7 +1056,13 @@ pub fn simulate_preset_dry_run(
         // Record pre-mutation diffs
         for action in &tweak.actions {
             match action {
-                TweakAction::RegistryDword { hive, path, name, optimized_value, .. } => {
+                TweakAction::RegistryDword {
+                    hive,
+                    path,
+                    name,
+                    optimized_value,
+                    ..
+                } => {
                     let orig = sandbox.reg_get_dword(hive, path, name);
                     registry_diffs.push(RegistryDiff {
                         hive: hive.clone(),
@@ -944,8 +1074,16 @@ pub fn simulate_preset_dry_run(
                         proposed_string: None,
                     });
                 }
-                TweakAction::RegistryString { hive, path, name, optimized_value, .. } => {
-                    let orig = sandbox.reg_get_string(hive, path, name, None).map(|s| s.value);
+                TweakAction::RegistryString {
+                    hive,
+                    path,
+                    name,
+                    optimized_value,
+                    ..
+                } => {
+                    let orig = sandbox
+                        .reg_get_string(hive, path, name, None)
+                        .map(|s| s.value);
                     registry_diffs.push(RegistryDiff {
                         hive: hive.clone(),
                         path: path.clone(),
@@ -956,14 +1094,26 @@ pub fn simulate_preset_dry_run(
                         proposed_string: Some(optimized_value.clone()),
                     });
                 }
-                TweakAction::ServiceState { service_name, target_start_type, default_start_type } => {
+                TweakAction::ServiceState {
+                    service_name,
+                    target_start_type,
+                    default_start_type,
+                } => {
                     service_diffs.push(ServiceDiff {
                         service_name: service_name.clone(),
                         original_start_type: *default_start_type,
                         proposed_start_type: *target_start_type,
                     });
                 }
-                TweakAction::PowerCfgSetting { subgroup_guid, setting_guid, optimized_ac, optimized_dc, default_ac, default_dc, .. } => {
+                TweakAction::PowerCfgSetting {
+                    subgroup_guid,
+                    setting_guid,
+                    optimized_ac,
+                    optimized_dc,
+                    default_ac,
+                    default_dc,
+                    ..
+                } => {
                     power_diffs.push(PowerDiff {
                         subgroup_guid: subgroup_guid.clone(),
                         setting_guid: setting_guid.clone(),
@@ -1042,11 +1192,7 @@ fn validate_text_field(
     Ok(())
 }
 
-fn validate_identifier(
-    field: &'static str,
-    val: &str,
-    max_len: usize,
-) -> Result<(), PresetError> {
+fn validate_identifier(field: &'static str, val: &str, max_len: usize) -> Result<(), PresetError> {
     if val.is_empty() {
         return Err(PresetError::EmptyField { field });
     }
@@ -1074,7 +1220,9 @@ struct BinaryWriter {
 
 impl BinaryWriter {
     fn new() -> Self {
-        Self { buf: Vec::with_capacity(256) }
+        Self {
+            buf: Vec::with_capacity(256),
+        }
     }
 
     fn write_u8(&mut self, val: u8) {
@@ -1233,7 +1381,8 @@ mod tests {
         PresetMetadata {
             title: "Ultra Low Latency Gaming".to_string(),
             author: "WinBlast Engineering".to_string(),
-            description: "Disables DPC jitter, disables background telemetry, optimizes MMCSS".to_string(),
+            description: "Disables DPC jitter, disables background telemetry, optimizes MMCSS"
+                .to_string(),
             created_at: 1732120000,
             category: PresetCategory::Latency,
         }
@@ -1284,7 +1433,8 @@ mod tests {
         let encoded = pkg.encode().unwrap();
 
         // Decode with Required policy
-        let decoded = PresetPackage::decode(&encoded, SignaturePolicy::Required(&verifying_key)).unwrap();
+        let decoded =
+            PresetPackage::decode(&encoded, SignaturePolicy::Required(&verifying_key)).unwrap();
         assert_eq!(pkg, decoded);
 
         // Verify with wrong key fails
@@ -1292,8 +1442,12 @@ mod tests {
         let wrong_signing_key = SigningKey::from_bytes(&seed);
         let wrong_verifying_key = wrong_signing_key.verifying_key();
 
-        let fail_res = PresetPackage::decode(&encoded, SignaturePolicy::Required(&wrong_verifying_key));
-        assert_eq!(fail_res.unwrap_err(), PresetError::SignatureVerificationFailed);
+        let fail_res =
+            PresetPackage::decode(&encoded, SignaturePolicy::Required(&wrong_verifying_key));
+        assert_eq!(
+            fail_res.unwrap_err(),
+            PresetError::SignatureVerificationFailed
+        );
     }
 
     #[test]
@@ -1307,7 +1461,13 @@ mod tests {
     #[test]
     fn test_digest_mismatch_tampering_detection() {
         let metadata = sample_metadata();
-        let pkg = PresetPackage::new(metadata, PresetGuards::default(), vec!["tweak_a".to_string()], BTreeMap::new()).unwrap();
+        let pkg = PresetPackage::new(
+            metadata,
+            PresetGuards::default(),
+            vec!["tweak_a".to_string()],
+            BTreeMap::new(),
+        )
+        .unwrap();
         let mut encoded = pkg.encode().unwrap();
 
         // Tamper with a payload byte
@@ -1321,8 +1481,16 @@ mod tests {
     fn test_duplicate_tweak_id_rejection() {
         let metadata = sample_metadata();
         let tweak_ids = vec!["tweak_a".to_string(), "tweak_a".to_string()];
-        let res = PresetPackage::new(metadata, PresetGuards::default(), tweak_ids, BTreeMap::new());
-        assert!(matches!(res.unwrap_err(), PresetError::DuplicateTweakId { .. }));
+        let res = PresetPackage::new(
+            metadata,
+            PresetGuards::default(),
+            tweak_ids,
+            BTreeMap::new(),
+        );
+        assert!(matches!(
+            res.unwrap_err(),
+            PresetError::DuplicateTweakId { .. }
+        ));
     }
 
     #[test]
@@ -1333,7 +1501,10 @@ mod tests {
         overrides.insert(OverrideKey::new("tweak_b", "param"), ParamValue::Bool(true));
 
         let res = PresetPackage::new(metadata, PresetGuards::default(), tweak_ids, overrides);
-        assert!(matches!(res.unwrap_err(), PresetError::OrphanedOverride { .. }));
+        assert!(matches!(
+            res.unwrap_err(),
+            PresetError::OrphanedOverride { .. }
+        ));
     }
 
     #[test]

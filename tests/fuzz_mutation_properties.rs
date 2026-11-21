@@ -276,7 +276,9 @@ fn test_worker_panic_resilience_and_lock_recovery() {
         let _guard = WorkerGuard(Arc::clone(&workers_clone));
 
         let guard = ledger_clone.lock().unwrap();
-        guard.record_change("panic_tweak", "RegistryDword", "0", "1").unwrap();
+        guard
+            .record_change("panic_tweak", "RegistryDword", "0", "1")
+            .unwrap();
         drop(guard);
 
         panic!("Simulated worker panic during mutation!");
@@ -288,7 +290,9 @@ fn test_worker_panic_resilience_and_lock_recovery() {
     assert_eq!(active_workers.load(Ordering::SeqCst), 0);
 
     // Verify ledger mutex is completely healthy and not poisoned/deadlocked
-    let ledger_guard = ledger.lock().expect("Mutex should not be permanently locked");
+    let ledger_guard = ledger
+        .lock()
+        .expect("Mutex should not be permanently locked");
     let count = ledger_guard.count_history().unwrap();
     assert_eq!(count, 1);
 }

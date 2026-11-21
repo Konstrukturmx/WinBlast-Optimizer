@@ -17,7 +17,9 @@ fn localize_dns_category<'a>(s: &'a AppState, cat: &'a str) -> &'a str {
         "Global Anycast & Reliability" => s.tr_v(ViewTextKey::NetDiagCatAnycast),
         "Malware Threat Shield & Zero Logs" => s.tr_v(ViewTextKey::NetDiagCatMalwareThreat),
         "Ad & Tracker Blocking" => s.tr_v(ViewTextKey::NetDiagCatAdTracker),
-        "Enterprise Security & Phishing Filter" => s.tr_v(ViewTextKey::NetDiagCatEnterprisePhishing),
+        "Enterprise Security & Phishing Filter" => {
+            s.tr_v(ViewTextKey::NetDiagCatEnterprisePhishing)
+        }
         "High-Performance Anycast" => s.tr_v(ViewTextKey::NetDiagCatHighPerfAnycast),
         "Tier-1 Backbone Routing" => s.tr_v(ViewTextKey::NetDiagCatTier1Routing),
         "Real-Time Cyber Threat Filter" => s.tr_v(ViewTextKey::NetDiagCatCyberThreat),

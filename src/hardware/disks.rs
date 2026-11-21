@@ -8,15 +8,15 @@
 //! Authentic physical kernel storage driver throughput is captured via IOCTL_DISK_GET_PERFORMANCE
 //! (0x00070020) across all privilege tiers without placebo values.
 
-use std::mem::size_of;
 use crate::core::process::SilentCommand;
 use rayon::prelude::*;
 use serde::{Deserialize, Serialize};
+use std::mem::size_of;
 use windows::core::PCWSTR;
 use windows::Win32::Foundation::{CloseHandle, HANDLE};
 use windows::Win32::Storage::FileSystem::{
-    CreateFileW, GetDiskFreeSpaceExW, GetLogicalDrives, GetVolumeInformationW,
-    FILE_SHARE_READ, FILE_SHARE_WRITE, OPEN_EXISTING,
+    CreateFileW, GetDiskFreeSpaceExW, GetLogicalDrives, GetVolumeInformationW, FILE_SHARE_READ,
+    FILE_SHARE_WRITE, OPEN_EXISTING,
 };
 use windows::Win32::System::Ioctl::{
     PropertyStandardQuery, StorageDeviceProperty, StorageDeviceSeekPenaltyProperty,
@@ -33,7 +33,7 @@ pub struct PhysicalDriveHealth {
     pub interface_type: String, // "NVMe", "SATA SSD", "HDD"
     pub total_size_gb: f64,
     pub health_percentage: u32, // e.g. 98%
-    pub status: String,          // "Good", "Caution", "Bad"
+    pub status: String,         // "Good", "Caution", "Bad"
     pub temperature_c: f32,
     pub lifetime_writes_tb: f64, // TBW
     pub power_on_hours: u32,
@@ -72,7 +72,9 @@ struct HandleGuard(HANDLE);
 impl Drop for HandleGuard {
     fn drop(&mut self) {
         if !self.0.is_invalid() {
-            unsafe { let _ = CloseHandle(self.0); }
+            unsafe {
+                let _ = CloseHandle(self.0);
+            }
         }
     }
 }
@@ -119,7 +121,9 @@ impl DiskSubsystemReport {
             let vol_drives: Vec<PhysicalDriveHealth> = letters
                 .into_par_iter()
                 .enumerate()
-                .filter_map(|(vol_idx, letter)| probe_volume_fallback(letter, vol_idx as u32, trim_active))
+                .filter_map(|(vol_idx, letter)| {
+                    probe_volume_fallback(letter, vol_idx as u32, trim_active)
+                })
                 .collect();
 
             for drive_info in &vol_drives {
@@ -245,7 +249,8 @@ fn probe_physical_drive(index: u32, trim_enabled: bool) -> Option<PhysicalDriveH
         return None;
     }
 
-    let desc = unsafe { std::ptr::read_unaligned(buf.as_ptr() as *const STORAGE_DEVICE_DESCRIPTOR) };
+    let desc =
+        unsafe { std::ptr::read_unaligned(buf.as_ptr() as *const STORAGE_DEVICE_DESCRIPTOR) };
 
     // Extract Product/Model string
     let mut model_str = String::new();
@@ -289,11 +294,12 @@ fn probe_physical_drive(index: u32, trim_enabled: bool) -> Option<PhysicalDriveH
         )
     };
 
-    let is_ssd = if ok_seek.is_ok() && bytes_ret >= size_of::<DEVICE_SEEK_PENALTY_DESCRIPTOR>() as u32 {
-        !seek_desc.IncursSeekPenalty
-    } else {
-        is_nvme
-    };
+    let is_ssd =
+        if ok_seek.is_ok() && bytes_ret >= size_of::<DEVICE_SEEK_PENALTY_DESCRIPTOR>() as u32 {
+            !seek_desc.IncursSeekPenalty
+        } else {
+            is_nvme
+        };
 
     let interface_type = if is_nvme {
         "NVMe PCIe SSD".to_string()
@@ -345,7 +351,9 @@ fn probe_physical_drive(index: u32, trim_enabled: bool) -> Option<PhysicalDriveH
         });
 
         (
-            smart.health_percentage.unwrap_or(if is_ssd { 100 } else { 98 }),
+            smart
+                .health_percentage
+                .unwrap_or(if is_ssd { 100 } else { 98 }),
             smart.status,
             smart.temperature_c.unwrap_or(36.0),
             final_tbw,
@@ -357,7 +365,11 @@ fn probe_physical_drive(index: u32, trim_enabled: bool) -> Option<PhysicalDriveH
         let (w_health, w_status, w_temp, w_tbw, w_poh, w_size) =
             query_smart_health_wmi(index, is_nvme || is_ssd);
 
-        let final_size = if ioctl_size_gb > 0.0 { ioctl_size_gb } else { w_size };
+        let final_size = if ioctl_size_gb > 0.0 {
+            ioctl_size_gb
+        } else {
+            w_size
+        };
 
         // Fallback TBW: If WMI didn't report TBW, derive authentic physical bytes written from kernel performance
         let final_tbw = if w_tbw > 0.0 {
@@ -384,14 +396,7 @@ fn probe_physical_drive(index: u32, trim_enabled: bool) -> Option<PhysicalDriveH
             w_status
         };
 
-        (
-            w_health,
-            final_status,
-            w_temp,
-            final_tbw,
-            w_poh,
-            final_size,
-        )
+        (w_health, final_status, w_temp, final_tbw, w_poh, final_size)
     };
 
     Some(PhysicalDriveHealth {
@@ -532,9 +537,9 @@ pub fn query_nvme_smart_ioctl(handle: HANDLE) -> Option<DriveSmartData> {
     for prop_id in [50u32, 49u32] {
         let query = NvmeProtocolQuery {
             property_id: prop_id,
-            query_type: 0,   // PropertyStandardQuery
-            protocol_type: 1, // ProtocolTypeNvme
-            data_type: 1,    // NVMeDataTypeLogPage
+            query_type: 0,                     // PropertyStandardQuery
+            protocol_type: 1,                  // ProtocolTypeNvme
+            data_type: 1,                      // NVMeDataTypeLogPage
             protocol_data_request_value: 0x02, // NVME_LOG_PAGE_SMART
             protocol_data_request_sub_value: 0,
             protocol_data_offset: 40,
@@ -567,7 +572,12 @@ pub fn query_nvme_smart_ioctl(handle: HANDLE) -> Option<DriveSmartData> {
 
         // Dynamically parse ProtocolDataOffset from STORAGE_PROTOCOL_DATA_DESCRIPTOR
         let data_offset = if bytes_ret >= 28 {
-            u32::from_le_bytes([out_buffer[24], out_buffer[25], out_buffer[26], out_buffer[27]]) as usize
+            u32::from_le_bytes([
+                out_buffer[24],
+                out_buffer[25],
+                out_buffer[26],
+                out_buffer[27],
+            ]) as usize
         } else {
             48
         };
@@ -732,7 +742,7 @@ pub fn query_ata_smart_ioctl(handle: HANDLE, drive_index: u32) -> Option<DriveSm
             b_features_reg: 0xD0, // SMART READ ATTRIBUTE VALUES
             b_sector_count_reg: 1,
             b_sector_number_reg: 1,
-            b_cyl_low_reg: 0x4F, // SMART_CYL_LOW
+            b_cyl_low_reg: 0x4F,  // SMART_CYL_LOW
             b_cyl_high_reg: 0xC2, // SMART_CYL_HI
             b_drive_head_reg: 0xA0 | ((drive_index as u8 & 1) << 4),
             b_command_reg: 0xB0, // SMART_CMD
@@ -845,7 +855,8 @@ pub fn parse_ata_smart_attributes(buf: &[u8; 512]) -> DriveSmartData {
                         lifetime_writes_tb = Some((tb * 100.0).round() / 100.0);
                     } else {
                         // Alternative controller unit: 32MB blocks (SandForce/Phison CX400 variant)
-                        let tb_32mb = (raw_val as f64 * 32.0 * 1024.0 * 1024.0) / 1_000_000_000_000.0;
+                        let tb_32mb =
+                            (raw_val as f64 * 32.0 * 1024.0 * 1024.0) / 1_000_000_000_000.0;
                         if tb_32mb > 0.0 && tb_32mb < 50_000.0 {
                             lifetime_writes_tb = Some((tb_32mb * 100.0).round() / 100.0);
                         }
@@ -891,7 +902,10 @@ pub fn parse_ata_smart_attributes(buf: &[u8; 512]) -> DriveSmartData {
 /// Uses `Get-PhysicalDisk` + `Get-StorageReliabilityCounter` with graceful fallback to
 /// `Win32_DiskDrive` and honest telemetry bounds.
 /// Returns `(health_pct, status, temp_c, tbw_tb, poh, size_gb)`.
-fn query_smart_health_wmi(disk_index: u32, is_solid_state: bool) -> (u32, String, f32, f64, u32, f64) {
+fn query_smart_health_wmi(
+    disk_index: u32,
+    is_solid_state: bool,
+) -> (u32, String, f32, f64, u32, f64) {
     let script = format!(
         "$c=[System.Globalization.CultureInfo]::InvariantCulture;\
 $d=Get-PhysicalDisk|Where-Object{{$_.DeviceId -eq '{idx}'}}|Select-Object -First 1;\
@@ -923,19 +937,35 @@ else{{Write-Output ''}}\
             let raw = String::from_utf8_lossy(&o.stdout);
             let line = raw.trim();
             if line.is_empty() {
-                return (default_health, "Healthy (Good)".to_string(), default_temp, 0.0, 0, 0.0);
+                return (
+                    default_health,
+                    "Healthy (Good)".to_string(),
+                    default_temp,
+                    0.0,
+                    0,
+                    0.0,
+                );
             }
             let parts: Vec<&str> = line.split('|').collect();
             if parts.len() < 6 {
-                return (default_health, "Healthy (Good)".to_string(), default_temp, 0.0, 0, 0.0);
+                return (
+                    default_health,
+                    "Healthy (Good)".to_string(),
+                    default_temp,
+                    0.0,
+                    0,
+                    0.0,
+                );
             }
-            let parse_f64 = |s: &str| -> f64 {
-                s.trim().replace(',', ".").parse::<f64>().unwrap_or(0.0)
-            };
-            let parse_f32 = |s: &str| -> f32 {
-                s.trim().replace(',', ".").parse::<f32>().unwrap_or(0.0)
-            };
-            let health_pct = parts[0].trim().parse::<u32>().unwrap_or(default_health).clamp(0, 100);
+            let parse_f64 =
+                |s: &str| -> f64 { s.trim().replace(',', ".").parse::<f64>().unwrap_or(0.0) };
+            let parse_f32 =
+                |s: &str| -> f32 { s.trim().replace(',', ".").parse::<f32>().unwrap_or(0.0) };
+            let health_pct = parts[0]
+                .trim()
+                .parse::<u32>()
+                .unwrap_or(default_health)
+                .clamp(0, 100);
             let temp_c = parse_f32(parts[1]);
             let tbw = parse_f64(parts[2]);
             let poh = parts[3].trim().parse::<u32>().unwrap_or(0);
@@ -970,7 +1000,11 @@ else{{Write-Output ''}}\
 }
 
 /// Fallback to querying logical volume info when physical drive handles are restricted.
-fn probe_volume_fallback(letter: char, index: u32, trim_enabled: bool) -> Option<PhysicalDriveHealth> {
+fn probe_volume_fallback(
+    letter: char,
+    index: u32,
+    trim_enabled: bool,
+) -> Option<PhysicalDriveHealth> {
     let root_utf16: Vec<u16> = format!("{}:\\", letter)
         .encode_utf16()
         .chain(std::iter::once(0))
@@ -1057,7 +1091,11 @@ mod tests {
     fn test_query_smart_health_wmi_fallback() {
         // For disk index 255 (non-existent), should return safe defaults without panic.
         let (health, status, temp, tbw, poh, size) = query_smart_health_wmi(255, true);
-        assert!(health >= 90, "SSD default health should be >= 90, got {}", health);
+        assert!(
+            health >= 90,
+            "SSD default health should be >= 90, got {}",
+            health
+        );
         assert!(!status.is_empty(), "Status string should not be empty");
         assert!(temp > 0.0, "Temperature default should be positive");
         assert_eq!(tbw, 0.0, "TBW should default to 0.0 for non-existent disk");
@@ -1071,7 +1109,10 @@ mod tests {
         let report = DiskSubsystemReport::probe();
         for drive in &report.drives {
             assert!(!drive.model.is_empty(), "Drive model should not be empty");
-            assert!(drive.health_percentage <= 100, "Health percentage out of range");
+            assert!(
+                drive.health_percentage <= 100,
+                "Health percentage out of range"
+            );
             assert!(drive.total_size_gb > 0.0, "Physical drive size must be > 0");
         }
     }

@@ -1417,46 +1417,92 @@ pub fn lookup(id: &str) -> Option<LocalizedTweakText> {
 #[allow(dead_code)]
 pub fn tweak_title(id: &str) -> Option<&'static str> {
     match id {
-        "disable_dwm_animations_per_process" => Some("Отключить анимации переходов DWM для каждого процесса"),
-        "disable_dwm_composition_throttle" => Some("Отключить троттлинг композиции диспетчера окон рабочего стола"),
+        "disable_dwm_animations_per_process" => {
+            Some("Отключить анимации переходов DWM для каждого процесса")
+        }
+        "disable_dwm_composition_throttle" => {
+            Some("Отключить троттлинг композиции диспетчера окон рабочего стола")
+        }
         "disable_kernel_mitigations_audit" => Some("Отключить режим аудита механизмов защиты ядра"),
         "disable_llmnr_protocol" => Some("Отключить протокол разрешения имен LLMNR"),
         "disable_memory_compression" => Some("Отключить механизм сжатия памяти"),
         "disable_netbios_over_tcp" => Some("Отключить NetBIOS через TCP/IP"),
-        "disable_ntfs_encryption_driver" => Some("Отключить драйвер шифрования файловой системы NTFS (EFS)"),
-        "disable_page_file_encryption" => Some("Отключить шифрование файла подкачки и очистку при выключении"),
-        "disable_processor_idle_demote_threshold" => Some("Отключить понижение состояний простоя процессора"),
+        "disable_ntfs_encryption_driver" => {
+            Some("Отключить драйвер шифрования файловой системы NTFS (EFS)")
+        }
+        "disable_page_file_encryption" => {
+            Some("Отключить шифрование файла подкачки и очистку при выключении")
+        }
+        "disable_processor_idle_demote_threshold" => {
+            Some("Отключить понижение состояний простоя процессора")
+        }
         "disable_rss_base_cpu" => Some("Задать базовый ЦП RSS для распределения нагрузки сети"),
-        "disable_spectre_meltdown_mitigations" => Some("Отключить защиту от уязвимостей процессора Spectre/Meltdown"),
-        "disable_threaded_dpc_optimization" => Some("Отключить потоковые DPC для снижения задержки прерываний"),
+        "disable_spectre_meltdown_mitigations" => {
+            Some("Отключить защиту от уязвимостей процессора Spectre/Meltdown")
+        }
+        "disable_threaded_dpc_optimization" => {
+            Some("Отключить потоковые DPC для снижения задержки прерываний")
+        }
         "disable_windows_search_indexer" => Some("Отключить службу индексирования Windows Search"),
         "enable_hardware_task_offload" => Some("Включить разгрузку задач оборудования TCP/IP"),
         "enable_large_ntfs_frs" => Some("Включить большие сегменты записей файлов NTFS"),
-        "enable_ultimate_performance_plan" => Some("Активировать схему питания «Максимальная производительность»"),
-        "increase_gpu_tdr_timeout" => Some("Увеличить задержку обнаружения и восстановления тайм-аута GPU"),
-        "increase_irp_stack_size" => Some("Увеличить размер стека IRP для сетевого и дискового ввода-вывода"),
-        "increase_max_connections_per_server" => Some("Увеличить максимальное количество HTTP-подключений к серверу"),
-        "increase_nonpaged_pool_quota" => Some("Увеличить квоту невыгружаемого пула для стабильности драйверов"),
-        "optimize_additional_critical_worker_threads" => Some("Увеличить дополнительные рабочие потоки ядра"),
+        "enable_ultimate_performance_plan" => {
+            Some("Активировать схему питания «Максимальная производительность»")
+        }
+        "increase_gpu_tdr_timeout" => {
+            Some("Увеличить задержку обнаружения и восстановления тайм-аута GPU")
+        }
+        "increase_irp_stack_size" => {
+            Some("Увеличить размер стека IRP для сетевого и дискового ввода-вывода")
+        }
+        "increase_max_connections_per_server" => {
+            Some("Увеличить максимальное количество HTTP-подключений к серверу")
+        }
+        "increase_nonpaged_pool_quota" => {
+            Some("Увеличить квоту невыгружаемого пула для стабильности драйверов")
+        }
+        "optimize_additional_critical_worker_threads" => {
+            Some("Увеличить дополнительные рабочие потоки ядра")
+        }
         "optimize_default_ttl" => Some("Задать оптимальное значение TTL для IP-пакетов"),
-        "optimize_disk_io_page_lock_limit" => Some("Увеличить лимит блокировки страниц ввода-вывода для больших передач"),
+        "optimize_disk_io_page_lock_limit" => {
+            Some("Увеличить лимит блокировки страниц ввода-вывода для больших передач")
+        }
         "optimize_dns_cache_parameters" => Some("Оптимизировать размер кэша и TTL DNS-клиента"),
-        "optimize_gpu_preemption_level" => Some("Установить планировщик GPU на приоритет только вычислений"),
-        "optimize_interrupt_steering" => Some("Оптимизировать сходство прерываний и политику маршрутизации"),
-        "optimize_mmcss_proaudio_scheduling" => Some("MMCSS Pro Audio — максимальный приоритет планирования"),
+        "optimize_gpu_preemption_level" => {
+            Some("Установить планировщик GPU на приоритет только вычислений")
+        }
+        "optimize_interrupt_steering" => {
+            Some("Оптимизировать сходство прерываний и политику маршрутизации")
+        }
+        "optimize_mmcss_proaudio_scheduling" => {
+            Some("MMCSS Pro Audio — максимальный приоритет планирования")
+        }
         "optimize_ntfs_memory_usage" => Some("Агрессивное кэширование выгружаемого пула NTFS"),
-        "optimize_object_manager_quota" => Some("Увеличить квоту дескрипторов диспетчера объектов ядра"),
-        "optimize_timer_resolution_requests" => Some("Разрешить приложениям запрашивать высокое разрешение таймера"),
-                "disable_driver_search_order_probing" => Some("Отключить опрос поиска драйверов в Windows Update"),
+        "optimize_object_manager_quota" => {
+            Some("Увеличить квоту дескрипторов диспетчера объектов ядра")
+        }
+        "optimize_timer_resolution_requests" => {
+            Some("Разрешить приложениям запрашивать высокое разрешение таймера")
+        }
+        "disable_driver_search_order_probing" => {
+            Some("Отключить опрос поиска драйверов в Windows Update")
+        }
         "disable_fast_user_switching" => Some("Отключить быстрое переключение пользователей"),
         "disable_ip_source_routing" => Some("Отключить маршрутизацию от источника IP"),
         "disable_netsh_teredo_tunneling" => Some("Отключить переходное туннелирование Teredo IPv6"),
-        "disable_network_adapter_power_saving" => Some("Отключить энергосбережение PnP сетевого адаптера NDIS"),
-        "disable_remote_desktop_udp" => Some("Отключить транспорт UDP клиента удаленного рабочего стола"),
+        "disable_network_adapter_power_saving" => {
+            Some("Отключить энергосбережение PnP сетевого адаптера NDIS")
+        }
+        "disable_remote_desktop_udp" => {
+            Some("Отключить транспорт UDP клиента удаленного рабочего стола")
+        }
         "disable_smart_card_service" => Some("Отключить службу смарт-карт (SCardSvr)"),
         "optimize_kerberos_ticket_cache" => Some("Оптимизировать размер буфера токена Kerberos"),
         "optimize_tcp_syn_attack_protection" => Some("Включить защиту от атак TCP SYN"),
-        "optimize_usb_selective_suspend_hub" => Some("Отключить глобальную выборочную приостановку USB"),
+        "optimize_usb_selective_suspend_hub" => {
+            Some("Отключить глобальную выборочную приостановку USB")
+        }
         _ => lookup(id).map(|t| t.title),
     }
 }

@@ -2229,11 +2229,14 @@ pub fn localize_error_text(lang: Language, raw: &str) -> String {
     } else if rest.contains("Known Folder Move redirects user files")
         || rest.contains("Known Folder Move active")
     {
-        rest.replace("Known Folder Move redirects user files", KFM_REDIRECT_MSG[idx])
-            .replace("Known Folder Move active", KFM_REDIRECT_MSG[idx])
-            .replace("Unlink OneDrive folder backup first.", "")
-            .trim()
-            .to_string()
+        rest.replace(
+            "Known Folder Move redirects user files",
+            KFM_REDIRECT_MSG[idx],
+        )
+        .replace("Known Folder Move active", KFM_REDIRECT_MSG[idx])
+        .replace("Unlink OneDrive folder backup first.", "")
+        .trim()
+        .to_string()
     } else if rest.eq_ignore_ascii_case("Policy locked") || rest.contains("is policy locked") {
         if let Some(name_part) = rest.strip_prefix("Startup entry '") {
             if let Some((name, _)) = name_part.split_once('\'') {
@@ -3344,7 +3347,11 @@ pub fn localize_kfm_detail(lang: Language, raw_kfm: &str) -> String {
     }
 
     if let Some(rest) = trimmed.strip_prefix("OneDrive Account ") {
-        return format!("{} {}", I18n::translate(lang, TextKey::OneDriveKfmAccount), rest);
+        return format!(
+            "{} {}",
+            I18n::translate(lang, TextKey::OneDriveKfmAccount),
+            rest
+        );
     }
 
     raw_kfm.to_string()
@@ -3373,7 +3380,11 @@ mod tests {
             },
             StatusMessageSpec::HagsUpdated(true),
             StatusMessageSpec::MpoUpdated(false),
-            StatusMessageSpec::DiskCleaned { mb: 120.5, files: 40, skipped: 2 },
+            StatusMessageSpec::DiskCleaned {
+                mb: 120.5,
+                files: 40,
+                skipped: 2,
+            },
         ];
 
         for lang in Language::ALL {
@@ -3386,7 +3397,10 @@ mod tests {
 
     #[test]
     fn test_turkish_language_changed_status_message() {
-        let msg = localize_status(Language::Turkish, &StatusMessageSpec::LanguageChanged(Language::Turkish));
+        let msg = localize_status(
+            Language::Turkish,
+            &StatusMessageSpec::LanguageChanged(Language::Turkish),
+        );
         assert_eq!(msg, "Dil Türkçe olarak değiştirildi.");
     }
 
@@ -3404,7 +3418,10 @@ mod tests {
     #[test]
     fn test_scan_detail_all_languages() {
         let kinds = [
-            ScanDetailKind::NotApplicableBuild { current: 19041, min_build: 22000 },
+            ScanDetailKind::NotApplicableBuild {
+                current: 19041,
+                min_build: 22000,
+            },
             ScanDetailKind::RegValueRemoved,
             ScanDetailKind::RegValuePresent,
             ScanDetailKind::DwordOptimized { value: 1 },
@@ -3417,9 +3434,13 @@ mod tests {
         for lang in Language::ALL {
             for kind in &kinds {
                 let text = localize_scan_detail(lang, Some(kind), "Fallback Text");
-                assert!(!text.is_empty(), "Empty detail for {:?} with {:?}", lang, kind);
+                assert!(
+                    !text.is_empty(),
+                    "Empty detail for {:?} with {:?}",
+                    lang,
+                    kind
+                );
             }
         }
     }
 }
-

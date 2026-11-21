@@ -11,9 +11,9 @@ use std::collections::{HashMap, HashSet};
 pub struct TweakCriteria {
     pub id: String,
     pub title: String,
-    pub performance_gain: f32, // 0.0 .. 10.0
-    pub privacy_gain: f32,     // 0.0 .. 10.0
-    pub stability_risk: f32,   // 0.0 (Safe) .. 10.0 (Dangerous)
+    pub performance_gain: f32,    // 0.0 .. 10.0
+    pub privacy_gain: f32,        // 0.0 .. 10.0
+    pub stability_risk: f32,      // 0.0 (Safe) .. 10.0 (Dangerous)
     pub reversibility_score: f32, // 10.0 (Instant) .. 1.0 (Reinstall)
     pub conflicts_with: Vec<String>,
 }

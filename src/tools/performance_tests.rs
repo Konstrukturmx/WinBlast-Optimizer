@@ -70,9 +70,12 @@ impl BenchmarkRunner {
             src[0] = src[0].wrapping_add(1);
         }
         let ram_ms = ram_start.elapsed().as_millis().max(1) as f32;
-        let ram_read_gb_s = ((buf_size as f32 * 4.0) / (1024.0 * 1024.0 * 1024.0)) / (ram_ms / 1000.0);
+        let ram_read_gb_s =
+            ((buf_size as f32 * 4.0) / (1024.0 * 1024.0 * 1024.0)) / (ram_ms / 1000.0);
 
-        let composite = ((multi_score as f32 * 0.5) + (ram_read_gb_s * 50.0) + (single_score as f32 * 1.2)) as u64;
+        let composite = ((multi_score as f32 * 0.5)
+            + (ram_read_gb_s * 50.0)
+            + (single_score as f32 * 1.2)) as u64;
 
         BenchmarkScore {
             cpu_single_score: single_score,

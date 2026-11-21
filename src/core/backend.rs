@@ -26,7 +26,9 @@ use crate::hardware::cpu::CpuInfo;
 use crate::hardware::gpu::{self, DetectedGpu, GpuVendor};
 use crate::hardware::latency::LatencySnapshot;
 use crate::hardware::monitor::{SystemMetrics, SystemMonitor};
-use crate::hardware::net_latency::{self, DpcJitterResult, LatencyBenchmarkSnapshot, TargetPingResult};
+use crate::hardware::net_latency::{
+    self, DpcJitterResult, LatencyBenchmarkSnapshot, TargetPingResult,
+};
 use crate::hardware::parking::{self, CoreParkingState, CoreStatus};
 use crate::hardware::power::{self, HibernationStatus, PowerSchemeInfo};
 use crate::hardware::sys_inventory::{
@@ -34,10 +36,16 @@ use crate::hardware::sys_inventory::{
 };
 use crate::scanner::appx_scanner::AppxCache;
 use crate::scanner::task_scanner::{normalize_task_path, TaskCache};
-use crate::tools::cleaner::{CleanExecutionReport, CleanTargetKind, CleanTargetResult, CleanTargetScan};
+use crate::tools::cleaner::{
+    CleanExecutionReport, CleanTargetKind, CleanTargetResult, CleanTargetScan,
+};
 use crate::tools::explorer_ctrl;
-use crate::tools::features_apps::{self, AppxSafetyTier, InstalledAppxPackage, WindowsOptionalFeature};
-use crate::tools::startup::{self, LiveScheduledTaskInfo, LiveServiceInfo, StartupEntry, StartupSource};
+use crate::tools::features_apps::{
+    self, AppxSafetyTier, InstalledAppxPackage, WindowsOptionalFeature,
+};
+use crate::tools::startup::{
+    self, LiveScheduledTaskInfo, LiveServiceInfo, StartupEntry, StartupSource,
+};
 
 /// Stateful sampler trait for 1-second Task Manager telemetry updates.
 pub trait MetricsSampler: Send {
@@ -63,20 +71,53 @@ pub trait SystemBackend: Send + Sync + 'static {
     fn reg_delete_value(&self, hive: &str, path: &str, name: &str) -> Result<()>;
 
     // Vendor-aware & extended lossless Registry primitives
-    fn reg_get_dword_for_vendor(&self, hive: &str, path: &str, name: &str, gpu_vendor: Option<&str>) -> Option<u32> {
+    fn reg_get_dword_for_vendor(
+        &self,
+        hive: &str,
+        path: &str,
+        name: &str,
+        gpu_vendor: Option<&str>,
+    ) -> Option<u32> {
         let _ = gpu_vendor;
         self.reg_get_dword(hive, path, name)
     }
-    fn reg_set_dword_for_vendor(&self, hive: &str, path: &str, name: &str, value: u32, gpu_vendor: Option<&str>) -> Result<()> {
+    fn reg_set_dword_for_vendor(
+        &self,
+        hive: &str,
+        path: &str,
+        name: &str,
+        value: u32,
+        gpu_vendor: Option<&str>,
+    ) -> Result<()> {
         let _ = gpu_vendor;
         self.reg_set_dword(hive, path, name, value)
     }
-    fn reg_delete_value_for_vendor(&self, hive: &str, path: &str, name: &str, gpu_vendor: Option<&str>) -> Result<()> {
+    fn reg_delete_value_for_vendor(
+        &self,
+        hive: &str,
+        path: &str,
+        name: &str,
+        gpu_vendor: Option<&str>,
+    ) -> Result<()> {
         let _ = gpu_vendor;
         self.reg_delete_value(hive, path, name)
     }
-    fn reg_get_string(&self, hive: &str, path: &str, name: &str, gpu_vendor: Option<&str>) -> Option<RegStringValue>;
-    fn reg_set_string(&self, hive: &str, path: &str, name: &str, value: &str, expand_sz: bool, gpu_vendor: Option<&str>) -> Result<()>;
+    fn reg_get_string(
+        &self,
+        hive: &str,
+        path: &str,
+        name: &str,
+        gpu_vendor: Option<&str>,
+    ) -> Option<RegStringValue>;
+    fn reg_set_string(
+        &self,
+        hive: &str,
+        path: &str,
+        name: &str,
+        value: &str,
+        expand_sz: bool,
+        gpu_vendor: Option<&str>,
+    ) -> Result<()>;
     fn reg_get_binary(&self, hive: &str, path: &str, name: &str) -> Option<Vec<u8>>;
     fn reg_set_binary(&self, hive: &str, path: &str, name: &str, bytes: &[u8]) -> Result<()>;
     fn reg_get_raw(&self, hive: &str, path: &str, name: &str) -> Option<RegRawSnapshot>;
@@ -96,8 +137,21 @@ pub trait SystemBackend: Send + Sync + 'static {
     fn list_power_schemes(&self) -> Vec<PowerSchemeInfo>;
     fn set_active_power_scheme(&self, scheme_guid: &str) -> Result<()>;
     fn create_and_activate_performance_plan(&self) -> Result<String>;
-    fn read_power_setting_index(&self, scheme_guid: Option<&str>, subgroup_guid: &str, setting_guid: &str) -> Result<(u32, u32)>;
-    fn write_power_setting_index(&self, scheme_guid: Option<&str>, subgroup_guid: &str, setting_guid: &str, ac: Option<u32>, dc: Option<u32>, unhide: bool) -> Result<()>;
+    fn read_power_setting_index(
+        &self,
+        scheme_guid: Option<&str>,
+        subgroup_guid: &str,
+        setting_guid: &str,
+    ) -> Result<(u32, u32)>;
+    fn write_power_setting_index(
+        &self,
+        scheme_guid: Option<&str>,
+        subgroup_guid: &str,
+        setting_guid: &str,
+        ac: Option<u32>,
+        dc: Option<u32>,
+        unhide: bool,
+    ) -> Result<()>;
     fn query_hibernation_status(&self) -> HibernationStatus;
     fn set_hibernation_enabled(&self, enable: bool) -> Result<HibernationStatus>;
     fn set_usb_root_hub_power_saving(&self, disable_power_saving: bool) -> Result<usize>;
@@ -132,7 +186,9 @@ pub trait SystemBackend: Send + Sync + 'static {
             let now_utc = chrono::Utc::now();
             let max_age_chrono = chrono::Duration::hours(24);
             for point in &points {
-                if let Some(created_at) = restore_point::parse_restore_point_time(&point.creation_time) {
+                if let Some(created_at) =
+                    restore_point::parse_restore_point_time(&point.creation_time)
+                {
                     let diff = now_utc.signed_duration_since(created_at);
                     if diff >= -chrono::Duration::minutes(5) && diff <= max_age_chrono {
                         return Ok(false);
@@ -147,7 +203,12 @@ pub trait SystemBackend: Send + Sync + 'static {
     // Hardware & Telemetry
     fn detect_cpu(&self) -> CpuInfo;
     fn detect_gpus(&self) -> Vec<DetectedGpu>;
-    fn set_gpu_msi_mode(&self, pnp_instance_id: &str, enable: bool, priority: u32) -> std::io::Result<()>;
+    fn set_gpu_msi_mode(
+        &self,
+        pnp_instance_id: &str,
+        enable: bool,
+        priority: u32,
+    ) -> std::io::Result<()>;
     fn is_hags_enabled(&self) -> bool;
     fn set_hags(&self, enable: bool) -> std::io::Result<()>;
     fn is_mpo_disabled(&self) -> bool;
@@ -210,7 +271,12 @@ pub trait SystemBackend: Send + Sync + 'static {
     fn list_installed_appx_detailed(&self) -> Vec<InstalledAppxPackage>;
     fn remove_appx_batch(&self, families: &[String], remove_provisioned: bool) -> Result<usize>;
     fn list_optional_features(&self) -> Result<Vec<WindowsOptionalFeature>>;
-    fn set_optional_feature(&self, name: &str, kind: OptionalFeatureKind, enable: bool) -> Result<FeatureInstallState>;
+    fn set_optional_feature(
+        &self,
+        name: &str,
+        kind: OptionalFeatureKind,
+        enable: bool,
+    ) -> Result<FeatureInstallState>;
     fn check_onedrive_kfm_active(&self) -> Option<String>;
     fn uninstall_onedrive_safe(&self) -> Result<String>;
     fn remove_edge_preserve_webview2(&self) -> Result<String>;
@@ -288,24 +354,59 @@ impl SystemBackend for RealBackend {
         crate::executor::reg_mutator::delete_value(hive, path, name)
     }
 
-    fn reg_get_dword_for_vendor(&self, hive: &str, path: &str, name: &str, gpu_vendor: Option<&str>) -> Option<u32> {
+    fn reg_get_dword_for_vendor(
+        &self,
+        hive: &str,
+        path: &str,
+        name: &str,
+        gpu_vendor: Option<&str>,
+    ) -> Option<u32> {
         crate::scanner::registry_scanner::get_dword_for_vendor(hive, path, name, gpu_vendor)
     }
 
-    fn reg_set_dword_for_vendor(&self, hive: &str, path: &str, name: &str, value: u32, gpu_vendor: Option<&str>) -> Result<()> {
+    fn reg_set_dword_for_vendor(
+        &self,
+        hive: &str,
+        path: &str,
+        name: &str,
+        value: u32,
+        gpu_vendor: Option<&str>,
+    ) -> Result<()> {
         crate::executor::reg_mutator::set_dword_for_vendor(hive, path, name, value, gpu_vendor)
     }
 
-    fn reg_delete_value_for_vendor(&self, hive: &str, path: &str, name: &str, gpu_vendor: Option<&str>) -> Result<()> {
+    fn reg_delete_value_for_vendor(
+        &self,
+        hive: &str,
+        path: &str,
+        name: &str,
+        gpu_vendor: Option<&str>,
+    ) -> Result<()> {
         crate::executor::reg_mutator::delete_value_for_vendor(hive, path, name, gpu_vendor)
     }
 
-    fn reg_get_string(&self, hive: &str, path: &str, name: &str, gpu_vendor: Option<&str>) -> Option<RegStringValue> {
+    fn reg_get_string(
+        &self,
+        hive: &str,
+        path: &str,
+        name: &str,
+        gpu_vendor: Option<&str>,
+    ) -> Option<RegStringValue> {
         crate::scanner::registry_scanner::get_string_for_vendor(hive, path, name, gpu_vendor)
     }
 
-    fn reg_set_string(&self, hive: &str, path: &str, name: &str, value: &str, expand_sz: bool, gpu_vendor: Option<&str>) -> Result<()> {
-        crate::executor::reg_mutator::set_string_for_vendor(hive, path, name, value, expand_sz, gpu_vendor)
+    fn reg_set_string(
+        &self,
+        hive: &str,
+        path: &str,
+        name: &str,
+        value: &str,
+        expand_sz: bool,
+        gpu_vendor: Option<&str>,
+    ) -> Result<()> {
+        crate::executor::reg_mutator::set_string_for_vendor(
+            hive, path, name, value, expand_sz, gpu_vendor,
+        )
     }
 
     fn reg_get_binary(&self, hive: &str, path: &str, name: &str) -> Option<Vec<u8>> {
@@ -370,11 +471,24 @@ impl SystemBackend for RealBackend {
         power::create_and_activate_performance_plan()
     }
 
-    fn read_power_setting_index(&self, scheme_guid: Option<&str>, subgroup_guid: &str, setting_guid: &str) -> Result<(u32, u32)> {
+    fn read_power_setting_index(
+        &self,
+        scheme_guid: Option<&str>,
+        subgroup_guid: &str,
+        setting_guid: &str,
+    ) -> Result<(u32, u32)> {
         power::read_power_setting_index(scheme_guid, subgroup_guid, setting_guid)
     }
 
-    fn write_power_setting_index(&self, scheme_guid: Option<&str>, subgroup_guid: &str, setting_guid: &str, ac: Option<u32>, dc: Option<u32>, unhide: bool) -> Result<()> {
+    fn write_power_setting_index(
+        &self,
+        scheme_guid: Option<&str>,
+        subgroup_guid: &str,
+        setting_guid: &str,
+        ac: Option<u32>,
+        dc: Option<u32>,
+        unhide: bool,
+    ) -> Result<()> {
         power::write_power_setting_index(scheme_guid, subgroup_guid, setting_guid, ac, dc, unhide)
     }
 
@@ -446,7 +560,12 @@ impl SystemBackend for RealBackend {
         gpu::detect_gpus()
     }
 
-    fn set_gpu_msi_mode(&self, pnp_instance_id: &str, enable: bool, priority: u32) -> std::io::Result<()> {
+    fn set_gpu_msi_mode(
+        &self,
+        pnp_instance_id: &str,
+        enable: bool,
+        priority: u32,
+    ) -> std::io::Result<()> {
         gpu::set_gpu_msi_mode(pnp_instance_id, enable, priority)
     }
 
@@ -524,7 +643,12 @@ impl SystemBackend for RealBackend {
         features_apps::list_optional_features()
     }
 
-    fn set_optional_feature(&self, name: &str, kind: OptionalFeatureKind, enable: bool) -> Result<FeatureInstallState> {
+    fn set_optional_feature(
+        &self,
+        name: &str,
+        kind: OptionalFeatureKind,
+        enable: bool,
+    ) -> Result<FeatureInstallState> {
         features_apps::set_optional_feature(name, kind, enable)
     }
 
@@ -652,22 +776,75 @@ impl<'a> CachedScanBackend<'a> {
 /// Operations recorded inside `SandboxEnv` for deterministic E2E assertions.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum SandboxOp {
-    RegSet { hive: String, path: String, name: String, value: u32 },
-    RegSetString { hive: String, path: String, name: String, value: String, expand_sz: bool },
-    RegSetBinary { hive: String, path: String, name: String, len: usize },
-    RegDelete { hive: String, path: String, name: String },
-    RegDeleteTree { hive: String, path: String },
-    PowerCfgSet { scheme: String, subgroup: String, setting: String, ac: Option<u32>, dc: Option<u32> },
-    ServiceSet { name: String, start_type: u32 },
-    TaskSet { path: String, enable: bool },
-    AppxRemove { family: String },
-    FeatureSet { name: String, kind: OptionalFeatureKind, enable: bool },
-    CleanExecuted { targets: usize, freed_bytes: u64 },
-    StartupToggled { id: String, enable: bool },
+    RegSet {
+        hive: String,
+        path: String,
+        name: String,
+        value: u32,
+    },
+    RegSetString {
+        hive: String,
+        path: String,
+        name: String,
+        value: String,
+        expand_sz: bool,
+    },
+    RegSetBinary {
+        hive: String,
+        path: String,
+        name: String,
+        len: usize,
+    },
+    RegDelete {
+        hive: String,
+        path: String,
+        name: String,
+    },
+    RegDeleteTree {
+        hive: String,
+        path: String,
+    },
+    PowerCfgSet {
+        scheme: String,
+        subgroup: String,
+        setting: String,
+        ac: Option<u32>,
+        dc: Option<u32>,
+    },
+    ServiceSet {
+        name: String,
+        start_type: u32,
+    },
+    TaskSet {
+        path: String,
+        enable: bool,
+    },
+    AppxRemove {
+        family: String,
+    },
+    FeatureSet {
+        name: String,
+        kind: OptionalFeatureKind,
+        enable: bool,
+    },
+    CleanExecuted {
+        targets: usize,
+        freed_bytes: u64,
+    },
+    StartupToggled {
+        id: String,
+        enable: bool,
+    },
     ExplorerRestarted,
     RebootRequested,
-    BlockHosts { added: usize },
-    GpuMsi { pnp_id: String, enable: bool, priority: u32 },
+    BlockHosts {
+        added: usize,
+    },
+    GpuMsi {
+        pnp_id: String,
+        enable: bool,
+        priority: u32,
+    },
     SetHags(bool),
     SetMpo(bool),
     UnparkCores,
@@ -751,7 +928,11 @@ impl Default for SandboxState {
                 core_index: i,
                 is_parked: i >= 4,
                 usage_pct: if i < 4 { 24.5 + i as f32 * 5.0 } else { 0.0 },
-                core_type_label: if i < 4 { "P-Core".to_string() } else { "E-Core".to_string() },
+                core_type_label: if i < 4 {
+                    "P-Core".to_string()
+                } else {
+                    "E-Core".to_string()
+                },
             });
         }
 
@@ -779,18 +960,20 @@ impl Default for SandboxState {
         let optional_features: Vec<WindowsOptionalFeature> =
             features_apps::curated_windows_features_meta()
                 .into_iter()
-                .map(|(name, display, desc, kind, bloat)| WindowsOptionalFeature {
-                    name: name.to_string(),
-                    display_name: display.to_string(),
-                    description: desc.to_string(),
-                    kind,
-                    state: if bloat {
-                        FeatureInstallState::Enabled
-                    } else {
-                        FeatureInstallState::Disabled
+                .map(
+                    |(name, display, desc, kind, bloat)| WindowsOptionalFeature {
+                        name: name.to_string(),
+                        display_name: display.to_string(),
+                        description: desc.to_string(),
+                        kind,
+                        state: if bloat {
+                            FeatureInstallState::Enabled
+                        } else {
+                            FeatureInstallState::Disabled
+                        },
+                        is_curated_bloat: bloat,
                     },
-                    is_curated_bloat: bloat,
-                })
+                )
                 .collect();
 
         Self {
@@ -870,7 +1053,8 @@ impl Default for SandboxState {
             startup_entries: vec![StartupEntry {
                 id: "HKCU|Run|OneDrive".to_string(),
                 name: "OneDrive".to_string(),
-                command: "\"C:\\Program Files\\Microsoft OneDrive\\OneDrive.exe\" /background".to_string(),
+                command: "\"C:\\Program Files\\Microsoft OneDrive\\OneDrive.exe\" /background"
+                    .to_string(),
                 source: StartupSource::RegistryHkcuRun,
                 enabled: true,
                 location: "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run".to_string(),
@@ -905,12 +1089,9 @@ impl Default for SandboxState {
                 ls
             },
             onedrive_kfm_path: None,
-            services: [
-                ("diagtrack".to_string(), 2u32),
-                ("rpcss".to_string(), 2u32),
-            ]
-            .into_iter()
-            .collect(),
+            services: [("diagtrack".to_string(), 2u32), ("rpcss".to_string(), 2u32)]
+                .into_iter()
+                .collect(),
             tasks: HashMap::new(),
             appx_packages: HashSet::new(),
             hosts_content: "127.0.0.1 localhost\r\n".to_string(),
@@ -926,7 +1107,9 @@ impl Default for SandboxState {
             gpus: vec![
                 DetectedGpu {
                     name: "NVIDIA GeForce RTX 4090 (Sandbox)".to_string(),
-                    pnp_instance_id: "PCI\\VEN_10DE&DEV_2684&SUBSYS_000010DE&REV_A1\\4&1234567&0&0008".to_string(),
+                    pnp_instance_id:
+                        "PCI\\VEN_10DE&DEV_2684&SUBSYS_000010DE&REV_A1\\4&1234567&0&0008"
+                            .to_string(),
                     msi_enabled: true,
                     interrupt_priority: 2,
                     vendor: GpuVendor::Nvidia,
@@ -935,7 +1118,9 @@ impl Default for SandboxState {
                 },
                 DetectedGpu {
                     name: "AMD Radeon RX 7900 XTX (Sandbox)".to_string(),
-                    pnp_instance_id: "PCI\\VEN_1002&DEV_744C&SUBSYS_00001002&REV_C8\\4&7654321&0&0008".to_string(),
+                    pnp_instance_id:
+                        "PCI\\VEN_1002&DEV_744C&SUBSYS_00001002&REV_C8\\4&7654321&0&0008"
+                            .to_string(),
                     msi_enabled: false,
                     interrupt_priority: 1,
                     vendor: GpuVendor::Amd,
@@ -944,7 +1129,8 @@ impl Default for SandboxState {
                 },
                 DetectedGpu {
                     name: "Intel(R) UHD Graphics 770 (Sandbox)".to_string(),
-                    pnp_instance_id: "PCI\\VEN_8086&DEV_A780&SUBSYS_00008086&REV_04\\3&11583659&0&10".to_string(),
+                    pnp_instance_id:
+                        "PCI\\VEN_8086&DEV_A780&SUBSYS_00008086&REV_04\\3&11583659&0&10".to_string(),
                     msi_enabled: false,
                     interrupt_priority: 1,
                     vendor: GpuVendor::Intel,
@@ -1048,7 +1234,10 @@ fn optional_feature_matches(candidate: &str, query: &str) -> bool {
     if candidate.eq_ignore_ascii_case(query) {
         return true;
     }
-    let c_prefix = candidate.split_once("~~~~").map(|(p, _)| p).unwrap_or(candidate);
+    let c_prefix = candidate
+        .split_once("~~~~")
+        .map(|(p, _)| p)
+        .unwrap_or(candidate);
     let q_prefix = query.split_once("~~~~").map(|(p, _)| p).unwrap_or(query);
     !c_prefix.is_empty() && c_prefix.eq_ignore_ascii_case(q_prefix)
 }
@@ -1122,25 +1311,19 @@ impl SandboxEnv {
         }
     }
 
-    fn write_dword_in_state(
-        st: &mut SandboxState,
-        hive: &str,
-        path: &str,
-        name: &str,
-        value: u32,
-    ) {
+    fn write_dword_in_state(st: &mut SandboxState, hive: &str, path: &str, name: &str, value: u32) {
         let norm_name = normalize_reg_value_name(name);
         let key = Self::reg_key(hive, path, name);
-        let (existing_numeric_sz, existing_expand_sz, existing_neg) =
-            match st.reg_strings.get(&key) {
-                Some(s) => {
-                    let t = s.value.trim();
-                    let is_u32 = t.parse::<u32>().is_ok();
-                    let neg_i32 = !is_u32 && t.parse::<i32>().is_ok_and(|n| n < 0);
-                    (is_u32 || t.parse::<i32>().is_ok(), s.expand_sz, neg_i32)
-                }
-                None => (false, false, false),
-            };
+        let (existing_numeric_sz, existing_expand_sz, existing_neg) = match st.reg_strings.get(&key)
+        {
+            Some(s) => {
+                let t = s.value.trim();
+                let is_u32 = t.parse::<u32>().is_ok();
+                let neg_i32 = !is_u32 && t.parse::<i32>().is_ok_and(|n| n < 0);
+                (is_u32 || t.parse::<i32>().is_ok(), s.expand_sz, neg_i32)
+            }
+            None => (false, false, false),
+        };
         let known_sz = crate::core::reg_helpers::is_known_numeric_reg_sz(path, norm_name);
         Self::clear_reg_value_in_state(st, &key);
         Self::ensure_tree_path_in_state(st, hive, path);
@@ -1347,7 +1530,9 @@ impl SandboxEnv {
             if is_match {
                 out.push(format!(
                     "{}\\{}{}",
-                    gpu::DISPLAY_CLASS_PREFIX, g.class_subkey, suffix
+                    gpu::DISPLAY_CLASS_PREFIX,
+                    g.class_subkey,
+                    suffix
                 ));
             }
         }
@@ -1464,9 +1649,7 @@ impl SandboxEnv {
                                 .as_deref()
                                 .and_then(|h| crate::core::reg_helpers::decode_hex(h).ok())
                         })
-                        .unwrap_or_else(|| {
-                            vec![0x9E, 0x3E, 0x07, 0x80, 0x12, 0x00, 0x00, 0x00]
-                        });
+                        .unwrap_or_else(|| vec![0x9E, 0x3E, 0x07, 0x80, 0x12, 0x00, 0x00, 0x00]);
                     let req_len = (*min_length).max(byte_index + 1);
                     if buf.len() < req_len {
                         buf.resize(req_len, 0);
@@ -1644,15 +1827,17 @@ impl SandboxEnv {
         if st.core_parking.is_hybrid_architecture {
             if let Some(v) = snap.min1 {
                 st.power_settings.insert(
-                    (scheme.clone(), sub.clone(), parking::CPMINCORES1.to_string()),
+                    (
+                        scheme.clone(),
+                        sub.clone(),
+                        parking::CPMINCORES1.to_string(),
+                    ),
                     v,
                 );
             }
             if let Some(v) = snap.max1 {
-                st.power_settings.insert(
-                    (scheme, sub, parking::CPMAXCORES1.to_string()),
-                    v,
-                );
+                st.power_settings
+                    .insert((scheme, sub, parking::CPMAXCORES1.to_string()), v);
             }
         }
 
@@ -1751,7 +1936,13 @@ impl SystemBackend for SandboxEnv {
         self.reg_delete_value_for_vendor(hive, path, name, None)
     }
 
-    fn reg_get_dword_for_vendor(&self, hive: &str, path: &str, name: &str, gpu_vendor: Option<&str>) -> Option<u32> {
+    fn reg_get_dword_for_vendor(
+        &self,
+        hive: &str,
+        path: &str,
+        name: &str,
+        gpu_vendor: Option<&str>,
+    ) -> Option<u32> {
         let st = self.state_read();
         let resolved = Self::resolve_target_paths_in_state(&st, hive, path, gpu_vendor).ok()?;
         if resolved.is_empty() {
@@ -1773,11 +1964,16 @@ impl SystemBackend for SandboxEnv {
                 let raw = st.reg_raw.get(&key)?;
                 let bytes = crate::core::reg_helpers::decode_hex(&raw.hex_bytes).ok()?;
                 match raw.reg_type {
-                    4 if bytes.len() >= 4 => u32::from_le_bytes([bytes[0], bytes[1], bytes[2], bytes[3]]),
-                    5 if bytes.len() >= 4 => u32::from_be_bytes([bytes[0], bytes[1], bytes[2], bytes[3]]),
+                    4 if bytes.len() >= 4 => {
+                        u32::from_le_bytes([bytes[0], bytes[1], bytes[2], bytes[3]])
+                    }
+                    5 if bytes.len() >= 4 => {
+                        u32::from_be_bytes([bytes[0], bytes[1], bytes[2], bytes[3]])
+                    }
                     11 if bytes.len() >= 8 => {
                         let q = u64::from_le_bytes([
-                            bytes[0], bytes[1], bytes[2], bytes[3], bytes[4], bytes[5], bytes[6], bytes[7],
+                            bytes[0], bytes[1], bytes[2], bytes[3], bytes[4], bytes[5], bytes[6],
+                            bytes[7],
                         ]);
                         u32::try_from(q).ok()?
                     }
@@ -1793,7 +1989,14 @@ impl SystemBackend for SandboxEnv {
         consensus
     }
 
-    fn reg_set_dword_for_vendor(&self, hive: &str, path: &str, name: &str, value: u32, gpu_vendor: Option<&str>) -> Result<()> {
+    fn reg_set_dword_for_vendor(
+        &self,
+        hive: &str,
+        path: &str,
+        name: &str,
+        value: u32,
+        gpu_vendor: Option<&str>,
+    ) -> Result<()> {
         self.take_injected_error()?;
         validate_registry_mutation_path(hive, path, false)?;
         let norm_hive = Self::normalize_hive(hive);
@@ -1811,7 +2014,13 @@ impl SystemBackend for SandboxEnv {
         Ok(())
     }
 
-    fn reg_delete_value_for_vendor(&self, hive: &str, path: &str, name: &str, gpu_vendor: Option<&str>) -> Result<()> {
+    fn reg_delete_value_for_vendor(
+        &self,
+        hive: &str,
+        path: &str,
+        name: &str,
+        gpu_vendor: Option<&str>,
+    ) -> Result<()> {
         self.take_injected_error()?;
         validate_registry_mutation_path(hive, path, false)?;
         let norm_hive = Self::normalize_hive(hive);
@@ -1829,7 +2038,13 @@ impl SystemBackend for SandboxEnv {
         Ok(())
     }
 
-    fn reg_get_string(&self, hive: &str, path: &str, name: &str, gpu_vendor: Option<&str>) -> Option<RegStringValue> {
+    fn reg_get_string(
+        &self,
+        hive: &str,
+        path: &str,
+        name: &str,
+        gpu_vendor: Option<&str>,
+    ) -> Option<RegStringValue> {
         let st = self.state_read();
         let resolved = Self::resolve_target_paths_in_state(&st, hive, path, gpu_vendor).ok()?;
         for rp in resolved {
@@ -1841,7 +2056,15 @@ impl SystemBackend for SandboxEnv {
         None
     }
 
-    fn reg_set_string(&self, hive: &str, path: &str, name: &str, value: &str, expand_sz: bool, gpu_vendor: Option<&str>) -> Result<()> {
+    fn reg_set_string(
+        &self,
+        hive: &str,
+        path: &str,
+        name: &str,
+        value: &str,
+        expand_sz: bool,
+        gpu_vendor: Option<&str>,
+    ) -> Result<()> {
         self.take_injected_error()?;
         validate_registry_mutation_path(hive, path, false)?;
         let norm_hive = Self::normalize_hive(hive);
@@ -1936,7 +2159,10 @@ impl SystemBackend for SandboxEnv {
         let norm_path = Self::normalize_reg_path(path);
         let prefix = format!("{}\\", norm_path);
         let st = self.state_read();
-        if st.reg_trees.contains_key(&(norm_hive.clone(), norm_path.clone())) {
+        if st
+            .reg_trees
+            .contains_key(&(norm_hive.clone(), norm_path.clone()))
+        {
             return true;
         }
         st.registry
@@ -1961,14 +2187,18 @@ impl SystemBackend for SandboxEnv {
         let mut st = self.state_write();
         st.reg_trees
             .retain(|(h, p), _| !(h == &norm_hive && (p == &norm_path || p.starts_with(&prefix))));
-        st.registry
-            .retain(|(h, p, _), _| !(h == &norm_hive && (p == &norm_path || p.starts_with(&prefix))));
-        st.reg_strings
-            .retain(|(h, p, _), _| !(h == &norm_hive && (p == &norm_path || p.starts_with(&prefix))));
-        st.reg_binaries
-            .retain(|(h, p, _), _| !(h == &norm_hive && (p == &norm_path || p.starts_with(&prefix))));
-        st.reg_raw
-            .retain(|(h, p, _), _| !(h == &norm_hive && (p == &norm_path || p.starts_with(&prefix))));
+        st.registry.retain(|(h, p, _), _| {
+            !(h == &norm_hive && (p == &norm_path || p.starts_with(&prefix)))
+        });
+        st.reg_strings.retain(|(h, p, _), _| {
+            !(h == &norm_hive && (p == &norm_path || p.starts_with(&prefix)))
+        });
+        st.reg_binaries.retain(|(h, p, _), _| {
+            !(h == &norm_hive && (p == &norm_path || p.starts_with(&prefix)))
+        });
+        st.reg_raw.retain(|(h, p, _), _| {
+            !(h == &norm_hive && (p == &norm_path || p.starts_with(&prefix)))
+        });
         st.ops.push(SandboxOp::RegDeleteTree {
             hive: norm_hive,
             path: path.to_string(),
@@ -2043,7 +2273,12 @@ impl SystemBackend for SandboxEnv {
         Ok(guid)
     }
 
-    fn read_power_setting_index(&self, scheme_guid: Option<&str>, subgroup_guid: &str, setting_guid: &str) -> Result<(u32, u32)> {
+    fn read_power_setting_index(
+        &self,
+        scheme_guid: Option<&str>,
+        subgroup_guid: &str,
+        setting_guid: &str,
+    ) -> Result<(u32, u32)> {
         if let Some(sg) = scheme_guid {
             let _ = power::parse_guid(sg)?;
         }
@@ -2059,11 +2294,22 @@ impl SystemBackend for SandboxEnv {
             power::normalize_guid_str(setting_guid),
         );
         st.power_settings.get(&key).copied().ok_or_else(|| {
-            WinBlastError::Hardware(format!("Sandbox power setting absent: {} / {}", subgroup_guid, setting_guid))
+            WinBlastError::Hardware(format!(
+                "Sandbox power setting absent: {} / {}",
+                subgroup_guid, setting_guid
+            ))
         })
     }
 
-    fn write_power_setting_index(&self, scheme_guid: Option<&str>, subgroup_guid: &str, setting_guid: &str, ac: Option<u32>, dc: Option<u32>, _unhide: bool) -> Result<()> {
+    fn write_power_setting_index(
+        &self,
+        scheme_guid: Option<&str>,
+        subgroup_guid: &str,
+        setting_guid: &str,
+        ac: Option<u32>,
+        dc: Option<u32>,
+        _unhide: bool,
+    ) -> Result<()> {
         self.take_injected_error()?;
         if let Some(sg) = scheme_guid {
             let _ = power::parse_guid(sg)?;
@@ -2098,38 +2344,22 @@ impl SystemBackend for SandboxEnv {
             let snap = parking::ParkingSnapshot {
                 min_ac: st
                     .power_settings
-                    .get(&(
-                        scheme.clone(),
-                        sub.clone(),
-                        parking::CPMINCORES.to_string(),
-                    ))
+                    .get(&(scheme.clone(), sub.clone(), parking::CPMINCORES.to_string()))
                     .map(|&(a, _)| a)
                     .unwrap_or(st.core_parking.min_cores_ac_pct),
                 min_dc: st
                     .power_settings
-                    .get(&(
-                        scheme.clone(),
-                        sub.clone(),
-                        parking::CPMINCORES.to_string(),
-                    ))
+                    .get(&(scheme.clone(), sub.clone(), parking::CPMINCORES.to_string()))
                     .map(|&(_, d)| d)
                     .unwrap_or(st.core_parking.min_cores_dc_pct),
                 max_ac: st
                     .power_settings
-                    .get(&(
-                        scheme.clone(),
-                        sub.clone(),
-                        parking::CPMAXCORES.to_string(),
-                    ))
+                    .get(&(scheme.clone(), sub.clone(), parking::CPMAXCORES.to_string()))
                     .map(|&(a, _)| a)
                     .unwrap_or(st.core_parking.max_cores_ac_pct),
                 max_dc: st
                     .power_settings
-                    .get(&(
-                        scheme.clone(),
-                        sub.clone(),
-                        parking::CPMAXCORES.to_string(),
-                    ))
+                    .get(&(scheme.clone(), sub.clone(), parking::CPMAXCORES.to_string()))
                     .map(|&(_, d)| d)
                     .unwrap_or(st.core_parking.max_cores_dc_pct),
                 min1: st
@@ -2151,7 +2381,13 @@ impl SystemBackend for SandboxEnv {
             };
             Self::sync_parking_in_state(&mut st, &snap);
         }
-        st.ops.push(SandboxOp::PowerCfgSet { scheme, subgroup: sub, setting: set, ac, dc });
+        st.ops.push(SandboxOp::PowerCfgSet {
+            scheme,
+            subgroup: sub,
+            setting: set,
+            ac,
+            dc,
+        });
         Ok(())
     }
 
@@ -2379,7 +2615,12 @@ impl SystemBackend for SandboxEnv {
         self.state_read().gpus.clone()
     }
 
-    fn set_gpu_msi_mode(&self, pnp_instance_id: &str, enable: bool, priority: u32) -> std::io::Result<()> {
+    fn set_gpu_msi_mode(
+        &self,
+        pnp_instance_id: &str,
+        enable: bool,
+        priority: u32,
+    ) -> std::io::Result<()> {
         if let Err(e) = self.take_injected_error() {
             return Err(std::io::Error::other(e.to_string()));
         }
@@ -2560,7 +2801,12 @@ impl SystemBackend for SandboxEnv {
         Ok(st.optional_features.clone())
     }
 
-    fn set_optional_feature(&self, name: &str, kind: OptionalFeatureKind, enable: bool) -> Result<FeatureInstallState> {
+    fn set_optional_feature(
+        &self,
+        name: &str,
+        kind: OptionalFeatureKind,
+        enable: bool,
+    ) -> Result<FeatureInstallState> {
         self.take_injected_error()?;
         let clean = features_apps::validate_feature_name(name)?;
         let mut st = self.state_write();
@@ -2652,7 +2898,9 @@ impl SystemBackend for SandboxEnv {
             .startup_entries
             .iter_mut()
             .find(|e| e.id == id)
-            .ok_or_else(|| WinBlastError::TweakFailed(format!("Startup entry '{}' not found", id)))?;
+            .ok_or_else(|| {
+                WinBlastError::TweakFailed(format!("Startup entry '{}' not found", id))
+            })?;
         if entry.policy_locked {
             return Err(WinBlastError::TweakFailed("Policy locked".to_string()));
         }
@@ -2678,8 +2926,8 @@ impl SystemBackend for SandboxEnv {
         let norm = normalize_task_path(task_path);
         let st = self.state_read();
         let space_variant = format!("{} ", norm);
-        let exists = st.tasks.contains_key(&norm)
-            || st.tasks.keys().any(|k| k.starts_with(&space_variant));
+        let exists =
+            st.tasks.contains_key(&norm) || st.tasks.keys().any(|k| k.starts_with(&space_variant));
         if !exists {
             return Err(WinBlastError::ScheduledTask(format!(
                 "Scheduled task '{}' does not exist in sandbox",

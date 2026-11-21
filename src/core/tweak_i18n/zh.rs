@@ -1427,7 +1427,9 @@ pub fn tweak_title(id: &str) -> Option<&'static str> {
         "disable_page_file_encryption" => Some("禁用页面文件磁盘加密及关机覆写清除"),
         "disable_processor_idle_demote_threshold" => Some("禁用处理器短暂空闲状态降级降频"),
         "disable_rss_base_cpu" => Some("将网络接收端缩放 (RSS) 基准 CPU 迁移至 CPU 1"),
-        "disable_spectre_meltdown_mitigations" => Some("禁用 Spectre / Meltdown CPU 投机执行漏洞安全缓解"),
+        "disable_spectre_meltdown_mitigations" => {
+            Some("禁用 Spectre / Meltdown CPU 投机执行漏洞安全缓解")
+        }
         "disable_threaded_dpc_optimization" => Some("禁用线程化 DPC 以压低硬件中断响应延迟"),
         "disable_windows_search_indexer" => Some("完全禁用 Windows 搜索全文索引服务 (WSearch)"),
         "enable_hardware_task_offload" => Some("启用 TCP/IP 网卡硬件卸载加速 (Task Offloading)"),
@@ -1435,26 +1437,40 @@ pub fn tweak_title(id: &str) -> Option<&'static str> {
         "enable_ultimate_performance_plan" => Some("激活并启用 Windows 隐藏的卓越性能电源方案"),
         "increase_gpu_tdr_timeout" => Some("增加 GPU 超时检测与恢复 (TDR) 响应延迟容限"),
         "increase_irp_stack_size" => Some("扩充网络与磁盘 I/O 请求包 (IRP) 堆栈大小"),
-        "increase_max_connections_per_server" => Some("提高 WinINet 每台服务器并发 HTTP 最大连接数"),
+        "increase_max_connections_per_server" => {
+            Some("提高 WinINet 每台服务器并发 HTTP 最大连接数")
+        }
         "increase_nonpaged_pool_quota" => Some("解除内核非分页内存池 (Non-Paged Pool) 配额限制"),
-        "optimize_additional_critical_worker_threads" => Some("预置额外关键与延迟内核工作线程 (Worker Threads)"),
+        "optimize_additional_critical_worker_threads" => {
+            Some("预置额外关键与延迟内核工作线程 (Worker Threads)")
+        }
         "optimize_default_ttl" => Some("将 IP 数据包默认生存时间 (TTL) 设定为标准 64 跃点"),
         "optimize_disk_io_page_lock_limit" => Some("扩充直接 I/O 内存页锁定上限 (IoPageLockLimit)"),
         "optimize_dns_cache_parameters" => Some("优化本地 DNS 客户端解析缓存条目与 TTL 存活周期"),
         "optimize_gpu_preemption_level" => Some("将显卡调度器配置为仅计算抢占模式 (Compute-Only)"),
-        "optimize_interrupt_steering" => Some("优化硬件中断亲和性与多核路由分发策略 (IRQ Steering)"),
-        "optimize_mmcss_proaudio_scheduling" => Some("为多媒体类调度器 (MMCSS) 专业音频任务赋予最高实时优先级"),
+        "optimize_interrupt_steering" => {
+            Some("优化硬件中断亲和性与多核路由分发策略 (IRQ Steering)")
+        }
+        "optimize_mmcss_proaudio_scheduling" => {
+            Some("为多媒体类调度器 (MMCSS) 专业音频任务赋予最高实时优先级")
+        }
         "optimize_ntfs_memory_usage" => Some("启用 NTFS 文件系统分页池侵略性元数据高速缓存"),
-        "optimize_object_manager_quota" => Some("扩充内核对象管理器句柄池配额上限 (SessionPoolSize)"),
-        "optimize_timer_resolution_requests" => Some("全局允许应用程序请求 0.5ms 超高精度系统时钟定时器"),
-                "disable_driver_search_order_probing" => Some("禁用 Windows Update 后台联网检索设备驱动"),
+        "optimize_object_manager_quota" => {
+            Some("扩充内核对象管理器句柄池配额上限 (SessionPoolSize)")
+        }
+        "optimize_timer_resolution_requests" => {
+            Some("全局允许应用程序请求 0.5ms 超高精度系统时钟定时器")
+        }
+        "disable_driver_search_order_probing" => Some("禁用 Windows Update 后台联网检索设备驱动"),
         "disable_fast_user_switching" => Some("禁用多账户快速用户切换"),
         "disable_ip_source_routing" => Some("禁用 IP 源路由选择 (Source Routing)"),
         "disable_netsh_teredo_tunneling" => Some("禁用 Teredo IPv6 移行隧道适配器"),
         "disable_network_adapter_power_saving" => Some("禁用 NDIS 物理网卡 PnP 节能与休眠"),
         "disable_remote_desktop_udp" => Some("禁用远程桌面客户端 UDP 传输协议"),
         "disable_smart_card_service" => Some("禁用 Windows 智能卡服务 (SCardSvr)"),
-        "optimize_kerberos_ticket_cache" => Some("优化 Kerberos 身份认证最大令牌缓存 (MaxTokenSize)"),
+        "optimize_kerberos_ticket_cache" => {
+            Some("优化 Kerberos 身份认证最大令牌缓存 (MaxTokenSize)")
+        }
         "optimize_tcp_syn_attack_protection" => Some("开启 TCP SYN 洪水攻击防御与连接保护"),
         "optimize_usb_selective_suspend_hub" => Some("全局禁用 USB 集线器选择性暂停挂起"),
         _ => lookup(id).map(|t| t.title),

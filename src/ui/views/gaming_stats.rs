@@ -24,7 +24,11 @@ fn sub_tab_chip(
     action_button(
         label,
         if active { p.accent } else { p.bg_card },
-        if active { Color::WHITE } else { p.text_secondary },
+        if active {
+            Color::WHITE
+        } else {
+            p.text_secondary
+        },
         p,
         on_click,
     )
@@ -41,11 +45,41 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
         .min_w(0.0)
         .gap(6.0)
         .flex_wrap()
-        .child(sub_tab_chip(s.tr(TextKey::TabInGameMonitor), s.gaming_sub_tab == GamingSubTab::LiveMonitor, p, style, |s| s.gaming_sub_tab = GamingSubTab::LiveMonitor))
-        .child(sub_tab_chip(s.tr(TextKey::TabFpsBench), s.gaming_sub_tab == GamingSubTab::FpsBenchmark, p, style, |s| s.gaming_sub_tab = GamingSubTab::FpsBenchmark))
-        .child(sub_tab_chip(s.tr(TextKey::TabGameProfiles), s.gaming_sub_tab == GamingSubTab::GameProfiles, p, style, |s| s.gaming_sub_tab = GamingSubTab::GameProfiles))
-        .child(sub_tab_chip(s.tr(TextKey::TabGameOverlay), s.gaming_sub_tab == GamingSubTab::GameOverlay, p, style, |s| s.gaming_sub_tab = GamingSubTab::GameOverlay))
-        .child(sub_tab_chip(s.tr(TextKey::TabGameSuitability), s.gaming_sub_tab == GamingSubTab::GameSuitability, p, style, |s| s.gaming_sub_tab = GamingSubTab::GameSuitability));
+        .child(sub_tab_chip(
+            s.tr(TextKey::TabInGameMonitor),
+            s.gaming_sub_tab == GamingSubTab::LiveMonitor,
+            p,
+            style,
+            |s| s.gaming_sub_tab = GamingSubTab::LiveMonitor,
+        ))
+        .child(sub_tab_chip(
+            s.tr(TextKey::TabFpsBench),
+            s.gaming_sub_tab == GamingSubTab::FpsBenchmark,
+            p,
+            style,
+            |s| s.gaming_sub_tab = GamingSubTab::FpsBenchmark,
+        ))
+        .child(sub_tab_chip(
+            s.tr(TextKey::TabGameProfiles),
+            s.gaming_sub_tab == GamingSubTab::GameProfiles,
+            p,
+            style,
+            |s| s.gaming_sub_tab = GamingSubTab::GameProfiles,
+        ))
+        .child(sub_tab_chip(
+            s.tr(TextKey::TabGameOverlay),
+            s.gaming_sub_tab == GamingSubTab::GameOverlay,
+            p,
+            style,
+            |s| s.gaming_sub_tab = GamingSubTab::GameOverlay,
+        ))
+        .child(sub_tab_chip(
+            s.tr(TextKey::TabGameSuitability),
+            s.gaming_sub_tab == GamingSubTab::GameSuitability,
+            p,
+            style,
+            |s| s.gaming_sub_tab = GamingSubTab::GameSuitability,
+        ));
 
     let inner_content = match s.gaming_sub_tab {
         GamingSubTab::FpsBenchmark => super::fps_benchmark::view(s, tier),
@@ -53,7 +87,9 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
         GamingSubTab::GameOverlay => super::game_overlay::view(s, tier),
         GamingSubTab::GameSuitability => super::game_suitability::view(s, tier),
         GamingSubTab::LiveMonitor => {
-            let frametime_waveform = vec![16.6, 16.5, 16.7, 16.6, 16.4, 16.8, 16.6, 16.5, 16.6, 16.7, 16.6, 16.5, 16.6, 16.6];
+            let frametime_waveform = vec![
+                16.6, 16.5, 16.7, 16.6, 16.4, 16.8, 16.6, 16.5, 16.6, 16.7, 16.6, 16.5, 16.6, 16.6,
+            ];
             col()
                 .w_full()
                 .min_w(0.0)
@@ -75,7 +111,11 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
                                 .hover(p.bg_card_hover)
                                 .motion(p.motion)
                                 .gap(4.0)
-                                .child(text(s.tr_v(ViewTextKey::GamingStatsFpsTelemetry)).font(rune::tok::type_::LABEL).color(p.text_secondary))
+                                .child(
+                                    text(s.tr_v(ViewTextKey::GamingStatsFpsTelemetry))
+                                        .font(rune::tok::type_::LABEL)
+                                        .color(p.text_secondary),
+                                )
                                 .child(
                                     text(format!("%{}", telemetry.frame_pacing_rating))
                                         .font(rune::tok::type_::TITLE)
@@ -98,7 +138,11 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
                                 .hover(p.bg_card_hover)
                                 .motion(p.motion)
                                 .gap(4.0)
-                                .child(text(s.tr_v(ViewTextKey::GamingStatsAvgFps)).font(rune::tok::type_::LABEL).color(p.text_secondary))
+                                .child(
+                                    text(s.tr_v(ViewTextKey::GamingStatsAvgFps))
+                                        .font(rune::tok::type_::LABEL)
+                                        .color(p.text_secondary),
+                                )
                                 .child(
                                     text(format!("{:.1}%", telemetry.background_cpu_impact_pct))
                                         .font(rune::tok::type_::TITLE)
@@ -121,7 +165,11 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
                                 .hover(p.bg_card_hover)
                                 .motion(p.motion)
                                 .gap(4.0)
-                                .child(text(s.tr_v(ViewTextKey::GamingStatsJitter)).font(rune::tok::type_::LABEL).color(p.text_secondary))
+                                .child(
+                                    text(s.tr_v(ViewTextKey::GamingStatsJitter))
+                                        .font(rune::tok::type_::LABEL)
+                                        .color(p.text_secondary),
+                                )
                                 .child(
                                     text(format!("{}/min", telemetry.micro_stutters_per_min))
                                         .font(rune::tok::type_::TITLE)
@@ -135,17 +183,15 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
                         ),
                 )
                 // Real-Time Frametime Sparkline & Microstutter Waveform
-                .child(
-                    sparkline::sparkline_with_palette(
-                        "Frametime Pacing Consistency (Target: 16.6ms @ 60Hz / 6.94ms @ 144Hz)",
-                        "16.6ms • Microstutter Suppression Active",
-                        &frametime_waveform,
-                        p.sparkline_cpu,
-                        46.0,
-                        30,
-                        p,
-                    )
-                )
+                .child(sparkline::sparkline_with_palette(
+                    "Frametime Pacing Consistency (Target: 16.6ms @ 60Hz / 6.94ms @ 144Hz)",
+                    "16.6ms • Microstutter Suppression Active",
+                    &frametime_waveform,
+                    p.sparkline_cpu,
+                    46.0,
+                    30,
+                    p,
+                ))
                 // Active Game Process Optimizer Card
                 .child(
                     col()
@@ -193,9 +239,23 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
                                 .fill(p.bg_card)
                                 .border(style.border_width(), p.border)
                                 .gap(4.0)
-                                .child(text(s.tr_v(ViewTextKey::GamingStatsDx12Agility)).font(rune::tok::type_::LABEL).color(p.accent))
-                                .child(text("D3D12Core.dll v1.614.0 active • Shader Model 6.8 enabled").font(rune::tok::type_::BODY).color(p.text_primary))
-                                .child(text("DirectStorage 1.2 GPU Decompression Active").font(rune::tok::type_::LABEL).color(p.success)),
+                                .child(
+                                    text(s.tr_v(ViewTextKey::GamingStatsDx12Agility))
+                                        .font(rune::tok::type_::LABEL)
+                                        .color(p.accent),
+                                )
+                                .child(
+                                    text(
+                                        "D3D12Core.dll v1.614.0 active • Shader Model 6.8 enabled",
+                                    )
+                                    .font(rune::tok::type_::BODY)
+                                    .color(p.text_primary),
+                                )
+                                .child(
+                                    text("DirectStorage 1.2 GPU Decompression Active")
+                                        .font(rune::tok::type_::LABEL)
+                                        .color(p.success),
+                                ),
                         )
                         .child(
                             col()
@@ -206,9 +266,21 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
                                 .fill(p.bg_card)
                                 .border(style.border_width(), p.border)
                                 .gap(4.0)
-                                .child(text(s.tr_v(ViewTextKey::GamingStatsWddmScheduling)).font(rune::tok::type_::LABEL).color(p.accent))
-                                .child(text("Hardware Accelerated GPU Scheduling (HAGS) active").font(rune::tok::type_::BODY).color(p.text_primary))
-                                .child(text("Variable Refresh Rate (VRR) & G-Sync Synchronized").font(rune::tok::type_::LABEL).color(p.success)),
+                                .child(
+                                    text(s.tr_v(ViewTextKey::GamingStatsWddmScheduling))
+                                        .font(rune::tok::type_::LABEL)
+                                        .color(p.accent),
+                                )
+                                .child(
+                                    text("Hardware Accelerated GPU Scheduling (HAGS) active")
+                                        .font(rune::tok::type_::BODY)
+                                        .color(p.text_primary),
+                                )
+                                .child(
+                                    text("Variable Refresh Rate (VRR) & G-Sync Synchronized")
+                                        .font(rune::tok::type_::LABEL)
+                                        .color(p.success),
+                                ),
                         ),
                 )
         }
@@ -243,14 +315,23 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
                         ),
                 )
                 .child(
-                    action_button(s.tr_v(ViewTextKey::GamingStatsRefreshBtn), p.accent, Color::WHITE, p, |s| {
-                        s.game_telemetry = crate::tools::gaming_stats::LiveGameTelemetry::probe();
-                    })
+                    action_button(
+                        s.tr_v(ViewTextKey::GamingStatsRefreshBtn),
+                        p.accent,
+                        Color::WHITE,
+                        p,
+                        |s| {
+                            s.game_telemetry =
+                                crate::tools::gaming_stats::LiveGameTelemetry::probe();
+                        },
+                    )
                     .radius(style.btn_radius()),
                 ),
         )
         .child(sub_nav)
         .child(inner_content)
-        .scroll(ScrollSpec { stick_bottom: false })
+        .scroll(ScrollSpec {
+            stick_bottom: false,
+        })
         .winblast_scroll(p)
 }

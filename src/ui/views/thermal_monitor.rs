@@ -62,9 +62,15 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                         ),
                 )
                 .child(
-                    action_button(s.tr_v(ViewTextKey::ThermalRefreshBtn), p.accent, Color::WHITE, p, |s| {
-                        s.scan_thermal_snapshot_async();
-                    })
+                    action_button(
+                        s.tr_v(ViewTextKey::ThermalRefreshBtn),
+                        p.accent,
+                        Color::WHITE,
+                        p,
+                        |s| {
+                            s.scan_thermal_snapshot_async();
+                        },
+                    )
                     .radius(style.btn_radius()),
                 ),
         )
@@ -74,8 +80,19 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                 .w_full()
                 .padding(10.0)
                 .radius(style.card_radius().min(6.0))
-                .fill(if thermals.sensors_available { p.success.alpha(0.12) } else { p.bg_card })
-                .border(1.0, if thermals.sensors_available { p.success.alpha(0.3) } else { p.border })
+                .fill(if thermals.sensors_available {
+                    p.success.alpha(0.12)
+                } else {
+                    p.bg_card
+                })
+                .border(
+                    1.0,
+                    if thermals.sensors_available {
+                        p.success.alpha(0.3)
+                    } else {
+                        p.border
+                    },
+                )
                 .child(
                     text(if thermals.sensors_available {
                         s.tr_v(ViewTextKey::ThermalActiveSensors)
@@ -83,7 +100,11 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                         s.tr_v(ViewTextKey::ThermalOemBanner)
                     })
                     .font(rune::tok::type_::LABEL)
-                    .color(if thermals.sensors_available { p.success } else { p.text_secondary })
+                    .color(if thermals.sensors_available {
+                        p.success
+                    } else {
+                        p.text_secondary
+                    })
                     .shrink()
                     .wrap(),
                 ),
@@ -111,7 +132,11 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                                 .gap(6.0)
                                 .center()
                                 .child(text("❄").font(rune::tok::type_::LABEL))
-                                .child(text(s.tr_v(ViewTextKey::ThermalCpuPackage)).font(rune::tok::type_::LABEL).color(p.text_secondary)),
+                                .child(
+                                    text(s.tr_v(ViewTextKey::ThermalCpuPackage))
+                                        .font(rune::tok::type_::LABEL)
+                                        .color(p.text_secondary),
+                                ),
                         )
                         .child(
                             text(format!("{:.1}°C", thermals.cpu_package_temp_c))
@@ -123,10 +148,20 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                                 "{}: {:.1}°C • Throttling: {}",
                                 s.tr_v(ViewTextKey::ThermalMaxCore),
                                 thermals.cpu_max_core_temp_c,
-                                if thermals.cpu_throttling_active { s.tr_v(ViewTextKey::ThermalThrottlingActive) } else { s.tr_v(ViewTextKey::ThermalThrottlingNone) }
+                                if thermals.cpu_throttling_active {
+                                    s.tr_v(ViewTextKey::ThermalThrottlingActive)
+                                } else {
+                                    s.tr_v(ViewTextKey::ThermalThrottlingNone)
+                                }
                             ))
                             .font(rune::tok::type_::BODY)
-                            .color(if thermals.cpu_throttling_active { p.danger } else { p.text_muted }),
+                            .color(
+                                if thermals.cpu_throttling_active {
+                                    p.danger
+                                } else {
+                                    p.text_muted
+                                },
+                            ),
                         ),
                 )
                 .child(
@@ -146,7 +181,11 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                                 .gap(6.0)
                                 .center()
                                 .child(text("🎮").font(rune::tok::type_::LABEL))
-                                .child(text(s.tr_v(ViewTextKey::ThermalGpuCore)).font(rune::tok::type_::LABEL).color(p.text_secondary)),
+                                .child(
+                                    text(s.tr_v(ViewTextKey::ThermalGpuCore))
+                                        .font(rune::tok::type_::LABEL)
+                                        .color(p.text_secondary),
+                                ),
                         )
                         .child(
                             text(format!("{:.1}°C", thermals.gpu_core_temp_c))
@@ -154,9 +193,13 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                                 .color(gpu_color),
                         )
                         .child(
-                            text(format!("Hotspot: {:.1}°C • Throttling: {}", thermals.gpu_hotspot_temp_c, s.tr_v(ViewTextKey::ThermalThrottlingNone)))
-                                .font(rune::tok::type_::BODY)
-                                .color(p.text_muted),
+                            text(format!(
+                                "Hotspot: {:.1}°C • Throttling: {}",
+                                thermals.gpu_hotspot_temp_c,
+                                s.tr_v(ViewTextKey::ThermalThrottlingNone)
+                            ))
+                            .font(rune::tok::type_::BODY)
+                            .color(p.text_muted),
                         ),
                 )
                 .child(
@@ -176,7 +219,11 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                                 .gap(6.0)
                                 .center()
                                 .child(text("💨").font(rune::tok::type_::LABEL))
-                                .child(text(s.tr_v(ViewTextKey::ThermalFanRpm)).font(rune::tok::type_::LABEL).color(p.text_secondary)),
+                                .child(
+                                    text(s.tr_v(ViewTextKey::ThermalFanRpm))
+                                        .font(rune::tok::type_::LABEL)
+                                        .color(p.text_secondary),
+                                ),
                         )
                         .child(
                             text(if thermals.fan_speed_rpm > 0 {
@@ -188,11 +235,20 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                             .color(p.accent),
                         )
                         .child(
-                            text(if let Some(comp) = thermals.components.iter().find(|c| c.fan_speed_pct.is_some()) {
-                                format!("GPU Fan PWM: {:.0}% • Smart Fan Curve Active", comp.fan_speed_pct.unwrap_or(0.0))
-                            } else {
-                                "Smart Fan Curve Active • Quiet / Performance Mode".to_string()
-                            })
+                            text(
+                                if let Some(comp) = thermals
+                                    .components
+                                    .iter()
+                                    .find(|c| c.fan_speed_pct.is_some())
+                                {
+                                    format!(
+                                        "GPU Fan PWM: {:.0}% • Smart Fan Curve Active",
+                                        comp.fan_speed_pct.unwrap_or(0.0)
+                                    )
+                                } else {
+                                    "Smart Fan Curve Active • Quiet / Performance Mode".to_string()
+                                },
+                            )
                             .font(rune::tok::type_::BODY)
                             .color(p.text_muted),
                         ),
@@ -232,7 +288,11 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                             col()
                                 .grow(1.0)
                                 .min_w(180.0)
-                                .child(text(&c.name).font(rune::tok::type_::LABEL).color(p.text_primary))
+                                .child(
+                                    text(&c.name)
+                                        .font(rune::tok::type_::LABEL)
+                                        .color(p.text_primary),
+                                )
                                 .child(
                                     text(format!("Thermal Threshold: {:.0}°C", c.max_temp_c))
                                         .font(rune::tok::type_::BODY)
@@ -255,5 +315,8 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                         )
                 })),
         )
-        .scroll(ScrollSpec { stick_bottom: false }).winblast_scroll(p)
+        .scroll(ScrollSpec {
+            stick_bottom: false,
+        })
+        .winblast_scroll(p)
 }

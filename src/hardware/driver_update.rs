@@ -149,10 +149,20 @@ impl DriverCategory {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum DriverProgress {
     Idle,
-    Scanning { scanned: usize, total: usize },
-    Comparing { device: String },
-    Downloading { bytes_received: u64, bytes_total: u64 },
-    BackingUp { device: String },
+    Scanning {
+        scanned: usize,
+        total: usize,
+    },
+    Comparing {
+        device: String,
+    },
+    Downloading {
+        bytes_received: u64,
+        bytes_total: u64,
+    },
+    BackingUp {
+        device: String,
+    },
     Verifying,
     Installing,
     Complete,
@@ -350,7 +360,9 @@ fn parse_pnputil_drivers(output: &str) -> Vec<PnpDriverPackage> {
     for line in output.lines() {
         let trimmed = line.trim();
         if trimmed.is_empty() {
-            if in_record && (!current.published_name.is_empty() || !current.original_name.is_empty()) {
+            if in_record
+                && (!current.published_name.is_empty() || !current.original_name.is_empty())
+            {
                 packages.push(current.clone());
                 current = PnpDriverPackage {
                     published_name: String::new(),
@@ -546,8 +558,14 @@ fn scan_class_registry(
             .unwrap_or(false);
 
         // Evaluate latest available version from driver store + PnPUtil
-        let (latest_ver, state, size_mb, url) =
-            evaluate_version_from_store(&name, &provider, &version, &inf_file, category, driver_store);
+        let (latest_ver, state, size_mb, url) = evaluate_version_from_store(
+            &name,
+            &provider,
+            &version,
+            &inf_file,
+            category,
+            driver_store,
+        );
 
         items.push(DriverUpdateItem {
             id: format!("{}_{}", class_guid, sub),
@@ -600,11 +618,14 @@ fn evaluate_version_from_store(
     let inf_lower = inf_file.to_lowercase();
 
     // 1. Attempt to resolve original INF package identity
-    let target_original_inf = driver_store.iter().find(|p| {
-        p.class_guid == class_guid
-            && (p.published_name.eq_ignore_ascii_case(&inf_lower)
-                || p.original_name.eq_ignore_ascii_case(&inf_lower))
-    }).map(|p| p.original_name.clone());
+    let target_original_inf = driver_store
+        .iter()
+        .find(|p| {
+            p.class_guid == class_guid
+                && (p.published_name.eq_ignore_ascii_case(&inf_lower)
+                    || p.original_name.eq_ignore_ascii_case(&inf_lower))
+        })
+        .map(|p| p.original_name.clone());
 
     // 2. Find the latest matching driver version in store for this device
     let mut best_store_version: Option<&str> = None;
@@ -628,7 +649,8 @@ fn evaluate_version_from_store(
             if !prov_match {
                 false
             } else {
-                let is_virtual_pkg = pkg.original_name.contains("vad") || pkg.original_name.contains("virt");
+                let is_virtual_pkg =
+                    pkg.original_name.contains("vad") || pkg.original_name.contains("virt");
                 let is_virtual_dev = name_upper.contains("VIRTUAL") || name_upper.contains("VAD");
                 is_virtual_pkg == is_virtual_dev
             }
@@ -736,10 +758,7 @@ pub fn verify_driver_signature(file_path: &Path) -> bool {
             "-NoProfile",
             "-NonInteractive",
             "-Command",
-            &format!(
-                "(Get-AuthenticodeSignature '{}').Status",
-                path_str
-            ),
+            &format!("(Get-AuthenticodeSignature '{}').Status", path_str),
         ])
         .output();
 
@@ -779,7 +798,11 @@ pub fn backup_driver(
 
     // Export current driver info using pnputil
     let output = SilentCommand::new("pnputil.exe")
-        .args(["/export-driver", &driver.inf_path, &backup_dir.to_string_lossy()])
+        .args([
+            "/export-driver",
+            &driver.inf_path,
+            &backup_dir.to_string_lossy(),
+        ])
         .output();
 
     match output {
@@ -844,10 +867,8 @@ pub fn scan_online_drivers_with_progress(
             total: 0,
         });
     }
-    let (pnp_devices, driver_store) = rayon::join(
-        enumerate_pnputil_devices,
-        enumerate_pnputil_driver_store,
-    );
+    let (pnp_devices, driver_store) =
+        rayon::join(enumerate_pnputil_devices, enumerate_pnputil_driver_store);
 
     let categories = DriverCategory::all_physical();
     let total_categories = categories.len();
@@ -898,7 +919,8 @@ pub fn create_sandbox_test_item() -> DriverUpdateItem {
         download_url: "https://winblast.internal/drivers/test_sandbox.inf".to_string(),
         download_size_mb: 2.5,
         state: DriverUpdateState::UpdateAvailable,
-        status_message: "Safe sandbox driver for automated verification and test install".to_string(),
+        status_message: "Safe sandbox driver for automated verification and test install"
+            .to_string(),
         inf_path: "test_driver.inf".to_string(),
         is_whql_signed: true,
         compatible_os_builds: vec![22621, 22631, 26100],
@@ -962,8 +984,9 @@ pub fn download_and_install_driver_with_progress(
     }
 
     // Ensure staging directory exists
-    fs::create_dir_all(staging_dir)
-        .map_err(|e| DriverError::StagingFailed(format!("Failed to create staging directory: {}", e)))?;
+    fs::create_dir_all(staging_dir).map_err(|e| {
+        DriverError::StagingFailed(format!("Failed to create staging directory: {}", e))
+    })?;
 
     if driver.category == DriverCategory::VirtualSandbox {
         return install_sandbox_driver(driver, staging_dir, progress_cb);
@@ -984,10 +1007,8 @@ pub fn download_and_install_driver_with_progress(
                 .spawn();
             match result {
                 Ok(_) => {
-                    driver.status_message = format!(
-                        "Vendor download portal opened: {}",
-                        driver.download_url
-                    );
+                    driver.status_message =
+                        format!("Vendor download portal opened: {}", driver.download_url);
                     driver.state = DriverUpdateState::ReadyToInstall;
 
                     if let Some(cb) = progress_cb {
@@ -1095,8 +1116,10 @@ DeviceDesc="WinBlast Virtual Sandbox Test Device"
 
     driver.current_version = driver.latest_version.clone();
     driver.state = DriverUpdateState::Installed;
-    driver.status_message =
-        format!("Successfully verified and installed in sandbox: {}", pnp_status);
+    driver.status_message = format!(
+        "Successfully verified and installed in sandbox: {}",
+        pnp_status
+    );
 
     if let Some(cb) = progress_cb {
         cb(DriverProgress::Complete);
@@ -1116,11 +1139,15 @@ DeviceDesc="WinBlast Virtual Sandbox Test Device"
 pub fn test_driver_sandbox_lifecycle() -> Result<String, String> {
     let mut item = create_sandbox_test_item();
     let temp_sandbox = std::env::temp_dir().join("winblast_driver_sandbox_test");
-    let result = download_and_install_driver(&mut item, &temp_sandbox)
-        .map_err(|e| e.to_string())?;
+    let result =
+        download_and_install_driver(&mut item, &temp_sandbox).map_err(|e| e.to_string())?;
     if let Err(e) = fs::remove_dir_all(&temp_sandbox) {
         if e.kind() != std::io::ErrorKind::NotFound {
-            tracing::warn!("Failed to clean up driver temp sandbox {:?}: {}", temp_sandbox, e);
+            tracing::warn!(
+                "Failed to clean up driver temp sandbox {:?}: {}",
+                temp_sandbox,
+                e
+            );
         }
     }
     Ok(result)
@@ -1254,7 +1281,9 @@ Signer:          Microsoft Windows Hardware Compatibility Publisher
     #[test]
     fn test_vendor_download_url_known() {
         assert!(vendor_download_url("NVIDIA GEFORCE RTX 4090", "NVIDIA").contains("nvidia.com"));
-        assert!(vendor_download_url("AMD RADEON RX 7900", "Advanced Micro Devices").contains("amd.com"));
+        assert!(
+            vendor_download_url("AMD RADEON RX 7900", "Advanced Micro Devices").contains("amd.com")
+        );
         assert!(vendor_download_url("INTEL UHD 770", "Intel").contains("intel.com"));
     }
 

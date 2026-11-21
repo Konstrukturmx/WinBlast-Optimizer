@@ -165,10 +165,7 @@ pub enum TweakAction {
         name: String,
     },
     /// Delete a guarded registry subkey tree (with lossless tree snapshot backup in StateLedger).
-    RegistryDeleteTree {
-        hive: String,
-        path: String,
-    },
+    RegistryDeleteTree { hive: String, path: String },
     /// Atomically update a single bit-mask inside a `REG_BINARY` value (e.g. `UserPreferencesMask`).
     RegistryBinaryBit {
         hive: String,
@@ -362,7 +359,10 @@ impl TweakDefinition {
     }
 
     /// Check if this tweak is compatible with the detected GPU vendors.
-    pub fn is_gpu_vendor_compatible(&self, detected_vendors: &[crate::hardware::gpu::GpuVendor]) -> bool {
+    pub fn is_gpu_vendor_compatible(
+        &self,
+        detected_vendors: &[crate::hardware::gpu::GpuVendor],
+    ) -> bool {
         match &self.gpu_vendor {
             None => true,
             Some(req) => {
@@ -400,7 +400,9 @@ pub fn load_rules_from_dir(
                     if reader.read_to_string(&mut content).is_ok() {
                         match toml::from_str::<TweakCatalog>(&content) {
                             Ok(catalog) => all_tweaks.extend(catalog.tweaks),
-                            Err(e) => tracing::error!("Failed to parse rule file {:?}: {}", path, e),
+                            Err(e) => {
+                                tracing::error!("Failed to parse rule file {:?}: {}", path, e)
+                            }
                         }
                     } else {
                         tracing::error!("Failed to read rule file {:?}", path);
@@ -419,13 +421,19 @@ const EMBEDDED_CATALOG_HARDWARE: &str = include_str!("../../assets/rules/hardwar
 const EMBEDDED_CATALOG_OS_SETTINGS: &str = include_str!("../../assets/rules/os_settings.toml");
 const EMBEDDED_CATALOG_PRIVACY: &str = include_str!("../../assets/rules/privacy.toml");
 const EMBEDDED_CATALOG_REGISTRY_LAG: &str = include_str!("../../assets/rules/registry_lag.toml");
-const EMBEDDED_CATALOG_TELEMETRY_APPS: &str = include_str!("../../assets/rules/telemetry_apps.toml");
+const EMBEDDED_CATALOG_TELEMETRY_APPS: &str =
+    include_str!("../../assets/rules/telemetry_apps.toml");
 const EMBEDDED_CATALOG_TELEMETRY_OS: &str = include_str!("../../assets/rules/telemetry_os.toml");
-const EMBEDDED_CATALOG_AI_PRIVACY_EXT: &str = include_str!("../../assets/rules/ai_privacy_ext.toml");
-const EMBEDDED_CATALOG_PERF_POWER_EXT: &str = include_str!("../../assets/rules/perf_power_ext.toml");
-const EMBEDDED_CATALOG_UX_CUSTOMIZATION: &str = include_str!("../../assets/rules/ux_customization.toml");
-const EMBEDDED_CATALOG_SYSTEM_DEEP_OPT: &str = include_str!("../../assets/rules/system_deep_opt.toml");
-const EMBEDDED_CATALOG_GAMING_LATENCY_ULTRA: &str = include_str!("../../assets/rules/gaming_latency_ultra.toml");
+const EMBEDDED_CATALOG_AI_PRIVACY_EXT: &str =
+    include_str!("../../assets/rules/ai_privacy_ext.toml");
+const EMBEDDED_CATALOG_PERF_POWER_EXT: &str =
+    include_str!("../../assets/rules/perf_power_ext.toml");
+const EMBEDDED_CATALOG_UX_CUSTOMIZATION: &str =
+    include_str!("../../assets/rules/ux_customization.toml");
+const EMBEDDED_CATALOG_SYSTEM_DEEP_OPT: &str =
+    include_str!("../../assets/rules/system_deep_opt.toml");
+const EMBEDDED_CATALOG_GAMING_LATENCY_ULTRA: &str =
+    include_str!("../../assets/rules/gaming_latency_ultra.toml");
 
 pub const EMBEDDED_CATALOGS: &[&str] = &[
     EMBEDDED_CATALOG_APPX,
@@ -463,7 +471,11 @@ pub fn load_rules_with_fallback(preferred_dir: Option<&std::path::Path>) -> Vec<
     if let Some(dir) = preferred_dir {
         if let Ok(tweaks) = load_rules_from_dir(dir) {
             if !tweaks.is_empty() {
-                tracing::info!("Loaded {} tweaks from preferred directory: {:?}", tweaks.len(), dir);
+                tracing::info!(
+                    "Loaded {} tweaks from preferred directory: {:?}",
+                    tweaks.len(),
+                    dir
+                );
                 return tweaks;
             }
         }
@@ -480,7 +492,11 @@ pub fn load_rules_with_fallback(preferred_dir: Option<&std::path::Path>) -> Vec<
         if candidate.is_dir() {
             if let Ok(tweaks) = load_rules_from_dir(candidate) {
                 if !tweaks.is_empty() {
-                    tracing::info!("Loaded {} tweaks from candidate: {:?}", tweaks.len(), candidate);
+                    tracing::info!(
+                        "Loaded {} tweaks from candidate: {:?}",
+                        tweaks.len(),
+                        candidate
+                    );
                     return tweaks;
                 }
             }
@@ -499,7 +515,11 @@ pub fn load_rules_with_fallback(preferred_dir: Option<&std::path::Path>) -> Vec<
                 if candidate.is_dir() {
                     if let Ok(tweaks) = load_rules_from_dir(candidate) {
                         if !tweaks.is_empty() {
-                            tracing::info!("Loaded {} tweaks from exe-relative candidate: {:?}", tweaks.len(), candidate);
+                            tracing::info!(
+                                "Loaded {} tweaks from exe-relative candidate: {:?}",
+                                tweaks.len(),
+                                candidate
+                            );
                             return tweaks;
                         }
                     }
@@ -510,7 +530,10 @@ pub fn load_rules_with_fallback(preferred_dir: Option<&std::path::Path>) -> Vec<
 
     // 4. Guaranteed zero-fail fallback: embedded rule catalogs
     let embedded = load_embedded_rules();
-    tracing::info!("Loaded {} tweaks from embedded rule catalogs", embedded.len());
+    tracing::info!(
+        "Loaded {} tweaks from embedded rule catalogs",
+        embedded.len()
+    );
     embedded
 }
 
@@ -553,12 +576,20 @@ mod tests {
     #[test]
     fn test_embedded_catalog_fallback() {
         let tweaks = load_embedded_rules();
-        assert!(tweaks.len() >= 80, "All catalog tweaks must be embedded in binary (found {})", tweaks.len());
+        assert!(
+            tweaks.len() >= 80,
+            "All catalog tweaks must be embedded in binary (found {})",
+            tweaks.len()
+        );
 
         // Test fallback with non-existent path
         let non_existent = Path::new("C:/non/existent/path/for/winblast/testing");
         let fallback_tweaks = load_rules_with_fallback(Some(non_existent));
-        assert!(fallback_tweaks.len() >= 80, "Fallback must return all tweaks (found {})", fallback_tweaks.len());
+        assert!(
+            fallback_tweaks.len() >= 80,
+            "Fallback must return all tweaks (found {})",
+            fallback_tweaks.len()
+        );
     }
 
     #[test]
@@ -655,7 +686,8 @@ mod tests {
         default_value = 0
         "#;
 
-        let catalog: TweakCatalog = toml::from_str(toml_str).expect("Failed to deserialize TOML with fallbacks");
+        let catalog: TweakCatalog =
+            toml::from_str(toml_str).expect("Failed to deserialize TOML with fallbacks");
         assert_eq!(catalog.tweaks.len(), 1);
         let t = &catalog.tweaks[0];
         assert_eq!(t.prerequisites, vec!["prior_tweak_a", "prior_tweak_b"]);
@@ -670,23 +702,62 @@ mod tests {
         use crate::hardware::gpu::{detect_vendor, set_gpu_msi_mode, GpuVendor};
 
         // 1. PCI Hardware Vendor ID detection
-        assert_eq!(detect_vendor("PCI\\VEN_10DE&DEV_2684&SUBSYS_16E810DE", "3D Video Controller"), GpuVendor::Nvidia);
-        assert_eq!(detect_vendor("PCI\\VEN_1002&DEV_73DF&SUBSYS_0C011002", "Display"), GpuVendor::Amd);
-        assert_eq!(detect_vendor("PCI\\VEN_1022&DEV_1638", "Display Controller"), GpuVendor::Amd);
-        assert_eq!(detect_vendor("PCI\\VEN_8086&DEV_56A0&SUBSYS_00008086", "Video Controller"), GpuVendor::Intel);
+        assert_eq!(
+            detect_vendor(
+                "PCI\\VEN_10DE&DEV_2684&SUBSYS_16E810DE",
+                "3D Video Controller"
+            ),
+            GpuVendor::Nvidia
+        );
+        assert_eq!(
+            detect_vendor("PCI\\VEN_1002&DEV_73DF&SUBSYS_0C011002", "Display"),
+            GpuVendor::Amd
+        );
+        assert_eq!(
+            detect_vendor("PCI\\VEN_1022&DEV_1638", "Display Controller"),
+            GpuVendor::Amd
+        );
+        assert_eq!(
+            detect_vendor("PCI\\VEN_8086&DEV_56A0&SUBSYS_00008086", "Video Controller"),
+            GpuVendor::Intel
+        );
 
         // 2. Driver name fallbacks
-        assert_eq!(detect_vendor("", "NVIDIA GeForce RTX 4090"), GpuVendor::Nvidia);
+        assert_eq!(
+            detect_vendor("", "NVIDIA GeForce RTX 4090"),
+            GpuVendor::Nvidia
+        );
         assert_eq!(detect_vendor("", "AMD Radeon RX 7900 XTX"), GpuVendor::Amd);
-        assert_eq!(detect_vendor("", "Intel(R) Arc(TM) A770 Graphics"), GpuVendor::Intel);
-        assert_eq!(detect_vendor("", "Intel(R) UHD Graphics 770"), GpuVendor::Intel);
+        assert_eq!(
+            detect_vendor("", "Intel(R) Arc(TM) A770 Graphics"),
+            GpuVendor::Intel
+        );
+        assert_eq!(
+            detect_vendor("", "Intel(R) UHD Graphics 770"),
+            GpuVendor::Intel
+        );
 
         // 3. Virtual display adapters & unexpected/empty PnP IDs (must not panic)
-        assert_eq!(detect_vendor("ROOT\\BASICDISPLAY\\0000", "Microsoft Basic Display Adapter"), GpuVendor::Unknown);
-        assert_eq!(detect_vendor("PCI\\VEN_15AD&DEV_0405", "VMware SVGA 3D"), GpuVendor::Unknown);
-        assert_eq!(detect_vendor("PCI\\VEN_80EE&DEV_BEEF", "VirtualBox Graphics Adapter"), GpuVendor::Unknown);
+        assert_eq!(
+            detect_vendor(
+                "ROOT\\BASICDISPLAY\\0000",
+                "Microsoft Basic Display Adapter"
+            ),
+            GpuVendor::Unknown
+        );
+        assert_eq!(
+            detect_vendor("PCI\\VEN_15AD&DEV_0405", "VMware SVGA 3D"),
+            GpuVendor::Unknown
+        );
+        assert_eq!(
+            detect_vendor("PCI\\VEN_80EE&DEV_BEEF", "VirtualBox Graphics Adapter"),
+            GpuVendor::Unknown
+        );
         assert_eq!(detect_vendor("", ""), GpuVendor::Unknown);
-        assert_eq!(detect_vendor("UNKNOWN_ID", "Unknown GPU"), GpuVendor::Unknown);
+        assert_eq!(
+            detect_vendor("UNKNOWN_ID", "Unknown GPU"),
+            GpuVendor::Unknown
+        );
 
         // 4. MSI mode error handling on empty or whitespace PnP ID
         assert!(set_gpu_msi_mode("", true, 2).is_err());
@@ -705,7 +776,11 @@ mod tests {
             category: "GPU Tuning".into(),
             description: "Test".into(),
             easy_mode_included: false,
-            os_req: OsRequirement { min_build: 19041, max_build: None, editions: vec![] },
+            os_req: OsRequirement {
+                min_build: 19041,
+                max_build: None,
+                editions: vec![],
+            },
             valuation: RiskValuation {
                 stability_risk: RiskLevel::Safe,
                 performance_gain: 3,

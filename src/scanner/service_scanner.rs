@@ -2,8 +2,8 @@
 //!
 //! State-of-the-art registry inspection of Windows services start types and states.
 
-use winreg::RegKey;
 use winreg::enums::HKEY_LOCAL_MACHINE;
+use winreg::RegKey;
 
 use crate::scanner::registry_scanner::open_subkey_read_64;
 

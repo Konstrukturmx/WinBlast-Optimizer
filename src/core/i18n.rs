@@ -4823,11 +4823,26 @@ mod tests {
 
     #[test]
     fn test_turkish_translation() {
-        assert_eq!(I18n::translate(Language::Turkish, TextKey::EasyMode), "⚡ Kolay Panel");
-        assert_eq!(I18n::translate(Language::Turkish, TextKey::GpuTuning), "🎮 GPU Ayarları");
-        assert_eq!(I18n::translate(Language::Turkish, TextKey::ChangelogTitle), "📜 Canlı Değişiklik Günlüğü & İşlem Geçmişi");
-        assert_eq!(I18n::translate(Language::Turkish, TextKey::NavStagedCount), "Bekleyen");
-        assert_eq!(I18n::translate(Language::Turkish, TextKey::LedgerDbLabel), "İşlem Defteri DB:");
+        assert_eq!(
+            I18n::translate(Language::Turkish, TextKey::EasyMode),
+            "⚡ Kolay Panel"
+        );
+        assert_eq!(
+            I18n::translate(Language::Turkish, TextKey::GpuTuning),
+            "🎮 GPU Ayarları"
+        );
+        assert_eq!(
+            I18n::translate(Language::Turkish, TextKey::ChangelogTitle),
+            "📜 Canlı Değişiklik Günlüğü & İşlem Geçmişi"
+        );
+        assert_eq!(
+            I18n::translate(Language::Turkish, TextKey::NavStagedCount),
+            "Bekleyen"
+        );
+        assert_eq!(
+            I18n::translate(Language::Turkish, TextKey::LedgerDbLabel),
+            "İşlem Defteri DB:"
+        );
         assert_ne!(
             I18n::translate(Language::Turkish, TextKey::DeselectAll),
             I18n::translate(Language::Turkish, TextKey::DeselectAllBtn)
@@ -4850,7 +4865,11 @@ mod tests {
             let footer = I18n::translate(lang, TextKey::FooterStatus);
             assert!(
                 footer.contains(concat!("v", env!("CARGO_PKG_VERSION"))),
-                concat!("FooterStatus missing v", env!("CARGO_PKG_VERSION"), " for {:?}: {}"),
+                concat!(
+                    "FooterStatus missing v",
+                    env!("CARGO_PKG_VERSION"),
+                    " for {:?}: {}"
+                ),
                 lang,
                 footer
             );
@@ -4917,10 +4936,22 @@ mod tests {
 
     #[test]
     fn test_fold_search_str_turkish_and_ascii() {
-        assert_eq!(I18n::fold_search_str("İSTANBUL IŞIK NVIDIA"), "istanbul isik nvidia");
-        assert_eq!(I18n::fold_search_str("Çeşitli Güç Öğesi Ücretsiz"), "cesitli guc ogesi ucretsiz");
-        assert_eq!(I18n::fold_search_str("Écran Démarrage Réseau Ñandú"), "ecran demarrage reseau nandu");
-        assert_eq!(I18n::fold_search_str("Ärger Öffnen Über"), "arger offnen uber");
+        assert_eq!(
+            I18n::fold_search_str("İSTANBUL IŞIK NVIDIA"),
+            "istanbul isik nvidia"
+        );
+        assert_eq!(
+            I18n::fold_search_str("Çeşitli Güç Öğesi Ücretsiz"),
+            "cesitli guc ogesi ucretsiz"
+        );
+        assert_eq!(
+            I18n::fold_search_str("Écran Démarrage Réseau Ñandú"),
+            "ecran demarrage reseau nandu"
+        );
+        assert_eq!(
+            I18n::fold_search_str("Ärger Öffnen Über"),
+            "arger offnen uber"
+        );
         assert_eq!(I18n::fold_search_str("Recall AI"), "recall ai");
     }
 }

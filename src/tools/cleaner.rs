@@ -173,7 +173,8 @@ fn record_dir_io_error(slot: &mut Option<String>, dir: &Path, err: &std::io::Err
 }
 
 fn resolve_target_paths(kind: CleanTargetKind) -> Vec<PathBuf> {
-    let windir = PathBuf::from(std::env::var("WINDIR").unwrap_or_else(|_| "C:\\Windows".to_string()));
+    let windir =
+        PathBuf::from(std::env::var("WINDIR").unwrap_or_else(|_| "C:\\Windows".to_string()));
     let local_app = std::env::var("LOCALAPPDATA").ok().map(PathBuf::from);
     let prog_data = PathBuf::from(
         std::env::var("ProgramData").unwrap_or_else(|_| "C:\\ProgramData".to_string()),
@@ -343,9 +344,7 @@ fn delete_dir_contents(
                     if matches!(
                         e.raw_os_error(),
                         Some(
-                            ERROR_SHARING_VIOLATION
-                                | ERROR_LOCK_VIOLATION
-                                | ERROR_USER_MAPPED_FILE
+                            ERROR_SHARING_VIOLATION | ERROR_LOCK_VIOLATION | ERROR_USER_MAPPED_FILE
                         )
                     ) =>
                 {
@@ -460,7 +459,13 @@ pub fn scan_all_clean_targets() -> Vec<CleanTargetScan> {
                 let mut total_files = 0u64;
                 let mut first_error = None;
                 for dir in &paths {
-                    measure_dir(kind, dir, &mut total_bytes, &mut total_files, &mut first_error);
+                    measure_dir(
+                        kind,
+                        dir,
+                        &mut total_bytes,
+                        &mut total_files,
+                        &mut first_error,
+                    );
                 }
                 CleanTargetScan {
                     kind,
@@ -506,7 +511,9 @@ pub fn execute_clean_targets(kinds: &[CleanTargetKind]) -> Result<CleanExecution
     }
 
     if report.results.is_empty() && !kinds.is_empty() {
-        return Err(WinBlastError::TweakFailed("No cleanup targets executed".to_string()));
+        return Err(WinBlastError::TweakFailed(
+            "No cleanup targets executed".to_string(),
+        ));
     }
 
     Ok(report)
@@ -527,7 +534,13 @@ mod tests {
         let mut bytes = 0;
         let mut files = 0;
         let mut first_err = None;
-        measure_dir(CleanTargetKind::UserTemp, &root, &mut bytes, &mut files, &mut first_err);
+        measure_dir(
+            CleanTargetKind::UserTemp,
+            &root,
+            &mut bytes,
+            &mut files,
+            &mut first_err,
+        );
         assert!(first_err.is_none());
         assert_eq!(bytes, 6);
         assert_eq!(files, 1);

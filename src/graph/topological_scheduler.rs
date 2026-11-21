@@ -462,7 +462,10 @@ fn tarjan_scc(active_nodes: BitSet256, out_adj: &[BitSet256; MAX_NODES], scc: &m
             let v = usize::from(call_node[frame]);
             let search_from = usize::from(call_next[frame]);
 
-            if let Some(w) = out_adj[v].intersect(active_nodes).next_set_from(search_from) {
+            if let Some(w) = out_adj[v]
+                .intersect(active_nodes)
+                .next_set_from(search_from)
+            {
                 call_next[frame] = (w + 1) as u16;
 
                 if index[w] == UNVISITED {
@@ -763,7 +766,9 @@ mod tests {
         );
 
         let too_many_reboots = vec![false; MAX_NODES + 1];
-        assert!(schedule_optimizations_topological(MAX_NODES + 1, &[], &[], &too_many_reboots).is_err());
+        assert!(
+            schedule_optimizations_topological(MAX_NODES + 1, &[], &[], &too_many_reboots).is_err()
+        );
         assert!(schedule_optimizations_topological(3, &[(0, 1)], &[10, 20], &[false; 3]).is_err());
         assert!(schedule_optimizations_topological(3, &[(0, 1)], &[10], &[false; 2]).is_err());
         assert!(schedule_optimizations_topological(3, &[(0, 3)], &[10], &[false; 3]).is_err());

@@ -291,9 +291,7 @@ impl HeuristicBugScanner {
                         continue;
                     }
                     dir_stack.push(path);
-                } else if file_type.is_file()
-                    && path.extension().is_some_and(|ext| ext == "rs")
-                {
+                } else if file_type.is_file() && path.extension().is_some_and(|ext| ext == "rs") {
                     self.scan_single_file(&path, &mut scratch, &mut report)?;
                 }
             }
@@ -587,7 +585,9 @@ fn is_ident_byte(b: u8) -> bool {
 
 #[inline]
 fn starts_with_at(bytes: &[u8], idx: usize, needle: &[u8]) -> bool {
-    bytes.get(idx..).is_some_and(|tail| tail.starts_with(needle))
+    bytes
+        .get(idx..)
+        .is_some_and(|tail| tail.starts_with(needle))
 }
 
 #[inline]
@@ -747,10 +747,7 @@ fn is_indexing_hazard(bytes: &[u8], open_idx: usize) -> bool {
     let trimmed_inside = trim_ascii_bytes(inside);
 
     // Exclude empty brackets, array type syntax `[T; N]`, and full-range slices `[..]`.
-    if trimmed_inside.is_empty()
-        || trimmed_inside == b".."
-        || trimmed_inside.contains(&b';')
-    {
+    if trimmed_inside.is_empty() || trimmed_inside == b".." || trimmed_inside.contains(&b';') {
         return false;
     }
 
@@ -831,13 +828,7 @@ mod tests {
         let scanner = HeuristicBugScanner::new();
         let report = scanner.scan_source(Path::new("optimizer.rs"), src);
 
-        let count_rule = |rule: BugRule| {
-            report
-                .findings
-                .iter()
-                .filter(|f| f.rule == rule)
-                .count()
-        };
+        let count_rule = |rule: BugRule| report.findings.iter().filter(|f| f.rule == rule).count();
 
         assert_eq!(count_rule(BugRule::OutOfBoundsIndexing), 2);
         assert_eq!(count_rule(BugRule::UncheckedUnwrapOrExpect), 1);
@@ -913,9 +904,7 @@ mod tests {
 
         println!(
             "Heuristic Bug Scanner Complete: Scanned {} files, {} lines. Total findings: {}",
-            report.stats.files_scanned,
-            report.stats.lines_scanned,
-            report.stats.findings_count
+            report.stats.files_scanned, report.stats.lines_scanned, report.stats.findings_count
         );
 
         let unbuffered_files: Vec<_> = report

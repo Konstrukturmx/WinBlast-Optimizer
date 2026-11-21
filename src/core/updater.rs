@@ -3,9 +3,9 @@
 //! Provides background checking, release metadata parsing, asset download,
 //! and atomic Windows binary replacement with elevation support.
 
+use crate::core::process::SilentCommand;
 use serde::{Deserialize, Serialize};
 use std::path::{Path, PathBuf};
-use crate::core::process::SilentCommand;
 
 /// GitHub Release metadata fetched from the GitHub API.
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
@@ -38,8 +38,14 @@ pub const FALLBACK_REPO: &str = "Devinance/WinBlast-Optimizer";
 
 /// Check if a remote version tag is newer than the current application version.
 pub fn is_version_newer(remote_tag: &str, current_version: &str) -> bool {
-    let clean_remote = remote_tag.trim().trim_start_matches('v').trim_start_matches('V');
-    let clean_current = current_version.trim().trim_start_matches('v').trim_start_matches('V');
+    let clean_remote = remote_tag
+        .trim()
+        .trim_start_matches('v')
+        .trim_start_matches('V');
+    let clean_current = current_version
+        .trim()
+        .trim_start_matches('v')
+        .trim_start_matches('V');
 
     let remote_parts: Vec<u64> = clean_remote
         .split('.')
@@ -132,8 +138,7 @@ pub fn check_latest_release(repo: &str) -> Result<Option<ReleaseInfo>, String> {
         let all_url = format!("https://api.github.com/repos/{}/releases", r);
 
         // Try /releases/latest first
-        let json_res = fetch_url_json(&latest_url)
-            .or_else(|_| fetch_url_json(&all_url));
+        let json_res = fetch_url_json(&latest_url).or_else(|_| fetch_url_json(&all_url));
 
         let json_str = match json_res {
             Ok(s) => s,
@@ -215,7 +220,16 @@ pub fn download_release_asset(download_url: &str, asset_name: &str) -> Result<Pa
 
     // 1. Try curl.exe -L first (handles GitHub redirects seamlessly)
     let curl_res = SilentCommand::new("curl.exe")
-        .args(["-L", "-s", "-f", "-H", "User-Agent: WinBlast0-Updater", "-o", &target_path_str, download_url])
+        .args([
+            "-L",
+            "-s",
+            "-f",
+            "-H",
+            "User-Agent: WinBlast0-Updater",
+            "-o",
+            &target_path_str,
+            download_url,
+        ])
         .output();
 
     if let Ok(c_out) = curl_res {
@@ -291,7 +305,11 @@ pub fn apply_and_restart(new_binary: &Path) -> Result<(), String> {
     // Clean any prior backup
     if let Err(e) = std::fs::remove_file(&backup_exe) {
         if e.kind() != std::io::ErrorKind::NotFound {
-            tracing::warn!("Failed to remove old backup executable {:?}: {}", backup_exe, e);
+            tracing::warn!(
+                "Failed to remove old backup executable {:?}: {}",
+                backup_exe,
+                e
+            );
         }
     }
 
@@ -319,7 +337,10 @@ pub fn apply_and_restart(new_binary: &Path) -> Result<(), String> {
     // 4. Launch via native Win32 ShellExecuteW (avoids cmd.exe/powershell string escaping & UNC '\\' errors)
     #[cfg(windows)]
     {
-        let file_w: Vec<u16> = clean_exe_str.encode_utf16().chain(std::iter::once(0)).collect();
+        let file_w: Vec<u16> = clean_exe_str
+            .encode_utf16()
+            .chain(std::iter::once(0))
+            .collect();
         let verb = if is_elevated { "runas" } else { "open" };
         let verb_w: Vec<u16> = verb.encode_utf16().chain(std::iter::once(0)).collect();
 
@@ -336,10 +357,16 @@ pub fn apply_and_restart(new_binary: &Path) -> Result<(), String> {
 
         let result_code = hinstance.0 as usize;
         if result_code > 32 {
-            tracing::info!("Successfully launched updated binary via Win32 ShellExecuteW (code: {})", result_code);
+            tracing::info!(
+                "Successfully launched updated binary via Win32 ShellExecuteW (code: {})",
+                result_code
+            );
             std::process::exit(0);
         } else {
-            tracing::warn!("Win32 ShellExecuteW failed with code {}, attempting detached process spawn", result_code);
+            tracing::warn!(
+                "Win32 ShellExecuteW failed with code {}, attempting detached process spawn",
+                result_code
+            );
         }
     }
 
@@ -391,10 +418,25 @@ mod tests {
 
     #[test]
     fn test_clean_windows_exe_path() {
-        assert_eq!(clean_exe_path(r"\\?\C:\Program Files\WinBlast0\winblast0.exe"), r"C:\Program Files\WinBlast0\winblast0.exe");
-        assert_eq!(clean_exe_path(r"\\?\UNC\server\share\winblast0.exe"), r"\\server\share\winblast0.exe");
-        assert_eq!(clean_exe_path(r"C:\Tools\winblast0.exe"), r"C:\Tools\winblast0.exe");
-        assert_eq!(clean_exe_path(r#""C:\Tools\winblast0.exe""#), r"C:\Tools\winblast0.exe");
-        assert_eq!(clean_exe_path("  'C:/Tools/winblast0.exe'  "), r"C:\Tools\winblast0.exe");
+        assert_eq!(
+            clean_exe_path(r"\\?\C:\Program Files\WinBlast0\winblast0.exe"),
+            r"C:\Program Files\WinBlast0\winblast0.exe"
+        );
+        assert_eq!(
+            clean_exe_path(r"\\?\UNC\server\share\winblast0.exe"),
+            r"\\server\share\winblast0.exe"
+        );
+        assert_eq!(
+            clean_exe_path(r"C:\Tools\winblast0.exe"),
+            r"C:\Tools\winblast0.exe"
+        );
+        assert_eq!(
+            clean_exe_path(r#""C:\Tools\winblast0.exe""#),
+            r"C:\Tools\winblast0.exe"
+        );
+        assert_eq!(
+            clean_exe_path("  'C:/Tools/winblast0.exe'  "),
+            r"C:\Tools\winblast0.exe"
+        );
     }
 }

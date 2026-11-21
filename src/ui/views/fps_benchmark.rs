@@ -79,9 +79,13 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                                 .fill(p.success.alpha(0.18))
                                 .border(1.0, p.success)
                                 .child(
-                                    text(format!("+{}% {}", fps_gain, s.tr_v(ViewTextKey::FpsBenchAvgFps)))
-                                        .font(rune::tok::type_::LABEL)
-                                        .color(p.success),
+                                    text(format!(
+                                        "+{}% {}",
+                                        fps_gain,
+                                        s.tr_v(ViewTextKey::FpsBenchAvgFps)
+                                    ))
+                                    .font(rune::tok::type_::LABEL)
+                                    .color(p.success),
                                 ),
                         ),
                 )
@@ -94,29 +98,47 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                             col()
                                 .grow(1.0)
                                 .min_w(160.0)
-                                .child(text(s.tr_v(ViewTextKey::FpsBenchAvgFps)).font(rune::tok::type_::LABEL).color(p.text_secondary))
                                 .child(
-                                    text(format!("{} FPS → {} FPS", b.stock_avg_fps, b.optimized_avg_fps))
-                                        .font(rune::tok::type_::TITLE)
-                                        .color(p.text_primary),
+                                    text(s.tr_v(ViewTextKey::FpsBenchAvgFps))
+                                        .font(rune::tok::type_::LABEL)
+                                        .color(p.text_secondary),
+                                )
+                                .child(
+                                    text(format!(
+                                        "{} FPS → {} FPS",
+                                        b.stock_avg_fps, b.optimized_avg_fps
+                                    ))
+                                    .font(rune::tok::type_::TITLE)
+                                    .color(p.text_primary),
                                 ),
                         )
                         .child(
                             col()
                                 .grow(1.0)
                                 .min_w(160.0)
-                                .child(text("1% Low").font(rune::tok::type_::LABEL).color(p.text_secondary))
                                 .child(
-                                    text(format!("{} FPS → {} FPS (+{}%)", b.stock_1pct_low, b.optimized_1pct_low, low_gain))
-                                        .font(rune::tok::type_::TITLE)
-                                        .color(p.accent),
+                                    text("1% Low")
+                                        .font(rune::tok::type_::LABEL)
+                                        .color(p.text_secondary),
+                                )
+                                .child(
+                                    text(format!(
+                                        "{} FPS → {} FPS (+{}%)",
+                                        b.stock_1pct_low, b.optimized_1pct_low, low_gain
+                                    ))
+                                    .font(rune::tok::type_::TITLE)
+                                    .color(p.accent),
                                 ),
                         )
                         .child(
                             col()
                                 .grow(1.0)
                                 .min_w(160.0)
-                                .child(text(s.tr_v(ViewTextKey::FpsBenchInputLatencyReduction)).font(rune::tok::type_::LABEL).color(p.text_secondary))
+                                .child(
+                                    text(s.tr_v(ViewTextKey::FpsBenchInputLatencyReduction))
+                                        .font(rune::tok::type_::LABEL)
+                                        .color(p.text_secondary),
+                                )
                                 .child(
                                     text(format!("-{:.1} ms", b.latency_reduction_ms))
                                         .font(rune::tok::type_::TITLE)
@@ -125,5 +147,8 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                         ),
                 )
         }))
-        .scroll(ScrollSpec { stick_bottom: false }).winblast_scroll(p)
+        .scroll(ScrollSpec {
+            stick_bottom: false,
+        })
+        .winblast_scroll(p)
 }

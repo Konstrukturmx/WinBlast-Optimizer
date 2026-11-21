@@ -122,9 +122,12 @@ impl GameProfile {
             "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Image File Execution Options\\{}\\PerfOptions",
             self.executable
         );
-        let (key, _) = hklm
-            .create_subkey(&subkey)
-            .map_err(|e| format!("Failed to create IFEO PerfOptions key (requires elevation): {}", e))?;
+        let (key, _) = hklm.create_subkey(&subkey).map_err(|e| {
+            format!(
+                "Failed to create IFEO PerfOptions key (requires elevation): {}",
+                e
+            )
+        })?;
 
         key.set_value("CpuPriorityClass", &3u32)
             .map_err(|e| format!("Failed to set CpuPriorityClass: {}", e))?;

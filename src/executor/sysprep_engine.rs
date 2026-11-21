@@ -8,9 +8,9 @@
 //! 5. Flushes and unmounts via `RegUnLoadKeyW` with RAII safety, ensuring all future user accounts
 //!    and enterprise sysprep images deploy 100% pre-optimized.
 
-use serde::{Deserialize, Serialize};
 use crate::core::backend::SystemBackend;
 use crate::core::error::WinBlastError;
+use serde::{Deserialize, Serialize};
 
 /// Multi-user profile propagation report.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -25,14 +25,14 @@ pub struct SysprepPropagationReport {
 /// Win32 Privilege Escalation Helper.
 #[cfg(windows)]
 fn acquire_registry_mount_privileges() -> bool {
+    use std::mem::size_of;
+    use windows::core::{w, PCWSTR};
+    use windows::Win32::Foundation::HANDLE;
     use windows::Win32::Security::{
-        AdjustTokenPrivileges, LookupPrivilegeValueW, LUID_AND_ATTRIBUTES,
-        SE_PRIVILEGE_ENABLED, TOKEN_ADJUST_PRIVILEGES, TOKEN_PRIVILEGES, TOKEN_QUERY,
+        AdjustTokenPrivileges, LookupPrivilegeValueW, LUID_AND_ATTRIBUTES, SE_PRIVILEGE_ENABLED,
+        TOKEN_ADJUST_PRIVILEGES, TOKEN_PRIVILEGES, TOKEN_QUERY,
     };
     use windows::Win32::System::Threading::{GetCurrentProcess, OpenProcessToken};
-    use windows::Win32::Foundation::HANDLE;
-    use windows::core::{PCWSTR, w};
-    use std::mem::size_of;
 
     let mut token_handle = HANDLE::default();
     let token_ok = unsafe {
@@ -101,8 +101,8 @@ pub struct HiveMountGuard<'a> {
 impl<'a> Drop for HiveMountGuard<'a> {
     fn drop(&mut self) {
         if self.mounted {
-            use windows::Win32::System::Registry::{RegFlushKey, RegUnLoadKeyW, HKEY_USERS};
             use windows::core::PCWSTR;
+            use windows::Win32::System::Registry::{RegFlushKey, RegUnLoadKeyW, HKEY_USERS};
 
             unsafe {
                 let _ = RegFlushKey(HKEY_USERS);
@@ -129,8 +129,8 @@ pub fn propagate_hkcu_dword<B: SystemBackend>(
 
     #[cfg(windows)]
     {
-        use windows::Win32::System::Registry::{RegLoadKeyW, HKEY_USERS};
         use windows::core::PCWSTR;
+        use windows::Win32::System::Registry::{RegLoadKeyW, HKEY_USERS};
 
         let _ = acquire_registry_mount_privileges();
 
@@ -159,7 +159,10 @@ pub fn propagate_hkcu_dword<B: SystemBackend>(
             };
 
             let mounted_path = format!("WinBlast_DefaultProfile\\{}", sub_key);
-            if backend.reg_set_dword("HKU", &mounted_path, value_name, optimized_val).is_ok() {
+            if backend
+                .reg_set_dword("HKU", &mounted_path, value_name, optimized_val)
+                .is_ok()
+            {
                 ntuser_updated = true;
             }
 

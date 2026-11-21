@@ -84,19 +84,41 @@ fn nav_button(
         .px(8.0)
         .py(6.0)
         .radius(style.btn_radius())
-        .fill(if active { p.accent.alpha(0.18) } else { Color::TRANSPARENT })
-        .hover(if active { p.accent.alpha(0.28) } else { p.bg_card_hover })
+        .fill(if active {
+            p.accent.alpha(0.18)
+        } else {
+            Color::TRANSPARENT
+        })
+        .hover(if active {
+            p.accent.alpha(0.28)
+        } else {
+            p.bg_card_hover
+        })
         .press(p.accent.alpha(0.38))
-        .border(1.0, if active { p.accent.alpha(0.65) } else { Color::TRANSPARENT })
+        .border(
+            1.0,
+            if active {
+                p.accent.alpha(0.65)
+            } else {
+                Color::TRANSPARENT
+            },
+        )
         .motion(style.motion())
         .center()
         .on_press(move |s: &mut AppState| s.navigate(target));
 
     // Smooth animated active indicator bar on left edge with spring physics
     let indicator = el()
-        .size(if active { 3.5 } else { 0.0 }, if active { 18.0 } else { 0.0 })
+        .size(
+            if active { 3.5 } else { 0.0 },
+            if active { 18.0 } else { 0.0 },
+        )
         .radius(1.75)
-        .fill(if active { p.warning } else { Color::TRANSPARENT })
+        .fill(if active {
+            p.warning
+        } else {
+            Color::TRANSPARENT
+        })
         .motion(style.motion())
         .mr(if active { 6.0 } else { 2.0 });
     btn = btn.child(indicator);
@@ -113,7 +135,11 @@ fn nav_button(
     btn = btn.child(
         text(label)
             .font(rune::tok::type_::LABEL)
-            .color(if active { p.text_primary } else { p.text_secondary })
+            .color(if active {
+                p.text_primary
+            } else {
+                p.text_secondary
+            })
             .grow(1.0)
             .min_w(0.0)
             .shrink()
@@ -135,12 +161,7 @@ fn nav_button(
                 ),
         );
     } else if status_dot {
-        btn = btn.child(
-            el()
-                .size(6.0, 6.0)
-                .radius(3.0)
-                .fill(p.warning),
-        );
+        btn = btn.child(el().size(6.0, 6.0).radius(3.0).fill(p.warning));
     }
 
     btn
@@ -160,7 +181,11 @@ fn mode_tab(
         .py(4.0)
         .radius(5.0)
         .fill(if active { p.accent } else { p.bg_card })
-        .hover(if active { p.accent_hover } else { p.bg_card_hover })
+        .hover(if active {
+            p.accent_hover
+        } else {
+            p.bg_card_hover
+        })
         .press(p.accent_press)
         .border(1.0, if active { p.accent_hover } else { p.border })
         .motion(rune::tok::motion::SNAPPY)
@@ -169,7 +194,11 @@ fn mode_tab(
         .child(
             text(label)
                 .font(rune::tok::type_::LABEL)
-                .color(if active { Color::WHITE } else { p.text_secondary })
+                .color(if active {
+                    Color::WHITE
+                } else {
+                    p.text_secondary
+                })
                 .shrink()
                 .wrap(),
         )
@@ -210,11 +239,7 @@ fn build_sidebar(s: &AppState, p: &ThemePalette, tier: LayoutTier) -> El {
         .border(p.border_width, p.border)
         .items_center()
         .gap(6.0)
-        .child(
-            text("🔍")
-                .font(rune::tok::type_::LABEL)
-                .color(p.text_muted),
-        )
+        .child(text("🔍").font(rune::tok::type_::LABEL).color(p.text_muted))
         .child(
             rune::text_input(&s.search_edit, rune::tok::type_::LABEL)
                 .key("sidebar_filter_input")
@@ -226,115 +251,380 @@ fn build_sidebar(s: &AppState, p: &ThemePalette, tier: LayoutTier) -> El {
                 .min_w(0.0),
         );
 
-    let mut nav_items = col()
-        .w_full()
-        .min_w(0.0)
-        .gap(3.0);
+    let mut nav_items = col().w_full().min_w(0.0).gap(3.0);
 
     // Group 1: Overview
     let g1_label = s.tr(TextKey::NavGroupOverview);
     let mut g1_items = Vec::new();
     if matches_filter(s.tr(TextKey::NavSystemPanel), "⚡") {
-        g1_items.push(nav_button("nav_easy", "⚡", s.tr(TextKey::NavSystemPanel), s.active_view == ActiveView::EasyDashboard, p, style, false, 0, ActiveView::EasyDashboard));
+        g1_items.push(nav_button(
+            "nav_easy",
+            "⚡",
+            s.tr(TextKey::NavSystemPanel),
+            s.active_view == ActiveView::EasyDashboard,
+            p,
+            style,
+            false,
+            0,
+            ActiveView::EasyDashboard,
+        ));
     }
     if matches_filter(s.tr(TextKey::NavHardware), "🖹") {
-        g1_items.push(nav_button("nav_hardware", "🖹", s.tr(TextKey::NavHardware), s.active_view == ActiveView::HardwareView, p, style, false, 0, ActiveView::HardwareView));
+        g1_items.push(nav_button(
+            "nav_hardware",
+            "🖹",
+            s.tr(TextKey::NavHardware),
+            s.active_view == ActiveView::HardwareView,
+            p,
+            style,
+            false,
+            0,
+            ActiveView::HardwareView,
+        ));
     }
     if matches_filter(s.tr(TextKey::NavDriverBios), "💾") {
-        g1_items.push(nav_button("nav_driver_bios", "💾", s.tr(TextKey::NavDriverBios), s.active_view == ActiveView::DriverBios, p, style, true, 0, ActiveView::DriverBios));
+        g1_items.push(nav_button(
+            "nav_driver_bios",
+            "💾",
+            s.tr(TextKey::NavDriverBios),
+            s.active_view == ActiveView::DriverBios,
+            p,
+            style,
+            true,
+            0,
+            ActiveView::DriverBios,
+        ));
     }
     if !g1_items.is_empty() {
-        nav_items = nav_items.child(nav_section_header(g1_label, p)).children(g1_items);
+        nav_items = nav_items
+            .child(nav_section_header(g1_label, p))
+            .children(g1_items);
     }
 
     // Group 2: Testing & Diagnostics
     let g2_label = s.tr(TextKey::NavGroupDiagnostics);
     let mut g2_items = Vec::new();
     if matches_filter(s.tr(TextKey::NavPerfTests), "📈") {
-        g2_items.push(nav_button("nav_perf_tests", "📈", s.tr(TextKey::NavPerfTests), s.active_view == ActiveView::PerformanceTests, p, style, false, 0, ActiveView::PerformanceTests));
+        g2_items.push(nav_button(
+            "nav_perf_tests",
+            "📈",
+            s.tr(TextKey::NavPerfTests),
+            s.active_view == ActiveView::PerformanceTests,
+            p,
+            style,
+            false,
+            0,
+            ActiveView::PerformanceTests,
+        ));
     }
     if matches_filter(s.tr(TextKey::NavFaultDiag), "🛡️") {
-        g2_items.push(nav_button("nav_fault_diag", "🛡️", s.tr(TextKey::NavFaultDiag), s.active_view == ActiveView::FaultDiagnostics, p, style, false, fault_count, ActiveView::FaultDiagnostics));
+        g2_items.push(nav_button(
+            "nav_fault_diag",
+            "🛡️",
+            s.tr(TextKey::NavFaultDiag),
+            s.active_view == ActiveView::FaultDiagnostics,
+            p,
+            style,
+            false,
+            fault_count,
+            ActiveView::FaultDiagnostics,
+        ));
     }
     if matches_filter(s.tr(TextKey::NavLatency), "⏱") {
-        g2_items.push(nav_button("nav_latency", "⏱", s.tr(TextKey::NavLatency), s.active_view == ActiveView::LatencyTester, p, style, true, 0, ActiveView::LatencyTester));
+        g2_items.push(nav_button(
+            "nav_latency",
+            "⏱",
+            s.tr(TextKey::NavLatency),
+            s.active_view == ActiveView::LatencyTester,
+            p,
+            style,
+            true,
+            0,
+            ActiveView::LatencyTester,
+        ));
     }
     if matches_filter(s.tr(TextKey::NavCoreParking), "🔲") {
-        g2_items.push(nav_button("nav_core_parking", "🔲", s.tr(TextKey::NavCoreParking), s.active_view == ActiveView::CoreParking, p, style, true, 0, ActiveView::CoreParking));
+        g2_items.push(nav_button(
+            "nav_core_parking",
+            "🔲",
+            s.tr(TextKey::NavCoreParking),
+            s.active_view == ActiveView::CoreParking,
+            p,
+            style,
+            true,
+            0,
+            ActiveView::CoreParking,
+        ));
     }
     if matches_filter(s.tr(TextKey::NavThermal), "❄") {
-        g2_items.push(nav_button("nav_thermal", "❄", s.tr(TextKey::NavThermal), s.active_view == ActiveView::ThermalMonitor, p, style, true, 0, ActiveView::ThermalMonitor));
+        g2_items.push(nav_button(
+            "nav_thermal",
+            "❄",
+            s.tr(TextKey::NavThermal),
+            s.active_view == ActiveView::ThermalMonitor,
+            p,
+            style,
+            true,
+            0,
+            ActiveView::ThermalMonitor,
+        ));
     }
     if matches_filter(s.tr(TextKey::NavDisks), "💽") {
-        g2_items.push(nav_button("nav_disks", "💽", s.tr(TextKey::NavDisks), s.active_view == ActiveView::DiskHealth, p, style, true, 0, ActiveView::DiskHealth));
+        g2_items.push(nav_button(
+            "nav_disks",
+            "💽",
+            s.tr(TextKey::NavDisks),
+            s.active_view == ActiveView::DiskHealth,
+            p,
+            style,
+            true,
+            0,
+            ActiveView::DiskHealth,
+        ));
     }
     if matches_filter(s.tr(TextKey::NavGamingStats), "🎮") {
-        g2_items.push(nav_button("nav_gaming_stats", "🎮", s.tr(TextKey::NavGamingStats), s.active_view == ActiveView::GamingStats, p, style, false, 0, ActiveView::GamingStats));
+        g2_items.push(nav_button(
+            "nav_gaming_stats",
+            "🎮",
+            s.tr(TextKey::NavGamingStats),
+            s.active_view == ActiveView::GamingStats,
+            p,
+            style,
+            false,
+            0,
+            ActiveView::GamingStats,
+        ));
     }
     if matches_filter(s.tr(TextKey::NavFpsBench), "📊") {
-        g2_items.push(nav_button("nav_fps_bench", "📊", s.tr(TextKey::NavFpsBench), s.active_view == ActiveView::FpsBenchmark, p, style, false, 0, ActiveView::FpsBenchmark));
+        g2_items.push(nav_button(
+            "nav_fps_bench",
+            "📊",
+            s.tr(TextKey::NavFpsBench),
+            s.active_view == ActiveView::FpsBenchmark,
+            p,
+            style,
+            false,
+            0,
+            ActiveView::FpsBenchmark,
+        ));
     }
     if matches_filter(s.tr(TextKey::NavNetwork), "📶") {
-        g2_items.push(nav_button("nav_network", "📶", s.tr(TextKey::NavNetwork), s.active_view == ActiveView::NetworkDiag, p, style, false, 0, ActiveView::NetworkDiag));
+        g2_items.push(nav_button(
+            "nav_network",
+            "📶",
+            s.tr(TextKey::NavNetwork),
+            s.active_view == ActiveView::NetworkDiag,
+            p,
+            style,
+            false,
+            0,
+            ActiveView::NetworkDiag,
+        ));
     }
     if !g2_items.is_empty() {
-        nav_items = nav_items.child(nav_section_header(g2_label, p)).children(g2_items);
+        nav_items = nav_items
+            .child(nav_section_header(g2_label, p))
+            .children(g2_items);
     }
 
     // Group 3: Optimization
     let g3_label = s.tr(TextKey::NavGroupOptimization);
     let mut g3_items = Vec::new();
     if matches_filter(s.tr(TextKey::NavFpsOptimization), "⚡") {
-        g3_items.push(nav_button("nav_advanced", "⚡", s.tr(TextKey::NavFpsOptimization), s.active_view == ActiveView::AdvancedMatrix, p, style, false, 0, ActiveView::AdvancedMatrix));
+        g3_items.push(nav_button(
+            "nav_advanced",
+            "⚡",
+            s.tr(TextKey::NavFpsOptimization),
+            s.active_view == ActiveView::AdvancedMatrix,
+            p,
+            style,
+            false,
+            0,
+            ActiveView::AdvancedMatrix,
+        ));
     }
     if matches_filter(s.tr(TextKey::NavAutomationCenter), "🤖") {
-        g3_items.push(nav_button("nav_automation", "🤖", s.tr(TextKey::NavAutomationCenter), s.active_view == ActiveView::AutomationCenter, p, style, false, 0, ActiveView::AutomationCenter));
+        g3_items.push(nav_button(
+            "nav_automation",
+            "🤖",
+            s.tr(TextKey::NavAutomationCenter),
+            s.active_view == ActiveView::AutomationCenter,
+            p,
+            style,
+            false,
+            0,
+            ActiveView::AutomationCenter,
+        ));
     }
     if matches_filter(s.tr(TextKey::NavGamePrereqs), "🎮") {
-        g3_items.push(nav_button("nav_game_prereqs", "🎮", s.tr(TextKey::NavGamePrereqs), s.active_view == ActiveView::GamePrerequisites, p, style, false, 0, ActiveView::GamePrerequisites));
+        g3_items.push(nav_button(
+            "nav_game_prereqs",
+            "🎮",
+            s.tr(TextKey::NavGamePrereqs),
+            s.active_view == ActiveView::GamePrerequisites,
+            p,
+            style,
+            false,
+            0,
+            ActiveView::GamePrerequisites,
+        ));
     }
     if matches_filter(s.tr(TextKey::NavGoalPlanner), "🎯") {
-        g3_items.push(nav_button("nav_goal_planner", "🎯", s.tr(TextKey::NavGoalPlanner), s.active_view == ActiveView::GoalPlanner, p, style, false, 0, ActiveView::GoalPlanner));
+        g3_items.push(nav_button(
+            "nav_goal_planner",
+            "🎯",
+            s.tr(TextKey::NavGoalPlanner),
+            s.active_view == ActiveView::GoalPlanner,
+            p,
+            style,
+            false,
+            0,
+            ActiveView::GoalPlanner,
+        ));
     }
     if matches_filter(s.tr(TextKey::NavGameProfiles), "🕹️") {
-        g3_items.push(nav_button("nav_game_profiles", "🕹️", s.tr(TextKey::NavGameProfiles), s.active_view == ActiveView::GameProfiles, p, style, false, 0, ActiveView::GameProfiles));
+        g3_items.push(nav_button(
+            "nav_game_profiles",
+            "🕹️",
+            s.tr(TextKey::NavGameProfiles),
+            s.active_view == ActiveView::GameProfiles,
+            p,
+            style,
+            false,
+            0,
+            ActiveView::GameProfiles,
+        ));
     }
     if matches_filter(s.tr(TextKey::NavGameOverlay), "🖥️") {
-        g3_items.push(nav_button("nav_game_overlay", "🖥️", s.tr(TextKey::NavGameOverlay), s.active_view == ActiveView::GameOverlay, p, style, false, 0, ActiveView::GameOverlay));
+        g3_items.push(nav_button(
+            "nav_game_overlay",
+            "🖥️",
+            s.tr(TextKey::NavGameOverlay),
+            s.active_view == ActiveView::GameOverlay,
+            p,
+            style,
+            false,
+            0,
+            ActiveView::GameOverlay,
+        ));
     }
     if matches_filter(s.tr(TextKey::NavGameSuitability), "🎯") {
-        g3_items.push(nav_button("nav_game_suitability", "🎯", s.tr(TextKey::NavGameSuitability), s.active_view == ActiveView::GameSuitability, p, style, false, 0, ActiveView::GameSuitability));
+        g3_items.push(nav_button(
+            "nav_game_suitability",
+            "🎯",
+            s.tr(TextKey::NavGameSuitability),
+            s.active_view == ActiveView::GameSuitability,
+            p,
+            style,
+            false,
+            0,
+            ActiveView::GameSuitability,
+        ));
     }
     if matches_filter(s.tr(TextKey::NavCleanApps), "🗑️") {
-        g3_items.push(nav_button("nav_clean_apps", "🗑️", s.tr(TextKey::NavCleanApps), s.active_view == ActiveView::CleanAndApps, p, style, false, 0, ActiveView::CleanAndApps));
+        g3_items.push(nav_button(
+            "nav_clean_apps",
+            "🗑️",
+            s.tr(TextKey::NavCleanApps),
+            s.active_view == ActiveView::CleanAndApps,
+            p,
+            style,
+            false,
+            0,
+            ActiveView::CleanAndApps,
+        ));
     }
     if matches_filter(s.tr(TextKey::NavStartupTasks), "⚙️") {
-        g3_items.push(nav_button("nav_startup_tasks", "⚙️", s.tr(TextKey::NavStartupTasks), s.active_view == ActiveView::StartupAndTasks, p, style, false, 0, ActiveView::StartupAndTasks));
+        g3_items.push(nav_button(
+            "nav_startup_tasks",
+            "⚙️",
+            s.tr(TextKey::NavStartupTasks),
+            s.active_view == ActiveView::StartupAndTasks,
+            p,
+            style,
+            false,
+            0,
+            ActiveView::StartupAndTasks,
+        ));
     }
     if matches_filter(s.tr(TextKey::NavWindowsRepair), "🔧") {
-        g3_items.push(nav_button("nav_win_repair", "🔧", s.tr(TextKey::NavWindowsRepair), s.active_view == ActiveView::WindowsRepair, p, style, false, 0, ActiveView::WindowsRepair));
+        g3_items.push(nav_button(
+            "nav_win_repair",
+            "🔧",
+            s.tr(TextKey::NavWindowsRepair),
+            s.active_view == ActiveView::WindowsRepair,
+            p,
+            style,
+            false,
+            0,
+            ActiveView::WindowsRepair,
+        ));
     }
     if matches_filter(s.tr(TextKey::NavBackupReport), "📄") {
-        g3_items.push(nav_button("nav_backup", "📄", s.tr(TextKey::NavBackupReport), s.active_view == ActiveView::BackupCenter, p, style, false, 0, ActiveView::BackupCenter));
+        g3_items.push(nav_button(
+            "nav_backup",
+            "📄",
+            s.tr(TextKey::NavBackupReport),
+            s.active_view == ActiveView::BackupCenter,
+            p,
+            style,
+            false,
+            0,
+            ActiveView::BackupCenter,
+        ));
     }
     if matches_filter(s.tr(TextKey::NavGpuMsiHags), "🎛️") {
-        g3_items.push(nav_button("nav_gpu", "🎛️", s.tr(TextKey::NavGpuMsiHags), s.active_view == ActiveView::GpuTuning, p, style, false, 0, ActiveView::GpuTuning));
+        g3_items.push(nav_button(
+            "nav_gpu",
+            "🎛️",
+            s.tr(TextKey::NavGpuMsiHags),
+            s.active_view == ActiveView::GpuTuning,
+            p,
+            style,
+            false,
+            0,
+            ActiveView::GpuTuning,
+        ));
     }
     if matches_filter(s.tr(TextKey::NavPrivacyShield), "🛡️") {
-        g3_items.push(nav_button("nav_privacy", "🛡️", s.tr(TextKey::NavPrivacyShield), s.active_view == ActiveView::PrivacyShield, p, style, false, 0, ActiveView::PrivacyShield));
+        g3_items.push(nav_button(
+            "nav_privacy",
+            "🛡️",
+            s.tr(TextKey::NavPrivacyShield),
+            s.active_view == ActiveView::PrivacyShield,
+            p,
+            style,
+            false,
+            0,
+            ActiveView::PrivacyShield,
+        ));
     }
     if !g3_items.is_empty() {
-        nav_items = nav_items.child(nav_section_header(g3_label, p)).children(g3_items);
+        nav_items = nav_items
+            .child(nav_section_header(g3_label, p))
+            .children(g3_items);
     }
 
     // Group 4: Account / Support
     let g4_label = s.tr(TextKey::NavGroupAccount);
     let mut g4_items = Vec::new();
     if matches_filter(s.tr(TextKey::NavSupportAbout), "✉") {
-        g4_items.push(nav_button("nav_support", "✉", s.tr(TextKey::NavSupportAbout), s.active_view == ActiveView::SupportAbout, p, style, false, 0, ActiveView::SupportAbout));
+        g4_items.push(nav_button(
+            "nav_support",
+            "✉",
+            s.tr(TextKey::NavSupportAbout),
+            s.active_view == ActiveView::SupportAbout,
+            p,
+            style,
+            false,
+            0,
+            ActiveView::SupportAbout,
+        ));
     }
     if !g4_items.is_empty() {
-        nav_items = nav_items.child(nav_section_header(g4_label, p)).children(g4_items);
+        nav_items = nav_items
+            .child(nav_section_header(g4_label, p))
+            .children(g4_items);
     }
 
     if tier == LayoutTier::Compact {
@@ -417,11 +707,21 @@ fn build_sidebar(s: &AppState, p: &ThemePalette, tier: LayoutTier) -> El {
                         p,
                         |s| {
                             let next = match s.theme_style {
-                                crate::ui::theme::UiThemeStyle::Glassy => crate::ui::theme::UiThemeStyle::Minimalistic,
-                                crate::ui::theme::UiThemeStyle::Minimalistic => crate::ui::theme::UiThemeStyle::Classic,
-                                crate::ui::theme::UiThemeStyle::Classic => crate::ui::theme::UiThemeStyle::Compact,
-                                crate::ui::theme::UiThemeStyle::Compact => crate::ui::theme::UiThemeStyle::Materialistic,
-                                crate::ui::theme::UiThemeStyle::Materialistic => crate::ui::theme::UiThemeStyle::Glassy,
+                                crate::ui::theme::UiThemeStyle::Glassy => {
+                                    crate::ui::theme::UiThemeStyle::Minimalistic
+                                }
+                                crate::ui::theme::UiThemeStyle::Minimalistic => {
+                                    crate::ui::theme::UiThemeStyle::Classic
+                                }
+                                crate::ui::theme::UiThemeStyle::Classic => {
+                                    crate::ui::theme::UiThemeStyle::Compact
+                                }
+                                crate::ui::theme::UiThemeStyle::Compact => {
+                                    crate::ui::theme::UiThemeStyle::Materialistic
+                                }
+                                crate::ui::theme::UiThemeStyle::Materialistic => {
+                                    crate::ui::theme::UiThemeStyle::Glassy
+                                }
                             };
                             s.set_theme_style(next);
                         },
@@ -447,7 +747,9 @@ fn build_sidebar(s: &AppState, p: &ThemePalette, tier: LayoutTier) -> El {
                 .grow(1.0)
                 .min_w(0.0)
                 .min_h(0.0)
-                .scroll(ScrollSpec { stick_bottom: false })
+                .scroll(ScrollSpec {
+                    stick_bottom: false,
+                })
                 .child(nav_items)
                 .winblast_scroll(p),
         )
@@ -465,12 +767,24 @@ fn build_sidebar(s: &AppState, p: &ThemePalette, tier: LayoutTier) -> El {
                         .justify_between()
                         .items_center()
                         .child(
-                            action_button("◀ Prev", p.bg_card, p.text_secondary, p, |s: &mut AppState| s.nav_prev_view())
-                                .grow(1.0),
+                            action_button(
+                                "◀ Prev",
+                                p.bg_card,
+                                p.text_secondary,
+                                p,
+                                |s: &mut AppState| s.nav_prev_view(),
+                            )
+                            .grow(1.0),
                         )
                         .child(
-                            action_button("Next ▶", p.bg_card, p.text_secondary, p, |s: &mut AppState| s.nav_next_view())
-                                .grow(1.0),
+                            action_button(
+                                "Next ▶",
+                                p.bg_card,
+                                p.text_secondary,
+                                p,
+                                |s: &mut AppState| s.nav_next_view(),
+                            )
+                            .grow(1.0),
                         ),
                 )
                 .child(
@@ -519,7 +833,12 @@ pub fn view(s: &AppState, cx: &mut Cx<AppState>) -> El {
         "Windows 10/11".to_string()
     };
 
-    let mut brand_group = row().min_w(0.0).shrink().gap(8.0).items_center().flex_wrap();
+    let mut brand_group = row()
+        .min_w(0.0)
+        .shrink()
+        .gap(8.0)
+        .items_center()
+        .flex_wrap();
     if tier != LayoutTier::Wide {
         brand_group = brand_group.child(
             row()
@@ -528,7 +847,11 @@ pub fn view(s: &AppState, cx: &mut Cx<AppState>) -> El {
                 .py(5.0)
                 .radius(5.0)
                 .fill(if s.sidebar_open { p.accent } else { p.bg_card })
-                .hover(if s.sidebar_open { p.accent_hover } else { p.bg_card_hover })
+                .hover(if s.sidebar_open {
+                    p.accent_hover
+                } else {
+                    p.bg_card_hover
+                })
                 .border(1.0, if s.sidebar_open { p.accent } else { p.border })
                 .motion(rune::tok::motion::SNAPPY)
                 .center()
@@ -536,7 +859,11 @@ pub fn view(s: &AppState, cx: &mut Cx<AppState>) -> El {
                 .child(
                     text("☰")
                         .font(rune::tok::type_::TITLE)
-                        .color(if s.sidebar_open { Color::WHITE } else { p.text_primary }),
+                        .color(if s.sidebar_open {
+                            Color::WHITE
+                        } else {
+                            p.text_primary
+                        }),
                 ),
         );
     }
@@ -570,24 +897,41 @@ pub fn view(s: &AppState, cx: &mut Cx<AppState>) -> El {
                 .px(8.0)
                 .py(4.0)
                 .radius(5.0)
-                .fill(if s.active_dropdown == crate::app::ActiveDropdown::Language { p.accent.alpha(0.20) } else { p.bg_card })
-                .border(1.0, if s.active_dropdown == crate::app::ActiveDropdown::Language { p.accent } else { p.border })
+                .fill(
+                    if s.active_dropdown == crate::app::ActiveDropdown::Language {
+                        p.accent.alpha(0.20)
+                    } else {
+                        p.bg_card
+                    },
+                )
+                .border(
+                    1.0,
+                    if s.active_dropdown == crate::app::ActiveDropdown::Language {
+                        p.accent
+                    } else {
+                        p.border
+                    },
+                )
                 .hover(p.bg_card_hover)
                 .motion(rune::tok::motion::SNAPPY)
                 .center()
                 .on_press(|s: &mut AppState| {
-                    s.active_dropdown = if s.active_dropdown == crate::app::ActiveDropdown::Language {
+                    s.active_dropdown = if s.active_dropdown == crate::app::ActiveDropdown::Language
+                    {
                         crate::app::ActiveDropdown::None
                     } else {
                         crate::app::ActiveDropdown::Language
                     };
                 })
                 .child(
-                    text(format!("🌐 {} ▾", if tier == LayoutTier::Compact {
-                        s.language.code().to_uppercase()
-                    } else {
-                        s.language.label().to_string()
-                    }))
+                    text(format!(
+                        "🌐 {} ▾",
+                        if tier == LayoutTier::Compact {
+                            s.language.code().to_uppercase()
+                        } else {
+                            s.language.label().to_string()
+                        }
+                    ))
                     .font(rune::tok::type_::LABEL)
                     .color(p.text_primary)
                     .shrink(),
@@ -611,11 +955,19 @@ pub fn view(s: &AppState, cx: &mut Cx<AppState>) -> El {
                     s.active_dropdown = crate::app::ActiveDropdown::None;
                 })
                 .child(
-                    text(format!("{} {}", if s.theme_mode == ThemeMode::Dark { "🌙" } else { "☀️" }, if s.theme_mode == ThemeMode::Dark {
-                        s.tr(TextKey::ThemeDark)
-                    } else {
-                        s.tr(TextKey::ThemeLight)
-                    }))
+                    text(format!(
+                        "{} {}",
+                        if s.theme_mode == ThemeMode::Dark {
+                            "🌙"
+                        } else {
+                            "☀️"
+                        },
+                        if s.theme_mode == ThemeMode::Dark {
+                            s.tr(TextKey::ThemeDark)
+                        } else {
+                            s.tr(TextKey::ThemeLight)
+                        }
+                    ))
                     .font(rune::tok::type_::LABEL)
                     .color(p.text_primary)
                     .shrink(),
@@ -632,16 +984,21 @@ pub fn view(s: &AppState, cx: &mut Cx<AppState>) -> El {
             .px(8.0)
             .py(4.0)
             .radius(p.btn_radius)
-            .fill(if s.active_dropdown == crate::app::ActiveDropdown::ThemeStyle {
-                p.accent.alpha(0.20)
-            } else {
-                p.accent.alpha(0.18)
-            })
-            .border(p.border_width, if s.active_dropdown == crate::app::ActiveDropdown::ThemeStyle {
-                p.accent
-            } else {
-                p.accent.alpha(0.60)
-            })
+            .fill(
+                if s.active_dropdown == crate::app::ActiveDropdown::ThemeStyle {
+                    p.accent.alpha(0.20)
+                } else {
+                    p.accent.alpha(0.18)
+                },
+            )
+            .border(
+                p.border_width,
+                if s.active_dropdown == crate::app::ActiveDropdown::ThemeStyle {
+                    p.accent
+                } else {
+                    p.accent.alpha(0.60)
+                },
+            )
             .hover(p.accent.alpha(0.30))
             .press(p.accent.alpha(0.45))
             .motion(p.motion)
@@ -671,17 +1028,31 @@ pub fn view(s: &AppState, cx: &mut Cx<AppState>) -> El {
                     .px(8.0)
                     .py(4.0)
                     .radius(p.btn_radius)
-                    .fill(if s.active_dropdown == crate::app::ActiveDropdown::ColorScheme { p.accent.alpha(0.20) } else { p.bg_card })
-                    .border(p.border_width, if s.active_dropdown == crate::app::ActiveDropdown::ColorScheme { p.accent } else { p.border })
+                    .fill(
+                        if s.active_dropdown == crate::app::ActiveDropdown::ColorScheme {
+                            p.accent.alpha(0.20)
+                        } else {
+                            p.bg_card
+                        },
+                    )
+                    .border(
+                        p.border_width,
+                        if s.active_dropdown == crate::app::ActiveDropdown::ColorScheme {
+                            p.accent
+                        } else {
+                            p.border
+                        },
+                    )
                     .hover(p.bg_card_hover)
                     .motion(p.motion)
                     .center()
                     .on_press(|s: &mut AppState| {
-                        s.active_dropdown = if s.active_dropdown == crate::app::ActiveDropdown::ColorScheme {
-                            crate::app::ActiveDropdown::None
-                        } else {
-                            crate::app::ActiveDropdown::ColorScheme
-                        };
+                        s.active_dropdown =
+                            if s.active_dropdown == crate::app::ActiveDropdown::ColorScheme {
+                                crate::app::ActiveDropdown::None
+                            } else {
+                                crate::app::ActiveDropdown::ColorScheme
+                            };
                     })
                     .child(
                         text(format!("{} ▾", s.tr(s.color_scheme.text_key())))
@@ -700,7 +1071,11 @@ pub fn view(s: &AppState, cx: &mut Cx<AppState>) -> El {
                     .border(1.0, p.border)
                     .gap(3.0)
                     .child(mode_tab(
-                        if tier == LayoutTier::Medium { "Dashboard" } else { s.tr(TextKey::EasyMode) },
+                        if tier == LayoutTier::Medium {
+                            "Dashboard"
+                        } else {
+                            s.tr(TextKey::EasyMode)
+                        },
                         s.mode == AppMode::Easy,
                         p,
                         |s| {
@@ -709,7 +1084,11 @@ pub fn view(s: &AppState, cx: &mut Cx<AppState>) -> El {
                         },
                     ))
                     .child(mode_tab(
-                        if tier == LayoutTier::Medium { "Matrix" } else { s.tr(TextKey::AdvancedMatrix) },
+                        if tier == LayoutTier::Medium {
+                            "Matrix"
+                        } else {
+                            s.tr(TextKey::AdvancedMatrix)
+                        },
                         s.mode == AppMode::Advanced,
                         p,
                         |s| {
@@ -762,10 +1141,13 @@ pub fn view(s: &AppState, cx: &mut Cx<AppState>) -> El {
                     .fill(p.bg_card)
                     .border(1.0, p.border)
                     .child(
-                        text(format!("CPU: {:.0}% • RAM: {:.0}%", m.cpu_usage, m.ram_percentage))
-                            .font(rune::tok::type_::LABEL)
-                            .color(p.text_secondary)
-                            .shrink(),
+                        text(format!(
+                            "CPU: {:.0}% • RAM: {:.0}%",
+                            m.cpu_usage, m.ram_percentage
+                        ))
+                        .font(rune::tok::type_::LABEL)
+                        .color(p.text_secondary)
+                        .shrink(),
                     ),
             );
         }
@@ -1007,7 +1389,11 @@ pub fn view(s: &AppState, cx: &mut Cx<AppState>) -> El {
                         s.tr(TextKey::ChangelogToggleShow)
                     })
                     .font(rune::tok::type_::LABEL)
-                    .color(if s.show_changelog { p.accent } else { p.text_secondary })
+                    .color(if s.show_changelog {
+                        p.accent
+                    } else {
+                        p.text_secondary
+                    })
                     .shrink()
                     .wrap(),
                 ),
@@ -1078,16 +1464,32 @@ pub fn view(s: &AppState, cx: &mut Cx<AppState>) -> El {
                 };
 
                 let undo_btn = if !is_rolled_back && can_revert {
-                    let can_undo = !s.is_rolling_back && !s.is_applying && s.in_flight_tweaks.is_empty();
+                    let can_undo =
+                        !s.is_rolling_back && !s.is_applying && s.in_flight_tweaks.is_empty();
                     row()
                         .min_w(0.0)
                         .shrink()
                         .px(6.0)
                         .py(2.0)
                         .radius(4.0)
-                        .fill(if can_undo { p.warning.alpha(0.15) } else { p.btn_secondary.alpha(0.65) })
-                        .border(1.0, if can_undo { p.warning.alpha(0.4) } else { p.border.alpha(0.65) })
-                        .hover(if can_undo { p.warning.alpha(0.3) } else { p.btn_secondary.alpha(0.65) })
+                        .fill(if can_undo {
+                            p.warning.alpha(0.15)
+                        } else {
+                            p.btn_secondary.alpha(0.65)
+                        })
+                        .border(
+                            1.0,
+                            if can_undo {
+                                p.warning.alpha(0.4)
+                            } else {
+                                p.border.alpha(0.65)
+                            },
+                        )
+                        .hover(if can_undo {
+                            p.warning.alpha(0.3)
+                        } else {
+                            p.btn_secondary.alpha(0.65)
+                        })
                         .motion(rune::tok::motion::SNAPPY)
                         .center()
                         .on_press(move |s: &mut AppState| {
@@ -1136,11 +1538,14 @@ pub fn view(s: &AppState, cx: &mut Cx<AppState>) -> El {
                             .radius(3.0)
                             .fill(p.accent.alpha(0.18))
                             .child(
-                                text(crate::core::status_i18n::localize_ledger_action(s.language, &entry.action_type))
-                                    .font(rune::tok::type_::LABEL)
-                                    .color(p.accent)
-                                    .shrink()
-                                    .truncate(),
+                                text(crate::core::status_i18n::localize_ledger_action(
+                                    s.language,
+                                    &entry.action_type,
+                                ))
+                                .font(rune::tok::type_::LABEL)
+                                .color(p.accent)
+                                .shrink()
+                                .truncate(),
                             ),
                     )
                     .child(
@@ -1159,7 +1564,11 @@ pub fn view(s: &AppState, cx: &mut Cx<AppState>) -> El {
             }
         }
 
-        let drawer_h = if tier == LayoutTier::Compact { 110.0 } else { 150.0 };
+        let drawer_h = if tier == LayoutTier::Compact {
+            110.0
+        } else {
+            150.0
+        };
         col()
             .key("changelog_drawer")
             .w_full()
@@ -1203,7 +1612,9 @@ pub fn view(s: &AppState, cx: &mut Cx<AppState>) -> El {
                     .key("changelog_drawer_scroll")
                     .grow(1.0)
                     .min_h(0.0)
-                    .scroll(ScrollSpec { stick_bottom: false })
+                    .scroll(ScrollSpec {
+                        stick_bottom: false,
+                    })
                     .winblast_scroll(p),
             )
     } else {
@@ -1244,11 +1655,15 @@ pub fn view(s: &AppState, cx: &mut Cx<AppState>) -> El {
         );
     }
 
-    footer = footer.child(
-        action_button(s.tr_v(ViewTextKey::FooterReportBug), Color::TRANSPARENT, p.accent, p, |s| {
+    footer = footer.child(action_button(
+        s.tr_v(ViewTextKey::FooterReportBug),
+        Color::TRANSPARENT,
+        p.accent,
+        p,
+        |s| {
             s.open_bug_report();
-        }),
-    );
+        },
+    ));
 
     // ── Root Frame & Window-Level Diff Preview Overlay ───────────────────────
     let mut root = col()
@@ -1334,7 +1749,11 @@ fn build_dropdown_overlay(s: &AppState, p: &ThemePalette, _tier: LayoutTier) -> 
                         .px(10.0)
                         .py(6.0)
                         .radius(4.0)
-                        .fill(if is_sel { p.accent.alpha(0.20) } else { Color::TRANSPARENT })
+                        .fill(if is_sel {
+                            p.accent.alpha(0.20)
+                        } else {
+                            Color::TRANSPARENT
+                        })
                         .hover(p.bg_card_hover)
                         .justify_between()
                         .items_center()
@@ -1346,8 +1765,16 @@ fn build_dropdown_overlay(s: &AppState, p: &ThemePalette, _tier: LayoutTier) -> 
                             row()
                                 .gap(8.0)
                                 .items_center()
-                                .child(text(native).font(rune::tok::type_::BODY).color(if is_sel { p.accent } else { p.text_primary }))
-                                .child(text(format!("({})", en)).font(rune::tok::type_::LABEL).color(p.text_muted)),
+                                .child(text(native).font(rune::tok::type_::BODY).color(if is_sel {
+                                    p.accent
+                                } else {
+                                    p.text_primary
+                                }))
+                                .child(
+                                    text(format!("({})", en))
+                                        .font(rune::tok::type_::LABEL)
+                                        .color(p.text_muted),
+                                ),
                         )
                         .child(
                             text(if is_sel { "✓" } else { "" })
@@ -1370,21 +1797,44 @@ fn build_dropdown_overlay(s: &AppState, p: &ThemePalette, _tier: LayoutTier) -> 
                             .pb(6.0)
                             .justify_between()
                             .items_center()
-                            .child(text("🌐 Select Language").font(rune::tok::type_::LABEL).color(p.text_muted))
                             .child(
-                                action_button("✕", Color::TRANSPARENT, p.text_muted, p, |s| s.active_dropdown = ActiveDropdown::None),
-                            ),
+                                text("🌐 Select Language")
+                                    .font(rune::tok::type_::LABEL)
+                                    .color(p.text_muted),
+                            )
+                            .child(action_button(
+                                "✕",
+                                Color::TRANSPARENT,
+                                p.text_muted,
+                                p,
+                                |s| s.active_dropdown = ActiveDropdown::None,
+                            )),
                     )
                     .child(list),
             )
         }
         ActiveDropdown::ThemeStyle => {
             let styles = [
-                (crate::ui::theme::UiThemeStyle::Glassy, "💎 Glassy (Mica / Acrylic)"),
-                (crate::ui::theme::UiThemeStyle::Minimalistic, "📐 Minimalistic (Flat Swiss)"),
-                (crate::ui::theme::UiThemeStyle::Classic, "🖥️ Classic (Win2000 Retro)"),
-                (crate::ui::theme::UiThemeStyle::Compact, "⚡ Compact (High Density)"),
-                (crate::ui::theme::UiThemeStyle::Materialistic, "🎨 Materialistic (MD3 Expressive)"),
+                (
+                    crate::ui::theme::UiThemeStyle::Glassy,
+                    "💎 Glassy (Mica / Acrylic)",
+                ),
+                (
+                    crate::ui::theme::UiThemeStyle::Minimalistic,
+                    "📐 Minimalistic (Flat Swiss)",
+                ),
+                (
+                    crate::ui::theme::UiThemeStyle::Classic,
+                    "🖥️ Classic (Win2000 Retro)",
+                ),
+                (
+                    crate::ui::theme::UiThemeStyle::Compact,
+                    "⚡ Compact (High Density)",
+                ),
+                (
+                    crate::ui::theme::UiThemeStyle::Materialistic,
+                    "🎨 Materialistic (MD3 Expressive)",
+                ),
             ];
             let mut list = col().gap(2.0).w_full();
             for (st, label) in styles {
@@ -1396,7 +1846,11 @@ fn build_dropdown_overlay(s: &AppState, p: &ThemePalette, _tier: LayoutTier) -> 
                         .px(10.0)
                         .py(6.0)
                         .radius(4.0)
-                        .fill(if is_sel { p.accent.alpha(0.20) } else { Color::TRANSPARENT })
+                        .fill(if is_sel {
+                            p.accent.alpha(0.20)
+                        } else {
+                            Color::TRANSPARENT
+                        })
                         .hover(p.bg_card_hover)
                         .justify_between()
                         .items_center()
@@ -1404,8 +1858,16 @@ fn build_dropdown_overlay(s: &AppState, p: &ThemePalette, _tier: LayoutTier) -> 
                             s.set_theme_style(st);
                             s.active_dropdown = ActiveDropdown::None;
                         })
-                        .child(text(label).font(rune::tok::type_::BODY).color(if is_sel { p.accent } else { p.text_primary }))
-                        .child(text(if is_sel { "✓" } else { "" }).font(rune::tok::type_::TITLE).color(p.accent)),
+                        .child(text(label).font(rune::tok::type_::BODY).color(if is_sel {
+                            p.accent
+                        } else {
+                            p.text_primary
+                        }))
+                        .child(
+                            text(if is_sel { "✓" } else { "" })
+                                .font(rune::tok::type_::TITLE)
+                                .color(p.accent),
+                        ),
                 );
             }
             (
@@ -1422,10 +1884,18 @@ fn build_dropdown_overlay(s: &AppState, p: &ThemePalette, _tier: LayoutTier) -> 
                             .pb(6.0)
                             .justify_between()
                             .items_center()
-                            .child(text("🎨 Theme Style").font(rune::tok::type_::LABEL).color(p.text_muted))
                             .child(
-                                action_button("✕", Color::TRANSPARENT, p.text_muted, p, |s| s.active_dropdown = ActiveDropdown::None),
-                            ),
+                                text("🎨 Theme Style")
+                                    .font(rune::tok::type_::LABEL)
+                                    .color(p.text_muted),
+                            )
+                            .child(action_button(
+                                "✕",
+                                Color::TRANSPARENT,
+                                p.text_muted,
+                                p,
+                                |s| s.active_dropdown = ActiveDropdown::None,
+                            )),
                     )
                     .child(list),
             )
@@ -1445,7 +1915,11 @@ fn build_dropdown_overlay(s: &AppState, p: &ThemePalette, _tier: LayoutTier) -> 
                         .px(10.0)
                         .py(6.0)
                         .radius(4.0)
-                        .fill(if is_sel { p.accent.alpha(0.20) } else { Color::TRANSPARENT })
+                        .fill(if is_sel {
+                            p.accent.alpha(0.20)
+                        } else {
+                            Color::TRANSPARENT
+                        })
                         .hover(p.bg_card_hover)
                         .justify_between()
                         .items_center()
@@ -1453,8 +1927,16 @@ fn build_dropdown_overlay(s: &AppState, p: &ThemePalette, _tier: LayoutTier) -> 
                             s.set_theme_mode(m);
                             s.active_dropdown = ActiveDropdown::None;
                         })
-                        .child(text(label).font(rune::tok::type_::BODY).color(if is_sel { p.accent } else { p.text_primary }))
-                        .child(text(if is_sel { "✓" } else { "" }).font(rune::tok::type_::TITLE).color(p.accent)),
+                        .child(text(label).font(rune::tok::type_::BODY).color(if is_sel {
+                            p.accent
+                        } else {
+                            p.text_primary
+                        }))
+                        .child(
+                            text(if is_sel { "✓" } else { "" })
+                                .font(rune::tok::type_::TITLE)
+                                .color(p.accent),
+                        ),
                 );
             }
             (
@@ -1471,10 +1953,18 @@ fn build_dropdown_overlay(s: &AppState, p: &ThemePalette, _tier: LayoutTier) -> 
                             .pb(6.0)
                             .justify_between()
                             .items_center()
-                            .child(text("🌓 Display Mode").font(rune::tok::type_::LABEL).color(p.text_muted))
                             .child(
-                                action_button("✕", Color::TRANSPARENT, p.text_muted, p, |s| s.active_dropdown = ActiveDropdown::None),
-                            ),
+                                text("🌓 Display Mode")
+                                    .font(rune::tok::type_::LABEL)
+                                    .color(p.text_muted),
+                            )
+                            .child(action_button(
+                                "✕",
+                                Color::TRANSPARENT,
+                                p.text_muted,
+                                p,
+                                |s| s.active_dropdown = ActiveDropdown::None,
+                            )),
                     )
                     .child(list),
             )
@@ -1498,7 +1988,11 @@ fn build_dropdown_overlay(s: &AppState, p: &ThemePalette, _tier: LayoutTier) -> 
                         .px(10.0)
                         .py(6.0)
                         .radius(4.0)
-                        .fill(if is_sel { p.accent.alpha(0.20) } else { Color::TRANSPARENT })
+                        .fill(if is_sel {
+                            p.accent.alpha(0.20)
+                        } else {
+                            Color::TRANSPARENT
+                        })
                         .hover(p.bg_card_hover)
                         .justify_between()
                         .items_center()
@@ -1506,8 +2000,16 @@ fn build_dropdown_overlay(s: &AppState, p: &ThemePalette, _tier: LayoutTier) -> 
                             s.set_color_scheme(cs);
                             s.active_dropdown = ActiveDropdown::None;
                         })
-                        .child(text(label).font(rune::tok::type_::BODY).color(if is_sel { p.accent } else { p.text_primary }))
-                        .child(text(if is_sel { "✓" } else { "" }).font(rune::tok::type_::TITLE).color(p.accent)),
+                        .child(text(label).font(rune::tok::type_::BODY).color(if is_sel {
+                            p.accent
+                        } else {
+                            p.text_primary
+                        }))
+                        .child(
+                            text(if is_sel { "✓" } else { "" })
+                                .font(rune::tok::type_::TITLE)
+                                .color(p.accent),
+                        ),
                 );
             }
             (
@@ -1524,10 +2026,18 @@ fn build_dropdown_overlay(s: &AppState, p: &ThemePalette, _tier: LayoutTier) -> 
                             .pb(6.0)
                             .justify_between()
                             .items_center()
-                            .child(text("🌈 Color Scheme").font(rune::tok::type_::LABEL).color(p.text_muted))
                             .child(
-                                action_button("✕", Color::TRANSPARENT, p.text_muted, p, |s| s.active_dropdown = ActiveDropdown::None),
-                            ),
+                                text("🌈 Color Scheme")
+                                    .font(rune::tok::type_::LABEL)
+                                    .color(p.text_muted),
+                            )
+                            .child(action_button(
+                                "✕",
+                                Color::TRANSPARENT,
+                                p.text_muted,
+                                p,
+                                |s| s.active_dropdown = ActiveDropdown::None,
+                            )),
                     )
                     .child(list),
             )
@@ -1537,6 +2047,8 @@ fn build_dropdown_overlay(s: &AppState, p: &ThemePalette, _tier: LayoutTier) -> 
     col()
         .key("topbar_dropdown_card")
         .child(content)
-        .modal(true, |s: &mut AppState| s.active_dropdown = crate::app::ActiveDropdown::None)
+        .modal(true, |s: &mut AppState| {
+            s.active_dropdown = crate::app::ActiveDropdown::None
+        })
         .anchored_fit(anchor_key, rune::Side::Bottom, rune::Align::Start, 4.0)
 }

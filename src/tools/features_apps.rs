@@ -66,18 +66,78 @@ pub struct WinGetAppEntry {
 }
 
 pub const CURATED_WINGET_APPS: &[WinGetAppEntry] = &[
-    WinGetAppEntry { id: "7zip.7zip", name: "7-Zip", category: "Utilities", description: "Fast open-source file archiver" },
-    WinGetAppEntry { id: "Microsoft.PowerToys", name: "PowerToys", category: "Utilities", description: "Microsoft official power-user utility suite" },
-    WinGetAppEntry { id: "voidtools.Everything", name: "Everything Search", category: "Utilities", description: "Instant NTFS filename search engine" },
-    WinGetAppEntry { id: "Notepad++.Notepad++", name: "Notepad++", category: "Development", description: "Lightweight text and source code editor" },
-    WinGetAppEntry { id: "VideoLAN.VLC", name: "VLC Media Player", category: "Media", description: "Open-source multimedia player" },
-    WinGetAppEntry { id: "ShareX.ShareX", name: "ShareX", category: "Utilities", description: "Lightweight screen capture and annotation tool" },
-    WinGetAppEntry { id: "OBSProject.OBSStudio", name: "OBS Studio", category: "Media", description: "Screen recording and live streaming studio" },
-    WinGetAppEntry { id: "Mozilla.Firefox", name: "Mozilla Firefox", category: "Browsers", description: "Privacy-focused open-source web browser" },
-    WinGetAppEntry { id: "Brave.Brave", name: "Brave Browser", category: "Browsers", description: "Chromium browser with built-in ad/tracker shield" },
-    WinGetAppEntry { id: "Microsoft.VisualStudioCode", name: "Visual Studio Code", category: "Development", description: "Extensible code editor" },
-    WinGetAppEntry { id: "Git.Git", name: "Git", category: "Development", description: "Distributed version control system" },
-    WinGetAppEntry { id: "CPUID.HWMonitor", name: "HWMonitor", category: "Diagnostics", description: "Hardware voltage, fan & temperature sensor monitor" },
+    WinGetAppEntry {
+        id: "7zip.7zip",
+        name: "7-Zip",
+        category: "Utilities",
+        description: "Fast open-source file archiver",
+    },
+    WinGetAppEntry {
+        id: "Microsoft.PowerToys",
+        name: "PowerToys",
+        category: "Utilities",
+        description: "Microsoft official power-user utility suite",
+    },
+    WinGetAppEntry {
+        id: "voidtools.Everything",
+        name: "Everything Search",
+        category: "Utilities",
+        description: "Instant NTFS filename search engine",
+    },
+    WinGetAppEntry {
+        id: "Notepad++.Notepad++",
+        name: "Notepad++",
+        category: "Development",
+        description: "Lightweight text and source code editor",
+    },
+    WinGetAppEntry {
+        id: "VideoLAN.VLC",
+        name: "VLC Media Player",
+        category: "Media",
+        description: "Open-source multimedia player",
+    },
+    WinGetAppEntry {
+        id: "ShareX.ShareX",
+        name: "ShareX",
+        category: "Utilities",
+        description: "Lightweight screen capture and annotation tool",
+    },
+    WinGetAppEntry {
+        id: "OBSProject.OBSStudio",
+        name: "OBS Studio",
+        category: "Media",
+        description: "Screen recording and live streaming studio",
+    },
+    WinGetAppEntry {
+        id: "Mozilla.Firefox",
+        name: "Mozilla Firefox",
+        category: "Browsers",
+        description: "Privacy-focused open-source web browser",
+    },
+    WinGetAppEntry {
+        id: "Brave.Brave",
+        name: "Brave Browser",
+        category: "Browsers",
+        description: "Chromium browser with built-in ad/tracker shield",
+    },
+    WinGetAppEntry {
+        id: "Microsoft.VisualStudioCode",
+        name: "Visual Studio Code",
+        category: "Development",
+        description: "Extensible code editor",
+    },
+    WinGetAppEntry {
+        id: "Git.Git",
+        name: "Git",
+        category: "Development",
+        description: "Distributed version control system",
+    },
+    WinGetAppEntry {
+        id: "CPUID.HWMonitor",
+        name: "HWMonitor",
+        category: "Diagnostics",
+        description: "Hardware voltage, fan & temperature sensor monitor",
+    },
 ];
 
 const PROTECTED_CORE_PREFIXES: &[&str] = &[
@@ -238,8 +298,7 @@ pub fn normalize_appx_family_name(raw: &str) -> String {
     let trimmed = raw.trim();
     let parts: Vec<&str> = trimmed.rsplitn(5, '_').collect();
     if parts.len() == 5 {
-        let (pub_id, _res_id, arch, ver, name) =
-            (parts[0], parts[1], parts[2], parts[3], parts[4]);
+        let (pub_id, _res_id, arch, ver, name) = (parts[0], parts[1], parts[2], parts[3], parts[4]);
         if is_crockford_pub_id(pub_id)
             && is_appx_arch(arch)
             && is_appx_version(ver)
@@ -360,7 +419,11 @@ pub fn list_installed_appx_from_cache_with_provisioned(
             })
         })
         .collect();
-    pkgs.sort_by(|a, b| a.safety_tier.cmp(&b.safety_tier).then(a.short_name.cmp(&b.short_name)));
+    pkgs.sort_by(|a, b| {
+        a.safety_tier
+            .cmp(&b.safety_tier)
+            .then(a.short_name.cmp(&b.short_name))
+    });
     pkgs
 }
 
@@ -476,18 +539,84 @@ pub fn remove_appx_batch(families: &[String], remove_provisioned: bool) -> Resul
 }
 
 /// Curated list of Winhance's Windows Optional Features & Capabilities supported cleanly via DISM.
-pub fn curated_windows_features_meta() -> Vec<(&'static str, &'static str, &'static str, OptionalFeatureKind, bool)> {
+pub fn curated_windows_features_meta() -> Vec<(
+    &'static str,
+    &'static str,
+    &'static str,
+    OptionalFeatureKind,
+    bool,
+)> {
     vec![
-        ("Recall", "Windows Recall AI (Optional Feature)", "Screenshot memory indexer on Copilot+ PCs (24H2+).", OptionalFeatureKind::OptionalFeature, true),
-        ("Containers-DisposableClientVM", "Windows Sandbox", "Throwaway isolated desktop VM for testing untrusted apps.", OptionalFeatureKind::OptionalFeature, false),
-        ("Microsoft-Windows-Subsystem-Linux", "Windows Subsystem for Linux (WSL)", "Run native Linux environments inside Windows.", OptionalFeatureKind::OptionalFeature, false),
-        ("Microsoft-Hyper-V-All", "Hyper-V Virtualization", "Type-1 hypervisor platform and VM management tools.", OptionalFeatureKind::OptionalFeature, false),
-        ("NetFx3", ".NET Framework 3.5", "Legacy .NET 2.0/3.0/3.5 runtime compatibility.", OptionalFeatureKind::OptionalFeature, false),
-        ("Browser.InternetExplorer~~~~0.0.11.0", "Internet Explorer (Legacy Capability)", "Legacy Trident web browser shell.", OptionalFeatureKind::Capability, true),
-        ("App.StepsRecorder~~~~0.0.1.0", "Steps Recorder", "Legacy problem-step screenshot recorder.", OptionalFeatureKind::Capability, true),
-        ("Microsoft.Windows.WordPad~~~~0.0.1.0", "WordPad (Legacy)", "Legacy RTF/DOC editor capability.", OptionalFeatureKind::Capability, true),
-        ("Microsoft.Windows.PowerShell.ISE~~~~0.0.1.0", "PowerShell ISE", "Legacy PowerShell script IDE.", OptionalFeatureKind::Capability, true),
-        ("OpenSSH.Client~~~~0.0.1.0", "OpenSSH Client", "Built-in SSH CLI client.", OptionalFeatureKind::Capability, false),
+        (
+            "Recall",
+            "Windows Recall AI (Optional Feature)",
+            "Screenshot memory indexer on Copilot+ PCs (24H2+).",
+            OptionalFeatureKind::OptionalFeature,
+            true,
+        ),
+        (
+            "Containers-DisposableClientVM",
+            "Windows Sandbox",
+            "Throwaway isolated desktop VM for testing untrusted apps.",
+            OptionalFeatureKind::OptionalFeature,
+            false,
+        ),
+        (
+            "Microsoft-Windows-Subsystem-Linux",
+            "Windows Subsystem for Linux (WSL)",
+            "Run native Linux environments inside Windows.",
+            OptionalFeatureKind::OptionalFeature,
+            false,
+        ),
+        (
+            "Microsoft-Hyper-V-All",
+            "Hyper-V Virtualization",
+            "Type-1 hypervisor platform and VM management tools.",
+            OptionalFeatureKind::OptionalFeature,
+            false,
+        ),
+        (
+            "NetFx3",
+            ".NET Framework 3.5",
+            "Legacy .NET 2.0/3.0/3.5 runtime compatibility.",
+            OptionalFeatureKind::OptionalFeature,
+            false,
+        ),
+        (
+            "Browser.InternetExplorer~~~~0.0.11.0",
+            "Internet Explorer (Legacy Capability)",
+            "Legacy Trident web browser shell.",
+            OptionalFeatureKind::Capability,
+            true,
+        ),
+        (
+            "App.StepsRecorder~~~~0.0.1.0",
+            "Steps Recorder",
+            "Legacy problem-step screenshot recorder.",
+            OptionalFeatureKind::Capability,
+            true,
+        ),
+        (
+            "Microsoft.Windows.WordPad~~~~0.0.1.0",
+            "WordPad (Legacy)",
+            "Legacy RTF/DOC editor capability.",
+            OptionalFeatureKind::Capability,
+            true,
+        ),
+        (
+            "Microsoft.Windows.PowerShell.ISE~~~~0.0.1.0",
+            "PowerShell ISE",
+            "Legacy PowerShell script IDE.",
+            OptionalFeatureKind::Capability,
+            true,
+        ),
+        (
+            "OpenSSH.Client~~~~0.0.1.0",
+            "OpenSSH Client",
+            "Built-in SSH CLI client.",
+            OptionalFeatureKind::Capability,
+            false,
+        ),
     ]
 }
 
@@ -620,9 +749,7 @@ pub fn list_optional_features() -> Result<Vec<WindowsOptionalFeature>> {
                     .or_else(|| {
                         cap_states
                             .iter()
-                            .find(|(k, _)| {
-                                k.split("~~~~").next().unwrap_or(k.as_str()) == prefix
-                            })
+                            .find(|(k, _)| k.split("~~~~").next().unwrap_or(k.as_str()) == prefix)
                             .map(|(_, st)| *st)
                     })
                     .unwrap_or(FeatureInstallState::Disabled)
@@ -774,11 +901,20 @@ pub fn check_onedrive_kfm_active() -> Option<String> {
             ("Personal", "Documents"),
             ("My Pictures", "Pictures"),
             ("{B4BFCC3A-DB2C-424C-B029-7FE99A87C641}", "Desktop (GUID)"),
-            ("{754AC886-DF64-4CBA-86B5-F7FBF4FBCEF5}", "Desktop (Backup GUID)"),
+            (
+                "{754AC886-DF64-4CBA-86B5-F7FBF4FBCEF5}",
+                "Desktop (Backup GUID)",
+            ),
             ("{F42EE2D3-909F-4907-8871-4C22FC0BF756}", "Documents (GUID)"),
-            ("{FDD39AD0-238F-46AF-ADB4-6C85480369C7}", "Documents (Backup GUID)"),
+            (
+                "{FDD39AD0-238F-46AF-ADB4-6C85480369C7}",
+                "Documents (Backup GUID)",
+            ),
             ("{0DDD015D-B06C-45D5-8C4C-F59713854639}", "Pictures (GUID)"),
-            ("{33E28130-4E1E-4676-835A-98395C3BC3BB}", "Pictures (Backup GUID)"),
+            (
+                "{33E28130-4E1E-4676-835A-98395C3BC3BB}",
+                "Pictures (Backup GUID)",
+            ),
         ];
         for (val_name, label) in folder_keys {
             if let Ok(path) = k.get_value::<String, _>(val_name) {
@@ -850,8 +986,12 @@ fn find_onedrive_setup_exe() -> Option<std::path::PathBuf> {
 
     let sys_root = std::env::var("SystemRoot").unwrap_or_else(|_| "C:\\Windows".to_string());
     [
-        PathBuf::from(&sys_root).join("SysWOW64").join("OneDriveSetup.exe"),
-        PathBuf::from(&sys_root).join("System32").join("OneDriveSetup.exe"),
+        PathBuf::from(&sys_root)
+            .join("SysWOW64")
+            .join("OneDriveSetup.exe"),
+        PathBuf::from(&sys_root)
+            .join("System32")
+            .join("OneDriveSetup.exe"),
     ]
     .into_iter()
     .find(|stub| stub.is_file())
@@ -907,9 +1047,10 @@ pub fn remove_edge_preserve_webview2() -> Result<String> {
     // Set EdgeUpdate DoNotUpdateToEdgeWithChromium in both 64-bit & 32-bit (WOW6432Node) views
     let hklm = RegKey::predef(HKEY_LOCAL_MACHINE);
     for wow in [KEY_WOW64_64KEY, KEY_WOW64_32KEY] {
-        if let Ok((k, _)) =
-            hklm.create_subkey_with_flags("SOFTWARE\\Microsoft\\EdgeUpdate", KEY_READ | KEY_WRITE | wow)
-        {
+        if let Ok((k, _)) = hklm.create_subkey_with_flags(
+            "SOFTWARE\\Microsoft\\EdgeUpdate",
+            KEY_READ | KEY_WRITE | wow,
+        ) {
             let _ = k.set_value("DoNotUpdateToEdgeWithChromium", &1u32);
         }
     }
@@ -959,11 +1100,17 @@ if ($failed.Count -gt 0) {
         } else {
             stderr.trim()
         };
-        return Err(WinBlastError::AppX(format!("Edge uninstall error: {}", detail)));
+        return Err(WinBlastError::AppX(format!(
+            "Edge uninstall error: {}",
+            detail
+        )));
     }
     let stdout = String::from_utf8_lossy(&out.stdout);
     if stdout.trim() == "NOT_FOUND" {
-        return Ok("Microsoft Edge browser installation not found; EdgeUpdate re-install policy locked.".to_string());
+        return Ok(
+            "Microsoft Edge browser installation not found; EdgeUpdate re-install policy locked."
+                .to_string(),
+        );
     }
     Ok("Microsoft Edge uninstalled while preserving WebView2 runtime.".to_string())
 }
@@ -976,7 +1123,10 @@ pub fn validate_winget_package_id(package_id: &str) -> Result<&str> {
             .chars()
             .all(|c| c.is_ascii_alphanumeric() || matches!(c, '.' | '-' | '_' | '+'))
     {
-        return Err(WinBlastError::AppX(format!("Invalid WinGet ID: {}", package_id)));
+        return Err(WinBlastError::AppX(format!(
+            "Invalid WinGet ID: {}",
+            package_id
+        )));
     }
     Ok(clean)
 }
@@ -1022,7 +1172,19 @@ fn strip_ansi_sequences(s: &str) -> String {
 fn is_progress_noise_char(c: char) -> bool {
     matches!(
         c,
-        '█' | '▒' | '░' | '▓' | '▌' | '▐' | '▀' | '▄' | '■' | '□' | '-' | '\\' | '|' | '/'
+        '█' | '▒'
+            | '░'
+            | '▓'
+            | '▌'
+            | '▐'
+            | '▀'
+            | '▄'
+            | '■'
+            | '□'
+            | '-'
+            | '\\'
+            | '|'
+            | '/'
     ) || c.is_whitespace()
 }
 
@@ -1032,10 +1194,7 @@ pub(crate) fn extract_winget_error_detail(stderr: &str, stdout: &str) -> String 
     clean_err
         .split(['\r', '\n'])
         .chain(clean_out.split(['\r', '\n']))
-        .map(|l| {
-            l.trim_matches(|c: char| is_progress_noise_char(c))
-                .trim()
-        })
+        .map(|l| l.trim_matches(|c: char| is_progress_noise_char(c)).trim())
         .rfind(|l| !l.is_empty())
         .unwrap_or("")
         .to_string()
@@ -1084,10 +1243,25 @@ mod tests {
 
     #[test]
     fn test_protected_core_appx_never_classified_bloat() {
-        assert_eq!(classify_appx_package("Microsoft.SecHealthUI_8wekyb3d8bbwe"), AppxSafetyTier::ProtectedCore);
-        assert_eq!(classify_appx_package("Microsoft.WindowsStore_8wekyb3d8bbwe"), AppxSafetyTier::ProtectedCore);
-        assert_eq!(classify_appx_package("Microsoft.VCLibs.140.00_8wekyb3d8bbwe"), AppxSafetyTier::ProtectedCore);
-        assert_eq!(classify_appx_package("Microsoft.BingWeather_8wekyb3d8bbwe"), AppxSafetyTier::SafeBloat);
-        assert_eq!(classify_appx_package("Microsoft.Copilot_8wekyb3d8bbwe"), AppxSafetyTier::AiBloat);
+        assert_eq!(
+            classify_appx_package("Microsoft.SecHealthUI_8wekyb3d8bbwe"),
+            AppxSafetyTier::ProtectedCore
+        );
+        assert_eq!(
+            classify_appx_package("Microsoft.WindowsStore_8wekyb3d8bbwe"),
+            AppxSafetyTier::ProtectedCore
+        );
+        assert_eq!(
+            classify_appx_package("Microsoft.VCLibs.140.00_8wekyb3d8bbwe"),
+            AppxSafetyTier::ProtectedCore
+        );
+        assert_eq!(
+            classify_appx_package("Microsoft.BingWeather_8wekyb3d8bbwe"),
+            AppxSafetyTier::SafeBloat
+        );
+        assert_eq!(
+            classify_appx_package("Microsoft.Copilot_8wekyb3d8bbwe"),
+            AppxSafetyTier::AiBloat
+        );
     }
 }

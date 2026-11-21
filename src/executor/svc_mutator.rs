@@ -70,7 +70,9 @@ pub fn set_service_start_type(service_name: &str, start_type: u32) -> Result<()>
     let path = format!("SYSTEM\\CurrentControlSet\\Services\\{}", clean_name);
     let key = match open_subkey_flags_64(&hklm, &path, KEY_READ | KEY_SET_VALUE) {
         Ok(k) => k,
-        Err(e) if (start_type == 3 || start_type == 4) && e.kind() == std::io::ErrorKind::NotFound => {
+        Err(e)
+            if (start_type == 3 || start_type == 4) && e.kind() == std::io::ErrorKind::NotFound =>
+        {
             // Optional/uninstalled service is already harmless
             return Ok(());
         }
@@ -91,7 +93,12 @@ pub fn set_service_start_type(service_name: &str, start_type: u32) -> Result<()>
     let output = crate::core::process::SilentCommand::new("sc")
         .args(["config", clean_name, "start=", mode])
         .output()
-        .map_err(|e| WinBlastError::service(1, format!("Failed to invoke sc config {}: {}", clean_name, e)))?;
+        .map_err(|e| {
+            WinBlastError::service(
+                1,
+                format!("Failed to invoke sc config {}: {}", clean_name, e),
+            )
+        })?;
 
     if !output.status.success() {
         let detail = format_sc_output(&output);
@@ -136,7 +143,9 @@ pub fn stop_service(service_name: &str) -> Result<()> {
     let output = crate::core::process::SilentCommand::new("sc")
         .args(["stop", clean_name])
         .output()
-        .map_err(|e| WinBlastError::service(1, format!("Failed to invoke sc stop {}: {}", clean_name, e)))?;
+        .map_err(|e| {
+            WinBlastError::service(1, format!("Failed to invoke sc stop {}: {}", clean_name, e))
+        })?;
 
     if !output.status.success() {
         let detail = format_sc_output(&output);
@@ -145,10 +154,7 @@ pub fn stop_service(service_name: &str) -> Result<()> {
             let code = output.status.code().unwrap_or(1) as u32;
             return Err(WinBlastError::service(
                 code,
-                format!(
-                    "sc stop {} failed: {}",
-                    clean_name, detail
-                ),
+                format!("sc stop {} failed: {}", clean_name, detail),
             ));
         }
     }
@@ -161,7 +167,12 @@ pub fn start_service(service_name: &str) -> Result<()> {
     let output = crate::core::process::SilentCommand::new("sc")
         .args(["start", clean_name])
         .output()
-        .map_err(|e| WinBlastError::service(1, format!("Failed to invoke sc start {}: {}", clean_name, e)))?;
+        .map_err(|e| {
+            WinBlastError::service(
+                1,
+                format!("Failed to invoke sc start {}: {}", clean_name, e),
+            )
+        })?;
 
     if !output.status.success() {
         let detail = format_sc_output(&output);
@@ -170,10 +181,7 @@ pub fn start_service(service_name: &str) -> Result<()> {
             let code = output.status.code().unwrap_or(1) as u32;
             return Err(WinBlastError::service(
                 code,
-                format!(
-                    "sc start {} failed: {}",
-                    clean_name, detail
-                ),
+                format!("sc start {} failed: {}", clean_name, detail),
             ));
         }
     }

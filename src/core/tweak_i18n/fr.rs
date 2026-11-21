@@ -1205,46 +1205,108 @@ pub fn lookup(id: &str) -> Option<LocalizedTweakText> {
 #[allow(dead_code)]
 pub fn tweak_title(id: &str) -> Option<&'static str> {
     match id {
-        "disable_dwm_animations_per_process" => Some("Désactiver les animations de transition DWM par processus"),
-        "disable_dwm_composition_throttle" => Some("Désactiver la limitation de composition du Gestionnaire de fenêtres du Bureau"),
-        "disable_kernel_mitigations_audit" => Some("Désactiver le mode d'audit des atténuations du noyau"),
+        "disable_dwm_animations_per_process" => {
+            Some("Désactiver les animations de transition DWM par processus")
+        }
+        "disable_dwm_composition_throttle" => {
+            Some("Désactiver la limitation de composition du Gestionnaire de fenêtres du Bureau")
+        }
+        "disable_kernel_mitigations_audit" => {
+            Some("Désactiver le mode d'audit des atténuations du noyau")
+        }
         "disable_llmnr_protocol" => Some("Désactiver le protocole de résolution de noms LLMNR"),
         "disable_memory_compression" => Some("Désactiver le moteur de compression de mémoire"),
         "disable_netbios_over_tcp" => Some("Désactiver NetBIOS sur TCP/IP"),
-        "disable_ntfs_encryption_driver" => Some("Désactiver le pilote de chiffrement de fichiers NTFS (EFS)"),
-        "disable_page_file_encryption" => Some("Désactiver le chiffrement du fichier d'échange et l'effacement à l'arrêt"),
-        "disable_processor_idle_demote_threshold" => Some("Désactiver la rétrogradation d'état d'inactivité du processeur"),
-        "disable_rss_base_cpu" => Some("Définir le processeur de base RSS pour la répartition réseau"),
-        "disable_spectre_meltdown_mitigations" => Some("Désactiver les atténuations de failles processeur Spectre/Meltdown"),
-        "disable_threaded_dpc_optimization" => Some("Désactiver les DPC threadés pour une latence d'interruption réduite"),
-        "disable_windows_search_indexer" => Some("Désactiver le service d'indexation Windows Search"),
-        "enable_hardware_task_offload" => Some("Activer le déchargement matériel des tâches TCP/IP"),
-        "enable_large_ntfs_frs" => Some("Activer les grands segments d'enregistrement de fichiers NTFS"),
-        "enable_ultimate_performance_plan" => Some("Activer le mode d'alimentation Performances ultimes"),
-        "increase_gpu_tdr_timeout" => Some("Augmenter le délai de détection et récupération de délai d'attente GPU"),
-        "increase_irp_stack_size" => Some("Augmenter la taille de la pile IRP pour les E/S réseau et disque"),
-        "increase_max_connections_per_server" => Some("Augmenter les connexions HTTP maximales par serveur"),
-        "increase_nonpaged_pool_quota" => Some("Augmenter le quota du pool non paginé pour la stabilité des pilotes"),
-        "optimize_additional_critical_worker_threads" => Some("Augmenter les threads de travail supplémentaires du noyau"),
+        "disable_ntfs_encryption_driver" => {
+            Some("Désactiver le pilote de chiffrement de fichiers NTFS (EFS)")
+        }
+        "disable_page_file_encryption" => {
+            Some("Désactiver le chiffrement du fichier d'échange et l'effacement à l'arrêt")
+        }
+        "disable_processor_idle_demote_threshold" => {
+            Some("Désactiver la rétrogradation d'état d'inactivité du processeur")
+        }
+        "disable_rss_base_cpu" => {
+            Some("Définir le processeur de base RSS pour la répartition réseau")
+        }
+        "disable_spectre_meltdown_mitigations" => {
+            Some("Désactiver les atténuations de failles processeur Spectre/Meltdown")
+        }
+        "disable_threaded_dpc_optimization" => {
+            Some("Désactiver les DPC threadés pour une latence d'interruption réduite")
+        }
+        "disable_windows_search_indexer" => {
+            Some("Désactiver le service d'indexation Windows Search")
+        }
+        "enable_hardware_task_offload" => {
+            Some("Activer le déchargement matériel des tâches TCP/IP")
+        }
+        "enable_large_ntfs_frs" => {
+            Some("Activer les grands segments d'enregistrement de fichiers NTFS")
+        }
+        "enable_ultimate_performance_plan" => {
+            Some("Activer le mode d'alimentation Performances ultimes")
+        }
+        "increase_gpu_tdr_timeout" => {
+            Some("Augmenter le délai de détection et récupération de délai d'attente GPU")
+        }
+        "increase_irp_stack_size" => {
+            Some("Augmenter la taille de la pile IRP pour les E/S réseau et disque")
+        }
+        "increase_max_connections_per_server" => {
+            Some("Augmenter les connexions HTTP maximales par serveur")
+        }
+        "increase_nonpaged_pool_quota" => {
+            Some("Augmenter le quota du pool non paginé pour la stabilité des pilotes")
+        }
+        "optimize_additional_critical_worker_threads" => {
+            Some("Augmenter les threads de travail supplémentaires du noyau")
+        }
         "optimize_default_ttl" => Some("Définir la durée de vie (TTL) optimale des paquets IP"),
-        "optimize_disk_io_page_lock_limit" => Some("Augmenter la limite de verrouillage de pages d'E/S"),
-        "optimize_dns_cache_parameters" => Some("Optimiser la taille du cache et le TTL du client DNS"),
-        "optimize_gpu_preemption_level" => Some("Régler le planificateur GPU sur la préemption de calcul uniquement"),
-        "optimize_interrupt_steering" => Some("Optimiser l'affinité des interruptions et la politique de routage"),
-        "optimize_mmcss_proaudio_scheduling" => Some("MMCSS Pro Audio — Priorité maximale de planification"),
+        "optimize_disk_io_page_lock_limit" => {
+            Some("Augmenter la limite de verrouillage de pages d'E/S")
+        }
+        "optimize_dns_cache_parameters" => {
+            Some("Optimiser la taille du cache et le TTL du client DNS")
+        }
+        "optimize_gpu_preemption_level" => {
+            Some("Régler le planificateur GPU sur la préemption de calcul uniquement")
+        }
+        "optimize_interrupt_steering" => {
+            Some("Optimiser l'affinité des interruptions et la politique de routage")
+        }
+        "optimize_mmcss_proaudio_scheduling" => {
+            Some("MMCSS Pro Audio — Priorité maximale de planification")
+        }
         "optimize_ntfs_memory_usage" => Some("Mise en cache agressive du pool paginé NTFS"),
-        "optimize_object_manager_quota" => Some("Augmenter le quota de descripteurs du Gestionnaire d'objets du noyau"),
-        "optimize_timer_resolution_requests" => Some("Autoriser les applications à demander une haute résolution de minuterie"),
-                "disable_driver_search_order_probing" => Some("Désactiver la recherche de pilotes en ligne Windows Update"),
+        "optimize_object_manager_quota" => {
+            Some("Augmenter le quota de descripteurs du Gestionnaire d'objets du noyau")
+        }
+        "optimize_timer_resolution_requests" => {
+            Some("Autoriser les applications à demander une haute résolution de minuterie")
+        }
+        "disable_driver_search_order_probing" => {
+            Some("Désactiver la recherche de pilotes en ligne Windows Update")
+        }
         "disable_fast_user_switching" => Some("Désactiver le basculement rapide d'utilisateur"),
         "disable_ip_source_routing" => Some("Désactiver le routage par la source IP"),
-        "disable_netsh_teredo_tunneling" => Some("Désactiver le tunneling de transition IPv6 Teredo"),
-        "disable_network_adapter_power_saving" => Some("Désactiver l'économie d'énergie PnP de la carte réseau NDIS"),
-        "disable_remote_desktop_udp" => Some("Désactiver le transport UDP du client Bureau à distance"),
+        "disable_netsh_teredo_tunneling" => {
+            Some("Désactiver le tunneling de transition IPv6 Teredo")
+        }
+        "disable_network_adapter_power_saving" => {
+            Some("Désactiver l'économie d'énergie PnP de la carte réseau NDIS")
+        }
+        "disable_remote_desktop_udp" => {
+            Some("Désactiver le transport UDP du client Bureau à distance")
+        }
         "disable_smart_card_service" => Some("Désactiver le service de carte à puce (SCardSvr)"),
         "optimize_kerberos_ticket_cache" => Some("Optimiser le tampon MaxTokenSize de Kerberos"),
-        "optimize_tcp_syn_attack_protection" => Some("Activer la protection contre les attaques TCP SYN"),
-        "optimize_usb_selective_suspend_hub" => Some("Désactiver la suspension sélective globale des hubs USB"),
+        "optimize_tcp_syn_attack_protection" => {
+            Some("Activer la protection contre les attaques TCP SYN")
+        }
+        "optimize_usb_selective_suspend_hub" => {
+            Some("Désactiver la suspension sélective globale des hubs USB")
+        }
         _ => lookup(id).map(|t| t.title),
     }
 }

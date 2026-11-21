@@ -481,16 +481,17 @@ impl ThemePalette {
             ),
         };
 
-        let (bg_primary, bg_card, bg_sidebar, bg_card_hover) = if scheme == ColorScheme::ArcticAurora {
-            (
-                rgb(0.039, 0.086, 0.157), // #0a1628
-                rgb(0.071, 0.122, 0.200), // #121f33
-                rgba(0.051, 0.102, 0.180, 0.90),
-                rgb(0.102, 0.165, 0.260),
-            )
-        } else {
-            (bg_primary, bg_card, bg_sidebar, bg_card_hover)
-        };
+        let (bg_primary, bg_card, bg_sidebar, bg_card_hover) =
+            if scheme == ColorScheme::ArcticAurora {
+                (
+                    rgb(0.039, 0.086, 0.157), // #0a1628
+                    rgb(0.071, 0.122, 0.200), // #121f33
+                    rgba(0.051, 0.102, 0.180, 0.90),
+                    rgb(0.102, 0.165, 0.260),
+                )
+            } else {
+                (bg_primary, bg_card, bg_sidebar, bg_card_hover)
+            };
 
         let (text_primary, text_secondary, text_muted) = if scheme == ColorScheme::ArcticAurora {
             (
@@ -540,8 +541,16 @@ impl ThemePalette {
             btn_secondary_hover,
             btn_secondary_press,
 
-            sparkline_cpu: if scheme == ColorScheme::ArcticAurora { rgb(0.00, 0.831, 0.667) } else { rgb(0.20, 0.70, 0.95) },
-            sparkline_ram: if scheme == ColorScheme::ArcticAurora { rgb(0.40, 0.85, 0.95) } else { rgb(0.85, 0.45, 0.95) },
+            sparkline_cpu: if scheme == ColorScheme::ArcticAurora {
+                rgb(0.00, 0.831, 0.667)
+            } else {
+                rgb(0.20, 0.70, 0.95)
+            },
+            sparkline_ram: if scheme == ColorScheme::ArcticAurora {
+                rgb(0.40, 0.85, 0.95)
+            } else {
+                rgb(0.85, 0.45, 0.95)
+            },
             sparkline_bg: rgba(1.0, 1.0, 1.0, 0.04),
 
             text_primary,
@@ -665,16 +674,17 @@ impl ThemePalette {
             ),
         };
 
-        let (bg_primary, bg_card, bg_sidebar, bg_card_hover) = if scheme == ColorScheme::ArcticAurora {
-            (
-                rgb(0.941, 0.973, 1.0), // #f0f8ff
-                rgb(1.0, 1.0, 1.0),      // #ffffff
-                rgba(0.92, 0.96, 0.99, 0.92),
-                rgb(0.91, 0.95, 0.98),
-            )
-        } else {
-            (bg_primary, bg_card, bg_sidebar, bg_card_hover)
-        };
+        let (bg_primary, bg_card, bg_sidebar, bg_card_hover) =
+            if scheme == ColorScheme::ArcticAurora {
+                (
+                    rgb(0.941, 0.973, 1.0), // #f0f8ff
+                    rgb(1.0, 1.0, 1.0),     // #ffffff
+                    rgba(0.92, 0.96, 0.99, 0.92),
+                    rgb(0.91, 0.95, 0.98),
+                )
+            } else {
+                (bg_primary, bg_card, bg_sidebar, bg_card_hover)
+            };
 
         let (text_primary, text_secondary, text_muted) = if scheme == ColorScheme::ArcticAurora {
             (
@@ -723,8 +733,16 @@ impl ThemePalette {
             btn_secondary_hover,
             btn_secondary_press,
 
-            sparkline_cpu: if scheme == ColorScheme::ArcticAurora { rgb(0.00, 0.659, 0.541) } else { rgb(0.10, 0.55, 0.85) },
-            sparkline_ram: if scheme == ColorScheme::ArcticAurora { rgb(0.20, 0.60, 0.80) } else { rgb(0.65, 0.25, 0.80) },
+            sparkline_cpu: if scheme == ColorScheme::ArcticAurora {
+                rgb(0.00, 0.659, 0.541)
+            } else {
+                rgb(0.10, 0.55, 0.85)
+            },
+            sparkline_ram: if scheme == ColorScheme::ArcticAurora {
+                rgb(0.20, 0.60, 0.80)
+            } else {
+                rgb(0.65, 0.25, 0.80)
+            },
             sparkline_bg: rgba(0.0, 0.0, 0.0, 0.04),
 
             text_primary,

@@ -74,9 +74,13 @@ fn before_after_comparison_card(
                         .color(dpc_color),
                 )
                 .child(
-                    text(format!("({} {} µs)", s.tr(TextKey::WasLabel), before.dpc.peak_jitter_us))
-                        .font(rune::tok::type_::LABEL)
-                        .color(p.text_muted),
+                    text(format!(
+                        "({} {} µs)",
+                        s.tr(TextKey::WasLabel),
+                        before.dpc.peak_jitter_us
+                    ))
+                    .font(rune::tok::type_::LABEL)
+                    .color(p.text_muted),
                 ),
         )
         .child(
@@ -362,20 +366,28 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
                                 .wrap(),
                         )
                         .child(
-                            text(format!("{}: {:.0}%", s.tr(TextKey::LossLabel), target.packet_loss_pct))
-                                .font(rune::tok::type_::LABEL)
-                                .color(if target.packet_loss_pct == 0.0 {
-                                    p.success
-                                } else {
-                                    p.danger
-                                }),
+                            text(format!(
+                                "{}: {:.0}%",
+                                s.tr(TextKey::LossLabel),
+                                target.packet_loss_pct
+                            ))
+                            .font(rune::tok::type_::LABEL)
+                            .color(if target.packet_loss_pct == 0.0 {
+                                p.success
+                            } else {
+                                p.danger
+                            }),
                         ),
                 )
                 .child(
                     col()
                         .grow(1.0)
                         .min_w(80.0)
-                        .child(text(s.tr(TextKey::MinLabel)).font(rune::tok::type_::LABEL).color(p.text_muted))
+                        .child(
+                            text(s.tr(TextKey::MinLabel))
+                                .font(rune::tok::type_::LABEL)
+                                .color(p.text_muted),
+                        )
                         .child(
                             text(format!("{:.1} ms", target.rtt_min_ms))
                                 .font(rune::tok::type_::TITLE)
@@ -386,7 +398,11 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
                     col()
                         .grow(1.0)
                         .min_w(80.0)
-                        .child(text(s.tr(TextKey::AvgLabel)).font(rune::tok::type_::LABEL).color(p.text_muted))
+                        .child(
+                            text(s.tr(TextKey::AvgLabel))
+                                .font(rune::tok::type_::LABEL)
+                                .color(p.text_muted),
+                        )
                         .child(
                             text(format!("{:.1} ms", target.rtt_avg_ms))
                                 .font(rune::tok::type_::TITLE)
@@ -397,7 +413,11 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
                     col()
                         .grow(1.0)
                         .min_w(80.0)
-                        .child(text(s.tr(TextKey::MaxLabel)).font(rune::tok::type_::LABEL).color(p.text_muted))
+                        .child(
+                            text(s.tr(TextKey::MaxLabel))
+                                .font(rune::tok::type_::LABEL)
+                                .color(p.text_muted),
+                        )
                         .child(
                             text(format!("{:.1} ms", target.rtt_max_ms))
                                 .font(rune::tok::type_::TITLE)
@@ -408,7 +428,11 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
                     col()
                         .grow(1.0)
                         .min_w(90.0)
-                        .child(text(s.tr(TextKey::JitterLabel)).font(rune::tok::type_::LABEL).color(p.text_muted))
+                        .child(
+                            text(s.tr(TextKey::JitterLabel))
+                                .font(rune::tok::type_::LABEL)
+                                .color(p.text_muted),
+                        )
                         .child(
                             text(format!("{:.2} ms", target.jitter_ms))
                                 .font(rune::tok::type_::TITLE)
@@ -444,7 +468,11 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
         );
     }
 
-    let pad = if tier == LayoutTier::Compact { 10.0 } else { 14.0 };
+    let pad = if tier == LayoutTier::Compact {
+        10.0
+    } else {
+        14.0
+    };
     col()
         .key("latency_bench_viewport")
         .w_full()
@@ -454,7 +482,9 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
         .padding(pad)
         .pr(14.0)
         .gap(12.0)
-        .scroll(ScrollSpec { stick_bottom: false })
+        .scroll(ScrollSpec {
+            stick_bottom: false,
+        })
         .child(header_card)
         .child(actions_card)
         .child(content_col)

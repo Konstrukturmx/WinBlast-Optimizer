@@ -9,8 +9,8 @@ pub mod service_scanner;
 pub mod task_scanner;
 pub mod telemetry_scanner;
 
-use serde::{Deserialize, Serialize};
 use rayon::prelude::*;
+use serde::{Deserialize, Serialize};
 
 use crate::core::backend::{
     is_unsupported_power_guid_error, CachedScanBackend, RealBackend, SystemBackend,
@@ -33,57 +33,130 @@ pub enum TweakState {
 /// Structured scan status detail payload for dynamic multi-language UI rendering.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub enum ScanDetailKind {
-    NotApplicableBuild { current: u32, min_build: u32 },
-    NotApplicableMaxBuild { current: u32, max_build: u32 },
-    NotApplicableEdition { edition: String, required: String },
-    NotApplicableGpu { vendor: String },
-    RegStringValue { value: String },
+    NotApplicableBuild {
+        current: u32,
+        min_build: u32,
+    },
+    NotApplicableMaxBuild {
+        current: u32,
+        max_build: u32,
+    },
+    NotApplicableEdition {
+        edition: String,
+        required: String,
+    },
+    NotApplicableGpu {
+        vendor: String,
+    },
+    RegStringValue {
+        value: String,
+    },
     RegNotConfiguredStock,
     RegValueRemoved,
     RegValuePresent,
     SubtreeRemoved,
     SubtreePresent,
-    BinaryMatch { index: usize, byte_val: u8, mask: u8 },
-    BinaryTooShort { required: usize, actual: usize },
+    BinaryMatch {
+        index: usize,
+        byte_val: u8,
+        mask: u8,
+    },
+    BinaryTooShort {
+        required: usize,
+        actual: usize,
+    },
     BinaryNotConfigured,
-    CompositeSet { key: String, value: String },
-    CompositeNotSet { key: String },
-    DynCurrent { current: u32, target: u32 },
-    DynNotConfigured { target: u32 },
-    PowerIndex { ac: u32, dc: u32 },
-    PowerNotExposed { err: String },
-    PowerUnavailable { err: String },
+    CompositeSet {
+        key: String,
+        value: String,
+    },
+    CompositeNotSet {
+        key: String,
+    },
+    DynCurrent {
+        current: u32,
+        target: u32,
+    },
+    DynNotConfigured {
+        target: u32,
+    },
+    PowerIndex {
+        ac: u32,
+        dc: u32,
+    },
+    PowerNotExposed {
+        err: String,
+    },
+    PowerUnavailable {
+        err: String,
+    },
     PowerUnavailableHardware,
-    FeatureState { state: crate::core::risk::FeatureInstallState },
+    FeatureState {
+        state: crate::core::risk::FeatureInstallState,
+    },
     FeatureNotRegistered,
     FeatureRequiresAdmin,
-    CompoundOptimized { optimized: usize, total: usize },
+    CompoundOptimized {
+        optimized: usize,
+        total: usize,
+    },
     // From registry_scanner:
-    DwordOptimized { value: u32 },
-    DwordDefault { value: u32 },
-    DwordCustom { value: u32, expected: u32 },
+    DwordOptimized {
+        value: u32,
+    },
+    DwordDefault {
+        value: u32,
+    },
+    DwordCustom {
+        value: u32,
+        expected: u32,
+    },
     DwordDefaultNotConfigured,
-    DwordNotConfigured { default_val: u32, expected: u32 },
-    DwordUnknownHive { hive: String },
-    NoGpuAdapter { vendor: String },
+    DwordNotConfigured {
+        default_val: u32,
+        expected: u32,
+    },
+    DwordUnknownHive {
+        hive: String,
+    },
+    NoGpuAdapter {
+        vendor: String,
+    },
     // From service_scanner:
-    ServiceOptimized { mode: u32 },
-    ServiceCurrent { current: u32, target: u32 },
+    ServiceOptimized {
+        mode: u32,
+    },
+    ServiceCurrent {
+        current: u32,
+        target: u32,
+    },
     ServiceNotInstalled,
     ServiceAbsent,
     // From task_scanner:
-    TaskFound { active: bool },
-    TaskMatched { leaf: String, active: bool },
-    TaskDirect { leaf: String, active: bool },
+    TaskFound {
+        active: bool,
+    },
+    TaskMatched {
+        leaf: String,
+        active: bool,
+    },
+    TaskDirect {
+        leaf: String,
+        active: bool,
+    },
     TaskRequiresAdmin,
-    TaskQueryError { err: String },
+    TaskQueryError {
+        err: String,
+    },
     TaskAbsentOptimized,
     TaskAbsentStock,
     // From appx_scanner:
     AppxNoPackage,
     AppxRemovedPs,
     AppxInstalledPs,
-    AppxInstalled { package: String },
+    AppxInstalled {
+        package: String,
+    },
     AppxRemovedOptimized,
 }
 
@@ -116,7 +189,8 @@ pub fn resolve_dynamic_dword(
         crate::core::risk::DynamicDwordFormula::TotalRamInKbPlusMargin => backend
             .total_physical_ram_kb()
             .saturating_add(1_048_576)
-            .clamp(1, u32::MAX as u64) as u32,
+            .clamp(1, u32::MAX as u64)
+            as u32,
         crate::core::risk::DynamicDwordFormula::LogicalCoreCount => {
             backend.logical_core_count().max(1)
         }
@@ -279,7 +353,11 @@ fn evaluate_single_action(
                     } else {
                         ActionEval::Evaluated {
                             optimized: false,
-                            detail: format!("Binary shorter than {} bytes (len={})", req, bytes.len()),
+                            detail: format!(
+                                "Binary shorter than {} bytes (len={})",
+                                req,
+                                bytes.len()
+                            ),
                             kind: ScanDetailKind::BinaryTooShort {
                                 required: req,
                                 actual: bytes.len(),
@@ -458,7 +536,8 @@ fn evaluate_single_action(
             }
         }
         TweakAction::AppXPackage { package_family } => {
-            let (optimized, detail, kind) = cached.appx().evaluate_package_with_kind(package_family);
+            let (optimized, detail, kind) =
+                cached.appx().evaluate_package_with_kind(package_family);
             ActionEval::Evaluated {
                 optimized,
                 detail,
@@ -739,20 +818,12 @@ pub fn scan_single_tweak_with(
 }
 
 /// Run a full system scan against the live Windows OS.
-pub fn run_full_scan(
-    tweaks: &[TweakDefinition],
-    build: u32,
-    edition: &str,
-) -> Vec<ScanResult> {
+pub fn run_full_scan(tweaks: &[TweakDefinition], build: u32, edition: &str) -> Vec<ScanResult> {
     run_full_scan_with(&RealBackend, tweaks, build, edition)
 }
 
 /// Run an instant, targeted scan on a single tweak against the live Windows OS.
-pub fn scan_single_tweak(
-    tweak: &TweakDefinition,
-    build: u32,
-    edition: &str,
-) -> ScanResult {
+pub fn scan_single_tweak(tweak: &TweakDefinition, build: u32, edition: &str) -> ScanResult {
     scan_single_tweak_with(&RealBackend, tweak, build, edition)
 }
 
@@ -812,7 +883,8 @@ mod tests {
 
         // Chunked parallel scan across multiple grain sizes
         for chunk_size in [1, 7, 16, 64] {
-            let chunked = scan_tweaks_chunked_parallel_with(&sbx, &tweaks, 26100, "Pro", chunk_size);
+            let chunked =
+                scan_tweaks_chunked_parallel_with(&sbx, &tweaks, 26100, "Pro", chunk_size);
             assert_eq!(seq_results.len(), chunked.len());
             for (seq, chk) in seq_results.iter().zip(chunked.iter()) {
                 assert_eq!(seq.tweak_id, chk.tweak_id);
@@ -840,7 +912,8 @@ mod tests {
         {
             let mut st = sbx.inner.write().unwrap();
             // NVIDIA only -> AMD & Intel must be NotApplicable
-            st.gpus.retain(|g| g.vendor == crate::hardware::gpu::GpuVendor::Nvidia);
+            st.gpus
+                .retain(|g| g.vendor == crate::hardware::gpu::GpuVendor::Nvidia);
             st.elevated = false;
         }
 
@@ -869,7 +942,10 @@ mod tests {
         crate::executor::engine::apply_tweak_with(pwr_tweak, &ledger, &sbx).unwrap();
         let pwr_res = scan_single_tweak_with(&sbx, pwr_tweak, 26100, "Pro");
         assert_eq!(pwr_res.current_state, TweakState::AlreadyOptimized);
-        assert!(matches!(pwr_res.detail_kind, Some(ScanDetailKind::CompoundOptimized { .. })));
+        assert!(matches!(
+            pwr_res.detail_kind,
+            Some(ScanDetailKind::CompoundOptimized { .. })
+        ));
     }
 
     fn mk_test_tweak(id: &str, actions: Vec<TweakAction>) -> TweakDefinition {

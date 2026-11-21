@@ -3,9 +3,9 @@
 //! Safely manages Windows Boot Configuration Data (BCD) boot menu policies, preventing
 //! catastrophic BitLocker recovery key lockouts caused by TPM PCR 7/11 measurement changes.
 
-use serde::{Deserialize, Serialize};
 use crate::core::backend::SystemBackend;
 use crate::core::error::WinBlastError;
+use serde::{Deserialize, Serialize};
 
 /// BitLocker volume encryption and protection status.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
@@ -108,7 +108,9 @@ pub fn apply_legacy_f8_boot_menu<B: SystemBackend>(
 }
 
 /// Restores the default Windows 10/11 modern graphical boot menu policy.
-pub fn restore_standard_boot_menu<B: SystemBackend>(_backend: &B) -> Result<BootMenuPolicyResult, WinBlastError> {
+pub fn restore_standard_boot_menu<B: SystemBackend>(
+    _backend: &B,
+) -> Result<BootMenuPolicyResult, WinBlastError> {
     let status = crate::core::process::SilentCommand::new("bcdedit.exe")
         .args(["/set", "{default}", "bootmenupolicy", "standard"])
         .status();

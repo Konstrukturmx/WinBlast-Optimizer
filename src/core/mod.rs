@@ -3,17 +3,17 @@
 //! Re-exports backend abstraction, error handling, OS detection, elevation checks, and the risk/tweak model.
 
 pub mod backend;
-pub mod error;
-pub mod generational_cache;
-pub mod os_detect;
+pub mod commands;
 pub mod elevation;
-pub mod risk;
+pub mod error;
+pub mod events;
+pub mod generational_cache;
+pub mod i18n;
+pub mod os_detect;
 pub mod process;
 pub mod reg_helpers;
-pub mod i18n;
-pub mod tweak_i18n;
+pub mod risk;
 pub mod status_i18n;
-pub mod view_i18n;
+pub mod tweak_i18n;
 pub mod updater;
-pub mod commands;
-pub mod events;
+pub mod view_i18n;

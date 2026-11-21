@@ -63,7 +63,11 @@ impl Hasher for FastAotHasher {
         z = (z ^ (z >> 27)).wrapping_mul(0x94d0_49bb_1331_11eb);
         z ^= z >> 31;
         // Reserve 0 as the empty-slot sentinel.
-        if z == 0 { 1 } else { z }
+        if z == 0 {
+            1
+        } else {
+            z
+        }
     }
 }
 
@@ -263,7 +267,11 @@ where
             .fetch_add(1, Ordering::Relaxed);
 
         let next = prev.wrapping_add(1);
-        if next == 0 { 1 } else { next }
+        if next == 0 {
+            1
+        } else {
+            next
+        }
     }
 
     /// Inserts or updates a key using the cache's default TTL.
@@ -309,10 +317,7 @@ where
             }
 
             // Acquire shared slot read lock and re-verify linearizability.
-            let guard = slot
-                .payload
-                .read()
-                .unwrap_or_else(PoisonError::into_inner);
+            let guard = slot.payload.read().unwrap_or_else(PoisonError::into_inner);
             if let Some(entry) = guard.as_ref() {
                 if entry.epoch == active_epoch
                     && now_ns < entry.expires_at_ns
@@ -375,10 +380,7 @@ where
             if slot.key_hash.load(Ordering::Relaxed) != key_hash {
                 continue;
             }
-            let mut payload = slot
-                .payload
-                .write()
-                .unwrap_or_else(PoisonError::into_inner);
+            let mut payload = slot.payload.write().unwrap_or_else(PoisonError::into_inner);
             if let Some(entry) = payload.as_ref() {
                 if entry.key.borrow() == key {
                     slot.epoch.store(0, Ordering::Release);
@@ -421,10 +423,7 @@ where
             let slot_exp = slot.expires_at_ns.load(Ordering::Relaxed);
 
             if slot_hash == key_hash && slot_epoch != 0 {
-                let guard = slot
-                    .payload
-                    .read()
-                    .unwrap_or_else(PoisonError::into_inner);
+                let guard = slot.payload.read().unwrap_or_else(PoisonError::into_inner);
                 if guard.as_ref().is_some_and(|e| e.key == key) {
                     target_idx = Some(idx);
                     break;
@@ -455,10 +454,7 @@ where
         };
 
         if let Some(slot) = set.slots.get(chosen_idx) {
-            let mut payload = slot
-                .payload
-                .write()
-                .unwrap_or_else(PoisonError::into_inner);
+            let mut payload = slot.payload.write().unwrap_or_else(PoisonError::into_inner);
 
             // Re-sample active epoch under write lock so concurrent global invalidations stay linearizable.
             let publish_epoch = self.current_epoch.0.load(Ordering::Acquire);

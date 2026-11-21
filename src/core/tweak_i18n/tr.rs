@@ -1205,46 +1205,98 @@ pub fn lookup(id: &str) -> Option<LocalizedTweakText> {
 #[allow(dead_code)]
 pub fn tweak_title(id: &str) -> Option<&'static str> {
     match id {
-        "disable_dwm_animations_per_process" => Some("İşlem Başına DWM Geçiş Animasyonlarını Devre Dışı Bırak"),
-        "disable_dwm_composition_throttle" => Some("Masaüstü Pencere Yöneticisi Kompozisyon Kısmasını Devre Dışı Bırak"),
-        "disable_kernel_mitigations_audit" => Some("Çekirdek Azaltma Önlemleri Denetim Modunu Devre Dışı Bırak"),
+        "disable_dwm_animations_per_process" => {
+            Some("İşlem Başına DWM Geçiş Animasyonlarını Devre Dışı Bırak")
+        }
+        "disable_dwm_composition_throttle" => {
+            Some("Masaüstü Pencere Yöneticisi Kompozisyon Kısmasını Devre Dışı Bırak")
+        }
+        "disable_kernel_mitigations_audit" => {
+            Some("Çekirdek Azaltma Önlemleri Denetim Modunu Devre Dışı Bırak")
+        }
         "disable_llmnr_protocol" => Some("LLMNR Ad Çözümleme Protokolünü Devre Dışı Bırak"),
         "disable_memory_compression" => Some("Bellek Sıkıştırma Motorunu Devre Dışı Bırak"),
         "disable_netbios_over_tcp" => Some("TCP/IP Üzerinden NetBIOS'u Devre Dışı Bırak"),
-        "disable_ntfs_encryption_driver" => Some("NTFS Dosya Sistemi Şifreleme (EFS) Sürücüsünü Devre Dışı Bırak"),
-        "disable_page_file_encryption" => Some("Takas Dosyası Şifrelemesini ve Kapanışta Temizlemeyi Devre Dışı Bırak"),
-        "disable_processor_idle_demote_threshold" => Some("İşlemci Boşta Durum İndirgemesini Devre Dışı Bırak"),
+        "disable_ntfs_encryption_driver" => {
+            Some("NTFS Dosya Sistemi Şifreleme (EFS) Sürücüsünü Devre Dışı Bırak")
+        }
+        "disable_page_file_encryption" => {
+            Some("Takas Dosyası Şifrelemesini ve Kapanışta Temizlemeyi Devre Dışı Bırak")
+        }
+        "disable_processor_idle_demote_threshold" => {
+            Some("İşlemci Boşta Durum İndirgemesini Devre Dışı Bırak")
+        }
         "disable_rss_base_cpu" => Some("Ağ Yük Dağıtımı İçin RSS Temel CPU Ayarla"),
-        "disable_spectre_meltdown_mitigations" => Some("Spectre/Meltdown CPU Güvenlik Açığı Önlemlerini Devre Dışı Bırak"),
-        "disable_threaded_dpc_optimization" => Some("Daha Düşük Kesme Gecikmesi İçin İş Parçacıklı DPC'yi Devre Dışı Bırak"),
-        "disable_windows_search_indexer" => Some("Windows Arama Dizin Oluşturucu Hizmetini Devre Dışı Bırak"),
+        "disable_spectre_meltdown_mitigations" => {
+            Some("Spectre/Meltdown CPU Güvenlik Açığı Önlemlerini Devre Dışı Bırak")
+        }
+        "disable_threaded_dpc_optimization" => {
+            Some("Daha Düşük Kesme Gecikmesi İçin İş Parçacıklı DPC'yi Devre Dışı Bırak")
+        }
+        "disable_windows_search_indexer" => {
+            Some("Windows Arama Dizin Oluşturucu Hizmetini Devre Dışı Bırak")
+        }
         "enable_hardware_task_offload" => Some("TCP/IP Donanım Görev Boşaltımını Etkinleştir"),
         "enable_large_ntfs_frs" => Some("Büyük NTFS Dosya Kayıt Segmentlerini Etkinleştir"),
         "enable_ultimate_performance_plan" => Some("Nihai Performans Güç Planını Etkinleştir"),
-        "increase_gpu_tdr_timeout" => Some("GPU Zaman Aşımı Algılama ve Kurtarma Gecikmesini Artır"),
+        "increase_gpu_tdr_timeout" => {
+            Some("GPU Zaman Aşımı Algılama ve Kurtarma Gecikmesini Artır")
+        }
         "increase_irp_stack_size" => Some("Ağ/Disk G/Ç İçin IRP Yığın Boyutunu Artır"),
-        "increase_max_connections_per_server" => Some("Sunucu Başına Maksimum HTTP Bağlantı Sayısını Artır"),
-        "increase_nonpaged_pool_quota" => Some("Sürücü Kararlılığı İçin Sayfalanmayan Havuz Kotasını Artır"),
-        "optimize_additional_critical_worker_threads" => Some("Ek Çekirdek Çalışma İş Parçacıklarını Artır"),
+        "increase_max_connections_per_server" => {
+            Some("Sunucu Başına Maksimum HTTP Bağlantı Sayısını Artır")
+        }
+        "increase_nonpaged_pool_quota" => {
+            Some("Sürücü Kararlılığı İçin Sayfalanmayan Havuz Kotasını Artır")
+        }
+        "optimize_additional_critical_worker_threads" => {
+            Some("Ek Çekirdek Çalışma İş Parçacıklarını Artır")
+        }
         "optimize_default_ttl" => Some("En Uygun Varsayılan IP Paketi TTL Değerini Ayarla"),
-        "optimize_disk_io_page_lock_limit" => Some("Büyük Aktarımlar İçin G/Ç Sayfa Kilitleme Sınırını Artır"),
-        "optimize_dns_cache_parameters" => Some("DNS İstemci Önbellek Boyutunu ve TTL Süresini Optimize Et"),
-        "optimize_gpu_preemption_level" => Some("GPU Zamanlayıcısını Yalnızca Hesaplama Kesintisine Ayarla"),
-        "optimize_interrupt_steering" => Some("Kesme Yakınlığını ve Yönlendirme İlkesini Optimize Et"),
-        "optimize_mmcss_proaudio_scheduling" => Some("MMCSS Pro Audio — Maksimum Zamanlama Önceliği"),
+        "optimize_disk_io_page_lock_limit" => {
+            Some("Büyük Aktarımlar İçin G/Ç Sayfa Kilitleme Sınırını Artır")
+        }
+        "optimize_dns_cache_parameters" => {
+            Some("DNS İstemci Önbellek Boyutunu ve TTL Süresini Optimize Et")
+        }
+        "optimize_gpu_preemption_level" => {
+            Some("GPU Zamanlayıcısını Yalnızca Hesaplama Kesintisine Ayarla")
+        }
+        "optimize_interrupt_steering" => {
+            Some("Kesme Yakınlığını ve Yönlendirme İlkesini Optimize Et")
+        }
+        "optimize_mmcss_proaudio_scheduling" => {
+            Some("MMCSS Pro Audio — Maksimum Zamanlama Önceliği")
+        }
         "optimize_ntfs_memory_usage" => Some("Agresif NTFS Sayfalanan Havuz Önbelleğe Alma"),
-        "optimize_object_manager_quota" => Some("Çekirdek Nesne Yöneticisi Tanıtıcı Kotasını Artır"),
-        "optimize_timer_resolution_requests" => Some("Uygulamaların Yüksek Zamanlayıcı Çözünürlüğü İstemesine İzin Ver"),
-                "disable_driver_search_order_probing" => Some("Windows Update Sürücü Arama Yoklamasını Devre Dışı Bırak"),
+        "optimize_object_manager_quota" => {
+            Some("Çekirdek Nesne Yöneticisi Tanıtıcı Kotasını Artır")
+        }
+        "optimize_timer_resolution_requests" => {
+            Some("Uygulamaların Yüksek Zamanlayıcı Çözünürlüğü İstemesine İzin Ver")
+        }
+        "disable_driver_search_order_probing" => {
+            Some("Windows Update Sürücü Arama Yoklamasını Devre Dışı Bırak")
+        }
         "disable_fast_user_switching" => Some("Hızlı Kullanıcı Geçişini Devre Dışı Bırak"),
         "disable_ip_source_routing" => Some("IP Kaynak Yönlendirmesini Devre Dışı Bırak"),
-        "disable_netsh_teredo_tunneling" => Some("Teredo IPv6 Geçiş Tünellemesini Devre Dışı Bırak"),
-        "disable_network_adapter_power_saving" => Some("NDIS Ağ Bağdaştırıcısı PnP Güç Tasarrufunu Devre Dışı Bırak"),
-        "disable_remote_desktop_udp" => Some("Uzak Masaüstü İstemcisi UDP Aktarımını Devre Dışı Bırak"),
+        "disable_netsh_teredo_tunneling" => {
+            Some("Teredo IPv6 Geçiş Tünellemesini Devre Dışı Bırak")
+        }
+        "disable_network_adapter_power_saving" => {
+            Some("NDIS Ağ Bağdaştırıcısı PnP Güç Tasarrufunu Devre Dışı Bırak")
+        }
+        "disable_remote_desktop_udp" => {
+            Some("Uzak Masaüstü İstemcisi UDP Aktarımını Devre Dışı Bırak")
+        }
         "disable_smart_card_service" => Some("Akıllı Kart Hizmetini (SCardSvr) Devre Dışı Bırak"),
-        "optimize_kerberos_ticket_cache" => Some("Kerberos Maksimum Belirteç Boyutu Arabelleğini Optimize Et"),
+        "optimize_kerberos_ticket_cache" => {
+            Some("Kerberos Maksimum Belirteç Boyutu Arabelleğini Optimize Et")
+        }
         "optimize_tcp_syn_attack_protection" => Some("TCP SYN Saldırı Korumasını Etkinleştir"),
-        "optimize_usb_selective_suspend_hub" => Some("Genel USB Hub Seçmeli Askıya Almayı Devre Dışı Bırak"),
+        "optimize_usb_selective_suspend_hub" => {
+            Some("Genel USB Hub Seçmeli Askıya Almayı Devre Dışı Bırak")
+        }
         _ => lookup(id).map(|t| t.title),
     }
 }

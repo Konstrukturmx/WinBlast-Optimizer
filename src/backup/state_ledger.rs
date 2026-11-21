@@ -183,11 +183,9 @@ impl StateLedger {
 
     /// Return the total count of entries recorded in the state ledger without allocating heap strings.
     pub fn count_history(&self) -> crate::core::error::Result<usize> {
-        let count: i64 = self.conn.query_row(
-            "SELECT COUNT(1) FROM ledger",
-            [],
-            |r| r.get(0),
-        )?;
+        let count: i64 = self
+            .conn
+            .query_row("SELECT COUNT(1) FROM ledger", [], |r| r.get(0))?;
         Ok(count.max(0) as usize)
     }
 
@@ -223,7 +221,11 @@ impl StateLedger {
     /// Zero-copy iterator over state ledger entries filtered by `tweak_id`, invoking `callback` with borrowed row views.
     ///
     /// Stops iterating when `callback` returns `false`.
-    pub fn for_each_history_by_tweak<F>(&self, tweak_id: &str, mut callback: F) -> crate::core::error::Result<()>
+    pub fn for_each_history_by_tweak<F>(
+        &self,
+        tweak_id: &str,
+        mut callback: F,
+    ) -> crate::core::error::Result<()>
     where
         F: FnMut(LedgerEntryView<'_>) -> bool,
     {
@@ -250,7 +252,10 @@ impl StateLedger {
     }
 
     /// Fast lookup for the latest active (unrolled) mutation recorded for a specific tweak ID.
-    pub fn find_latest_unrolled_by_tweak(&self, tweak_id: &str) -> crate::core::error::Result<Option<LedgerEntry>> {
+    pub fn find_latest_unrolled_by_tweak(
+        &self,
+        tweak_id: &str,
+    ) -> crate::core::error::Result<Option<LedgerEntry>> {
         let mut latest = None;
         self.for_each_history_by_tweak(tweak_id, |view| {
             if !view.rolled_back {
@@ -358,7 +363,10 @@ impl StateLedger {
         self.query_single_baseline("SELECT id, captured_at, total_ram_mb, used_ram_mb, process_count, thread_count, timer_resolution_ns, optimized_count, label FROM baselines ORDER BY id DESC LIMIT 1")
     }
 
-    fn query_single_baseline(&self, sql: &str) -> crate::core::error::Result<Option<SystemBaseline>> {
+    fn query_single_baseline(
+        &self,
+        sql: &str,
+    ) -> crate::core::error::Result<Option<SystemBaseline>> {
         let mut stmt = self.conn.prepare(sql)?;
         let mut rows = stmt.query_map([], |row| {
             let ts_str: String = row.get(1)?;
@@ -414,11 +422,21 @@ mod tests {
 
         // Test baseline CRUD
         let baseline_id = ledger
-            .save_baseline(32768, 8192, 180, 2400, 15_625_000, 0, "Initial Pre-Optimization")
+            .save_baseline(
+                32768,
+                8192,
+                180,
+                2400,
+                15_625_000,
+                0,
+                "Initial Pre-Optimization",
+            )
             .expect("Failed to save baseline");
         assert!(baseline_id > 0);
 
-        let initial = ledger.get_initial_baseline().expect("Failed to get initial baseline");
+        let initial = ledger
+            .get_initial_baseline()
+            .expect("Failed to get initial baseline");
         assert!(initial.is_some());
         let b = initial.unwrap();
         assert_eq!(b.used_ram_mb, 8192);
@@ -427,11 +445,22 @@ mod tests {
 
         // Test baseline reset
         let reset_id = ledger
-            .reset_baseline(32768, 7168, 160, 2100, 500_000, 15, "Post-Optimization Baseline")
+            .reset_baseline(
+                32768,
+                7168,
+                160,
+                2100,
+                500_000,
+                15,
+                "Post-Optimization Baseline",
+            )
             .expect("Failed to reset baseline");
         assert!(reset_id > 0);
 
-        let new_initial = ledger.get_initial_baseline().expect("Failed to get new baseline").unwrap();
+        let new_initial = ledger
+            .get_initial_baseline()
+            .expect("Failed to get new baseline")
+            .unwrap();
         assert_eq!(new_initial.used_ram_mb, 7168);
         assert_eq!(new_initial.process_count, 160);
         assert_eq!(new_initial.timer_resolution_ns, 500_000);
@@ -439,28 +468,53 @@ mod tests {
         assert_eq!(new_initial.label, "Post-Optimization Baseline");
 
         // Test is_reversible coverage
-        let e_appx = ledger.record_change("appx", "AppXPackage:Microsoft.BingWeather_8wekyb3d8bbwe", "installed", "removed").unwrap();
-        let e_startup = ledger.record_change("st", "Startup:OneDrive", "enabled", "disabled").unwrap();
-        let e_approved = ledger.record_change("sta", "StartupApproved:HKCU|Run|OneDrive", "true", "false").unwrap();
+        let e_appx = ledger
+            .record_change(
+                "appx",
+                "AppXPackage:Microsoft.BingWeather_8wekyb3d8bbwe",
+                "installed",
+                "removed",
+            )
+            .unwrap();
+        let e_startup = ledger
+            .record_change("st", "Startup:OneDrive", "enabled", "disabled")
+            .unwrap();
+        let e_approved = ledger
+            .record_change("sta", "StartupApproved:HKCU|Run|OneDrive", "true", "false")
+            .unwrap();
         let hist = ledger.get_history().unwrap();
-        assert!(!hist.iter().find(|e| e.id == e_appx).unwrap().is_reversible());
-        assert!(!hist.iter().find(|e| e.id == e_startup).unwrap().is_reversible());
-        assert!(hist.iter().find(|e| e.id == e_approved).unwrap().is_reversible());
+        assert!(!hist
+            .iter()
+            .find(|e| e.id == e_appx)
+            .unwrap()
+            .is_reversible());
+        assert!(!hist
+            .iter()
+            .find(|e| e.id == e_startup)
+            .unwrap()
+            .is_reversible());
+        assert!(hist
+            .iter()
+            .find(|e| e.id == e_approved)
+            .unwrap()
+            .is_reversible());
 
         // Test zero-copy methods
         assert_eq!(ledger.count_history().unwrap(), 4);
         let mut count = 0;
         let mut found_approved = false;
-        ledger.for_each_history(|view| {
-            count += 1;
-            if view.tweak_id == "sta" {
-                found_approved = true;
-                assert!(view.is_reversible());
-                assert_eq!(view.original_value, "true");
-                assert_eq!(view.new_value, "false");
-            }
-            true
-        }).unwrap();
+        ledger
+            .for_each_history(|view| {
+                count += 1;
+                if view.tweak_id == "sta" {
+                    found_approved = true;
+                    assert!(view.is_reversible());
+                    assert_eq!(view.original_value, "true");
+                    assert_eq!(view.new_value, "false");
+                }
+                true
+            })
+            .unwrap();
         assert_eq!(count, 4);
         assert!(found_approved);
 

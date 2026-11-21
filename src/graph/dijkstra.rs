@@ -44,7 +44,10 @@ struct NodeCost {
 impl Ord for NodeCost {
     fn cmp(&self, other: &Self) -> Ordering {
         // Min-heap for Dijkstra: lower cost has higher priority
-        other.cost.cmp(&self.cost).then_with(|| self.node_idx.cmp(&other.node_idx))
+        other
+            .cost
+            .cmp(&self.cost)
+            .then_with(|| self.node_idx.cmp(&other.node_idx))
     }
 }
 
@@ -69,11 +72,7 @@ impl DijkstraScheduler {
     /// # Arguments
     /// * `all_tweaks` - Catalog of all available tweaks with metadata, prerequisites, and reversibility.
     /// * `staged_ids` - The subset of tweak IDs chosen for application.
-    pub fn schedule_execution<'a, I>(
-        &self,
-        all_tweaks: I,
-        staged_ids: &[String],
-    ) -> ExecutionOrder
+    pub fn schedule_execution<'a, I>(&self, all_tweaks: I, staged_ids: &[String]) -> ExecutionOrder
     where
         I: IntoIterator<Item = (&'a str, &'a [String], bool, bool)>, // (id, prerequisites, requires_reboot, touches_services)
     {
@@ -173,7 +172,9 @@ impl DijkstraScheduler {
         // Initialize root nodes (in_degree == 0)
         for i in 0..n {
             if in_degrees[i] == 0 {
-                let cost = 1 + (if service_flags[i] { 3 } else { 0 }) + (if reboot_flags[i] { 10 } else { 0 });
+                let cost = 1
+                    + (if service_flags[i] { 3 } else { 0 })
+                    + (if reboot_flags[i] { 10 } else { 0 });
                 dist[i] = cost;
                 heap.push(NodeCost { cost, node_idx: i });
             }
@@ -205,9 +206,14 @@ impl DijkstraScheduler {
                         in_degrees[v] -= 1;
                     }
                     if in_degrees[v] == 0 {
-                        let step_cost = 1 + (if service_flags[v] { 3 } else { 0 }) + (if reboot_flags[v] { 10 } else { 0 });
+                        let step_cost = 1
+                            + (if service_flags[v] { 3 } else { 0 })
+                            + (if reboot_flags[v] { 10 } else { 0 });
                         dist[v] = step_cost;
-                        heap.push(NodeCost { cost: step_cost, node_idx: v });
+                        heap.push(NodeCost {
+                            cost: step_cost,
+                            node_idx: v,
+                        });
                     }
                 }
             }
@@ -216,7 +222,9 @@ impl DijkstraScheduler {
         // 4. Catch any remaining disconnected nodes
         for i in 0..n {
             if !executed[i] {
-                let cost = 1 + (if service_flags[i] { 3 } else { 0 }) + (if reboot_flags[i] { 10 } else { 0 });
+                let cost = 1
+                    + (if service_flags[i] { 3 } else { 0 })
+                    + (if reboot_flags[i] { 10 } else { 0 });
                 current_cost += cost;
                 if reboot_flags[i] {
                     total_reboots += 1;
@@ -249,7 +257,9 @@ mod tests {
         let scheduler = DijkstraScheduler::new();
         let tweaks: Vec<(&str, Vec<String>, bool, bool)> = Vec::new();
         let plan = scheduler.schedule_execution(
-            tweaks.iter().map(|(id, p, r, s)| (*id, p.as_slice(), *r, *s)),
+            tweaks
+                .iter()
+                .map(|(id, p, r, s)| (*id, p.as_slice(), *r, *s)),
             &[],
         );
         assert_eq!(plan.steps.len(), 0);
@@ -266,9 +276,15 @@ mod tests {
             ("tweak_b", vec!["tweak_a".to_string()], false, false),
         ];
 
-        let staged = vec!["tweak_c".to_string(), "tweak_a".to_string(), "tweak_b".to_string()];
+        let staged = vec![
+            "tweak_c".to_string(),
+            "tweak_a".to_string(),
+            "tweak_b".to_string(),
+        ];
         let plan = scheduler.schedule_execution(
-            tweaks.iter().map(|(id, p, r, s)| (*id, p.as_slice(), *r, *s)),
+            tweaks
+                .iter()
+                .map(|(id, p, r, s)| (*id, p.as_slice(), *r, *s)),
             &staged,
         );
 
@@ -289,7 +305,9 @@ mod tests {
 
         let staged = vec!["tweak_reboot".to_string(), "tweak_instant".to_string()];
         let plan = scheduler.schedule_execution(
-            tweaks.iter().map(|(id, p, r, s)| (*id, p.as_slice(), *r, *s)),
+            tweaks
+                .iter()
+                .map(|(id, p, r, s)| (*id, p.as_slice(), *r, *s)),
             &staged,
         );
 
@@ -310,7 +328,9 @@ mod tests {
 
         let staged = vec!["node_a".to_string(), "node_b".to_string()];
         let plan = scheduler.schedule_execution(
-            tweaks.iter().map(|(id, p, r, s)| (*id, p.as_slice(), *r, *s)),
+            tweaks
+                .iter()
+                .map(|(id, p, r, s)| (*id, p.as_slice(), *r, *s)),
             &staged,
         );
 

@@ -21,8 +21,16 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
     let is_compact = tier == LayoutTier::Compact;
     let bios = s.bios_info.clone().unwrap_or_default();
 
-    let sb_badge_color = if bios.secure_boot { p.success } else { p.warning };
-    let sb_text = if bios.secure_boot { "✔ Secure Boot Active" } else { "⚠ Secure Boot Disabled / Setup Mode" };
+    let sb_badge_color = if bios.secure_boot {
+        p.success
+    } else {
+        p.warning
+    };
+    let sb_text = if bios.secure_boot {
+        "✔ Secure Boot Active"
+    } else {
+        "⚠ Secure Boot Disabled / Setup Mode"
+    };
 
     let q_raw = s.driver_search_edit.text.trim().to_lowercase();
 

@@ -3,11 +3,11 @@
 //! All asynchronous mutations, background scans, hardware telemetry polls, and
 //! worker completions flow back into the UI via strongly-typed `CoreEvent` messages.
 
-use std::time::Duration;
-use crate::tools::automation::AutoTuneResult;
+use crate::hardware::bios::BiosSystemInfo;
 use crate::hardware::disks::DiskSubsystemReport;
 use crate::hardware::thermal::SystemThermalSnapshot;
-use crate::hardware::bios::BiosSystemInfo;
+use crate::tools::automation::AutoTuneResult;
+use std::time::Duration;
 
 /// High-frequency telemetry tick payload
 #[derive(Debug, Clone, Default)]
@@ -44,17 +44,27 @@ pub enum CoreEvent {
     Telemetry(TelemetryTickData),
 
     /// Health score updated
-    HealthScoreUpdated { score: u32, details: String },
+    HealthScoreUpdated {
+        score: u32,
+        details: String,
+    },
 
     /// Background scan completed
-    ScanCompleted { total_tweaks: usize, optimized: usize },
+    ScanCompleted {
+        total_tweaks: usize,
+        optimized: usize,
+    },
 
     /// AutoTune profile completed
     AutoTuneCompleted(Result<AutoTuneResult, String>),
 
     /// Cleaner scan/clean completed
-    CleanerScanCompleted { reclaimable_bytes: u64 },
-    CleanerCleanCompleted { reclaimed_bytes: u64 },
+    CleanerScanCompleted {
+        reclaimable_bytes: u64,
+    },
+    CleanerCleanCompleted {
+        reclaimed_bytes: u64,
+    },
 
     /// Hardware async probe completed
     DiskReportLoaded(Result<DiskSubsystemReport, String>),
@@ -63,12 +73,20 @@ pub enum CoreEvent {
     DriverScanCompleted(Result<usize, String>),
 
     /// Batch toggling finished
-    StartupBatchCompleted { affected: usize, enabled: bool },
-    TasksBatchCompleted { affected: usize, enabled: bool },
+    StartupBatchCompleted {
+        affected: usize,
+        enabled: bool,
+    },
+    TasksBatchCompleted {
+        affected: usize,
+        enabled: bool,
+    },
 
     /// User-facing toast
     Toast(ToastNotification),
 
     /// Application log line
-    LogAppended { line: String },
+    LogAppended {
+        line: String,
+    },
 }

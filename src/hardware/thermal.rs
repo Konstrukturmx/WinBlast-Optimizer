@@ -3,9 +3,9 @@
 //! Queries temperature sensors and hardware limits via native ACPI thermal zones and GPU vendor APIs.
 //! Honestly reports sensor availability without displaying fabricated values.
 
-use std::sync::atomic::{AtomicU8, Ordering};
 use crate::core::process::SilentCommand;
 use serde::{Deserialize, Serialize};
+use std::sync::atomic::{AtomicU8, Ordering};
 use winreg::enums::*;
 use winreg::RegKey;
 
@@ -163,7 +163,13 @@ impl SystemThermalSnapshot {
                 max_temp_c: 105.0,
                 throttling: false,
                 fan_speed_pct: fan_pct,
-                status: if hotspot_temp > 90.0 { ThermalHealth::Hot } else if hotspot_temp > 75.0 { ThermalHealth::Warm } else { ThermalHealth::Cool },
+                status: if hotspot_temp > 90.0 {
+                    ThermalHealth::Hot
+                } else if hotspot_temp > 75.0 {
+                    ThermalHealth::Warm
+                } else {
+                    ThermalHealth::Cool
+                },
             });
         }
 
@@ -277,7 +283,10 @@ fn probe_gpu_thermals() -> Option<(f32, f32, Option<f32>)> {
     let status = NVIDIA_SMI_STATUS.load(Ordering::Relaxed);
     if status != 2 {
         if let Ok(o) = SilentCommand::new("nvidia-smi")
-            .args(["--query-gpu=temperature.gpu,fan.speed", "--format=csv,noheader,nounits"])
+            .args([
+                "--query-gpu=temperature.gpu,fan.speed",
+                "--format=csv,noheader,nounits",
+            ])
             .output()
         {
             if o.status.success() {
@@ -301,7 +310,9 @@ fn probe_gpu_thermals() -> Option<(f32, f32, Option<f32>)> {
 
     // 2. Fallback: Registry / DirectX Adapter check for AMD or Intel GPUs
     let hklm = RegKey::predef(HKEY_LOCAL_MACHINE);
-    if let Ok(class_key) = hklm.open_subkey("SYSTEM\\CurrentControlSet\\Control\\Class\\{4d36e968-e325-11ce-bfc1-08002be10318}") {
+    if let Ok(class_key) = hklm.open_subkey(
+        "SYSTEM\\CurrentControlSet\\Control\\Class\\{4d36e968-e325-11ce-bfc1-08002be10318}",
+    ) {
         for sub in class_key.enum_keys().filter_map(|r| r.ok()) {
             if sub.len() == 4 && sub.chars().all(|c| c.is_ascii_digit()) {
                 if let Ok(dev_key) = class_key.open_subkey(&sub) {

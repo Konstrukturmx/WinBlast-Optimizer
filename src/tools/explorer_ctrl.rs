@@ -16,8 +16,8 @@ use windows::Win32::System::Threading::{
 };
 use windows::Win32::UI::Shell::{SHChangeNotify, SHCNE_ASSOCCHANGED, SHCNF_FLUSH};
 use windows::Win32::UI::WindowsAndMessaging::{
-    GetShellWindow, GetWindowThreadProcessId, SendMessageTimeoutW, HWND_BROADCAST, SMTO_ABORTIFHUNG,
-    WM_SETTINGCHANGE,
+    GetShellWindow, GetWindowThreadProcessId, SendMessageTimeoutW, HWND_BROADCAST,
+    SMTO_ABORTIFHUNG, WM_SETTINGCHANGE,
 };
 
 use crate::core::elevation;
@@ -109,8 +109,9 @@ pub fn restart_explorer_safely() -> Result<String> {
         ));
     }
 
-    let proc_handle = unsafe { OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, false, shell_pid) }
-        .map_err(|e| WinBlastError::Hardware(format!("OpenProcess(shell) failed: {}", e)))?;
+    let proc_handle =
+        unsafe { OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, false, shell_pid) }
+            .map_err(|e| WinBlastError::Hardware(format!("OpenProcess(shell) failed: {}", e)))?;
     let _proc_guard = HandleCloser(proc_handle);
 
     let mut shell_token = HANDLE::default();
@@ -141,13 +142,15 @@ pub fn restart_explorer_safely() -> Result<String> {
         .map_err(|e| WinBlastError::Hardware(format!("CreateEnvironmentBlock failed: {}", e)))?;
     let _env_guard = EnvBlockGuard(env_block);
 
-    let term_handle = unsafe { OpenProcess(PROCESS_TERMINATE | PROCESS_SYNCHRONIZE, false, shell_pid) }
-        .map_err(|e| {
-            WinBlastError::Hardware(format!(
-                "OpenProcess(terminate shell PID {}) failed before stopping Explorer: {}",
-                shell_pid, e
-            ))
-        })?;
+    let term_handle =
+        unsafe { OpenProcess(PROCESS_TERMINATE | PROCESS_SYNCHRONIZE, false, shell_pid) }.map_err(
+            |e| {
+                WinBlastError::Hardware(format!(
+                    "OpenProcess(terminate shell PID {}) failed before stopping Explorer: {}",
+                    shell_pid, e
+                ))
+            },
+        )?;
     let _term_guard = HandleCloser(term_handle);
 
     // Terminate ONLY this desktop session's shell PID with ExitCode=0 (avoids Winlogon AutoRestartShell race)
@@ -161,7 +164,10 @@ pub fn restart_explorer_safely() -> Result<String> {
     let windir = std::env::var("WINDIR").unwrap_or_else(|_| "C:\\Windows".to_string());
     let explorer_exe = format!("{}\\explorer.exe", windir.trim_end_matches('\\'));
     let mut cmdline_w: Vec<u16> = format!("\"{}\"\0", explorer_exe).encode_utf16().collect();
-    let app_w: Vec<u16> = explorer_exe.encode_utf16().chain(std::iter::once(0)).collect();
+    let app_w: Vec<u16> = explorer_exe
+        .encode_utf16()
+        .chain(std::iter::once(0))
+        .collect();
 
     let si = STARTUPINFOW {
         cb: std::mem::size_of::<STARTUPINFOW>() as u32,

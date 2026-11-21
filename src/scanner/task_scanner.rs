@@ -175,7 +175,11 @@ impl TaskCache {
         // 1. Exact path match
         if let Some(&enabled) = self.tasks.get(&norm) {
             let is_opt = enabled == expected_enabled;
-            let desc = if enabled { "Active (Running/Ready)" } else { "Disabled" };
+            let desc = if enabled {
+                "Active (Running/Ready)"
+            } else {
+                "Disabled"
+            };
             return (
                 is_opt,
                 format!("Task found: {}", desc),
@@ -194,7 +198,11 @@ impl TaskCache {
 
         if let Some((name, &enabled)) = variant_hits.first() {
             let is_opt = enabled == expected_enabled;
-            let desc = if enabled { "Active (Running/Ready)" } else { "Disabled" };
+            let desc = if enabled {
+                "Active (Running/Ready)"
+            } else {
+                "Disabled"
+            };
             let leaf = task_leaf_name(name);
             return (
                 is_opt,
@@ -332,7 +340,9 @@ fn query_task_via_com(canonical_path: &str) -> Option<Result<Option<(String, boo
     let try_get = |p: &str| -> std::result::Result<Option<(String, bool)>, windows::core::Error> {
         match unsafe { root_folder.GetTask(&BSTR::from(p)) } {
             Ok(task) => {
-                let enabled = unsafe { task.Enabled() }.map(|v| v.as_bool()).unwrap_or(true);
+                let enabled = unsafe { task.Enabled() }
+                    .map(|v| v.as_bool())
+                    .unwrap_or(true);
                 Ok(Some((p.to_string(), enabled)))
             }
             Err(e)
@@ -424,7 +434,9 @@ fn query_task_via_schtasks(canonical_path: &str) -> Result<Option<(String, bool)
         let output = crate::core::process::SilentCommand::new("schtasks")
             .args(["/Query", "/TN", tn, "/FO", "CSV", "/NH"])
             .output()
-            .map_err(|e| WinBlastError::ScheduledTask(format!("Failed to invoke schtasks: {}", e)))?;
+            .map_err(|e| {
+                WinBlastError::ScheduledTask(format!("Failed to invoke schtasks: {}", e))
+            })?;
 
         if output.status.success() {
             let stdout = decode_oem_bytes(&output.stdout);
@@ -446,7 +458,10 @@ fn query_task_via_schtasks(canonical_path: &str) -> Result<Option<(String, bool)
         let stdout = decode_oem_bytes(&output.stdout);
         let combined = format!("{} {}", stdout.trim(), stderr.trim());
         let lower = combined.to_lowercase();
-        if lower.contains("access is denied") || lower.contains("erişim engellendi") || lower.contains("zugriff verweigert") {
+        if lower.contains("access is denied")
+            || lower.contains("erişim engellendi")
+            || lower.contains("zugriff verweigert")
+        {
             return Err(WinBlastError::ElevationRequired(format!(
                 "Access denied querying scheduled task '{}': {}",
                 tn,
@@ -585,8 +600,7 @@ mod tests {
             cache.evaluate_task_with_kind("\\Microsoft\\Windows\\SuffixTask", false),
             (
                 false,
-                "Matched (microsoft\\windows\\suffixtask exp): Active (Running/Ready)"
-                    .to_string(),
+                "Matched (microsoft\\windows\\suffixtask exp): Active (Running/Ready)".to_string(),
                 ScanDetailKind::TaskMatched {
                     leaf: "suffixtask exp".to_string(),
                     active: true,

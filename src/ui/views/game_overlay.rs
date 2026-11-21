@@ -79,11 +79,20 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                                 } else {
                                     s.tr_v(ViewTextKey::OverlayDisabledState).to_string()
                                 },
-                                if overlay.game_bar_disabled { p.success } else { p.btn_secondary },
-                                if overlay.game_bar_disabled { Color::WHITE } else { p.text_primary },
+                                if overlay.game_bar_disabled {
+                                    p.success
+                                } else {
+                                    p.btn_secondary
+                                },
+                                if overlay.game_bar_disabled {
+                                    Color::WHITE
+                                } else {
+                                    p.text_primary
+                                },
                                 p,
                                 |s| {
-                                    s.game_overlay.game_bar_disabled = !s.game_overlay.game_bar_disabled;
+                                    s.game_overlay.game_bar_disabled =
+                                        !s.game_overlay.game_bar_disabled;
                                 },
                             )
                             .radius(style.btn_radius()),
@@ -118,11 +127,20 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                                 } else {
                                     s.tr_v(ViewTextKey::OverlayDisabledState).to_string()
                                 },
-                                if overlay.game_dvr_background_recording_disabled { p.success } else { p.btn_secondary },
-                                if overlay.game_dvr_background_recording_disabled { Color::WHITE } else { p.text_primary },
+                                if overlay.game_dvr_background_recording_disabled {
+                                    p.success
+                                } else {
+                                    p.btn_secondary
+                                },
+                                if overlay.game_dvr_background_recording_disabled {
+                                    Color::WHITE
+                                } else {
+                                    p.text_primary
+                                },
                                 p,
                                 |s| {
-                                    let next = !s.game_overlay.game_dvr_background_recording_disabled;
+                                    let next =
+                                        !s.game_overlay.game_dvr_background_recording_disabled;
                                     let _ = s.game_overlay.set_game_dvr_disabled(next);
                                 },
                             )
@@ -158,8 +176,16 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                                 } else {
                                     s.tr_v(ViewTextKey::OverlayDisabledState).to_string()
                                 },
-                                if overlay.game_mode_enabled { p.success } else { p.btn_secondary },
-                                if overlay.game_mode_enabled { Color::WHITE } else { p.text_primary },
+                                if overlay.game_mode_enabled {
+                                    p.success
+                                } else {
+                                    p.btn_secondary
+                                },
+                                if overlay.game_mode_enabled {
+                                    Color::WHITE
+                                } else {
+                                    p.text_primary
+                                },
                                 p,
                                 |s| {
                                     let next = !s.game_overlay.game_mode_enabled;
@@ -170,5 +196,8 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                         ),
                 ),
         )
-        .scroll(ScrollSpec { stick_bottom: false }).winblast_scroll(p)
+        .scroll(ScrollSpec {
+            stick_bottom: false,
+        })
+        .winblast_scroll(p)
 }

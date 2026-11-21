@@ -50,7 +50,8 @@ pub fn check_elevation() -> crate::core::error::Result<()> {
 ///
 /// Triggers Windows User Account Control (UAC) elevation prompt and cleanly exits current standard instance.
 pub fn relaunch_as_admin() -> Result<(), String> {
-    let current_exe = std::env::current_exe().map_err(|e| format!("Failed to get current executable path: {}", e))?;
+    let current_exe = std::env::current_exe()
+        .map_err(|e| format!("Failed to get current executable path: {}", e))?;
     let raw_str = current_exe.to_string_lossy();
     let clean_str = crate::core::updater::clean_exe_path(&raw_str);
 

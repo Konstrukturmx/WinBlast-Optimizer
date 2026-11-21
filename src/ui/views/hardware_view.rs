@@ -63,7 +63,12 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
             .child(
                 sparkline::sparkline_with_palette(
                     s.tr(TextKey::CpuSparklineTitle),
-                    &format!("{:.1}% ({} {})", m.cpu_usage, m.thread_count, s.tr(TextKey::ThreadsLabel)),
+                    &format!(
+                        "{:.1}% ({} {})",
+                        m.cpu_usage,
+                        m.thread_count,
+                        s.tr(TextKey::ThreadsLabel)
+                    ),
                     &s.cpu_sparkline,
                     p.sparkline_cpu,
                     42.0,
@@ -120,7 +125,12 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
             .min_w(0.0)
             .gap(6.0)
             .child(kv_row(s.tr(TextKey::VendorLabel), &cpu.vendor, compact, p))
-            .child(kv_row(s.tr(TextKey::ModelLabel), &cpu.model_name, compact, p))
+            .child(kv_row(
+                s.tr(TextKey::ModelLabel),
+                &cpu.model_name,
+                compact,
+                p,
+            ))
             .child(kv_row(
                 s.tr(TextKey::PhysicalCoresLabel),
                 cpu.physical_cores.to_string(),
@@ -133,13 +143,22 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
                 compact,
                 p,
             ))
-            .child(kv_row(s.tr(TextKey::TopologyLabel), hybrid_note, compact, p));
+            .child(kv_row(
+                s.tr(TextKey::TopologyLabel),
+                hybrid_note,
+                compact,
+                p,
+            ));
 
         if let Some(ref m) = s.realtime_metrics {
             if !m.core_usages.is_empty() {
                 let mut core_strip = row().w_full().min_w(0.0).flex_wrap().gaps(4.0, 6.0);
                 for (i, u) in m.core_usages.iter().enumerate() {
-                    let clean_u = if u.is_finite() { u.clamp(0.0, 100.0) } else { 0.0 };
+                    let clean_u = if u.is_finite() {
+                        u.clamp(0.0, 100.0)
+                    } else {
+                        0.0
+                    };
                     let c_color = if clean_u > 80.0 {
                         p.danger
                     } else if clean_u > 45.0 {
@@ -192,7 +211,12 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
         let mut lat_body = col().w_full().min_w(0.0).gap(6.0);
         if let Some(ref m) = s.realtime_metrics {
             lat_body = lat_body
-                .child(kv_row(s.tr(TextKey::TimerResolution), m.timer_res_ms_display(), compact, p))
+                .child(kv_row(
+                    s.tr(TextKey::TimerResolution),
+                    m.timer_res_ms_display(),
+                    compact,
+                    p,
+                ))
                 .child(kv_row(s.tr(TextKey::RamUsage), m.ram_display(), compact, p))
                 .child(kv_row(
                     s.tr(TextKey::BackgroundProcesses),
@@ -200,7 +224,12 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
                     compact,
                     p,
                 ))
-                .child(kv_row(s.tr(TextKey::ThreadsLabel), m.thread_count.to_string(), compact, p));
+                .child(kv_row(
+                    s.tr(TextKey::ThreadsLabel),
+                    m.thread_count.to_string(),
+                    compact,
+                    p,
+                ));
         }
 
         if let Some(ref snap) = s.latency {
@@ -217,11 +246,26 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
                     .shrink()
                     .wrap(),
                 )
-                .child(kv_row(s.tr(TextKey::TimerResolution), snap.timer_resolution_display(), compact, p))
-                .child(kv_row(s.tr(TextKey::RamUsage), snap.ram_display(), compact, p))
+                .child(kv_row(
+                    s.tr(TextKey::TimerResolution),
+                    snap.timer_resolution_display(),
+                    compact,
+                    p,
+                ))
+                .child(kv_row(
+                    s.tr(TextKey::RamUsage),
+                    snap.ram_display(),
+                    compact,
+                    p,
+                ))
                 .child(kv_row(
                     s.tr(TextKey::BackgroundProcesses),
-                    format!("{} · {} {}", snap.process_count, snap.thread_count, s.tr(TextKey::ThreadsLabel)),
+                    format!(
+                        "{} · {} {}",
+                        snap.process_count,
+                        snap.thread_count,
+                        s.tr(TextKey::ThreadsLabel)
+                    ),
                     compact,
                     p,
                 ));
@@ -230,7 +274,10 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
         if let Some(ref bench) = s.latest_latency_bench {
             lat_body = lat_body.child(kv_row(
                 s.tr(TextKey::DpcJitterPeak),
-                format!("{} µs ({:.3} ms)", bench.dpc.peak_jitter_us, bench.dpc.timer_resolution_ms),
+                format!(
+                    "{} µs ({:.3} ms)",
+                    bench.dpc.peak_jitter_us, bench.dpc.timer_resolution_ms
+                ),
                 compact,
                 p,
             ));
@@ -246,15 +293,15 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
             );
         }
 
-        lat_body = lat_body.child(
-            row().w_full().min_w(0.0).flex_wrap().pt(4.0).child(action_button(
+        lat_body = lat_body.child(row().w_full().min_w(0.0).flex_wrap().pt(4.0).child(
+            action_button(
                 s.tr(TextKey::RefreshLatencyBtn),
                 p.btn_secondary,
                 p.text_primary,
                 p,
                 |s| s.refresh_latency(),
-            )),
-        );
+            ),
+        ));
         section_card(s.tr(TextKey::LatencyCardTitle), lat_body, p)
     };
 
@@ -272,13 +319,18 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
                     .wrap(),
             )
             .child(
-                row().w_full().min_w(0.0).flex_wrap().pt(2.0).child(action_button(
-                    s.tr(TextKey::GpuTuning),
-                    p.accent,
-                    Color::WHITE,
-                    p,
-                    |s| s.navigate(ActiveView::GpuTuning),
-                )),
+                row()
+                    .w_full()
+                    .min_w(0.0)
+                    .flex_wrap()
+                    .pt(2.0)
+                    .child(action_button(
+                        s.tr(TextKey::GpuTuning),
+                        p.accent,
+                        Color::WHITE,
+                        p,
+                        |s| s.navigate(ActiveView::GpuTuning),
+                    )),
             ),
         p,
     );
@@ -291,8 +343,16 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
         };
         let vbs_txt = format!(
             "VBS: {} · HVCI: {}",
-            if sec.vbs_enabled { s.tr(TextKey::StateEnabled) } else { s.tr(TextKey::StateDisabled) },
-            if sec.hvci_enabled { s.tr(TextKey::StateEnabled) } else { s.tr(TextKey::StateDisabled) }
+            if sec.vbs_enabled {
+                s.tr(TextKey::StateEnabled)
+            } else {
+                s.tr(TextKey::StateDisabled)
+            },
+            if sec.hvci_enabled {
+                s.tr(TextKey::StateEnabled)
+            } else {
+                s.tr(TextKey::StateDisabled)
+            }
         );
         section_card(
             s.tr(TextKey::PlatformSecurityTitle),
@@ -300,11 +360,26 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
                 .w_full()
                 .min_w(0.0)
                 .gap(6.0)
-                .child(kv_row(s.tr(TextKey::FirmwareLabel), &sec.firmware_mode, compact, p))
+                .child(kv_row(
+                    s.tr(TextKey::FirmwareLabel),
+                    &sec.firmware_mode,
+                    compact,
+                    p,
+                ))
                 .child(kv_row(s.tr(TextKey::SecureBootLabel), sb_txt, compact, p))
                 .child(kv_row(s.tr(TextKey::VbsHvciLabel), vbs_txt, compact, p))
-                .child(kv_row(s.tr(TextKey::BoardBiosLabel), format!("{} ({})", sec.motherboard, sec.bios_version), compact, p))
-                .child(kv_row(s.tr(TextKey::UptimeLabel), format!("{:.1} {}", sec.uptime_hours, s.tr(TextKey::HoursUnit)), compact, p)),
+                .child(kv_row(
+                    s.tr(TextKey::BoardBiosLabel),
+                    format!("{} ({})", sec.motherboard, sec.bios_version),
+                    compact,
+                    p,
+                ))
+                .child(kv_row(
+                    s.tr(TextKey::UptimeLabel),
+                    format!("{:.1} {}", sec.uptime_hours, s.tr(TextKey::HoursUnit)),
+                    compact,
+                    p,
+                )),
             p,
         )
     } else {
@@ -349,18 +424,25 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
                         .justify_between()
                         .gaps(6.0, 10.0)
                         .child(
-                            text(format!("{} · {} ({})", d.locator, d.manufacturer, d.ddr_type))
-                                .font(rune::tok::type_::BODY)
-                                .color(p.text_primary)
-                                .shrink()
-                                .wrap(),
+                            text(format!(
+                                "{} · {} ({})",
+                                d.locator, d.manufacturer, d.ddr_type
+                            ))
+                            .font(rune::tok::type_::BODY)
+                            .color(p.text_primary)
+                            .shrink()
+                            .wrap(),
                         )
                         .child(
-                            text(format!("{:.1} GB @ {} MT/s", d.capacity_mb as f64 / 1024.0, d.speed_mts))
-                                .font(rune::tok::type_::LABEL)
-                                .color(p.accent)
-                                .shrink()
-                                .wrap(),
+                            text(format!(
+                                "{:.1} GB @ {} MT/s",
+                                d.capacity_mb as f64 / 1024.0,
+                                d.speed_mts
+                            ))
+                            .font(rune::tok::type_::LABEL)
+                            .color(p.accent)
+                            .shrink()
+                            .wrap(),
                         ),
                 );
             }
@@ -393,11 +475,17 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
                     .justify_between()
                     .gaps(6.0, 10.0)
                     .child(
-                        text(format!("{} {} ({} / {})", v.drive_letter, v.label, v.media_kind.as_label(), v.file_system))
-                            .font(rune::tok::type_::BODY)
-                            .color(p.text_primary)
-                            .shrink()
-                            .wrap(),
+                        text(format!(
+                            "{} {} ({} / {})",
+                            v.drive_letter,
+                            v.label,
+                            v.media_kind.as_label(),
+                            v.file_system
+                        ))
+                        .font(rune::tok::type_::BODY)
+                        .color(p.text_primary)
+                        .shrink()
+                        .wrap(),
                     )
                     .child(
                         text(format!(
@@ -408,10 +496,14 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
                             v.used_pct,
                             s.tr(TextKey::UsedLabel)
                         ))
-                            .font(rune::tok::type_::LABEL)
-                            .color(if v.used_pct > 88.0 { p.warning } else { p.success })
-                            .shrink()
-                            .wrap(),
+                        .font(rune::tok::type_::LABEL)
+                        .color(if v.used_pct > 88.0 {
+                            p.warning
+                        } else {
+                            p.success
+                        })
+                        .shrink()
+                        .wrap(),
                     ),
             );
         }
@@ -419,7 +511,13 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
     };
 
     let power_card = {
-        let mut scheme_row = row().key("hw_scheme_row").w_full().min_w(0.0).min_h(32.0).flex_wrap().gaps(6.0, 6.0);
+        let mut scheme_row = row()
+            .key("hw_scheme_row")
+            .w_full()
+            .min_w(0.0)
+            .min_h(32.0)
+            .flex_wrap()
+            .gaps(6.0, 6.0);
         if s.power_schemes.is_empty() {
             scheme_row = scheme_row.child(
                 text(s.tr(TextKey::Scanning))
@@ -447,8 +545,16 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
             };
             scheme_row = scheme_row.child(action_button_guarded(
                 format!("{}{}", if sc.is_active { "✔ " } else { "" }, display_name),
-                if sc.is_active { p.accent } else { p.btn_secondary },
-                if sc.is_active { Color::WHITE } else { p.text_primary },
+                if sc.is_active {
+                    p.accent
+                } else {
+                    p.btn_secondary
+                },
+                if sc.is_active {
+                    Color::WHITE
+                } else {
+                    p.text_primary
+                },
                 !s.power_scheme_inflight && !s.is_rolling_back,
                 p,
                 move |s| s.set_active_power_plan(guid.clone()),
@@ -458,25 +564,36 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
         let hib_enabled = s.hibernation_status.hibernation_enabled;
         let hib_note = format!(
             "{} ({}: {}, S0ix: {})",
-            if hib_enabled { s.tr(TextKey::StateEnabled) } else { s.tr(TextKey::StateDisabled) },
+            if hib_enabled {
+                s.tr(TextKey::StateEnabled)
+            } else {
+                s.tr(TextKey::StateDisabled)
+            },
             s.tr(TextKey::FastStartupLabel),
-            if s.hibernation_status.fast_startup_enabled { s.tr(TextKey::StatusOn) } else { s.tr(TextKey::StatusOff) },
-            if s.hibernation_status.modern_standby_s0ix { "S0ix" } else { "S3" }
+            if s.hibernation_status.fast_startup_enabled {
+                s.tr(TextKey::StatusOn)
+            } else {
+                s.tr(TextKey::StatusOff)
+            },
+            if s.hibernation_status.modern_standby_s0ix {
+                "S0ix"
+            } else {
+                "S3"
+            }
         );
 
         let body = col()
             .w_full()
             .min_w(0.0)
             .gap(12.0)
-            .child(
-                col()
-                    .w_full()
-                    .min_w(0.0)
-                    .gap(8.0)
-                    .child(scheme_row),
-            )
+            .child(col().w_full().min_w(0.0).gap(8.0).child(scheme_row))
             .child(el().w_full().h(1.0).fill(p.border.alpha(0.5)))
-            .child(row().key("hw_hib_row").w_full().min_w(0.0).child(kv_row(s.tr(TextKey::HibernationLabel), hib_note, compact, p)))
+            .child(row().key("hw_hib_row").w_full().min_w(0.0).child(kv_row(
+                s.tr(TextKey::HibernationLabel),
+                hib_note,
+                compact,
+                p,
+            )))
             .child(
                 row()
                     .w_full()
@@ -502,7 +619,11 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
                             format!(
                                 "{}: {}",
                                 s.tr(TextKey::HibernationLabel),
-                                if hib_enabled { s.tr(TextKey::ToggleDisable) } else { s.tr(TextKey::ToggleEnable) }
+                                if hib_enabled {
+                                    s.tr(TextKey::ToggleDisable)
+                                } else {
+                                    s.tr(TextKey::ToggleEnable)
+                                }
                             )
                         },
                         p.btn_secondary,
@@ -515,7 +636,11 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
                         if s.usb_power_inflight {
                             s.tr(TextKey::BusyWorking).to_string()
                         } else {
-                            format!("{} ({})", s.tr(TextKey::UsbPowerLabel), s.tr(TextKey::ToggleDisable))
+                            format!(
+                                "{} ({})",
+                                s.tr(TextKey::UsbPowerLabel),
+                                s.tr(TextKey::ToggleDisable)
+                            )
                         },
                         p.btn_secondary,
                         p.text_primary,
@@ -527,7 +652,11 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
                         if s.usb_power_inflight {
                             s.tr(TextKey::BusyWorking).to_string()
                         } else {
-                            format!("{} ({})", s.tr(TextKey::UsbPowerLabel), s.tr(TextKey::ToggleEnable))
+                            format!(
+                                "{} ({})",
+                                s.tr(TextKey::UsbPowerLabel),
+                                s.tr(TextKey::ToggleEnable)
+                            )
                         },
                         p.btn_secondary,
                         p.text_primary,
@@ -549,7 +678,9 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
         .padding(pad)
         .pr(14.0)
         .gap(12.0)
-        .scroll(ScrollSpec { stick_bottom: false })
+        .scroll(ScrollSpec {
+            stick_bottom: false,
+        })
         .child(header)
         .child(telemetry_card)
         .child(cpu_card)

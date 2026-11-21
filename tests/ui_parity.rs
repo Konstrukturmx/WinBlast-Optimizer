@@ -107,7 +107,7 @@ mod slint_parity {
         // Initial default properties
         assert_eq!(app.get_active_view(), "dashboard");
         assert!(app.get_is_elevated());
-        assert_eq!(app.get_app_version(), "1.6.1");
+        assert_eq!(app.get_app_version(), env!("CARGO_PKG_VERSION"));
 
         // Mutate properties
         app.set_active_view("tweaks".into());
@@ -164,13 +164,148 @@ mod slint_parity {
         let bridge = winblast0::ui_slint::bridge::SlintBridge::new(app.clone_strong());
 
         // Create a test AppState
-        let state = winblast0::app::AppState::new_with_backend(
-            std::sync::Arc::new(winblast0::core::backend::SandboxEnv::new()),
-        );
+        let state = winblast0::app::AppState::new_with_backend(std::sync::Arc::new(
+            winblast0::core::backend::SandboxEnv::new(),
+        ));
 
         bridge.sync_from_state(&state);
 
         assert_eq!(app.get_app_version(), env!("CARGO_PKG_VERSION"));
         assert_eq!(app.get_active_view(), state.active_view.name());
+    }
+
+    #[test]
+    fn test_all_26_views_navigation_and_mounting() {
+        init_test_env();
+        let app = MainWindow::new().expect("Failed to instantiate Slint MainWindow");
+
+        let view_ids = [
+            "dashboard",
+            "matrix",
+            "clean_apps",
+            "startup_tasks",
+            "gpu",
+            "cpu_parking",
+            "hardware",
+            "thermal",
+            "disk_health",
+            "driver_bios",
+            "latency",
+            "fps_benchmark",
+            "gaming_stats",
+            "network_diag",
+            "performance_tests",
+            "game_profiles",
+            "game_overlay",
+            "game_suitability",
+            "game_prereqs",
+            "automation",
+            "goal_planner",
+            "windows_repair",
+            "fault_diagnostics",
+            "backup",
+            "privacy",
+            "support_about",
+        ];
+
+        for view in view_ids {
+            app.set_active_view(view.into());
+            assert_eq!(
+                app.get_active_view(),
+                view,
+                "View navigation failed for {view}"
+            );
+        }
+    }
+
+    #[test]
+    fn test_modals_state_and_lifecycle() {
+        init_test_env();
+        let app = MainWindow::new().expect("Failed to instantiate Slint MainWindow");
+
+        // Diff modal
+        assert!(!app.get_diff_modal_open());
+        app.set_diff_modal_open(true);
+        assert!(app.get_diff_modal_open());
+        app.set_diff_modal_open(false);
+        assert!(!app.get_diff_modal_open());
+
+        // In-progress HUD
+        assert!(!app.get_hud_active());
+        app.set_hud_active(true);
+        app.set_hud_task_title("Deep Optimization".into());
+        app.set_hud_current_step("Applying BCD tweak...".into());
+        app.set_hud_progress(45.5);
+
+        assert!(app.get_hud_active());
+        assert_eq!(app.get_hud_task_title(), "Deep Optimization");
+        assert_eq!(app.get_hud_current_step(), "Applying BCD tweak...");
+        assert!((app.get_hud_progress() - 45.5).abs() < f32::EPSILON);
+
+        app.set_hud_active(false);
+        assert!(!app.get_hud_active());
+    }
+
+    #[test]
+    fn test_statusbar_telemetry_properties() {
+        init_test_env();
+        let app = MainWindow::new().expect("Failed to instantiate Slint MainWindow");
+
+        app.set_cpu_usage(22.8);
+        assert!((app.get_cpu_usage() - 22.8).abs() < f32::EPSILON);
+
+        app.set_ram_usage(68.2);
+        assert!((app.get_ram_usage() - 68.2).abs() < f32::EPSILON);
+
+        app.set_ram_text("10.9 / 16.0 GB".into());
+        assert_eq!(app.get_ram_text(), "10.9 / 16.0 GB");
+
+        app.set_reboot_pending(true);
+        assert!(app.get_reboot_pending());
+
+        app.set_worker_active(true);
+        app.set_worker_label("Scanning disk health...".into());
+        assert!(app.get_worker_active());
+        assert_eq!(app.get_worker_label(), "Scanning disk health...");
+
+        use std::cell::Cell;
+        use std::rc::Rc;
+        let reboot_clicked = Rc::new(Cell::new(false));
+        let rc_clone = reboot_clicked.clone();
+        app.on_reboot_system(move || {
+            rc_clone.set(true);
+        });
+        app.invoke_reboot_system();
+        assert!(reboot_clicked.get(), "reboot_system callback must fire");
+    }
+
+    #[test]
+    fn test_global_keyboard_shortcuts_and_actions() {
+        init_test_env();
+        let app = MainWindow::new().expect("Failed to instantiate Slint MainWindow");
+
+        use std::cell::Cell;
+        use std::rc::Rc;
+
+        let search_fired = Rc::new(Cell::new(false));
+        let sf_clone = search_fired.clone();
+        app.on_search_triggered(move || {
+            sf_clone.set(true);
+        });
+
+        let boost_fired = Rc::new(Cell::new(false));
+        let bf_clone = boost_fired.clone();
+        app.on_quick_boost_triggered(move || {
+            bf_clone.set(true);
+        });
+
+        app.invoke_search_triggered();
+        assert!(search_fired.get(), "search_triggered callback must fire");
+
+        app.invoke_quick_boost_triggered();
+        assert!(
+            boost_fired.get(),
+            "quick_boost_triggered callback must fire"
+        );
     }
 }

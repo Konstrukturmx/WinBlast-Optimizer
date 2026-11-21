@@ -73,25 +73,42 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                                                 .color(p.text_primary),
                                         )
                                         .child(
-                                            text(format!("{}: {}", s.tr_v(ViewTextKey::RepairCommandLabel), task.command_preview))
-                                                .font(rune::tok::type_::BODY)
-                                                .color(p.text_muted),
+                                            text(format!(
+                                                "{}: {}",
+                                                s.tr_v(ViewTextKey::RepairCommandLabel),
+                                                task.command_preview
+                                            ))
+                                            .font(rune::tok::type_::BODY)
+                                            .color(p.text_muted),
                                         ),
-                                 ),
+                                ),
                         )
                         .child(
-                            action_button(s.tr_v(ViewTextKey::RepairRunBtn), p.accent, Color::WHITE, p, move |s| {
-                                match RepairTask::execute(task_id) {
+                            action_button(
+                                s.tr_v(ViewTextKey::RepairRunBtn),
+                                p.accent,
+                                Color::WHITE,
+                                p,
+                                move |s| match RepairTask::execute(task_id) {
                                     Ok(msg) => {
                                         s.repair_log.push(format!("✔ [{}] {}", task_id, msg));
-                                        s.status_message = format!("{}: {}", s.tr_v(ViewTextKey::RepairDonePrefix), task_id);
+                                        s.status_message = format!(
+                                            "{}: {}",
+                                            s.tr_v(ViewTextKey::RepairDonePrefix),
+                                            task_id
+                                        );
                                     }
                                     Err(err) => {
-                                        s.repair_log.push(format!("✖ [{}] Error: {}", task_id, err));
-                                        s.status_message = format!("{}: {}", s.tr_v(ViewTextKey::RepairErrPrefix), err);
+                                        s.repair_log
+                                            .push(format!("✖ [{}] Error: {}", task_id, err));
+                                        s.status_message = format!(
+                                            "{}: {}",
+                                            s.tr_v(ViewTextKey::RepairErrPrefix),
+                                            err
+                                        );
                                     }
-                                }
-                            })
+                                },
+                            )
                             .radius(style.btn_radius()),
                         ),
                 )
@@ -107,7 +124,11 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                 .w_full()
                 .padding(12.0)
                 .radius(style.card_radius())
-                .fill(if p.is_dark { crate::ui::theme::rgb(0.01, 0.012, 0.018) } else { crate::ui::theme::rgb(0.92, 0.93, 0.95) })
+                .fill(if p.is_dark {
+                    crate::ui::theme::rgb(0.01, 0.012, 0.018)
+                } else {
+                    crate::ui::theme::rgb(0.92, 0.93, 0.95)
+                })
                 .border(1.0, p.border)
                 .gap(6.0)
                 .child(
@@ -120,14 +141,19 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                         .font(rune::tok::type_::BODY)
                         .color(p.text_muted)
                 } else {
-                    col()
-                        .gap(4.0)
-                        .children(s.repair_log.iter().map(|line| {
-                            text(line)
-                                .font(rune::tok::type_::BODY)
-                                .color(if line.starts_with('✔') { p.success } else { p.danger })
-                        }))
+                    col().gap(4.0).children(s.repair_log.iter().map(|line| {
+                        text(line)
+                            .font(rune::tok::type_::BODY)
+                            .color(if line.starts_with('✔') {
+                                p.success
+                            } else {
+                                p.danger
+                            })
+                    }))
                 }),
         )
-        .scroll(ScrollSpec { stick_bottom: false }).winblast_scroll(p)
+        .scroll(ScrollSpec {
+            stick_bottom: false,
+        })
+        .winblast_scroll(p)
 }

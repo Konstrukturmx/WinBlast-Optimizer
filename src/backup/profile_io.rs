@@ -1,7 +1,7 @@
 //! Export/import user tweak configuration profiles (`.wb0` files).
 
-use std::path::Path;
 use serde::{Deserialize, Serialize};
+use std::path::Path;
 
 /// A user's saved tweak profile.
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -27,10 +27,7 @@ impl TweakProfile {
 }
 
 /// Export the current tweak selection to a `.wb0` profile file.
-pub fn export_profile(
-    path: &Path,
-    selected_ids: &[String],
-) -> crate::core::error::Result<()> {
+pub fn export_profile(path: &Path, selected_ids: &[String]) -> crate::core::error::Result<()> {
     let profile = TweakProfile::new(
         "WinBlast0 Custom Profile".to_string(),
         "Exported user tweak profile".to_string(),
@@ -38,8 +35,7 @@ pub fn export_profile(
     );
     if let Some(parent) = path.parent() {
         if !parent.as_os_str().is_empty() {
-            std::fs::create_dir_all(parent)
-                .map_err(crate::core::error::WinBlastError::Io)?;
+            std::fs::create_dir_all(parent).map_err(crate::core::error::WinBlastError::Io)?;
         }
     }
     let json = serde_json::to_string_pretty(&profile)?;
@@ -49,9 +45,7 @@ pub fn export_profile(
 }
 
 /// Import a `.wb0` profile file and return the selected tweak IDs.
-pub fn import_profile(
-    path: &Path,
-) -> crate::core::error::Result<Vec<String>> {
+pub fn import_profile(path: &Path) -> crate::core::error::Result<Vec<String>> {
     let content = std::fs::read_to_string(path).map_err(crate::core::error::WinBlastError::Io)?;
     let profile: TweakProfile = serde_json::from_str(&content)?;
     tracing::info!("Profile imported from {:?}: {}", path, profile.name);

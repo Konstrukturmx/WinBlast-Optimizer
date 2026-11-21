@@ -33,7 +33,11 @@ fn sub_tab_btn(
         .py(6.0)
         .radius(p.btn_radius)
         .fill(if active { p.accent } else { p.bg_primary })
-        .hover(if active { p.accent_hover } else { p.bg_card_hover })
+        .hover(if active {
+            p.accent_hover
+        } else {
+            p.bg_card_hover
+        })
         .border(p.border_width, if active { p.accent } else { p.border })
         .motion(p.motion)
         .center()
@@ -85,7 +89,8 @@ fn build_startup_apps_list(s: &AppState, p: &ThemePalette, tier: LayoutTier) -> 
     };
     let hide_ms = s.hide_microsoft_tasks;
     let filter = s.startup_status_filter;
-    let mut matching_idxs: Vec<usize> = s.startup_entries
+    let mut matching_idxs: Vec<usize> = s
+        .startup_entries
         .iter()
         .enumerate()
         .filter(|(_, e)| {
@@ -107,30 +112,49 @@ fn build_startup_apps_list(s: &AppState, p: &ThemePalette, tier: LayoutTier) -> 
 
     match s.startup_sort_mode {
         crate::app::StartupSortMode::NameAsc => {
-            matching_idxs.sort_by(|&a, &b| s.startup_entries[a].name.to_lowercase().cmp(&s.startup_entries[b].name.to_lowercase()));
+            matching_idxs.sort_by(|&a, &b| {
+                s.startup_entries[a]
+                    .name
+                    .to_lowercase()
+                    .cmp(&s.startup_entries[b].name.to_lowercase())
+            });
         }
         crate::app::StartupSortMode::NameDesc => {
-            matching_idxs.sort_by(|&a, &b| s.startup_entries[b].name.to_lowercase().cmp(&s.startup_entries[a].name.to_lowercase()));
+            matching_idxs.sort_by(|&a, &b| {
+                s.startup_entries[b]
+                    .name
+                    .to_lowercase()
+                    .cmp(&s.startup_entries[a].name.to_lowercase())
+            });
         }
         crate::app::StartupSortMode::StatusActiveFirst => {
             matching_idxs.sort_by(|&a, &b| {
                 let ea = &s.startup_entries[a];
                 let eb = &s.startup_entries[b];
-                eb.enabled.cmp(&ea.enabled).then_with(|| ea.name.to_lowercase().cmp(&eb.name.to_lowercase()))
+                eb.enabled
+                    .cmp(&ea.enabled)
+                    .then_with(|| ea.name.to_lowercase().cmp(&eb.name.to_lowercase()))
             });
         }
         crate::app::StartupSortMode::StatusInactiveFirst => {
             matching_idxs.sort_by(|&a, &b| {
                 let ea = &s.startup_entries[a];
                 let eb = &s.startup_entries[b];
-                ea.enabled.cmp(&eb.enabled).then_with(|| ea.name.to_lowercase().cmp(&eb.name.to_lowercase()))
+                ea.enabled
+                    .cmp(&eb.enabled)
+                    .then_with(|| ea.name.to_lowercase().cmp(&eb.name.to_lowercase()))
             });
         }
         crate::app::StartupSortMode::Source => {
             matching_idxs.sort_by(|&a, &b| {
                 let sa = format!("{:?}", s.startup_entries[a].source);
                 let sb = format!("{:?}", s.startup_entries[b].source);
-                sa.cmp(&sb).then_with(|| s.startup_entries[a].name.to_lowercase().cmp(&s.startup_entries[b].name.to_lowercase()))
+                sa.cmp(&sb).then_with(|| {
+                    s.startup_entries[a]
+                        .name
+                        .to_lowercase()
+                        .cmp(&s.startup_entries[b].name.to_lowercase())
+                })
             });
         }
     }
@@ -150,14 +174,20 @@ fn build_startup_apps_list(s: &AppState, p: &ThemePalette, tier: LayoutTier) -> 
 
     let k_idxs = Rc::clone(&idxs);
     let b_idxs = Rc::clone(&idxs);
-    let row_h = if tier == LayoutTier::Compact { 116.0 } else { 72.0 };
+    let row_h = if tier == LayoutTier::Compact {
+        116.0
+    } else {
+        72.0
+    };
 
     let mut sc = col()
         .key("startup_scroll")
         .w_full()
         .min_w(0.0)
         .pr(14.0)
-        .scroll(ScrollSpec { stick_bottom: false });
+        .scroll(ScrollSpec {
+            stick_bottom: false,
+        });
     sc = if tier == LayoutTier::Compact {
         sc.h(220.0)
     } else {
@@ -200,7 +230,11 @@ fn build_startup_apps_list(s: &AppState, p: &ThemePalette, tier: LayoutTier) -> 
                                 s.tr(TextKey::ToggleEnable)
                             },
                             if e.enabled { p.btn_secondary } else { p.accent },
-                            if e.enabled { p.text_primary } else { Color::WHITE },
+                            if e.enabled {
+                                p.text_primary
+                            } else {
+                                Color::WHITE
+                            },
                             !s.startup_tasks_busy,
                             p,
                             move |s| s.toggle_startup_entry_async(id_btn.clone(), target),
@@ -210,77 +244,81 @@ fn build_startup_apps_list(s: &AppState, p: &ThemePalette, tier: LayoutTier) -> 
                     let is_selected = s.selected_startup_entries.contains(&e.id);
                     let sel_id = e.id.clone();
 
-                    col()
-                        .w_full()
-                        .min_w(0.0)
-                        .pb(6.0)
-                        .child(
-                            row()
-                                .w_full()
-                                .min_w(0.0)
-                                .padding(8.0)
-                                .radius(6.0)
-                                .fill(p.bg_card)
-                                .border(1.0, p.border)
-                                .flex_wrap()
-                                .items_center()
-                                .justify_between()
-                                .gaps(6.0, 10.0)
-                                .child(
-                                    row()
-                                        .min_w(0.0)
-                                        .grow(1.0)
-                                        .items_center()
-                                        .gap(8.0)
-                                        .child(action_button(
-                                            if is_selected { "☑" } else { "☐" },
-                                            if is_selected { p.accent.alpha(0.18) } else { p.bg_card },
-                                            if is_selected { p.accent } else { p.text_muted },
-                                            p,
-                                            move |s| s.toggle_startup_entry_selection(sel_id.clone()),
-                                        ))
-                                        .child(switch_toggle_with(
-                                            e.enabled,
-                                            s.startup_tasks_busy,
-                                            sw_key,
-                                            p,
-                                            move |s: &mut AppState| {
-                                                if !locked && !is_run_once {
-                                                    s.toggle_startup_entry_async(id_sw.clone(), target);
-                                                }
-                                            },
-                                        ))
-                                        .child(
-                                            col()
-                                                .grow(1.0)
-                                                .min_w(120.0)
-                                                .gap(2.0)
-                                                .child(
-                                                    text(&e.name)
-                                                        .font(rune::tok::type_::SECTION)
-                                                        .color(p.text_primary)
-                                                        .shrink()
-                                                        .truncate(),
-                                                )
-                                                .child(
-                                                    text(&e.command)
-                                                        .font(rune::tok::type_::LABEL)
-                                                        .color(p.text_muted)
-                                                        .shrink()
-                                                        .truncate(),
-                                                ),
-                                        ),
-                                )
-                                .child(
-                                    row()
-                                        .min_w(0.0)
-                                        .shrink()
-                                        .items_center()
-                                        .gap(6.0)
-                                        .child(pill_badge(startup_source_label(s, e.source), p.accent, p))
-                                        .child(toggle_ctl),
-                                ),
-                        )
+                    col().w_full().min_w(0.0).pb(6.0).child(
+                        row()
+                            .w_full()
+                            .min_w(0.0)
+                            .padding(8.0)
+                            .radius(6.0)
+                            .fill(p.bg_card)
+                            .border(1.0, p.border)
+                            .flex_wrap()
+                            .items_center()
+                            .justify_between()
+                            .gaps(6.0, 10.0)
+                            .child(
+                                row()
+                                    .min_w(0.0)
+                                    .grow(1.0)
+                                    .items_center()
+                                    .gap(8.0)
+                                    .child(action_button(
+                                        if is_selected { "☑" } else { "☐" },
+                                        if is_selected {
+                                            p.accent.alpha(0.18)
+                                        } else {
+                                            p.bg_card
+                                        },
+                                        if is_selected { p.accent } else { p.text_muted },
+                                        p,
+                                        move |s| s.toggle_startup_entry_selection(sel_id.clone()),
+                                    ))
+                                    .child(switch_toggle_with(
+                                        e.enabled,
+                                        s.startup_tasks_busy,
+                                        sw_key,
+                                        p,
+                                        move |s: &mut AppState| {
+                                            if !locked && !is_run_once {
+                                                s.toggle_startup_entry_async(id_sw.clone(), target);
+                                            }
+                                        },
+                                    ))
+                                    .child(
+                                        col()
+                                            .grow(1.0)
+                                            .min_w(120.0)
+                                            .gap(2.0)
+                                            .child(
+                                                text(&e.name)
+                                                    .font(rune::tok::type_::SECTION)
+                                                    .color(p.text_primary)
+                                                    .shrink()
+                                                    .truncate(),
+                                            )
+                                            .child(
+                                                text(&e.command)
+                                                    .font(rune::tok::type_::LABEL)
+                                                    .color(p.text_muted)
+                                                    .shrink()
+                                                    .truncate(),
+                                            ),
+                                    ),
+                            )
+                            .child(
+                                row()
+                                    .min_w(0.0)
+                                    .shrink()
+                                    .items_center()
+                                    .gap(6.0)
+                                    .child(pill_badge(
+                                        startup_source_label(s, e.source),
+                                        p.accent,
+                                        p,
+                                    ))
+                                    .child(toggle_ctl),
+                            ),
+                    )
                 },
             ),
     )
@@ -296,7 +334,8 @@ fn build_tasks_list(s: &AppState, p: &ThemePalette, tier: LayoutTier) -> El {
     };
     let hide_ms = s.hide_microsoft_tasks;
     let filter = s.startup_status_filter;
-    let mut matching_idxs: Vec<usize> = s.scheduled_tasks
+    let mut matching_idxs: Vec<usize> = s
+        .scheduled_tasks
         .iter()
         .enumerate()
         .filter(|(_, t)| {
@@ -318,27 +357,49 @@ fn build_tasks_list(s: &AppState, p: &ThemePalette, tier: LayoutTier) -> El {
 
     match s.startup_sort_mode {
         crate::app::StartupSortMode::NameAsc => {
-            matching_idxs.sort_by(|&a, &b| s.scheduled_tasks[a].task_name.to_lowercase().cmp(&s.scheduled_tasks[b].task_name.to_lowercase()));
+            matching_idxs.sort_by(|&a, &b| {
+                s.scheduled_tasks[a]
+                    .task_name
+                    .to_lowercase()
+                    .cmp(&s.scheduled_tasks[b].task_name.to_lowercase())
+            });
         }
         crate::app::StartupSortMode::NameDesc => {
-            matching_idxs.sort_by(|&a, &b| s.scheduled_tasks[b].task_name.to_lowercase().cmp(&s.scheduled_tasks[a].task_name.to_lowercase()));
+            matching_idxs.sort_by(|&a, &b| {
+                s.scheduled_tasks[b]
+                    .task_name
+                    .to_lowercase()
+                    .cmp(&s.scheduled_tasks[a].task_name.to_lowercase())
+            });
         }
         crate::app::StartupSortMode::StatusActiveFirst => {
             matching_idxs.sort_by(|&a, &b| {
                 let ta = &s.scheduled_tasks[a];
                 let tb = &s.scheduled_tasks[b];
-                tb.enabled.cmp(&ta.enabled).then_with(|| ta.task_name.to_lowercase().cmp(&tb.task_name.to_lowercase()))
+                tb.enabled.cmp(&ta.enabled).then_with(|| {
+                    ta.task_name
+                        .to_lowercase()
+                        .cmp(&tb.task_name.to_lowercase())
+                })
             });
         }
         crate::app::StartupSortMode::StatusInactiveFirst => {
             matching_idxs.sort_by(|&a, &b| {
                 let ta = &s.scheduled_tasks[a];
                 let tb = &s.scheduled_tasks[b];
-                ta.enabled.cmp(&tb.enabled).then_with(|| ta.task_name.to_lowercase().cmp(&tb.task_name.to_lowercase()))
+                ta.enabled.cmp(&tb.enabled).then_with(|| {
+                    ta.task_name
+                        .to_lowercase()
+                        .cmp(&tb.task_name.to_lowercase())
+                })
             });
         }
         crate::app::StartupSortMode::Source => {
-            matching_idxs.sort_by(|&a, &b| s.scheduled_tasks[a].folder.cmp(&s.scheduled_tasks[b].folder));
+            matching_idxs.sort_by(|&a, &b| {
+                s.scheduled_tasks[a]
+                    .folder
+                    .cmp(&s.scheduled_tasks[b].folder)
+            });
         }
     }
     let idxs: Rc<Vec<usize>> = Rc::new(matching_idxs);
@@ -357,14 +418,20 @@ fn build_tasks_list(s: &AppState, p: &ThemePalette, tier: LayoutTier) -> El {
 
     let k_idxs = Rc::clone(&idxs);
     let b_idxs = Rc::clone(&idxs);
-    let row_h = if tier == LayoutTier::Compact { 116.0 } else { 72.0 };
+    let row_h = if tier == LayoutTier::Compact {
+        116.0
+    } else {
+        72.0
+    };
 
     let mut sc = col()
         .key("tasks_scroll")
         .w_full()
         .min_w(0.0)
         .pr(14.0)
-        .scroll(ScrollSpec { stick_bottom: false });
+        .scroll(ScrollSpec {
+            stick_bottom: false,
+        });
     sc = if tier == LayoutTier::Compact {
         sc.h(220.0)
     } else {
@@ -391,93 +458,101 @@ fn build_tasks_list(s: &AppState, p: &ThemePalette, tier: LayoutTier) -> El {
                     let is_selected = s.selected_scheduled_tasks.contains(&t.task_path);
                     let sel_path = t.task_path.clone();
 
-                    col()
-                        .w_full()
-                        .min_w(0.0)
-                        .pb(6.0)
-                        .child(
-                            row()
-                                .w_full()
-                                .min_w(0.0)
-                                .padding(8.0)
-                                .radius(6.0)
-                                .fill(p.bg_card)
-                                .border(1.0, p.border)
-                                .flex_wrap()
-                                .items_center()
-                                .justify_between()
-                                .gaps(6.0, 10.0)
-                                .child(
-                                    row()
-                                        .grow(1.0)
-                                        .min_w(140.0)
-                                        .items_center()
-                                        .gap(8.0)
-                                        .child(action_button(
-                                            if is_selected { "☑" } else { "☐" },
-                                            if is_selected { p.accent.alpha(0.18) } else { p.bg_card },
-                                            if is_selected { p.accent } else { p.text_muted },
-                                            p,
-                                            move |s| s.toggle_scheduled_task_selection(sel_path.clone()),
-                                        ))
-                                        .child(
-                                            col()
-                                                .grow(1.0)
-                                                .min_w(100.0)
-                                                .gap(2.0)
-                                                .child(
-                                                    text(&t.task_name)
-                                                        .font(rune::tok::type_::SECTION)
-                                                        .color(p.text_primary)
-                                                        .shrink()
-                                                        .truncate(),
-                                                )
-                                                .child(
-                                                    text(&t.task_path)
-                                                        .font(rune::tok::type_::LABEL)
-                                                        .color(p.text_muted)
-                                                        .shrink()
-                                                        .truncate(),
-                                                ),
-                                        ),
-                                )
-                                .child(
-                                    row()
-                                        .min_w(0.0)
-                                        .shrink()
-                                        .items_center()
-                                        .gap(6.0)
-                                        .child(pill_badge(
-                                            if t.enabled {
-                                                s.tr(TextKey::StateEnabled)
-                                            } else {
-                                                s.tr(TextKey::StateDisabled)
-                                            },
-                                            if t.enabled { p.success } else { p.text_muted },
-                                            p,
-                                        ))
-                                        .child(action_button_guarded(
-                                            s.tr(TextKey::RunTaskBtn),
-                                            p.btn_secondary,
-                                            p.text_primary,
-                                            !s.startup_tasks_busy,
-                                            p,
-                                            move |s| s.run_live_task_async(path_run.clone()),
-                                        ))
-                                        .child(action_button_guarded(
-                                            if t.enabled {
-                                                s.tr(TextKey::ToggleDisable)
-                                            } else {
-                                                s.tr(TextKey::ToggleEnable)
-                                            },
-                                            if t.enabled { p.warning.alpha(0.16) } else { p.accent },
-                                            if t.enabled { p.warning } else { Color::WHITE },
-                                            !s.startup_tasks_busy,
-                                            p,
-                                            move |s| s.toggle_live_task_async(path_toggle.clone(), target),
-                                        )),
-                                ),
-                        )
+                    col().w_full().min_w(0.0).pb(6.0).child(
+                        row()
+                            .w_full()
+                            .min_w(0.0)
+                            .padding(8.0)
+                            .radius(6.0)
+                            .fill(p.bg_card)
+                            .border(1.0, p.border)
+                            .flex_wrap()
+                            .items_center()
+                            .justify_between()
+                            .gaps(6.0, 10.0)
+                            .child(
+                                row()
+                                    .grow(1.0)
+                                    .min_w(140.0)
+                                    .items_center()
+                                    .gap(8.0)
+                                    .child(action_button(
+                                        if is_selected { "☑" } else { "☐" },
+                                        if is_selected {
+                                            p.accent.alpha(0.18)
+                                        } else {
+                                            p.bg_card
+                                        },
+                                        if is_selected { p.accent } else { p.text_muted },
+                                        p,
+                                        move |s| {
+                                            s.toggle_scheduled_task_selection(sel_path.clone())
+                                        },
+                                    ))
+                                    .child(
+                                        col()
+                                            .grow(1.0)
+                                            .min_w(100.0)
+                                            .gap(2.0)
+                                            .child(
+                                                text(&t.task_name)
+                                                    .font(rune::tok::type_::SECTION)
+                                                    .color(p.text_primary)
+                                                    .shrink()
+                                                    .truncate(),
+                                            )
+                                            .child(
+                                                text(&t.task_path)
+                                                    .font(rune::tok::type_::LABEL)
+                                                    .color(p.text_muted)
+                                                    .shrink()
+                                                    .truncate(),
+                                            ),
+                                    ),
+                            )
+                            .child(
+                                row()
+                                    .min_w(0.0)
+                                    .shrink()
+                                    .items_center()
+                                    .gap(6.0)
+                                    .child(pill_badge(
+                                        if t.enabled {
+                                            s.tr(TextKey::StateEnabled)
+                                        } else {
+                                            s.tr(TextKey::StateDisabled)
+                                        },
+                                        if t.enabled { p.success } else { p.text_muted },
+                                        p,
+                                    ))
+                                    .child(action_button_guarded(
+                                        s.tr(TextKey::RunTaskBtn),
+                                        p.btn_secondary,
+                                        p.text_primary,
+                                        !s.startup_tasks_busy,
+                                        p,
+                                        move |s| s.run_live_task_async(path_run.clone()),
+                                    ))
+                                    .child(action_button_guarded(
+                                        if t.enabled {
+                                            s.tr(TextKey::ToggleDisable)
+                                        } else {
+                                            s.tr(TextKey::ToggleEnable)
+                                        },
+                                        if t.enabled {
+                                            p.warning.alpha(0.16)
+                                        } else {
+                                            p.accent
+                                        },
+                                        if t.enabled { p.warning } else { Color::WHITE },
+                                        !s.startup_tasks_busy,
+                                        p,
+                                        move |s| {
+                                            s.toggle_live_task_async(path_toggle.clone(), target)
+                                        },
+                                    )),
+                            ),
+                    )
                 },
             ),
     )
@@ -493,7 +568,8 @@ fn build_services_list(s: &AppState, p: &ThemePalette, tier: LayoutTier) -> El {
     };
     let hide_ms = s.hide_microsoft_tasks;
     let filter = s.startup_status_filter;
-    let mut matching_idxs: Vec<usize> = s.live_services
+    let mut matching_idxs: Vec<usize> = s
+        .live_services
         .iter()
         .enumerate()
         .filter(|(_, svc)| {
@@ -515,27 +591,49 @@ fn build_services_list(s: &AppState, p: &ThemePalette, tier: LayoutTier) -> El {
 
     match s.startup_sort_mode {
         crate::app::StartupSortMode::NameAsc => {
-            matching_idxs.sort_by(|&a, &b| s.live_services[a].display_name.to_lowercase().cmp(&s.live_services[b].display_name.to_lowercase()));
+            matching_idxs.sort_by(|&a, &b| {
+                s.live_services[a]
+                    .display_name
+                    .to_lowercase()
+                    .cmp(&s.live_services[b].display_name.to_lowercase())
+            });
         }
         crate::app::StartupSortMode::NameDesc => {
-            matching_idxs.sort_by(|&a, &b| s.live_services[b].display_name.to_lowercase().cmp(&s.live_services[a].display_name.to_lowercase()));
+            matching_idxs.sort_by(|&a, &b| {
+                s.live_services[b]
+                    .display_name
+                    .to_lowercase()
+                    .cmp(&s.live_services[a].display_name.to_lowercase())
+            });
         }
         crate::app::StartupSortMode::StatusActiveFirst => {
             matching_idxs.sort_by(|&a, &b| {
                 let sa = &s.live_services[a];
                 let sb = &s.live_services[b];
-                sb.is_running.cmp(&sa.is_running).then_with(|| sa.display_name.to_lowercase().cmp(&sb.display_name.to_lowercase()))
+                sb.is_running.cmp(&sa.is_running).then_with(|| {
+                    sa.display_name
+                        .to_lowercase()
+                        .cmp(&sb.display_name.to_lowercase())
+                })
             });
         }
         crate::app::StartupSortMode::StatusInactiveFirst => {
             matching_idxs.sort_by(|&a, &b| {
                 let sa = &s.live_services[a];
                 let sb = &s.live_services[b];
-                sa.is_running.cmp(&sb.is_running).then_with(|| sa.display_name.to_lowercase().cmp(&sb.display_name.to_lowercase()))
+                sa.is_running.cmp(&sb.is_running).then_with(|| {
+                    sa.display_name
+                        .to_lowercase()
+                        .cmp(&sb.display_name.to_lowercase())
+                })
             });
         }
         crate::app::StartupSortMode::Source => {
-            matching_idxs.sort_by(|&a, &b| s.live_services[a].service_name.cmp(&s.live_services[b].service_name));
+            matching_idxs.sort_by(|&a, &b| {
+                s.live_services[a]
+                    .service_name
+                    .cmp(&s.live_services[b].service_name)
+            });
         }
     }
     let idxs: Rc<Vec<usize>> = Rc::new(matching_idxs);
@@ -554,14 +652,20 @@ fn build_services_list(s: &AppState, p: &ThemePalette, tier: LayoutTier) -> El {
 
     let k_idxs = Rc::clone(&idxs);
     let b_idxs = Rc::clone(&idxs);
-    let row_h = if tier == LayoutTier::Compact { 140.0 } else { 76.0 };
+    let row_h = if tier == LayoutTier::Compact {
+        140.0
+    } else {
+        76.0
+    };
 
     let mut sc = col()
         .key("services_scroll")
         .w_full()
         .min_w(0.0)
         .pr(14.0)
-        .scroll(ScrollSpec { stick_bottom: false });
+        .scroll(ScrollSpec {
+            stick_bottom: false,
+        });
     sc = if tier == LayoutTier::Compact {
         sc.h(220.0)
     } else {
@@ -601,13 +705,21 @@ fn build_services_list(s: &AppState, p: &ThemePalette, tier: LayoutTier) -> El {
                             } else {
                                 s.tr(TextKey::StateStopped)
                             },
-                            if svc.is_running { p.success } else { p.text_muted },
+                            if svc.is_running {
+                                p.success
+                            } else {
+                                p.text_muted
+                            },
                             p,
                         ))
                         .child(pill_badge(start_lbl, p.accent, p));
 
                     if svc.is_protected_core {
-                        actions = actions.child(pill_badge(s.tr(TextKey::ProtectedCoreBadge), p.danger, p));
+                        actions = actions.child(pill_badge(
+                            s.tr(TextKey::ProtectedCoreBadge),
+                            p.danger,
+                            p,
+                        ));
                     } else {
                         let s_auto = svc.service_name.clone();
                         let s_man = svc.service_name.clone();
@@ -639,44 +751,43 @@ fn build_services_list(s: &AppState, p: &ThemePalette, tier: LayoutTier) -> El {
                             ));
                     }
 
-                    col()
-                        .w_full()
-                        .min_w(0.0)
-                        .pb(6.0)
-                        .child(
-                            row()
-                                .w_full()
-                                .min_w(0.0)
-                                .padding(8.0)
-                                .radius(6.0)
-                                .fill(p.bg_card)
-                                .border(1.0, p.border)
-                                .flex_wrap()
-                                .items_center()
-                                .justify_between()
-                                .gaps(6.0, 10.0)
-                                .child(
-                                    col()
-                                        .grow(1.0)
-                                        .min_w(140.0)
-                                        .gap(2.0)
-                                        .child(
-                                            text(format!("{} ({})", svc.display_name, svc.service_name))
-                                                .font(rune::tok::type_::SECTION)
-                                                .color(p.text_primary)
-                                                .shrink()
-                                                .truncate(),
-                                        )
-                                        .child(
-                                            text(&svc.binary_path)
-                                                .font(rune::tok::type_::LABEL)
-                                                .color(p.text_muted)
-                                                .shrink()
-                                                .truncate(),
-                                        ),
-                                )
-                                .child(actions),
-                        )
+                    col().w_full().min_w(0.0).pb(6.0).child(
+                        row()
+                            .w_full()
+                            .min_w(0.0)
+                            .padding(8.0)
+                            .radius(6.0)
+                            .fill(p.bg_card)
+                            .border(1.0, p.border)
+                            .flex_wrap()
+                            .items_center()
+                            .justify_between()
+                            .gaps(6.0, 10.0)
+                            .child(
+                                col()
+                                    .grow(1.0)
+                                    .min_w(140.0)
+                                    .gap(2.0)
+                                    .child(
+                                        text(format!(
+                                            "{} ({})",
+                                            svc.display_name, svc.service_name
+                                        ))
+                                        .font(rune::tok::type_::SECTION)
+                                        .color(p.text_primary)
+                                        .shrink()
+                                        .truncate(),
+                                    )
+                                    .child(
+                                        text(&svc.binary_path)
+                                            .font(rune::tok::type_::LABEL)
+                                            .color(p.text_muted)
+                                            .shrink()
+                                            .truncate(),
+                                    ),
+                            )
+                            .child(actions),
+                    )
                 },
             ),
     )
@@ -687,7 +798,11 @@ fn build_services_list(s: &AppState, p: &ThemePalette, tier: LayoutTier) -> El {
 pub fn view(s: &AppState, tier: LayoutTier) -> El {
     let p = s.palette();
     let _style = s.theme_style;
-    let pad = if tier == LayoutTier::Compact { 10.0 } else { p.card_padding };
+    let pad = if tier == LayoutTier::Compact {
+        10.0
+    } else {
+        p.card_padding
+    };
 
     let mut title_row = row()
         .w_full()
@@ -795,7 +910,11 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
                                         |s| s.deselect_all_startup(),
                                     ))
                                     .child(action_button_guarded(
-                                        if sel_count == 0 { "Disable Selected".to_string() } else { format!("Disable Selected ({})", sel_count) },
+                                        if sel_count == 0 {
+                                            "Disable Selected".to_string()
+                                        } else {
+                                            format!("Disable Selected ({})", sel_count)
+                                        },
                                         p.warning.alpha(0.18),
                                         p.warning,
                                         !s.startup_tasks_busy && sel_count > 0,
@@ -803,7 +922,11 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
                                         |s| s.batch_toggle_selected_startup_async(false),
                                     ))
                                     .child(action_button_guarded(
-                                        if sel_count == 0 { "Enable Selected".to_string() } else { format!("Enable Selected ({})", sel_count) },
+                                        if sel_count == 0 {
+                                            "Enable Selected".to_string()
+                                        } else {
+                                            format!("Enable Selected ({})", sel_count)
+                                        },
                                         p.btn_secondary,
                                         p.accent,
                                         !s.startup_tasks_busy && sel_count > 0,
@@ -838,7 +961,11 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
                                         |s| s.deselect_all_tasks(),
                                     ))
                                     .child(action_button_guarded(
-                                        if sel_count == 0 { "Disable Selected".to_string() } else { format!("Disable Selected ({})", sel_count) },
+                                        if sel_count == 0 {
+                                            "Disable Selected".to_string()
+                                        } else {
+                                            format!("Disable Selected ({})", sel_count)
+                                        },
                                         p.warning.alpha(0.18),
                                         p.warning,
                                         !s.startup_tasks_busy && sel_count > 0,
@@ -846,7 +973,11 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
                                         |s| s.batch_toggle_selected_tasks_async(false),
                                     ))
                                     .child(action_button_guarded(
-                                        if sel_count == 0 { "Enable Selected".to_string() } else { format!("Enable Selected ({})", sel_count) },
+                                        if sel_count == 0 {
+                                            "Enable Selected".to_string()
+                                        } else {
+                                            format!("Enable Selected ({})", sel_count)
+                                        },
                                         p.btn_secondary,
                                         p.accent,
                                         !s.startup_tasks_busy && sel_count > 0,
@@ -862,8 +993,16 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
                                 if s.hide_microsoft_tasks { "☑" } else { "☐" },
                                 s.tr(TextKey::HideMicrosoftTasks)
                             ),
-                            if s.hide_microsoft_tasks { p.accent } else { p.btn_secondary },
-                            if s.hide_microsoft_tasks { Color::WHITE } else { p.text_primary },
+                            if s.hide_microsoft_tasks {
+                                p.accent
+                            } else {
+                                p.btn_secondary
+                            },
+                            if s.hide_microsoft_tasks {
+                                Color::WHITE
+                            } else {
+                                p.text_primary
+                            },
                             p,
                             |s| s.hide_microsoft_tasks = !s.hide_microsoft_tasks,
                         ))
@@ -912,57 +1051,99 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
                         .shrink()
                         .gap(4.0)
                         .items_center()
-                        .child(
-                            action_button(
-                                "All",
-                                if s.startup_status_filter == crate::app::StartupStatusFilter::All { p.accent } else { p.bg_card },
-                                if s.startup_status_filter == crate::app::StartupStatusFilter::All { Color::WHITE } else { p.text_secondary },
-                                p,
-                                |s| s.startup_status_filter = crate::app::StartupStatusFilter::All,
-                            ),
-                        )
-                        .child(
-                            action_button(
-                                "Active",
-                                if s.startup_status_filter == crate::app::StartupStatusFilter::ActiveOnly { p.success } else { p.bg_card },
-                                if s.startup_status_filter == crate::app::StartupStatusFilter::ActiveOnly { Color::BLACK } else { p.text_secondary },
-                                p,
-                                |s| s.startup_status_filter = crate::app::StartupStatusFilter::ActiveOnly,
-                            ),
-                        )
-                        .child(
-                            action_button(
-                                "Inactive",
-                                if s.startup_status_filter == crate::app::StartupStatusFilter::InactiveOnly { p.warning } else { p.bg_card },
-                                if s.startup_status_filter == crate::app::StartupStatusFilter::InactiveOnly { Color::BLACK } else { p.text_secondary },
-                                p,
-                                |s| s.startup_status_filter = crate::app::StartupStatusFilter::InactiveOnly,
-                            ),
-                        ),
+                        .child(action_button(
+                            "All",
+                            if s.startup_status_filter == crate::app::StartupStatusFilter::All {
+                                p.accent
+                            } else {
+                                p.bg_card
+                            },
+                            if s.startup_status_filter == crate::app::StartupStatusFilter::All {
+                                Color::WHITE
+                            } else {
+                                p.text_secondary
+                            },
+                            p,
+                            |s| s.startup_status_filter = crate::app::StartupStatusFilter::All,
+                        ))
+                        .child(action_button(
+                            "Active",
+                            if s.startup_status_filter
+                                == crate::app::StartupStatusFilter::ActiveOnly
+                            {
+                                p.success
+                            } else {
+                                p.bg_card
+                            },
+                            if s.startup_status_filter
+                                == crate::app::StartupStatusFilter::ActiveOnly
+                            {
+                                Color::BLACK
+                            } else {
+                                p.text_secondary
+                            },
+                            p,
+                            |s| {
+                                s.startup_status_filter =
+                                    crate::app::StartupStatusFilter::ActiveOnly
+                            },
+                        ))
+                        .child(action_button(
+                            "Inactive",
+                            if s.startup_status_filter
+                                == crate::app::StartupStatusFilter::InactiveOnly
+                            {
+                                p.warning
+                            } else {
+                                p.bg_card
+                            },
+                            if s.startup_status_filter
+                                == crate::app::StartupStatusFilter::InactiveOnly
+                            {
+                                Color::BLACK
+                            } else {
+                                p.text_secondary
+                            },
+                            p,
+                            |s| {
+                                s.startup_status_filter =
+                                    crate::app::StartupStatusFilter::InactiveOnly
+                            },
+                        )),
                 )
-                .child(
-                    action_button(
-                        match s.startup_sort_mode {
-                            crate::app::StartupSortMode::NameAsc => "↕ Sort: Name (A-Z)",
-                            crate::app::StartupSortMode::NameDesc => "↕ Sort: Name (Z-A)",
-                            crate::app::StartupSortMode::StatusActiveFirst => "↕ Sort: Active First",
-                            crate::app::StartupSortMode::StatusInactiveFirst => "↕ Sort: Inactive First",
-                            crate::app::StartupSortMode::Source => "↕ Sort: Source / Folder",
-                        },
-                        p.btn_secondary,
-                        p.text_primary,
-                        p,
-                        |s| {
-                            s.startup_sort_mode = match s.startup_sort_mode {
-                                crate::app::StartupSortMode::NameAsc => crate::app::StartupSortMode::NameDesc,
-                                crate::app::StartupSortMode::NameDesc => crate::app::StartupSortMode::StatusActiveFirst,
-                                crate::app::StartupSortMode::StatusActiveFirst => crate::app::StartupSortMode::StatusInactiveFirst,
-                                crate::app::StartupSortMode::StatusInactiveFirst => crate::app::StartupSortMode::Source,
-                                crate::app::StartupSortMode::Source => crate::app::StartupSortMode::NameAsc,
-                            };
-                        },
-                    ),
-                ),
+                .child(action_button(
+                    match s.startup_sort_mode {
+                        crate::app::StartupSortMode::NameAsc => "↕ Sort: Name (A-Z)",
+                        crate::app::StartupSortMode::NameDesc => "↕ Sort: Name (Z-A)",
+                        crate::app::StartupSortMode::StatusActiveFirst => "↕ Sort: Active First",
+                        crate::app::StartupSortMode::StatusInactiveFirst => {
+                            "↕ Sort: Inactive First"
+                        }
+                        crate::app::StartupSortMode::Source => "↕ Sort: Source / Folder",
+                    },
+                    p.btn_secondary,
+                    p.text_primary,
+                    p,
+                    |s| {
+                        s.startup_sort_mode = match s.startup_sort_mode {
+                            crate::app::StartupSortMode::NameAsc => {
+                                crate::app::StartupSortMode::NameDesc
+                            }
+                            crate::app::StartupSortMode::NameDesc => {
+                                crate::app::StartupSortMode::StatusActiveFirst
+                            }
+                            crate::app::StartupSortMode::StatusActiveFirst => {
+                                crate::app::StartupSortMode::StatusInactiveFirst
+                            }
+                            crate::app::StartupSortMode::StatusInactiveFirst => {
+                                crate::app::StartupSortMode::Source
+                            }
+                            crate::app::StartupSortMode::Source => {
+                                crate::app::StartupSortMode::NameAsc
+                            }
+                        };
+                    },
+                )),
         );
 
     let body = match s.startup_sub_tab {
@@ -982,7 +1163,12 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
         .child(body);
 
     if tier == LayoutTier::Compact {
-        outer.key("startup_tasks_compact_viewport").scroll(ScrollSpec { stick_bottom: false }).winblast_scroll(p)
+        outer
+            .key("startup_tasks_compact_viewport")
+            .scroll(ScrollSpec {
+                stick_bottom: false,
+            })
+            .winblast_scroll(p)
     } else {
         outer
     }

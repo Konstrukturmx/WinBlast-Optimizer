@@ -33,21 +33,9 @@ fn diff_pair_card(p: &ThemePalette, header: String, left: String, right: String)
                 .min_w(0.0)
                 .flex_wrap()
                 .gap(10.0)
-                .child(
-                    text(left)
-                        .color(p.danger)
-                        .shrink()
-                        .wrap()
-                        .wrap_anywhere(),
-                )
+                .child(text(left).color(p.danger).shrink().wrap().wrap_anywhere())
                 .child(text("➔").color(p.text_muted))
-                .child(
-                    text(right)
-                        .color(p.success)
-                        .shrink()
-                        .wrap()
-                        .wrap_anywhere(),
-                ),
+                .child(text(right).color(p.success).shrink().wrap().wrap_anywhere()),
         )
 }
 
@@ -105,8 +93,11 @@ pub fn view_state(s: &AppState, p: &ThemePalette) -> El {
     } else if !s.pending_items.is_empty() {
         view_items_with_palette(s.tr(TextKey::DiffModalTitle), &s.pending_items, s, p)
     } else {
-        let fallback: Vec<(TweakAction, bool)> =
-            s.pending_actions.iter().map(|a| (a.clone(), false)).collect();
+        let fallback: Vec<(TweakAction, bool)> = s
+            .pending_actions
+            .iter()
+            .map(|a| (a.clone(), false))
+            .collect();
         view_items_with_palette(s.tr(TextKey::DiffModalTitle), &fallback, s, p)
     }
 }
@@ -158,7 +149,13 @@ pub fn view_items_with_palette(
                         p,
                         header_with_dir(
                             s,
-                            format!("{}: {}\\{}\\{}", s.tr(TextKey::DiffActionRegDword), hive, path, name),
+                            format!(
+                                "{}: {}\\{}\\{}",
+                                s.tr(TextKey::DiffActionRegDword),
+                                hive,
+                                path,
+                                name
+                            ),
                             is_revert,
                         ),
                         left,
@@ -226,7 +223,12 @@ pub fn view_items_with_palette(
                     p,
                     header_with_dir(
                         s,
-                        format!("{}: {}\\{}", s.tr(TextKey::DiffActionRegTreeDelete), hive, path),
+                        format!(
+                            "{}: {}\\{}",
+                            s.tr(TextKey::DiffActionRegTreeDelete),
+                            hive,
+                            path
+                        ),
                         is_revert,
                     ),
                     s.tr(TextKey::DiffActionRemoveTree).to_string(),
@@ -410,7 +412,11 @@ pub fn view_items_with_palette(
                             s.tr(TextKey::DiffStateDisable)
                         }
                         .to_string(),
-                        if effective_enable { p.success } else { p.warning },
+                        if effective_enable {
+                            p.success
+                        } else {
+                            p.warning
+                        },
                     )
                 }
                 TweakAction::AppXPackage { package_family } => diff_single_card(
@@ -442,7 +448,11 @@ pub fn view_items_with_palette(
                             s.tr(TextKey::DiffActionDisable)
                         }
                         .to_string(),
-                        if effective_enable { p.success } else { p.warning },
+                        if effective_enable {
+                            p.success
+                        } else {
+                            p.warning
+                        },
                     )
                 }
             };
@@ -495,7 +505,9 @@ pub fn view_items_with_palette(
                 .key("diff_modal_items_scroll")
                 .grow(1.0)
                 .min_h(0.0)
-                .scroll(ScrollSpec { stick_bottom: false })
+                .scroll(ScrollSpec {
+                    stick_bottom: false,
+                })
                 .winblast_scroll(p),
         )
 }

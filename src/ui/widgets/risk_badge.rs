@@ -1,22 +1,56 @@
 //! Threat and risk level badge component in Rune.
 
-use rune::{row, text, El};
 use crate::core::risk::{RiskLevel, RiskValuation};
 use crate::ui::theme::{self, ThemePalette};
+use rune::{row, text, El};
 
 /// Renders a localized multi-axis threat valuation badge with color-blind friendly symbols
 /// and animated pulse on Extreme risk.
 pub fn view_localized(risk: &RiskValuation, p: &ThemePalette, s: &crate::app::AppState) -> El {
     let (icon, label, bg_color, text_color, is_extreme) = match risk.stability_risk {
-        RiskLevel::Safe => ("✓", s.tr(crate::core::i18n::TextKey::RiskSafe), p.success.alpha(0.18), p.success, false),
-        RiskLevel::Low => ("●", s.tr(crate::core::i18n::TextKey::RiskLow), p.accent.alpha(0.18), p.accent, false),
-        RiskLevel::Moderate => ("▲", s.tr(crate::core::i18n::TextKey::RiskCaution), p.warning.alpha(0.20), p.warning, false),
-        RiskLevel::High => ("◆", s.tr(crate::core::i18n::TextKey::RiskHigh), p.warning.alpha(0.28), p.warning, false),
-        RiskLevel::Extreme => ("✖", s.tr(crate::core::i18n::TextKey::RiskExtreme), p.danger.alpha(0.32), p.danger, true),
+        RiskLevel::Safe => (
+            "✓",
+            s.tr(crate::core::i18n::TextKey::RiskSafe),
+            p.success.alpha(0.18),
+            p.success,
+            false,
+        ),
+        RiskLevel::Low => (
+            "●",
+            s.tr(crate::core::i18n::TextKey::RiskLow),
+            p.accent.alpha(0.18),
+            p.accent,
+            false,
+        ),
+        RiskLevel::Moderate => (
+            "▲",
+            s.tr(crate::core::i18n::TextKey::RiskCaution),
+            p.warning.alpha(0.20),
+            p.warning,
+            false,
+        ),
+        RiskLevel::High => (
+            "◆",
+            s.tr(crate::core::i18n::TextKey::RiskHigh),
+            p.warning.alpha(0.28),
+            p.warning,
+            false,
+        ),
+        RiskLevel::Extreme => (
+            "✖",
+            s.tr(crate::core::i18n::TextKey::RiskExtreme),
+            p.danger.alpha(0.32),
+            p.danger,
+            true,
+        ),
     };
 
     let border_width = if is_extreme { 1.5 } else { p.border_width };
-    let border_color = if is_extreme { text_color.alpha(0.85) } else { text_color.alpha(0.40) };
+    let border_color = if is_extreme {
+        text_color.alpha(0.85)
+    } else {
+        text_color.alpha(0.40)
+    };
 
     let mut row_badge = row()
         .min_w(0.0)
@@ -62,7 +96,11 @@ pub fn view_with_palette(risk: &RiskValuation, p: &ThemePalette) -> El {
     };
 
     let border_width = if is_extreme { 1.5 } else { p.border_width };
-    let border_color = if is_extreme { text_color.alpha(0.85) } else { text_color.alpha(0.40) };
+    let border_color = if is_extreme {
+        text_color.alpha(0.85)
+    } else {
+        text_color.alpha(0.40)
+    };
 
     let mut row_badge = row()
         .min_w(0.0)
@@ -115,9 +153,5 @@ pub fn view(risk: &RiskValuation) -> El {
         .fill(bg_color)
         .border(1.0, text_color.alpha(0.4))
         .center()
-        .child(
-            text(label)
-                .font(rune::tok::type_::LABEL)
-                .color(text_color),
-        )
+        .child(text(label).font(rune::tok::type_::LABEL).color(text_color))
 }

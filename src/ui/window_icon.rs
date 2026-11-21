@@ -39,10 +39,7 @@ pub fn attach_window_icon() {
         }
 
         let mut target_hwnd = HWND::default();
-        let _ = EnumWindows(
-            Some(enum_proc),
-            LPARAM(&mut target_hwnd as *mut _ as isize),
-        );
+        let _ = EnumWindows(Some(enum_proc), LPARAM(&mut target_hwnd as *mut _ as isize));
 
         if !target_hwnd.is_invalid() {
             // Ensure window is cleanly maximized to full desktop work area (retaining standard frame & taskbar)

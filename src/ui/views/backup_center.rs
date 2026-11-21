@@ -194,9 +194,12 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
             let is_rolled_back = entry.rolled_back;
             let ts = entry.timestamp.format("%Y-%m-%d %H:%M:%S").to_string();
             let display_title = s.tweak_title(&entry.tweak_id, &entry.tweak_id);
-            let action_label = crate::core::status_i18n::localize_ledger_action(s.language, &entry.action_type);
-            let orig_val = crate::core::tweak_i18n::localize_ledger_token(s.language, &entry.original_value);
-            let new_val = crate::core::tweak_i18n::localize_ledger_token(s.language, &entry.new_value);
+            let action_label =
+                crate::core::status_i18n::localize_ledger_action(s.language, &entry.action_type);
+            let orig_val =
+                crate::core::tweak_i18n::localize_ledger_token(s.language, &entry.original_value);
+            let new_val =
+                crate::core::tweak_i18n::localize_ledger_token(s.language, &entry.new_value);
 
             let row_item = row()
                 .w_full()
@@ -231,11 +234,7 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
                                         .shrink()
                                         .wrap_anywhere(),
                                 )
-                                .child(
-                                    text(ts)
-                                        .font(rune::tok::type_::LABEL)
-                                        .color(p.text_muted),
-                                ),
+                                .child(text(ts).font(rune::tok::type_::LABEL).color(p.text_muted)),
                         ),
                 )
                 .child(
@@ -258,7 +257,11 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
                                 s.tr(TextKey::AppliedBadge)
                             })
                             .font(rune::tok::type_::LABEL)
-                            .color(if is_rolled_back { p.text_muted } else { p.success })
+                            .color(if is_rolled_back {
+                                p.text_muted
+                            } else {
+                                p.success
+                            })
                             .shrink()
                             .wrap(),
                         ),
@@ -373,55 +376,124 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
             .child(action_button(
                 format!(
                     "{} {}",
-                    if s.unattend_opts.bypass_tpm_ram_requirements { "☑" } else { "☐" },
+                    if s.unattend_opts.bypass_tpm_ram_requirements {
+                        "☑"
+                    } else {
+                        "☐"
+                    },
                     s.tr(TextKey::UnattendBypassTpm)
                 ),
-                if s.unattend_opts.bypass_tpm_ram_requirements { p.accent } else { p.btn_secondary },
-                if s.unattend_opts.bypass_tpm_ram_requirements { Color::WHITE } else { p.text_primary },
+                if s.unattend_opts.bypass_tpm_ram_requirements {
+                    p.accent
+                } else {
+                    p.btn_secondary
+                },
+                if s.unattend_opts.bypass_tpm_ram_requirements {
+                    Color::WHITE
+                } else {
+                    p.text_primary
+                },
                 p,
-                |s| s.unattend_opts.bypass_tpm_ram_requirements = !s.unattend_opts.bypass_tpm_ram_requirements,
+                |s| {
+                    s.unattend_opts.bypass_tpm_ram_requirements =
+                        !s.unattend_opts.bypass_tpm_ram_requirements
+                },
             ))
             .child(action_button(
                 format!(
                     "{} {}",
-                    if s.unattend_opts.bypass_msa_oobe { "☑" } else { "☐" },
+                    if s.unattend_opts.bypass_msa_oobe {
+                        "☑"
+                    } else {
+                        "☐"
+                    },
                     s.tr(TextKey::UnattendBypassMsa)
                 ),
-                if s.unattend_opts.bypass_msa_oobe { p.accent } else { p.btn_secondary },
-                if s.unattend_opts.bypass_msa_oobe { Color::WHITE } else { p.text_primary },
+                if s.unattend_opts.bypass_msa_oobe {
+                    p.accent
+                } else {
+                    p.btn_secondary
+                },
+                if s.unattend_opts.bypass_msa_oobe {
+                    Color::WHITE
+                } else {
+                    p.text_primary
+                },
                 p,
                 |s| s.unattend_opts.bypass_msa_oobe = !s.unattend_opts.bypass_msa_oobe,
             ))
             .child(action_button(
                 format!(
                     "{} {}",
-                    if s.unattend_opts.skip_oobe_privacy_screens { "☑" } else { "☐" },
+                    if s.unattend_opts.skip_oobe_privacy_screens {
+                        "☑"
+                    } else {
+                        "☐"
+                    },
                     s.tr(TextKey::UnattendSkipPrivacy)
                 ),
-                if s.unattend_opts.skip_oobe_privacy_screens { p.accent } else { p.btn_secondary },
-                if s.unattend_opts.skip_oobe_privacy_screens { Color::WHITE } else { p.text_primary },
+                if s.unattend_opts.skip_oobe_privacy_screens {
+                    p.accent
+                } else {
+                    p.btn_secondary
+                },
+                if s.unattend_opts.skip_oobe_privacy_screens {
+                    Color::WHITE
+                } else {
+                    p.text_primary
+                },
                 p,
-                |s| s.unattend_opts.skip_oobe_privacy_screens = !s.unattend_opts.skip_oobe_privacy_screens,
+                |s| {
+                    s.unattend_opts.skip_oobe_privacy_screens =
+                        !s.unattend_opts.skip_oobe_privacy_screens
+                },
             ))
             .child(action_button(
                 format!(
                     "{} {}",
-                    if s.unattend_opts.include_selected_tweaks { "☑" } else { "☐" },
+                    if s.unattend_opts.include_selected_tweaks {
+                        "☑"
+                    } else {
+                        "☐"
+                    },
                     s.tr(TextKey::UnattendIncludeTweaks)
                 ),
-                if s.unattend_opts.include_selected_tweaks { p.accent } else { p.btn_secondary },
-                if s.unattend_opts.include_selected_tweaks { Color::WHITE } else { p.text_primary },
+                if s.unattend_opts.include_selected_tweaks {
+                    p.accent
+                } else {
+                    p.btn_secondary
+                },
+                if s.unattend_opts.include_selected_tweaks {
+                    Color::WHITE
+                } else {
+                    p.text_primary
+                },
                 p,
-                |s| s.unattend_opts.include_selected_tweaks = !s.unattend_opts.include_selected_tweaks,
+                |s| {
+                    s.unattend_opts.include_selected_tweaks =
+                        !s.unattend_opts.include_selected_tweaks
+                },
             ))
             .child(action_button(
                 format!(
                     "{} {}",
-                    if s.unattend_opts.auto_timezone_utc { "☑" } else { "☐" },
+                    if s.unattend_opts.auto_timezone_utc {
+                        "☑"
+                    } else {
+                        "☐"
+                    },
                     s.tr(TextKey::UnattendAutoTimezone)
                 ),
-                if s.unattend_opts.auto_timezone_utc { p.accent } else { p.btn_secondary },
-                if s.unattend_opts.auto_timezone_utc { Color::WHITE } else { p.text_primary },
+                if s.unattend_opts.auto_timezone_utc {
+                    p.accent
+                } else {
+                    p.btn_secondary
+                },
+                if s.unattend_opts.auto_timezone_utc {
+                    Color::WHITE
+                } else {
+                    p.text_primary
+                },
                 p,
                 |s| s.unattend_opts.auto_timezone_utc = !s.unattend_opts.auto_timezone_utc,
             ));
@@ -459,12 +531,16 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
             .child(presets_row)
             .child(opts_row)
             .child(
-                text(format!("{} {}", s.tr(TextKey::LedgerDbLabel), s.ledger_path.display()))
-                    .font(rune::tok::type_::LABEL)
-                    .color(p.text_muted)
-                    .shrink()
-                    .wrap()
-                    .wrap_anywhere(),
+                text(format!(
+                    "{} {}",
+                    s.tr(TextKey::LedgerDbLabel),
+                    s.ledger_path.display()
+                ))
+                .font(rune::tok::type_::LABEL)
+                .color(p.text_muted)
+                .shrink()
+                .wrap()
+                .wrap_anywhere(),
             );
 
         if let Some(ref pth) = s.unattend_last_export {
@@ -480,7 +556,11 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
         u_col
     };
 
-    let pad = if tier == LayoutTier::Compact { 10.0 } else { p.card_padding };
+    let pad = if tier == LayoutTier::Compact {
+        10.0
+    } else {
+        p.card_padding
+    };
     col()
         .key("backup_center_viewport")
         .w_full()
@@ -490,7 +570,9 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
         .padding(pad)
         .pr(14.0)
         .gap(12.0)
-        .scroll(ScrollSpec { stick_bottom: false })
+        .scroll(ScrollSpec {
+            stick_bottom: false,
+        })
         .child(header)
         .child(top_actions)
         .child(rp_card)

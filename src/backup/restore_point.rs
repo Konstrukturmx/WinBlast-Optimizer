@@ -26,7 +26,9 @@ pub fn create_restore_point(description: &str) -> crate::core::error::Result<()>
     let output = crate::core::process::SilentCommand::new("powershell")
         .args(["-NoProfile", "-NonInteractive", "-Command", &script])
         .output()
-        .map_err(|e| crate::core::error::WinBlastError::Backup(format!("Failed to run PowerShell: {}", e)))?;
+        .map_err(|e| {
+            crate::core::error::WinBlastError::Backup(format!("Failed to run PowerShell: {}", e))
+        })?;
 
     if !output.status.success() {
         let stderr = crate::scanner::task_scanner::decode_oem_bytes(&output.stderr);
@@ -42,7 +44,10 @@ pub fn create_restore_point(description: &str) -> crate::core::error::Result<()>
         )));
     }
 
-    tracing::info!("System Restore point '{}' created successfully", description);
+    tracing::info!(
+        "System Restore point '{}' created successfully",
+        description
+    );
     Ok(())
 }
 
@@ -53,7 +58,9 @@ pub fn list_restore_points() -> crate::core::error::Result<Vec<RestorePoint>> {
     let output = crate::core::process::SilentCommand::new("powershell")
         .args(["-NoProfile", "-NonInteractive", "-Command", script])
         .output()
-        .map_err(|e| crate::core::error::WinBlastError::Backup(format!("Failed to run PowerShell: {}", e)))?;
+        .map_err(|e| {
+            crate::core::error::WinBlastError::Backup(format!("Failed to run PowerShell: {}", e))
+        })?;
 
     if !output.status.success() {
         return Ok(Vec::new());
@@ -115,18 +122,27 @@ pub fn parse_restore_point_time(s: &str) -> Option<chrono::DateTime<chrono::Utc>
 
     // 2. Try "%Y-%m-%d %H:%M:%S"
     if let Ok(naive) = chrono::NaiveDateTime::parse_from_str(trimmed, "%Y-%m-%d %H:%M:%S") {
-        return Some(chrono::DateTime::<chrono::Utc>::from_naive_utc_and_offset(naive, chrono::Utc));
+        return Some(chrono::DateTime::<chrono::Utc>::from_naive_utc_and_offset(
+            naive,
+            chrono::Utc,
+        ));
     }
 
     // 3. Try "%Y-%m-%dT%H:%M:%S"
     if let Ok(naive) = chrono::NaiveDateTime::parse_from_str(trimmed, "%Y-%m-%dT%H:%M:%S") {
-        return Some(chrono::DateTime::<chrono::Utc>::from_naive_utc_and_offset(naive, chrono::Utc));
+        return Some(chrono::DateTime::<chrono::Utc>::from_naive_utc_and_offset(
+            naive,
+            chrono::Utc,
+        ));
     }
 
     // 4. Try WMI DMTF format: "yyyymmddHHMMSS.xxxxxx+UUU" (e.g. "20261117143000.000000+000")
     if trimmed.len() >= 14 && trimmed.chars().take(14).all(|c| c.is_ascii_digit()) {
         if let Ok(naive) = chrono::NaiveDateTime::parse_from_str(&trimmed[..14], "%Y%m%d%H%M%S") {
-            return Some(chrono::DateTime::<chrono::Utc>::from_naive_utc_and_offset(naive, chrono::Utc));
+            return Some(chrono::DateTime::<chrono::Utc>::from_naive_utc_and_offset(
+                naive,
+                chrono::Utc,
+            ));
         }
     }
 
@@ -168,13 +184,28 @@ mod tests {
         let initial_count = sandbox.list_restore_points().unwrap().len();
 
         // 1. Old restore point is >24h old -> preflight creates a new one
-        let created = ensure_preflight_restore_point_with(&sandbox, "Pre-optimization test").expect("Preflight failed");
-        assert!(created, "Expected restore point to be created when no recent point exists");
-        assert_eq!(sandbox.list_restore_points().unwrap().len(), initial_count + 1);
+        let created = ensure_preflight_restore_point_with(&sandbox, "Pre-optimization test")
+            .expect("Preflight failed");
+        assert!(
+            created,
+            "Expected restore point to be created when no recent point exists"
+        );
+        assert_eq!(
+            sandbox.list_restore_points().unwrap().len(),
+            initial_count + 1
+        );
 
         // 2. Second invocation within 24h -> preflight skips creation
-        let created_again = ensure_preflight_restore_point_with(&sandbox, "Pre-optimization test 2").expect("Preflight failed");
-        assert!(!created_again, "Expected preflight to skip creation within 24h");
-        assert_eq!(sandbox.list_restore_points().unwrap().len(), initial_count + 1);
+        let created_again =
+            ensure_preflight_restore_point_with(&sandbox, "Pre-optimization test 2")
+                .expect("Preflight failed");
+        assert!(
+            !created_again,
+            "Expected preflight to skip creation within 24h"
+        );
+        assert_eq!(
+            sandbox.list_restore_points().unwrap().len(),
+            initial_count + 1
+        );
     }
 }

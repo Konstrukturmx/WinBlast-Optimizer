@@ -147,9 +147,8 @@ impl CoreParkingState {
         let topo = crate::hardware::cpu::query_win32_core_topology(total_cores);
         let is_hybrid = topo.as_ref().is_some_and(|t| t.has_hybrid);
 
-        let is_fully_unparked = compute_is_fully_unparked(
-            on_ac, is_hybrid, min_ac, min_dc, max_ac, max_dc, min1, max1,
-        );
+        let is_fully_unparked =
+            compute_is_fully_unparked(on_ac, is_hybrid, min_ac, min_dc, max_ac, max_dc, min1, max1);
 
         let mut cores = Vec::with_capacity(total_cores);
         let mut unparked_count = 0usize;

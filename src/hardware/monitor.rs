@@ -99,7 +99,9 @@ fn query_processor_group_bases() -> (Vec<usize>, usize) {
 }
 
 /// Query per-logical-processor NT kernel performance counters (`SystemProcessorPerformanceInformation`) into an existing buffer.
-fn query_nt_processor_performance_into(buf: &mut Vec<SystemProcessorPerformanceInformation>) -> bool {
+fn query_nt_processor_performance_into(
+    buf: &mut Vec<SystemProcessorPerformanceInformation>,
+) -> bool {
     let elem_sz = std::mem::size_of::<SystemProcessorPerformanceInformation>();
     if buf.is_empty() {
         let capacity = active_logical_core_count().max(1);
@@ -164,7 +166,10 @@ fn compute_nt_cpu_deltas_into(
         let d_kernel = (c.kernel_time.max(0) as u64).saturating_sub(p.kernel_time.max(0) as u64);
         let d_user = (c.user_time.max(0) as u64).saturating_sub(p.user_time.max(0) as u64);
         let total = d_kernel.saturating_add(d_user);
-        let busy = d_kernel.saturating_sub(d_idle).saturating_add(d_user).min(total);
+        let busy = d_kernel
+            .saturating_sub(d_idle)
+            .saturating_add(d_user)
+            .min(total);
         let pct = if total > 0 {
             ((100.0 * busy as f64) / total as f64).clamp(0.0, 100.0) as f32
         } else {
@@ -564,7 +569,13 @@ impl SystemMonitor {
                 self.cpu_sampler
                     .last_cores
                     .iter()
-                    .map(|&u| if u.is_finite() { u.clamp(0.0, 100.0) } else { 0.0 })
+                    .map(|&u| {
+                        if u.is_finite() {
+                            u.clamp(0.0, 100.0)
+                        } else {
+                            0.0
+                        }
+                    })
                     .collect(),
             )
         } else {
@@ -580,8 +591,10 @@ impl SystemMonitor {
         let perf_info = query_system_perf_info();
         let (total_ram_mb, used_ram_mb, available_ram_mb, process_count, thread_count) =
             if let Some(perf) = perf_info {
-                let total_bytes = (perf.physical_total as u64).saturating_mul(perf.page_size as u64);
-                let avail_bytes = (perf.physical_available as u64).saturating_mul(perf.page_size as u64);
+                let total_bytes =
+                    (perf.physical_total as u64).saturating_mul(perf.page_size as u64);
+                let avail_bytes =
+                    (perf.physical_available as u64).saturating_mul(perf.page_size as u64);
                 let used_bytes = total_bytes.saturating_sub(avail_bytes);
                 (
                     total_bytes / (1024 * 1024),
@@ -644,14 +657,25 @@ mod tests {
         let res_ns = query_nt_timer_resolution();
         assert!(res_ns > 0, "Timer resolution must be non-zero");
         // Standard Windows resolutions are between 0.5ms (500_000 ns) and 15.625ms (15_625_000 ns)
-        assert!(res_ns <= 20_000_000, "Timer resolution unexpectedly high: {}", res_ns);
+        assert!(
+            res_ns <= 20_000_000,
+            "Timer resolution unexpectedly high: {}",
+            res_ns
+        );
     }
 
     #[test]
     fn test_system_thread_count() {
         if let Some(threads) = query_system_thread_count() {
-            assert!(threads > 50, "Windows system must have at least 50 threads, got {}", threads);
-            println!("System reported {} active threads via GetPerformanceInfo", threads);
+            assert!(
+                threads > 50,
+                "Windows system must have at least 50 threads, got {}",
+                threads
+            );
+            println!(
+                "System reported {} active threads via GetPerformanceInfo",
+                threads
+            );
         }
     }
 
@@ -692,9 +716,21 @@ mod tests {
             },
         ];
         let (global, cores) = compute_nt_cpu_deltas(&prev, &cur).unwrap();
-        assert!((cores[0] - 0.0).abs() < 0.01, "Idle core must be 0.0%, got {}", cores[0]);
-        assert!((cores[1] - 50.0).abs() < 0.01, "50% busy core got {}", cores[1]);
-        assert!((global - 25.0).abs() < 0.01, "Global avg must be 25.0%, got {}", global);
+        assert!(
+            (cores[0] - 0.0).abs() < 0.01,
+            "Idle core must be 0.0%, got {}",
+            cores[0]
+        );
+        assert!(
+            (cores[1] - 50.0).abs() < 0.01,
+            "50% busy core got {}",
+            cores[1]
+        );
+        assert!(
+            (global - 25.0).abs() < 0.01,
+            "Global avg must be 25.0%, got {}",
+            global
+        );
 
         // Zero-delta must return None instead of dividing by zero
         assert!(compute_nt_cpu_deltas(&prev, &prev).is_none());

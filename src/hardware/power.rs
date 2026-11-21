@@ -41,7 +41,10 @@ pub struct HibernationStatus {
 
 /// Normalize a GUID string (handles optional `{}` braces and casing) to lowercase dashed format.
 pub fn normalize_guid_str(s: &str) -> String {
-    s.trim().trim_start_matches('{').trim_end_matches('}').to_ascii_lowercase()
+    s.trim()
+        .trim_start_matches('{')
+        .trim_end_matches('}')
+        .to_ascii_lowercase()
 }
 
 /// Parse a dashed GUID string (`xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx` with optional `{}`).
@@ -55,7 +58,10 @@ pub fn parse_guid(s: &str) -> Result<GUID> {
         || parts[3].len() != 4
         || parts[4].len() != 12
     {
-        return Err(WinBlastError::Hardware(format!("Invalid GUID format: {}", s)));
+        return Err(WinBlastError::Hardware(format!(
+            "Invalid GUID format: {}",
+            s
+        )));
     }
     let data1 = u32::from_str_radix(parts[0], 16)
         .map_err(|_| WinBlastError::Hardware(format!("Invalid GUID segment: {}", s)))?;
@@ -222,10 +228,22 @@ pub fn read_power_setting_index(
     let mut ac_val = 0u32;
     let mut dc_val = 0u32;
     let ac_err = unsafe {
-        PowerReadACValueIndex(None, Some(&scheme), Some(&subgroup), Some(&setting), &mut ac_val)
+        PowerReadACValueIndex(
+            None,
+            Some(&scheme),
+            Some(&subgroup),
+            Some(&setting),
+            &mut ac_val,
+        )
     };
     let dc_err = unsafe {
-        PowerReadDCValueIndex(None, Some(&scheme), Some(&subgroup), Some(&setting), &mut dc_val)
+        PowerReadDCValueIndex(
+            None,
+            Some(&scheme),
+            Some(&subgroup),
+            Some(&setting),
+            &mut dc_val,
+        )
     };
 
     let mut ac_ok = ac_err == WIN32_ERROR(0);
@@ -287,7 +305,9 @@ pub fn write_power_setting_index(
             "SYSTEM\\CurrentControlSet\\Control\\Power\\PowerSettings\\{}\\{}",
             sub_norm, set_norm
         );
-        if let Ok(k) = hklm.open_subkey_with_flags(&path, KEY_READ | KEY_SET_VALUE | KEY_WOW64_64KEY) {
+        if let Ok(k) =
+            hklm.open_subkey_with_flags(&path, KEY_READ | KEY_SET_VALUE | KEY_WOW64_64KEY)
+        {
             let cur_attr: u32 = k.get_value("Attributes").unwrap_or(1);
             let cleared = cur_attr & !0x01;
             if cleared != cur_attr {
@@ -297,18 +317,25 @@ pub fn write_power_setting_index(
     }
 
     if let Some(ac) = ac_value {
-        let mut rc = unsafe { PowerWriteACValueIndex(None, &scheme, Some(&subgroup), Some(&setting), ac) };
-        if rc == WIN32_ERROR(13) && unlock_power_setting_range_if_clamped(&subgroup, &setting, ac)? {
-            rc = unsafe { PowerWriteACValueIndex(None, &scheme, Some(&subgroup), Some(&setting), ac) };
+        let mut rc =
+            unsafe { PowerWriteACValueIndex(None, &scheme, Some(&subgroup), Some(&setting), ac) };
+        if rc == WIN32_ERROR(13) && unlock_power_setting_range_if_clamped(&subgroup, &setting, ac)?
+        {
+            rc = unsafe {
+                PowerWriteACValueIndex(None, &scheme, Some(&subgroup), Some(&setting), ac)
+            };
         }
         if rc != WIN32_ERROR(0) {
             return Err(map_win32_err("PowerWriteACValueIndex", rc));
         }
     }
     if let Some(dc) = dc_value {
-        let mut rc = unsafe { PowerWriteDCValueIndex(None, &scheme, Some(&subgroup), Some(&setting), dc) };
+        let mut rc =
+            unsafe { PowerWriteDCValueIndex(None, &scheme, Some(&subgroup), Some(&setting), dc) };
         if rc == 13 && unlock_power_setting_range_if_clamped(&subgroup, &setting, dc)? {
-            rc = unsafe { PowerWriteDCValueIndex(None, &scheme, Some(&subgroup), Some(&setting), dc) };
+            rc = unsafe {
+                PowerWriteDCValueIndex(None, &scheme, Some(&subgroup), Some(&setting), dc)
+            };
         }
         if rc != 0 {
             return Err(map_win32_err("PowerWriteDCValueIndex", WIN32_ERROR(rc)));
@@ -362,7 +389,10 @@ fn strip_indirect_prefix(raw_name: &str) -> String {
             let id_clean = id_part.trim();
             let label_clean = label_part.trim();
             if !label_clean.is_empty()
-                && id_clean.trim_start_matches('-').chars().all(|c| c.is_ascii_digit())
+                && id_clean
+                    .trim_start_matches('-')
+                    .chars()
+                    .all(|c| c.is_ascii_digit())
             {
                 return label_clean.to_string();
             }
@@ -426,10 +456,10 @@ pub fn list_power_schemes() -> Vec<PowerSchemeInfo> {
 /// applying tuned processor & NVMe/USB/PCIe latency indices while respecting Modern Standby (`AoAc`) warning.
 pub fn create_and_activate_performance_plan() -> Result<String> {
     let existing = list_power_schemes();
-    let scheme = if let Some(found) = existing
-        .iter()
-        .find(|p| p.friendly_name.eq_ignore_ascii_case("WinBlast0 Ultimate Performance"))
-    {
+    let scheme = if let Some(found) = existing.iter().find(|p| {
+        p.friendly_name
+            .eq_ignore_ascii_case("WinBlast0 Ultimate Performance")
+    }) {
         found.guid.clone()
     } else {
         // Prefer Ultimate Performance template, fallback High Performance, fallback current
@@ -451,16 +481,16 @@ pub fn create_and_activate_performance_plan() -> Result<String> {
                 if err == WIN32_ERROR(0) && !dst_ptr.is_null() {
                     let guard = LocalGuidPtr(dst_ptr);
                     let dst = unsafe { *guard.0 };
-                    let name_utf16: Vec<u16> = "WinBlast0 Ultimate Performance\0".encode_utf16().collect();
+                    let name_utf16: Vec<u16> =
+                        "WinBlast0 Ultimate Performance\0".encode_utf16().collect();
                     let name_bytes: &[u8] = unsafe {
                         std::slice::from_raw_parts(
                             name_utf16.as_ptr() as *const u8,
                             name_utf16.len() * 2,
                         )
                     };
-                    let fn_rc = unsafe {
-                        PowerWriteFriendlyName(None, &dst, None, None, name_bytes)
-                    };
+                    let fn_rc =
+                        unsafe { PowerWriteFriendlyName(None, &dst, None, None, name_bytes) };
                     if fn_rc != WIN32_ERROR(0) {
                         tracing::warn!(
                             "PowerWriteFriendlyName failed for scheme {}: Win32 error 0x{:08X}",
@@ -485,19 +515,61 @@ pub fn create_and_activate_performance_plan() -> Result<String> {
     #[allow(clippy::type_complexity)]
     let tuned_settings: &[(&str, &str, Option<u32>, Option<u32>, bool)] = &[
         // Min cores AC/DC = 100 (Class 0)
-        ("54533251-82be-4824-96c1-47b60b740d00", "0cc5b647-c1df-4637-891a-dec35c318583", Some(100), Some(100), true),
+        (
+            "54533251-82be-4824-96c1-47b60b740d00",
+            "0cc5b647-c1df-4637-891a-dec35c318583",
+            Some(100),
+            Some(100),
+            true,
+        ),
         // Max cores AC/DC = 100 (Class 0)
-        ("54533251-82be-4824-96c1-47b60b740d00", "ea062031-0e34-4ff1-9b6d-eb1059334028", Some(100), Some(100), true),
+        (
+            "54533251-82be-4824-96c1-47b60b740d00",
+            "ea062031-0e34-4ff1-9b6d-eb1059334028",
+            Some(100),
+            Some(100),
+            true,
+        ),
         // Min cores AC/DC = 100 (Class 1 / P-core on Intel hybrid)
-        ("54533251-82be-4824-96c1-47b60b740d00", "0cc5b647-c1df-4637-891a-dec35c318584", Some(100), Some(100), true),
+        (
+            "54533251-82be-4824-96c1-47b60b740d00",
+            "0cc5b647-c1df-4637-891a-dec35c318584",
+            Some(100),
+            Some(100),
+            true,
+        ),
         // Max cores AC/DC = 100 (Class 1 / P-core on Intel hybrid)
-        ("54533251-82be-4824-96c1-47b60b740d00", "ea062031-0e34-4ff1-9b6d-eb1059334029", Some(100), Some(100), true),
+        (
+            "54533251-82be-4824-96c1-47b60b740d00",
+            "ea062031-0e34-4ff1-9b6d-eb1059334029",
+            Some(100),
+            Some(100),
+            true,
+        ),
         // Perf increase policy = Rocket (2)
-        ("54533251-82be-4824-96c1-47b60b740d00", "465e1f50-b610-473a-ab58-00d1077dc418", Some(2), Some(2), true),
+        (
+            "54533251-82be-4824-96c1-47b60b740d00",
+            "465e1f50-b610-473a-ab58-00d1077dc418",
+            Some(2),
+            Some(2),
+            true,
+        ),
         // USB selective suspend off AC
-        ("2a737441-1930-4402-8d77-b2bebba308a3", "48e6b7a6-50f5-4782-a5d4-53bb8f07e226", Some(0), None, true),
+        (
+            "2a737441-1930-4402-8d77-b2bebba308a3",
+            "48e6b7a6-50f5-4782-a5d4-53bb8f07e226",
+            Some(0),
+            None,
+            true,
+        ),
         // PCIe ASPM off AC
-        ("501a4d13-42af-4429-9fd1-a8218c268e20", "ee12f906-d277-404b-b6da-e5fa1a576df5", Some(0), None, false),
+        (
+            "501a4d13-42af-4429-9fd1-a8218c268e20",
+            "ee12f906-d277-404b-b6da-e5fa1a576df5",
+            Some(0),
+            None,
+            false,
+        ),
     ];
 
     for &(sub, set, ac, dc, unhide) in tuned_settings {
@@ -533,7 +605,10 @@ pub fn query_hibernation_and_standby() -> HibernationStatus {
 
     let hklm = RegKey::predef(HKEY_LOCAL_MACHINE);
     let hib_reg = hklm
-        .open_subkey_with_flags("SYSTEM\\CurrentControlSet\\Control\\Power", KEY_READ | KEY_WOW64_64KEY)
+        .open_subkey_with_flags(
+            "SYSTEM\\CurrentControlSet\\Control\\Power",
+            KEY_READ | KEY_WOW64_64KEY,
+        )
         .and_then(|k| k.get_value::<u32, _>("HibernateEnabled"))
         .unwrap_or(0)
         == 1;
@@ -556,7 +631,10 @@ pub fn query_hibernation_and_standby() -> HibernationStatus {
         }
     } else {
         let cs_enabled = hklm
-            .open_subkey_with_flags("SYSTEM\\CurrentControlSet\\Control\\Power", KEY_READ | KEY_WOW64_64KEY)
+            .open_subkey_with_flags(
+                "SYSTEM\\CurrentControlSet\\Control\\Power",
+                KEY_READ | KEY_WOW64_64KEY,
+            )
             .and_then(|k| k.get_value::<u32, _>("CsEnabled"))
             .unwrap_or(0)
             == 1;
@@ -611,7 +689,10 @@ pub fn set_hibernation_enabled(enable: bool) -> Result<HibernationStatus> {
 pub fn set_usb_root_hub_power_saving(disable_power_saving: bool) -> Result<usize> {
     let hklm = RegKey::predef(HKEY_LOCAL_MACHINE);
     let usb_root = hklm
-        .open_subkey_with_flags("SYSTEM\\CurrentControlSet\\Enum\\USB", KEY_READ | KEY_WOW64_64KEY)
+        .open_subkey_with_flags(
+            "SYSTEM\\CurrentControlSet\\Enum\\USB",
+            KEY_READ | KEY_WOW64_64KEY,
+        )
         .map_err(WinBlastError::from_reg_err)?;
 
     let mut updated = 0usize;
@@ -621,13 +702,16 @@ pub fn set_usb_root_hub_power_saving(disable_power_saving: bool) -> Result<usize
         if !dev_name.to_ascii_uppercase().contains("ROOT_HUB") {
             continue;
         }
-        if let Ok(dev_key) = usb_root.open_subkey_with_flags(&dev_name, KEY_READ | KEY_WOW64_64KEY) {
+        if let Ok(dev_key) = usb_root.open_subkey_with_flags(&dev_name, KEY_READ | KEY_WOW64_64KEY)
+        {
             for inst_name in dev_key.enum_keys().filter_map(|k| k.ok()) {
                 let param_path = format!("{}\\Device Parameters", inst_name);
-                if let Ok(pk) =
-                    dev_key.open_subkey_with_flags(&param_path, KEY_READ | KEY_SET_VALUE | KEY_WOW64_64KEY)
+                if let Ok(pk) = dev_key
+                    .open_subkey_with_flags(&param_path, KEY_READ | KEY_SET_VALUE | KEY_WOW64_64KEY)
                 {
-                    let ok1 = pk.set_value("EnhancedPowerManagementEnabled", &target_val).is_ok();
+                    let ok1 = pk
+                        .set_value("EnhancedPowerManagementEnabled", &target_val)
+                        .is_ok();
                     let ok2 = pk.set_value("AllowIdleIrpInD3", &target_val).is_ok();
                     let ok3 = pk.set_value("DeviceIdleEnabled", &target_val).is_ok();
                     if ok1 || ok2 || ok3 {
@@ -663,14 +747,20 @@ mod tests {
     fn test_guid_roundtrip_and_normalization() {
         let g = parse_guid("{54533251-82BE-4824-96C1-47B60B740D00}").unwrap();
         assert_eq!(format_guid(&g), "54533251-82be-4824-96c1-47b60b740d00");
-        assert_eq!(normalize_guid_str(" {381B4222-F694-41F0-9685-FF5BB260DF2E} "), "381b4222-f694-41f0-9685-ff5bb260df2e");
+        assert_eq!(
+            normalize_guid_str(" {381B4222-F694-41F0-9685-FF5BB260DF2E} "),
+            "381b4222-f694-41f0-9685-ff5bb260df2e"
+        );
         assert!(parse_guid("not-a-guid").is_err());
     }
 
     #[test]
     fn test_power_scheme_enumeration_nonblocking() {
         let active = get_active_power_scheme();
-        assert!(active.is_ok(), "PowerGetActiveScheme should work on Windows");
+        assert!(
+            active.is_ok(),
+            "PowerGetActiveScheme should work on Windows"
+        );
         let schemes = list_power_schemes();
         // In sandboxed or restricted execution environments, HKLM PowerSchemes subkeys may be unreadable;
         // when present, each entry must have valid GUID and non-empty friendly name.
@@ -689,7 +779,10 @@ mod tests {
         let sub = parse_guid("54533251-82be-4824-96c1-47b60b740d00").unwrap();
         let idle_disable = parse_guid("5d76a2ca-e8c0-402f-a133-2158492d58ad").unwrap();
         let unlocked = unlock_power_setting_range_if_clamped(&sub, &idle_disable, 1).unwrap();
-        assert!(!unlocked, "Enumerated setting must not attempt ValueMin/ValueMax write");
+        assert!(
+            !unlocked,
+            "Enumerated setting must not attempt ValueMin/ValueMax write"
+        );
 
         // Reading CPMINCORES on live host succeeds, while a bogus GUID fails cleanly
         assert!(read_power_setting_index(
@@ -709,11 +802,17 @@ mod tests {
     #[test]
     fn test_fallback_scheme_name_indirect_stripping() {
         assert_eq!(
-            fallback_scheme_name("00000000-0000-0000-0000-000000000001", "@nonexistent_oem.dll,-42,OEM Turbo Plan"),
+            fallback_scheme_name(
+                "00000000-0000-0000-0000-000000000001",
+                "@nonexistent_oem.dll,-42,OEM Turbo Plan"
+            ),
             "OEM Turbo Plan"
         );
         assert_eq!(
-            fallback_scheme_name("381b4222-f694-41f0-9685-ff5bb260df2e", "@nonexistent.dll,-10"),
+            fallback_scheme_name(
+                "381b4222-f694-41f0-9685-ff5bb260df2e",
+                "@nonexistent.dll,-10"
+            ),
             "Balanced"
         );
         assert_eq!(

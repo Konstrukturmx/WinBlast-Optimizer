@@ -90,7 +90,10 @@ pub fn full_telemetry_audit_with(backend: &dyn SystemBackend) -> TelemetryAuditR
     let mut unblocked_hosts = Vec::new();
 
     for host in TELEMETRY_HOSTS {
-        if blocked_in_hosts.iter().any(|b| b.eq_ignore_ascii_case(host)) {
+        if blocked_in_hosts
+            .iter()
+            .any(|b| b.eq_ignore_ascii_case(host))
+        {
             blocked_hosts.push(host.to_string());
         } else {
             unblocked_hosts.push(host.to_string());

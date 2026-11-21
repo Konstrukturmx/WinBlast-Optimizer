@@ -13,13 +13,27 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
     let p = s.palette();
     let style = s.theme_style;
 
-    let cpu_cores = s.cpu_info.as_ref().map(|c| c.physical_cores as u32).unwrap_or(4);
-    let ram_mb = s.realtime_metrics.as_ref().map(|m| m.total_ram_mb).unwrap_or(8192);
+    let cpu_cores = s
+        .cpu_info
+        .as_ref()
+        .map(|c| c.physical_cores as u32)
+        .unwrap_or(4);
+    let ram_mb = s
+        .realtime_metrics
+        .as_ref()
+        .map(|m| m.total_ram_mb)
+        .unwrap_or(8192);
     let gpu_name = s.gpus.first().map(|g| g.name.as_str()).unwrap_or("GPU");
     let hags_active = s.hags_enabled;
-    let has_nvme = s.platform_security.as_ref().map(|ps| {
-        ps.volumes.iter().any(|v| v.media_kind == crate::hardware::sys_inventory::DriveMediaKind::Nvme)
-    }).unwrap_or(false);
+    let has_nvme = s
+        .platform_security
+        .as_ref()
+        .map(|ps| {
+            ps.volumes
+                .iter()
+                .any(|v| v.media_kind == crate::hardware::sys_inventory::DriveMediaKind::Nvme)
+        })
+        .unwrap_or(false);
 
     let evaluated_report = crate::tools::game_overlay::GameSuitabilityReport::evaluate(
         cpu_cores,
@@ -110,7 +124,11 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
         )
         // Feature Checks List
         .children(report.checks.iter().map(|chk| {
-            let chk_color = if chk.is_supported { p.success } else { p.warning };
+            let chk_color = if chk.is_supported {
+                p.success
+            } else {
+                p.warning
+            };
             col()
                 .w_full()
                 .padding(12.0)
@@ -159,5 +177,8 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                         .color(p.text_secondary),
                 )
         }))
-        .scroll(ScrollSpec { stick_bottom: false }).winblast_scroll(p)
+        .scroll(ScrollSpec {
+            stick_bottom: false,
+        })
+        .winblast_scroll(p)
 }

@@ -56,7 +56,8 @@ impl GameSuitabilityReport {
             passed += 1;
             checks.push(SuitabilityCheck {
                 feature_name: "DirectX 12 (Feature Level 12_1+)",
-                description: "Supports Ray Tracing Tier 1.1, Mesh Shaders & Sampler Feedback".to_string(),
+                description: "Supports Ray Tracing Tier 1.1, Mesh Shaders & Sampler Feedback"
+                    .to_string(),
                 is_supported: true,
                 recommendation: "Fully compatible with modern game engines.",
             });
@@ -81,7 +82,8 @@ impl GameSuitabilityReport {
         } else {
             checks.push(SuitabilityCheck {
                 feature_name: "Hardware-Accelerated GPU Scheduling (HAGS)",
-                description: "HAGS is currently disabled or unsupported by display driver".to_string(),
+                description: "HAGS is currently disabled or unsupported by display driver"
+                    .to_string(),
                 is_supported: false,
                 recommendation: "Enable HAGS in GPU MSI & HAGS view to reduce input lag.",
             });
@@ -92,14 +94,18 @@ impl GameSuitabilityReport {
             passed += 1;
             checks.push(SuitabilityCheck {
                 feature_name: "Multi-Core CPU Scheduling (>= 6 Cores)",
-                description: "High thread count prevents frame time spikes in open-world games".to_string(),
+                description: "High thread count prevents frame time spikes in open-world games"
+                    .to_string(),
                 is_supported: true,
                 recommendation: "Excellent CPU core density for esports and AAA titles.",
             });
         } else {
             checks.push(SuitabilityCheck {
                 feature_name: "Multi-Core CPU Scheduling",
-                description: format!("Detected {} cores (modern AAA games recommend >= 6 cores)", cpu_cores),
+                description: format!(
+                    "Detected {} cores (modern AAA games recommend >= 6 cores)",
+                    cpu_cores
+                ),
                 is_supported: false,
                 recommendation: "Unpark cores in CPU Analysis view to prevent micro-stutters.",
             });
@@ -109,7 +115,8 @@ impl GameSuitabilityReport {
         passed += 1;
         checks.push(SuitabilityCheck {
             feature_name: "AVX2 & BMI2 CPU Vector Extensions",
-            description: "Hardware acceleration for game physics and asset decompression".to_string(),
+            description: "Hardware acceleration for game physics and asset decompression"
+                .to_string(),
             is_supported: true,
             recommendation: "Supported on all active cores.",
         });
@@ -119,7 +126,8 @@ impl GameSuitabilityReport {
             passed += 1;
             checks.push(SuitabilityCheck {
                 feature_name: "DirectStorage (NVMe PCIe Gen3/Gen4/Gen5)",
-                description: "Bypasses CPU for direct asset streaming from NVMe to VRAM".to_string(),
+                description: "Bypasses CPU for direct asset streaming from NVMe to VRAM"
+                    .to_string(),
                 is_supported: true,
                 recommendation: "High-speed NVMe storage ready for fast asset streaming.",
             });
@@ -137,14 +145,18 @@ impl GameSuitabilityReport {
             passed += 1;
             checks.push(SuitabilityCheck {
                 feature_name: "High-Speed RAM Capacity (>= 16 GB)",
-                description: "Prevents memory paging bottlenecks during intensive gaming".to_string(),
+                description: "Prevents memory paging bottlenecks during intensive gaming"
+                    .to_string(),
                 is_supported: true,
                 recommendation: "Sufficient memory capacity for high-resolution textures.",
             });
         } else {
             checks.push(SuitabilityCheck {
                 feature_name: "High-Speed RAM Capacity",
-                description: format!("{:.1} GB installed (< 16 GB recommended)", total_ram_mb as f64 / 1024.0),
+                description: format!(
+                    "{:.1} GB installed (< 16 GB recommended)",
+                    total_ram_mb as f64 / 1024.0
+                ),
                 is_supported: false,
                 recommendation: "Close background applications and clean standby RAM.",
             });
@@ -186,7 +198,9 @@ impl GameOverlaySettings {
     pub fn read_live() -> Self {
         let hkcu = RegKey::predef(HKEY_CURRENT_USER);
 
-        let dvr_disabled = if let Ok(key) = hkcu.open_subkey("Software\\Microsoft\\Windows\\CurrentVersion\\GameDVR") {
+        let dvr_disabled = if let Ok(key) =
+            hkcu.open_subkey("Software\\Microsoft\\Windows\\CurrentVersion\\GameDVR")
+        {
             let app_cap: Result<u32, _> = key.get_value("AppCaptureEnabled");
             app_cap.map(|v| v == 0).unwrap_or(false)
         } else {
@@ -213,7 +227,9 @@ impl GameOverlaySettings {
         let hkcu = RegKey::predef(HKEY_CURRENT_USER);
         let val = if disabled { 0u32 } else { 1u32 };
 
-        if let Ok((key, _)) = hkcu.create_subkey("Software\\Microsoft\\Windows\\CurrentVersion\\GameDVR") {
+        if let Ok((key, _)) =
+            hkcu.create_subkey("Software\\Microsoft\\Windows\\CurrentVersion\\GameDVR")
+        {
             let _ = key.set_value("AppCaptureEnabled", &val);
         }
         if let Ok((key, _)) = hkcu.create_subkey("System\\GameConfigStore") {

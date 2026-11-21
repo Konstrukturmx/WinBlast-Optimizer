@@ -78,8 +78,12 @@ impl RepairTask {
                 }
             }
             "winsock" => {
-                let _ = SilentCommand::new("netsh").args(["winsock", "reset"]).output();
-                let _ = SilentCommand::new("netsh").args(["int", "ip", "reset"]).output();
+                let _ = SilentCommand::new("netsh")
+                    .args(["winsock", "reset"])
+                    .output();
+                let _ = SilentCommand::new("netsh")
+                    .args(["int", "ip", "reset"])
+                    .output();
                 Ok("Winsock catalog and TCP/IP stack were successfully reset (system reboot recommended).".to_string())
             }
             "icon_cache" => {
@@ -117,28 +121,50 @@ impl RepairTask {
                     .output()
                     .map_err(|e| format!("Failed to launch dism.exe: {}", e))?;
                 let text = String::from_utf8_lossy(&out.stdout);
-                if text.contains("The restore operation completed successfully") || out.status.success() {
-                    Ok("DISM RestoreHealth: Windows component store was successfully repaired.".to_string())
+                if text.contains("The restore operation completed successfully")
+                    || out.status.success()
+                {
+                    Ok(
+                        "DISM RestoreHealth: Windows component store was successfully repaired."
+                            .to_string(),
+                    )
                 } else {
                     Err(format!("DISM component repair error: {}", text))
                 }
             }
             "wu_reset" => {
-                let _ = SilentCommand::new("net").args(["stop", "wuauserv"]).output();
+                let _ = SilentCommand::new("net")
+                    .args(["stop", "wuauserv"])
+                    .output();
                 let _ = SilentCommand::new("net").args(["stop", "bits"]).output();
                 let windir = std::env::var("WINDIR").unwrap_or_else(|_| "C:\\Windows".to_string());
-                let download_cache = std::path::Path::new(&windir).join("SoftwareDistribution").join("Download");
+                let download_cache = std::path::Path::new(&windir)
+                    .join("SoftwareDistribution")
+                    .join("Download");
                 if download_cache.is_dir() {
                     if let Err(e) = std::fs::remove_dir_all(&download_cache) {
-                        tracing::warn!("Failed to clear SoftwareDistribution download cache {:?}: {}", download_cache, e);
+                        tracing::warn!(
+                            "Failed to clear SoftwareDistribution download cache {:?}: {}",
+                            download_cache,
+                            e
+                        );
                     }
                     if let Err(e) = std::fs::create_dir_all(&download_cache) {
-                        tracing::warn!("Failed to recreate SoftwareDistribution download cache {:?}: {}", download_cache, e);
+                        tracing::warn!(
+                            "Failed to recreate SoftwareDistribution download cache {:?}: {}",
+                            download_cache,
+                            e
+                        );
                     }
                 }
-                let _ = SilentCommand::new("net").args(["start", "wuauserv"]).output();
+                let _ = SilentCommand::new("net")
+                    .args(["start", "wuauserv"])
+                    .output();
                 let _ = SilentCommand::new("net").args(["start", "bits"]).output();
-                Ok("Windows Update services and SoftwareDistribution download cache were reset.".to_string())
+                Ok(
+                    "Windows Update services and SoftwareDistribution download cache were reset."
+                        .to_string(),
+                )
             }
             _ => Err("Unknown repair task ID".to_string()),
         }

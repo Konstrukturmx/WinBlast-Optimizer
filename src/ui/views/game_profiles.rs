@@ -60,94 +60,134 @@ pub fn view(s: &AppState, _tier: LayoutTier) -> El {
                         .color(p.text_muted),
                 )
         } else {
-            col().w_full().min_w(0.0).gap(10.0).children(s.game_profiles.iter().enumerate().map(|(idx, profile)| {
-                let is_active = profile.is_applied;
-                col()
+            col()
+                .w_full()
+                .min_w(0.0)
+                .gap(10.0)
+                .children(s.game_profiles.iter().enumerate().map(|(idx, profile)| {
+                    let is_active = profile.is_applied;
+                    col()
                     .w_full()
                     .min_w(0.0)
                     .padding(p.card_padding)
                     .radius(style.card_radius())
                     .fill(p.card_fill_styled(style))
-                    .border(style.border_width(), if is_active { p.accent } else { p.border_styled(style) })
+                    .border(
+                        style.border_width(),
+                        if is_active {
+                            p.accent
+                        } else {
+                            p.border_styled(style)
+                        },
+                    )
                     .hover(p.bg_card_hover)
                     .motion(p.motion)
                     .gap(8.0)
-                .child(
-                    row()
-                        .w_full()
-                        .center()
-                        .gaps(10.0, 6.0)
-                        .flex_wrap()
-                        .child(
-                            row()
-                                .gap(8.0)
-                                .center()
-                                .grow(1.0)
-                                .min_w(200.0)
-                                .child(text(profile.icon_glyph).font(rune::tok::type_::TITLE))
-                                .child(
-                                    col()
-                                        .child(
-                                            text(profile.title)
-                                                .font(rune::tok::type_::TITLE)
-                                                .color(p.text_primary),
-                                        )
-                                        .child(
-                                            text(format!("{}: {}", s.tr_v(ViewTextKey::GameProfilesTarget), profile.executable))
+                    .child(
+                        row()
+                            .w_full()
+                            .center()
+                            .gaps(10.0, 6.0)
+                            .flex_wrap()
+                            .child(
+                                row()
+                                    .gap(8.0)
+                                    .center()
+                                    .grow(1.0)
+                                    .min_w(200.0)
+                                    .child(text(profile.icon_glyph).font(rune::tok::type_::TITLE))
+                                    .child(
+                                        col()
+                                            .child(
+                                                text(profile.title)
+                                                    .font(rune::tok::type_::TITLE)
+                                                    .color(p.text_primary),
+                                            )
+                                            .child(
+                                                text(format!(
+                                                    "{}: {}",
+                                                    s.tr_v(ViewTextKey::GameProfilesTarget),
+                                                    profile.executable
+                                                ))
                                                 .font(rune::tok::type_::BODY)
                                                 .color(p.text_muted),
-                                        ),
-                                ),
-                        )
-                        .child(
-                            action_button(
-                                if is_active { s.tr_v(ViewTextKey::GameProfilesActiveBtn) } else { s.tr_v(ViewTextKey::GameProfilesApplyBtn) },
-                                if is_active { p.success } else { p.accent },
-                                Color::WHITE,
-                                p,
-                                move |s| {
-                                    if let Some(prof) = s.game_profiles.get_mut(idx) {
-                                        if prof.is_applied {
-                                            let _ = prof.revert();
-                                            prof.is_applied = prof.check_applied();
-                                            s.status_message = s.tr_v(ViewTextKey::GameProfilesRevertedToast).to_string();
-                                        } else {
-                                            let _ = prof.apply();
-                                            prof.is_applied = prof.check_applied();
-                                            s.status_message = s.tr_v(ViewTextKey::GameProfilesAppliedToast).to_string();
-                                        }
-                                    }
-                                },
+                                            ),
+                                    ),
                             )
-                            .radius(style.btn_radius()),
-                        ),
-                )
-                .child(
-                    text(profile.description)
-                        .font(rune::tok::type_::BODY)
-                        .color(p.text_secondary),
-                )
-                .child(
-                    row()
-                        .gaps(12.0, 4.0)
-                        .flex_wrap()
-                        .child(
-                            text("• Yüksek CPU Önceliği (High Priority)")
+                            .child(
+                                action_button(
+                                    if is_active {
+                                        s.tr_v(ViewTextKey::GameProfilesActiveBtn)
+                                    } else {
+                                        s.tr_v(ViewTextKey::GameProfilesApplyBtn)
+                                    },
+                                    if is_active { p.success } else { p.accent },
+                                    Color::WHITE,
+                                    p,
+                                    move |s| {
+                                        if let Some(prof) = s.game_profiles.get_mut(idx) {
+                                            if prof.is_applied {
+                                                let _ = prof.revert();
+                                                prof.is_applied = prof.check_applied();
+                                                s.status_message = s
+                                                    .tr_v(ViewTextKey::GameProfilesRevertedToast)
+                                                    .to_string();
+                                            } else {
+                                                let _ = prof.apply();
+                                                prof.is_applied = prof.check_applied();
+                                                s.status_message = s
+                                                    .tr_v(ViewTextKey::GameProfilesAppliedToast)
+                                                    .to_string();
+                                            }
+                                        }
+                                    },
+                                )
+                                .radius(style.btn_radius()),
+                            ),
+                    )
+                    .child(
+                        text(profile.description)
+                            .font(rune::tok::type_::BODY)
+                            .color(p.text_secondary),
+                    )
+                    .child(
+                        row()
+                            .gaps(12.0, 4.0)
+                            .flex_wrap()
+                            .child(
+                                text("• Yüksek CPU Önceliği (High Priority)")
+                                    .font(rune::tok::type_::LABEL)
+                                    .color(if profile.high_priority {
+                                        p.success
+                                    } else {
+                                        p.text_muted
+                                    }),
+                            )
+                            .child(
+                                text(
+                                    "• Tam Ekran İyileştirmelerini Devre Dışı Bırak (Disable FSO)",
+                                )
                                 .font(rune::tok::type_::LABEL)
-                                .color(if profile.high_priority { p.success } else { p.text_muted }),
-                        )
-                        .child(
-                            text("• Tam Ekran İyileştirmelerini Devre Dışı Bırak (Disable FSO)")
-                                .font(rune::tok::type_::LABEL)
-                                .color(if profile.disable_fso { p.success } else { p.text_muted }),
-                        )
-                        .child(
-                            text("• Tüm Çekirdekleri Uyandır (Unpark Cores)")
-                                .font(rune::tok::type_::LABEL)
-                                .color(if profile.unpark_cores { p.success } else { p.text_muted }),
-                        ),
-                )
-            }))
+                                .color(if profile.disable_fso {
+                                    p.success
+                                } else {
+                                    p.text_muted
+                                }),
+                            )
+                            .child(
+                                text("• Tüm Çekirdekleri Uyandır (Unpark Cores)")
+                                    .font(rune::tok::type_::LABEL)
+                                    .color(if profile.unpark_cores {
+                                        p.success
+                                    } else {
+                                        p.text_muted
+                                    }),
+                            ),
+                    )
+                }))
         })
-        .scroll(ScrollSpec { stick_bottom: false }).winblast_scroll(p)
+        .scroll(ScrollSpec {
+            stick_bottom: false,
+        })
+        .winblast_scroll(p)
 }

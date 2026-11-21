@@ -40,11 +40,7 @@ const MAX_STATUS_LINES: usize = 2;
 /// Displays a clockwise cubic-eased orbital radar spinner, a pulsing central
 /// lightning badge driven by `(elapsed_secs * 3.0).sin()`, crisp action/timer
 /// typography, and a smooth indeterminate sliding progress pill.
-pub fn in_progress_hud(
-    now_secs: f64,
-    status_message: &str,
-    palette: &ThemePalette,
-) -> El {
+pub fn in_progress_hud(now_secs: f64, status_message: &str, palette: &ThemePalette) -> El {
     let elapsed = sanitize_elapsed(now_secs);
     let display_action = if status_message.trim().is_empty() {
         "Optimizing Windows..."
@@ -59,17 +55,15 @@ pub fn in_progress_hud(
     let background_btn = row()
         .center()
         .pt(4.0)
-        .child(
-            crate::ui::widgets::button::action_button(
-                "Run in Background",
-                Color::TRANSPARENT,
-                palette.text_muted,
-                palette,
-                |s| {
-                    s.dismiss_progress_hud = true;
-                },
-            ),
-        );
+        .child(crate::ui::widgets::button::action_button(
+            "Run in Background",
+            Color::TRANSPARENT,
+            palette.text_muted,
+            palette,
+            |s| {
+                s.dismiss_progress_hud = true;
+            },
+        ));
 
     // Floating Acrylic/Mica-style card
     let modal_card = col()
@@ -90,7 +84,9 @@ pub fn in_progress_hud(
         .key("in_progress_hud_overlay")
         .pin(Some(0.0), Some(0.0), Some(0.0), Some(0.0))
         .fill(Color::BLACK.alpha(0.50))
-        .modal(true, |s: &mut crate::app::AppState| s.dismiss_progress_hud = true)
+        .modal(true, |s: &mut crate::app::AppState| {
+            s.dismiss_progress_hud = true
+        })
         .center()
         .child(modal_card)
 }
@@ -187,10 +183,7 @@ fn build_orbital_spinner(elapsed: f64, palette: &ThemePalette) -> El {
             .fill(palette.accent.alpha(0.14 + 0.10 * pulse))
             .border(1.0, palette.accent.alpha(0.32 + 0.28 * pulse))
             .pin(Some(badge_offset), Some(badge_offset), None, None)
-            .child(
-                text("⚡")
-                    .color(palette.accent.alpha(0.78 + 0.22 * pulse)),
-            ),
+            .child(text("⚡").color(palette.accent.alpha(0.78 + 0.22 * pulse))),
     );
 
     canvas
@@ -228,17 +221,17 @@ fn build_typography_block(action_name: &str, elapsed: f64, palette: &ThemePalett
                 .color(palette.text_secondary),
         );
 
-    let lines = wrap_and_truncate_status(
-        action_name,
-        MAX_STATUS_CHARS_PER_LINE,
-        MAX_STATUS_LINES,
-    );
+    let lines = wrap_and_truncate_status(action_name, MAX_STATUS_CHARS_PER_LINE, MAX_STATUS_LINES);
 
     let mut title_col = col().gap(2.0).center();
     for (idx, line) in lines.iter().enumerate() {
         title_col = title_col.child(
             text(line)
-                .font(if idx == 0 { rune::tok::type_::TITLE } else { rune::tok::type_::BODY })
+                .font(if idx == 0 {
+                    rune::tok::type_::TITLE
+                } else {
+                    rune::tok::type_::BODY
+                })
                 .color(palette.text_primary),
         );
     }
@@ -361,7 +354,10 @@ pub fn wrap_and_truncate_status(
             }
 
             if word.chars().count() > max_chars_per_line {
-                let chunk: String = word.chars().take(max_chars_per_line.saturating_sub(1)).collect();
+                let chunk: String = word
+                    .chars()
+                    .take(max_chars_per_line.saturating_sub(1))
+                    .collect();
                 lines.push(format!("{}…", chunk));
                 if lines.len() == max_lines {
                     break;
@@ -389,7 +385,8 @@ mod tests {
 
     #[test]
     fn test_wrap_and_truncate_status() {
-        let s = "Scanning Windows Registry and removing telemetry tracking components from the host";
+        let s =
+            "Scanning Windows Registry and removing telemetry tracking components from the host";
         let lines = wrap_and_truncate_status(s, 30, 2);
         assert!(!lines.is_empty());
         assert!(lines.len() <= 2);

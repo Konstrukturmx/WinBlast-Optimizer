@@ -1,7 +1,7 @@
 //! Custom themed scrollbar styling, rail track visibility, and momentum scrolling helpers.
 
-use rune_kit::{ScrollBar, ScrollBarStyle};
 use crate::ui::theme::{ThemePalette, UiThemeStyle};
+use rune_kit::{ScrollBar, ScrollBarStyle};
 
 /// Momentum friction and physics constants for silky smooth scrolling across viewport tiers.
 pub const SCROLL_MOMENTUM_FRICTION: f32 = 0.94;

@@ -98,18 +98,26 @@ pub fn localize_tweak(lang: Language, tweak_id: &str) -> Option<LocalizedTweakTe
 #[allow(dead_code)]
 pub fn tweak_title(id: &str) -> Option<&'static str> {
     match id {
-        "disable_driver_search_order_probing" => Some("Disable Windows Update Driver Search Probing"),
+        "disable_driver_search_order_probing" => {
+            Some("Disable Windows Update Driver Search Probing")
+        }
         "disable_fast_user_switching" => Some("Disable Fast User Switching"),
         "disable_ip_source_routing" => Some("Disable IP Source Routing"),
         "disable_netsh_teredo_tunneling" => Some("Disable Teredo IPv6 Transition Tunneling"),
-        "disable_network_adapter_power_saving" => Some("Disable NDIS Network Adapter PnP Power Saving"),
+        "disable_network_adapter_power_saving" => {
+            Some("Disable NDIS Network Adapter PnP Power Saving")
+        }
         "disable_remote_desktop_udp" => Some("Disable Remote Desktop Client UDP Transport"),
         "disable_smart_card_service" => Some("Disable Smart Card Service (SCardSvr)"),
         "optimize_kerberos_ticket_cache" => Some("Optimize Kerberos Max Token Size Buffer"),
         "optimize_tcp_syn_attack_protection" => Some("Enable TCP SYN Attack Protection"),
         "optimize_usb_selective_suspend_hub" => Some("Disable Global USB Hub Selective Suspend"),
-        "disable_dwm_animations_per_process" => Some("Disable DWM Per-Process Transition Animations"),
-        "disable_dwm_composition_throttle" => Some("Disable Desktop Window Manager Composition Throttle"),
+        "disable_dwm_animations_per_process" => {
+            Some("Disable DWM Per-Process Transition Animations")
+        }
+        "disable_dwm_composition_throttle" => {
+            Some("Disable Desktop Window Manager Composition Throttle")
+        }
         "disable_kernel_mitigations_audit" => Some("Disable Kernel Mitigations Audit Mode"),
         "disable_llmnr_protocol" => Some("Disable LLMNR Name Resolution Protocol"),
         "disable_memory_compression" => Some("Disable Memory Compression Engine"),
@@ -118,38 +126,64 @@ pub fn tweak_title(id: &str) -> Option<&'static str> {
         "disable_page_file_encryption" => Some("Disable Page File Encryption & Clear-on-Shutdown"),
         "disable_processor_idle_demote_threshold" => Some("Disable Processor Idle State Demotion"),
         "disable_rss_base_cpu" => Some("Set RSS Base CPU for Network Load Distribution"),
-        "disable_spectre_meltdown_mitigations" => Some("Disable Spectre/Meltdown CPU Vulnerability Mitigations"),
-        "disable_threaded_dpc_optimization" => Some("Disable Threaded DPC for Lower Interrupt Latency"),
+        "disable_spectre_meltdown_mitigations" => {
+            Some("Disable Spectre/Meltdown CPU Vulnerability Mitigations")
+        }
+        "disable_threaded_dpc_optimization" => {
+            Some("Disable Threaded DPC for Lower Interrupt Latency")
+        }
         "disable_windows_search_indexer" => Some("Disable Windows Search Indexer Service"),
         "enable_hardware_task_offload" => Some("Enable TCP/IP Hardware Task Offloading"),
         "enable_large_ntfs_frs" => Some("Enable Large NTFS File Record Segments"),
         "enable_ultimate_performance_plan" => Some("Activate Ultimate Performance Power Plan"),
         "increase_gpu_tdr_timeout" => Some("Increase GPU Timeout Detection and Recovery Delay"),
         "increase_irp_stack_size" => Some("Increase IRP Stack Size for Network/Disk IO"),
-        "increase_max_connections_per_server" => Some("Increase Maximum HTTP Connections Per Server"),
-        "increase_nonpaged_pool_quota" => Some("Increase Non-Paged Pool Quota for Driver Stability"),
-        "optimize_additional_critical_worker_threads" => Some("Increase Additional Kernel Worker Threads"),
+        "increase_max_connections_per_server" => {
+            Some("Increase Maximum HTTP Connections Per Server")
+        }
+        "increase_nonpaged_pool_quota" => {
+            Some("Increase Non-Paged Pool Quota for Driver Stability")
+        }
+        "optimize_additional_critical_worker_threads" => {
+            Some("Increase Additional Kernel Worker Threads")
+        }
         "optimize_default_ttl" => Some("Set Optimal Default IP Packet TTL"),
-        "optimize_disk_io_page_lock_limit" => Some("Increase IO Page Lock Limit for Larger Transfers"),
+        "optimize_disk_io_page_lock_limit" => {
+            Some("Increase IO Page Lock Limit for Larger Transfers")
+        }
         "optimize_dns_cache_parameters" => Some("Optimize DNS Client Cache Size and TTL"),
         "optimize_gpu_preemption_level" => Some("Set GPU Scheduler to Compute-Only Preemption"),
         "optimize_interrupt_steering" => Some("Optimize Interrupt Affinity and Steering Policy"),
-        "optimize_mmcss_proaudio_scheduling" => Some("MMCSS Pro Audio — Maximum Scheduling Priority"),
+        "optimize_mmcss_proaudio_scheduling" => {
+            Some("MMCSS Pro Audio — Maximum Scheduling Priority")
+        }
         "optimize_ntfs_memory_usage" => Some("Aggressive NTFS Paged-Pool Caching"),
         "optimize_object_manager_quota" => Some("Increase Kernel Object Manager Handle Quota"),
-        "optimize_timer_resolution_requests" => Some("Allow Applications to Request High Timer Resolution"),
+        "optimize_timer_resolution_requests" => {
+            Some("Allow Applications to Request High Timer Resolution")
+        }
         "disable_wpbt_execution" => Some("Disable WPBT Firmware Binary Execution"),
         "service_shutdown_timeout_15s" => Some("Reduce Service Shutdown Timeout to 15s"),
         "set_this_pc_as_default_explorer" => Some("Set 'This PC' as Default File Explorer View"),
         "enable_taskbar_end_task" => Some("Enable Right-Click 'End Task' on Taskbar"),
-        "disable_oobe_privacy_experience" => Some("Disable Windows OOBE Privacy Settings Experience Prompt"),
-        "disable_explorer_sync_provider_ads" => Some("Disable File Explorer Sync Provider Advertisements"),
+        "disable_oobe_privacy_experience" => {
+            Some("Disable Windows OOBE Privacy Settings Experience Prompt")
+        }
+        "disable_explorer_sync_provider_ads" => {
+            Some("Disable File Explorer Sync Provider Advertisements")
+        }
         "disable_taskbar_task_view" => Some("Disable Task View Button on Taskbar"),
         "hide_taskbar_meet_now" => Some("Hide 'Meet Now' & Chat Button from Taskbar"),
         "disable_background_apps_global" => Some("Disable Background Apps Execution Globally"),
-        "disable_finish_setup_ads" => Some("Disable 'Finish Setting Up Your PC' Fullscreen Prompts"),
-        "disable_lockscreen_spotlight_ads" => Some("Disable Lock Screen Tips, Tricks & Spotlight Advertisements"),
-        "disable_welcome_experience_ads" => Some("Disable Windows Welcome Experience Promotional Screens"),
+        "disable_finish_setup_ads" => {
+            Some("Disable 'Finish Setting Up Your PC' Fullscreen Prompts")
+        }
+        "disable_lockscreen_spotlight_ads" => {
+            Some("Disable Lock Screen Tips, Tricks & Spotlight Advertisements")
+        }
+        "disable_welcome_experience_ads" => {
+            Some("Disable Windows Welcome Experience Promotional Screens")
+        }
         "disable_general_tips_ads" => Some("Disable Windows Suggestions, Tips & Trick Banners"),
         "enable_windowed_game_optimizations" => Some("Enable Optimizations for Windowed Games"),
         _ => None,
@@ -217,7 +251,6 @@ pub fn tweak_description(id: &str) -> Option<&'static str> {
         _ => None,
     }
 }
-
 
 static CATEGORY_TABLE: &[(&str, [&str; 7])] = &[
     (
@@ -533,22 +566,49 @@ static WINGET_TABLE: &[(&str, [(&str, &str); 7])] = &[
             (CAT_UTILITIES[0], "Hızlı ve açık kaynaklı dosya arşivleyici"),
             (CAT_UTILITIES[1], "Schneller Open-Source-Dateiarchivierer"),
             (CAT_UTILITIES[2], "Archiveur de fichiers open-source rapide"),
-            (CAT_UTILITIES[3], "Compresor y archivador de código abierto rápido"),
-            (CAT_UTILITIES[4], "Быстрый архиватор с открытым исходным кодом"),
+            (
+                CAT_UTILITIES[3],
+                "Compresor y archivador de código abierto rápido",
+            ),
+            (
+                CAT_UTILITIES[4],
+                "Быстрый архиватор с открытым исходным кодом",
+            ),
             (CAT_UTILITIES[5], "快速、开源的文件压缩与归档工具"),
-            (CAT_UTILITIES[6], "高速なオープンソースのファイル圧縮・解凍ツール"),
+            (
+                CAT_UTILITIES[6],
+                "高速なオープンソースのファイル圧縮・解凍ツール",
+            ),
         ],
     ),
     (
         "Microsoft.PowerToys",
         [
-            (CAT_UTILITIES[0], "Microsoft'un resmi uzman kullanıcı araç paketi"),
-            (CAT_UTILITIES[1], "Offizielle Microsoft-Tool-Sammlung für Power-User"),
-            (CAT_UTILITIES[2], "Suite officielle d'utilitaires Microsoft pour utilisateurs avancés"),
-            (CAT_UTILITIES[3], "Suite oficial de utilidades de Microsoft para usuarios avanzados"),
-            (CAT_UTILITIES[4], "Официальный набор утилит Microsoft для опытных пользователей"),
+            (
+                CAT_UTILITIES[0],
+                "Microsoft'un resmi uzman kullanıcı araç paketi",
+            ),
+            (
+                CAT_UTILITIES[1],
+                "Offizielle Microsoft-Tool-Sammlung für Power-User",
+            ),
+            (
+                CAT_UTILITIES[2],
+                "Suite officielle d'utilitaires Microsoft pour utilisateurs avancés",
+            ),
+            (
+                CAT_UTILITIES[3],
+                "Suite oficial de utilidades de Microsoft para usuarios avanzados",
+            ),
+            (
+                CAT_UTILITIES[4],
+                "Официальный набор утилит Microsoft для опытных пользователей",
+            ),
             (CAT_UTILITIES[5], "微软官方高阶用户系统增强工具套件"),
-            (CAT_UTILITIES[6], "Microsoft 公式のパワーユーザー向けユーティリティ群"),
+            (
+                CAT_UTILITIES[6],
+                "Microsoft 公式のパワーユーザー向けユーティリティ群",
+            ),
         ],
     ),
     (
@@ -556,33 +616,66 @@ static WINGET_TABLE: &[(&str, [(&str, &str); 7])] = &[
         [
             (CAT_UTILITIES[0], "Anlık NTFS dosya adı arama motoru"),
             (CAT_UTILITIES[1], "Sofortige NTFS-Dateinamensuche"),
-            (CAT_UTILITIES[2], "Moteur de recherche instantanée de fichiers NTFS"),
-            (CAT_UTILITIES[3], "Motor de búsqueda instantánea de archivos NTFS"),
-            (CAT_UTILITIES[4], "Мгновенный поиск файлов на томах NTFS по имени"),
+            (
+                CAT_UTILITIES[2],
+                "Moteur de recherche instantanée de fichiers NTFS",
+            ),
+            (
+                CAT_UTILITIES[3],
+                "Motor de búsqueda instantánea de archivos NTFS",
+            ),
+            (
+                CAT_UTILITIES[4],
+                "Мгновенный поиск файлов на томах NTFS по имени",
+            ),
             (CAT_UTILITIES[5], "毫秒级响应的 NTFS 文件名即时搜索引擎"),
-            (CAT_UTILITIES[6], "NTFS ファイル名を瞬時に検索する高速検索エンジン"),
+            (
+                CAT_UTILITIES[6],
+                "NTFS ファイル名を瞬時に検索する高速検索エンジン",
+            ),
         ],
     ),
     (
         "Notepad++.Notepad++",
         [
-            (CAT_DEVELOPMENT[0], "Hafif metin ve kaynak kodu düzenleyicisi"),
-            (CAT_DEVELOPMENT[1], "Leichtgewichtiger Text- und Quellcode-Editor"),
-            (CAT_DEVELOPMENT[2], "Éditeur léger de texte et de code source"),
+            (
+                CAT_DEVELOPMENT[0],
+                "Hafif metin ve kaynak kodu düzenleyicisi",
+            ),
+            (
+                CAT_DEVELOPMENT[1],
+                "Leichtgewichtiger Text- und Quellcode-Editor",
+            ),
+            (
+                CAT_DEVELOPMENT[2],
+                "Éditeur léger de texte et de code source",
+            ),
             (CAT_DEVELOPMENT[3], "Editor ligero de texto y código fuente"),
-            (CAT_DEVELOPMENT[4], "Лёгкий текстовый редактор и редактор исходного кода"),
+            (
+                CAT_DEVELOPMENT[4],
+                "Лёгкий текстовый редактор и редактор исходного кода",
+            ),
             (CAT_DEVELOPMENT[5], "轻量级文本与源代码编辑器"),
-            (CAT_DEVELOPMENT[6], "軽量なテキストおよびソースコードエディター"),
+            (
+                CAT_DEVELOPMENT[6],
+                "軽量なテキストおよびソースコードエディター",
+            ),
         ],
     ),
     (
         "VideoLAN.VLC",
         [
             (CAT_MEDIA[0], "Açık kaynaklı çoklu ortam oynatıcısı"),
-            (CAT_MEDIA[1], "Open-Source-Mediaplayer für nahezu alle Formate"),
+            (
+                CAT_MEDIA[1],
+                "Open-Source-Mediaplayer für nahezu alle Formate",
+            ),
             (CAT_MEDIA[2], "Lecteur multimédia open-source"),
             (CAT_MEDIA[3], "Reproductor multimedia de código abierto"),
-            (CAT_MEDIA[4], "Мультимедиа-проигрыватель с открытым исходным кодом"),
+            (
+                CAT_MEDIA[4],
+                "Мультимедиа-проигрыватель с открытым исходным кодом",
+            ),
             (CAT_MEDIA[5], "开源全能多媒体播放器"),
             (CAT_MEDIA[6], "オープンソースのマルチメディアプレーヤー"),
         ],
@@ -590,11 +683,26 @@ static WINGET_TABLE: &[(&str, [(&str, &str); 7])] = &[
     (
         "ShareX.ShareX",
         [
-            (CAT_UTILITIES[0], "Hafif ekran görüntüsü alma ve açıklama aracı"),
-            (CAT_UTILITIES[1], "Leichtgewichtiges Werkzeug für Screenshots und Anmerkungen"),
-            (CAT_UTILITIES[2], "Outil léger de capture d'écran et d'annotation"),
-            (CAT_UTILITIES[3], "Herramienta ligera de captura de pantalla y anotación"),
-            (CAT_UTILITIES[4], "Лёгкий инструмент для снимков экрана и аннотаций"),
+            (
+                CAT_UTILITIES[0],
+                "Hafif ekran görüntüsü alma ve açıklama aracı",
+            ),
+            (
+                CAT_UTILITIES[1],
+                "Leichtgewichtiges Werkzeug für Screenshots und Anmerkungen",
+            ),
+            (
+                CAT_UTILITIES[2],
+                "Outil léger de capture d'écran et d'annotation",
+            ),
+            (
+                CAT_UTILITIES[3],
+                "Herramienta ligera de captura de pantalla y anotación",
+            ),
+            (
+                CAT_UTILITIES[4],
+                "Лёгкий инструмент для снимков экрана и аннотаций",
+            ),
             (CAT_UTILITIES[5], "轻量级屏幕截图与标注工具"),
             (CAT_UTILITIES[6], "軽量なスクリーンショット撮影・注釈ツール"),
         ],
@@ -603,9 +711,18 @@ static WINGET_TABLE: &[(&str, [(&str, &str); 7])] = &[
         "OBSProject.OBSStudio",
         [
             (CAT_MEDIA[0], "Ekran kaydı ve canlı yayın stüdyosu"),
-            (CAT_MEDIA[1], "Studio für Bildschirmaufnahme und Livestreaming"),
-            (CAT_MEDIA[2], "Studio d'enregistrement d'écran et de diffusion en direct"),
-            (CAT_MEDIA[3], "Estudio de grabación de pantalla y transmisión en vivo"),
+            (
+                CAT_MEDIA[1],
+                "Studio für Bildschirmaufnahme und Livestreaming",
+            ),
+            (
+                CAT_MEDIA[2],
+                "Studio d'enregistrement d'écran et de diffusion en direct",
+            ),
+            (
+                CAT_MEDIA[3],
+                "Estudio de grabación de pantalla y transmisión en vivo",
+            ),
             (CAT_MEDIA[4], "Студия для записи экрана и прямых трансляций"),
             (CAT_MEDIA[5], "开源屏幕录制与实时直播工作室"),
             (CAT_MEDIA[6], "画面録画およびライブ配信スタジオ"),
@@ -614,25 +731,61 @@ static WINGET_TABLE: &[(&str, [(&str, &str); 7])] = &[
     (
         "Mozilla.Firefox",
         [
-            (CAT_BROWSERS[0], "Gizlilik odaklı açık kaynaklı web tarayıcısı"),
-            (CAT_BROWSERS[1], "Datenschutzorientierter Open-Source-Webbrowser"),
-            (CAT_BROWSERS[2], "Navigateur web open-source axé sur la confidentialité"),
-            (CAT_BROWSERS[3], "Navegador web de código abierto centrado en la privacidad"),
-            (CAT_BROWSERS[4], "Веб-браузер с открытым исходным кодом и фокусом на приватность"),
+            (
+                CAT_BROWSERS[0],
+                "Gizlilik odaklı açık kaynaklı web tarayıcısı",
+            ),
+            (
+                CAT_BROWSERS[1],
+                "Datenschutzorientierter Open-Source-Webbrowser",
+            ),
+            (
+                CAT_BROWSERS[2],
+                "Navigateur web open-source axé sur la confidentialité",
+            ),
+            (
+                CAT_BROWSERS[3],
+                "Navegador web de código abierto centrado en la privacidad",
+            ),
+            (
+                CAT_BROWSERS[4],
+                "Веб-браузер с открытым исходным кодом и фокусом на приватность",
+            ),
             (CAT_BROWSERS[5], "注重隐私保护的开源网页浏览器"),
-            (CAT_BROWSERS[6], "プライバシー重視のオープンソース Web ブラウザー"),
+            (
+                CAT_BROWSERS[6],
+                "プライバシー重視のオープンソース Web ブラウザー",
+            ),
         ],
     ),
     (
         "Brave.Brave",
         [
-            (CAT_BROWSERS[0], "Yerleşik reklam ve izleyici korumalı Chromium tarayıcısı"),
-            (CAT_BROWSERS[1], "Chromium-Browser mit integriertem Werbe- und Tracker-Blocker"),
-            (CAT_BROWSERS[2], "Navigateur Chromium avec bloqueur de pubs et traqueurs intégré"),
-            (CAT_BROWSERS[3], "Navegador Chromium con bloqueo integrado de anuncios y rastreadores"),
-            (CAT_BROWSERS[4], "Браузер на базе Chromium со встроенной защитой от рекламы и трекеров"),
+            (
+                CAT_BROWSERS[0],
+                "Yerleşik reklam ve izleyici korumalı Chromium tarayıcısı",
+            ),
+            (
+                CAT_BROWSERS[1],
+                "Chromium-Browser mit integriertem Werbe- und Tracker-Blocker",
+            ),
+            (
+                CAT_BROWSERS[2],
+                "Navigateur Chromium avec bloqueur de pubs et traqueurs intégré",
+            ),
+            (
+                CAT_BROWSERS[3],
+                "Navegador Chromium con bloqueo integrado de anuncios y rastreadores",
+            ),
+            (
+                CAT_BROWSERS[4],
+                "Браузер на базе Chromium со встроенной защитой от рекламы и трекеров",
+            ),
             (CAT_BROWSERS[5], "内置广告与追踪器拦截盾的 Chromium 浏览器"),
-            (CAT_BROWSERS[6], "広告・トラッカー遮断機能内蔵の Chromium ブラウザー"),
+            (
+                CAT_BROWSERS[6],
+                "広告・トラッカー遮断機能内蔵の Chromium ブラウザー",
+            ),
         ],
     ),
     (
@@ -652,8 +805,14 @@ static WINGET_TABLE: &[(&str, [(&str, &str); 7])] = &[
         [
             (CAT_DEVELOPMENT[0], "Dağıtılmış sürüm kontrol sistemi"),
             (CAT_DEVELOPMENT[1], "Verteiltes Versionskontrollsystem"),
-            (CAT_DEVELOPMENT[2], "Système de gestion de versions décentralisé"),
-            (CAT_DEVELOPMENT[3], "Sistema de control de versiones distribuido"),
+            (
+                CAT_DEVELOPMENT[2],
+                "Système de gestion de versions décentralisé",
+            ),
+            (
+                CAT_DEVELOPMENT[3],
+                "Sistema de control de versiones distribuido",
+            ),
             (CAT_DEVELOPMENT[4], "Распределённая система контроля версий"),
             (CAT_DEVELOPMENT[5], "分布式版本控制系统"),
             (CAT_DEVELOPMENT[6], "分散型バージョン管理システム"),
@@ -662,13 +821,31 @@ static WINGET_TABLE: &[(&str, [(&str, &str); 7])] = &[
     (
         "CPUID.HWMonitor",
         [
-            (CAT_DIAGNOSTICS[0], "Donanım voltajı, fan ve sıcaklık sensörü izleyicisi"),
-            (CAT_DIAGNOSTICS[1], "Monitor für Spannungen, Lüfterdrehzahlen und Temperatursensoren"),
-            (CAT_DIAGNOSTICS[2], "Moniteur de tensions, ventilateurs et sondes de température"),
-            (CAT_DIAGNOSTICS[3], "Monitor de voltaje, ventiladores y sensores de temperatura"),
-            (CAT_DIAGNOSTICS[4], "Монитор напряжений, вентиляторов и датчиков температуры"),
+            (
+                CAT_DIAGNOSTICS[0],
+                "Donanım voltajı, fan ve sıcaklık sensörü izleyicisi",
+            ),
+            (
+                CAT_DIAGNOSTICS[1],
+                "Monitor für Spannungen, Lüfterdrehzahlen und Temperatursensoren",
+            ),
+            (
+                CAT_DIAGNOSTICS[2],
+                "Moniteur de tensions, ventilateurs et sondes de température",
+            ),
+            (
+                CAT_DIAGNOSTICS[3],
+                "Monitor de voltaje, ventiladores y sensores de temperatura",
+            ),
+            (
+                CAT_DIAGNOSTICS[4],
+                "Монитор напряжений, вентиляторов и датчиков температуры",
+            ),
             (CAT_DIAGNOSTICS[5], "硬件电压、风扇转速与温度传感器监测工具"),
-            (CAT_DIAGNOSTICS[6], "ハードウェアの電圧・ファン回転数・温度センサー監視ツール"),
+            (
+                CAT_DIAGNOSTICS[6],
+                "ハードウェアの電圧・ファン回転数・温度センサー監視ツール",
+            ),
         ],
     ),
 ];
@@ -1136,14 +1313,7 @@ static LEDGER_TOKEN_TABLE: &[(&str, [&str; 8])] = &[
     (
         "false",
         [
-            "False",
-            "Yanlış",
-            "Falsch",
-            "Faux",
-            "Falso",
-            "Ложь",
-            "假",
-            "偽",
+            "False", "Yanlış", "Falsch", "Faux", "Falso", "Ложь", "假", "偽",
         ],
     ),
 ];
@@ -1154,7 +1324,11 @@ pub fn localize_ledger_token(lang: Language, token: &str) -> String {
     let trimmed = token.trim();
     for (key, vals) in LEDGER_TOKEN_TABLE {
         if key.eq_ignore_ascii_case(trimmed) {
-            return vals.get(lang as usize).copied().unwrap_or(vals[0]).to_string();
+            return vals
+                .get(lang as usize)
+                .copied()
+                .unwrap_or(vals[0])
+                .to_string();
         }
     }
     token.to_string()
@@ -1191,7 +1365,10 @@ mod tests {
 
             for lang in NON_ENGLISH_LANGS {
                 let loc = localize_tweak(lang, &tweak.id).unwrap_or_else(|| {
-                    panic!("Missing localization for tweak '{}' in {:?}", tweak.id, lang)
+                    panic!(
+                        "Missing localization for tweak '{}' in {:?}",
+                        tweak.id, lang
+                    )
                 });
                 assert!(
                     !loc.title.trim().is_empty(),
@@ -1261,7 +1438,10 @@ mod tests {
                     assert_ne!(loc, cat, "Category '{}' untranslated for {:?}", cat, lang);
                 }
             }
-            assert_eq!(localize_category(lang, "Custom Category"), "Custom Category");
+            assert_eq!(
+                localize_category(lang, "Custom Category"),
+                "Custom Category"
+            );
 
             for sub in sub_categories {
                 let loc = localize_sub_category(lang, sub);
@@ -1310,7 +1490,11 @@ mod tests {
             }
         }
         // Prefix matching when DISM version suffix differs or is omitted
-        assert!(localize_optional_feature(Language::Russian, "Browser.InternetExplorer~~~~0.0.99.0").is_some());
+        assert!(localize_optional_feature(
+            Language::Russian,
+            "Browser.InternetExplorer~~~~0.0.99.0"
+        )
+        .is_some());
         assert!(localize_optional_feature(Language::Japanese, "App.StepsRecorder").is_some());
 
         assert_eq!(KNOWN_TELEMETRY_SERVICES.len(), 9);
@@ -1318,7 +1502,10 @@ mod tests {
             assert!(localize_telemetry_service(Language::English, svc).is_none());
             for lang in NON_ENGLISH_LANGS {
                 let text = localize_telemetry_service(lang, svc).unwrap_or_else(|| {
-                    panic!("Missing telemetry service localization for '{}' in {:?}", svc, lang)
+                    panic!(
+                        "Missing telemetry service localization for '{}' in {:?}",
+                        svc, lang
+                    )
                 });
                 assert!(!text.trim().is_empty());
             }
@@ -1342,7 +1529,10 @@ mod tests {
                 let loc = localize_power_scheme_name(lang, s);
                 assert!(!loc.trim().is_empty());
             }
-            assert_eq!(localize_power_scheme_name(lang, "My Custom Plan"), "My Custom Plan");
+            assert_eq!(
+                localize_power_scheme_name(lang, "My Custom Plan"),
+                "My Custom Plan"
+            );
         }
 
         let tokens = [
@@ -1375,18 +1565,33 @@ mod tests {
         let deep_opt_toml = include_str!("../../../assets/rules/system_deep_opt.toml");
         let catalog = toml::from_str::<crate::core::risk::TweakCatalog>(deep_opt_toml)
             .expect("system_deep_opt.toml should parse cleanly");
-        assert_eq!(catalog.tweaks.len(), 32, "Expected 32 deep optimization tweaks");
+        assert_eq!(
+            catalog.tweaks.len(),
+            32,
+            "Expected 32 deep optimization tweaks"
+        );
 
         for tweak in &catalog.tweaks {
             // English base lookup
             let en_title = tweak_title(&tweak.id);
-            assert!(en_title.is_some(), "Missing English tweak_title for {}", tweak.id);
+            assert!(
+                en_title.is_some(),
+                "Missing English tweak_title for {}",
+                tweak.id
+            );
             let en_desc = tweak_description(&tweak.id);
-            assert!(en_desc.is_some(), "Missing English tweak_description for {}", tweak.id);
+            assert!(
+                en_desc.is_some(),
+                "Missing English tweak_description for {}",
+                tweak.id
+            );
 
             for lang in NON_ENGLISH_LANGS {
                 let loc = localize_tweak(lang, &tweak.id).unwrap_or_else(|| {
-                    panic!("Missing localization for tweak '{}' in {:?}", tweak.id, lang)
+                    panic!(
+                        "Missing localization for tweak '{}' in {:?}",
+                        tweak.id, lang
+                    )
                 });
                 assert!(
                     !loc.title.trim().is_empty(),
@@ -1418,25 +1623,39 @@ mod tests {
             }
         }
     }
-
 
     #[test]
     fn test_all_11_gaming_latency_ultra_tweaks_localized_all_7_languages() {
         let ultra_toml = include_str!("../../../assets/rules/gaming_latency_ultra.toml");
         let catalog = toml::from_str::<crate::core::risk::TweakCatalog>(ultra_toml)
             .expect("gaming_latency_ultra.toml should parse cleanly");
-        assert_eq!(catalog.tweaks.len(), 11, "Expected 11 gaming latency ultra tweaks");
+        assert_eq!(
+            catalog.tweaks.len(),
+            11,
+            "Expected 11 gaming latency ultra tweaks"
+        );
 
         for tweak in &catalog.tweaks {
             // English base lookup
             let en_title = tweak_title(&tweak.id);
-            assert!(en_title.is_some(), "Missing English tweak_title for {}", tweak.id);
+            assert!(
+                en_title.is_some(),
+                "Missing English tweak_title for {}",
+                tweak.id
+            );
             let en_desc = tweak_description(&tweak.id);
-            assert!(en_desc.is_some(), "Missing English tweak_description for {}", tweak.id);
+            assert!(
+                en_desc.is_some(),
+                "Missing English tweak_description for {}",
+                tweak.id
+            );
 
             for lang in NON_ENGLISH_LANGS {
                 let loc = localize_tweak(lang, &tweak.id).unwrap_or_else(|| {
-                    panic!("Missing localization for tweak '{}' in {:?}", tweak.id, lang)
+                    panic!(
+                        "Missing localization for tweak '{}' in {:?}",
+                        tweak.id, lang
+                    )
                 });
                 assert!(
                     !loc.title.trim().is_empty(),
@@ -1468,5 +1687,4 @@ mod tests {
             }
         }
     }
-
 }

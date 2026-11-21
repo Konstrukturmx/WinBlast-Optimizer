@@ -49,7 +49,8 @@ pub(crate) fn appx_package_matches_family(
         return false;
     }
     if let Some(pub_id) = pub_part {
-        pkg_lower.ends_with(&format!("__{}", pub_id)) || pkg_lower.ends_with(&format!("_{}", pub_id))
+        pkg_lower.ends_with(&format!("__{}", pub_id))
+            || pkg_lower.ends_with(&format!("_{}", pub_id))
     } else {
         true
     }
@@ -68,7 +69,10 @@ impl AppxCache {
     /// Construct an explicit pre-populated cache (used by isolated test sandboxes).
     pub fn from_packages(packages: HashSet<String>) -> Self {
         Self {
-            installed_packages: packages.into_iter().map(|s| s.trim().to_lowercase()).collect(),
+            installed_packages: packages
+                .into_iter()
+                .map(|s| s.trim().to_lowercase())
+                .collect(),
             loaded: true,
         }
     }
@@ -269,7 +273,11 @@ mod tests {
 
         assert_eq!(
             cache.evaluate_package_with_kind("   "),
-            (true, "No package specified".to_string(), ScanDetailKind::AppxNoPackage)
+            (
+                true,
+                "No package specified".to_string(),
+                ScanDetailKind::AppxNoPackage
+            )
         );
         assert_eq!(
             cache.evaluate_package_with_kind("Microsoft.BingWeather_8wekyb3d8bbwe"),

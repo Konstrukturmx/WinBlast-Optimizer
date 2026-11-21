@@ -33,7 +33,8 @@ impl LatencySnapshot {
         let total_ram_mb = sys.total_memory() / (1024 * 1024);
         let used_ram_mb = sys.used_memory() / (1024 * 1024);
         let process_count = sys.processes().len();
-        let thread_count = super::monitor::query_system_thread_count().unwrap_or(process_count * 12);
+        let thread_count =
+            super::monitor::query_system_thread_count().unwrap_or(process_count * 12);
 
         // Exact system timer resolution query from NT kernel
         let timer_resolution_ns = super::monitor::query_nt_timer_resolution();
@@ -61,7 +62,8 @@ impl LatencySnapshot {
         } else {
             0.0
         };
-        format!("{:.1} GB / {:.1} GB ({:.1}%)",
+        format!(
+            "{:.1} GB / {:.1} GB ({:.1}%)",
             self.used_ram_mb as f64 / 1024.0,
             self.total_ram_mb as f64 / 1024.0,
             pct

@@ -17,7 +17,10 @@ fn test_filter_locality_invariant_i1() {
 
     // 1. Select tweaks matching "telemetry"
     state.select_filtered_tweaks("telemetry", None);
-    assert!(!state.selected_tweaks.is_empty(), "Should select telemetry tweaks");
+    assert!(
+        !state.selected_tweaks.is_empty(),
+        "Should select telemetry tweaks"
+    );
 
     let initial_telemetry_ids: Vec<String> = state.selected_tweaks.iter().cloned().collect();
     for id in &initial_telemetry_ids {
@@ -37,7 +40,11 @@ fn test_filter_locality_invariant_i1() {
     state.deselect_filtered_tweaks("telemetry", None);
 
     for id in &initial_telemetry_ids {
-        assert!(!state.selected_tweaks.contains(id), "Telemetry tweak {} must be deselected", id);
+        assert!(
+            !state.selected_tweaks.contains(id),
+            "Telemetry tweak {} must be deselected",
+            id
+        );
     }
 }
 
@@ -62,8 +69,16 @@ fn test_category_staging_parity_invariant_i2() {
     state.toggle_category_selection(&cat_tweak_ids, true);
 
     for id in &cat_tweak_ids {
-        assert!(state.selected_tweaks.contains(id), "Tweak {} must be in selected_tweaks", id);
-        assert!(state.staged_transitions.contains_key(id), "Tweak {} must be in staged_transitions", id);
+        assert!(
+            state.selected_tweaks.contains(id),
+            "Tweak {} must be in selected_tweaks",
+            id
+        );
+        assert!(
+            state.staged_transitions.contains_key(id),
+            "Tweak {} must be in staged_transitions",
+            id
+        );
         assert_eq!(
             state.staged_transitions.get(id),
             Some(&StagedTransition::StageApply),
@@ -72,15 +87,29 @@ fn test_category_staging_parity_invariant_i2() {
     }
 
     // Pending actions must be populated
-    assert!(!state.pending_actions.is_empty(), "Pending actions must not be empty after category select");
-    assert!(!state.pending_items.is_empty(), "Pending items must not be empty after category select");
+    assert!(
+        !state.pending_actions.is_empty(),
+        "Pending actions must not be empty after category select"
+    );
+    assert!(
+        !state.pending_items.is_empty(),
+        "Pending items must not be empty after category select"
+    );
 
     // Toggle category selection OFF
     state.toggle_category_selection(&cat_tweak_ids, false);
 
     for id in &cat_tweak_ids {
-        assert!(!state.selected_tweaks.contains(id), "Tweak {} must be removed from selected_tweaks", id);
-        assert!(!state.staged_transitions.contains_key(id), "Tweak {} must be removed from staged_transitions", id);
+        assert!(
+            !state.selected_tweaks.contains(id),
+            "Tweak {} must be removed from selected_tweaks",
+            id
+        );
+        assert!(
+            !state.staged_transitions.contains_key(id),
+            "Tweak {} must be removed from staged_transitions",
+            id
+        );
     }
 }
 
@@ -123,15 +152,25 @@ fn test_appx_filtered_selection_and_core_protection() {
     // Select filtered by "xbox"
     state.select_filtered_appx("xbox");
     assert_eq!(state.selected_appx.len(), 2);
-    assert!(state.selected_appx.contains("Microsoft.XboxApp_8wekyb3d8bbwe"));
-    assert!(state.selected_appx.contains("Microsoft.GamingApp_8wekyb3d8bbwe"));
-    assert!(!state.selected_appx.contains("Microsoft.Windows.ShellExperienceHost_cw5n1h2txyewy"));
+    assert!(state
+        .selected_appx
+        .contains("Microsoft.XboxApp_8wekyb3d8bbwe"));
+    assert!(state
+        .selected_appx
+        .contains("Microsoft.GamingApp_8wekyb3d8bbwe"));
+    assert!(!state
+        .selected_appx
+        .contains("Microsoft.Windows.ShellExperienceHost_cw5n1h2txyewy"));
 
     // Select safe & AI bloat
     state.select_safe_and_ai_appx();
     assert_eq!(state.selected_appx.len(), 3);
-    assert!(state.selected_appx.contains("Microsoft.Copilot_8wekyb3d8bbwe"));
-    assert!(!state.selected_appx.contains("Microsoft.Windows.ShellExperienceHost_cw5n1h2txyewy"));
+    assert!(state
+        .selected_appx
+        .contains("Microsoft.Copilot_8wekyb3d8bbwe"));
+    assert!(!state
+        .selected_appx
+        .contains("Microsoft.Windows.ShellExperienceHost_cw5n1h2txyewy"));
 
     // Deselect all
     state.deselect_all_appx();
@@ -213,7 +252,8 @@ fn test_startup_and_tasks_batch_selection() {
 
     state.scheduled_tasks = vec![
         LiveScheduledTaskInfo {
-            task_path: "\\Microsoft\\Windows\\Customer Experience Improvement Program\\Consolidator".into(),
+            task_path:
+                "\\Microsoft\\Windows\\Customer Experience Improvement Program\\Consolidator".into(),
             task_name: "Consolidator".into(),
             folder: "\\Microsoft\\Windows\\Customer Experience Improvement Program".into(),
             enabled: true,
@@ -254,14 +294,27 @@ fn test_preset_alignment_with_autotune_profiles() {
 
     // Apply Gaming preset
     state.apply_preset(PresetKind::Gaming);
-    assert!(!state.selected_tweaks.is_empty(), "Gaming preset must select tweaks");
-    assert!(!state.staged_transitions.is_empty(), "Gaming preset must stage transitions in Normal mode");
+    assert!(
+        !state.selected_tweaks.is_empty(),
+        "Gaming preset must select tweaks"
+    );
+    assert!(
+        !state.staged_transitions.is_empty(),
+        "Gaming preset must stage transitions in Normal mode"
+    );
 
     let gaming_plan = create_auto_tune_plan(&state.tweaks, AutoTuneProfile::GamingLowLatency);
-    assert!(!gaming_plan.recommended_tweak_ids.is_empty(), "AutoTune plan must contain recommendations");
+    assert!(
+        !gaming_plan.recommended_tweak_ids.is_empty(),
+        "AutoTune plan must contain recommendations"
+    );
 
     // All selected tweaks must be verified against ISO criteria
     for id in &state.selected_tweaks {
-        assert!(gaming_plan.recommended_tweak_ids.contains(id), "Tweak {} must be in gaming plan", id);
+        assert!(
+            gaming_plan.recommended_tweak_ids.contains(id),
+            "Tweak {} must be in gaming plan",
+            id
+        );
     }
 }

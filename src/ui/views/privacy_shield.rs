@@ -34,9 +34,8 @@ fn state_counts<'b>(results: impl Iterator<Item = &'b ScanResult>) -> (usize, us
 pub fn view(s: &AppState, tier: LayoutTier) -> El {
     let p = s.palette();
     let _style = s.theme_style;
-    let is_privacy = |r: &&ScanResult| {
-        crate::core::tweak_i18n::is_privacy_or_telemetry_category(&r.category)
-    };
+    let is_privacy =
+        |r: &&ScanResult| crate::core::tweak_i18n::is_privacy_or_telemetry_category(&r.category);
 
     let header = col()
         .w_full()
@@ -74,7 +73,11 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
                 .min_w(130.0)
                 .gap(2.0)
                 .center()
-                .child(text(format!("{}", opt)).font(rune::tok::type_::TITLE).color(p.success))
+                .child(
+                    text(format!("{}", opt))
+                        .font(rune::tok::type_::TITLE)
+                        .color(p.success),
+                )
                 .child(
                     text(s.tr(TextKey::PrivacyBlockedStat))
                         .font(rune::tok::type_::LABEL)
@@ -89,7 +92,11 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
                 .min_w(130.0)
                 .gap(2.0)
                 .center()
-                .child(text(format!("{}", not_opt)).font(rune::tok::type_::TITLE).color(p.danger))
+                .child(
+                    text(format!("{}", not_opt))
+                        .font(rune::tok::type_::TITLE)
+                        .color(p.danger),
+                )
                 .child(
                     text(s.tr(TextKey::PrivacyActiveStat))
                         .font(rune::tok::type_::LABEL)
@@ -104,7 +111,11 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
                 .min_w(130.0)
                 .gap(2.0)
                 .center()
-                .child(text(format!("{}", partial)).font(rune::tok::type_::TITLE).color(p.warning))
+                .child(
+                    text(format!("{}", partial))
+                        .font(rune::tok::type_::TITLE)
+                        .color(p.warning),
+                )
                 .child(
                     text(s.tr(TextKey::PrivacyPartialStat))
                         .font(rune::tok::type_::LABEL)
@@ -326,10 +337,18 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
                 .min_w(0.0)
                 .padding(10.0)
                 .radius(6.0)
-                .fill(if is_active { p.bg_card_hover } else { p.bg_card })
+                .fill(if is_active {
+                    p.bg_card_hover
+                } else {
+                    p.bg_card
+                })
                 .border(
                     1.0,
-                    if is_active { p.accent.alpha(0.35) } else { p.border },
+                    if is_active {
+                        p.accent.alpha(0.35)
+                    } else {
+                        p.border
+                    },
                 )
                 .hover(p.bg_card_hover)
                 .motion(p.motion)
@@ -386,7 +405,11 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
         }
     }
 
-    let pad = if tier == LayoutTier::Compact { 10.0 } else { 14.0 };
+    let pad = if tier == LayoutTier::Compact {
+        10.0
+    } else {
+        14.0
+    };
     col()
         .key("privacy_shield_viewport")
         .w_full()
@@ -396,7 +419,9 @@ pub fn view(s: &AppState, tier: LayoutTier) -> El {
         .padding(pad)
         .pr(14.0)
         .gap(12.0)
-        .scroll(ScrollSpec { stick_bottom: false })
+        .scroll(ScrollSpec {
+            stick_bottom: false,
+        })
         .child(header)
         .child(stats_card)
         .child(audit_card)

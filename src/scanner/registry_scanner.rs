@@ -13,7 +13,11 @@ const DISPLAY_CLASS_LOWER: &str =
 
 /// Open a registry subkey with explicit flags + `KEY_WOW64_64KEY`, falling back without
 /// `KEY_WOW64_64KEY` ONLY on `ERROR_INVALID_PARAMETER` (87).
-pub(crate) fn open_subkey_flags_64(root: &RegKey, path: &str, flags: u32) -> std::io::Result<RegKey> {
+pub(crate) fn open_subkey_flags_64(
+    root: &RegKey,
+    path: &str,
+    flags: u32,
+) -> std::io::Result<RegKey> {
     match root.open_subkey_with_flags(path, flags | KEY_WOW64_64KEY) {
         Ok(k) => Ok(k),
         Err(e) if e.raw_os_error() == Some(87) => root.open_subkey_with_flags(path, flags),
@@ -41,7 +45,12 @@ pub(crate) fn replace_placeholder_ci(path: &str, placeholder: &str, replacement:
     let lower = path.to_ascii_lowercase();
     let needle = placeholder.to_ascii_lowercase();
     if let Some(idx) = lower.find(&needle) {
-        format!("{}{}{}", &path[..idx], replacement, &path[idx + needle.len()..])
+        format!(
+            "{}{}{}",
+            &path[..idx],
+            replacement,
+            &path[idx + needle.len()..]
+        )
     } else {
         path.to_string()
     }
@@ -62,7 +71,11 @@ fn has_active_ip(key: &RegKey, value_name: &str) -> bool {
 }
 
 /// Resolve `<NET_INTERFACE_GUID>` to active TCP/IP interface subkeys (having `IPAddress` or `DhcpIPAddress`).
-pub fn resolve_net_interface_paths(hive: &str, path: &str, include_inactive_for_delete: bool) -> (bool, Vec<String>) {
+pub fn resolve_net_interface_paths(
+    hive: &str,
+    path: &str,
+    include_inactive_for_delete: bool,
+) -> (bool, Vec<String>) {
     let is_hklm = hive.trim().eq_ignore_ascii_case("HKLM")
         || hive.trim().eq_ignore_ascii_case("HKEY_LOCAL_MACHINE");
     let lower = path.trim().to_ascii_lowercase();
@@ -81,7 +94,8 @@ pub fn resolve_net_interface_paths(hive: &str, path: &str, include_inactive_for_
                 all_guids.push(resolved.clone());
             }
             if let Ok(sub_key) = open_subkey_read_64(&ifaces_key, &sub_name) {
-                if has_active_ip(&sub_key, "IPAddress") || has_active_ip(&sub_key, "DhcpIPAddress") {
+                if has_active_ip(&sub_key, "IPAddress") || has_active_ip(&sub_key, "DhcpIPAddress")
+                {
                     active.push(resolved);
                 }
             }
@@ -324,7 +338,10 @@ pub fn get_string_for_vendor(
                 if raw.vtype == winreg::enums::REG_SZ || raw.vtype == winreg::enums::REG_EXPAND_SZ {
                     let expand_sz = raw.vtype == winreg::enums::REG_EXPAND_SZ;
                     let s = winreg::types::FromRegValue::from_reg_value(&raw).ok()?;
-                    return Some(crate::core::reg_helpers::RegStringValue { value: s, expand_sz });
+                    return Some(crate::core::reg_helpers::RegStringValue {
+                        value: s,
+                        expand_sz,
+                    });
                 }
             }
         }
@@ -399,7 +416,11 @@ fn reg_type_to_u32(rt: &winreg::enums::RegType) -> u32 {
 }
 
 /// Read lossless raw value bytes + `REG_*` type code.
-pub fn get_raw(hive: &str, path: &str, name: &str) -> Option<crate::core::reg_helpers::RegRawSnapshot> {
+pub fn get_raw(
+    hive: &str,
+    path: &str,
+    name: &str,
+) -> Option<crate::core::reg_helpers::RegRawSnapshot> {
     let root = resolve_hive(hive).ok()?;
     let norm_name = crate::core::risk::normalize_reg_value_name(name);
     let key = open_subkey_read_64(&root, path).ok()?;
@@ -475,20 +496,26 @@ mod tests {
         let subkey = format!("Software\\WinBlast0_TypeTest_{}", Uuid::new_v4());
         let _cleanup = ScratchCleanup(subkey.clone());
         let hkcu = RegKey::predef(HKEY_CURRENT_USER);
-        let (key, _) = match hkcu.create_subkey_with_flags(&subkey, KEY_READ | KEY_WRITE | KEY_WOW64_64KEY) {
+        let (key, _) = match hkcu
+            .create_subkey_with_flags(&subkey, KEY_READ | KEY_WRITE | KEY_WOW64_64KEY)
+        {
             Ok(k) => k,
             Err(e) if e.kind() == std::io::ErrorKind::PermissionDenied => {
-                eprintln!("Skipping registry write test: sandbox restricted HKCU write access: {e}");
+                eprintln!(
+                    "Skipping registry write test: sandbox restricted HKCU write access: {e}"
+                );
                 return;
             }
-            Err(_) => match hkcu.create_subkey(&subkey) {
-                Ok(k) => k,
-                Err(e) if e.kind() == std::io::ErrorKind::PermissionDenied => {
-                    eprintln!("Skipping registry write test: sandbox restricted HKCU write access: {e}");
-                    return;
+            Err(_) => {
+                match hkcu.create_subkey(&subkey) {
+                    Ok(k) => k,
+                    Err(e) if e.kind() == std::io::ErrorKind::PermissionDenied => {
+                        eprintln!("Skipping registry write test: sandbox restricted HKCU write access: {e}");
+                        return;
+                    }
+                    Err(e) => panic!("Failed to create test subkey: {e}"),
                 }
-                Err(e) => panic!("Failed to create test subkey: {e}"),
-            },
+            }
         };
 
         // Non-numeric REG_SZ >= 4 UTF-16LE bytes must NEVER corrupt into u32
@@ -498,8 +525,12 @@ mod tests {
 
         // Negative i32 stored as REG_SZ parses cleanly and preserves REG_SZ + sign on update
         key.set_value("SignedSz", &"-15").unwrap();
-        assert_eq!(get_dword("HKCU", &subkey, "SignedSz"), Some((-15i32) as u32));
-        crate::executor::reg_mutator::set_dword("HKCU", &subkey, "SignedSz", (-60i32) as u32).unwrap();
+        assert_eq!(
+            get_dword("HKCU", &subkey, "SignedSz"),
+            Some((-15i32) as u32)
+        );
+        crate::executor::reg_mutator::set_dword("HKCU", &subkey, "SignedSz", (-60i32) as u32)
+            .unwrap();
         assert_eq!(key.get_value::<String, _>("SignedSz").unwrap(), "-60");
 
         // REG_QWORD within u32 vs overflowing u32
@@ -531,7 +562,10 @@ mod tests {
             },
         )
         .unwrap();
-        assert_eq!(get_dword("HKCU", &subkey, "BigEndianDword"), Some(0x12345678));
+        assert_eq!(
+            get_dword("HKCU", &subkey, "BigEndianDword"),
+            Some(0x12345678)
+        );
 
         // get_binary enforces REG_BINARY strictly
         key.set_value("DwordNotBin", &123u32).unwrap();
