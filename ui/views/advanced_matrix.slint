@@ -1,156 +1,250 @@
 // ui/views/advanced_matrix.slint
-// WinBlast0 230-Tweak Advanced Matrix View in Slint 1.19
-
-import { Scale, Theme } from "../theme.slint";
+// Advanced Tweak Matrix (port of v1.6.1): header actions, 1-click presets, batch toolbar,
+// search + category chips + sort + risk filter, grouped tweak list with live switches.
+import { ScrollView } from "std-widgets.slint";
+import { Scale, Theme, Tr } from "../theme.slint";
+import { AppStore } from "../stores/app.slint";
+import { MatrixStore, MatrixRow } from "../stores/matrix.slint";
+import { WbChip } from "../components/chip.slint";
 import { WbButton } from "../components/button.slint";
-import { WbCard } from "../components/card.slint";
-import { WbBadge } from "../components/badge.slint";
 import { WbSearchInput } from "../components/search_input.slint";
-import { WbTweakRow } from "../components/tweak_row.slint";
+import { WbToggle, WbRiskBadge, WbPill, WbPanel } from "../components/toggle.slint";
 
-export struct TweakItemData {
-    id: string,
-    title: string,
-    description: string,
-    category: string,
-    risk: string,             // "safe" | "low" | "moderate" | "high"
-    status: string,           // "optimized" | "unoptimized"
-    enabled: bool,
+component SectionTitle inherits Text {
+    font-size: Scale.font-sm;
+    font-weight: 700;
+    color: Theme.text-primary;
+    vertical-alignment: center;
 }
 
-export component AdvancedMatrixView inherits Flickable {
+component MatrixHeaderRow inherits Rectangle {
+    in property <MatrixRow> data;
+    height: Scale.px(36px);
+    border-radius: Scale.px(Theme.btn-radius);
+    background: Theme.accent.with-alpha(0.08);
+    HorizontalLayout {
+        padding-left: Scale.px(10px);
+        padding-right: Scale.px(8px);
+        spacing: Scale.px(8px);
+        Text { text: "▾"; color: Theme.accent; vertical-alignment: center; }
+        Text {
+            text: "📂  " + data.category-label + " (" + data.category-count + ")";
+            font-size: Scale.font-sm;
+            font-weight: 700;
+            color: Theme.text-primary;
+            vertical-alignment: center;
+            overflow: elide;
+            horizontal-stretch: 1;
+        }
+        WbChip {
+            tone: data.all-selected ? "warning" : "accent";
+            text: data.all-selected ? Tr.s("DeselectCategoryBtn") : Tr.s("SelectAllCategory");
+            clicked => { MatrixStore.toggle-category(data.category-raw, !data.all-selected); }
+        }
+    }
+}
+
+component MatrixTweakRow inherits Rectangle {
+    in property <MatrixRow> data;
     in property <int> tier;
-    in-out property <string> search-query: "";
-    in-out property <string> selected-category: "All";
-    in-out property <string> selected-risk: "All";
+    border-radius: Scale.px(Theme.card-radius);
+    background: Theme.bg-card;
+    border-width: Theme.border-width;
+    border-color: data.active ? Theme.accent.with-alpha(0.35) : Theme.border;
 
-    in property <int> total-count: 230;
-    in property <int> optimized-count: 142;
-    in property <[TweakItemData]> tweaks: [];
-
-    callback tweak-toggled(string, bool);
-    callback inspect-diff(string);
-    callback apply-all-safe();
-    callback revert-all();
-    callback refresh-scan();
-
-    content-height: content.preferred-height;
-
-    content := VerticalLayout {
-        padding: Scale.space-lg;
-        spacing: Scale.space-md;
-
-        // Header controls card
-        WbCard {
+    VerticalLayout {
+        padding: Scale.px(10px);
+        spacing: Scale.px(6px);
+        HorizontalLayout {
+            spacing: Scale.px(10px);
+            if data.not-applicable : WbPill { text: Tr.s("StatusNotApplicable"); tone: "muted"; y: (parent.height - self.height) / 2; }
+            if !data.not-applicable : WbToggle {
+                on: data.active;
+                busy: data.in-flight;
+                accessible-name: data.title;
+                y: (parent.height - self.height) / 2;
+                clicked => { MatrixStore.switch-clicked(data.id); }
+            }
             VerticalLayout {
-                spacing: Scale.space-md;
-
-                // Title and bulk actions row
-                HorizontalLayout {
-                    alignment: space-between;
-
-                    VerticalLayout {
-                        spacing: Scale.space-2xs;
-                        Text {
-                            text: "Advanced Optimization Matrix";
-                            font-size: Scale.font-xl;
-                            font-weight: 700;
-                            color: Theme.text-primary;
-                        }
-                        Text {
-                            text: root.optimized-count + " of " + root.total-count + " optimization policies active";
-                            font-size: Scale.font-sm;
-                            color: Theme.text-secondary;
-                        }
+                horizontal-stretch: 1;
+                min-width: 0;
+                spacing: Scale.px(2px);
+                Text { text: data.title; font-size: Scale.font-sm; font-weight: 600; color: Theme.text-primary; wrap: word-wrap; }
+                if data.broken != "" : Text { text: data.broken; font-size: Scale.font-2xs; color: Theme.warning; wrap: word-wrap; }
+            }
+            if root.tier != 0 : HorizontalLayout {
+                spacing: Scale.px(8px);
+                alignment: end;
+                Text { text: Tr.s("PerfShort") + " +" + data.perf-gain; font-size: Scale.font-xs; color: Theme.success; vertical-alignment: center; }
+                Text { text: Tr.s("PrivShort") + " +" + data.priv-gain; font-size: Scale.font-xs; color: Theme.accent; vertical-alignment: center; }
+                WbRiskBadge { level: data.risk-level; label: data.risk-label; y: (parent.height - self.height) / 2; }
+                VerticalLayout {
+                    width: Scale.px(170px);
+                    alignment: center;
+                    Text {
+                        text: data.state-text;
+                        font-size: Scale.font-xs;
+                        font-weight: 600;
+                        color: data.state-tone == "success" ? Theme.success : data.state-tone == "danger" ? Theme.danger : data.state-tone == "warning" ? Theme.warning : Theme.text-muted;
                     }
+                    Text { text: data.detail; font-size: Scale.font-2xs; color: Theme.text-muted; overflow: elide; }
+                }
+                WbChip { text: "🔍 " + Tr.s("InspectDiff"); y: (parent.height - self.height) / 2; clicked => { MatrixStore.inspect(data.id); } }
+            }
+        }
+        if root.tier == 0 : FlexboxLayout {
+            spacing: Scale.px(6px);
+            Text { text: Tr.s("PerfShort") + " +" + data.perf-gain; font-size: Scale.font-xs; color: Theme.success; }
+            Text { text: Tr.s("PrivShort") + " +" + data.priv-gain; font-size: Scale.font-xs; color: Theme.accent; }
+            WbRiskBadge { level: data.risk-level; label: data.risk-label; }
+            WbPill {
+                text: data.state-text;
+                tone: data.state-tone;
+            }
+            WbChip { text: "🔍 " + Tr.s("InspectDiff"); clicked => { MatrixStore.inspect(data.id); } }
+        }
+    }
+}
 
-                    HorizontalLayout {
-                        spacing: Scale.space-sm;
-                        alignment: end;
+export component AdvancedMatrixView inherits Rectangle {
+    in property <int> tier;
 
-                        WbButton {
-                            variant: "ghost";
-                            text: "Scan";
-                            min-height: Scale.control-sm;
-                            clicked => { root.refresh-scan(); }
-                        }
+    ScrollView {
+        VerticalLayout {
+            padding: root.tier == 0 ? Scale.px(10px) : Scale.px(14px);
+            spacing: Scale.px(12px);
+            alignment: start;
 
+            // ---- Header card ----
+            WbPanel {
+                VerticalLayout {
+                    padding: Scale.px(Theme.card-padding);
+                    spacing: Scale.px(8px);
+                    Text { text: Tr.s("AdvancedMatrix"); font-size: Scale.font-xl; font-weight: 800; color: Theme.text-primary; }
+                    Text { text: MatrixStore.summary; font-size: Scale.font-xs; color: Theme.text-muted; }
+                    FlexboxLayout {
+                        spacing: Scale.px(6px);
+                        WbButton { variant: "secondary"; text: Tr.s("SelectAll"); clicked => { MatrixStore.select-filtered(); } }
+                        WbButton { variant: "secondary"; text: Tr.s("DeselectAll"); clicked => { MatrixStore.deselect-filtered(); } }
                         WbButton {
                             variant: "secondary";
-                            text: "Revert All";
-                            min-height: Scale.control-sm;
-                            clicked => { root.revert-all(); }
+                            text: MatrixStore.is-scanning ? Tr.s("Scanning") : Tr.s("ScanSystem");
+                            enabled: !MatrixStore.is-scanning;
+                            loading: MatrixStore.is-scanning;
+                            clicked => { AppStore.start-scan(); }
                         }
-
                         WbButton {
                             variant: "primary";
-                            text: "Apply All Safe";
-                            min-height: Scale.control-sm;
-                            clicked => { root.apply-all-safe(); }
+                            text: MatrixStore.is-applying ? Tr.s("BusyWorking")
+                                : MatrixStore.selected-count == 0 ? Tr.s("ApplySelected")
+                                : Tr.s("ApplySelected") + " (" + MatrixStore.selected-count + ")";
+                            enabled: !MatrixStore.busy;
+                            loading: MatrixStore.is-applying;
+                            clicked => { MatrixStore.apply-selected(); }
                         }
-                    }
-                }
-
-                // Search input
-                WbSearchInput {
-                    text <=> root.search-query;
-                    placeholder: "Search by tweak name, registry key, group, or keyword...";
-                }
-
-                // Category selector filter row
-                HorizontalLayout {
-                    spacing: Scale.space-xs;
-                    alignment: start;
-
-                    for cat in ["All", "Privacy", "Gaming", "System", "Network", "Hardware", "Explorer", "Security"]: Rectangle {
-                        private property <bool> is-active: root.selected-category == cat;
-                        height: Scale.control-sm;
-                        border-radius: Scale.radius-pill;
-                        background: self.is-active ? Theme.accent : (cat-ta.has-hover ? Theme.bg-surface-hover : Theme.bg-surface);
-                        border-width: 1px;
-                        border-color: self.is-active ? Theme.accent : Theme.border-subtle;
-
-                        HorizontalLayout {
-                            padding-left: Scale.space-md;
-                            padding-right: Scale.space-md;
-                            alignment: center;
-                            Text {
-                                text: cat;
-                                font-size: Scale.font-xs;
-                                font-weight: 600;
-                                color: is-active ? Theme.text-on-accent : Theme.text-secondary;
-                                vertical-alignment: center;
-                            }
+                        WbButton {
+                            variant: "secondary";
+                            text: MatrixStore.selected-count == 0 ? Tr.s("RevertDefaultsBtn") : Tr.s("RevertDefaultsBtn") + " (" + MatrixStore.selected-count + ")";
+                            enabled: !MatrixStore.busy && MatrixStore.selected-count > 0;
+                            clicked => { MatrixStore.revert-defaults(); }
                         }
-
-                        cat-ta := TouchArea {
-                            mouse-cursor: pointer;
-                            clicked => { root.selected-category = cat; }
-                        }
+                        WbButton { variant: "secondary"; text: Tr.s("PreviewDiff"); clicked => { MatrixStore.toggle-diff-preview(); } }
+                        WbButton { variant: "secondary"; text: Tr.s("RestartExplorerBtn"); clicked => { MatrixStore.restart-explorer(); } }
                     }
                 }
             }
-        }
 
-        // Tweak list section
-        VerticalLayout {
-            spacing: Scale.space-xs;
-
-            for tweak in root.tweaks: WbTweakRow {
-                title: tweak.title;
-                description: tweak.description;
-                category: tweak.category;
-                risk: tweak.risk;
-                status: tweak.status;
-                enabled: tweak.enabled;
-
-                toggled(checked) => {
-                    root.tweak-toggled(tweak.id, checked);
+            // ---- 1-click presets ----
+            WbPanel {
+                FlexboxLayout {
+                    padding: Scale.px(12px);
+                    spacing: Scale.px(8px);
+                    cross-axis-alignment: center;
+                    SectionTitle { text: "🎯 " + Tr.s("MatrixPresetsTitle"); }
+                    WbButton { variant: "primary"; text: Tr.s("GamingPreset"); clicked => { MatrixStore.apply-preset("gaming"); } }
+                    WbButton { variant: "secondary"; text: Tr.s("ProAudioPreset"); clicked => { MatrixStore.apply-preset("pro_audio"); } }
+                    WbButton { variant: "secondary"; text: Tr.s("LaptopBatteryPreset"); clicked => { MatrixStore.apply-preset("laptop_battery"); } }
                 }
+            }
 
-                inspect-diff() => {
-                    root.inspect-diff(tweak.id);
+            // ---- Batch toolbar ----
+            WbPanel {
+                FlexboxLayout {
+                    padding: Scale.px(12px);
+                    spacing: Scale.px(8px);
+                    cross-axis-alignment: center;
+                    SectionTitle { text: "⚡ " + Tr.s("BatchActionsTitle") + " (" + MatrixStore.selected-count + ")"; }
+                    WbButton {
+                        variant: "primary";
+                        text: MatrixStore.is-applying ? Tr.s("BusyWorking")
+                            : MatrixStore.selected-count == 0 ? Tr.s("ApplySelected")
+                            : Tr.s("ApplySelected") + " (" + MatrixStore.selected-count + ")";
+                        enabled: !MatrixStore.busy && MatrixStore.selected-count > 0;
+                        clicked => { MatrixStore.apply-selected(); }
+                    }
+                    WbButton {
+                        variant: "secondary";
+                        text: Tr.s("RevertSelected");
+                        enabled: MatrixStore.selected-count > 0 && !MatrixStore.is-applying;
+                        clicked => { MatrixStore.revert-selected-active(); }
+                    }
+                    WbButton { variant: "secondary"; text: Tr.s("ExportSelected"); clicked => { MatrixStore.export-selected(); } }
                 }
+            }
+
+            // ---- Search / filters ----
+            WbPanel {
+                VerticalLayout {
+                    padding: Scale.px(12px);
+                    spacing: Scale.px(8px);
+                    WbSearchInput {
+                        placeholder: Tr.s("SearchPlaceholder");
+                        text: MatrixStore.query;
+                        changed(t) => { MatrixStore.query-edited(t); }
+                    }
+                    FlexboxLayout {
+                        spacing: Scale.px(6px);
+                        WbChip {
+                            text: Tr.s("CategoryAll");
+                            active: MatrixStore.selected-category == "";
+                            clicked => { MatrixStore.set-category(""); }
+                        }
+                        for c in MatrixStore.categories : WbChip {
+                            text: c.label;
+                            active: c.active;
+                            clicked => { MatrixStore.set-category(c.raw); }
+                        }
+                        if MatrixStore.has-filter : WbChip { text: Tr.s("ClearFiltersBtn"); clicked => { MatrixStore.clear-filters(); } }
+                        WbChip { text: MatrixStore.sort-label; tone: "accent"; clicked => { MatrixStore.cycle-sort(); } }
+                    }
+                    FlexboxLayout {
+                        spacing: Scale.px(6px);
+                        cross-axis-alignment: center;
+                        Text { text: Tr.s("SortRisk") + ":"; font-size: Scale.font-xs; color: Theme.text-muted; }
+                        WbChip { text: Tr.s("RiskSafe"); tone: "success"; clicked => { MatrixStore.set-risk-query("safe"); } }
+                        WbChip { text: Tr.s("RiskLow"); tone: "accent"; clicked => { MatrixStore.set-risk-query("low"); } }
+                        WbChip { text: Tr.s("RiskCaution"); tone: "warning"; clicked => { MatrixStore.set-risk-query("moderate"); } }
+                        WbChip { text: Tr.s("RiskHigh"); tone: "warning"; clicked => { MatrixStore.set-risk-query("high"); } }
+                        WbChip { text: Tr.s("RiskExtreme"); tone: "danger"; clicked => { MatrixStore.set-risk-query("extreme"); } }
+                    }
+                }
+            }
+
+            // ---- Grouped tweak list ----
+            if MatrixStore.filtered-count == 0 : WbPanel {
+                height: Scale.px(80px);
+                Text {
+                    text: AppStore.is-scanning ? Tr.s("ScanningEvaluating") : Tr.s("EmptyMatrixList");
+                    font-size: Scale.font-sm;
+                    color: Theme.text-muted;
+                    wrap: word-wrap;
+                    horizontal-alignment: center;
+                }
+            }
+            for r in MatrixStore.rows : VerticalLayout {
+                padding-top: r.is-header ? Scale.px(6px) : 0px;
+                if r.is-header : MatrixHeaderRow { data: r; }
+                if !r.is-header : MatrixTweakRow { data: r; tier: root.tier; }
             }
         }
     }

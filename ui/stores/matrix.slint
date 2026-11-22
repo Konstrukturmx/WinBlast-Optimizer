@@ -1,0 +1,66 @@
+// ui/stores/matrix.slint
+// Advanced Tweak Matrix store (port of v1.6.1 advanced_matrix view). Written by
+// src/ui_slint/views/matrix.rs. Filtering, grouping and sorting happen in Rust exactly as in v1.6.1.
+
+export struct MatrixCategory {
+    raw: string,
+    label: string,
+    active: bool,
+}
+
+// One row of the flattened, grouped list: either a category header or a tweak.
+export struct MatrixRow {
+    is-header: bool,
+    // header fields
+    category-raw: string,
+    category-label: string,
+    category-count: int,
+    all-selected: bool,
+    // tweak fields
+    id: string,
+    title: string,
+    broken: string,
+    perf-gain: int,
+    priv-gain: int,
+    risk-level: int,        // 0 safe .. 4 extreme
+    risk-label: string,
+    state-text: string,
+    state-tone: string,     // "success" | "danger" | "warning" | "muted"
+    detail: string,
+    active: bool,
+    in-flight: bool,
+    not-applicable: bool,
+}
+
+export global MatrixStore {
+    in-out property <string> query;
+    in-out property <string> selected-category;    // "" = All
+    in-out property <string> sort-label;
+    in-out property <string> summary;
+    in-out property <[MatrixCategory]> categories: [];
+    in-out property <[MatrixRow]> rows: [];
+    in-out property <int> filtered-count;
+    in-out property <int> selected-count;
+    in-out property <bool> has-filter;
+    in-out property <bool> is-scanning;
+    in-out property <bool> is-applying;
+    in-out property <bool> busy;                    // applying or rolling back
+
+    callback query-edited(string);
+    callback select-filtered();
+    callback deselect-filtered();
+    callback apply-selected();
+    callback revert-defaults();
+    callback revert-selected-active();
+    callback export-selected();
+    callback toggle-diff-preview();
+    callback restart-explorer();
+    callback apply-preset(string);                  // "gaming" | "pro_audio" | "laptop_battery"
+    callback set-category(string);
+    callback clear-filters();
+    callback cycle-sort();
+    callback set-risk-query(string);
+    callback toggle-category(string, bool);
+    callback switch-clicked(string);
+    callback inspect(string);
+}

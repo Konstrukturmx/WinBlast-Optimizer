@@ -49,6 +49,29 @@ pub struct TextEdit {
     pub text: String,
 }
 
+/// Pre-folded Advanced-Matrix query (see `AppState::tweak_matches_query`).
+#[derive(Debug, Clone, Default, PartialEq, Eq)]
+pub struct MatrixQuery {
+    pub folded: String,
+    pub risk: Option<RiskLevel>,
+}
+
+impl MatrixQuery {
+    pub fn new(raw: &str) -> Self {
+        let raw = raw.trim();
+        let risk = match raw.to_ascii_lowercase().as_str() {
+            "safe" => Some(RiskLevel::Safe),
+            "low" => Some(RiskLevel::Low),
+            "moderate" | "caution" => Some(RiskLevel::Moderate),
+            "high" => Some(RiskLevel::High),
+            "extreme" => Some(RiskLevel::Extreme),
+            _ => None,
+        };
+        let folded = if raw.is_empty() { String::new() } else { I18n::fold_search_str(raw) };
+        Self { folded, risk }
+    }
+}
+
 /// High-level application mode.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum AppMode {
@@ -3631,10 +3654,42 @@ impl AppState {
         }
     }
 
+    /// Shared Advanced-Matrix filter used by the list, Select-All and Deselect-All so they can
+    /// never disagree: accent/diacritic-folded match against raw and localized title, category,
+    /// description and id, plus risk keywords ("safe", "low", "moderate", "high", "extreme")
+    /// that match the tweak's actual stability risk.
+    pub fn tweak_matches_query(
+        &self,
+        q: &MatrixQuery,
+        id: &str,
+        title: &str,
+        category: &str,
+        description: &str,
+        stability: RiskLevel,
+    ) -> bool {
+        if q.folded.is_empty() {
+            return true;
+        }
+        if q.risk == Some(stability) {
+            return true;
+        }
+        [
+            title,
+            id,
+            category,
+            description,
+            self.tweak_title(id, title),
+            self.tweak_category(category),
+            self.tweak_description(id, description),
+        ]
+        .iter()
+        .any(|f| I18n::fold_search_str(f).contains(q.folded.as_str()))
+    }
+
     /// Select filtered subset of tweaks matching query and category without affecting others (Invariant I1).
     pub fn select_filtered_tweaks(&mut self, query: &str, category: Option<&str>) {
         let is_normal = self.engine_mode == EngineMode::Normal;
-        let q = query.trim().to_lowercase();
+        let filter = MatrixQuery::new(query);
         let eligible_ids: Vec<String> = self
             .tweaks
             .iter()
@@ -3644,13 +3699,8 @@ impl AppState {
                         return false;
                     }
                 }
-                if !q.is_empty() {
-                    let matches_q = t.title.to_lowercase().contains(&q)
-                        || t.description.to_lowercase().contains(&q)
-                        || t.id.to_lowercase().contains(&q);
-                    if !matches_q {
-                        return false;
-                    }
+                if !self.tweak_matches_query(&filter, &t.id, &t.title, &t.category, &t.description, t.valuation.stability_risk) {
+                    return false;
                 }
                 t.valuation.stability_risk < RiskLevel::High
                     && (self.mode != AppMode::Easy || t.easy_mode_included)
@@ -3678,7 +3728,7 @@ impl AppState {
 
     /// Deselect filtered subset of tweaks matching query and category (Invariant I1).
     pub fn deselect_filtered_tweaks(&mut self, query: &str, category: Option<&str>) {
-        let q = query.trim().to_lowercase();
+        let filter = MatrixQuery::new(query);
         let to_remove: Vec<String> = self
             .tweaks
             .iter()
@@ -3688,15 +3738,7 @@ impl AppState {
                         return false;
                     }
                 }
-                if !q.is_empty() {
-                    let matches_q = t.title.to_lowercase().contains(&q)
-                        || t.description.to_lowercase().contains(&q)
-                        || t.id.to_lowercase().contains(&q);
-                    if !matches_q {
-                        return false;
-                    }
-                }
-                true
+                self.tweak_matches_query(&filter, &t.id, &t.title, &t.category, &t.description, t.valuation.stability_risk)
             })
             .map(|t| t.id.clone())
             .collect();

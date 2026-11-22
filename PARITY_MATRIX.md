@@ -286,6 +286,13 @@ Status legend: **WIRED** = a Slint callback reaches this AppState action · **MI
 |---|---|
 | `dismiss_progress_hud =` | **MISSING** |
 
+## Port status (v1.7.0)
+
+| View | Status | Tests |
+|---|---|---|
+| Shell (top bar, sidebar, progress, changelog, footer, dropdowns, HUD, diff) | DONE | tests/ui_parity.rs (14) |
+| Advanced Matrix | DONE: all actions wired, plus fixes for risk filtering, consistent Select All matching and a real Export | tests/ui_views.rs matrix_* (8) |
+
 ## Cross-cutting features (checked by hand during implementation)
 
 | Feature | v1.6.1 source | Slint status |

@@ -619,10 +619,14 @@ pub enum TextKey {
     TabPrereqs,
     TabWinRepair,
     TabFaultDiag,
+    MatrixPresetsTitle,
+    BatchActionsTitle,
+    RevertDefaultsBtn,
+    DeselectCategoryBtn,
 }
 
 impl TextKey {
-    pub const COUNT: usize = 510;
+    pub const COUNT: usize = 514;
 }
 
 /// Translations indexed by [Language as usize][TextKey as usize]
@@ -1142,6 +1146,10 @@ static TRANSLATIONS: [[&str; TextKey::COUNT]; 8] = [
         "🎮 Game Prerequisites",
         "🔧 Windows Repair",
         "🛡️ BSOD Diagnostics",
+        "1-Click Optimization Presets",
+        "Batch Actions",
+        "Revert Defaults",
+        "Deselect Category",
     ],
     // 1: Turkish (Türkçe)
     [
@@ -1658,6 +1666,10 @@ static TRANSLATIONS: [[&str; TextKey::COUNT]; 8] = [
         "🎮 Oyun Gereksinimleri",
         "🔧 Windows Onarımı",
         "🛡️ BSOD Teşhisi",
+        "1-Tık Hızlı Optimizasyon Profilleri",
+        "Toplu İşlemler",
+        "Varsayılanlara Dön",
+        "Kategori Seçimini Kaldır",
     ],
     // 2: German (Deutsch)
     [
@@ -2174,6 +2186,10 @@ static TRANSLATIONS: [[&str; TextKey::COUNT]; 8] = [
         "🎮 Spielvoraussetzungen",
         "🔧 Windows-Reparatur",
         "🛡️ BSOD-Diagnose",
+        "1-Klick-Optimierungsprofile",
+        "Stapelaktionen",
+        "Standard wiederherstellen",
+        "Kategorie abwählen",
     ],
     // 3: French (Français)
     [
@@ -2690,6 +2706,10 @@ static TRANSLATIONS: [[&str; TextKey::COUNT]; 8] = [
         "🎮 Prérequis de jeu",
         "🔧 Réparation Windows",
         "🛡️ Diagnostics BSOD",
+        "Profils d'optimisation en 1 clic",
+        "Actions groupées",
+        "Rétablir les valeurs par défaut",
+        "Désélectionner la catégorie",
     ],
     // 4: Spanish (Español)
     [
@@ -3206,6 +3226,10 @@ static TRANSLATIONS: [[&str; TextKey::COUNT]; 8] = [
         "🎮 Requisitos del juego",
         "🔧 Reparación de Windows",
         "🛡️ Diagnóstico de BSOD",
+        "Perfiles de optimización en 1 clic",
+        "Acciones por lotes",
+        "Restaurar valores predeterminados",
+        "Deseleccionar categoría",
     ],
     // 5: Russian (Русский)
     [
@@ -3722,6 +3746,10 @@ static TRANSLATIONS: [[&str; TextKey::COUNT]; 8] = [
         "🎮 Игровые компоненты",
         "🔧 Восстановление Windows",
         "🛡️ Диагностика BSOD",
+        "Профили оптимизации в 1 клик",
+        "Пакетные действия",
+        "Вернуть по умолчанию",
+        "Снять выбор категории",
     ],
     // 6: Chinese Simplified (简体中文)
     [
@@ -4238,6 +4266,10 @@ static TRANSLATIONS: [[&str; TextKey::COUNT]; 8] = [
         "🎮 游戏必备运行库",
         "🔧 Windows 系统修复",
         "🛡️ 蓝屏崩溃诊断",
+        "一键优化预设",
+        "批量操作",
+        "恢复默认",
+        "取消选择类别",
     ],
     // 7: Japanese (日本語)
     [
@@ -4754,6 +4786,10 @@ static TRANSLATIONS: [[&str; TextKey::COUNT]; 8] = [
         "🎮 ゲーム必須ランタイム",
         "🔧 Windows修復",
         "🛡️ BSOD診断",
+        "ワンクリック最適化プリセット",
+        "一括操作",
+        "既定値に戻す",
+        "カテゴリの選択を解除",
     ],
 ];
 
