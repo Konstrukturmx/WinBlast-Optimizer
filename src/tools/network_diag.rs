@@ -19,6 +19,34 @@ pub struct DnsProbeResult {
     pub status: String,
 }
 
+/// DNS configuration actions offered by the Network view (all mutating).
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum NetAction {
+    FlushDns,
+    ResetDnsDhcp,
+    ApplyDns { primary: String, secondary: String },
+}
+
+/// Whether the Nagle / delayed-ACK overrides (TcpAckFrequency == 1, TCPNoDelay == 1) are set on
+/// any Tcpip interface key.
+#[cfg(windows)]
+fn read_tcp_overrides() -> (bool, bool) {
+    use winreg::enums::{HKEY_LOCAL_MACHINE, KEY_READ};
+    use winreg::RegKey;
+    let hklm = RegKey::predef(HKEY_LOCAL_MACHINE);
+    let Ok(ifaces) = hklm.open_subkey_with_flags(r"SYSTEM\CurrentControlSet\Services\Tcpip\Parameters\Interfaces", KEY_READ) else {
+        return (false, false);
+    };
+    let (mut ack, mut nodelay) = (false, false);
+    for name in ifaces.enum_keys().flatten() {
+        if let Ok(k) = ifaces.open_subkey_with_flags(&name, KEY_READ) {
+            ack |= k.get_value::<u32, _>("TcpAckFrequency").is_ok_and(|v| v == 1);
+            nodelay |= k.get_value::<u32, _>("TCPNoDelay").is_ok_and(|v| v == 1);
+        }
+    }
+    (ack, nodelay)
+}
+
 /// System network configuration and live diagnostic telemetry.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct NetworkDiagnostics {
@@ -109,11 +137,12 @@ const DNS_CATALOG: [(&str, &str, &str, &str); 10] = [
 impl Default for NetworkDiagnostics {
     fn default() -> Self {
         Self {
-            adapter_name: "Active Network Interface".to_string(),
-            ip_address: query_local_ip(),
-            mtu_size: 1500,
-            tcp_ack_frequency_optimized: true,
-            tcp_no_delay_optimized: true,
+            // Not probed yet: no invented adapter/MTU/TCP values (v1.6.1 claimed "optimized").
+            adapter_name: String::new(),
+            ip_address: String::new(),
+            mtu_size: 0,
+            tcp_ack_frequency_optimized: false,
+            tcp_no_delay_optimized: false,
             probes: DNS_CATALOG
                 .iter()
                 .map(|(name, p_ip, s_ip, cat)| DnsProbeResult {
@@ -184,7 +213,31 @@ impl NetworkDiagnostics {
         results.sort_by_key(|r| r.ping_ms.unwrap_or(9999));
 
         diag.probes = results;
+        diag.probe_local_interface();
         diag
+    }
+
+    /// Read the active IPv4 interface (alias + MTU), local IP and the Nagle/ACK registry
+    /// overrides from the real system (read-only).
+    pub fn probe_local_interface(&mut self) {
+        self.ip_address = query_local_ip();
+        #[cfg(windows)]
+        {
+            let ps = "Get-NetIPInterface -AddressFamily IPv4 -ConnectionState Connected | Sort-Object InterfaceMetric | Select-Object -First 1 InterfaceAlias,NlMtu | ConvertTo-Json -Compress";
+            if let Ok(out) = SilentCommand::new("powershell").args(["-NoProfile", "-NonInteractive", "-Command", ps]).output() {
+                if let Ok(v) = serde_json::from_slice::<serde_json::Value>(&out.stdout) {
+                    if let Some(alias) = v.get("InterfaceAlias").and_then(|a| a.as_str()) {
+                        self.adapter_name = alias.to_string();
+                    }
+                    if let Some(mtu) = v.get("NlMtu").and_then(|m| m.as_u64()) {
+                        self.mtu_size = u32::try_from(mtu).unwrap_or(0);
+                    }
+                }
+            }
+            let (ack, nodelay) = read_tcp_overrides();
+            self.tcp_ack_frequency_optimized = ack;
+            self.tcp_no_delay_optimized = nodelay;
+        }
     }
 
     /// Flush DNS Resolver Cache via `ipconfig /flushdns`.

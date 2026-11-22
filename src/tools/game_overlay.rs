@@ -187,71 +187,79 @@ pub struct GameOverlaySettings {
     pub fullscreen_exclusive_optimized: bool,
 }
 
+/// "Not read yet": every flag off. (v1.6.1's Default read the live registry, so merely
+/// constructing state touched HKCU, and reported FSE optimization as always on.)
 impl Default for GameOverlaySettings {
     fn default() -> Self {
-        Self::read_live()
+        Self {
+            game_bar_disabled: false,
+            game_dvr_background_recording_disabled: false,
+            game_mode_enabled: false,
+            fullscreen_exclusive_optimized: false,
+        }
     }
 }
 
+fn read_u32(hive: &RegKey, path: &str, name: &str) -> Option<u32> {
+    hive.open_subkey(path).ok().and_then(|k| k.get_value::<u32, _>(name).ok())
+}
+
+fn write_u32(hive: &RegKey, path: &str, name: &str, value: u32) -> Result<(), String> {
+    let (key, _) = hive.create_subkey(path).map_err(|e| format!("open {path}: {e}"))?;
+    key.set_value(name, &value).map_err(|e| format!("write {path}\\{name}: {e}"))
+}
+
 impl GameOverlaySettings {
-    /// Read live Game DVR and Game Mode states from Windows Registry.
+    /// Read live Game Bar, Game DVR, Game Mode and fullscreen-optimization states (HKCU).
     pub fn read_live() -> Self {
         let hkcu = RegKey::predef(HKEY_CURRENT_USER);
-
-        let dvr_disabled = if let Ok(key) =
-            hkcu.open_subkey("Software\\Microsoft\\Windows\\CurrentVersion\\GameDVR")
-        {
-            let app_cap: Result<u32, _> = key.get_value("AppCaptureEnabled");
-            app_cap.map(|v| v == 0).unwrap_or(false)
-        } else {
-            false
-        };
-
-        let game_mode = if let Ok(key) = hkcu.open_subkey("Software\\Microsoft\\GameBar") {
-            let mode: Result<u32, _> = key.get_value("AllowAutoGameMode");
-            mode.map(|v| v == 1).unwrap_or(true)
-        } else {
-            true
-        };
-
+        let game_bar_disabled = read_u32(&hkcu, "Software\\Microsoft\\GameBar", "UseNexusForGameBarEnabled") == Some(0);
+        let dvr_disabled = read_u32(&hkcu, "Software\\Microsoft\\Windows\\CurrentVersion\\GameDVR", "AppCaptureEnabled") == Some(0);
+        // Game Mode is on by default in Windows 10 1703+ unless explicitly disabled.
+        let game_mode = read_u32(&hkcu, "Software\\Microsoft\\GameBar", "AllowAutoGameMode").is_none_or(|v| v == 1);
+        // FSEBehaviorMode = 2 disables fullscreen optimizations (true exclusive fullscreen).
+        let fse = read_u32(&hkcu, "System\\GameConfigStore", "GameDVR_FSEBehaviorMode") == Some(2);
         Self {
-            game_bar_disabled: dvr_disabled,
+            game_bar_disabled,
             game_dvr_background_recording_disabled: dvr_disabled,
             game_mode_enabled: game_mode,
-            fullscreen_exclusive_optimized: true,
+            fullscreen_exclusive_optimized: fse,
         }
     }
 
-    /// Toggle Game DVR background recording in Windows Registry.
-    pub fn set_game_dvr_disabled(&mut self, disabled: bool) -> Result<(), String> {
+    /// Enable / disable the Xbox Game Bar (Win+G) for the current user.
+    pub fn set_game_bar_disabled(&mut self, disabled: bool) -> Result<(), String> {
         let hkcu = RegKey::predef(HKEY_CURRENT_USER);
-        let val = if disabled { 0u32 } else { 1u32 };
-
-        if let Ok((key, _)) =
-            hkcu.create_subkey("Software\\Microsoft\\Windows\\CurrentVersion\\GameDVR")
-        {
-            let _ = key.set_value("AppCaptureEnabled", &val);
-        }
-        if let Ok((key, _)) = hkcu.create_subkey("System\\GameConfigStore") {
-            let _ = key.set_value("GameDVR_Enabled", &val);
-        }
-
-        self.game_dvr_background_recording_disabled = disabled;
+        write_u32(&hkcu, "Software\\Microsoft\\GameBar", "UseNexusForGameBarEnabled", u32::from(!disabled))?;
         self.game_bar_disabled = disabled;
         Ok(())
     }
 
-    /// Toggle Windows Game Mode in Windows Registry.
+    /// Toggle Game DVR background recording. Write failures are reported (v1.6.1 ignored them).
+    pub fn set_game_dvr_disabled(&mut self, disabled: bool) -> Result<(), String> {
+        let hkcu = RegKey::predef(HKEY_CURRENT_USER);
+        let val = u32::from(!disabled);
+        write_u32(&hkcu, "Software\\Microsoft\\Windows\\CurrentVersion\\GameDVR", "AppCaptureEnabled", val)?;
+        write_u32(&hkcu, "System\\GameConfigStore", "GameDVR_Enabled", val)?;
+        self.game_dvr_background_recording_disabled = disabled;
+        Ok(())
+    }
+
+    /// Toggle Windows Game Mode.
     pub fn set_game_mode_enabled(&mut self, enabled: bool) -> Result<(), String> {
         let hkcu = RegKey::predef(HKEY_CURRENT_USER);
-        let val = if enabled { 1u32 } else { 0u32 };
-
-        if let Ok((key, _)) = hkcu.create_subkey("Software\\Microsoft\\GameBar") {
-            let _ = key.set_value("AllowAutoGameMode", &val);
-            let _ = key.set_value("AutoGameModeEnabled", &val);
-        }
-
+        let val = u32::from(enabled);
+        write_u32(&hkcu, "Software\\Microsoft\\GameBar", "AllowAutoGameMode", val)?;
+        write_u32(&hkcu, "Software\\Microsoft\\GameBar", "AutoGameModeEnabled", val)?;
         self.game_mode_enabled = enabled;
         Ok(())
     }
+}
+
+/// Overlay settings the Game Overlay view can change.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum OverlaySetting {
+    GameBarDisabled,
+    DvrDisabled,
+    GameModeEnabled,
 }

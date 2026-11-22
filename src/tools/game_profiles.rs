@@ -23,8 +23,8 @@ pub struct GameProfile {
 
 impl GameProfile {
     /// Return all game profiles initialized against live Windows registry IFEO status.
-    pub fn all() -> Vec<Self> {
-        let mut profiles = vec![
+    pub fn catalog() -> Vec<Self> {
+        vec![
             Self {
                 id: "cs2",
                 title: "Counter-Strike 2",
@@ -91,12 +91,15 @@ impl GameProfile {
                 disable_fso: true,
                 unpark_cores: true,
             },
-        ];
+        ]
+    }
 
+    /// Catalog with `is_applied` read from the live registry (IFEO PerfOptions).
+    pub fn all() -> Vec<Self> {
+        let mut profiles = Self::catalog();
         for prof in &mut profiles {
             prof.is_applied = prof.check_applied();
         }
-
         profiles
     }
 

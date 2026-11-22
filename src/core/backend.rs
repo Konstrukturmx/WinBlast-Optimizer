@@ -315,6 +315,72 @@ pub trait SystemBackend: Send + Sync + 'static {
         crate::hardware::driver_update::download_and_install_driver(item, staging_dir).map_err(|e| e.to_string())
     }
 
+    /// Game profiles with their live IFEO "applied" state.
+    fn list_game_profiles(&self) -> Vec<crate::tools::game_profiles::GameProfile> {
+        crate::tools::game_profiles::GameProfile::all()
+    }
+
+    /// Apply or revert a game profile; returns the re-read applied state (mutating).
+    fn set_game_profile(&self, profile: &crate::tools::game_profiles::GameProfile, apply: bool) -> std::result::Result<bool, String> {
+        if apply {
+            profile.apply()?;
+        } else {
+            profile.revert()?;
+        }
+        Ok(profile.check_applied())
+    }
+
+    /// Live Game Bar / DVR / Game Mode / FSE settings (read-only).
+    fn read_game_overlay(&self) -> crate::tools::game_overlay::GameOverlaySettings {
+        crate::tools::game_overlay::GameOverlaySettings::read_live()
+    }
+
+    /// Change one overlay setting and return the re-read settings (mutating).
+    fn set_game_overlay(
+        &self,
+        setting: crate::tools::game_overlay::OverlaySetting,
+        value: bool,
+    ) -> std::result::Result<crate::tools::game_overlay::GameOverlaySettings, String> {
+        use crate::tools::game_overlay::{GameOverlaySettings, OverlaySetting};
+        let mut s = GameOverlaySettings::read_live();
+        match setting {
+            OverlaySetting::GameBarDisabled => s.set_game_bar_disabled(value)?,
+            OverlaySetting::DvrDisabled => s.set_game_dvr_disabled(value)?,
+            OverlaySetting::GameModeEnabled => s.set_game_mode_enabled(value)?,
+        }
+        Ok(GameOverlaySettings::read_live())
+    }
+
+    /// Detect installed gaming runtimes (DirectX, VC++, .NET, Vulkan…; read-only).
+    fn scan_game_prereqs(&self) -> Vec<crate::tools::game_prereqs::GamePrerequisiteItem> {
+        crate::tools::game_prereqs::scan_game_prereqs()
+    }
+
+    /// Download and install one runtime (mutating, network).
+    fn install_game_prereq(&self, item: &mut crate::tools::game_prereqs::GamePrerequisiteItem) -> std::result::Result<String, String> {
+        crate::tools::game_prereqs::install_prereq_cascade(item)
+    }
+
+    /// Running-game detection (read-only; frame metrics are not captured).
+    fn probe_game_telemetry(&self) -> crate::tools::gaming_stats::LiveGameTelemetry {
+        crate::tools::gaming_stats::LiveGameTelemetry::probe()
+    }
+
+    /// DNS latency probes + active interface / TCP settings (read-only, network I/O).
+    fn probe_network(&self) -> crate::tools::network_diag::NetworkDiagnostics {
+        crate::tools::network_diag::NetworkDiagnostics::probe_live()
+    }
+
+    /// DNS configuration actions (mutating).
+    fn network_action(&self, action: &crate::tools::network_diag::NetAction) -> std::result::Result<String, String> {
+        use crate::tools::network_diag::{NetAction, NetworkDiagnostics};
+        match action {
+            NetAction::FlushDns => NetworkDiagnostics::flush_dns(),
+            NetAction::ResetDnsDhcp => NetworkDiagnostics::reset_dns_dhcp(),
+            NetAction::ApplyDns { primary, secondary } => NetworkDiagnostics::apply_dns_servers(primary, secondary),
+        }
+    }
+
     /// Run one Windows repair routine (SFC, DISM, Winsock, WU reset…). Mutating and slow.
     fn run_repair_task(&self, id: &str) -> std::result::Result<String, String> {
         crate::tools::windows_repair::RepairTask::execute(id)
@@ -2946,6 +3012,79 @@ impl SystemBackend for SandboxEnv {
 
     fn check_onedrive_kfm_active(&self) -> Option<String> {
         self.state_read().onedrive_kfm_path.clone()
+    }
+
+    fn list_game_profiles(&self) -> Vec<crate::tools::game_profiles::GameProfile> {
+        let dir = self.temp_dir.path.join("game_profiles");
+        let mut profiles = crate::tools::game_profiles::GameProfile::catalog();
+        for p in &mut profiles {
+            p.is_applied = dir.join(p.id).exists();
+        }
+        profiles
+    }
+
+    fn set_game_profile(&self, profile: &crate::tools::game_profiles::GameProfile, apply: bool) -> std::result::Result<bool, String> {
+        self.take_injected_error().map_err(|e| e.to_string())?;
+        let dir = self.temp_dir.path.join("game_profiles");
+        std::fs::create_dir_all(&dir).map_err(|e| e.to_string())?;
+        let marker = dir.join(profile.id);
+        if apply {
+            std::fs::write(&marker, b"applied").map_err(|e| e.to_string())?;
+        } else if marker.exists() {
+            std::fs::remove_file(&marker).map_err(|e| e.to_string())?;
+        }
+        Ok(apply)
+    }
+
+    fn read_game_overlay(&self) -> crate::tools::game_overlay::GameOverlaySettings {
+        std::fs::read(self.temp_dir.path.join("game_overlay.json"))
+            .ok()
+            .and_then(|b| serde_json::from_slice(&b).ok())
+            .unwrap_or_default()
+    }
+
+    fn set_game_overlay(
+        &self,
+        setting: crate::tools::game_overlay::OverlaySetting,
+        value: bool,
+    ) -> std::result::Result<crate::tools::game_overlay::GameOverlaySettings, String> {
+        use crate::tools::game_overlay::OverlaySetting;
+        self.take_injected_error().map_err(|e| e.to_string())?;
+        let mut s = self.read_game_overlay();
+        match setting {
+            OverlaySetting::GameBarDisabled => s.game_bar_disabled = value,
+            OverlaySetting::DvrDisabled => s.game_dvr_background_recording_disabled = value,
+            OverlaySetting::GameModeEnabled => s.game_mode_enabled = value,
+        }
+        let json = serde_json::to_vec(&s).map_err(|e| e.to_string())?;
+        std::fs::write(self.temp_dir.path.join("game_overlay.json"), json).map_err(|e| e.to_string())?;
+        Ok(s)
+    }
+
+    fn scan_game_prereqs(&self) -> Vec<crate::tools::game_prereqs::GamePrerequisiteItem> {
+        crate::tools::game_prereqs::catalog_undetected()
+    }
+
+    fn install_game_prereq(&self, item: &mut crate::tools::game_prereqs::GamePrerequisiteItem) -> std::result::Result<String, String> {
+        self.take_injected_error().map_err(|e| e.to_string())?;
+        item.installed = true;
+        item.installed_version = Some("sandbox".into());
+        item.state = crate::tools::game_prereqs::PrereqInstallState::Installed;
+        item.status_message = "Sandbox: runtime install simulated".into();
+        Ok(item.status_message.clone())
+    }
+
+    fn probe_game_telemetry(&self) -> crate::tools::gaming_stats::LiveGameTelemetry {
+        crate::tools::gaming_stats::LiveGameTelemetry::default()
+    }
+
+    fn probe_network(&self) -> crate::tools::network_diag::NetworkDiagnostics {
+        crate::tools::network_diag::NetworkDiagnostics::default()
+    }
+
+    fn network_action(&self, action: &crate::tools::network_diag::NetAction) -> std::result::Result<String, String> {
+        self.take_injected_error().map_err(|e| e.to_string())?;
+        Ok(format!("Sandbox: {action:?} simulated"))
     }
 
     fn run_repair_task(&self, id: &str) -> std::result::Result<String, String> {

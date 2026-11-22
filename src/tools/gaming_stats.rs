@@ -108,11 +108,13 @@ pub struct LiveGameTelemetry {
 impl Default for LiveGameTelemetry {
     fn default() -> Self {
         Self {
+            // Frame pacing / stutter capture is not implemented (needs ETW PresentMon); v1.6.1
+            // displayed these invented constants as live telemetry. Zero/empty = not measured.
             active_game_detected: None,
-            frame_pacing_rating: 98,
-            background_cpu_impact_pct: 0.8,
+            frame_pacing_rating: 0,
+            background_cpu_impact_pct: 0.0,
             micro_stutters_per_min: 0,
-            directx_version: "DirectX 12 Ultimate (Agility SDK)".to_string(),
+            directx_version: String::new(),
         }
     }
 }

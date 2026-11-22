@@ -1,0 +1,62 @@
+// ui/stores/gaming.slint
+// Gaming hub stores (ports of v1.6.1 gaming_stats, fps_benchmark, game_profiles, game_overlay,
+// game_suitability, game_prereqs) + Network diagnostics.
+
+export struct FpsRow { icon: string, title: string, gain: string, avg: string, low: string, latency: string }
+export struct ProfileRow { id: string, icon: string, title: string, target: string, desc: string, applied: bool, busy: bool, high-priority: bool, disable-fso: bool, unpark: bool }
+export struct CheckRow { name: string, ok: bool, desc: string, recommendation: string }
+export struct PrereqRow { id: string, name: string, sub: string, version: string, status: string, state: string, tone: string, installed: bool, busy: bool }
+export struct DnsRow { name: string, category: string, ips: string, primary: string, secondary: string, ping: string, status: string, tone: string }
+
+export global GamingStore {
+    in-out property <int> sub-tab;             // 0 live, 1 fps, 2 profiles, 3 overlay, 4 suitability
+    in-out property <bool> probing;
+    in-out property <string> detected-game;
+    in-out property <string> hags-text;
+    in-out property <bool> hags-on;
+    in-out property <[FpsRow]> fps: [];
+    in-out property <[ProfileRow]> profiles: [];
+    in-out property <bool> profile-busy;
+    in-out property <bool> overlay-busy;
+    in-out property <bool> game-bar-disabled;
+    in-out property <bool> dvr-disabled;
+    in-out property <bool> game-mode;
+    in-out property <bool> fse;
+    in-out property <bool> suitability-ready;
+    in-out property <string> tier-label;
+    in-out property <int> score;
+    in-out property <[CheckRow]> checks: [];
+    callback set-sub-tab(int);
+    callback refresh();
+    callback toggle-profile(string);
+    callback set-overlay(string, bool);         // "gamebar" | "dvr" | "gamemode"
+}
+
+export global PrereqStore {
+    in-out property <bool> scanning;
+    in-out property <bool> busy;
+    in-out property <int> total;
+    in-out property <int> installed;
+    in-out property <int> missing;
+    in-out property <string> filter;
+    in-out property <[PrereqRow]> items: [];
+    callback scan();
+    callback install(string);
+    callback install-all();
+    callback filter-edited(string);
+}
+
+export global NetworkStore {
+    in-out property <bool> probing;
+    in-out property <bool> busy;
+    in-out property <string> adapter;
+    in-out property <string> ip-mtu;
+    in-out property <bool> ack-optimized;
+    in-out property <bool> nodelay-optimized;
+    in-out property <string> tracked;
+    in-out property <[DnsRow]> probes: [];
+    callback ping();
+    callback reset-dns();
+    callback flush-dns();
+    callback apply-dns(string, string, string);  // primary, secondary, provider name
+}

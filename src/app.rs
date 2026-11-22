@@ -493,6 +493,20 @@ pub enum WorkerEvent {
     DiskReportLoaded(crate::hardware::disks::DiskSubsystemReport),
     /// Result of an asynchronous ReTrim of all fixed volumes.
     DiskTrimCompleted(std::result::Result<String, String>),
+    /// Game profiles reloaded (after a scan or apply/revert).
+    GameProfilesLoaded { profiles: Vec<crate::tools::game_profiles::GameProfile>, message: Option<String> },
+    /// Overlay settings read or changed.
+    GameOverlayLoaded { settings: crate::tools::game_overlay::GameOverlaySettings, error: Option<String> },
+    /// Prerequisite scan finished.
+    PrereqsScanned(Vec<crate::tools::game_prereqs::GamePrerequisiteItem>),
+    /// One prerequisite install finished (finished = last of a batch).
+    PrereqInstalled { item: crate::tools::game_prereqs::GamePrerequisiteItem, message: String, finished: bool },
+    /// Network probe finished.
+    NetworkProbed(crate::tools::network_diag::NetworkDiagnostics),
+    /// DNS action finished (real result, not an assumed success).
+    NetworkActionDone(std::result::Result<String, String>),
+    /// Running-game detection finished.
+    GameTelemetryProbed(crate::tools::gaming_stats::LiveGameTelemetry),
     /// One repair routine finished (log line + whether the run is complete).
     RepairStepDone { id: String, result: std::result::Result<String, String>, finished: bool },
     /// Fault diagnostics scan finished.
@@ -729,9 +743,14 @@ pub struct AppState {
     pub is_benchmarking_perf: bool,
     pub game_telemetry: crate::tools::gaming_stats::LiveGameTelemetry,
     pub network_diag: Option<crate::tools::network_diag::NetworkDiagnostics>,
+    pub network_probe_inflight: bool,
+    pub network_action_inflight: bool,
+    pub game_probe_inflight: bool,
     pub game_profiles: Vec<crate::tools::game_profiles::GameProfile>,
     pub game_suitability: crate::tools::game_overlay::GameSuitabilityReport,
     pub game_overlay: crate::tools::game_overlay::GameOverlaySettings,
+    pub game_profile_inflight: Option<String>,
+    pub overlay_inflight: bool,
     pub repair_tasks: Vec<crate::tools::windows_repair::RepairTask>,
     pub repair_log: Vec<String>,
     /// Repair task currently running on the worker ("all" while running the whole suite).
@@ -978,7 +997,12 @@ impl AppState {
             is_benchmarking_perf: false,
             game_telemetry: crate::tools::gaming_stats::LiveGameTelemetry::default(),
             network_diag: None,
-            game_profiles: crate::tools::game_profiles::GameProfile::all(),
+            network_probe_inflight: false,
+            network_action_inflight: false,
+            game_probe_inflight: false,
+            game_profiles: crate::tools::game_profiles::GameProfile::catalog(),
+            game_profile_inflight: None,
+            overlay_inflight: false,
             game_suitability: crate::tools::game_overlay::GameSuitabilityReport::default(),
             game_overlay: crate::tools::game_overlay::GameOverlaySettings::default(),
             repair_tasks: crate::tools::windows_repair::RepairTask::all(),
@@ -1031,6 +1055,8 @@ impl AppState {
         self.refresh_restore_points();
         self.refresh_maintenance_tasks();
         self.scan_fault_report_async();
+        self.refresh_game_profiles();
+        self.refresh_game_overlay();
         self.refresh_latency();
         self.run_telemetry_audit();
         self.check_for_updates();
@@ -1956,6 +1982,49 @@ impl AppState {
                     self.repair_running = None;
                 }
             }
+            WorkerEvent::NetworkProbed(diag) => {
+                self.network_probe_inflight = false;
+                self.network_diag = Some(diag);
+            }
+            WorkerEvent::NetworkActionDone(res) => {
+                self.network_action_inflight = false;
+                match res {
+                    Ok(msg) => self.set_status(msg),
+                    Err(e) => self.set_status(format!("Network action failed: {e}")),
+                }
+            }
+            WorkerEvent::GameTelemetryProbed(t) => {
+                self.game_probe_inflight = false;
+                self.game_telemetry = t;
+            }
+            WorkerEvent::GameProfilesLoaded { profiles, message } => {
+                self.game_profile_inflight = None;
+                self.game_profiles = profiles;
+                if let Some(m) = message {
+                    self.set_status(m);
+                }
+            }
+            WorkerEvent::GameOverlayLoaded { settings, error } => {
+                self.overlay_inflight = false;
+                self.game_overlay = settings;
+                if let Some(e) = error {
+                    self.set_status(format!("Overlay setting failed: {e}"));
+                }
+            }
+            WorkerEvent::PrereqsScanned(items) => {
+                self.is_prereqs_scanning = false;
+                self.game_prereqs = items;
+            }
+            WorkerEvent::PrereqInstalled { item, message, finished } => {
+                match self.game_prereqs.iter_mut().find(|p| p.id == item.id) {
+                    Some(slot) => *slot = item,
+                    None => self.game_prereqs.push(item),
+                }
+                self.set_status(message);
+                if finished {
+                    self.prereq_install_in_flight = None;
+                }
+            }
             WorkerEvent::DiskTrimCompleted(res) => {
                 self.disk_trim_inflight = false;
                 match res {
@@ -2309,6 +2378,9 @@ impl AppState {
             ActiveView::AutomationCenter if self.system_health_assessment.is_none() => {
                 self.refresh_system_health();
             }
+            ActiveView::GameOverlay => self.refresh_game_overlay(),
+            ActiveView::GameProfiles => self.refresh_game_profiles(),
+            ActiveView::GamingStats => self.probe_game_telemetry_async(),
             _ => {}
         }
     }
@@ -2398,6 +2470,58 @@ impl AppState {
             |msg| WorkerEvent::FaultActionDone(Err(format!("worker panic: {msg}"))),
             move |tx| {
                 let _ = tx.send(WorkerEvent::FaultActionDone(backend.fault_remediation(action, &report)));
+            },
+        );
+    }
+
+    /// Ping the DNS catalog and read the active interface on a worker (v1.6.1: UI thread).
+    pub fn probe_network_async(&mut self) {
+        if self.network_probe_inflight {
+            return;
+        }
+        self.network_probe_inflight = true;
+        let backend = Arc::clone(&self.backend);
+        spawn_guarded_worker(
+            self.tx_events.clone(),
+            self.waker.clone(),
+            |_msg| WorkerEvent::NetworkProbed(crate::tools::network_diag::NetworkDiagnostics::default()),
+            move |tx| {
+                let _ = tx.send(WorkerEvent::NetworkProbed(backend.probe_network()));
+            },
+        );
+    }
+
+    /// Flush / reset / apply DNS on a worker and report the real outcome
+    /// (v1.6.1 ignored the result and always claimed success).
+    pub fn network_action_async(&mut self, action: crate::tools::network_diag::NetAction) {
+        if self.network_action_inflight || self.is_rolling_back {
+            return;
+        }
+        self.network_action_inflight = true;
+        let backend = Arc::clone(&self.backend);
+        spawn_guarded_worker(
+            self.tx_events.clone(),
+            self.waker.clone(),
+            |msg| WorkerEvent::NetworkActionDone(Err(format!("worker panic: {msg}"))),
+            move |tx| {
+                let _ = tx.send(WorkerEvent::NetworkActionDone(backend.network_action(&action)));
+            },
+        );
+    }
+
+    /// Detect a running game on a worker thread.
+    pub fn probe_game_telemetry_async(&mut self) {
+        if self.game_probe_inflight {
+            return;
+        }
+        self.game_probe_inflight = true;
+        let backend = Arc::clone(&self.backend);
+        spawn_guarded_worker(
+            self.tx_events.clone(),
+            self.waker.clone(),
+            |_msg| WorkerEvent::GameTelemetryProbed(crate::tools::gaming_stats::LiveGameTelemetry::default()),
+            move |tx| {
+                let _ = tx.send(WorkerEvent::GameTelemetryProbed(backend.probe_game_telemetry()));
             },
         );
     }
@@ -5246,43 +5370,146 @@ impl AppState {
 
     // ── v1.4 Game Prerequisites & Automation Methods ──────────────────────────
 
+    /// Detect gaming runtimes on a worker via the backend (v1.6.1: UI thread).
     pub fn scan_game_prereqs(&mut self) {
+        if self.is_prereqs_scanning {
+            return;
+        }
         self.is_prereqs_scanning = true;
-        self.game_prereqs = crate::tools::game_prereqs::scan_game_prereqs();
-        self.is_prereqs_scanning = false;
-        if let Some(ref w) = self.waker {
-            w();
-        }
+        let backend = Arc::clone(&self.backend);
+        spawn_guarded_worker(
+            self.tx_events.clone(),
+            self.waker.clone(),
+            |_msg| WorkerEvent::PrereqsScanned(Vec::new()),
+            move |tx| {
+                let _ = tx.send(WorkerEvent::PrereqsScanned(backend.scan_game_prereqs()));
+            },
+        );
     }
 
+    /// Install one runtime on a worker (v1.6.1 downloaded + installed on the UI thread and
+    /// set/cleared the in-flight flag inside the same call).
     pub fn install_game_prereq(&mut self, prereq_id: String) {
-        if self.prereq_install_in_flight.is_some() {
-            return;
-        }
-        self.prereq_install_in_flight = Some(prereq_id.clone());
-        if let Some(item) = self.game_prereqs.iter_mut().find(|p| p.id == prereq_id) {
-            let _ = crate::tools::game_prereqs::install_prereq_cascade(item);
-        }
-        self.prereq_install_in_flight = None;
-        if let Some(ref w) = self.waker {
-            w();
-        }
+        self.install_prereqs(vec![prereq_id]);
     }
 
+    /// Install every missing runtime sequentially on one worker.
     pub fn install_all_missing_prereqs(&mut self) {
-        if self.prereq_install_in_flight.is_some() {
+        let missing: Vec<String> = self.game_prereqs.iter().filter(|p| !p.installed).map(|p| p.id.clone()).collect();
+        self.install_prereqs(missing);
+    }
+
+    fn install_prereqs(&mut self, ids: Vec<String>) {
+        if self.prereq_install_in_flight.is_some() || ids.is_empty() {
             return;
         }
-        let missing_ids: Vec<String> = self
-            .game_prereqs
-            .iter()
-            .filter(|p| !p.installed)
-            .map(|p| p.id.clone())
-            .collect();
-
-        for id in missing_ids {
-            self.install_game_prereq(id);
+        let items: Vec<_> = ids.iter().filter_map(|id| self.game_prereqs.iter().find(|p| &p.id == id).cloned()).collect();
+        if items.is_empty() {
+            return;
         }
+        self.prereq_install_in_flight = Some(items[0].id.clone());
+        let backend = Arc::clone(&self.backend);
+        let fallback = items[0].clone();
+        spawn_guarded_worker(
+            self.tx_events.clone(),
+            self.waker.clone(),
+            move |msg| WorkerEvent::PrereqInstalled { item: fallback, message: format!("Install worker panic: {msg}"), finished: true },
+            move |tx| {
+                let n = items.len();
+                for (i, mut item) in items.into_iter().enumerate() {
+                    let message = match backend.install_game_prereq(&mut item) {
+                        Ok(m) => m,
+                        Err(e) => format!("Install failed for {}: {e}", item.name),
+                    };
+                    let _ = tx.send(WorkerEvent::PrereqInstalled { item, message, finished: i + 1 == n });
+                }
+            },
+        );
+    }
+
+    /// Reload game profiles with live applied state (worker).
+    pub fn refresh_game_profiles(&mut self) {
+        if self.game_profile_inflight.is_some() {
+            return;
+        }
+        self.game_profile_inflight = Some(String::new());
+        let backend = Arc::clone(&self.backend);
+        spawn_guarded_worker(
+            self.tx_events.clone(),
+            self.waker.clone(),
+            |msg| WorkerEvent::GameProfilesLoaded { profiles: crate::tools::game_profiles::GameProfile::catalog(), message: Some(format!("worker panic: {msg}")) },
+            move |tx| {
+                let _ = tx.send(WorkerEvent::GameProfilesLoaded { profiles: backend.list_game_profiles(), message: None });
+            },
+        );
+    }
+
+    /// Apply (or revert, if applied) a game profile on a worker and report the real outcome
+    /// (v1.6.1 ignored errors and always showed the success toast).
+    pub fn toggle_game_profile(&mut self, id: &str) {
+        if self.game_profile_inflight.is_some() || self.is_rolling_back {
+            return;
+        }
+        let Some(profile) = self.game_profiles.iter().find(|p| p.id == id).cloned() else {
+            return;
+        };
+        self.game_profile_inflight = Some(id.to_string());
+        let backend = Arc::clone(&self.backend);
+        let applied_toast = self.tr_v(crate::core::view_i18n::ViewTextKey::GameProfilesAppliedToast).to_string();
+        let reverted_toast = self.tr_v(crate::core::view_i18n::ViewTextKey::GameProfilesRevertedToast).to_string();
+        spawn_guarded_worker(
+            self.tx_events.clone(),
+            self.waker.clone(),
+            |msg| WorkerEvent::GameProfilesLoaded { profiles: crate::tools::game_profiles::GameProfile::catalog(), message: Some(format!("worker panic: {msg}")) },
+            move |tx| {
+                let want = !profile.is_applied;
+                let message = match backend.set_game_profile(&profile, want) {
+                    Ok(true) if want => applied_toast,
+                    Ok(false) if !want => reverted_toast,
+                    Ok(state) => format!("{}: state is now {}", profile.title, if state { "applied" } else { "not applied" }),
+                    Err(e) => format!("{}: {e}", profile.title),
+                };
+                let _ = tx.send(WorkerEvent::GameProfilesLoaded { profiles: backend.list_game_profiles(), message: Some(message) });
+            },
+        );
+    }
+
+    /// Read overlay settings from the system (worker).
+    pub fn refresh_game_overlay(&mut self) {
+        if self.overlay_inflight {
+            return;
+        }
+        self.overlay_inflight = true;
+        let backend = Arc::clone(&self.backend);
+        spawn_guarded_worker(
+            self.tx_events.clone(),
+            self.waker.clone(),
+            |msg| WorkerEvent::GameOverlayLoaded { settings: Default::default(), error: Some(format!("worker panic: {msg}")) },
+            move |tx| {
+                let _ = tx.send(WorkerEvent::GameOverlayLoaded { settings: backend.read_game_overlay(), error: None });
+            },
+        );
+    }
+
+    /// Change one overlay setting on a worker (v1.6.1's Game Bar toggle never touched Windows).
+    pub fn set_game_overlay_async(&mut self, setting: crate::tools::game_overlay::OverlaySetting, value: bool) {
+        if self.overlay_inflight || self.is_rolling_back {
+            return;
+        }
+        self.overlay_inflight = true;
+        let backend = Arc::clone(&self.backend);
+        spawn_guarded_worker(
+            self.tx_events.clone(),
+            self.waker.clone(),
+            |msg| WorkerEvent::GameOverlayLoaded { settings: Default::default(), error: Some(format!("worker panic: {msg}")) },
+            move |tx| {
+                let ev = match backend.set_game_overlay(setting, value) {
+                    Ok(settings) => WorkerEvent::GameOverlayLoaded { settings, error: None },
+                    Err(e) => WorkerEvent::GameOverlayLoaded { settings: backend.read_game_overlay(), error: Some(e) },
+                };
+                let _ = tx.send(ev);
+            },
+        );
     }
 
     /// Run the health assessment on a worker thread via the backend (v1.6.1 ran it on the UI thread).

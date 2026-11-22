@@ -189,6 +189,26 @@ const PREREQ_DESCRIPTORS: [PrereqDescriptor; 10] = [
     },
 ];
 
+/// The prerequisite catalog with nothing detected (used by sandboxes and before the first scan).
+pub fn catalog_undetected() -> Vec<GamePrerequisiteItem> {
+    PREREQ_DESCRIPTORS
+        .iter()
+        .map(|desc| GamePrerequisiteItem {
+            id: desc.id.to_string(),
+            name: desc.name.to_string(),
+            category: desc.category.to_string(),
+            description: desc.description.to_string(),
+            installed: false,
+            installed_version: None,
+            winget_id: desc.winget_id.map(ToString::to_string),
+            choco_id: desc.choco_id.map(ToString::to_string),
+            direct_url: desc.direct_url.to_string(),
+            state: PrereqInstallState::NotInstalled,
+            status_message: String::new(),
+        })
+        .collect()
+}
+
 /// Scan all 10 essential gaming prerequisites against registry and system files in parallel via Rayon.
 pub fn scan_game_prereqs() -> Vec<GamePrerequisiteItem> {
     PREREQ_DESCRIPTORS

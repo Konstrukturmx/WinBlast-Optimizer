@@ -648,10 +648,13 @@ pub enum TextKey {
     GoalStepReboot,
     GoalStepService,
     GoalStepInstant,
+    FpsReferenceNotice,
+    GamingNotMeasured,
+    GamingNoGameDetected,
 }
 
 impl TextKey {
-    pub const COUNT: usize = 539;
+    pub const COUNT: usize = 542;
 }
 
 /// Translations indexed by [Language as usize][TextKey as usize]
@@ -1200,6 +1203,9 @@ static TRANSLATIONS: [[&str; TextKey::COUNT]; 8] = [
         "⚠️ Reboot Required",
         "🔄 Service Restart",
         "⚡ Instant",
+        "Reference figures from WinBlast lab test systems — not measured on this PC.",
+        "Not measured — frame-time capture (ETW / PresentMon) is not available",
+        "No supported game is running",
     ],
     // 1: Turkish (Türkçe)
     [
@@ -1745,6 +1751,9 @@ static TRANSLATIONS: [[&str; TextKey::COUNT]; 8] = [
         "⚠️ Yeniden Başlatma Gerekli",
         "🔄 Hizmet Yeniden Başlatma",
         "⚡ Anında",
+        "WinBlast laboratuvar test sistemlerinden referans değerler — bu bilgisayarda ölçülmemiştir.",
+        "Ölçülmedi — kare süresi yakalama (ETW / PresentMon) kullanılamıyor",
+        "Desteklenen bir oyun çalışmıyor",
     ],
     // 2: German (Deutsch)
     [
@@ -2290,6 +2299,9 @@ static TRANSLATIONS: [[&str; TextKey::COUNT]; 8] = [
         "⚠️ Neustart erforderlich",
         "🔄 Dienstneustart",
         "⚡ Sofort",
+        "Referenzwerte von WinBlast-Testsystemen – nicht auf diesem PC gemessen.",
+        "Nicht gemessen – Frametime-Erfassung (ETW / PresentMon) nicht verfügbar",
+        "Kein unterstütztes Spiel läuft",
     ],
     // 3: French (Français)
     [
@@ -2835,6 +2847,9 @@ static TRANSLATIONS: [[&str; TextKey::COUNT]; 8] = [
         "⚠️ Redémarrage requis",
         "🔄 Redémarrage du service",
         "⚡ Instantané",
+        "Valeurs de référence des systèmes de test WinBlast — non mesurées sur ce PC.",
+        "Non mesuré — capture des temps de trame (ETW / PresentMon) indisponible",
+        "Aucun jeu pris en charge en cours",
     ],
     // 4: Spanish (Español)
     [
@@ -3380,6 +3395,9 @@ static TRANSLATIONS: [[&str; TextKey::COUNT]; 8] = [
         "⚠️ Requiere reinicio",
         "🔄 Reinicio de servicio",
         "⚡ Instantáneo",
+        "Cifras de referencia de los sistemas de prueba de WinBlast; no medidas en este PC.",
+        "No medido: la captura de tiempos de fotograma (ETW / PresentMon) no está disponible",
+        "No se está ejecutando ningún juego compatible",
     ],
     // 5: Russian (Русский)
     [
@@ -3925,6 +3943,9 @@ static TRANSLATIONS: [[&str; TextKey::COUNT]; 8] = [
         "⚠️ Нужна перезагрузка",
         "🔄 Перезапуск службы",
         "⚡ Мгновенно",
+        "Эталонные значения с тестовых систем WinBlast — не измерены на этом ПК.",
+        "Не измерено — захват времени кадров (ETW / PresentMon) недоступен",
+        "Поддерживаемая игра не запущена",
     ],
     // 6: Chinese Simplified (简体中文)
     [
@@ -4470,6 +4491,9 @@ static TRANSLATIONS: [[&str; TextKey::COUNT]; 8] = [
         "⚠️ 需要重启",
         "🔄 服务重启",
         "⚡ 即时",
+        "来自 WinBlast 实验室测试系统的参考数据——并非在本机测得。",
+        "未测量——帧时间捕获（ETW / PresentMon）不可用",
+        "没有正在运行的受支持游戏",
     ],
     // 7: Japanese (日本語)
     [
@@ -5015,6 +5039,9 @@ static TRANSLATIONS: [[&str; TextKey::COUNT]; 8] = [
         "⚠️ 再起動が必要",
         "🔄 サービス再起動",
         "⚡ 即時",
+        "WinBlast ラボのテスト環境による参考値です（この PC での測定値ではありません）。",
+        "未測定 — フレームタイム取得 (ETW / PresentMon) は利用できません",
+        "対応ゲームは実行されていません",
     ],
 ];
 
