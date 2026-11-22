@@ -1,149 +1,100 @@
 // ui/views/latency_bench.slint
-// WinBlast0 DPC & ISR Driver Latency Benchmark in Slint 1.19
-
-import { Scale, Theme } from "../theme.slint";
+// System & network latency benchmark (port of v1.6.1) with before/after comparison.
+import { ScrollView } from "std-widgets.slint";
+import { Scale, Theme, Tr } from "../theme.slint";
+import { LatencyStore, LatencyMetric } from "../stores/latency.slint";
 import { WbButton } from "../components/button.slint";
-import { WbCard } from "../components/card.slint";
-import { WbBadge } from "../components/badge.slint";
-import { WbProgressBar } from "../components/progress_bar.slint";
-import { WbSparkline } from "../components/sparkline.slint";
+import { WbPill, WbPanel } from "../components/toggle.slint";
 
-export component LatencyBenchView inherits Flickable {
+component MetricCell inherits VerticalLayout {
+    in property <LatencyMetric> m;
+    min-width: Scale.px(150px);
+    horizontal-stretch: 1;
+    spacing: Scale.px(2px);
+    Text { text: m.label; font-size: Scale.font-xs; color: Theme.text-muted; wrap: word-wrap; }
+    Text {
+        text: m.now;
+        font-size: Scale.font-lg;
+        font-weight: 800;
+        color: m.tone == "success" ? Theme.success : m.tone == "warning" ? Theme.warning : m.tone == "danger" ? Theme.danger : Theme.accent;
+    }
+    if m.was != "" : Text { text: m.was; font-size: Scale.font-2xs; color: Theme.text-muted; }
+}
+
+component Cell inherits VerticalLayout {
+    in property <string> k;
+    in property <string> v;
+    min-width: Scale.px(70px);
+    Text { text: root.k; font-size: Scale.font-2xs; color: Theme.text-muted; }
+    Text { text: root.v; font-size: Scale.font-xs; font-weight: 600; color: Theme.text-primary; }
+}
+
+export component LatencyBenchView inherits Rectangle {
     in property <int> tier;
-    in property <bool> is-monitoring: false;
-    in property <float> current-latency-us: 42.0;
-    in property <float> max-latency-us: 128.5;
-    in property <float> avg-latency-us: 38.2;
-    in property <[float]> latency-history: [35.0, 42.0, 38.0, 45.0, 128.5, 41.0, 39.0, 42.0, 36.0, 40.0];
 
-    in property <string> offending-driver: "dxgkrnl.sys (DirectX Graphics Kernel)";
-    in property <float> offending-driver-latency: 128.5;
+    ScrollView {
+        VerticalLayout {
+            padding: root.tier == 0 ? Scale.px(10px) : Scale.px(14px);
+            spacing: Scale.px(12px);
+            alignment: start;
 
-    callback toggle-monitoring();
-    callback reset-stats();
-
-    content-height: content.preferred-height;
-
-    content := VerticalLayout {
-        padding: Scale.space-lg;
-        spacing: Scale.space-md;
-
-        // Header Card
-        WbCard {
-            HorizontalLayout {
-                alignment: space-between;
-                VerticalLayout {
-                    spacing: Scale.space-2xs;
-                    Text {
-                        text: "DPC & Interrupt Execution Latency";
-                        font-size: Scale.font-xl;
-                        font-weight: 700;
-                        color: Theme.text-primary;
-                    }
-                    Text {
-                        text: "Microsecond-resolution driver Deferred Procedure Call (DPC) audio and frame-drop diagnostics.";
-                        font-size: Scale.font-sm;
-                        color: Theme.text-secondary;
-                    }
-                }
-
-                HorizontalLayout {
-                    spacing: Scale.space-sm;
-                    WbButton {
-                        variant: "ghost";
-                        text: "Reset";
-                        clicked => { root.reset-stats(); }
-                    }
-                    WbButton {
-                        variant: root.is-monitoring ? "danger" : "primary";
-                        text: root.is-monitoring ? "Stop Monitor" : "Start Monitor";
-                        clicked => { root.toggle-monitoring(); }
-                    }
-                }
-            }
-        }
-
-        // Latency Metric Gauges Row
-        HorizontalLayout {
-            spacing: Scale.space-md;
-
-            WbCard {
-                horizontal-stretch: 1;
-                VerticalLayout {
-                    spacing: Scale.space-xs;
-                    Text { text: "CURRENT DPC LATENCY"; font-size: Scale.font-xs; font-weight: 700; color: Theme.text-muted; }
-                    Text {
-                        text: round(root.current-latency-us) + " µs";
-                        font-size: Scale.font-2xl;
-                        font-weight: 800;
-                        color: root.current-latency-us >= 1000 ? Theme.high : (root.current-latency-us >= 500 ? Theme.moderate : Theme.safe);
-                    }
-                    Text { text: "Real-time tick latency"; font-size: Scale.font-xs; color: Theme.text-secondary; }
-                }
-            }
-
-            WbCard {
-                horizontal-stretch: 1;
-                VerticalLayout {
-                    spacing: Scale.space-xs;
-                    Text { text: "MAXIMUM SPIKE"; font-size: Scale.font-xs; font-weight: 700; color: Theme.text-muted; }
-                    Text {
-                        text: round(root.max-latency-us) + " µs";
-                        font-size: Scale.font-2xl;
-                        font-weight: 800;
-                        color: root.max-latency-us >= 1000 ? Theme.high : (root.max-latency-us >= 500 ? Theme.moderate : Theme.safe);
-                    }
-                    Text { text: "Peak worst-case latency"; font-size: Scale.font-xs; color: Theme.text-secondary; }
-                }
-            }
-
-            WbCard {
-                horizontal-stretch: 1;
-                VerticalLayout {
-                    spacing: Scale.space-xs;
-                    Text { text: "AVERAGE LATENCY"; font-size: Scale.font-xs; font-weight: 700; color: Theme.text-muted; }
-                    Text {
-                        text: round(root.avg-latency-us) + " µs";
-                        font-size: Scale.font-2xl;
-                        font-weight: 800;
-                        color: Theme.accent;
-                    }
-                    Text { text: "Rolling session mean"; font-size: Scale.font-xs; color: Theme.text-secondary; }
-                }
-            }
-        }
-
-        // Live History Chart
-        WbCard {
             VerticalLayout {
-                spacing: Scale.space-sm;
-                HorizontalLayout {
-                    alignment: space-between;
-                    Text { text: "REAL-TIME LATENCY TRACE"; font-size: Scale.font-xs; font-weight: 700; color: Theme.text-muted; }
-                    WbBadge {
-                        text: root.max-latency-us < 500 ? "System Suitable for Real-Time Audio" : "Potential Audio Glitches / Stutters";
-                        variant: root.max-latency-us < 500 ? "safe" : "moderate";
-                        show-dot: true;
-                    }
+                spacing: Scale.px(4px);
+                Text { text: Tr.s("LatencyTitle"); font-size: Scale.font-xl; font-weight: 800; color: Theme.text-primary; wrap: word-wrap; }
+                Text { text: Tr.s("LatencySub"); font-size: Scale.font-xs; color: Theme.text-muted; wrap: word-wrap; }
+            }
+            FlexboxLayout {
+                spacing: Scale.px(6px);
+                WbButton {
+                    variant: "primary";
+                    text: LatencyStore.running ? Tr.s("RunningTest") : Tr.s("RunLatencyTest");
+                    enabled: !LatencyStore.running;
+                    loading: LatencyStore.running;
+                    clicked => { LatencyStore.run(); }
                 }
-                WbSparkline {
-                    values: root.latency-history;
-                    max-val: 200.0;
-                    unit: "µs";
-                    stroke-color: root.max-latency-us >= 1000 ? Theme.high : Theme.accent;
+                WbButton { variant: "secondary"; text: Tr.s("SaveBeforeBaselineBtn"); enabled: !LatencyStore.running; clicked => { LatencyStore.save-baseline(); } }
+                WbButton { variant: "secondary"; text: Tr.s("LatencyClearBtn"); clicked => { LatencyStore.clear(); } }
+            }
+
+            if LatencyStore.has-comparison : WbPanel {
+                FlexboxLayout {
+                    padding: Scale.px(12px);
+                    spacing: Scale.px(14px);
+                    alignment: stretch;
+                    for m in LatencyStore.comparison : MetricCell { m: m; }
                 }
             }
-        }
 
-        // Offending Driver Card
-        WbCard {
-            VerticalLayout {
-                spacing: Scale.space-2xs;
-                Text { text: "HIGHEST REPORTED ISR/DPC ROUTINE"; font-size: Scale.font-xs; font-weight: 700; color: Theme.text-muted; }
-                HorizontalLayout {
-                    alignment: space-between;
-                    Text { text: root.offending-driver; font-size: Scale.font-md; font-weight: 600; color: Theme.text-primary; }
-                    Text { text: round(root.offending-driver-latency) + " µs"; font-size: Scale.font-md; font-weight: 700; color: Theme.accent; }
+            if !LatencyStore.has-result : WbPanel {
+                height: Scale.px(72px);
+                Text {
+                    text: LatencyStore.running ? Tr.s("LatencyRunningText") : Tr.s("NoLatencyRunYet");
+                    font-size: Scale.font-sm;
+                    color: Theme.text-muted;
+                    wrap: word-wrap;
+                    horizontal-alignment: center;
+                }
+            }
+            if LatencyStore.has-result : WbPanel {
+                FlexboxLayout {
+                    padding: Scale.px(12px);
+                    spacing: Scale.px(14px);
+                    alignment: stretch;
+                    for m in LatencyStore.kpis : MetricCell { m: m; }
+                }
+            }
+            for t in LatencyStore.targets : WbPanel {
+                FlexboxLayout {
+                    padding: Scale.px(10px);
+                    spacing: Scale.px(12px);
+                    alignment: stretch;
+                    cross-axis-alignment: center;
+                    Text { text: t.name; font-size: Scale.font-sm; font-weight: 600; color: Theme.text-primary; min-width: Scale.px(160px); horizontal-stretch: 1; }
+                    WbPill { text: t.loss; tone: t.loss-ok ? "success" : "danger"; }
+                    Cell { k: Tr.s("MinLabel"); v: t.min; }
+                    Cell { k: Tr.s("AvgLabel"); v: t.avg; }
+                    Cell { k: Tr.s("MaxLabel"); v: t.max; }
+                    Cell { k: Tr.s("JitterLabel"); v: t.jitter; }
                 }
             }
         }

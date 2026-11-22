@@ -1,0 +1,17 @@
+// ui/stores/latency.slint
+// System & network latency benchmark store (port of v1.6.1 latency_bench).
+
+export struct LatencyMetric { label: string, now: string, was: string, tone: string }
+export struct PingRow { name: string, loss: string, loss-ok: bool, min: string, avg: string, max: string, jitter: string }
+
+export global LatencyStore {
+    in-out property <bool> running;
+    in-out property <bool> has-comparison;
+    in-out property <[LatencyMetric]> comparison: [];
+    in-out property <bool> has-result;
+    in-out property <[LatencyMetric]> kpis: [];
+    in-out property <[PingRow]> targets: [];
+    callback run();
+    callback save-baseline();
+    callback clear();
+}

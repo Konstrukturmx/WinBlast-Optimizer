@@ -13,7 +13,7 @@ use winblast0::app::{ActiveView, AppState, MatrixSortMode};
 use winblast0::core::backend::SandboxEnv;
 use winblast0::core::risk::load_embedded_rules;
 use winblast0::ui_slint::bridge::SlintBridge;
-use winblast0::ui_slint::{AppStore, BackupStore, DiskStore, DriverStore, GpuStore, HardwareStore, ParkingStore, ThermalStore, PrivacyStore, CleanAppsStore, DashboardStore, MainWindow, MatrixStore, StartupStore};
+use winblast0::ui_slint::{AppStore, BackupStore, DiskStore, DriverStore, LatencyStore, GpuStore, HardwareStore, ParkingStore, ThermalStore, PrivacyStore, CleanAppsStore, DashboardStore, MainWindow, MatrixStore, StartupStore};
 
 struct Harness {
     #[allow(dead_code)]
@@ -857,4 +857,28 @@ fn drivers_scan_filter_install_and_backup_are_async_and_sandboxed() {
     st.invoke_rescan_bios();
     h.wait("bios", |s| !s.is_bios_scanning);
     assert_eq!(st.get_board_title().as_str(), "Detecting…", "sandbox board info is honest, not invented");
+}
+
+// ───────────────────────────── Latency benchmark ─────────────────────────────
+
+#[test]
+fn latency_run_baseline_compare_and_clear() {
+    let h = Harness::scanned();
+    h.goto(ActiveView::LatencyTester);
+    let st = h.window.global::<LatencyStore>();
+    st.invoke_save_baseline();
+    h.wait("baseline bench", |s| !s.is_benchmarking_latency);
+    st.invoke_run();
+    h.wait("after bench", |s| !s.is_benchmarking_latency && s.latest_latency_bench.is_some());
+    assert!(st.get_has_result());
+    assert_eq!(st.get_kpis().row_count(), 4);
+    if h.state.borrow().latency_before.is_some() && h.state.borrow().latency_after.is_some() {
+        assert!(st.get_has_comparison());
+        assert_eq!(st.get_comparison().row_count(), 4);
+    }
+    // KPI strip never prints a negative ping.
+    assert!(st.get_kpis().iter().all(|k| !k.now.starts_with('-')));
+    st.invoke_clear();
+    h.bridge.sync();
+    assert!(!st.get_has_comparison());
 }
