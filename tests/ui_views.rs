@@ -13,7 +13,7 @@ use winblast0::app::{ActiveView, AppState, MatrixSortMode};
 use winblast0::core::backend::SandboxEnv;
 use winblast0::core::risk::load_embedded_rules;
 use winblast0::ui_slint::bridge::SlintBridge;
-use winblast0::ui_slint::{AppStore, BackupStore, PrivacyStore, CleanAppsStore, DashboardStore, MainWindow, MatrixStore, StartupStore};
+use winblast0::ui_slint::{AppStore, BackupStore, GpuStore, PrivacyStore, CleanAppsStore, DashboardStore, MainWindow, MatrixStore, StartupStore};
 
 struct Harness {
     #[allow(dead_code)]
@@ -656,4 +656,62 @@ fn privacy_audit_and_hosts_block_run_in_sandbox() {
     st.invoke_neutralize_services();
     h.wait("services neutralized", |s| !s.telemetry_services_inflight);
     assert!(!st.get_hosts_inflight() && !st.get_services_inflight());
+}
+
+// ───────────────────────────── GPU Tuning ─────────────────────────────
+
+#[test]
+fn gpu_adapters_hags_mpo_and_msi_validation() {
+    let h = Harness::scanned();
+    h.goto(ActiveView::GpuTuning);
+    let st = h.window.global::<GpuStore>();
+    assert_eq!(st.get_adapters().row_count(), h.state.borrow().gpus.len());
+
+    if st.get_hags_supported() {
+        let before = h.state.borrow().hags_enabled;
+        st.invoke_toggle_hags(!before);
+        h.wait("hags", |s| !s.hags_inflight);
+        assert_eq!(h.state.borrow().hags_enabled, !before);
+        assert_eq!(st.get_hags_enabled(), !before);
+    }
+    let mpo = h.state.borrow().mpo_disabled;
+    st.invoke_toggle_mpo(!mpo);
+    h.wait("mpo", |s| !s.mpo_inflight);
+    assert_eq!(h.state.borrow().mpo_disabled, !mpo);
+
+    // Invalid MSI requests are ignored without touching state.
+    st.invoke_set_msi("".into(), true, 2);
+    st.invoke_set_msi("PCI\\VEN_TEST".into(), true, 0);
+    st.invoke_set_msi("PCI\\VEN_TEST".into(), true, 9);
+    h.bridge.sync();
+    assert!(h.state.borrow().gpu_msi_inflight.is_empty());
+    if let Some(a) = st.get_adapters().iter().find(|a| a.pnp_valid) {
+        st.invoke_set_msi(a.pnp.clone(), !a.msi, 3);
+        h.wait("msi", |s| s.gpu_msi_inflight.is_empty());
+    }
+}
+
+#[test]
+fn gpu_vendor_tweaks_hide_and_unhide() {
+    let h = Harness::scanned();
+    h.goto(ActiveView::GpuTuning);
+    let st = h.window.global::<GpuStore>();
+    let n = st.get_tweaks().row_count();
+    assert!(n > 0, "catalog has GPU tweaks");
+    let vendors = h.state.borrow().detected_gpu_vendors();
+    for t in st.get_tweaks().iter() {
+        let def = h.state.borrow().tweaks.iter().find(|d| d.id == t.id.as_str()).cloned().unwrap();
+        assert_eq!(t.supported, def.is_gpu_vendor_compatible(&vendors), "{}", t.id);
+        if !t.supported {
+            assert!(!t.required.is_empty());
+        }
+    }
+    let first = st.get_tweaks().row_data(0).unwrap();
+    st.invoke_hide_tweak(first.id.clone());
+    h.bridge.sync();
+    assert_eq!(st.get_tweaks().row_count(), n - 1);
+    assert_eq!(st.get_hidden_count(), 1);
+    st.invoke_unhide_all();
+    h.bridge.sync();
+    assert_eq!(st.get_tweaks().row_count(), n);
 }

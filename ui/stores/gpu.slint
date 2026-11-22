@@ -1,0 +1,24 @@
+// ui/stores/gpu.slint
+// GPU Tuning store (port of v1.6.1): detected adapters, HAGS, MPO, per-adapter MSI mode +
+// interrupt priority, vendor-gated silicon tweaks with hide/unhide and inspect.
+
+export struct GpuAdapterRow { index: int, name: string, vendor: string, pnp: string, pnp-valid: bool, msi: bool, priority: int, busy: bool }
+export struct GpuTweakRow { id: string, title: string, desc: string, vendor: string, sub-category: string, supported: bool, required: string, active: bool, in-flight: bool, not-applicable: bool, state-text: string, risk-level: int, risk-label: string }
+
+export global GpuStore {
+    in-out property <[GpuAdapterRow]> adapters: [];
+    in-out property <bool> hags-supported;
+    in-out property <bool> hags-enabled;
+    in-out property <bool> hags-inflight;
+    in-out property <bool> mpo-disabled;
+    in-out property <bool> mpo-inflight;
+    in-out property <bool> rolling-back;
+    in-out property <[GpuTweakRow]> tweaks: [];
+    in-out property <int> hidden-count;
+
+    callback toggle-hags(bool);
+    callback toggle-mpo(bool);
+    callback set-msi(string, bool, int);    // pnp id, enable, priority 1..3
+    callback hide-tweak(string);
+    callback unhide-all();
+}

@@ -1,196 +1,191 @@
 // ui/views/gpu_tuning.slint
-// WinBlast0 GPU Tuning & Graphics Optimization View in Slint 1.19
-
-import { Scale, Theme } from "../theme.slint";
+// GPU Tuning (port of v1.6.1): detected adapters, display engine (HAGS / MPO), per-adapter
+// PCIe MSI mode + interrupt priority, and vendor-gated silicon tweak cards.
+import { ScrollView } from "std-widgets.slint";
+import { Scale, Theme, Tr } from "../theme.slint";
+import { GpuStore } from "../stores/gpu.slint";
+import { MatrixStore } from "../stores/matrix.slint";
+import { WbChip } from "../components/chip.slint";
 import { WbButton } from "../components/button.slint";
-import { WbCard } from "../components/card.slint";
-import { WbBadge } from "../components/badge.slint";
-import { WbSwitch } from "../components/switch.slint";
-import { WbProgressBar } from "../components/progress_bar.slint";
+import { WbToggle, WbRiskBadge, WbPill, WbPanel } from "../components/toggle.slint";
 
-export component GpuTuningView inherits Flickable {
+component Section inherits WbPanel {
+    in property <string> title;
+    VerticalLayout {
+        padding: Scale.px(12px);
+        spacing: Scale.px(8px);
+        Text { text: root.title; font-size: Scale.font-md; font-weight: 700; color: Theme.text-primary; wrap: word-wrap; }
+        @children
+    }
+}
+
+component Kv inherits HorizontalLayout {
+    in property <string> k;
+    in property <string> v;
+    spacing: Scale.px(8px);
+    Text { text: root.k; font-size: Scale.font-xs; color: Theme.text-muted; width: Scale.px(130px); }
+    Text { text: root.v; font-size: Scale.font-xs; color: Theme.text-primary; wrap: word-wrap; horizontal-stretch: 1; }
+}
+
+export component GpuTuningView inherits Rectangle {
     in property <int> tier;
-    in property <string> gpu-name: "NVIDIA GeForce RTX 4080 (16GB)";
-    in property <string> driver-version: "566.14 (WHQL)";
-    in property <bool> is-msi-enabled: true;
-    in property <bool> is-rebar-supported: true;
-    in property <bool> is-hags-enabled: true;
 
-    in-out property <int> core-clock-offset: 0;   // MHz
-    in-out property <int> memory-clock-offset: 0; // MHz
-    in-out property <int> power-limit: 100;       // %
-    in-out property <int> fan-speed: 55;          // %
+    ScrollView {
+        VerticalLayout {
+            padding: root.tier == 0 ? Scale.px(10px) : Scale.px(14px);
+            spacing: Scale.px(12px);
+            alignment: start;
 
-    callback apply-tuning();
-    callback reset-defaults();
-    callback msi-toggled(bool);
-    callback hags-toggled(bool);
-
-    content-height: content.preferred-height;
-
-    content := VerticalLayout {
-        padding: Scale.space-lg;
-        spacing: Scale.space-md;
-
-        // GPU Identification & Hardware Features
-        WbCard {
             VerticalLayout {
-                spacing: Scale.space-md;
+                spacing: Scale.px(4px);
+                Text { text: Tr.s("GpuTuningTitle"); font-size: Scale.font-xl; font-weight: 800; color: Theme.text-primary; wrap: word-wrap; }
+                Text { text: Tr.s("GpuTuningSub"); font-size: Scale.font-xs; color: Theme.text-muted; wrap: word-wrap; }
+            }
 
-                HorizontalLayout {
-                    alignment: space-between;
-                    VerticalLayout {
-                        spacing: Scale.space-2xs;
-                        Text {
-                            text: "GPU Performance & Interrupt Tuning";
-                            font-size: Scale.font-xl;
-                            font-weight: 700;
-                            color: Theme.text-primary;
-                        }
-                        Text {
-                            text: root.gpu-name + " — Driver: " + root.driver-version;
-                            font-size: Scale.font-sm;
-                            color: Theme.text-secondary;
-                        }
-                    }
-
-                    HorizontalLayout {
-                        spacing: Scale.space-sm;
-                        alignment: end;
-                        WbButton {
-                            variant: "ghost";
-                            text: "Reset Defaults";
-                            clicked => { root.reset-defaults(); }
-                        }
-                        WbButton {
-                            variant: "primary";
-                            text: "Apply Settings";
-                            clicked => { root.apply-tuning(); }
-                        }
-                    }
-                }
-
-                // Feature Status Badges
-                HorizontalLayout {
-                    spacing: Scale.space-sm;
-                    WbBadge {
-                        text: root.is-msi-enabled ? "MSI Interrupts Active" : "Legacy Pin Interrupts";
-                        variant: root.is-msi-enabled ? "safe" : "moderate";
-                        show-dot: true;
-                    }
-                    WbBadge {
-                        text: root.is-rebar-supported ? "Resizable BAR Active" : "ReBAR Disabled";
-                        variant: root.is-rebar-supported ? "safe" : "neutral";
-                        show-dot: true;
-                    }
-                    WbBadge {
-                        text: root.is-hags-enabled ? "HAGS Enabled" : "HAGS Disabled";
-                        variant: root.is-hags-enabled ? "info" : "neutral";
+            Section {
+                title: Tr.s("DetectedGpuHeader");
+                if GpuStore.adapters.length == 0 : Text { text: Tr.s("NoGpuDetected"); font-size: Scale.font-sm; color: Theme.text-muted; }
+                for g in GpuStore.adapters : HorizontalLayout {
+                    spacing: Scale.px(8px);
+                    Text { text: "🟢"; vertical-alignment: center; }
+                    Text { text: "#" + g.index + " " + g.name; font-size: Scale.font-sm; font-weight: 600; color: Theme.text-primary; vertical-alignment: center; horizontal-stretch: 1; overflow: elide; }
+                    WbPill {
+                        text: g.vendor + " (✔)";
+                        tone: g.vendor == "NVIDIA" ? "accent" : g.vendor == "AMD" ? "danger" : g.vendor == "Intel" ? "success" : "muted";
                     }
                 }
             }
-        }
 
-        // Interrupt Optimization Card
-        WbCard {
-            VerticalLayout {
-                spacing: Scale.space-md;
-                Text {
-                    text: "INTERRUPT & KERNEL SCHEDULING";
-                    font-size: Scale.font-xs;
-                    font-weight: 700;
-                    color: Theme.text-muted;
-                }
-
-                HorizontalLayout {
-                    alignment: space-between;
+            Section {
+                title: Tr.s("DisplayEngineTitle");
+                FlexboxLayout {
+                    spacing: Scale.px(10px);
+                    alignment: stretch;
+                    cross-axis-alignment: center;
                     VerticalLayout {
-                        spacing: Scale.space-2xs;
+                        horizontal-stretch: 1;
+                        min-width: Scale.px(220px);
+                        Text { text: Tr.s("HagsTitle"); font-size: Scale.font-sm; font-weight: 600; color: Theme.text-primary; }
                         Text {
-                            text: "Message Signaled Interrupts (MSI Mode)";
-                            font-size: Scale.font-md;
-                            font-weight: 600;
-                            color: Theme.text-primary;
-                        }
-                        Text {
-                            text: "Routes GPU interrupt requests directly over PCIe bus, eliminating line sharing latency.";
+                            text: !GpuStore.hags-supported ? Tr.s("HagsUnsupportedNote") : GpuStore.hags-enabled ? Tr.s("HagsActiveStatus") : Tr.s("HagsDisabledStatus");
                             font-size: Scale.font-xs;
-                            color: Theme.text-secondary;
+                            color: !GpuStore.hags-supported ? Theme.text-muted : GpuStore.hags-enabled ? Theme.success : Theme.warning;
+                            wrap: word-wrap;
                         }
                     }
-                    WbSwitch {
-                        checked: root.is-msi-enabled;
-                        toggled(c) => { root.msi-toggled(c); }
+                    WbButton {
+                        variant: GpuStore.hags-enabled ? "secondary" : "primary";
+                        text: !GpuStore.hags-supported ? Tr.s("StatusNotApplicable")
+                            : GpuStore.hags-inflight ? Tr.s("BusyWorking")
+                            : GpuStore.hags-enabled ? Tr.s("DisableHags") : Tr.s("EnableHags");
+                        enabled: GpuStore.hags-supported && !GpuStore.hags-inflight && !GpuStore.rolling-back;
+                        clicked => { GpuStore.toggle-hags(!GpuStore.hags-enabled); }
                     }
                 }
-
-                HorizontalLayout {
-                    alignment: space-between;
+                Rectangle { height: 1px; background: Theme.border; }
+                FlexboxLayout {
+                    spacing: Scale.px(10px);
+                    alignment: stretch;
+                    cross-axis-alignment: center;
                     VerticalLayout {
-                        spacing: Scale.space-2xs;
-                        Text {
-                            text: "Hardware Accelerated GPU Scheduling (HAGS)";
-                            font-size: Scale.font-md;
-                            font-weight: 600;
-                            color: Theme.text-primary;
-                        }
-                        Text {
-                            text: "Delegates high-frequency frame scheduling to the dedicated GPU scheduling processor.";
-                            font-size: Scale.font-xs;
-                            color: Theme.text-secondary;
-                        }
+                        horizontal-stretch: 1;
+                        min-width: Scale.px(220px);
+                        Text { text: Tr.s("MpoTitle"); font-size: Scale.font-sm; font-weight: 600; color: Theme.text-primary; }
+                        Text { text: GpuStore.mpo-disabled ? Tr.s("MpoFixedStatus") : Tr.s("MpoEnabledStatus"); font-size: Scale.font-xs; color: GpuStore.mpo-disabled ? Theme.success : Theme.text-muted; wrap: word-wrap; }
                     }
-                    WbSwitch {
-                        checked: root.is-hags-enabled;
-                        toggled(c) => { root.hags-toggled(c); }
+                    WbButton {
+                        variant: GpuStore.mpo-disabled ? "secondary" : "primary";
+                        text: GpuStore.mpo-inflight ? Tr.s("BusyWorking") : GpuStore.mpo-disabled ? Tr.s("RestoreMpoDefault") : Tr.s("DisableMpoFix");
+                        enabled: !GpuStore.mpo-inflight && !GpuStore.rolling-back;
+                        clicked => { GpuStore.toggle-mpo(!GpuStore.mpo-disabled); }
                     }
                 }
             }
-        }
 
-        // Clock & Power Sliders
-        WbCard {
-            VerticalLayout {
-                spacing: Scale.space-md;
-
-                Text {
-                    text: "CLOCK FREQUENCY & POWER TARGETS";
-                    font-size: Scale.font-xs;
-                    font-weight: 700;
-                    color: Theme.text-muted;
-                }
-
-                // Core Clock
-                VerticalLayout {
-                    spacing: Scale.space-2xs;
-                    HorizontalLayout {
-                        alignment: space-between;
-                        Text { text: "GPU Core Clock Offset"; font-size: Scale.font-sm; color: Theme.text-secondary; }
-                        Text { text: (root.core-clock-offset >= 0 ? "+" : "") + root.core-clock-offset + " MHz"; font-size: Scale.font-sm; font-weight: 700; color: Theme.accent; }
+            Section {
+                title: Tr.s("PcieMsiTitle");
+                if GpuStore.adapters.length == 0 : Text { text: Tr.s("NoPcieGpuDetected"); font-size: Scale.font-sm; color: Theme.text-muted; }
+                for g in GpuStore.adapters : Rectangle {
+                    border-radius: Scale.px(Theme.btn-radius);
+                    background: Theme.bg-primary;
+                    VerticalLayout {
+                        padding: Scale.px(10px);
+                        spacing: Scale.px(6px);
+                        Text { text: Tr.s("PcieAdapterPrefix") + " #" + g.index + ": " + g.name; font-size: Scale.font-sm; font-weight: 600; color: Theme.text-primary; wrap: word-wrap; }
+                        Kv { k: Tr.s("AdapterName"); v: g.name; }
+                        Kv { k: Tr.s("DevicePnpId"); v: g.pnp; }
+                        FlexboxLayout {
+                            spacing: Scale.px(8px);
+                            cross-axis-alignment: center;
+                            Text { text: g.msi ? Tr.s("MsiEnabledStatus") : Tr.s("MsiDisabledStatus"); font-size: Scale.font-xs; color: g.msi ? Theme.success : Theme.warning; }
+                            WbButton {
+                                variant: g.msi ? "secondary" : "primary";
+                                text: g.busy ? Tr.s("BusyWorking") : !g.pnp-valid ? Tr.s("StatusNotApplicable") : g.msi ? Tr.s("SwitchToLineIrq") : Tr.s("EnableMsiMode");
+                                enabled: g.pnp-valid && !g.busy && !GpuStore.rolling-back;
+                                clicked => { GpuStore.set-msi(g.pnp, !g.msi, g.priority); }
+                            }
+                        }
+                        FlexboxLayout {
+                            spacing: Scale.px(6px);
+                            cross-axis-alignment: center;
+                            Text {
+                                text: Tr.s("InterruptPriority") + ": " + (g.priority == 1 ? Tr.s("PriorityLow") : g.priority == 3 ? Tr.s("PriorityHigh") : Tr.s("PriorityNormal"));
+                                font-size: Scale.font-xs;
+                                color: Theme.text-secondary;
+                            }
+                            for p[i] in [1, 2, 3] : WbChip {
+                                text: p == 1 ? Tr.s("PriorityLow") : p == 2 ? Tr.s("PriorityNormal") : Tr.s("PriorityHigh");
+                                active: g.priority == p;
+                                enabled: g.pnp-valid && !g.busy && !GpuStore.rolling-back;
+                                clicked => { GpuStore.set-msi(g.pnp, g.msi, p); }
+                            }
+                        }
                     }
-                    WbProgressBar { progress: clamp((root.core-clock-offset + 200) / 400.0, 0.0, 1.0); }
                 }
+            }
 
-                // Memory Clock
-                VerticalLayout {
-                    spacing: Scale.space-2xs;
-                    HorizontalLayout {
-                        alignment: space-between;
-                        Text { text: "Video Memory Clock Offset"; font-size: Scale.font-sm; color: Theme.text-secondary; }
-                        Text { text: (root.memory-clock-offset >= 0 ? "+" : "") + root.memory-clock-offset + " MHz"; font-size: Scale.font-sm; font-weight: 700; color: Theme.accent; }
+            HorizontalLayout {
+                spacing: Scale.px(8px);
+                Text { text: Tr.s("VendorSiliconTitle"); font-size: Scale.font-md; font-weight: 700; color: Theme.text-primary; vertical-alignment: center; horizontal-stretch: 1; wrap: word-wrap; }
+                if GpuStore.hidden-count > 0 : WbChip { text: Tr.s("UnhideAll") + " (" + GpuStore.hidden-count + ")"; tone: "accent"; clicked => { GpuStore.unhide-all(); } }
+            }
+            FlexboxLayout {
+                spacing: Scale.px(10px);
+                alignment: stretch;
+                for t in GpuStore.tweaks : Rectangle {
+                    min-width: root.tier == 0 ? Scale.px(240px) : Scale.px(300px);
+                    horizontal-stretch: 1;
+                    border-radius: Scale.px(Theme.card-radius);
+                    background: t.supported ? Theme.bg-card : Theme.warning.with-alpha(0.08);
+                    border-width: 1px;
+                    border-color: t.supported ? (t.active ? Theme.accent.with-alpha(0.35) : Theme.border) : Theme.warning.with-alpha(0.32);
+                    VerticalLayout {
+                        padding: Scale.px(12px);
+                        spacing: Scale.px(6px);
+                        if !t.supported : HorizontalLayout {
+                            spacing: Scale.px(6px);
+                            Text { text: "⚠"; color: Theme.warning; }
+                            Text { text: Tr.s("NotSupportedOnSystem"); font-size: Scale.font-xs; font-weight: 700; color: Theme.warning; }
+                        }
+                        Text { text: t.title; font-size: Scale.font-sm; font-weight: 700; color: Theme.text-primary; wrap: word-wrap; }
+                        FlexboxLayout {
+                            spacing: Scale.px(6px);
+                            WbPill { text: "🖵 " + t.vendor; tone: "accent"; }
+                            WbPill { text: "⚡ " + t.sub-category; tone: "muted"; }
+                        }
+                        if t.supported : Text { text: t.desc; font-size: Scale.font-xs; color: Theme.text-muted; wrap: word-wrap; }
+                        if !t.supported : Text { text: Tr.s("ConditionFailed") + " " + t.required; font-size: Scale.font-xs; color: Theme.warning; wrap: word-wrap; }
+                        FlexboxLayout {
+                            spacing: Scale.px(6px);
+                            cross-axis-alignment: center;
+                            if t.supported : WbRiskBadge { level: t.risk-level; label: t.risk-label; }
+                            if t.supported : Text { text: t.state-text; font-size: Scale.font-xs; color: t.active ? Theme.success : Theme.text-muted; }
+                            if t.supported && t.not-applicable : WbPill { text: Tr.s("StatusNotApplicable"); }
+                            if t.supported && !t.not-applicable : WbToggle { on: t.active; busy: t.in-flight; accessible-name: t.title; clicked => { MatrixStore.switch-clicked(t.id); } }
+                            WbChip { text: t.supported ? "< / >" : "ⓘ " + Tr.s("WhatIsThis"); clicked => { MatrixStore.inspect(t.id); } }
+                            WbChip { text: t.supported ? "👁" : Tr.s("Hide"); clicked => { GpuStore.hide-tweak(t.id); } }
+                        }
                     }
-                    WbProgressBar { progress: clamp((root.memory-clock-offset + 500) / 1000.0, 0.0, 1.0); }
-                }
-
-                // Power Limit
-                VerticalLayout {
-                    spacing: Scale.space-2xs;
-                    HorizontalLayout {
-                        alignment: space-between;
-                        Text { text: "Power Limit Target"; font-size: Scale.font-sm; color: Theme.text-secondary; }
-                        Text { text: root.power-limit + "%"; font-size: Scale.font-sm; font-weight: 700; color: Theme.accent; }
-                    }
-                    WbProgressBar { progress: clamp(root.power-limit / 120.0, 0.0, 1.0); }
                 }
             }
         }

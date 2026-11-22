@@ -3,6 +3,7 @@
 pub mod backup;
 pub mod clean_apps;
 pub mod dashboard;
+pub mod gpu;
 pub mod matrix;
 pub mod privacy;
 pub mod startup;
@@ -20,11 +21,12 @@ pub struct Views {
     startup: startup::StartupView,
     backup: backup::BackupView,
     privacy: privacy::PrivacyView,
+    gpu: gpu::GpuView,
 }
 
 impl Views {
     pub fn new(window: &MainWindow) -> Self {
-        Self { matrix: matrix::MatrixView::new(window), dashboard: dashboard::DashboardView::new(window), clean_apps: clean_apps::CleanAppsView::new(window), startup: startup::StartupView::new(window), backup: backup::BackupView::new(window), privacy: privacy::PrivacyView::new(window) }
+        Self { matrix: matrix::MatrixView::new(window), dashboard: dashboard::DashboardView::new(window), clean_apps: clean_apps::CleanAppsView::new(window), startup: startup::StartupView::new(window), backup: backup::BackupView::new(window), privacy: privacy::PrivacyView::new(window), gpu: gpu::GpuView::new(window) }
     }
 
     pub fn bind(&self, window: &MainWindow, ctx: &Ctx) {
@@ -34,6 +36,7 @@ impl Views {
         self.startup.bind(window, ctx);
         self.backup.bind(window, ctx);
         self.privacy.bind(window, ctx);
+        self.gpu.bind(window, ctx);
     }
 
     /// Sync the active view's store (inactive views are refreshed when navigated to).
@@ -45,6 +48,7 @@ impl Views {
             ActiveView::StartupAndTasks => self.startup.sync(window, s),
             ActiveView::BackupCenter => self.backup.sync(window, s),
             ActiveView::PrivacyShield => self.privacy.sync(window, s),
+            ActiveView::GpuTuning => self.gpu.sync(window, s),
             _ => {}
         }
     }
