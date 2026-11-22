@@ -13,7 +13,7 @@ use winblast0::app::{ActiveView, AppState, MatrixSortMode};
 use winblast0::core::backend::SandboxEnv;
 use winblast0::core::risk::load_embedded_rules;
 use winblast0::ui_slint::bridge::SlintBridge;
-use winblast0::ui_slint::{AppStore, BackupStore, GpuStore, PrivacyStore, CleanAppsStore, DashboardStore, MainWindow, MatrixStore, StartupStore};
+use winblast0::ui_slint::{AppStore, BackupStore, GpuStore, HardwareStore, PrivacyStore, CleanAppsStore, DashboardStore, MainWindow, MatrixStore, StartupStore};
 
 struct Harness {
     #[allow(dead_code)]
@@ -714,4 +714,53 @@ fn gpu_vendor_tweaks_hide_and_unhide() {
     st.invoke_unhide_all();
     h.bridge.sync();
     assert_eq!(st.get_tweaks().row_count(), n);
+}
+
+// ───────────────────────────── Hardware ─────────────────────────────
+
+#[test]
+fn hardware_cards_reflect_detected_data_only() {
+    let h = Harness::scanned();
+    h.state.borrow_mut().refresh_platform_inventory();
+    h.wait("inventory", |s| !s.power_schemes.is_empty() || s.platform_security.is_some());
+    h.goto(ActiveView::HardwareView);
+    let st = h.window.global::<HardwareStore>();
+    let s = h.state.borrow();
+    let cpu_rows: Vec<_> = st.get_cpu_rows().iter().collect();
+    match &s.cpu_info {
+        Some(c) => assert!(cpu_rows.iter().any(|r| r.v == c.model_name.as_str())),
+        None => assert_eq!(cpu_rows.len(), 1),
+    }
+    assert_eq!(st.get_volumes().row_count(), s.storage_volumes.len());
+    assert_eq!(st.get_dimms().row_count(), s.ram_dimms.len());
+    assert_eq!(st.get_schemes().row_count(), s.power_schemes.len());
+    if let Some(m) = &s.realtime_metrics {
+        assert_eq!(st.get_cores().row_count(), m.core_usages.len());
+        assert!(st.get_cores().iter().all(|c| (0.0..=1.0).contains(&c.value)));
+    }
+}
+
+#[test]
+fn hardware_power_plan_hibernation_and_usb_in_sandbox() {
+    let h = Harness::scanned();
+    h.state.borrow_mut().refresh_platform_inventory();
+    h.wait("inventory", |s| !s.power_schemes.is_empty());
+    h.goto(ActiveView::HardwareView);
+    let st = h.window.global::<HardwareStore>();
+    st.invoke_set_power_plan("00000000-not-a-plan".into()); // unknown GUID ignored
+    h.bridge.sync();
+    assert!(!h.state.borrow().power_scheme_inflight);
+    if let Some(inactive) = st.get_schemes().iter().find(|p| !p.active) {
+        st.invoke_set_power_plan(inactive.id.clone());
+        h.wait("plan switch", |s| !s.power_scheme_inflight);
+        assert!(h.state.borrow().power_schemes.iter().any(|p| p.guid == inactive.id.as_str() && p.is_active));
+    }
+    st.invoke_ultimate_plan();
+    h.wait("ultimate plan", |s| !s.power_scheme_inflight);
+    let hib = h.state.borrow().hibernation_status.hibernation_enabled;
+    st.invoke_toggle_hibernation(!hib);
+    h.wait("hibernation", |s| !s.hibernation_inflight);
+    st.invoke_usb_power_saving(true);
+    h.wait("usb", |s| !s.usb_power_inflight);
+    assert!(!st.get_power_inflight() && !st.get_hibernation_inflight() && !st.get_usb_inflight());
 }

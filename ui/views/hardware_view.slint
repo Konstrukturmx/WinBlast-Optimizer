@@ -1,136 +1,153 @@
 // ui/views/hardware_view.slint
-// WinBlast0 Hardware Specifications & Architecture Diagnostics in Slint 1.19
-
-import { Scale, Theme } from "../theme.slint";
+// Hardware overview (port of v1.6.1): live waveforms, CPU topology + per-core load, NT latency,
+// power plans / hibernation / USB power, platform security, DIMMs, storage, GPU shortcut.
+import { ScrollView } from "std-widgets.slint";
+import { Scale, Theme, Tr } from "../theme.slint";
+import { AppStore } from "../stores/app.slint";
+import { HardwareStore } from "../stores/hardware.slint";
+import { WbChip } from "../components/chip.slint";
 import { WbButton } from "../components/button.slint";
-import { WbCard } from "../components/card.slint";
-import { WbBadge } from "../components/badge.slint";
+import { WbPanel } from "../components/toggle.slint";
+import { WbSparkline } from "../components/sparkline.slint";
+import { WbProgressBar } from "../components/progress_bar.slint";
+import { WbKvList, WbTitledList, WbSection } from "../components/kv.slint";
 
-export component HardwareViewComponent inherits Flickable {
+export component HardwareViewComponent inherits Rectangle {
     in property <int> tier;
-    in property <string> cpu-name: "AMD Ryzen 9 5900X 12-Core Processor";
-    in property <string> cpu-cores: "12 Physical / 24 Logical";
-    in property <string> cpu-base-clock: "3.70 GHz (Boost up to 4.80 GHz)";
-    in property <string> cpu-l3-cache: "64 MB Unified L3 Cache";
 
-    in property <string> gpu-name: "NVIDIA GeForce RTX 4080";
-    in property <string> gpu-vram: "16384 MB GDDR6X (256-bit)";
-    in property <string> gpu-driver: "566.14 WHQL (DCH)";
-    in property <string> gpu-pcie-link: "PCIe 4.0 x16 @ x16 16.0 GT/s";
+    ScrollView {
+        VerticalLayout {
+            padding: root.tier == 0 ? Scale.px(10px) : Scale.px(14px);
+            spacing: Scale.px(12px);
+            alignment: start;
 
-    in property <string> mobo-name: "ASUSTeK COMPUTER INC. ROG STRIX X570-E GAMING";
-    in property <string> mobo-bios: "Version 5013 (03/22/2024)";
-    in property <string> mobo-chipset: "AMD X570 (Bixby)";
-
-    in property <string> ram-total: "32.0 GB (4x 8GB Modules)";
-    in property <string> ram-speed: "DDR4-3600 (1800 MHz 1:1 FCLK)";
-    in property <string> ram-timings: "CL16-19-19-39 CR1";
-
-    callback copy-specs-clicked();
-    callback refresh-specs-clicked();
-
-    content-height: content.preferred-height;
-
-    content := VerticalLayout {
-        padding: Scale.space-lg;
-        spacing: Scale.space-md;
-
-        // Header Card
-        WbCard {
-            HorizontalLayout {
-                alignment: space-between;
+            FlexboxLayout {
+                spacing: Scale.px(10px);
+                alignment: stretch;
+                cross-axis-alignment: center;
                 VerticalLayout {
-                    spacing: Scale.space-2xs;
-                    Text {
-                        text: "Hardware Architecture & Subsystem Diagnostics";
-                        font-size: Scale.font-xl;
-                        font-weight: 700;
-                        color: Theme.text-primary;
-                    }
-                    Text {
-                        text: "Authentic physical sensor and low-level kernel query readout.";
-                        font-size: Scale.font-sm;
-                        color: Theme.text-secondary;
+                    horizontal-stretch: 1;
+                    min-width: Scale.px(220px);
+                    Text { text: Tr.s("HardwareTitle"); font-size: Scale.font-xl; font-weight: 800; color: Theme.text-primary; wrap: word-wrap; }
+                    Text { text: Tr.s("HardwareSub"); font-size: Scale.font-xs; color: Theme.text-muted; wrap: word-wrap; }
+                }
+                WbButton { variant: "secondary"; text: Tr.s("RefreshHardwareBtn"); clicked => { HardwareStore.refresh(); } }
+            }
+
+            if !HardwareStore.metrics-available : WbSection { title: Tr.s("CpuSparklineTitle"); Text { text: Tr.s("Scanning"); font-size: Scale.font-sm; color: Theme.text-muted; } }
+            if HardwareStore.metrics-available : FlexboxLayout {
+                spacing: Scale.px(12px);
+                alignment: stretch;
+                WbSection {
+                    min-width: root.tier == 0 ? Scale.px(240px) : Scale.px(300px);
+                    horizontal-stretch: 1;
+                    title: HardwareStore.cpu-title;
+                    Text { text: HardwareStore.cpu-text; font-size: Scale.font-xs; color: Theme.sparkline-cpu; }
+                    WbSparkline { values: HardwareStore.cpu-points; stroke-color: Theme.sparkline-cpu; }
+                }
+                WbSection {
+                    min-width: root.tier == 0 ? Scale.px(240px) : Scale.px(300px);
+                    horizontal-stretch: 1;
+                    title: HardwareStore.ram-title;
+                    Text { text: HardwareStore.ram-text; font-size: Scale.font-xs; color: Theme.sparkline-ram; }
+                    WbSparkline { values: HardwareStore.ram-points; stroke-color: Theme.sparkline-ram; }
+                }
+            }
+
+            WbSection {
+                title: Tr.s("CpuCardTitle");
+                WbKvList { rows: HardwareStore.cpu-rows; }
+                if HardwareStore.cores.length > 0 : Text { text: Tr.s("LiveCores"); font-size: Scale.font-xs; font-weight: 700; color: Theme.text-secondary; }
+                if HardwareStore.cores.length > 0 : FlexboxLayout {
+                    spacing: Scale.px(6px);
+                    for c in HardwareStore.cores : VerticalLayout {
+                        width: Scale.px(76px);
+                        spacing: Scale.px(2px);
+                        Text { text: c.label; font-size: Scale.font-2xs; color: Theme.text-secondary; }
+                        WbProgressBar {
+                            height: Scale.px(5px);
+                            progress: c.value;
+                            bar-color: c.tone == "danger" ? Theme.danger : c.tone == "warning" ? Theme.warning : Theme.accent;
+                        }
                     }
                 }
-                HorizontalLayout {
-                    spacing: Scale.space-sm;
+            }
+
+            WbSection {
+                title: Tr.s("LatencyCardTitle");
+                WbKvList { rows: HardwareStore.latency-rows; }
+                if HardwareStore.latency-snapshot-title != "" : Rectangle { height: 1px; background: Theme.border; }
+                if HardwareStore.latency-snapshot-title != "" : Text { text: HardwareStore.latency-snapshot-title; font-size: Scale.font-xs; font-weight: 700; color: Theme.text-secondary; }
+                WbKvList { rows: HardwareStore.latency-snapshot-rows; }
+                HorizontalLayout { alignment: start; WbButton { variant: "secondary"; text: Tr.s("RefreshLatencyBtn"); clicked => { HardwareStore.refresh-latency(); } } }
+            }
+
+            WbSection {
+                title: Tr.s("PowerMgrTitle");
+                if HardwareStore.schemes.length == 0 : Text { text: Tr.s("Scanning"); font-size: Scale.font-sm; color: Theme.text-muted; }
+                FlexboxLayout {
+                    spacing: Scale.px(6px);
+                    for p in HardwareStore.schemes : WbChip {
+                        text: p.label;
+                        active: p.active;
+                        enabled: !HardwareStore.power-inflight && !HardwareStore.rolling-back;
+                        clicked => { HardwareStore.set-power-plan(p.id); }
+                    }
+                }
+                Rectangle { height: 1px; background: Theme.border.with-alpha(0.5); }
+                FlexboxLayout {
+                    spacing: Scale.px(8px);
+                    Text { text: Tr.s("HibernationLabel"); font-size: Scale.font-xs; color: Theme.text-muted; min-width: Scale.px(150px); }
+                    Text { text: HardwareStore.hibernation-note; font-size: Scale.font-xs; color: Theme.text-primary; wrap: word-wrap; }
+                }
+                FlexboxLayout {
+                    spacing: Scale.px(6px);
                     WbButton {
-                        variant: "ghost";
-                        text: "Refresh";
-                        clicked => { root.refresh-specs-clicked(); }
+                        variant: "primary";
+                        text: HardwareStore.power-inflight ? Tr.s("BusyWorking") : Tr.s("UltimatePowerPlanBtn");
+                        enabled: !HardwareStore.power-inflight && !HardwareStore.rolling-back;
+                        clicked => { HardwareStore.ultimate-plan(); }
                     }
                     WbButton {
                         variant: "secondary";
-                        text: "Copy Full Report";
-                        clicked => { root.copy-specs-clicked(); }
+                        text: HardwareStore.hibernation-inflight ? Tr.s("BusyWorking")
+                            : Tr.s("HibernationLabel") + ": " + (HardwareStore.hibernation-enabled ? Tr.s("ToggleDisable") : Tr.s("ToggleEnable"));
+                        enabled: !HardwareStore.hibernation-inflight && !HardwareStore.rolling-back;
+                        clicked => { HardwareStore.toggle-hibernation(!HardwareStore.hibernation-enabled); }
+                    }
+                    WbButton {
+                        variant: "secondary";
+                        text: HardwareStore.usb-inflight ? Tr.s("BusyWorking") : Tr.s("UsbPowerLabel") + " (" + Tr.s("ToggleDisable") + ")";
+                        enabled: !HardwareStore.usb-inflight && !HardwareStore.rolling-back;
+                        clicked => { HardwareStore.usb-power-saving(true); }
+                    }
+                    WbButton {
+                        variant: "secondary";
+                        text: HardwareStore.usb-inflight ? Tr.s("BusyWorking") : Tr.s("UsbPowerLabel") + " (" + Tr.s("ToggleEnable") + ")";
+                        enabled: !HardwareStore.usb-inflight && !HardwareStore.rolling-back;
+                        clicked => { HardwareStore.usb-power-saving(false); }
                     }
                 }
             }
-        }
 
-        // Processor Card
-        WbCard {
-            VerticalLayout {
-                spacing: Scale.space-sm;
-                HorizontalLayout {
-                    alignment: space-between;
-                    Text { text: "CENTRAL PROCESSING UNIT (CPU)"; font-size: Scale.font-xs; font-weight: 700; color: Theme.text-muted; }
-                    WbBadge { text: "Authentic Hardware IOCTL"; variant: "safe"; show-dot: true; }
-                }
-                Text { text: root.cpu-name; font-size: Scale.font-lg; font-weight: 700; color: Theme.text-primary; }
-                HorizontalLayout {
-                    spacing: Scale.space-lg;
-                    VerticalLayout { Text { text: "Cores / Threads"; font-size: Scale.font-xs; color: Theme.text-muted; } Text { text: root.cpu-cores; font-size: Scale.font-sm; color: Theme.text-secondary; } }
-                    VerticalLayout { Text { text: "Clock Rating"; font-size: Scale.font-xs; color: Theme.text-muted; } Text { text: root.cpu-base-clock; font-size: Scale.font-sm; color: Theme.text-secondary; } }
-                    VerticalLayout { Text { text: "Cache Hierarchy"; font-size: Scale.font-xs; color: Theme.text-muted; } Text { text: root.cpu-l3-cache; font-size: Scale.font-sm; color: Theme.text-secondary; } }
-                }
-            }
-        }
+            WbSection { title: Tr.s("PlatformSecurityTitle"); WbKvList { rows: HardwareStore.security-rows; } }
 
-        // Graphics Card
-        WbCard {
-            VerticalLayout {
-                spacing: Scale.space-sm;
-                HorizontalLayout {
-                    alignment: space-between;
-                    Text { text: "GRAPHICS PROCESSING UNIT (GPU)"; font-size: Scale.font-xs; font-weight: 700; color: Theme.text-muted; }
-                    WbBadge { text: "NVML / DXGI Authentic"; variant: "info"; }
-                }
-                Text { text: root.gpu-name; font-size: Scale.font-lg; font-weight: 700; color: Theme.text-primary; }
-                HorizontalLayout {
-                    spacing: Scale.space-lg;
-                    VerticalLayout { Text { text: "Video Memory"; font-size: Scale.font-xs; color: Theme.text-muted; } Text { text: root.gpu-vram; font-size: Scale.font-sm; color: Theme.text-secondary; } }
-                    VerticalLayout { Text { text: "PCIe Bus Link"; font-size: Scale.font-xs; color: Theme.text-muted; } Text { text: root.gpu-pcie-link; font-size: Scale.font-sm; color: Theme.text-secondary; } }
-                    VerticalLayout { Text { text: "Active Driver"; font-size: Scale.font-xs; color: Theme.text-muted; } Text { text: root.gpu-driver; font-size: Scale.font-sm; color: Theme.text-secondary; } }
-                }
-            }
-        }
-
-        // Motherboard & RAM Row
-        HorizontalLayout {
-            spacing: Scale.space-md;
-
-            WbCard {
-                horizontal-stretch: 1;
-                VerticalLayout {
-                    spacing: Scale.space-sm;
-                    Text { text: "MOTHERBOARD & FIRMWARE"; font-size: Scale.font-xs; font-weight: 700; color: Theme.text-muted; }
-                    Text { text: root.mobo-name; font-size: Scale.font-md; font-weight: 600; color: Theme.text-primary; }
-                    Text { text: root.mobo-bios; font-size: Scale.font-xs; color: Theme.text-secondary; }
-                    Text { text: root.mobo-chipset; font-size: Scale.font-xs; color: Theme.text-muted; }
-                }
+            WbSection {
+                title: Tr.s("MemoryDimmsTitle");
+                if HardwareStore.dimm-fallback != "" : Text { text: HardwareStore.dimm-fallback; font-size: Scale.font-sm; color: Theme.text-secondary; wrap: word-wrap; }
+                WbTitledList { rows: HardwareStore.dimms; }
             }
 
-            WbCard {
-                horizontal-stretch: 1;
-                VerticalLayout {
-                    spacing: Scale.space-sm;
-                    Text { text: "SYSTEM MEMORY (RAM)"; font-size: Scale.font-xs; font-weight: 700; color: Theme.text-muted; }
-                    Text { text: root.ram-total; font-size: Scale.font-md; font-weight: 600; color: Theme.text-primary; }
-                    Text { text: root.ram-speed; font-size: Scale.font-xs; color: Theme.text-secondary; }
-                    Text { text: root.ram-timings; font-size: Scale.font-xs; color: Theme.text-muted; }
-                }
+            WbSection {
+                title: Tr.s("StorageDrivesTitle");
+                if HardwareStore.volumes.length == 0 : Text { text: Tr.s("Scanning"); font-size: Scale.font-sm; color: Theme.text-muted; }
+                WbTitledList { rows: HardwareStore.volumes; }
+            }
+
+            WbSection {
+                title: Tr.s("GpuCardTitle");
+                Text { text: Tr.s("GpuTuningSub"); font-size: Scale.font-xs; color: Theme.text-muted; wrap: word-wrap; }
+                HorizontalLayout { alignment: start; WbButton { variant: "primary"; text: Tr.s("GpuTuning"); clicked => { AppStore.navigate("gpu"); } } }
             }
         }
     }

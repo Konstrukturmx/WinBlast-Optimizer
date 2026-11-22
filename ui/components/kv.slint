@@ -1,0 +1,47 @@
+// ui/components/kv.slint
+// Key/value list and section card used by diagnostic views.
+import { Scale, Theme, Tr } from "../theme.slint";
+import { KvRow, TitledRow } from "../stores/common.slint";
+import { WbPanel } from "toggle.slint";
+
+export component WbKvList inherits VerticalLayout {
+    in property <[KvRow]> rows;
+    in property <int> tier;
+    spacing: Scale.px(4px);
+    for r in root.rows : FlexboxLayout {
+        spacing: Scale.px(8px);
+        Text { text: r.k; font-size: Scale.font-xs; color: Theme.text-muted; min-width: Scale.px(150px); }
+        Text { text: r.v; font-size: Scale.font-xs; color: Theme.text-primary; wrap: word-wrap; min-width: Scale.px(160px); }
+    }
+}
+
+export component WbTitledList inherits VerticalLayout {
+    in property <[TitledRow]> rows;
+    spacing: Scale.px(6px);
+    for r in root.rows : Rectangle {
+        border-radius: Scale.px(Theme.btn-radius);
+        background: Theme.bg-primary;
+        VerticalLayout {
+            padding: Scale.px(8px);
+            spacing: Scale.px(2px);
+            Text {
+                text: r.title;
+                font-size: Scale.font-sm;
+                font-weight: 600;
+                color: r.tone == "danger" ? Theme.danger : r.tone == "warning" ? Theme.warning : r.tone == "success" ? Theme.success : Theme.text-primary;
+                wrap: word-wrap;
+            }
+            if r.sub != "" : Text { text: r.sub; font-size: Scale.font-xs; color: Theme.text-muted; wrap: word-wrap; }
+        }
+    }
+}
+
+export component WbSection inherits WbPanel {
+    in property <string> title;
+    VerticalLayout {
+        padding: Scale.px(12px);
+        spacing: Scale.px(8px);
+        Text { text: root.title; font-size: Scale.font-md; font-weight: 700; color: Theme.text-primary; wrap: word-wrap; }
+        @children
+    }
+}

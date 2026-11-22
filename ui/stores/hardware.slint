@@ -1,0 +1,38 @@
+// ui/stores/hardware.slint
+// Hardware overview store (port of v1.6.1 hardware_view).
+import { KvRow, TitledRow, ChipItem, MeterCell } from "common.slint";
+
+export global HardwareStore {
+    in-out property <bool> metrics-available;
+    in-out property <string> cpu-title;
+    in-out property <string> cpu-text;
+    in-out property <[float]> cpu-points: [];
+    in-out property <string> ram-title;
+    in-out property <string> ram-text;
+    in-out property <[float]> ram-points: [];
+
+    in-out property <[KvRow]> cpu-rows: [];
+    in-out property <[MeterCell]> cores: [];
+    in-out property <[KvRow]> latency-rows: [];
+    in-out property <string> latency-snapshot-title;
+    in-out property <[KvRow]> latency-snapshot-rows: [];
+    in-out property <[KvRow]> security-rows: [];
+    in-out property <[TitledRow]> dimms: [];
+    in-out property <string> dimm-fallback;
+    in-out property <[TitledRow]> volumes: [];
+
+    in-out property <[ChipItem]> schemes: [];
+    in-out property <string> hibernation-note;
+    in-out property <bool> hibernation-enabled;
+    in-out property <bool> power-inflight;
+    in-out property <bool> hibernation-inflight;
+    in-out property <bool> usb-inflight;
+    in-out property <bool> rolling-back;
+
+    callback refresh();
+    callback refresh-latency();
+    callback set-power-plan(string);
+    callback ultimate-plan();
+    callback toggle-hibernation(bool);
+    callback usb-power-saving(bool);   // true = disable power saving
+}
