@@ -1,146 +1,89 @@
 // ui/views/disk_health.slint
-// WinBlast0 Disk Health, SMART Diagnostics & Authentic TBW in Slint 1.19
-
-import { Scale, Theme } from "../theme.slint";
+// Disk health & TRIM (port of v1.6.1): SMART health, lifetime writes, power-on hours, temps,
+// non-blocking ReTrim of all fixed volumes.
+import { ScrollView } from "std-widgets.slint";
+import { Scale, Theme, Tr } from "../theme.slint";
+import { DiskStore } from "../stores/sensors.slint";
 import { WbButton } from "../components/button.slint";
-import { WbCard } from "../components/card.slint";
-import { WbBadge } from "../components/badge.slint";
+import { WbPill, WbPanel } from "../components/toggle.slint";
 import { WbProgressBar } from "../components/progress_bar.slint";
 
-export struct PhysicalDiskInfo {
-    model: string,
-    serial: string,
-    bus-type: string,          // "NVMe" | "SATA"
-    capacity-text: string,
-    tbw-text: string,
-    health-percent: int,
-    temperature-c: int,
-    power-on-hours: int,
-    unsafe-shutdowns: int,
-}
-
-export component DiskHealthView inherits Flickable {
+export component DiskHealthView inherits Rectangle {
     in property <int> tier;
-    in property <[PhysicalDiskInfo]> disks: [];
 
-    callback refresh-disks();
+    ScrollView {
+        VerticalLayout {
+            padding: root.tier == 0 ? Scale.px(10px) : Scale.px(14px);
+            spacing: Scale.px(12px);
+            alignment: start;
 
-    content-height: content.preferred-height;
-
-    content := VerticalLayout {
-        padding: Scale.space-lg;
-        spacing: Scale.space-md;
-
-        // Header Card
-        WbCard {
-            HorizontalLayout {
-                alignment: space-between;
+            FlexboxLayout {
+                spacing: Scale.px(10px);
+                alignment: stretch;
+                cross-axis-alignment: center;
                 VerticalLayout {
-                    spacing: Scale.space-2xs;
-                    Text {
-                        text: "Physical Storage & SMART Health Diagnostics";
-                        font-size: Scale.font-xl;
-                        font-weight: 700;
-                        color: Theme.text-primary;
-                    }
-                    Text {
-                        text: "Authentic IOCTL_STORAGE_QUERY_PROPERTY and NVMe SMART protocol telemetry.";
-                        font-size: Scale.font-sm;
-                        color: Theme.text-secondary;
-                    }
+                    horizontal-stretch: 1;
+                    min-width: Scale.px(220px);
+                    Text { text: Tr.s("DiskTitle"); font-size: Scale.font-xl; font-weight: 800; color: Theme.text-primary; wrap: word-wrap; }
+                    Text { text: Tr.s("DiskSubtitle"); font-size: Scale.font-xs; color: Theme.text-muted; wrap: word-wrap; }
                 }
+                WbButton { variant: "secondary"; text: Tr.s("DiskRefreshBtn"); loading: DiskStore.scanning; enabled: !DiskStore.scanning; clicked => { DiskStore.refresh(); } }
                 WbButton {
-                    variant: "ghost";
-                    text: "Refresh";
-                    clicked => { root.refresh-disks(); }
+                    variant: "primary";
+                    text: DiskStore.trim-inflight ? Tr.s("BusyWorking") : Tr.s("DiskTrimAllBtn");
+                    enabled: !DiskStore.trim-inflight;
+                    loading: DiskStore.trim-inflight;
+                    clicked => { DiskStore.trim-all(); }
                 }
             }
-        }
 
-        // Disks List
-        VerticalLayout {
-            spacing: Scale.space-md;
+            Rectangle {
+                border-radius: Scale.px(Theme.card-radius);
+                background: DiskStore.trim-active ? Theme.success.with-alpha(0.12) : Theme.warning.with-alpha(0.12);
+                border-width: 1px;
+                border-color: DiskStore.trim-active ? Theme.success.with-alpha(0.4) : Theme.warning.with-alpha(0.4);
+                min-height: Scale.px(36px);
+                Text {
+                    x: Scale.px(12px);
+                    width: parent.width - Scale.px(24px);
+                    text: DiskStore.trim-banner;
+                    font-size: Scale.font-xs;
+                    color: DiskStore.trim-active ? Theme.success : Theme.warning;
+                    wrap: word-wrap;
+                }
+            }
 
-            for disk in root.disks: WbCard {
+            Text { text: Tr.s("DiskHealthStatus"); font-size: Scale.font-md; font-weight: 700; color: Theme.text-primary; }
+            if DiskStore.drives.length == 0 : Text { text: DiskStore.scanning ? Tr.s("Scanning") : "—"; color: Theme.text-muted; }
+            for d in DiskStore.drives : WbPanel {
                 VerticalLayout {
-                    spacing: Scale.space-md;
-
+                    padding: Scale.px(12px);
+                    spacing: Scale.px(6px);
                     HorizontalLayout {
-                        alignment: space-between;
+                        spacing: Scale.px(8px);
                         VerticalLayout {
-                            spacing: Scale.space-2xs;
-                            HorizontalLayout {
-                                spacing: Scale.space-sm;
-                                Text {
-                                    text: disk.model;
-                                    font-size: Scale.font-lg;
-                                    font-weight: 700;
-                                    color: Theme.text-primary;
-                                }
-                                WbBadge {
-                                    text: disk.bus-type;
-                                    variant: disk.bus-type == "NVMe" ? "info" : "neutral";
-                                }
-                            }
-                            Text {
-                                text: "Serial: " + disk.serial + " — Capacity: " + disk.capacity-text;
-                                font-size: Scale.font-xs;
-                                color: Theme.text-muted;
-                            }
+                            horizontal-stretch: 1;
+                            Text { text: d.title; font-size: Scale.font-sm; font-weight: 700; color: Theme.text-primary; wrap: word-wrap; }
+                            Text { text: d.sub; font-size: Scale.font-xs; color: Theme.text-muted; }
                         }
-
-                        HorizontalLayout {
-                            spacing: Scale.space-md;
-                            alignment: end;
-
-                            VerticalLayout {
-                                alignment: center;
-                                Text { text: "HEALTH"; font-size: Scale.font-2xs; font-weight: 700; color: Theme.text-muted; }
-                                Text {
-                                    text: disk.health-percent + "%";
-                                    font-size: Scale.font-xl;
-                                    font-weight: 800;
-                                    color: disk.health-percent >= 80 ? Theme.safe : (disk.health-percent >= 50 ? Theme.moderate : Theme.danger);
-                                }
-                            }
-
-                            VerticalLayout {
-                                alignment: center;
-                                Text { text: "TEMP"; font-size: Scale.font-2xs; font-weight: 700; color: Theme.text-muted; }
-                                Text {
-                                    text: disk.temperature-c + " °C";
-                                    font-size: Scale.font-xl;
-                                    font-weight: 800;
-                                    color: disk.temperature-c >= 60 ? Theme.high : Theme.safe;
-                                }
-                            }
+                        WbPill { text: d.status; tone: d.tone; y: (parent.height - self.height) / 2; }
+                    }
+                    HorizontalLayout {
+                        spacing: Scale.px(8px);
+                        Text { text: d.health-text; font-size: Scale.font-xs; color: Theme.text-secondary; }
+                        WbProgressBar {
+                            height: Scale.px(6px);
+                            y: (parent.height - self.height) / 2;
+                            horizontal-stretch: 1;
+                            progress: d.health / 100;
+                            bar-color: d.tone == "success" ? Theme.success : d.tone == "warning" ? Theme.warning : Theme.danger;
                         }
                     }
-
-                    // Metrics Grid
-                    HorizontalLayout {
-                        spacing: Scale.space-lg;
-
-                        VerticalLayout {
-                            horizontal-stretch: 1;
-                            spacing: Scale.space-2xs;
-                            Text { text: "Lifetime Data Written (TBW)"; font-size: Scale.font-xs; color: Theme.text-muted; }
-                            Text { text: disk.tbw-text; font-size: Scale.font-sm; font-weight: 700; color: Theme.text-primary; }
-                        }
-
-                        VerticalLayout {
-                            horizontal-stretch: 1;
-                            spacing: Scale.space-2xs;
-                            Text { text: "Power-On Hours"; font-size: Scale.font-xs; color: Theme.text-muted; }
-                            Text { text: disk.power-on-hours + " hrs"; font-size: Scale.font-sm; font-weight: 700; color: Theme.text-primary; }
-                        }
-
-                        VerticalLayout {
-                            horizontal-stretch: 1;
-                            spacing: Scale.space-2xs;
-                            Text { text: "Unsafe Shutdowns"; font-size: Scale.font-xs; color: Theme.text-muted; }
-                            Text { text: disk.unsafe-shutdowns + " events"; font-size: Scale.font-sm; font-weight: 700; color: disk.unsafe-shutdowns > 50 ? Theme.moderate : Theme.text-primary; }
-                        }
+                    FlexboxLayout {
+                        spacing: Scale.px(14px);
+                        Text { text: d.writes; font-size: Scale.font-xs; color: Theme.text-secondary; }
+                        Text { text: d.hours; font-size: Scale.font-xs; color: Theme.text-secondary; }
+                        Text { text: d.temp; font-size: Scale.font-xs; color: Theme.text-secondary; }
                     }
                 }
             }

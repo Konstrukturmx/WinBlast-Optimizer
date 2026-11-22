@@ -491,6 +491,8 @@ pub enum WorkerEvent {
     ThermalSnapshot(crate::hardware::thermal::SystemThermalSnapshot),
     BiosInfoLoaded(crate::hardware::bios::BiosSystemInfo),
     DiskReportLoaded(crate::hardware::disks::DiskSubsystemReport),
+    /// Result of an asynchronous ReTrim of all fixed volumes.
+    DiskTrimCompleted(std::result::Result<String, String>),
     DriverScanCompleted(Vec<crate::hardware::driver_update::DriverUpdateItem>),
     AutoTuneCompleted(Result<crate::tools::automation::AutoTuneResult, String>),
     StartupBatchToggled(Result<(usize, bool), String>),
@@ -706,6 +708,7 @@ pub struct AppState {
     pub is_thermal_scanning: bool,
     pub disk_report: Option<crate::hardware::disks::DiskSubsystemReport>,
     pub is_disk_scanning: bool,
+    pub disk_trim_inflight: bool,
     pub perf_score: Option<crate::tools::performance_tests::BenchmarkScore>,
     pub is_benchmarking_perf: bool,
     pub game_telemetry: crate::tools::gaming_stats::LiveGameTelemetry,
@@ -948,6 +951,7 @@ impl AppState {
             is_thermal_scanning: false,
             disk_report: None,
             is_disk_scanning: false,
+            disk_trim_inflight: false,
             perf_score: Some(crate::tools::performance_tests::BenchmarkScore::default()),
             is_benchmarking_perf: false,
             game_telemetry: crate::tools::gaming_stats::LiveGameTelemetry::default(),
@@ -1139,6 +1143,7 @@ impl AppState {
             || self.is_driver_scanning
             || self.is_thermal_scanning
             || self.is_disk_scanning
+            || self.disk_trim_inflight
             || self.is_benchmarking_latency
     }
 
@@ -1167,6 +1172,9 @@ impl AppState {
         }
         if self.is_disk_scanning {
             return "Evaluating physical storage SMART health & TRIM telemetry...".to_string();
+        }
+        if self.disk_trim_inflight {
+            return "Issuing ReTrim to all fixed volumes...".to_string();
         }
         if self.clean_apps_busy {
             return "Executing system cleanup and app management...".to_string();
@@ -1873,6 +1881,14 @@ impl AppState {
                 self.disk_report = Some(report);
                 self.is_disk_scanning = false;
             }
+            WorkerEvent::DiskTrimCompleted(res) => {
+                self.disk_trim_inflight = false;
+                match res {
+                    Ok(msg) => self.set_status(msg),
+                    Err(e) => self.set_status(format!("TRIM failed: {e}")),
+                }
+                self.scan_disk_health_async();
+            }
             WorkerEvent::DriverScanCompleted(updates) => {
                 self.driver_updates = updates;
                 self.is_driver_scanning = false;
@@ -2263,6 +2279,26 @@ impl AppState {
     }
 
     /// Probe disk subsystem and SMART telemetry asynchronously.
+    /// Issue ReTrim to all fixed volumes on a worker thread via the backend
+    /// (v1.6.1 ran Optimize-Volume synchronously on the UI thread, freezing the window,
+    /// and bypassed the backend so it could not be sandboxed).
+    pub fn run_trim_all_async(&mut self) {
+        if self.disk_trim_inflight || self.is_rolling_back {
+            return;
+        }
+        self.disk_trim_inflight = true;
+        let backend = Arc::clone(&self.backend);
+        spawn_guarded_worker(
+            self.tx_events.clone(),
+            self.waker.clone(),
+            |msg| WorkerEvent::DiskTrimCompleted(Err(format!("TRIM worker panic: {msg}"))),
+            move |tx| {
+                let res = backend.run_trim_all().map_err(|e| e.to_string());
+                let _ = tx.send(WorkerEvent::DiskTrimCompleted(res));
+            },
+        );
+    }
+
     pub fn scan_disk_health_async(&mut self) {
         if self.is_disk_scanning {
             return;
@@ -2270,14 +2306,15 @@ impl AppState {
         self.is_disk_scanning = true;
         let tx = self.tx_events.clone();
         let waker = self.waker.clone();
+        let backend = Arc::clone(&self.backend);
         spawn_guarded_worker(
             tx,
             waker,
             |_err| {
                 WorkerEvent::DiskReportLoaded(crate::hardware::disks::DiskSubsystemReport::default())
             },
-            |tx| {
-                let report = crate::hardware::disks::DiskSubsystemReport::probe();
+            move |tx| {
+                let report = backend.probe_disk_report();
                 let _ = tx.send(WorkerEvent::DiskReportLoaded(report));
             },
         );
@@ -2291,6 +2328,7 @@ impl AppState {
         self.is_thermal_scanning = true;
         let tx = self.tx_events.clone();
         let waker = self.waker.clone();
+        let backend = Arc::clone(&self.backend);
         spawn_guarded_worker(
             tx,
             waker,
@@ -2299,8 +2337,8 @@ impl AppState {
                     crate::hardware::thermal::SystemThermalSnapshot::default(),
                 )
             },
-            |tx| {
-                let snap = crate::hardware::thermal::SystemThermalSnapshot::read();
+            move |tx| {
+                let snap = backend.read_thermal_snapshot();
                 let _ = tx.send(WorkerEvent::ThermalSnapshot(snap));
             },
         );

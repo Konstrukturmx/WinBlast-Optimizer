@@ -7,6 +7,7 @@ pub mod gpu;
 pub mod hardware;
 pub mod matrix;
 pub mod privacy;
+pub mod sensors;
 pub mod startup;
 
 use crate::app::{ActiveView, AppState};
@@ -24,11 +25,12 @@ pub struct Views {
     privacy: privacy::PrivacyView,
     gpu: gpu::GpuView,
     hardware: hardware::HardwareView,
+    sensors: sensors::SensorsView,
 }
 
 impl Views {
     pub fn new(window: &MainWindow) -> Self {
-        Self { matrix: matrix::MatrixView::new(window), dashboard: dashboard::DashboardView::new(window), clean_apps: clean_apps::CleanAppsView::new(window), startup: startup::StartupView::new(window), backup: backup::BackupView::new(window), privacy: privacy::PrivacyView::new(window), gpu: gpu::GpuView::new(window), hardware: hardware::HardwareView::new(window) }
+        Self { matrix: matrix::MatrixView::new(window), dashboard: dashboard::DashboardView::new(window), clean_apps: clean_apps::CleanAppsView::new(window), startup: startup::StartupView::new(window), backup: backup::BackupView::new(window), privacy: privacy::PrivacyView::new(window), gpu: gpu::GpuView::new(window), hardware: hardware::HardwareView::new(window), sensors: sensors::SensorsView::new(window) }
     }
 
     pub fn bind(&self, window: &MainWindow, ctx: &Ctx) {
@@ -40,6 +42,7 @@ impl Views {
         self.privacy.bind(window, ctx);
         self.gpu.bind(window, ctx);
         self.hardware.bind(window, ctx);
+        self.sensors.bind(window, ctx);
     }
 
     /// Sync the active view's store (inactive views are refreshed when navigated to).
@@ -53,6 +56,9 @@ impl Views {
             ActiveView::PrivacyShield => self.privacy.sync(window, s),
             ActiveView::GpuTuning => self.gpu.sync(window, s),
             ActiveView::HardwareView => self.hardware.sync(window, s),
+            ActiveView::CoreParking => self.sensors.sync_parking(window, s),
+            ActiveView::ThermalMonitor => self.sensors.sync_thermal(window, s),
+            ActiveView::DiskHealth => self.sensors.sync_disks(window, s),
             _ => {}
         }
     }

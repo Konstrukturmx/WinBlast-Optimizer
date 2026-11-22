@@ -1,174 +1,90 @@
 // ui/views/cpu_parking.slint
-// WinBlast0 CPU Core Parking & Frequency Scaling View in Slint 1.19
-
-import { Scale, Theme } from "../theme.slint";
+// CPU Core Parking manager (port of v1.6.1): status, unpark/restore/refresh, stats, per-core cards.
+import { ScrollView } from "std-widgets.slint";
+import { Scale, Theme, Tr } from "../theme.slint";
+import { ParkingStore } from "../stores/sensors.slint";
 import { WbButton } from "../components/button.slint";
-import { WbCard } from "../components/card.slint";
-import { WbBadge } from "../components/badge.slint";
+import { WbPill, WbPanel } from "../components/toggle.slint";
 import { WbProgressBar } from "../components/progress_bar.slint";
 
-export struct CoreStateItem {
-    core-id: int,
-    is-parked: bool,
-    usage: float,
-    frequency-mhz: int,
+component StatCell inherits VerticalLayout {
+    in property <string> label;
+    in property <string> value;
+    in property <color> tone: Theme.text-primary;
+    min-width: Scale.px(130px);
+    horizontal-stretch: 1;
+    Text { text: root.label; font-size: Scale.font-xs; color: Theme.text-muted; wrap: word-wrap; }
+    Text { text: root.value; font-size: Scale.font-lg; font-weight: 800; color: root.tone; }
 }
 
-export component CpuParkingView inherits Flickable {
+export component CpuParkingView inherits Rectangle {
     in property <int> tier;
-    in property <string> cpu-name: "AMD Ryzen 9 5900X 12-Core Processor";
-    in property <int> logical-cores: 24;
-    in property <int> physical-cores: 12;
-    in property <int> parked-count: 0;
 
-    in-out property <int> min-unparked-percent: 100; // 0 to 100%
-    in-out property <string> active-power-scheme: "Ultimate Performance";
+    ScrollView {
+        VerticalLayout {
+            padding: root.tier == 0 ? Scale.px(10px) : Scale.px(14px);
+            spacing: Scale.px(12px);
+            alignment: start;
 
-    in property <[CoreStateItem]> cores: [];
-
-    callback apply-parking();
-    callback set-power-scheme(string);
-    callback reset-defaults();
-
-    content-height: content.preferred-height;
-
-    content := VerticalLayout {
-        padding: Scale.space-lg;
-        spacing: Scale.space-md;
-
-        // Header Card
-        WbCard {
-            VerticalLayout {
-                spacing: Scale.space-md;
-
-                HorizontalLayout {
-                    alignment: space-between;
+            WbPanel {
+                FlexboxLayout {
+                    padding: Scale.px(Theme.card-padding);
+                    spacing: Scale.px(10px);
+                    alignment: stretch;
+                    cross-axis-alignment: center;
                     VerticalLayout {
-                        spacing: Scale.space-2xs;
-                        Text {
-                            text: "CPU Core Parking & Thread Scheduling";
-                            font-size: Scale.font-xl;
-                            font-weight: 700;
-                            color: Theme.text-primary;
-                        }
-                        Text {
-                            text: root.cpu-name + " (" + root.physical-cores + " Cores / " + root.logical-cores + " Threads)";
-                            font-size: Scale.font-sm;
-                            color: Theme.text-secondary;
-                        }
-                    }
-
-                    HorizontalLayout {
-                        spacing: Scale.space-sm;
-                        alignment: end;
-                        WbButton {
-                            variant: "ghost";
-                            text: "Defaults";
-                            clicked => { root.reset-defaults(); }
-                        }
-                        WbButton {
-                            variant: "primary";
-                            text: "Apply 100% Unpark";
-                            clicked => { root.apply-parking(); }
-                        }
-                    }
-                }
-
-                HorizontalLayout {
-                    spacing: Scale.space-sm;
-                    WbBadge {
-                        text: root.parked-count == 0 ? "All Cores Active (0 Parked)" : root.parked-count + " Cores Parked";
-                        variant: root.parked-count == 0 ? "safe" : "moderate";
-                        show-dot: true;
-                    }
-                    WbBadge {
-                        text: "Scheme: " + root.active-power-scheme;
-                        variant: "info";
-                    }
-                }
-            }
-        }
-
-        // Core Parking Configuration Slider Card
-        WbCard {
-            VerticalLayout {
-                spacing: Scale.space-md;
-
-                Text {
-                    text: "UNPARKED CORES THRESHOLD";
-                    font-size: Scale.font-xs;
-                    font-weight: 700;
-                    color: Theme.text-muted;
-                }
-
-                HorizontalLayout {
-                    alignment: space-between;
-                    Text {
-                        text: "Minimum Unparked Core Percentage";
-                        font-size: Scale.font-sm;
-                        color: Theme.text-secondary;
-                    }
-                    Text {
-                        text: root.min-unparked-percent + "%";
-                        font-size: Scale.font-md;
-                        font-weight: 700;
-                        color: Theme.accent;
-                    }
-                }
-
-                WbProgressBar {
-                    progress: root.min-unparked-percent / 100.0;
-                }
-
-                Text {
-                    text: "Setting to 100% disables Windows kernel core sleeping, keeping all execution units primed for instantaneous thread context switches.";
-                    font-size: Scale.font-xs;
-                    color: Theme.text-muted;
-                    wrap: word-wrap;
-                }
-            }
-        }
-
-        // Power Scheme Selector Card
-        WbCard {
-            VerticalLayout {
-                spacing: Scale.space-sm;
-
-                Text {
-                    text: "ACTIVE POWER PLAN";
-                    font-size: Scale.font-xs;
-                    font-weight: 700;
-                    color: Theme.text-muted;
-                }
-
-                HorizontalLayout {
-                    spacing: Scale.space-sm;
-
-                    for scheme in ["Ultimate Performance", "High Performance", "Balanced"]: Rectangle {
-                        private property <bool> is-active: root.active-power-scheme == scheme;
                         horizontal-stretch: 1;
-                        height: Scale.control-md;
-                        border-radius: Scale.radius-sm;
-                        background: self.is-active ? Theme.accent : Theme.bg-surface;
+                        min-width: Scale.px(220px);
+                        Text { text: Tr.s("CoreParkingTitle"); font-size: Scale.font-xl; font-weight: 800; color: Theme.text-primary; wrap: word-wrap; }
+                        Text { text: Tr.s("CoreParkingSub"); font-size: Scale.font-xs; color: Theme.text-muted; wrap: word-wrap; }
+                    }
+                    WbPill {
+                        text: ParkingStore.fully-unparked ? Tr.s("CoreParkingStatusUnparked") : Tr.s("CoreParkingStatusParked");
+                        tone: ParkingStore.fully-unparked ? "success" : "warning";
+                    }
+                }
+            }
 
+            FlexboxLayout {
+                spacing: Scale.px(6px);
+                WbButton {
+                    variant: "primary";
+                    text: ParkingStore.inflight ? Tr.s("BusyWorking") : Tr.s("UnparkAllCores");
+                    enabled: !ParkingStore.inflight && !ParkingStore.rolling-back;
+                    loading: ParkingStore.inflight;
+                    clicked => { ParkingStore.unpark-all(); }
+                }
+                WbButton { variant: "secondary"; text: Tr.s("RestoreStockParking"); enabled: !ParkingStore.inflight && !ParkingStore.rolling-back; clicked => { ParkingStore.restore-stock(); } }
+                WbButton { variant: "secondary"; text: Tr.s("RefreshCoresBtn"); clicked => { ParkingStore.refresh(); } }
+            }
+
+            WbPanel {
+                FlexboxLayout {
+                    padding: Scale.px(12px);
+                    spacing: Scale.px(14px);
+                    alignment: stretch;
+                    StatCell { label: Tr.s("TotalLogicalCores"); value: ParkingStore.total; }
+                    StatCell { label: Tr.s("ActiveUnparked"); value: ParkingStore.unparked; tone: Theme.success; }
+                    StatCell { label: Tr.s("ParkedSleeping"); value: ParkingStore.parked; tone: ParkingStore.parked > 0 ? Theme.warning : Theme.text-muted; }
+                    StatCell { label: Tr.s("MinCoresAcDc"); value: ParkingStore.min-ac-dc; }
+                }
+            }
+
+            FlexboxLayout {
+                spacing: Scale.px(8px);
+                alignment: stretch;
+                for c in ParkingStore.cores : WbPanel {
+                    min-width: root.tier == 0 ? Scale.px(170px) : Scale.px(210px);
+                    horizontal-stretch: 1;
+                    VerticalLayout {
+                        padding: Scale.px(10px);
+                        spacing: Scale.px(4px);
                         HorizontalLayout {
-                            alignment: center;
-                            Text {
-                                text: scheme;
-                                font-size: Scale.font-xs;
-                                font-weight: 600;
-                                color: is-active ? Theme.text-on-accent : Theme.text-secondary;
-                                vertical-alignment: center;
-                            }
+                            Text { text: c.title; font-size: Scale.font-sm; font-weight: 700; color: Theme.text-primary; horizontal-stretch: 1; }
+                            Text { text: c.parked ? Tr.s("CoreStatusParked") : Tr.s("CoreStatusUnparked"); font-size: Scale.font-2xs; color: c.parked ? Theme.warning : Theme.success; }
                         }
-
-                        TouchArea {
-                            mouse-cursor: pointer;
-                            clicked => {
-                                root.active-power-scheme = scheme;
-                                root.set-power-scheme(scheme);
-                            }
-                        }
+                        Text { text: c.usage-text; font-size: Scale.font-xs; color: Theme.text-secondary; }
+                        WbProgressBar { height: Scale.px(5px); progress: c.usage; bar-color: c.parked ? Theme.warning : Theme.success; }
                     }
                 }
             }

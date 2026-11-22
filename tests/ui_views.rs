@@ -13,7 +13,7 @@ use winblast0::app::{ActiveView, AppState, MatrixSortMode};
 use winblast0::core::backend::SandboxEnv;
 use winblast0::core::risk::load_embedded_rules;
 use winblast0::ui_slint::bridge::SlintBridge;
-use winblast0::ui_slint::{AppStore, BackupStore, GpuStore, HardwareStore, PrivacyStore, CleanAppsStore, DashboardStore, MainWindow, MatrixStore, StartupStore};
+use winblast0::ui_slint::{AppStore, BackupStore, DiskStore, GpuStore, HardwareStore, ParkingStore, ThermalStore, PrivacyStore, CleanAppsStore, DashboardStore, MainWindow, MatrixStore, StartupStore};
 
 struct Harness {
     #[allow(dead_code)]
@@ -763,4 +763,56 @@ fn hardware_power_plan_hibernation_and_usb_in_sandbox() {
     st.invoke_usb_power_saving(true);
     h.wait("usb", |s| !s.usb_power_inflight);
     assert!(!st.get_power_inflight() && !st.get_hibernation_inflight() && !st.get_usb_inflight());
+}
+
+// ───────────────────────────── Core parking / Thermal / Disks ─────────────────────────────
+
+#[test]
+fn core_parking_actions_round_trip_in_sandbox() {
+    let h = Harness::scanned();
+    h.goto(ActiveView::CoreParking);
+    let st = h.window.global::<ParkingStore>();
+    assert_eq!(st.get_cores().row_count(), h.state.borrow().core_parking.cores.len());
+    assert_eq!(st.get_total() as usize, h.state.borrow().core_parking.total_cores);
+    st.invoke_unpark_all();
+    h.wait("unpark", |s| !s.core_parking_inflight);
+    assert!(st.get_fully_unparked() || st.get_parked() == 0 || !h.state.borrow().status_message.is_empty());
+    st.invoke_restore_stock();
+    h.wait("restore", |s| !s.core_parking_inflight);
+    st.invoke_refresh();
+    h.wait("refresh", |s| !s.core_parking_inflight);
+    assert!(st.get_cores().iter().all(|c| (0.0..=1.0).contains(&c.usage)));
+}
+
+#[test]
+fn thermal_view_never_invents_temperatures() {
+    let h = Harness::scanned();
+    h.goto(ActiveView::ThermalMonitor);
+    let st = h.window.global::<ThermalStore>();
+    st.invoke_refresh();
+    h.wait("thermal", |s| !s.is_thermal_scanning && s.thermal_snapshot.is_some());
+    // The sandbox has no sensors: every reading must be the honest placeholder.
+    assert!(!st.get_sensors_available());
+    assert_eq!(st.get_cpu_temp().as_str(), "—");
+    assert_eq!(st.get_gpu_temp().as_str(), "—");
+    assert_eq!(st.get_fan_text().as_str(), "—");
+    for bogus in ["Auto PWM Active", "Smart Fan Curve Active"] {
+        assert!(!st.get_fan_text().contains(bogus) && !st.get_fan_detail().contains(bogus));
+    }
+}
+
+#[test]
+fn disk_view_trim_is_async_and_direct_storage_is_not_claimed() {
+    let h = Harness::scanned();
+    h.goto(ActiveView::DiskHealth);
+    let st = h.window.global::<DiskStore>();
+    st.invoke_refresh();
+    h.wait("disk report", |s| !s.is_disk_scanning && s.disk_report.is_some());
+    assert_eq!(st.get_drives().row_count(), 0, "sandbox has no physical disks");
+    assert!(!st.get_trim_banner().contains("DirectStorage"), "DirectStorage must only be shown when detected");
+    st.invoke_trim_all();
+    h.bridge.sync();
+    st.invoke_trim_all(); // second click while in flight is ignored
+    h.wait("trim done", |s| !s.disk_trim_inflight && !s.is_disk_scanning);
+    assert!(h.state.borrow().status_message.contains("ReTrim"), "status: {}", h.state.borrow().status_message);
 }

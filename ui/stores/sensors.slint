@@ -1,0 +1,46 @@
+// ui/stores/sensors.slint
+// CPU Core Parking, Thermal & Fan monitor and Disk Health stores (ports of v1.6.1 views).
+import { KvRow } from "common.slint";
+
+export struct CoreCard { title: string, parked: bool, usage: float, usage-text: string }
+export struct ThermalRow { name: string, threshold: string, temp: string, status: string, tone: string }
+export struct DriveCard { title: string, sub: string, health: int, health-text: string, status: string, writes: string, hours: string, temp: string, tone: string }
+
+export global ParkingStore {
+    in-out property <bool> fully-unparked;
+    in-out property <int> total;
+    in-out property <int> unparked;
+    in-out property <int> parked;
+    in-out property <string> min-ac-dc;
+    in-out property <[CoreCard]> cores: [];
+    in-out property <bool> inflight;
+    in-out property <bool> rolling-back;
+    callback unpark-all();
+    callback restore-stock();
+    callback refresh();
+}
+
+export global ThermalStore {
+    in-out property <bool> sensors-available;
+    in-out property <string> cpu-temp;
+    in-out property <string> cpu-detail;
+    in-out property <string> cpu-tone;
+    in-out property <string> gpu-temp;
+    in-out property <string> gpu-detail;
+    in-out property <string> gpu-tone;
+    in-out property <string> fan-text;
+    in-out property <string> fan-detail;
+    in-out property <[ThermalRow]> components: [];
+    in-out property <bool> scanning;
+    callback refresh();
+}
+
+export global DiskStore {
+    in-out property <bool> trim-active;
+    in-out property <string> trim-banner;
+    in-out property <[DriveCard]> drives: [];
+    in-out property <bool> scanning;
+    in-out property <bool> trim-inflight;
+    callback refresh();
+    callback trim-all();
+}

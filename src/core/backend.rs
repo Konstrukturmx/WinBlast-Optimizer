@@ -279,6 +279,22 @@ pub trait SystemBackend: Send + Sync + 'static {
     ) -> Result<FeatureInstallState>;
     fn check_onedrive_kfm_active(&self) -> Option<String>;
     fn uninstall_onedrive_safe(&self) -> Result<String>;
+
+    /// Issue a ReTrim to every fixed volume (Optimize-Volume -ReTrim). Mutating; default impl
+    /// refuses so wrapper/test backends can never reach the real disks by accident.
+    fn run_trim_all(&self) -> Result<String> {
+        Err(WinBlastError::Hardware("TRIM is not supported by this backend".into()))
+    }
+
+    /// Physical disk SMART / TRIM report (read-only probe).
+    fn probe_disk_report(&self) -> crate::hardware::disks::DiskSubsystemReport {
+        crate::hardware::disks::DiskSubsystemReport::probe()
+    }
+
+    /// CPU/GPU/board thermal snapshot (read-only probe).
+    fn read_thermal_snapshot(&self) -> crate::hardware::thermal::SystemThermalSnapshot {
+        crate::hardware::thermal::SystemThermalSnapshot::read()
+    }
     fn remove_edge_preserve_webview2(&self) -> Result<String>;
     fn winget_install_package(&self, package_id: &str) -> Result<String>;
 
@@ -654,6 +670,10 @@ impl SystemBackend for RealBackend {
 
     fn check_onedrive_kfm_active(&self) -> Option<String> {
         features_apps::check_onedrive_kfm_active()
+    }
+
+    fn run_trim_all(&self) -> Result<String> {
+        crate::hardware::disks::DiskSubsystemReport::run_trim_all().map_err(WinBlastError::Hardware)
     }
 
     fn uninstall_onedrive_safe(&self) -> Result<String> {
@@ -2841,6 +2861,20 @@ impl SystemBackend for SandboxEnv {
 
     fn check_onedrive_kfm_active(&self) -> Option<String> {
         self.state_read().onedrive_kfm_path.clone()
+    }
+
+    fn probe_disk_report(&self) -> crate::hardware::disks::DiskSubsystemReport {
+        // The sandbox has no physical disks: report none instead of probing the host.
+        crate::hardware::disks::DiskSubsystemReport::default()
+    }
+
+    fn read_thermal_snapshot(&self) -> crate::hardware::thermal::SystemThermalSnapshot {
+        crate::hardware::thermal::SystemThermalSnapshot::default()
+    }
+
+    fn run_trim_all(&self) -> Result<String> {
+        self.take_injected_error()?;
+        Ok("Sandbox: ReTrim simulated for all fixed volumes".to_string())
     }
 
     fn uninstall_onedrive_safe(&self) -> Result<String> {
