@@ -1,15 +1,12 @@
 # Graph Report - WinBlast0  (2026-11-22)
 
 ## Corpus Check
-- 143 files · ~304,071 words
-- Verdict: corpus is large enough that graph structure adds value.
-- Unclassified: 62 file(s) not represented in the graph (top: .slint 44, .toml 12, (none) 3)
-- WARNING: 62 of 234 files seen (26%) have no supported extractor and are missing from this graph entirely. It may look complete while representing only part of the codebase.
+- cluster-only mode — file stats not available
 
 ## Summary
 - 4273 nodes · 8898 edges · 196 communities (138 shown, 58 thin omitted)
 - Extraction: 96% EXTRACTED · 4% INFERRED · 0% AMBIGUOUS · INFERRED: 330 edges (avg confidence: 0.79)
-- Token cost: 13,424 input · 14,275 output
+- Token cost: 0 input · 0 output
 
 ## Graph Freshness
 - Built from commit: `db0e3a47`
@@ -197,21 +194,21 @@
 10. `RealBackend` - 84 edges
 
 ## Surprising Connections (you probably didn't know these)
-- `Changelog` --references--> `AppState`  [EXTRACTED]
-  CHANGELOG.md → src/app.rs
-- `WinBlast Optimizer — Developer & Architecture Guide` --references--> `AppState`  [EXTRACTED]
-  DEVELOPMENT.md → src/app.rs
 - `WinBlast Optimizer — Developer & Architecture Guide` --references--> `SandboxEnv`  [EXTRACTED]
   DEVELOPMENT.md → src/core/backend.rs
 - `assets/rules/registry_lag.toml` --references--> `TweakDefinition`  [EXTRACTED]
   Project WinBlast0 Project Structure.md → src/core/risk.rs
+- `Changelog` --references--> `AppState`  [EXTRACTED]
+  CHANGELOG.md → src/app.rs
+- `WinBlast Optimizer — Developer & Architecture Guide` --references--> `AppState`  [EXTRACTED]
+  DEVELOPMENT.md → src/app.rs
 - `Changelog` --references--> `SystemBackend`  [EXTRACTED]
   CHANGELOG.md → src/core/backend.rs
 
 ## Import Cycles
 - 1-file cycle: `src/ui_sync/diff_sync.rs -> src/ui_sync/diff_sync.rs`
-- 2-file cycle: `src/backup/restore_point.rs -> src/core/backend.rs -> src/backup/restore_point.rs`
 - 2-file cycle: `src/core/backend.rs -> src/hardware/parking.rs -> src/core/backend.rs`
+- 2-file cycle: `src/backup/restore_point.rs -> src/core/backend.rs -> src/backup/restore_point.rs`
 
 ## Hyperedges (group relationships)
 - **WinBlast0 Reactive Systems Architecture** — development_system_architecture, project_winblast0_project_structure_core_architecture_code_blueprint, readme_cpu_core_parking_hybrid_architecture_vis, readme_key_architecture_capabilities [INFERRED 0.85]
@@ -771,7 +768,7 @@ Cohesion: 0.07
 Nodes (7): BitSet256, .EMPTY, BitSetIter, CellBitSet256, contains_ascii_icase(), MAX_TWEAKS, WORDS
 
 ## Knowledge Gaps
-- **1332 isolated node(s):** `Easy`, `Advanced`, `HardwareView`, `PrivacyShield`, `BackupCenter` (+1327 more)
+- **1332 isolated node(s):** `CacheSet<K, V>`, `CacheSlot<K, V>`, `ActiveChanges`, `ActiveOptimizations`, `ActiveRailAc` (+1327 more)
   These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 1941 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
 - **58 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
@@ -779,16 +776,16 @@ Nodes (7): BitSet256, .EMPTY, BitSetIter, CellBitSet256, contains_ascii_icase(),
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `AppState` connect `Disk Cleaning & Temporary File Purger` to `action_button_guarded`, `spawn_guarded_worker`, `.sync_startup_tasks_busy`, `WinBlast Optimizer — Developer & Architecture Guide`, `FailAtMutationBackend`, `features_apps.rs`, `enum_scm_services_by_type`, `HealthSeverity`, `startup.rs`, `startup.rs`, `path`, `app.rs`, `WinBlastScrollable`, `in_progress_hud.rs`, `UpdateStatus`, `super`, `clean_apps.rs`, `sys_inventory.rs`, `sysprep_engine.rs`, `System Architecture Changelog`, `.run_scan_internal`, `.Reg State() Vendor()`, `.set_status`, `RealBackend`, `LiveServiceInfo`, `power.rs`, `latency_bench.rs`, `startup.rs`, `registry_scanner.rs`, `parse_guid`, `AppX Package & Modern App Scanner`, `parking.rs`, `FailAtMutationBackend`, `deserialize`, `RegRawSnapshot`, `probe_physical_drive`, `.reset_baseline`, `.rollback_entry`, `backend.rs`, `Reversibility Instant Requireslogoff`, `dijkstra.rs`, `TaskCache`, `Project Documentation, Architecture & Licensing`, `WorkerEvent`, `app.rs`, `.setup`, `app.rs`, `deserialize`, `decode_oem_bytes`, `normalize_guid_str`, `bridge.rs`, `enums`, `UiThemeStyle`, `FeatureInstallState`, `WindowsOptionalFeature`, `appx_scanner.rs`, `adaptive_tuning.rs`, `advanced_matrix.rs`, `WinBlast Optimizer — Developer & Architecture Guide`, `.sign`, `PowerSchemeInfo`, `privacy_shield.rs`, `PlatformSecurityInfo`, `PlatformSecurityInfo`, `PdhParkingCollector`, `RestorePoint`, `TaskCache`, `boot_config.rs`, `power_governor.rs`, `progress_bar.rs`?**
-  _High betweenness centrality (0.259) - this node is a cross-community bridge._
+  _High betweenness centrality (0.261) - this node is a cross-community bridge._
 - **Are the 25 inferred relationships involving `AppState` (e.g. with `OptimizationGoal` and `OptimizationPlan`) actually correct?**
   _`AppState` has 25 INFERRED edges - model-reasoned connections that need verification._
-- **What connects `Easy`, `Advanced`, `HardwareView` to the rest of the system?**
+- **What connects `CacheSet<K, V>`, `CacheSlot<K, V>`, `ActiveChanges` to the rest of the system?**
   _1332 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Core UI Internationalization & Text Catalog` be split into smaller, more focused modules?**
   _Cohesion score 0.00390625 - nodes in this community are weakly interconnected._
 - **Why does `TextKey` connect `Core UI Internationalization & Text Catalog` to `latency_bench.rs`, `Reversibility Instant Requireslogoff`, `parse_guid`, `features_apps.rs`, `theme.rs`, `app.rs`, `ui_scrollbar_test.rs`, `enums`, `clean_apps.rs`, `boot_config.rs`, `.run_scan_internal`, `.Reg State() Vendor()`, `RealBackend`?**
-  _High betweenness centrality (0.232) - this node is a cross-community bridge._
+  _High betweenness centrality (0.242) - this node is a cross-community bridge._
 - **Should `action_button_guarded` be split into smaller, more focused modules?**
   _Cohesion score 0.01 - nodes in this community are weakly interconnected._
 - **Why does `ViewTextKey` connect `action_button_guarded` to `Disk Cleaning & Temporary File Purger`, `features_apps.rs`, `WinBlastScrollable`, `ui_scrollbar_test.rs`, `enums`, `clean_apps.rs`, `RealBackend`?**
-  _High betweenness centrality (0.111) - this node is a cross-community bridge._
+  _High betweenness centrality (0.102) - this node is a cross-community bridge._

@@ -1,42 +1,42 @@
 # normalize_guid_str
 
-> 17 nodes · cohesion 0.12
+> 16 nodes · cohesion 0.12
 
 ## Key Concepts
 
-- **DriverCategory** (22 connections) — `src/hardware/driver_update.rs`
-- **.all_physical()** (4 connections) — `src/hardware/driver_update.rs`
-- **test_all_categories_have_guid()** (2 connections) — `src/hardware/driver_update.rs`
-- **test_all_categories_have_icon_and_name()** (2 connections) — `src/hardware/driver_update.rs`
-- **Audio** (1 connections) — `src/hardware/driver_update.rs`
-- **Biometric** (1 connections) — `src/hardware/driver_update.rs`
-- **Bluetooth** (1 connections) — `src/hardware/driver_update.rs`
-- **Camera** (1 connections) — `src/hardware/driver_update.rs`
-- **Chipset** (1 connections) — `src/hardware/driver_update.rs`
-- **Display** (1 connections) — `src/hardware/driver_update.rs`
-- **.display_name()** (1 connections) — `src/hardware/driver_update.rs`
-- **.icon()** (1 connections) — `src/hardware/driver_update.rs`
-- **Input** (1 connections) — `src/hardware/driver_update.rs`
-- **Network** (1 connections) — `src/hardware/driver_update.rs`
-- **Storage** (1 connections) — `src/hardware/driver_update.rs`
-- **Usb** (1 connections) — `src/hardware/driver_update.rs`
-- **VirtualSandbox** (1 connections) — `src/hardware/driver_update.rs`
+- **Changelog** (20 connections) — `CHANGELOG.md`
+- **Added** (1 connections) — `CHANGELOG.md`
+- **Changed** (1 connections) — `CHANGELOG.md`
+- **Fixed** (1 connections) — `CHANGELOG.md`
+- **Fixed & Improved** (1 connections) — `CHANGELOG.md`
+- **Highlights** (1 connections) — `CHANGELOG.md`
+- **v0.1.0] - 2026-10-28** (1 connections) — `CHANGELOG.md`
+- **v0.2.0] - 2026-11-03** (1 connections) — `CHANGELOG.md`
+- **v0.3.0] - 2026-11-05** (1 connections) — `CHANGELOG.md`
+- **v0.4.0] - 2026-11-06** (1 connections) — `CHANGELOG.md`
+- **v0.5.0] - 2026-11-07** (1 connections) — `CHANGELOG.md`
+- **v0.6.0] - 2026-11-08** (1 connections) — `CHANGELOG.md`
+- **v0.7.0] - 2026-11-09** (1 connections) — `CHANGELOG.md`
+- **v0.8.0] - 2026-11-10** (1 connections) — `CHANGELOG.md`
+- **v0.9.0] - 2026-11-12** (1 connections) — `CHANGELOG.md`
+- **v0.9.1] - 2026-11-13** (1 connections) — `CHANGELOG.md`
 
 ## Relationships
 
-- [RegRawSnapshot](RegRawSnapshot.md) (7 shared connections)
-- [lazy_loader.rs](lazy_loader.rs.md) (2 shared connections)
-- [elevation.rs](elevation.rs.md) (1 shared connections)
-- [.Toggle .Set .Apply](Toggle_.Set_.Apply.md) (1 shared connections)
+- [power_governor.rs](power_governor.rs.md) (1 shared connections)
+- [Disk Cleaning & Temporary File Purger](Disk_Cleaning_&_Temporary_File_Purger.md) (1 shared connections)
+- [FailAtMutationBackend](FailAtMutationBackend.md) (1 shared connections)
+- [dijkstra.rs](dijkstra.rs.md) (1 shared connections)
+- [app.rs](app.rs.md) (1 shared connections)
 
 ## Source Files
 
-- `src/hardware/driver_update.rs`
+- `CHANGELOG.md`
 
 ## Audit Trail
 
-- EXTRACTED: 26 (96%)
-- INFERRED: 1 (4%)
+- EXTRACTED: 20 (100%)
+- INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 
 ---

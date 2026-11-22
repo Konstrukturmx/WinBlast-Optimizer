@@ -1,54 +1,42 @@
 # TaskCache
 
-> 20 nodes · cohesion 0.21
+> 17 nodes · cohesion 0.12
 
 ## Key Concepts
 
-- **autounattend.rs** (24 connections) — `src/tools/autounattend.rs`
-- **normalize_reg_value_name()** (21 connections) — `src/core/risk.rs`
-- **generate_autounattend_xml()** (17 connections) — `src/tools/autounattend.rs`
-- **UnattendOptions** (7 connections) — `src/tools/autounattend.rs`
-- **display_reg_value_name()** (6 connections) — `src/core/risk.rs`
-- **TargetArch** (6 connections) — `src/tools/autounattend.rs`
-- **format_reg_add_cmd()** (5 connections) — `src/tools/autounattend.rs`
-- **format_reg_delete_cmd()** (5 connections) — `src/tools/autounattend.rs`
-- **test_risk_valuation()** (3 connections) — `src/core/risk.rs`
-- **escape_win32_quoted_arg()** (3 connections) — `src/tools/autounattend.rs`
-- **map_hive()** (3 connections) — `src/tools/autounattend.rs`
-- **test_autounattend_generation_wellformed_and_escaped()** (3 connections) — `src/tools/autounattend.rs`
-- **.default()** (3 connections) — `src/tools/autounattend.rs`
-- **escape_xml()** (2 connections) — `src/tools/autounattend.rs`
-- **sanitize_computer_name()** (2 connections) — `src/tools/autounattend.rs`
-- **sanitize_local_user()** (2 connections) — `src/tools/autounattend.rs`
-- **.as_str()** (2 connections) — `src/tools/autounattend.rs`
-- **.detect_host()** (2 connections) — `src/tools/autounattend.rs`
-- **Amd64** (1 connections) — `src/tools/autounattend.rs`
-- **Arm64** (1 connections) — `src/tools/autounattend.rs`
+- **DriverCategory** (22 connections) — `src/hardware/driver_update.rs`
+- **.all_physical()** (4 connections) — `src/hardware/driver_update.rs`
+- **test_all_categories_have_guid()** (2 connections) — `src/hardware/driver_update.rs`
+- **test_all_categories_have_icon_and_name()** (2 connections) — `src/hardware/driver_update.rs`
+- **Audio** (1 connections) — `src/hardware/driver_update.rs`
+- **Biometric** (1 connections) — `src/hardware/driver_update.rs`
+- **Bluetooth** (1 connections) — `src/hardware/driver_update.rs`
+- **Camera** (1 connections) — `src/hardware/driver_update.rs`
+- **Chipset** (1 connections) — `src/hardware/driver_update.rs`
+- **Display** (1 connections) — `src/hardware/driver_update.rs`
+- **.display_name()** (1 connections) — `src/hardware/driver_update.rs`
+- **.icon()** (1 connections) — `src/hardware/driver_update.rs`
+- **Input** (1 connections) — `src/hardware/driver_update.rs`
+- **Network** (1 connections) — `src/hardware/driver_update.rs`
+- **Storage** (1 connections) — `src/hardware/driver_update.rs`
+- **Usb** (1 connections) — `src/hardware/driver_update.rs`
+- **VirtualSandbox** (1 connections) — `src/hardware/driver_update.rs`
 
 ## Relationships
 
-- [DriverError](DriverError.md) (5 shared connections)
-- [SlowScanBackend](SlowScanBackend.md) (5 shared connections)
-- [ps_runner.rs](ps_runner.rs.md) (4 shared connections)
-- [theme.rs](theme.rs.md) (4 shared connections)
-- [clean_apps.rs](clean_apps.rs.md) (3 shared connections)
-- [Project History & Release Version Ledger](Project_History_&_Release_Version_Ledger.md) (2 shared connections)
-- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (2 shared connections)
-- [Reversibility Instant Requireslogoff](Reversibility_Instant_Requireslogoff.md) (2 shared connections)
-- [Win32 Registry Scanner & Mutator](Win32_Registry_Scanner_&_Mutator.md) (2 shared connections)
-- [LazyLoader](LazyLoader.md) (2 shared connections)
-- [.new](new.md) (1 shared connections)
-- [deserialize](deserialize.md) (1 shared connections)
+- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (7 shared connections)
+- [adaptive_tuning.rs](adaptive_tuning.rs.md) (2 shared connections)
+- [features_apps.rs](features_apps.rs.md) (1 shared connections)
+- [Disk Cleaning & Temporary File Purger](Disk_Cleaning_&_Temporary_File_Purger.md) (1 shared connections)
 
 ## Source Files
 
-- `src/core/risk.rs`
-- `src/tools/autounattend.rs`
+- `src/hardware/driver_update.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 63 (81%)
-- INFERRED: 15 (19%)
+- EXTRACTED: 26 (96%)
+- INFERRED: 1 (4%)
 - AMBIGUOUS: 0 (0%)
 
 ---

@@ -2,7 +2,7 @@
 
 > God node · 88 connections · `src/ui/theme.rs`
 
-**Community:** [updater.rs](updater.rs.md)
+**Community:** [RealBackend](RealBackend.md)
 
 ## Connections by Relation
 
@@ -18,7 +18,7 @@
 - startup_tasks.rs `EXTRACTED`
 - gpu_tuning.rs `EXTRACTED`
 - button.rs `EXTRACTED`
-- [diff_modal.rs](diff_modal.rs.md) `EXTRACTED`
+- diff_modal.rs `EXTRACTED`
 - [progress_bar.rs](progress_bar.rs.md) `EXTRACTED`
 - risk_badge.rs `EXTRACTED`
 - sparkline.rs `EXTRACTED`
@@ -39,20 +39,20 @@
 - [UiThemeStyle](UiThemeStyle.md) `EXTRACTED`
 - Color `EXTRACTED`
 - pill_badge() `EXTRACTED`
-- view_items_with_palette() `EXTRACTED`
 - build_appx_features_body() `EXTRACTED`
 - build_disk_cleaner_body() `EXTRACTED`
+- view_items_with_palette() `EXTRACTED`
 - build_winget_body() `EXTRACTED`
 - render_compatible_card() `EXTRACTED`
-- build_sidebar() `EXTRACTED`
 - build_startup_apps_list() `EXTRACTED`
+- build_sidebar() `EXTRACTED`
+- build_tasks_list() `EXTRACTED`
 - switch_toggle() `EXTRACTED`
 - build_services_list() `EXTRACTED`
-- build_tasks_list() `EXTRACTED`
 - in_progress_hud() `EXTRACTED`
+- progress_bar_styled() `EXTRACTED`
 - Spring `EXTRACTED`
 - switch_indicator() `EXTRACTED`
-- progress_bar_styled() `EXTRACTED`
 - *…and 48 more `references` connection(s) not listed (lowest-degree first to go)*
 
 ---

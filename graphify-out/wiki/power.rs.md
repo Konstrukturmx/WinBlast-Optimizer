@@ -1,59 +1,62 @@
 # power.rs
 
-> 33 nodes · cohesion 0.11
+> 57 nodes · cohesion 0.06
 
 ## Key Concepts
 
-- **.take_injected_error()** (37 connections) — `src/core/backend.rs`
-- **.state_write()** (36 connections) — `src/core/backend.rs`
-- **.sync_parking_in_state()** (7 connections) — `src/core/backend.rs`
-- **.reg_restore_tree()** (6 connections) — `src/core/backend.rs`
-- **.set_optional_feature()** (6 connections) — `src/core/backend.rs`
-- **.apply_parking_snapshot()** (5 connections) — `src/core/backend.rs`
-- **.execute_clean_targets()** (5 connections) — `src/core/backend.rs`
-- **.restore_stock_parking()** (5 connections) — `src/core/backend.rs`
-- **.write_power_setting_index()** (5 connections) — `src/core/backend.rs`
-- **.remove_appx_batch()** (4 connections) — `src/core/backend.rs`
-- **.remove_appx_family_in_state()** (4 connections) — `src/core/backend.rs`
-- **.remove_appx_package()** (4 connections) — `src/core/backend.rs`
-- **.set_hags()** (4 connections) — `src/core/backend.rs`
-- **.set_hibernation_enabled()** (4 connections) — `src/core/backend.rs`
-- **.set_mpo_disabled()** (4 connections) — `src/core/backend.rs`
-- **.set_scheduled_task_enabled()** (4 connections) — `src/core/backend.rs`
-- **.set_startup_entry_enabled()** (4 connections) — `src/core/backend.rs`
-- **.set_usb_root_hub_power_saving()** (4 connections) — `src/core/backend.rs`
-- **optional_feature_matches()** (3 connections) — `src/core/backend.rs`
-- **.block_telemetry_hosts()** (3 connections) — `src/core/backend.rs`
-- **.create_and_activate_performance_plan()** (3 connections) — `src/core/backend.rs`
-- **.request_system_reboot()** (3 connections) — `src/core/backend.rs`
-- **.restart_explorer_safely()** (3 connections) — `src/core/backend.rs`
-- **.set_active_power_scheme()** (3 connections) — `src/core/backend.rs`
-- **.set_gpu_msi_mode()** (3 connections) — `src/core/backend.rs`
-- *... and 8 more nodes in this community*
+- **cleaner.rs** (46 connections) — `src/tools/cleaner.rs`
+- **CleanTargetKind** (33 connections) — `src/tools/cleaner.rs`
+- **CleanTargetScan** (15 connections) — `src/tools/cleaner.rs`
+- **CleanExecutionReport** (14 connections) — `src/tools/cleaner.rs`
+- **delete_dir_contents()** (9 connections) — `src/tools/cleaner.rs`
+- **measure_dir()** (8 connections) — `src/tools/cleaner.rs`
+- **execute_clean_targets()** (7 connections) — `src/tools/cleaner.rs`
+- **scan_all_clean_targets()** (7 connections) — `src/tools/cleaner.rs`
+- **CleanTargetResult** (6 connections) — `src/tools/cleaner.rs`
+- **pcwstr** (5 connections)
+- **empty_recycle_bin()** (5 connections) — `src/tools/cleaner.rs`
+- **.execute_clean_targets()** (4 connections) — `src/core/backend.rs`
+- **init_com_sta()** (4 connections) — `src/tools/cleaner.rs`
+- **query_recycle_bin()** (4 connections) — `src/tools/cleaner.rs`
+- **resolve_target_paths()** (4 connections) — `src/tools/cleaner.rs`
+- **should_skip_entry()** (4 connections) — `src/tools/cleaner.rs`
+- **.scan_clean_targets()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.scan_clean_targets()** (3 connections) — `src/core/backend.rs`
+- **.execute_clean_targets()** (3 connections) — `src/core/backend.rs`
+- **ComStaGuard** (3 connections) — `src/tools/cleaner.rs`
+- **dir_meta_if_real()** (3 connections) — `src/tools/cleaner.rs`
+- **is_reparse_point()** (3 connections) — `src/tools/cleaner.rs`
+- **record_dir_io_error()** (3 connections) — `src/tools/cleaner.rs`
+- **test_delete_dir_preserves_dot_net_and_reparse_safe()** (3 connections) — `src/tools/cleaner.rs`
+- **.scan_clean_targets()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
+- *... and 32 more nodes in this community*
 
 ## Relationships
 
-- [full_telemetry_audit_with](full_telemetry_audit_with.md) (31 shared connections)
-- [Project History & Release Version Ledger](Project_History_&_Release_Version_Ledger.md) (16 shared connections)
-- [deserialize](deserialize.md) (5 shared connections)
-- [Error.Rs Winblasterror Appx](Error.Rs_Winblasterror_Appx.md) (4 shared connections)
-- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (3 shared connections)
-- [features_apps.rs](features_apps.rs.md) (2 shared connections)
-- [tools/game_overlay.rs](tools-game_overlay.rs.md) (2 shared connections)
-- [progress_bar.rs](progress_bar.rs.md) (1 shared connections)
-- [DriverError](DriverError.md) (1 shared connections)
-- [HibernationStatus](HibernationStatus.md) (1 shared connections)
-- [UiThemeStyle](UiThemeStyle.md) (1 shared connections)
-- [svc_mutator.rs](svc_mutator.rs.md) (1 shared connections)
+- [automation.rs](automation.rs.md) (6 shared connections)
+- [backend.rs](backend.rs.md) (5 shared connections)
+- [Disk Cleaning & Temporary File Purger](Disk_Cleaning_&_Temporary_File_Purger.md) (3 shared connections)
+- [app.rs](app.rs.md) (3 shared connections)
+- [in_progress_hud.rs](in_progress_hud.rs.md) (3 shared connections)
+- [topological_scheduler.rs](topological_scheduler.rs.md) (2 shared connections)
+- [driver_update.rs](driver_update.rs.md) (2 shared connections)
+- [FailAtMutationBackend](FailAtMutationBackend.md) (2 shared connections)
+- [AppxCache](AppxCache.md) (2 shared connections)
+- [startup.rs](startup.rs.md) (2 shared connections)
+- [spawn_guarded_worker](spawn_guarded_worker.md) (2 shared connections)
+- [.Reg State() Vendor()](Reg_State_Vendor.md) (2 shared connections)
 
 ## Source Files
 
+- `src/app.rs`
 - `src/core/backend.rs`
+- `src/tools/cleaner.rs`
+- `tests/tweak_sandbox_e2e.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 125 (97%)
-- INFERRED: 4 (3%)
+- EXTRACTED: 145 (100%)
+- INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 
 ---

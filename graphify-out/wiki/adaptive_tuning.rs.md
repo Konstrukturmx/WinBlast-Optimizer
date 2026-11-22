@@ -1,23 +1,28 @@
 # adaptive_tuning.rs
 
-> 7 nodes · cohesion 0.29
+> 9 nodes · cohesion 0.31
 
 ## Key Concepts
 
-- **DriverUpdateState** (11 connections) — `src/hardware/driver_update.rs`
-- **Downloading** (1 connections) — `src/hardware/driver_update.rs`
-- **Installed** (1 connections) — `src/hardware/driver_update.rs`
-- **Installing** (1 connections) — `src/hardware/driver_update.rs`
-- **ReadyToInstall** (1 connections) — `src/hardware/driver_update.rs`
-- **UpdateAvailable** (1 connections) — `src/hardware/driver_update.rs`
-- **UpToDate** (1 connections) — `src/hardware/driver_update.rs`
+- **DriverUpdateItem** (16 connections) — `src/hardware/driver_update.rs`
+- **scan_online_drivers_with_progress()** (7 connections) — `src/hardware/driver_update.rs`
+- **create_sandbox_test_item()** (5 connections) — `src/hardware/driver_update.rs`
+- **download_and_install_driver()** (5 connections) — `src/hardware/driver_update.rs`
+- **scan_online_drivers()** (4 connections) — `src/hardware/driver_update.rs`
+- **test_driver_sandbox_lifecycle()** (4 connections) — `src/hardware/driver_update.rs`
+- **test_create_sandbox_item_metadata()** (2 connections) — `src/hardware/driver_update.rs`
+- **test_driver_sandbox_lifecycle_execution()** (2 connections) — `src/hardware/driver_update.rs`
+- **.is_update_available()** (1 connections) — `src/hardware/driver_update.rs`
 
 ## Relationships
 
-- [RegRawSnapshot](RegRawSnapshot.md) (2 shared connections)
-- [lazy_loader.rs](lazy_loader.rs.md) (1 shared connections)
-- [elevation.rs](elevation.rs.md) (1 shared connections)
-- [SandboxEnv](SandboxEnv.md) (1 shared connections)
+- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (10 shared connections)
+- [Runtime](Runtime.md) (6 shared connections)
+- [driver_update.rs](driver_update.rs.md) (3 shared connections)
+- [TaskCache](TaskCache.md) (2 shared connections)
+- [SlowScanBackend](SlowScanBackend.md) (1 shared connections)
+- [Disk Cleaning & Temporary File Purger](Disk_Cleaning_&_Temporary_File_Purger.md) (1 shared connections)
+- [startup.rs](startup.rs.md) (1 shared connections)
 
 ## Source Files
 
@@ -25,8 +30,8 @@
 
 ## Audit Trail
 
-- EXTRACTED: 11 (100%)
-- INFERRED: 0 (0%)
+- EXTRACTED: 33 (94%)
+- INFERRED: 2 (6%)
 - AMBIGUOUS: 0 (0%)
 
 ---

@@ -1,39 +1,49 @@
 # FeatureInstallState
 
-> 15 nodes · cohesion 0.19
+> 15 nodes · cohesion 0.21
 
 ## Key Concepts
 
-- **boot_config.rs** (12 connections) — `src/tools/boot_config.rs`
-- **BootMenuPolicyResult** (7 connections) — `src/tools/boot_config.rs`
-- **apply_legacy_f8_boot_menu()** (6 connections) — `src/tools/boot_config.rs`
-- **BitLockerProtectionState** (5 connections) — `src/tools/boot_config.rs`
-- **restore_standard_boot_menu()** (4 connections) — `src/tools/boot_config.rs`
-- **query_system_drive_bitlocker_state()** (3 connections) — `src/tools/boot_config.rs`
-- **B** (2 connections)
-- **test_bitlocker_state_guards_legacy_boot()** (2 connections) — `src/tools/boot_config.rs`
-- **Indeterminate** (1 connections) — `src/tools/boot_config.rs`
-- **ProtectedOn** (1 connections) — `src/tools/boot_config.rs`
-- **ProtectionOff** (1 connections) — `src/tools/boot_config.rs`
-- **AppliedLegacy** (1 connections) — `src/tools/boot_config.rs`
-- **RestoredStandard** (1 connections) — `src/tools/boot_config.rs`
-- **SkippedBitLockerActive** (1 connections) — `src/tools/boot_config.rs`
-- **SkippedBitLockerIndeterminate** (1 connections) — `src/tools/boot_config.rs`
+- **CpuInfo** (13 connections) — `src/hardware/cpu.rs`
+- **cpu.rs** (9 connections) — `src/hardware/cpu.rs`
+- **query_win32_core_topology()** (5 connections) — `src/hardware/cpu.rs`
+- **classify_efficiency_records()** (4 connections) — `src/hardware/cpu.rs`
+- **System** (4 connections)
+- **.detect_cpu()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.detect()** (3 connections) — `src/hardware/cpu.rs`
+- **Win32CoreTopology** (3 connections) — `src/hardware/cpu.rs`
+- **.detect_cpu()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.detect_cpu()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.detect_cpu()** (2 connections) — `src/core/backend.rs`
+- **.detect_cpu()** (2 connections) — `src/core/backend.rs`
+- **test_classify_efficiency_records_hybrid_and_non_ht_and_uniform()** (2 connections) — `src/hardware/cpu.rs`
+- **test_cpu_detect_host_safe()** (2 connections) — `src/hardware/cpu.rs`
+- **cpuid** (1 connections)
 
 ## Relationships
 
-- [parking.rs](parking.rs.md) (4 shared connections)
-- [Reversibility Instant Requireslogoff](Reversibility_Instant_Requireslogoff.md) (2 shared connections)
-- [full_telemetry_audit_with](full_telemetry_audit_with.md) (1 shared connections)
-- [startup.rs](startup.rs.md) (1 shared connections)
+- [Integration Suite: Tweak Sandbox E2E](Integration_Suite-_Tweak_Sandbox_E2E.md) (2 shared connections)
+- [driver_update.rs](driver_update.rs.md) (1 shared connections)
+- [FailAtMutationBackend](FailAtMutationBackend.md) (1 shared connections)
+- [ui_scrollbar_test.rs](ui_scrollbar_test.rs.md) (1 shared connections)
+- [PlatformSecurityInfo](PlatformSecurityInfo.md) (1 shared connections)
+- [Disk Cleaning & Temporary File Purger](Disk_Cleaning_&_Temporary_File_Purger.md) (1 shared connections)
+- [app.rs](app.rs.md) (1 shared connections)
+- [backend.rs](backend.rs.md) (1 shared connections)
+- [in_progress_hud.rs](in_progress_hud.rs.md) (1 shared connections)
+- [WinBlastError](WinBlastError.md) (1 shared connections)
+- [advanced_matrix.rs](advanced_matrix.rs.md) (1 shared connections)
+- [clean_exe_path](clean_exe_path.md) (1 shared connections)
 
 ## Source Files
 
-- `src/tools/boot_config.rs`
+- `src/core/backend.rs`
+- `src/hardware/cpu.rs`
+- `tests/tweak_sandbox_e2e.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 28 (100%)
+- EXTRACTED: 38 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

@@ -1,62 +1,57 @@
 # theme.rs
 
-> 51 nodes · cohesion 0.06
+> 46 nodes · cohesion 0.07
 
 ## Key Concepts
 
-- **tweak_sandbox_e2e.rs** (107 connections) — `tests/tweak_sandbox_e2e.rs`
-- **load_embedded_rules()** (46 connections) — `src/core/risk.rs`
-- **drain_until()** (14 connections) — `tests/tweak_sandbox_e2e.rs`
-- **test_wave1_compound_actions_deep_edge_cases()** (13 connections) — `tests/tweak_sandbox_e2e.rs`
-- **make_synth_tweak()** (8 connections) — `tests/tweak_sandbox_e2e.rs`
-- **test_atomic_partial_failure_rollback_and_partially_optimized_lifecycle()** (8 connections) — `tests/tweak_sandbox_e2e.rs`
-- **test_wave1_presets_policy_locked_winget_appx_and_autounattend_permutations()** (7 connections) — `tests/tweak_sandbox_e2e.rs`
-- **test_iso_25010_fault_tolerance_concurrency_and_corruption_recovery()** (6 connections) — `tests/tweak_sandbox_e2e.rs`
-- **test_catalog_integrity_audit()** (5 connections) — `tests/tweak_sandbox_e2e.rs`
-- **test_tools_appx_hosts_and_autounattend_edge_cases()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
-- **test_worker_panic_recovery_releases_all_inflight_flags()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
-- **test_unorthodox_concurrent_worker_event_stress()** (3 connections) — `tests/edge_cases_unorthodox.rs`
-- **test_real_backend_readonly_live_host_audit()** (3 connections) — `tests/real_windows_env.rs`
-- **.new()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.drop()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **normalize_task_path()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.new()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **test_app_state_export_import_profile_staging_sync()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **test_app_state_instant_mode_error_unlocks_in_flight_tweaks()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **test_app_state_normal_mode_low_build_select_all_and_batch_apply()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **test_mode_transitions_select_all_and_diff_modal_separation()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **test_sandbox_clean_apps_startup_features_power_and_autounattend()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **tweaks_scope_overlap()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **HkcuScratchGuard** (2 connections) — `tests/tweak_sandbox_e2e.rs`
-- **test_iso_29119_automation_engine_workflows()** (2 connections) — `tests/tweak_sandbox_e2e.rs`
-- *... and 26 more nodes in this community*
+- **status_i18n.rs** (59 connections) — `src/core/status_i18n.rs`
+- **localize_status()** (14 connections) — `src/core/status_i18n.rs`
+- **localize_scan_detail()** (12 connections) — `src/core/status_i18n.rs`
+- **pick()** (12 connections) — `src/core/status_i18n.rs`
+- **localize_feature_install_state()** (6 connections) — `src/core/status_i18n.rs`
+- **fmt1()** (5 connections) — `src/core/status_i18n.rs`
+- **fmt2()** (5 connections) — `src/core/status_i18n.rs`
+- **fmt3()** (5 connections) — `src/core/status_i18n.rs`
+- **localize_error_text()** (5 connections) — `src/core/status_i18n.rs`
+- **localize_service_start_mode()** (5 connections) — `src/core/status_i18n.rs`
+- **localize_task_active_label()** (4 connections) — `src/core/status_i18n.rs`
+- **test_localize_error_text_prefixes()** (2 connections) — `src/core/status_i18n.rs`
+- **test_scan_detail_all_languages()** (2 connections) — `src/core/status_i18n.rs`
+- **ADMIN_RUN_MSG** (1 connections) — `src/core/status_i18n.rs`
+- **ERROR_PREFIX_TABLE** (1 connections) — `src/core/status_i18n.rs`
+- **KFM_REDIRECT_MSG** (1 connections) — `src/core/status_i18n.rs`
+- **POLICY_LOCKED_LABEL** (1 connections) — `src/core/status_i18n.rs`
+- **STATIC_APPX_SCANNING** (1 connections) — `src/core/status_i18n.rs`
+- **STATIC_BASELINE_RESET_OK** (1 connections) — `src/core/status_i18n.rs`
+- **STATIC_BASELINE_RESETTING** (1 connections) — `src/core/status_i18n.rs`
+- **STATIC_CHANGELOG_CLEARED** (1 connections) — `src/core/status_i18n.rs`
+- **STATIC_DESELECTED_ALL** (1 connections) — `src/core/status_i18n.rs`
+- **STATIC_DISK_SCANNING** (1 connections) — `src/core/status_i18n.rs`
+- **STATIC_EDGE_REMOVED** (1 connections) — `src/core/status_i18n.rs`
+- **STATIC_EXPLORER_RESTARTED** (1 connections) — `src/core/status_i18n.rs`
+- *... and 21 more nodes in this community*
 
 ## Relationships
 
-- [Win32 Registry Scanner & Mutator](Win32_Registry_Scanner_&_Mutator.md) (18 shared connections)
-- [sys_inventory.rs](sys_inventory.rs.md) (10 shared connections)
-- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (9 shared connections)
-- [SlowScanBackend](SlowScanBackend.md) (9 shared connections)
-- [ps_runner.rs](ps_runner.rs.md) (6 shared connections)
-- [Scandetailkind Appxinstalled Appxinstalledps](Scandetailkind_Appxinstalled_Appxinstalledps.md) (4 shared connections)
-- [svc_mutator.rs](svc_mutator.rs.md) (4 shared connections)
-- [clean_apps.rs](clean_apps.rs.md) (4 shared connections)
-- [TaskCache](TaskCache.md) (4 shared connections)
-- [enums](enums.md) (3 shared connections)
-- [backend.rs](backend.rs.md) (3 shared connections)
-- [.poll](poll.md) (3 shared connections)
+- [app.rs](app.rs.md) (16 shared connections)
+- [test_status_i18n_all_languages_and_core_specs](test_status_i18n_all_languages_and_core_specs.md) (4 shared connections)
+- [ui_scrollbar_test.rs](ui_scrollbar_test.rs.md) (2 shared connections)
+- [task_scanner.rs](task_scanner.rs.md) (2 shared connections)
+- [astar.rs](astar.rs.md) (2 shared connections)
+- [spawn_guarded_worker](spawn_guarded_worker.md) (2 shared connections)
+- [features_apps.rs](features_apps.rs.md) (2 shared connections)
+- [Core UI Internationalization & Text Catalog](Core_UI_Internationalization_&_Text_Catalog.md) (1 shared connections)
+- [RegStringValue](RegStringValue.md) (1 shared connections)
+- [GPU Silicon & Hardware Tuning Policies](GPU_Silicon_&_Hardware_Tuning_Policies.md) (1 shared connections)
 
 ## Source Files
 
-- `src/core/risk.rs`
-- `tests/edge_cases_unorthodox.rs`
-- `tests/real_windows_env.rs`
-- `tests/tweak_sandbox_e2e.rs`
+- `src/core/status_i18n.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 165 (78%)
-- INFERRED: 47 (22%)
+- EXTRACTED: 101 (100%)
+- INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 
 ---

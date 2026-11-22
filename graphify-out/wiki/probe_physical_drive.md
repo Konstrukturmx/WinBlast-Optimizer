@@ -1,33 +1,59 @@
 # probe_physical_drive
 
-> 10 nodes · cohesion 0.20
+> 25 nodes · cohesion 0.09
 
 ## Key Concepts
 
-- **assets/rules/registry_lag.toml** (11 connections) — `Project WinBlast0 Project Structure.md`
-- **1\. Domain Model & Risk Valuation Engine**** (1 connections) — `Project WinBlast0 Project Structure.md`
-- **2\. Declarative Rule Format**** (1 connections) — `Project WinBlast0 Project Structure.md`
-- **3\. Hardware GPU MSI Mode & Priority Optimizer Logic**** (1 connections) — `Project WinBlast0 Project Structure.md`
-- **4\. Auto-Elevation Manifest Setup**** (1 connections) — `Project WinBlast0 Project Structure.md`
-- **Architectural Enhancements**** (1 connections) — `Project WinBlast0 Project Structure.md`
-- **Core Architecture & Code Blueprint**** (1 connections) — `Project WinBlast0 Project Structure.md`
-- **Project Directory Structure**** (1 connections) — `Project WinBlast0 Project Structure.md`
-- **Project WinBlast0**** (1 connections) — `Project WinBlast0 Project Structure.md`
-- **Recommended Rust Tech Stack**** (1 connections) — `Project WinBlast0 Project Structure.md`
+- **CoreEvent** (21 connections) — `src/core/events.rs`
+- **events.rs** (9 connections) — `src/core/events.rs`
+- **duration** (7 connections)
+- **ToastSeverity** (6 connections) — `src/core/events.rs`
+- **AutoTuneResult** (6 connections) — `src/tools/automation.rs`
+- **ToastNotification** (3 connections) — `src/core/events.rs`
+- **TelemetryTickData** (2 connections) — `src/core/events.rs`
+- **AutoTuneCompleted** (1 connections) — `src/core/events.rs`
+- **BiosInfoLoaded** (1 connections) — `src/core/events.rs`
+- **CleanerCleanCompleted** (1 connections) — `src/core/events.rs`
+- **CleanerScanCompleted** (1 connections) — `src/core/events.rs`
+- **DiskReportLoaded** (1 connections) — `src/core/events.rs`
+- **DriverScanCompleted** (1 connections) — `src/core/events.rs`
+- **HealthScoreUpdated** (1 connections) — `src/core/events.rs`
+- **LogAppended** (1 connections) — `src/core/events.rs`
+- **ScanCompleted** (1 connections) — `src/core/events.rs`
+- **StartupBatchCompleted** (1 connections) — `src/core/events.rs`
+- **TasksBatchCompleted** (1 connections) — `src/core/events.rs`
+- **Telemetry** (1 connections) — `src/core/events.rs`
+- **ThermalSnapshotLoaded** (1 connections) — `src/core/events.rs`
+- **Toast** (1 connections) — `src/core/events.rs`
+- **Error** (1 connections) — `src/core/events.rs`
+- **Info** (1 connections) — `src/core/events.rs`
+- **Success** (1 connections) — `src/core/events.rs`
+- **Warning** (1 connections) — `src/core/events.rs`
 
 ## Relationships
 
-- [Win32 Registry Scanner & Mutator](Win32_Registry_Scanner_&_Mutator.md) (1 shared connections)
+- [deserialize](deserialize.md) (2 shared connections)
+- [sysprep_engine.rs](sysprep_engine.rs.md) (2 shared connections)
+- [.setup](setup.md) (2 shared connections)
+- [AppState](AppState.md) (1 shared connections)
+- [driver_update.rs](driver_update.rs.md) (1 shared connections)
+- [ps_runner.rs](ps_runner.rs.md) (1 shared connections)
+- [Project Documentation, Architecture & Licensing](Project_Documentation,_Architecture_&_Licensing.md) (1 shared connections)
+- [appx_scanner.rs](appx_scanner.rs.md) (1 shared connections)
+- [in_progress_hud.rs](in_progress_hud.rs.md) (1 shared connections)
 - [WorkerEvent](WorkerEvent.md) (1 shared connections)
+- [RestorePoint](RestorePoint.md) (1 shared connections)
+- [Disk Cleaning & Temporary File Purger](Disk_Cleaning_&_Temporary_File_Purger.md) (1 shared connections)
 
 ## Source Files
 
-- `Project WinBlast0 Project Structure.md`
+- `src/core/events.rs`
+- `src/tools/automation.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 11 (100%)
-- INFERRED: 0 (0%)
+- EXTRACTED: 42 (95%)
+- INFERRED: 2 (5%)
 - AMBIGUOUS: 0 (0%)
 
 ---

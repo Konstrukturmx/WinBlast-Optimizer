@@ -1,62 +1,62 @@
 # .Reg State() Vendor()
 
-> 36 nodes · cohesion 0.06
+> 32 nodes · cohesion 0.17
 
 ## Key Concepts
 
-- **ActiveView** (44 connections) — `src/app.rs`
-- **.nav_prev_view()** (3 connections) — `src/app.rs`
-- **AdvancedMatrix** (2 connections) — `src/app.rs`
-- **CoreParking** (2 connections) — `src/app.rs`
-- **EasyDashboard** (2 connections) — `src/app.rs`
-- **GpuTuning** (2 connections) — `src/app.rs`
-- **.prev()** (2 connections) — `src/app.rs`
-- **ALL_VIEWS** (2 connections) — `tests/ui_responsive_e2e.rs`
-- **Advanced Optimization Matrix UI** (1 connections) — `assets/screenshots/advanced_matrix.png`
-- **CPU Core Parking Topology Visualizer UI** (1 connections) — `assets/screenshots/cpu_parking.png`
-- **Easy Mode Telemetry Dashboard UI** (1 connections) — `assets/screenshots/dashboard.png`
-- **GPU Tuning & Vendor Gating UI** (1 connections) — `assets/screenshots/gpu_tuning.png`
-- **.ALL_VIEWS** (1 connections) — `src/app.rs`
-- **AutomationCenter** (1 connections) — `src/app.rs`
-- **BackupCenter** (1 connections) — `src/app.rs`
-- **CleanAndApps** (1 connections) — `src/app.rs`
-- **DiskHealth** (1 connections) — `src/app.rs`
-- **DriverBios** (1 connections) — `src/app.rs`
-- **FaultDiagnostics** (1 connections) — `src/app.rs`
-- **FpsBenchmark** (1 connections) — `src/app.rs`
-- **GameOverlay** (1 connections) — `src/app.rs`
-- **GamePrerequisites** (1 connections) — `src/app.rs`
-- **GameProfiles** (1 connections) — `src/app.rs`
-- **GameSuitability** (1 connections) — `src/app.rs`
-- **GamingStats** (1 connections) — `src/app.rs`
-- *... and 11 more nodes in this community*
+- **action_button_guarded()** (44 connections) — `src/ui/widgets/button.rs`
+- **clean_apps.rs** (32 connections) — `src/ui/views/clean_apps.rs`
+- **startup_tasks.rs** (28 connections) — `src/ui/views/startup_tasks.rs`
+- **pill_badge()** (22 connections) — `src/ui/widgets/button.rs`
+- **build_appx_features_body()** (13 connections) — `src/ui/views/clean_apps.rs`
+- **build_disk_cleaner_body()** (13 connections) — `src/ui/views/clean_apps.rs`
+- **build_winget_body()** (12 connections) — `src/ui/views/clean_apps.rs`
+- **build_startup_apps_list()** (12 connections) — `src/ui/views/startup_tasks.rs`
+- **view()** (12 connections) — `src/ui/views/startup_tasks.rs`
+- **view()** (10 connections) — `src/ui/views/clean_apps.rs`
+- **build_tasks_list()** (10 connections) — `src/ui/views/startup_tasks.rs`
+- **build_services_list()** (9 connections) — `src/ui/views/startup_tasks.rs`
+- **CleanAppsSubTab** (8 connections) — `src/app.rs`
+- **StartupTasksSubTab** (8 connections) — `src/app.rs`
+- **switch_indicator()** (8 connections) — `src/ui/widgets/button.rs`
+- **El** (7 connections)
+- **El** (7 connections)
+- **empty_card()** (6 connections) — `src/ui/views/clean_apps.rs`
+- **empty_card()** (6 connections) — `src/ui/views/startup_tasks.rs`
+- **sub_tab_btn()** (5 connections) — `src/ui/views/clean_apps.rs`
+- **sub_tab_btn()** (5 connections) — `src/ui/views/startup_tasks.rs`
+- **rc** (4 connections)
+- **clean_target_label()** (4 connections) — `src/ui/views/clean_apps.rs`
+- **startup_source_label()** (4 connections) — `src/ui/views/startup_tasks.rs`
+- **growthspec** (2 connections)
+- *... and 7 more nodes in this community*
 
 ## Relationships
 
-- [Runtime](Runtime.md) (3 shared connections)
-- [.Toggle .Set .Apply](Toggle_.Set_.Apply.md) (2 shared connections)
-- [advanced_matrix.rs](advanced_matrix.rs.md) (2 shared connections)
-- [updater.rs](updater.rs.md) (2 shared connections)
-- [Scandetailkind Appxinstalled Appxinstalledps](Scandetailkind_Appxinstalled_Appxinstalledps.md) (2 shared connections)
-- [AppxCache](AppxCache.md) (2 shared connections)
-- [WinBlastError](WinBlastError.md) (1 shared connections)
-- [task_scanner.rs](task_scanner.rs.md) (1 shared connections)
-- [enums](enums.md) (1 shared connections)
-- [SlowScanBackend](SlowScanBackend.md) (1 shared connections)
+- [features_apps.rs](features_apps.rs.md) (37 shared connections)
+- [clean_apps.rs](clean_apps.rs.md) (34 shared connections)
+- [RealBackend](RealBackend.md) (18 shared connections)
+- [Disk Cleaning & Temporary File Purger](Disk_Cleaning_&_Temporary_File_Purger.md) (15 shared connections)
+- [app.rs](app.rs.md) (5 shared connections)
+- [WinBlastScrollable](WinBlastScrollable.md) (4 shared connections)
+- [enums](enums.md) (4 shared connections)
+- [parse_guid](parse_guid.md) (2 shared connections)
+- [ui_scrollbar_test.rs](ui_scrollbar_test.rs.md) (2 shared connections)
+- [Core UI Internationalization & Text Catalog](Core_UI_Internationalization_&_Text_Catalog.md) (2 shared connections)
+- [power.rs](power.rs.md) (2 shared connections)
+- [Item](Item.md) (2 shared connections)
 
 ## Source Files
 
-- `assets/screenshots/advanced_matrix.png`
-- `assets/screenshots/cpu_parking.png`
-- `assets/screenshots/dashboard.png`
-- `assets/screenshots/gpu_tuning.png`
 - `src/app.rs`
-- `tests/ui_responsive_e2e.rs`
+- `src/ui/views/clean_apps.rs`
+- `src/ui/views/startup_tasks.rs`
+- `src/ui/widgets/button.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 52 (100%)
-- INFERRED: 0 (0%)
+- EXTRACTED: 172 (80%)
+- INFERRED: 44 (20%)
 - AMBIGUOUS: 0 (0%)
 
 ---

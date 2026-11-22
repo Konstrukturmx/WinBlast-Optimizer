@@ -1,59 +1,58 @@
 # sys_inventory.rs
 
-> 60 nodes · cohesion 0.05
+> 33 nodes · cohesion 0.08
 
 ## Key Concepts
 
-- **SlowScanBackend** (85 connections) — `tests/tweak_sandbox_e2e.rs`
-- **PanickingBackend** (81 connections) — `tests/tweak_sandbox_e2e.rs`
-- **AtomicBool** (7 connections)
-- **.reg_set_raw()** (6 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.reg_set_string()** (6 connections) — `tests/tweak_sandbox_e2e.rs`
-- **test_epoch_and_stale_scan_fencing_preserves_instant_mutation()** (6 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.reg_set_raw()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.reg_delete_tree()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.reg_delete_value()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.reg_get_binary()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.reg_set_dword()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.set_service_start_type()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.write_power_setting_index()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.reg_delete_tree()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.reg_delete_value()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.reg_set_dword()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.reg_set_string()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.set_service_start_type()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.write_power_setting_index()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.broadcast_shell_settings_changed()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.check_onedrive_kfm_active()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.get_service_start_type()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.get_task_enabled()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.is_hags_enabled()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.logical_core_count()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- *... and 35 more nodes in this community*
+- **spawn_guarded_worker()** (51 connections) — `src/app.rs`
+- **.sync_clean_apps_busy()** (10 connections) — `src/app.rs`
+- **.execute_clean_selected()** (5 connections) — `src/app.rs`
+- **.scan_appx_and_features_async()** (5 connections) — `src/app.rs`
+- **WorkerDropGuard** (5 connections) — `src/app.rs`
+- **.create_restore_point()** (4 connections) — `src/app.rs`
+- **.install_selected_winget_async()** (4 connections) — `src/app.rs`
+- **.remove_edge_async()** (4 connections) — `src/app.rs`
+- **.remove_selected_appx_async()** (4 connections) — `src/app.rs`
+- **.toggle_optional_feature_async()** (4 connections) — `src/app.rs`
+- **.uninstall_onedrive_async()** (4 connections) — `src/app.rs`
+- **Waker** (4 connections)
+- **Sender** (3 connections)
+- **.block_telemetry_hosts()** (3 connections) — `src/app.rs`
+- **.restart_explorer_safely()** (3 connections) — `src/app.rs`
+- **panic_payload_to_string()** (3 connections) — `src/app.rs`
+- **OneDriveEdgeResult** (3 connections) — `src/app.rs`
+- **P** (2 connections)
+- **.activate_winblast_ultimate_power_plan()** (2 connections) — `src/app.rs`
+- **.set_active_power_plan()** (2 connections) — `src/app.rs`
+- **.toggle_gpu_msi()** (2 connections) — `src/app.rs`
+- **.toggle_hags()** (2 connections) — `src/app.rs`
+- **.toggle_hibernation()** (2 connections) — `src/app.rs`
+- **.toggle_mpo()** (2 connections) — `src/app.rs`
+- **.toggle_usb_power_saving()** (2 connections) — `src/app.rs`
+- *... and 8 more nodes in this community*
 
 ## Relationships
 
-- [WinBlast Optimizer](WinBlast_Optimizer.md) (48 shared connections)
-- [InstalledAppxPackage](InstalledAppxPackage.md) (25 shared connections)
-- [SlowScanBackend](SlowScanBackend.md) (18 shared connections)
-- [theme.rs](theme.rs.md) (10 shared connections)
-- [deserialize](deserialize.md) (4 shared connections)
-- [tools/game_overlay.rs](tools-game_overlay.rs.md) (4 shared connections)
-- [progress_bar.rs](progress_bar.rs.md) (4 shared connections)
-- [HibernationStatus](HibernationStatus.md) (4 shared connections)
-- [.poll](poll.md) (4 shared connections)
-- [features_apps.rs](features_apps.rs.md) (4 shared connections)
-- [full_telemetry_audit_with](full_telemetry_audit_with.md) (3 shared connections)
-- [State Ledger & Restore Point Engine](State_Ledger_&_Restore_Point_Engine.md) (2 shared connections)
+- [Disk Cleaning & Temporary File Purger](Disk_Cleaning_&_Temporary_File_Purger.md) (20 shared connections)
+- [startup.rs](startup.rs.md) (12 shared connections)
+- [super](super.md) (8 shared connections)
+- [WindowsOptionalFeature](WindowsOptionalFeature.md) (7 shared connections)
+- [privacy_shield.rs](privacy_shield.rs.md) (7 shared connections)
+- [PlatformSecurityInfo](PlatformSecurityInfo.md) (6 shared connections)
+- [app.rs](app.rs.md) (3 shared connections)
+- [task_scanner.rs](task_scanner.rs.md) (1 shared connections)
+- [.reset_baseline](reset_baseline.md) (1 shared connections)
+- [.rollback_entry](rollback_entry.md) (1 shared connections)
+- [.run_scan_internal](run_scan_internal.md) (1 shared connections)
 
 ## Source Files
 
-- `tests/tweak_sandbox_e2e.rs`
+- `src/app.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 248 (100%)
-- INFERRED: 1 (0%)
+- EXTRACTED: 108 (100%)
+- INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 
 ---

@@ -26,19 +26,18 @@
 - **aot_prewarm_and_zero_alloc_borrowed_reads()** (5 connections) — `src/core/generational_cache.rs`
 - **concurrent_reads_writes_and_epoch_bumps()** (5 connections) — `src/core/generational_cache.rs`
 - **.invalidate_key()** (5 connections) — `src/core/generational_cache.rs`
-- **Mutex** (4 connections)
 - **atomic_epoch_invalidation_fences_all_entries_in_o1()** (4 connections) — `src/core/generational_cache.rs`
 - **.new()** (4 connections) — `src/core/generational_cache.rs`
+- **.write()** (4 connections) — `src/core/generational_cache.rs`
 - *... and 37 more nodes in this community*
 
 ## Relationships
 
-- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (3 shared connections)
-- [sys_inventory.rs](sys_inventory.rs.md) (1 shared connections)
-- [parking.rs](parking.rs.md) (1 shared connections)
-- [.take_injected_error](take_injected_error.md) (1 shared connections)
-- [Project Documentation, Architecture & Licensing](Project_Documentation,_Architecture_&_Licensing.md) (1 shared connections)
-- [Reversibility Instant Requireslogoff](Reversibility_Instant_Requireslogoff.md) (1 shared connections)
+- [driver_update.rs](driver_update.rs.md) (2 shared connections)
+- [ui_scrollbar_test.rs](ui_scrollbar_test.rs.md) (1 shared connections)
+- [.setup](setup.md) (1 shared connections)
+- [probe_physical_drive](probe_physical_drive.md) (1 shared connections)
+- [WinBlast Optimizer — Developer & Architecture Guide](WinBlast_Optimizer_—_Developer_&_Architecture_Guide.md) (1 shared connections)
 
 ## Source Files
 
@@ -46,7 +45,7 @@
 
 ## Audit Trail
 
-- EXTRACTED: 144 (100%)
+- EXTRACTED: 142 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

@@ -1,62 +1,59 @@
 # svc_mutator.rs
 
-> 28 nodes · cohesion 0.07
+> 28 nodes · cohesion 0.11
 
 ## Key Concepts
 
-- **TweakAction** (36 connections) — `src/core/risk.rs`
-- **OptionalFeatureKind** (21 connections) — `src/core/risk.rs`
-- **PowerTargetScope** (7 connections) — `src/core/risk.rs`
-- **resolve_dynamic_dword()** (7 connections) — `src/scanner/mod.rs`
-- **DynamicDwordFormula** (6 connections) — `src/core/risk.rs`
-- **.set_optional_feature()** (3 connections) — `src/core/backend.rs`
-- **.set_optional_feature()** (3 connections) — `src/core/backend.rs`
-- **parse_feature_kind()** (3 connections) — `src/executor/engine.rs`
-- **LogicalCoreCount** (1 connections) — `src/core/risk.rs`
-- **TotalRamInKb** (1 connections) — `src/core/risk.rs`
-- **TotalRamInKbPlusMargin** (1 connections) — `src/core/risk.rs`
-- **Capability** (1 connections) — `src/core/risk.rs`
-- **OptionalFeature** (1 connections) — `src/core/risk.rs`
-- **AcAndDc** (1 connections) — `src/core/risk.rs`
-- **AcOnly** (1 connections) — `src/core/risk.rs`
-- **DcOnly** (1 connections) — `src/core/risk.rs`
-- **AppXPackage** (1 connections) — `src/core/risk.rs`
-- **CompositeStringKey** (1 connections) — `src/core/risk.rs`
-- **PowerCfgSetting** (1 connections) — `src/core/risk.rs`
-- **RegistryBinaryBit** (1 connections) — `src/core/risk.rs`
-- **RegistryDelete** (1 connections) — `src/core/risk.rs`
-- **RegistryDeleteTree** (1 connections) — `src/core/risk.rs`
-- **RegistryDword** (1 connections) — `src/core/risk.rs`
-- **RegistryDynamicDword** (1 connections) — `src/core/risk.rs`
-- **RegistryString** (1 connections) — `src/core/risk.rs`
+- **WinBlastError** (49 connections) — `src/core/error.rs`
+- **test_error_formatting()** (6 connections) — `src/core/error.rs`
+- **error.rs** (5 connections) — `src/core/error.rs`
+- **test_error_helpers()** (5 connections) — `src/core/error.rs`
+- **Registry** (5 connections) — `src/core/error.rs`
+- **.invalid_input()** (4 connections) — `src/core/error.rs`
+- **Service** (4 connections) — `src/core/error.rs`
+- **S** (3 connections)
+- **.from_reg_err()** (3 connections) — `src/core/error.rs`
+- **InvalidInput** (3 connections) — `src/core/error.rs`
+- **Com** (2 connections) — `src/core/error.rs`
+- **NtStatus** (2 connections) — `src/core/error.rs`
+- **FromSqlError** (1 connections)
+- **AppX** (1 connections) — `src/core/error.rs`
+- **Backup** (1 connections) — `src/core/error.rs`
+- **Database** (1 connections) — `src/core/error.rs`
+- **DatabaseConversion** (1 connections) — `src/core/error.rs`
+- **ElevationRequired** (1 connections) — `src/core/error.rs`
+- **Hardware** (1 connections) — `src/core/error.rs`
+- **Io** (1 connections) — `src/core/error.rs`
+- **OsIncompatible** (1 connections) — `src/core/error.rs`
+- **PowerShell** (1 connections) — `src/core/error.rs`
+- **Rollback** (1 connections) — `src/core/error.rs`
+- **ScheduledTask** (1 connections) — `src/core/error.rs`
+- **Serialization** (1 connections) — `src/core/error.rs`
 - *... and 3 more nodes in this community*
 
 ## Relationships
 
-- [clean_apps.rs](clean_apps.rs.md) (8 shared connections)
-- [Win32 Registry Scanner & Mutator](Win32_Registry_Scanner_&_Mutator.md) (6 shared connections)
-- [UiThemeStyle](UiThemeStyle.md) (4 shared connections)
-- [ps_runner.rs](ps_runner.rs.md) (4 shared connections)
-- [SlowScanBackend](SlowScanBackend.md) (4 shared connections)
-- [theme.rs](theme.rs.md) (4 shared connections)
-- [ui_scrollbar_test.rs](ui_scrollbar_test.rs.md) (4 shared connections)
-- [startup.rs](startup.rs.md) (3 shared connections)
-- [deserialize](deserialize.md) (2 shared connections)
+- [tools/game_overlay.rs](tools-game_overlay.rs.md) (3 shared connections)
+- [edge_cases_unorthodox.rs](edge_cases_unorthodox.rs.md) (3 shared connections)
+- [backend.rs](backend.rs.md) (2 shared connections)
+- [WindowsInfo](WindowsInfo.md) (2 shared connections)
 - [Project History & Release Version Ledger](Project_History_&_Release_Version_Ledger.md) (2 shared connections)
-- [Integration Suite: Tweak Sandbox E2E](Integration_Suite-_Tweak_Sandbox_E2E.md) (1 shared connections)
-- [Error.Rs Winblasterror Appx](Error.Rs_Winblasterror_Appx.md) (1 shared connections)
+- [Scandetailkind Appxinstalled Appxinstalledps](Scandetailkind_Appxinstalled_Appxinstalledps.md) (2 shared connections)
+- [ui_scrollbar_test.rs](ui_scrollbar_test.rs.md) (1 shared connections)
+- [Changelog](Changelog.md) (1 shared connections)
+- [WinBlast Optimizer](WinBlast_Optimizer.md) (1 shared connections)
+- [reg_mutator.rs](reg_mutator.rs.md) (1 shared connections)
+- [task_scanner.rs](task_scanner.rs.md) (1 shared connections)
+- [power.rs](power.rs.md) (1 shared connections)
 
 ## Source Files
 
-- `src/core/backend.rs`
-- `src/core/risk.rs`
-- `src/executor/engine.rs`
-- `src/scanner/mod.rs`
+- `src/core/error.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 77 (97%)
-- INFERRED: 2 (3%)
+- EXTRACTED: 67 (100%)
+- INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 
 ---

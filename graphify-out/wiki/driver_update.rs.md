@@ -1,58 +1,59 @@
 # driver_update.rs
 
-> 34 nodes · cohesion 0.11
+> 31 nodes · cohesion 0.07
 
 ## Key Concepts
 
-- **localize_tweak()** (16 connections) — `src/core/tweak_i18n/mod.rs`
-- **LocalizedTweakText** (16 connections) — `src/core/tweak_i18n/mod.rs`
-- **lookup()** (5 connections) — `src/core/tweak_i18n/de.rs`
-- **lookup()** (5 connections) — `src/core/tweak_i18n/es.rs`
-- **lookup()** (5 connections) — `src/core/tweak_i18n/fr.rs`
-- **lookup()** (5 connections) — `src/core/tweak_i18n/ja.rs`
-- **lookup()** (5 connections) — `src/core/tweak_i18n/ru.rs`
-- **lookup()** (5 connections) — `src/core/tweak_i18n/tr.rs`
-- **lookup()** (5 connections) — `src/core/tweak_i18n/zh.rs`
-- **de.rs** (4 connections) — `src/core/tweak_i18n/de.rs`
-- **es.rs** (4 connections) — `src/core/tweak_i18n/es.rs`
-- **fr.rs** (4 connections) — `src/core/tweak_i18n/fr.rs`
-- **ja.rs** (4 connections) — `src/core/tweak_i18n/ja.rs`
-- **ru.rs** (4 connections) — `src/core/tweak_i18n/ru.rs`
-- **tr.rs** (4 connections) — `src/core/tweak_i18n/tr.rs`
-- **zh.rs** (4 connections) — `src/core/tweak_i18n/zh.rs`
-- **test_all_230_tweaks_localized_all_7_languages()** (3 connections) — `src/core/tweak_i18n/mod.rs`
-- **.tweak_broken_features()** (2 connections) — `src/app.rs`
-- **.tweak_description()** (2 connections) — `src/app.rs`
-- **.tweak_title()** (2 connections) — `src/app.rs`
-- **tweak_description()** (2 connections) — `src/core/tweak_i18n/de.rs`
-- **tweak_title()** (2 connections) — `src/core/tweak_i18n/de.rs`
-- **tweak_description()** (2 connections) — `src/core/tweak_i18n/es.rs`
-- **tweak_title()** (2 connections) — `src/core/tweak_i18n/es.rs`
-- **tweak_description()** (2 connections) — `src/core/tweak_i18n/fr.rs`
-- *... and 9 more nodes in this community*
+- **RealBackend** (84 connections) — `src/core/backend.rs`
+- **resolve_persistent_app_dir()** (4 connections) — `src/core/backend.rs`
+- **.default_ledger_path()** (2 connections) — `src/core/backend.rs`
+- **.default_profile_path()** (2 connections) — `src/core/backend.rs`
+- **.is_hags_enabled()** (2 connections) — `src/core/backend.rs`
+- **.is_mpo_disabled()** (2 connections) — `src/core/backend.rs`
+- **.reg_delete_tree()** (2 connections) — `src/core/backend.rs`
+- **.reg_delete_value()** (2 connections) — `src/core/backend.rs`
+- **.reg_delete_value_for_vendor()** (2 connections) — `src/core/backend.rs`
+- **.reg_get_binary()** (2 connections) — `src/core/backend.rs`
+- **.reg_get_dword()** (2 connections) — `src/core/backend.rs`
+- **.reg_get_dword_for_vendor()** (2 connections) — `src/core/backend.rs`
+- **.reg_key_exists()** (2 connections) — `src/core/backend.rs`
+- **.reg_set_binary()** (2 connections) — `src/core/backend.rs`
+- **.reg_set_dword()** (2 connections) — `src/core/backend.rs`
+- **.reg_set_dword_for_vendor()** (2 connections) — `src/core/backend.rs`
+- **.reg_set_string()** (2 connections) — `src/core/backend.rs`
+- **.remove_edge_preserve_webview2()** (2 connections) — `src/core/backend.rs`
+- **.set_gpu_msi_mode()** (2 connections) — `src/core/backend.rs`
+- **.set_hags()** (2 connections) — `src/core/backend.rs`
+- **.set_mpo_disabled()** (2 connections) — `src/core/backend.rs`
+- **.set_startup_entry_enabled_by_id()** (2 connections) — `src/core/backend.rs`
+- **.winget_install_package()** (2 connections) — `src/core/backend.rs`
+- **.drop()** (2 connections) — `src/core/backend.rs`
+- **is_hags_enabled()** (2 connections) — `src/hardware/gpu.rs`
+- *... and 6 more nodes in this community*
 
 ## Relationships
 
-- [RealBackend](RealBackend.md) (5 shared connections)
-- [.Toggle .Set .Apply](Toggle_.Set_.Apply.md) (3 shared connections)
-- [FailAtMutationBackend](FailAtMutationBackend.md) (1 shared connections)
-- [theme.rs](theme.rs.md) (1 shared connections)
+- [task_scanner.rs](task_scanner.rs.md) (7 shared connections)
+- [Changelog](Changelog.md) (7 shared connections)
+- [app.rs](app.rs.md) (6 shared connections)
+- [parking.rs](parking.rs.md) (6 shared connections)
+- [normalize_guid_str](normalize_guid_str.md) (4 shared connections)
+- [AutoTuneProfile](AutoTuneProfile.md) (4 shared connections)
+- [reg_mutator.rs](reg_mutator.rs.md) (4 shared connections)
+- [backend.rs](backend.rs.md) (3 shared connections)
+- [features_apps.rs](features_apps.rs.md) (3 shared connections)
+- [.all_physical](all_physical.md) (2 shared connections)
+- [adaptive_tuning.rs](adaptive_tuning.rs.md) (2 shared connections)
+- [UiThemeStyle](UiThemeStyle.md) (2 shared connections)
 
 ## Source Files
 
-- `src/app.rs`
-- `src/core/tweak_i18n/de.rs`
-- `src/core/tweak_i18n/es.rs`
-- `src/core/tweak_i18n/fr.rs`
-- `src/core/tweak_i18n/ja.rs`
-- `src/core/tweak_i18n/mod.rs`
-- `src/core/tweak_i18n/ru.rs`
-- `src/core/tweak_i18n/tr.rs`
-- `src/core/tweak_i18n/zh.rs`
+- `src/core/backend.rs`
+- `src/hardware/gpu.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 70 (99%)
+- EXTRACTED: 112 (99%)
 - INFERRED: 1 (1%)
 - AMBIGUOUS: 0 (0%)
 

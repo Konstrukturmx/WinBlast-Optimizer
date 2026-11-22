@@ -1,62 +1,46 @@
 # updater.rs
 
-> 27 nodes · cohesion 0.23
+> 15 nodes · cohesion 0.21
 
 ## Key Concepts
 
-- **ThemePalette** (88 connections) — `src/ui/theme.rs`
-- **easy_dashboard.rs** (31 connections) — `src/ui/views/easy_dashboard.rs`
-- **view()** (16 connections) — `src/ui/views/easy_dashboard.rs`
-- **progress_bar.rs** (14 connections) — `src/ui/widgets/progress_bar.rs`
-- **El** (11 connections)
-- **rgb()** (10 connections) — `src/ui/theme.rs`
-- **progress_bar_styled()** (8 connections) — `src/ui/widgets/progress_bar.rs`
-- **before_after_card()** (7 connections) — `src/ui/views/easy_dashboard.rs`
-- **quick_actions_card()** (7 connections) — `src/ui/views/easy_dashboard.rs`
-- **admin_warning_banner()** (6 connections) — `src/ui/views/easy_dashboard.rs`
-- **live_telemetry_card()** (6 connections) — `src/ui/views/easy_dashboard.rs`
-- **quick_action_card()** (6 connections) — `src/ui/views/easy_dashboard.rs`
-- **score_ring_badge()** (6 connections) — `src/ui/views/easy_dashboard.rs`
-- **updater_status_card()** (6 connections) — `src/ui/views/easy_dashboard.rs`
-- **Color** (6 connections)
-- **El** (6 connections)
-- **.card_fill_styled()** (5 connections) — `src/ui/theme.rs`
-- **hardware_overview_card()** (5 connections) — `src/ui/views/easy_dashboard.rs`
-- **optimization_categories_summary()** (5 connections) — `src/ui/views/easy_dashboard.rs`
-- **progress_bar()** (5 connections) — `src/ui/widgets/progress_bar.rs`
-- **progress_bar_labeled()** (5 connections) — `src/ui/widgets/progress_bar.rs`
-- **BeforeAfterImpact** (4 connections) — `src/app.rs`
-- **health_color()** (4 connections) — `src/ui/views/easy_dashboard.rs`
-- **progress_bar_indeterminate()** (4 connections) — `src/ui/widgets/progress_bar.rs`
-- **progress_bar_segmented()** (4 connections) — `src/ui/widgets/progress_bar.rs`
-- *... and 2 more nodes in this community*
+- **updater.rs** (21 connections) — `src/core/updater.rs`
+- **ReleaseInfo** (5 connections) — `src/core/updater.rs`
+- **check_latest_release()** (4 connections) — `src/core/updater.rs`
+- **clean_exe_path()** (4 connections) — `src/core/updater.rs`
+- **is_version_newer()** (4 connections) — `src/core/updater.rs`
+- **apply_and_restart()** (3 connections) — `src/core/updater.rs`
+- **fetch_url_json()** (2 connections) — `src/core/updater.rs`
+- **GhAsset** (2 connections) — `src/core/updater.rs`
+- **GhRelease** (2 connections) — `src/core/updater.rs`
+- **test_clean_windows_exe_path()** (2 connections) — `src/core/updater.rs`
+- **test_release_info_structure()** (2 connections) — `src/core/updater.rs`
+- **test_version_comparison_logic()** (2 connections) — `src/core/updater.rs`
+- **download_release_asset()** (1 connections) — `src/core/updater.rs`
+- **FALLBACK_REPO** (1 connections) — `src/core/updater.rs`
+- **GITHUB_REPO** (1 connections) — `src/core/updater.rs`
 
 ## Relationships
 
-- [task_scanner.rs](task_scanner.rs.md) (20 shared connections)
-- [.Toggle .Set .Apply](Toggle_.Set_.Apply.md) (13 shared connections)
-- [elevation.rs](elevation.rs.md) (13 shared connections)
-- [WinBlastError](WinBlastError.md) (12 shared connections)
-- [backend.rs](backend.rs.md) (11 shared connections)
-- [PlatformSecurityInfo](PlatformSecurityInfo.md) (8 shared connections)
-- [advanced_matrix.rs](advanced_matrix.rs.md) (7 shared connections)
-- [Language](Language.md) (7 shared connections)
-- [ui_scrollbar_test.rs](ui_scrollbar_test.rs.md) (6 shared connections)
-- [driver_update.rs](driver_update.rs.md) (5 shared connections)
-- [Dynamicdwordformula Logicalcorecount Totalraminkb](Dynamicdwordformula_Logicalcorecount_Totalraminkb.md) (5 shared connections)
-- [RegTreeSnapshot](RegTreeSnapshot.md) (3 shared connections)
+- [UpdateState](UpdateState.md) (2 shared connections)
+- [Low-Level NT Core & Kernel Architecture](Low-Level_NT_Core_&_Kernel_Architecture.md) (2 shared connections)
+- [ui_scrollbar_test.rs](ui_scrollbar_test.rs.md) (1 shared connections)
+- [progress_bar.rs](progress_bar.rs.md) (1 shared connections)
+- [deserialize](deserialize.md) (1 shared connections)
+- [WinBlast Optimizer — Developer & Architecture Guide](WinBlast_Optimizer_—_Developer_&_Architecture_Guide.md) (1 shared connections)
+- [path](path.md) (1 shared connections)
+- [Reversibility Instant Requireslogoff](Reversibility_Instant_Requireslogoff.md) (1 shared connections)
+- [UpdateStatus](UpdateStatus.md) (1 shared connections)
+- [startup.rs](startup.rs.md) (1 shared connections)
 
 ## Source Files
 
-- `src/app.rs`
-- `src/ui/theme.rs`
-- `src/ui/views/easy_dashboard.rs`
-- `src/ui/widgets/progress_bar.rs`
+- `src/core/updater.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 191 (95%)
-- INFERRED: 11 (5%)
+- EXTRACTED: 29 (85%)
+- INFERRED: 5 (15%)
 - AMBIGUOUS: 0 (0%)
 
 ---

@@ -1,47 +1,49 @@
 # WorkerEvent
 
-> 20 nodes · cohesion 0.26
+> 15 nodes · cohesion 0.16
 
 ## Key Concepts
 
-- **parse_guid()** (11 connections) — `src/hardware/power.rs`
-- **create_and_activate_performance_plan()** (10 connections) — `src/hardware/power.rs`
-- **normalize_guid_str()** (10 connections) — `src/hardware/power.rs`
-- **write_power_setting_index()** (10 connections) — `src/hardware/power.rs`
-- **get_active_power_scheme()** (9 connections) — `src/hardware/power.rs`
-- **read_power_setting_index()** (9 connections) — `src/hardware/power.rs`
-- **list_power_schemes()** (8 connections) — `src/hardware/power.rs`
-- **map_win32_err()** (8 connections) — `src/hardware/power.rs`
-- **WIN32_ERROR** (8 connections)
-- **resolve_scheme()** (7 connections) — `src/hardware/power.rs`
-- **unlock_power_setting_range_if_clamped()** (7 connections) — `src/hardware/power.rs`
-- **format_guid()** (6 connections) — `src/hardware/power.rs`
-- **GUID** (5 connections)
-- **set_active_power_scheme()** (5 connections) — `src/hardware/power.rs`
-- **test_ac_power_status_and_enumerated_range_noop()** (5 connections) — `src/hardware/power.rs`
-- **LocalGuidPtr** (4 connections) — `src/hardware/power.rs`
-- **test_guid_roundtrip_and_normalization()** (4 connections) — `src/hardware/power.rs`
-- **set_usb_root_hub_power_saving()** (3 connections) — `src/hardware/power.rs`
-- **test_power_scheme_enumeration_nonblocking()** (3 connections) — `src/hardware/power.rs`
-- **.drop()** (1 connections) — `src/hardware/power.rs`
+- **AutoTuneProfile** (20 connections) — `src/tools/automation.rs`
+- **create_auto_tune_plan()** (10 connections) — `src/tools/automation.rs`
+- **AutoTunePlan** (4 connections) — `src/tools/automation.rs`
+- **.target_risk_level()** (4 connections) — `src/tools/automation.rs`
+- **test_iso_29119_auto_tune_plan_generation_all_profiles()** (4 connections) — `src/tools/automation.rs`
+- **.generate_auto_tune_plan()** (2 connections) — `src/app.rs`
+- **test_preset_alignment_with_autotune_profiles()** (2 connections) — `tests/selection_automation_e2e.rs`
+- **.all()** (1 connections) — `src/tools/automation.rs`
+- **.description()** (1 connections) — `src/tools/automation.rs`
+- **.display_name()** (1 connections) — `src/tools/automation.rs`
+- **GamingLowLatency** (1 connections) — `src/tools/automation.rs`
+- **.icon()** (1 connections) — `src/tools/automation.rs`
+- **LaptopBatterySaving** (1 connections) — `src/tools/automation.rs`
+- **ProAudioDpc** (1 connections) — `src/tools/automation.rs`
+- **WorkstationStability** (1 connections) — `src/tools/automation.rs`
 
 ## Relationships
 
-- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (24 shared connections)
-- [clean_apps.rs](clean_apps.rs.md) (4 shared connections)
-- [edge_cases_unorthodox.rs](edge_cases_unorthodox.rs.md) (2 shared connections)
-- [HibernationStatus](HibernationStatus.md) (1 shared connections)
-- [parking.rs](parking.rs.md) (1 shared connections)
-- [theme.rs](theme.rs.md) (1 shared connections)
+- [RestorePoint](RestorePoint.md) (4 shared connections)
+- [Disk Cleaning & Temporary File Purger](Disk_Cleaning_&_Temporary_File_Purger.md) (3 shared connections)
+- [features_apps.rs](features_apps.rs.md) (3 shared connections)
+- [selection_automation_e2e.rs](selection_automation_e2e.rs.md) (3 shared connections)
+- [full_telemetry_audit_with](full_telemetry_audit_with.md) (1 shared connections)
+- [probe_physical_drive](probe_physical_drive.md) (1 shared connections)
+- [Reversibility Instant Requireslogoff](Reversibility_Instant_Requireslogoff.md) (1 shared connections)
+- [super](super.md) (1 shared connections)
+- [.maybe_arm_error](maybe_arm_error.md) (1 shared connections)
+- [registry_scanner.rs](registry_scanner.rs.md) (1 shared connections)
+- [in_progress_hud.rs](in_progress_hud.rs.md) (1 shared connections)
 
 ## Source Files
 
-- `src/hardware/power.rs`
+- `src/app.rs`
+- `src/tools/automation.rs`
+- `tests/selection_automation_e2e.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 78 (94%)
-- INFERRED: 5 (6%)
+- EXTRACTED: 30 (81%)
+- INFERRED: 7 (19%)
 - AMBIGUOUS: 0 (0%)
 
 ---

@@ -1,50 +1,41 @@
 # edge_cases_unorthodox.rs
 
-> 15 nodes · cohesion 0.18
+> 15 nodes · cohesion 0.19
 
 ## Key Concepts
 
-- **CoreParkingState** (20 connections) — `src/hardware/parking.rs`
-- **.detect_internal()** (7 connections) — `src/hardware/parking.rs`
-- **.detect_core_parking()** (5 connections) — `src/core/backend.rs`
-- **.detect_core_parking()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.detect_core_parking_sampled()** (3 connections) — `src/core/backend.rs`
-- **.detect()** (3 connections) — `src/hardware/parking.rs`
-- **CoreStatus** (3 connections) — `src/hardware/parking.rs`
-- **is_on_ac_power()** (3 connections) — `src/hardware/power.rs`
-- **.detect_core_parking()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.detect_core_parking()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.detect_core_parking()** (2 connections) — `src/core/backend.rs`
-- **.detect_core_parking_sampled()** (2 connections) — `src/core/backend.rs`
-- **.detect_core_parking()** (2 connections) — `src/core/backend.rs`
-- **.detect_sampled()** (2 connections) — `src/hardware/parking.rs`
-- **test_core_parking_detect()** (2 connections) — `src/hardware/parking.rs`
+- **boot_config.rs** (12 connections) — `src/tools/boot_config.rs`
+- **BootMenuPolicyResult** (7 connections) — `src/tools/boot_config.rs`
+- **apply_legacy_f8_boot_menu()** (6 connections) — `src/tools/boot_config.rs`
+- **BitLockerProtectionState** (5 connections) — `src/tools/boot_config.rs`
+- **restore_standard_boot_menu()** (4 connections) — `src/tools/boot_config.rs`
+- **query_system_drive_bitlocker_state()** (3 connections) — `src/tools/boot_config.rs`
+- **B** (2 connections)
+- **test_bitlocker_state_guards_legacy_boot()** (2 connections) — `src/tools/boot_config.rs`
+- **Indeterminate** (1 connections) — `src/tools/boot_config.rs`
+- **ProtectedOn** (1 connections) — `src/tools/boot_config.rs`
+- **ProtectionOff** (1 connections) — `src/tools/boot_config.rs`
+- **AppliedLegacy** (1 connections) — `src/tools/boot_config.rs`
+- **RestoredStandard** (1 connections) — `src/tools/boot_config.rs`
+- **SkippedBitLockerActive** (1 connections) — `src/tools/boot_config.rs`
+- **SkippedBitLockerIndeterminate** (1 connections) — `src/tools/boot_config.rs`
 
 ## Relationships
 
-- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (5 shared connections)
-- [deserialize](deserialize.md) (3 shared connections)
-- [Integration Suite: Tweak Sandbox E2E](Integration_Suite-_Tweak_Sandbox_E2E.md) (2 shared connections)
-- [full_telemetry_audit_with](full_telemetry_audit_with.md) (2 shared connections)
-- [startup.rs](startup.rs.md) (2 shared connections)
-- [WorkerEvent](WorkerEvent.md) (2 shared connections)
-- [sys_inventory.rs](sys_inventory.rs.md) (2 shared connections)
-- [Embedded Catalog Test](Embedded_Catalog_Test.md) (1 shared connections)
-- [.Toggle .Set .Apply](Toggle_.Set_.Apply.md) (1 shared connections)
-- [HibernationStatus](HibernationStatus.md) (1 shared connections)
-- [Project History & Release Version Ledger](Project_History_&_Release_Version_Ledger.md) (1 shared connections)
-- [SlowScanBackend](SlowScanBackend.md) (1 shared connections)
+- [svc_mutator.rs](svc_mutator.rs.md) (3 shared connections)
+- [ui_scrollbar_test.rs](ui_scrollbar_test.rs.md) (1 shared connections)
+- [WinBlastError](WinBlastError.md) (1 shared connections)
+- [FailAtMutationBackend](FailAtMutationBackend.md) (1 shared connections)
+- [deserialize](deserialize.md) (1 shared connections)
+- [WinBlast Optimizer — Developer & Architecture Guide](WinBlast_Optimizer_—_Developer_&_Architecture_Guide.md) (1 shared connections)
 
 ## Source Files
 
-- `src/core/backend.rs`
-- `src/hardware/parking.rs`
-- `src/hardware/power.rs`
-- `tests/tweak_sandbox_e2e.rs`
+- `src/tools/boot_config.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 45 (100%)
+- EXTRACTED: 28 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

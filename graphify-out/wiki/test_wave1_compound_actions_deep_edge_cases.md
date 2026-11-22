@@ -1,36 +1,36 @@
 # test_wave1_compound_actions_deep_edge_cases
 
-> 9 nodes · cohesion 0.56
+> 11 nodes · cohesion 0.25
 
 ## Key Concepts
 
-- **svc_mutator.rs** (13 connections) — `src/executor/svc_mutator.rs`
-- **set_service_start_type()** (8 connections) — `src/executor/svc_mutator.rs`
-- **format_sc_output()** (6 connections) — `src/executor/svc_mutator.rs`
-- **stop_service()** (6 connections) — `src/executor/svc_mutator.rs`
-- **start_service()** (5 connections) — `src/executor/svc_mutator.rs`
-- **output_has_sc_code()** (4 connections) — `src/executor/svc_mutator.rs`
-- **validate_service_name()** (4 connections) — `src/executor/svc_mutator.rs`
-- **Output** (2 connections)
-- **sc_start_mode()** (2 connections) — `src/executor/svc_mutator.rs`
+- **storage.rs** (8 connections) — `src/hardware/storage.rs`
+- **StorageMedium** (8 connections) — `src/hardware/storage.rs`
+- **StorageMediumInfo** (5 connections) — `src/hardware/storage.rs`
+- **diagnose_storage_medium()** (4 connections) — `src/hardware/storage.rs`
+- **probe_volume_seek_penalty()** (2 connections) — `src/hardware/storage.rs`
+- **test_storage_medium_info()** (2 connections) — `src/hardware/storage.rs`
+- **MechanicalHdd** (1 connections) — `src/hardware/storage.rs`
+- **Nvme** (1 connections) — `src/hardware/storage.rs`
+- **SataSsd** (1 connections) — `src/hardware/storage.rs`
+- **Unknown** (1 connections) — `src/hardware/storage.rs`
+- **UsbRemovable** (1 connections) — `src/hardware/storage.rs`
 
 ## Relationships
 
-- [CoreParkingState](CoreParkingState.md) (2 shared connections)
-- [SlowScanBackend](SlowScanBackend.md) (2 shared connections)
-- [ThemePalette](ThemePalette.md) (2 shared connections)
-- [WorkerEvent](WorkerEvent.md) (2 shared connections)
-- [clean_apps.rs](clean_apps.rs.md) (1 shared connections)
-- [parking.rs](parking.rs.md) (1 shared connections)
+- [tools/game_overlay.rs](tools-game_overlay.rs.md) (3 shared connections)
+- [ui_scrollbar_test.rs](ui_scrollbar_test.rs.md) (1 shared connections)
+- [deserialize](deserialize.md) (1 shared connections)
+- [WinBlast Optimizer — Developer & Architecture Guide](WinBlast_Optimizer_—_Developer_&_Architecture_Guide.md) (1 shared connections)
 
 ## Source Files
 
-- `src/executor/svc_mutator.rs`
+- `src/hardware/storage.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 28 (93%)
-- INFERRED: 2 (7%)
+- EXTRACTED: 20 (100%)
+- INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 
 ---

@@ -1,30 +1,31 @@
 # c_void
 
-> 6 nodes · cohesion 0.40
+> 6 nodes · cohesion 0.53
 
 ## Key Concepts
 
-- **.new()** (5 connections) — `src/core/backend.rs`
-- **SandboxTempDir** (5 connections) — `src/core/backend.rs`
-- **.new()** (3 connections) — `src/core/backend.rs`
-- **.default()** (2 connections) — `src/core/backend.rs`
-- **.default()** (2 connections) — `src/core/backend.rs`
-- **.default()** (2 connections) — `src/core/backend.rs`
+- **profile_io.rs** (8 connections) — `src/backup/profile_io.rs`
+- **export_profile()** (4 connections) — `src/backup/profile_io.rs`
+- **import_profile()** (3 connections) — `src/backup/profile_io.rs`
+- **test_profile_export_import()** (3 connections) — `src/backup/profile_io.rs`
+- **TweakProfile** (2 connections) — `src/backup/profile_io.rs`
+- **.new()** (2 connections) — `src/backup/profile_io.rs`
 
 ## Relationships
 
-- [full_telemetry_audit_with](full_telemetry_audit_with.md) (3 shared connections)
-- [deserialize](deserialize.md) (2 shared connections)
-- [Project History & Release Version Ledger](Project_History_&_Release_Version_Ledger.md) (1 shared connections)
-- [Integration Suite: Tweak Sandbox E2E](Integration_Suite-_Tweak_Sandbox_E2E.md) (1 shared connections)
+- [app.rs](app.rs.md) (2 shared connections)
+- [deserialize](deserialize.md) (1 shared connections)
+- [WinBlast Optimizer — Developer & Architecture Guide](WinBlast_Optimizer_—_Developer_&_Architecture_Guide.md) (1 shared connections)
+- [path](path.md) (1 shared connections)
+- [ui_scrollbar_test.rs](ui_scrollbar_test.rs.md) (1 shared connections)
 
 ## Source Files
 
-- `src/core/backend.rs`
+- `src/backup/profile_io.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 13 (100%)
+- EXTRACTED: 14 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

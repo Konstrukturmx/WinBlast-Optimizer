@@ -1,45 +1,45 @@
 # PlatformSecurityInfo
 
-> 11 nodes · cohesion 0.25
+> 19 nodes · cohesion 0.22
 
 ## Key Concepts
 
-- **LatencySnapshot** (18 connections) — `src/hardware/latency.rs`
-- **latency.rs** (4 connections) — `src/hardware/latency.rs`
-- **.capture_latency()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.capture_latency()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.capture_latency()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.capture_latency()** (2 connections) — `src/core/backend.rs`
-- **.capture_latency()** (2 connections) — `src/core/backend.rs`
-- **DateTime** (2 connections)
-- **Utc** (2 connections)
-- **.ram_display()** (1 connections) — `src/hardware/latency.rs`
-- **.timer_resolution_display()** (1 connections) — `src/hardware/latency.rs`
+- **.decode()** (25 connections) — `src/backup/preset_sharing.rs`
+- **BinaryReader<'a>** (10 connections) — `src/backup/preset_sharing.rs`
+- **ParamValue** (8 connections) — `src/backup/preset_sharing.rs`
+- **.read_u32()** (6 connections) — `src/backup/preset_sharing.rs`
+- **.remaining()** (6 connections) — `src/backup/preset_sharing.rs`
+- **.read_bytes()** (5 connections) — `src/backup/preset_sharing.rs`
+- **.read_opt_u32()** (5 connections) — `src/backup/preset_sharing.rs`
+- **.read_string()** (5 connections) — `src/backup/preset_sharing.rs`
+- **.read_u8()** (5 connections) — `src/backup/preset_sharing.rs`
+- **.read_fixed()** (3 connections) — `src/backup/preset_sharing.rs`
+- **.read_i64()** (3 connections) — `src/backup/preset_sharing.rs`
+- **.read_u64()** (3 connections) — `src/backup/preset_sharing.rs`
+- **U64** (3 connections) — `src/backup/preset_sharing.rs`
+- **.new()** (2 connections) — `src/backup/preset_sharing.rs`
+- **Bytes** (2 connections) — `src/backup/preset_sharing.rs`
+- **I64** (2 connections) — `src/backup/preset_sharing.rs`
+- **Str** (2 connections) — `src/backup/preset_sharing.rs`
+- **test_corrupted_magic_rejection()** (2 connections) — `src/backup/preset_sharing.rs`
+- **Bool** (1 connections) — `src/backup/preset_sharing.rs`
 
 ## Relationships
 
-- [sys_inventory.rs](sys_inventory.rs.md) (2 shared connections)
-- [Integration Suite: Tweak Sandbox E2E](Integration_Suite-_Tweak_Sandbox_E2E.md) (1 shared connections)
-- [startup.rs](startup.rs.md) (1 shared connections)
-- [DateTime](DateTime.md) (1 shared connections)
-- [Embedded Catalog Test](Embedded_Catalog_Test.md) (1 shared connections)
-- [Project History & Release Version Ledger](Project_History_&_Release_Version_Ledger.md) (1 shared connections)
-- [.Toggle .Set .Apply](Toggle_.Set_.Apply.md) (1 shared connections)
-- [SlowScanBackend](SlowScanBackend.md) (1 shared connections)
-- [deserialize](deserialize.md) (1 shared connections)
-- [theme.rs](theme.rs.md) (1 shared connections)
-- [full_telemetry_audit_with](full_telemetry_audit_with.md) (1 shared connections)
-- [AppX Package & Modern App Scanner](AppX_Package_&_Modern_App_Scanner.md) (1 shared connections)
+- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (10 shared connections)
+- [updater.rs](updater.rs.md) (9 shared connections)
+- [Win32 Registry Scanner & Mutator](Win32_Registry_Scanner_&_Mutator.md) (2 shared connections)
+- [reg_helpers.rs](reg_helpers.rs.md) (1 shared connections)
+- [test_disks.ps1](test_disks.ps1.md) (1 shared connections)
+- [SignaturePolicy](SignaturePolicy.md) (1 shared connections)
 
 ## Source Files
 
-- `src/core/backend.rs`
-- `src/hardware/latency.rs`
-- `tests/tweak_sandbox_e2e.rs`
+- `src/backup/preset_sharing.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 28 (100%)
+- EXTRACTED: 61 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

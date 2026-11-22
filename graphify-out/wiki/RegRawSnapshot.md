@@ -1,56 +1,55 @@
 # RegRawSnapshot
 
-> 25 nodes · cohesion 0.15
+> 23 nodes · cohesion 0.15
 
 ## Key Concepts
 
-- **driver_update.rs** (50 connections) — `src/hardware/driver_update.rs`
-- **scan_class_registry()** (10 connections) — `src/hardware/driver_update.rs`
-- **evaluate_version_from_store()** (9 connections) — `src/hardware/driver_update.rs`
-- **parse_pnputil_devices()** (5 connections) — `src/hardware/driver_update.rs`
-- **PnpDriverPackage** (5 connections) — `src/hardware/driver_update.rs`
-- **parse_pnputil_drivers()** (4 connections) — `src/hardware/driver_update.rs`
-- **PnpDeviceInfo** (4 connections) — `src/hardware/driver_update.rs`
-- **vendor_download_url()** (4 connections) — `src/hardware/driver_update.rs`
-- **backup_root()** (3 connections) — `src/hardware/driver_update.rs`
-- **compare_versions()** (3 connections) — `src/hardware/driver_update.rs`
-- **.class_guid()** (3 connections) — `src/hardware/driver_update.rs`
-- **enumerate_pnputil_devices()** (3 connections) — `src/hardware/driver_update.rs`
-- **enumerate_pnputil_driver_store()** (3 connections) — `src/hardware/driver_update.rs`
-- **estimate_download_size()** (3 connections) — `src/hardware/driver_update.rs`
-- **test_backup_root_exists()** (2 connections) — `src/hardware/driver_update.rs`
-- **test_compare_versions_logic()** (2 connections) — `src/hardware/driver_update.rs`
-- **test_parse_pnputil_devices_empty()** (2 connections) — `src/hardware/driver_update.rs`
-- **test_parse_pnputil_devices_sample()** (2 connections) — `src/hardware/driver_update.rs`
-- **test_parse_pnputil_drivers_sample()** (2 connections) — `src/hardware/driver_update.rs`
-- **test_vendor_download_url_known()** (2 connections) — `src/hardware/driver_update.rs`
-- **test_vendor_download_url_unknown()** (2 connections) — `src/hardware/driver_update.rs`
-- **MAX_RETRIES** (1 connections) — `src/hardware/driver_update.rs`
-- **test_virtual_device_filter()** (1 connections) — `src/hardware/driver_update.rs`
-- **verify_driver_signature()** (1 connections) — `src/hardware/driver_update.rs`
-- **VIRTUAL_DEVICE_FILTERS** (1 connections) — `src/hardware/driver_update.rs`
+- **UiThemeStyle** (35 connections) — `src/ui/theme.rs`
+- **.build_dark()** (14 connections) — `src/ui/theme.rs`
+- **.build_light()** (14 connections) — `src/ui/theme.rs`
+- **rgba()** (8 connections) — `src/ui/theme.rs`
+- **.border_styled()** (4 connections) — `src/ui/theme.rs`
+- **.badge_radius()** (3 connections) — `src/ui/theme.rs`
+- **.border_width()** (3 connections) — `src/ui/theme.rs`
+- **.btn_radius()** (3 connections) — `src/ui/theme.rs`
+- **.card_padding()** (3 connections) — `src/ui/theme.rs`
+- **.card_radius()** (3 connections) — `src/ui/theme.rs`
+- **.input_radius()** (3 connections) — `src/ui/theme.rs`
+- **.sidebar_width()** (3 connections) — `src/ui/theme.rs`
+- **.set_theme_style()** (2 connections) — `src/app.rs`
+- **.ALL** (1 connections) — `src/ui/theme.rs`
+- **Classic** (1 connections) — `src/ui/theme.rs`
+- **Compact** (1 connections) — `src/ui/theme.rs`
+- **.easing_curve()** (1 connections) — `src/ui/theme.rs`
+- **.easing_duration_ms()** (1 connections) — `src/ui/theme.rs`
+- **Glassy** (1 connections) — `src/ui/theme.rs`
+- **.label()** (1 connections) — `src/ui/theme.rs`
+- **Materialistic** (1 connections) — `src/ui/theme.rs`
+- **Minimalistic** (1 connections) — `src/ui/theme.rs`
+- **.short_label()** (1 connections) — `src/ui/theme.rs`
 
 ## Relationships
 
-- [lazy_loader.rs](lazy_loader.rs.md) (10 shared connections)
-- [SandboxEnv](SandboxEnv.md) (7 shared connections)
-- [normalize_guid_str](normalize_guid_str.md) (7 shared connections)
-- [app.rs](app.rs.md) (3 shared connections)
-- [CoreParkingState](CoreParkingState.md) (3 shared connections)
-- [Reversibility Instant Requireslogoff](Reversibility_Instant_Requireslogoff.md) (2 shared connections)
-- [adaptive_tuning.rs](adaptive_tuning.rs.md) (2 shared connections)
-- [backend.rs](backend.rs.md) (1 shared connections)
-- [parking.rs](parking.rs.md) (1 shared connections)
-- [Project Documentation, Architecture & Licensing](Project_Documentation,_Architecture_&_Licensing.md) (1 shared connections)
+- [RealBackend](RealBackend.md) (11 shared connections)
+- [Reversibility Instant Requireslogoff](Reversibility_Instant_Requireslogoff.md) (6 shared connections)
+- [Project History & Release Version Ledger](Project_History_&_Release_Version_Ledger.md) (4 shared connections)
+- [ui/mod.rs](ui-mod.rs.md) (4 shared connections)
+- [Disk Cleaning & Temporary File Purger](Disk_Cleaning_&_Temporary_File_Purger.md) (2 shared connections)
+- [full_telemetry_audit_with](full_telemetry_audit_with.md) (1 shared connections)
+- [WinBlastScrollable](WinBlastScrollable.md) (1 shared connections)
+- [PowerSchemeInfo](PowerSchemeInfo.md) (1 shared connections)
+- [enums](enums.md) (1 shared connections)
+- [features_apps.rs](features_apps.rs.md) (1 shared connections)
 
 ## Source Files
 
-- `src/hardware/driver_update.rs`
+- `src/app.rs`
+- `src/ui/theme.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 79 (96%)
-- INFERRED: 3 (4%)
+- EXTRACTED: 65 (93%)
+- INFERRED: 5 (7%)
 - AMBIGUOUS: 0 (0%)
 
 ---

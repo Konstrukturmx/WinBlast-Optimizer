@@ -1,60 +1,46 @@
 # task_scanner.rs
 
-> 24 nodes · cohesion 0.25
+> 19 nodes · cohesion 0.11
 
 ## Key Concepts
 
-- **action_button()** (65 connections) — `src/ui/widgets/button.rs`
-- **gpu_tuning.rs** (26 connections) — `src/ui/views/gpu_tuning.rs`
-- **advanced_matrix.rs** (23 connections) — `src/ui/views/advanced_matrix.rs`
-- **button.rs** (23 connections) — `src/ui/widgets/button.rs`
-- **hardware_view.rs** (18 connections) — `src/ui/views/hardware_view.rs`
-- **El** (13 connections)
-- **render_compatible_card()** (12 connections) — `src/ui/views/gpu_tuning.rs`
-- **view()** (10 connections) — `src/ui/views/advanced_matrix.rs`
-- **view()** (10 connections) — `src/ui/views/gpu_tuning.rs`
-- **switch_toggle()** (10 connections) — `src/ui/widgets/button.rs`
-- **tweak_state_meta()** (10 connections) — `src/ui/widgets/button.rs`
-- **view()** (9 connections) — `src/ui/views/hardware_view.rs`
-- **Color** (8 connections)
-- **render_incompatible_card()** (7 connections) — `src/ui/views/gpu_tuning.rs`
-- **kv_row()** (7 connections) — `src/ui/widgets/button.rs`
-- **section_card()** (7 connections) — `src/ui/widgets/button.rs`
-- **switch_toggle_with()** (7 connections) — `src/ui/widgets/button.rs`
-- **switch_visual_shell()** (7 connections) — `src/ui/widgets/button.rs`
-- **action_button_loading()** (6 connections) — `src/ui/widgets/button.rs`
-- **action_button_icon_only()** (5 connections) — `src/ui/widgets/button.rs`
-- **action_button_with_tooltip()** (5 connections) — `src/ui/widgets/button.rs`
-- **El** (4 connections)
-- **El** (2 connections)
-- **El** (2 connections)
+- **SandboxOp** (25 connections) — `src/core/backend.rs`
+- **AppxRemove** (1 connections) — `src/core/backend.rs`
+- **BlockHosts** (1 connections) — `src/core/backend.rs`
+- **CleanExecuted** (1 connections) — `src/core/backend.rs`
+- **ExplorerRestarted** (1 connections) — `src/core/backend.rs`
+- **FeatureSet** (1 connections) — `src/core/backend.rs`
+- **GpuMsi** (1 connections) — `src/core/backend.rs`
+- **PowerCfgSet** (1 connections) — `src/core/backend.rs`
+- **RebootRequested** (1 connections) — `src/core/backend.rs`
+- **RegDelete** (1 connections) — `src/core/backend.rs`
+- **RegDeleteTree** (1 connections) — `src/core/backend.rs`
+- **RegSet** (1 connections) — `src/core/backend.rs`
+- **RegSetBinary** (1 connections) — `src/core/backend.rs`
+- **RegSetString** (1 connections) — `src/core/backend.rs`
+- **RestoreParking** (1 connections) — `src/core/backend.rs`
+- **ServiceSet** (1 connections) — `src/core/backend.rs`
+- **StartupToggled** (1 connections) — `src/core/backend.rs`
+- **TaskSet** (1 connections) — `src/core/backend.rs`
+- **UnparkCores** (1 connections) — `src/core/backend.rs`
 
 ## Relationships
 
-- [WinBlastError](WinBlastError.md) (38 shared connections)
-- [elevation.rs](elevation.rs.md) (27 shared connections)
-- [updater.rs](updater.rs.md) (20 shared connections)
-- [.Toggle .Set .Apply](Toggle_.Set_.Apply.md) (17 shared connections)
-- [PlatformSecurityInfo](PlatformSecurityInfo.md) (14 shared connections)
-- [Win32 Registry Scanner & Mutator](Win32_Registry_Scanner_&_Mutator.md) (10 shared connections)
-- [RegTreeSnapshot](RegTreeSnapshot.md) (9 shared connections)
-- [advanced_matrix.rs](advanced_matrix.rs.md) (6 shared connections)
-- [Language](Language.md) (5 shared connections)
-- [Core UI Internationalization & Text Catalog](Core_UI_Internationalization_&_Text_Catalog.md) (4 shared connections)
-- [startup.rs](startup.rs.md) (2 shared connections)
-- [storage.rs](storage.rs.md) (2 shared connections)
+- [spawn_guarded_worker](spawn_guarded_worker.md) (2 shared connections)
+- [task_scanner.rs](task_scanner.rs.md) (1 shared connections)
+- [WinBlastError](WinBlastError.md) (1 shared connections)
+- [PlatformSecurityInfo](PlatformSecurityInfo.md) (1 shared connections)
+- [restore_point.rs](restore_point.rs.md) (1 shared connections)
+- [backend.rs](backend.rs.md) (1 shared connections)
 
 ## Source Files
 
-- `src/ui/views/advanced_matrix.rs`
-- `src/ui/views/gpu_tuning.rs`
-- `src/ui/views/hardware_view.rs`
-- `src/ui/widgets/button.rs`
+- `src/core/backend.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 178 (78%)
-- INFERRED: 50 (22%)
+- EXTRACTED: 25 (100%)
+- INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 
 ---

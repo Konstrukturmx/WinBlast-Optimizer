@@ -1,60 +1,55 @@
 # AppX Package & Modern App Scanner
 
-> 29 nodes · cohesion 0.09
+> 24 nodes · cohesion 0.17
 
 ## Key Concepts
 
-- **monitor.rs** (55 connections) — `src/hardware/monitor.rs`
-- **query_nt_timer_resolution()** (7 connections) — `src/hardware/monitor.rs`
-- **query_system_perf_info()** (5 connections) — `src/hardware/monitor.rs`
-- **query_system_process_and_thread_counts()** (4 connections) — `src/hardware/monitor.rs`
-- **query_system_thread_count()** (4 connections) — `src/hardware/monitor.rs`
-- **.capture()** (3 connections) — `src/hardware/latency.rs`
-- **GetPerformanceInfo()** (3 connections) — `src/hardware/monitor.rs`
-- **NtQueryTimerResolution()** (3 connections) — `src/hardware/monitor.rs`
-- **PerformanceInformation** (3 connections) — `src/hardware/monitor.rs`
-- **test_nt_timer_resolution()** (2 connections) — `src/hardware/monitor.rs`
-- **test_system_thread_count()** (2 connections) — `src/hardware/monitor.rs`
-- **all_processor_groups** (1 connections)
-- **getactiveprocessorcount** (1 connections)
-- **getactiveprocessorgroupcount** (1 connections)
-- **memoryrefreshkind** (1 connections)
-- **pdh_cstatus_new_data** (1 connections)
-- **pdh_cstatus_valid_data** (1 connections)
-- **pdh_fmt_countervalue_item_w** (1 connections)
-- **pdh_fmt_double** (1 connections)
-- **pdh_more_data** (1 connections)
-- **pdhaddenglishcounterw** (1 connections)
-- **pdhclosequery** (1 connections)
-- **pdhcollectquerydata** (1 connections)
-- **pdhgetformattedcounterarrayw** (1 connections)
-- **pdhopenqueryw** (1 connections)
-- *... and 4 more nodes in this community*
+- **tools/game_prereqs.rs** (32 connections) — `src/tools/game_prereqs.rs`
+- **test_iso_29119_runtime_detection_heuristics_execution()** (11 connections) — `src/tools/game_prereqs.rs`
+- **GamePrerequisiteItem** (6 connections) — `src/tools/game_prereqs.rs`
+- **get_system32_path()** (6 connections) — `src/tools/game_prereqs.rs`
+- **detect_openal()** (4 connections) — `src/tools/game_prereqs.rs`
+- **install_prereq_cascade()** (4 connections) — `src/tools/game_prereqs.rs`
+- **scan_game_prereqs()** (4 connections) — `src/tools/game_prereqs.rs`
+- **detect_directx_legacy()** (3 connections) — `src/tools/game_prereqs.rs`
+- **detect_vcredist_2015_2022_x64()** (3 connections) — `src/tools/game_prereqs.rs`
+- **detect_vcredist_2015_2022_x86()** (3 connections) — `src/tools/game_prereqs.rs`
+- **detect_vcredist_all_in_one()** (3 connections) — `src/tools/game_prereqs.rs`
+- **detect_vulkan_runtime()** (3 connections) — `src/tools/game_prereqs.rs`
+- **get_syswow64_path()** (3 connections) — `src/tools/game_prereqs.rs`
+- **detect_dotnet_desktop_8()** (2 connections) — `src/tools/game_prereqs.rs`
+- **detect_dotnet_desktop_9()** (2 connections) — `src/tools/game_prereqs.rs`
+- **detect_dotnet_framework_481()** (2 connections) — `src/tools/game_prereqs.rs`
+- **detect_xna_framework_4()** (2 connections) — `src/tools/game_prereqs.rs`
+- **PREREQ_DESCRIPTORS** (2 connections) — `src/tools/game_prereqs.rs`
+- **PrereqDescriptor** (2 connections) — `src/tools/game_prereqs.rs`
+- **test_iso_29119_cascade_error_recovery_empty_source()** (2 connections) — `src/tools/game_prereqs.rs`
+- **test_iso_29119_cascade_fallback_url_validity()** (2 connections) — `src/tools/game_prereqs.rs`
+- **test_iso_29119_scan_returns_all_10_prereqs()** (2 connections) — `src/tools/game_prereqs.rs`
+- **test_iso_29119_serde_roundtrip()** (2 connections) — `src/tools/game_prereqs.rs`
+- **.is_installed()** (1 connections) — `src/tools/game_prereqs.rs`
 
 ## Relationships
 
-- [WindowsOptionalFeature](WindowsOptionalFeature.md) (9 shared connections)
-- [DateTime](DateTime.md) (7 shared connections)
-- [TaskCache](TaskCache.md) (6 shared connections)
-- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (3 shared connections)
-- [DriverUpdateItem](DriverUpdateItem.md) (2 shared connections)
-- [PlatformSecurityInfo](PlatformSecurityInfo.md) (1 shared connections)
-- [.logical_core_count](logical_core_count.md) (1 shared connections)
-- [parking.rs](parking.rs.md) (1 shared connections)
-- [.take_injected_error](take_injected_error.md) (1 shared connections)
-- [Project Documentation, Architecture & Licensing](Project_Documentation,_Architecture_&_Licensing.md) (1 shared connections)
+- [deserialize](deserialize.md) (2 shared connections)
+- [PrereqInstallState](PrereqInstallState.md) (2 shared connections)
+- [path](path.md) (1 shared connections)
 - [Reversibility Instant Requireslogoff](Reversibility_Instant_Requireslogoff.md) (1 shared connections)
-- [deserialize](deserialize.md) (1 shared connections)
+- [AppxCache](AppxCache.md) (1 shared connections)
+- [ui_scrollbar_test.rs](ui_scrollbar_test.rs.md) (1 shared connections)
+- [progress_bar.rs](progress_bar.rs.md) (1 shared connections)
+- [.maybe_arm_error](maybe_arm_error.md) (1 shared connections)
+- [WinBlast Optimizer — Developer & Architecture Guide](WinBlast_Optimizer_—_Developer_&_Architecture_Guide.md) (1 shared connections)
+- [Disk Cleaning & Temporary File Purger](Disk_Cleaning_&_Temporary_File_Purger.md) (1 shared connections)
 
 ## Source Files
 
-- `src/hardware/latency.rs`
-- `src/hardware/monitor.rs`
+- `src/tools/game_prereqs.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 71 (99%)
-- INFERRED: 1 (1%)
+- EXTRACTED: 58 (98%)
+- INFERRED: 1 (2%)
 - AMBIGUOUS: 0 (0%)
 
 ---

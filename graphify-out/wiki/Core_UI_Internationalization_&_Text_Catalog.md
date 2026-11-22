@@ -33,18 +33,18 @@
 
 ## Relationships
 
-- [elevation.rs](elevation.rs.md) (5 shared connections)
-- [task_scanner.rs](task_scanner.rs.md) (4 shared connections)
-- [PlatformSecurityInfo](PlatformSecurityInfo.md) (4 shared connections)
-- [WinBlastError](WinBlastError.md) (2 shared connections)
-- [ui_scrollbar_test.rs](ui_scrollbar_test.rs.md) (2 shared connections)
-- [SlowScanBackend](SlowScanBackend.md) (1 shared connections)
-- [System Architecture Changelog](System_Architecture_Changelog.md) (1 shared connections)
-- [advanced_matrix.rs](advanced_matrix.rs.md) (1 shared connections)
-- [updater.rs](updater.rs.md) (1 shared connections)
-- [Language](Language.md) (1 shared connections)
-- [RegTreeSnapshot](RegTreeSnapshot.md) (1 shared connections)
-- [Scandetailkind Appxinstalled Appxinstalledps](Scandetailkind_Appxinstalled_Appxinstalledps.md) (1 shared connections)
+- [features_apps.rs](features_apps.rs.md) (6 shared connections)
+- [clean_apps.rs](clean_apps.rs.md) (5 shared connections)
+- [ui_scrollbar_test.rs](ui_scrollbar_test.rs.md) (3 shared connections)
+- [.Reg State() Vendor()](Reg_State_Vendor.md) (2 shared connections)
+- [boot_config.rs](boot_config.rs.md) (2 shared connections)
+- [app.rs](app.rs.md) (1 shared connections)
+- [theme.rs](theme.rs.md) (1 shared connections)
+- [enums](enums.md) (1 shared connections)
+- [RealBackend](RealBackend.md) (1 shared connections)
+- [latency_bench.rs](latency_bench.rs.md) (1 shared connections)
+- [parse_guid](parse_guid.md) (1 shared connections)
+- [.run_scan_internal](run_scan_internal.md) (1 shared connections)
 
 ## Source Files
 

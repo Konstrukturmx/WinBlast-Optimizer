@@ -1,23 +1,32 @@
 # UpdateStatus
 
-> 1 nodes · cohesion 1.00
+> 7 nodes · cohesion 0.29
 
 ## Key Concepts
 
-- **executor/mod.rs** (0 connections) — `src/executor/mod.rs`
+- **UpdateStatus** (10 connections) — `src/app.rs`
+- **Available** (2 connections) — `src/app.rs`
+- **Checking** (1 connections) — `src/app.rs`
+- **Downloading** (1 connections) — `src/app.rs`
+- **Idle** (1 connections) — `src/app.rs`
+- **ReadyToRestart** (1 connections) — `src/app.rs`
+- **UpToDate** (1 connections) — `src/app.rs`
 
 ## Relationships
 
-- No strong cross-community connections detected
+- [startup.rs](startup.rs.md) (2 shared connections)
+- [Disk Cleaning & Temporary File Purger](Disk_Cleaning_&_Temporary_File_Purger.md) (1 shared connections)
+- [app.rs](app.rs.md) (1 shared connections)
+- [updater.rs](updater.rs.md) (1 shared connections)
 
 ## Source Files
 
-- `src/executor/mod.rs`
+- `src/app.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 0 (0%)
-- INFERRED: 0 (0%)
+- EXTRACTED: 10 (91%)
+- INFERRED: 1 (9%)
 - AMBIGUOUS: 0 (0%)
 
 ---

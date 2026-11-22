@@ -1,55 +1,59 @@
 # FailAtMutationBackend
 
-> 29 nodes · cohesion 0.13
+> 34 nodes · cohesion 0.12
 
 ## Key Concepts
 
-- **tools/game_prereqs.rs** (32 connections) — `src/tools/game_prereqs.rs`
-- **test_iso_29119_runtime_detection_heuristics_execution()** (11 connections) — `src/tools/game_prereqs.rs`
-- **PrereqInstallState** (7 connections) — `src/tools/game_prereqs.rs`
-- **GamePrerequisiteItem** (6 connections) — `src/tools/game_prereqs.rs`
-- **get_system32_path()** (6 connections) — `src/tools/game_prereqs.rs`
-- **detect_openal()** (4 connections) — `src/tools/game_prereqs.rs`
-- **install_prereq_cascade()** (4 connections) — `src/tools/game_prereqs.rs`
-- **scan_game_prereqs()** (4 connections) — `src/tools/game_prereqs.rs`
-- **detect_directx_legacy()** (3 connections) — `src/tools/game_prereqs.rs`
-- **detect_vcredist_2015_2022_x64()** (3 connections) — `src/tools/game_prereqs.rs`
-- **detect_vcredist_2015_2022_x86()** (3 connections) — `src/tools/game_prereqs.rs`
-- **detect_vcredist_all_in_one()** (3 connections) — `src/tools/game_prereqs.rs`
-- **detect_vulkan_runtime()** (3 connections) — `src/tools/game_prereqs.rs`
-- **get_syswow64_path()** (3 connections) — `src/tools/game_prereqs.rs`
-- **detect_dotnet_desktop_8()** (2 connections) — `src/tools/game_prereqs.rs`
-- **detect_dotnet_desktop_9()** (2 connections) — `src/tools/game_prereqs.rs`
-- **detect_dotnet_framework_481()** (2 connections) — `src/tools/game_prereqs.rs`
-- **detect_xna_framework_4()** (2 connections) — `src/tools/game_prereqs.rs`
-- **PREREQ_DESCRIPTORS** (2 connections) — `src/tools/game_prereqs.rs`
-- **PrereqDescriptor** (2 connections) — `src/tools/game_prereqs.rs`
-- **test_iso_29119_cascade_error_recovery_empty_source()** (2 connections) — `src/tools/game_prereqs.rs`
-- **test_iso_29119_cascade_fallback_url_validity()** (2 connections) — `src/tools/game_prereqs.rs`
-- **test_iso_29119_scan_returns_all_10_prereqs()** (2 connections) — `src/tools/game_prereqs.rs`
-- **test_iso_29119_serde_roundtrip()** (2 connections) — `src/tools/game_prereqs.rs`
-- **.is_installed()** (1 connections) — `src/tools/game_prereqs.rs`
-- *... and 4 more nodes in this community*
+- **StateLedger** (36 connections) — `src/backup/state_ledger.rs`
+- **state_ledger.rs** (13 connections) — `src/backup/state_ledger.rs`
+- **LedgerEntry** (12 connections) — `src/backup/state_ledger.rs`
+- **test_ledger_crud()** (10 connections) — `src/backup/state_ledger.rs`
+- **SystemBaseline** (9 connections) — `src/backup/state_ledger.rs`
+- **.get_history()** (6 connections) — `src/backup/state_ledger.rs`
+- **.to_owned()** (5 connections) — `src/backup/state_ledger.rs`
+- **.find_latest_unrolled_by_tweak()** (5 connections) — `src/backup/state_ledger.rs`
+- **.parse_timestamp()** (4 connections) — `src/backup/state_ledger.rs`
+- **DateTime** (4 connections)
+- **Utc** (4 connections)
+- **.for_each_history()** (4 connections) — `src/backup/state_ledger.rs`
+- **.get_initial_baseline()** (4 connections) — `src/backup/state_ledger.rs`
+- **.init_conn()** (4 connections) — `src/backup/state_ledger.rs`
+- **.query_single_baseline()** (4 connections) — `src/backup/state_ledger.rs`
+- **revert_tweak()** (4 connections) — `src/executor/engine.rs`
+- **Connection** (3 connections)
+- **is_reversible_action()** (3 connections) — `src/backup/state_ledger.rs`
+- **LedgerEntryView<'a>** (3 connections) — `src/backup/state_ledger.rs`
+- **.for_each_history_by_tweak()** (3 connections) — `src/backup/state_ledger.rs`
+- **.get_latest_baseline()** (3 connections) — `src/backup/state_ledger.rs`
+- **.new()** (3 connections) — `src/backup/state_ledger.rs`
+- **.reset_baseline()** (3 connections) — `src/backup/state_ledger.rs`
+- **.save_baseline()** (3 connections) — `src/backup/state_ledger.rs`
+- **.is_reversible()** (2 connections) — `src/backup/state_ledger.rs`
+- *... and 9 more nodes in this community*
 
 ## Relationships
 
-- [app.rs](app.rs.md) (2 shared connections)
-- [CoreParkingState](CoreParkingState.md) (2 shared connections)
-- [Reversibility Instant Requireslogoff](Reversibility_Instant_Requireslogoff.md) (2 shared connections)
-- [parking.rs](parking.rs.md) (1 shared connections)
-- [Project Documentation, Architecture & Licensing](Project_Documentation,_Architecture_&_Licensing.md) (1 shared connections)
-- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (1 shared connections)
-- [.Toggle .Set .Apply](Toggle_.Set_.Apply.md) (1 shared connections)
-- [elevation.rs](elevation.rs.md) (1 shared connections)
+- [Scandetailkind Appxinstalled Appxinstalledps](Scandetailkind_Appxinstalled_Appxinstalledps.md) (18 shared connections)
+- [app.rs](app.rs.md) (3 shared connections)
+- [Disk Cleaning & Temporary File Purger](Disk_Cleaning_&_Temporary_File_Purger.md) (2 shared connections)
+- [ui_scrollbar_test.rs](ui_scrollbar_test.rs.md) (1 shared connections)
+- [deserialize](deserialize.md) (1 shared connections)
+- [WinBlast Optimizer — Developer & Architecture Guide](WinBlast_Optimizer_—_Developer_&_Architecture_Guide.md) (1 shared connections)
+- [Win32 Registry Scanner & Mutator](Win32_Registry_Scanner_&_Mutator.md) (1 shared connections)
+- [.maybe_arm_error](maybe_arm_error.md) (1 shared connections)
+- [in_progress_hud.rs](in_progress_hud.rs.md) (1 shared connections)
+- [startup.rs](startup.rs.md) (1 shared connections)
+- [registry_scanner.rs](registry_scanner.rs.md) (1 shared connections)
 
 ## Source Files
 
-- `src/tools/game_prereqs.rs`
+- `src/backup/state_ledger.rs`
+- `src/executor/engine.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 63 (98%)
-- INFERRED: 1 (2%)
+- EXTRACTED: 100 (100%)
+- INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 
 ---

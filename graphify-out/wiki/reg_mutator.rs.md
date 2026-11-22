@@ -1,62 +1,59 @@
 # reg_mutator.rs
 
-> 35 nodes · cohesion 0.09
+> 27 nodes · cohesion 0.15
 
 ## Key Concepts
 
-- **gpu.rs** (27 connections) — `src/hardware/gpu.rs`
-- **DetectedGpu** (17 connections) — `src/hardware/gpu.rs`
-- **GpuVendor** (15 connections) — `src/hardware/gpu.rs`
-- **detect_gpus()** (7 connections) — `src/hardware/gpu.rs`
-- **detect_vendor()** (7 connections) — `src/hardware/gpu.rs`
-- **resolve_gpu_class_path_for_vendor()** (6 connections) — `src/hardware/gpu.rs`
-- **.detect_gpus()** (5 connections) — `tests/tweak_sandbox_e2e.rs`
-- **DevInfoGuard** (4 connections) — `src/hardware/gpu.rs`
-- **.as_str()** (4 connections) — `src/hardware/gpu.rs`
-- **parse_target_vendor()** (4 connections) — `src/hardware/gpu.rs`
-- **present_display_class_subkeys()** (4 connections) — `src/hardware/gpu.rs`
-- **primary_vendor()** (3 connections) — `src/hardware/gpu.rs`
-- **.detect_gpus()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.detect_gpus()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.detect_gpus()** (2 connections) — `src/core/backend.rs`
-- **.detect_gpus()** (2 connections) — `src/core/backend.rs`
-- **test_gpu_vendor_compatibility()** (2 connections) — `src/core/risk.rs`
-- **.is_gpu_vendor_compatible()** (2 connections) — `src/core/risk.rs`
-- **detect_dxgi_vram_table()** (2 connections) — `src/hardware/gpu.rs`
-- **has_ascii_token()** (2 connections) — `src/hardware/gpu.rs`
-- **parse_ven_dev()** (2 connections) — `src/hardware/gpu.rs`
-- **resolve_gpu_class_path()** (2 connections) — `src/hardware/gpu.rs`
-- **test_detect_vendor_no_false_positive_ati()** (2 connections) — `src/hardware/gpu.rs`
-- **HDEVINFO** (1 connections)
-- **.drop()** (1 connections) — `src/hardware/gpu.rs`
-- *... and 10 more nodes in this community*
+- **registry_scanner.rs** (37 connections) — `src/scanner/registry_scanner.rs`
+- **open_subkey_read_64()** (13 connections) — `src/scanner/registry_scanner.rs`
+- **open_subkey_flags_64()** (8 connections) — `src/scanner/registry_scanner.rs`
+- **RegKey** (8 connections)
+- **get_dword_for_vendor()** (7 connections) — `src/scanner/registry_scanner.rs`
+- **snapshot_key_recursive()** (7 connections) — `src/scanner/registry_scanner.rs`
+- **get_binary()** (6 connections) — `src/scanner/registry_scanner.rs`
+- **snapshot_tree()** (6 connections) — `src/scanner/registry_scanner.rs`
+- **test_strict_reg_type_dispatch_and_negative_numeric_sz()** (6 connections) — `src/scanner/registry_scanner.rs`
+- **evaluate_dword_value_with_kind()** (5 connections) — `src/scanner/registry_scanner.rs`
+- **get_dword()** (5 connections) — `src/scanner/registry_scanner.rs`
+- **resolve_net_interface_paths()** (5 connections) — `src/scanner/registry_scanner.rs`
+- **evaluate_dword()** (4 connections) — `src/scanner/registry_scanner.rs`
+- **evaluate_dword_value()** (4 connections) — `src/scanner/registry_scanner.rs`
+- **key_exists()** (4 connections) — `src/scanner/registry_scanner.rs`
+- **read_dword_from_key()** (4 connections) — `src/scanner/registry_scanner.rs`
+- **reg_type_to_u32()** (4 connections) — `src/scanner/registry_scanner.rs`
+- **has_active_ip()** (3 connections) — `src/scanner/registry_scanner.rs`
+- **replace_placeholder_ci()** (3 connections) — `src/scanner/registry_scanner.rs`
+- **ScratchCleanup** (3 connections) — `src/scanner/registry_scanner.rs`
+- **test_evaluate_dword_value_with_kind_all_branches()** (3 connections) — `src/scanner/registry_scanner.rs`
+- **check_dword()** (2 connections) — `src/scanner/registry_scanner.rs`
+- **DISPLAY_CLASS_LOWER** (1 connections) — `src/scanner/registry_scanner.rs`
+- **NET_INTERFACES_LOWER** (1 connections) — `src/scanner/registry_scanner.rs`
+- **NET_PLACEHOLDER_LOWER** (1 connections) — `src/scanner/registry_scanner.rs`
+- *... and 2 more nodes in this community*
 
 ## Relationships
 
-- [deserialize](deserialize.md) (3 shared connections)
-- [Win32 Registry Scanner & Mutator](Win32_Registry_Scanner_&_Mutator.md) (2 shared connections)
-- [Reversibility Instant Requireslogoff](Reversibility_Instant_Requireslogoff.md) (2 shared connections)
-- [CoreParkingState](CoreParkingState.md) (2 shared connections)
-- [full_telemetry_audit_with](full_telemetry_audit_with.md) (2 shared connections)
-- [SlowScanBackend](SlowScanBackend.md) (2 shared connections)
-- [sys_inventory.rs](sys_inventory.rs.md) (2 shared connections)
-- [Integration Suite: Tweak Sandbox E2E](Integration_Suite-_Tweak_Sandbox_E2E.md) (1 shared connections)
-- [startup.rs](startup.rs.md) (1 shared connections)
-- [ps_runner.rs](ps_runner.rs.md) (1 shared connections)
-- [parking.rs](parking.rs.md) (1 shared connections)
-- [backend.rs](backend.rs.md) (1 shared connections)
+- [Changelog](Changelog.md) (15 shared connections)
+- [.all_physical](all_physical.md) (4 shared connections)
+- [driver_update.rs](driver_update.rs.md) (4 shared connections)
+- [parking.rs](parking.rs.md) (3 shared connections)
+- [RegStringValue](RegStringValue.md) (3 shared connections)
+- [adaptive_tuning.rs](adaptive_tuning.rs.md) (3 shared connections)
+- [AppxCache](AppxCache.md) (2 shared connections)
+- [backend.rs](backend.rs.md) (2 shared connections)
+- [tools/game_overlay.rs](tools-game_overlay.rs.md) (2 shared connections)
+- [app.rs](app.rs.md) (2 shared connections)
+- [ui_scrollbar_test.rs](ui_scrollbar_test.rs.md) (1 shared connections)
+- [svc_mutator.rs](svc_mutator.rs.md) (1 shared connections)
 
 ## Source Files
 
-- `src/core/backend.rs`
-- `src/core/risk.rs`
-- `src/hardware/gpu.rs`
-- `tests/tweak_sandbox_e2e.rs`
+- `src/scanner/registry_scanner.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 80 (96%)
-- INFERRED: 3 (4%)
+- EXTRACTED: 88 (89%)
+- INFERRED: 11 (11%)
 - AMBIGUOUS: 0 (0%)
 
 ---

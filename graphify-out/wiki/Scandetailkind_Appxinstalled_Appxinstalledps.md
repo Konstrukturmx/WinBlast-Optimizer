@@ -1,60 +1,60 @@
 # Scandetailkind Appxinstalled Appxinstalledps
 
-> 54 nodes · cohesion 0.07
+> 39 nodes · cohesion 0.13
 
 ## Key Concepts
 
-- **ui_responsive_e2e.rs** (61 connections) — `tests/ui_responsive_e2e.rs`
-- **build_populated_sandbox_state()** (17 connections) — `tests/ui_responsive_e2e.rs`
-- **settle_frames()** (13 connections) — `tests/ui_responsive_e2e.rs`
-- **full_telemetry_audit_with()** (10 connections) — `src/scanner/telemetry_scanner.rs`
-- **telemetry_scanner.rs** (9 connections) — `src/scanner/telemetry_scanner.rs`
-- **click_key()** (8 connections) — `tests/ui_responsive_e2e.rs`
-- **test_ui_live_viewport_sweep_and_compact_nav_menu_interaction()** (8 connections) — `tests/ui_responsive_e2e.rs`
-- **test_ui_v08_not_applicable_diff_modal_privacy_cores_and_protected_appx()** (8 connections) — `tests/ui_responsive_e2e.rs`
-- **Runtime** (7 connections)
-- **TelemetryAuditResult** (6 connections) — `src/scanner/telemetry_scanner.rs`
-- **assert_frame_clean()** (6 connections) — `tests/ui_responsive_e2e.rs`
-- **click_text()** (6 connections) — `tests/ui_responsive_e2e.rs`
-- **drain_state_workers()** (6 connections) — `tests/ui_responsive_e2e.rs`
-- **assert_clean_appx_compact_vertical_geometry()** (5 connections) — `tests/ui_responsive_e2e.rs`
-- **test_ui_responsive_matrix_all_viewports_views_themes_locales_scales()** (5 connections) — `tests/ui_responsive_e2e.rs`
-- **full_telemetry_audit()** (4 connections) — `src/scanner/telemetry_scanner.rs`
-- **test_ui_dropdown_anchoring_and_header_height_stability()** (4 connections) — `tests/ui_responsive_e2e.rs`
-- **test_ui_theme_style_selector_button_clicks_all_tiers()** (4 connections) — `tests/ui_responsive_e2e.rs`
-- **KNOWN_TELEMETRY_SERVICES** (3 connections) — `src/scanner/telemetry_scanner.rs`
-- **parse_blocked_hosts_from_content()** (3 connections) — `src/scanner/telemetry_scanner.rs`
-- **init_cpu_parking_state()** (3 connections) — `tests/ui_responsive_e2e.rs`
-- **init_dashboard_state()** (3 connections) — `tests/ui_responsive_e2e.rs`
-- **init_fault_diagnostics_state()** (3 connections) — `tests/ui_responsive_e2e.rs`
-- **init_gpu_state()** (3 connections) — `tests/ui_responsive_e2e.rs`
-- **init_matrix_state()** (3 connections) — `tests/ui_responsive_e2e.rs`
-- *... and 29 more nodes in this community*
+- **engine.rs** (53 connections) — `src/executor/engine.rs`
+- **reg_helpers.rs** (24 connections) — `src/core/reg_helpers.rs`
+- **rollback_entry_with()** (22 connections) — `src/executor/engine.rs`
+- **apply_tweak_with()** (20 connections) — `src/executor/engine.rs`
+- **revert_tweak_with()** (19 connections) — `src/executor/engine.rs`
+- **apply_action_slice_with()** (17 connections) — `src/executor/engine.rs`
+- **format_pipe_reg_target()** (11 connections) — `src/core/reg_helpers.rs`
+- **merge_composite_pair()** (8 connections) — `src/core/reg_helpers.rs`
+- **escape_pipe()** (7 connections) — `src/core/reg_helpers.rs`
+- **parse_pipe_reg_target()** (6 connections) — `src/core/reg_helpers.rs`
+- **apply_tweaks_by_id_with()** (6 connections) — `src/executor/engine.rs`
+- **format_composite_action_key()** (6 connections) — `src/executor/engine.rs`
+- **revert_tweaks_by_id_with()** (6 connections) — `src/executor/engine.rs`
+- **rollback_recorded_ids()** (6 connections) — `src/executor/engine.rs`
+- **ensure_tweak_compatible()** (5 connections) — `src/executor/engine.rs`
+- **format_dword_action_key()** (5 connections) — `src/executor/engine.rs`
+- **read_composite_entry()** (4 connections) — `src/core/reg_helpers.rs`
+- **unescape_pipe()** (4 connections) — `src/core/reg_helpers.rs`
+- **apply_tweak()** (4 connections) — `src/executor/engine.rs`
+- **apply_tweaks_by_id()** (4 connections) — `src/executor/engine.rs`
+- **format_power_indices()** (4 connections) — `src/executor/engine.rs`
+- **revert_tweaks_by_id()** (4 connections) — `src/executor/engine.rs`
+- **rollback_entry()** (4 connections) — `src/executor/engine.rs`
+- **test_batch1_engine_edge_cases_and_atomic_revert()** (4 connections) — `src/executor/engine.rs`
+- **parse_composite_pairs()** (3 connections) — `src/core/reg_helpers.rs`
+- *... and 14 more nodes in this community*
 
 ## Relationships
 
-- [.Toggle .Set .Apply](Toggle_.Set_.Apply.md) (16 shared connections)
-- [SlowScanBackend](SlowScanBackend.md) (4 shared connections)
-- [theme.rs](theme.rs.md) (4 shared connections)
-- [startup.rs](startup.rs.md) (2 shared connections)
-- [enums](enums.md) (2 shared connections)
-- [FailAtMutationBackend](FailAtMutationBackend.md) (2 shared connections)
-- [.setup](setup.md) (2 shared connections)
-- [.Reg State() Vendor()](Reg_State_Vendor.md) (2 shared connections)
-- [WinBlastScrollable](WinBlastScrollable.md) (1 shared connections)
-- [RealBackend](RealBackend.md) (1 shared connections)
-- [Embedded Catalog Test](Embedded_Catalog_Test.md) (1 shared connections)
-- [Core UI Internationalization & Text Catalog](Core_UI_Internationalization_&_Text_Catalog.md) (1 shared connections)
+- [FailAtMutationBackend](FailAtMutationBackend.md) (27 shared connections)
+- [registry_scanner.rs](registry_scanner.rs.md) (15 shared connections)
+- [backend.rs](backend.rs.md) (7 shared connections)
+- [.maybe_arm_error](maybe_arm_error.md) (7 shared connections)
+- [PowerSchemeInfo](PowerSchemeInfo.md) (5 shared connections)
+- [Changelog](Changelog.md) (4 shared connections)
+- [Embedded Catalog Test](Embedded_Catalog_Test.md) (4 shared connections)
+- [in_progress_hud.rs](in_progress_hud.rs.md) (4 shared connections)
+- [.all_physical](all_physical.md) (3 shared connections)
+- [task_scanner.rs](task_scanner.rs.md) (3 shared connections)
+- [AutoTuneProfile](AutoTuneProfile.md) (3 shared connections)
+- [ui_scrollbar_test.rs](ui_scrollbar_test.rs.md) (2 shared connections)
 
 ## Source Files
 
-- `src/scanner/telemetry_scanner.rs`
-- `tests/ui_responsive_e2e.rs`
+- `src/core/reg_helpers.rs`
+- `src/executor/engine.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 141 (97%)
-- INFERRED: 5 (3%)
+- EXTRACTED: 160 (83%)
+- INFERRED: 33 (17%)
 - AMBIGUOUS: 0 (0%)
 
 ---

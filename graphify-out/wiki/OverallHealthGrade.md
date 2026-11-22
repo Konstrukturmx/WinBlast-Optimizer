@@ -1,18 +1,25 @@
 # OverallHealthGrade
 
-> 1 nodes · cohesion 1.00
+> 3 nodes · cohesion 0.67
 
 ## Key Concepts
 
-- **DateTime** (0 connections)
+- **NtQuerySystemInformation()** (3 connections) — `src/hardware/sys_inventory.rs`
+- **query_live_code_integrity_options()** (3 connections) — `src/hardware/sys_inventory.rs`
+- **c_void** (1 connections)
 
 ## Relationships
 
-- No strong cross-community connections detected
+- [topological_scheduler.rs](topological_scheduler.rs.md) (2 shared connections)
+- [UiThemeStyle](UiThemeStyle.md) (1 shared connections)
+
+## Source Files
+
+- `src/hardware/sys_inventory.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 0 (0%)
+- EXTRACTED: 5 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

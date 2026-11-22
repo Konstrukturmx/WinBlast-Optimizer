@@ -1,10 +1,11 @@
 # action_button_guarded
 
-> 199 nodes · cohesion 0.01
+> 200 nodes · cohesion 0.01
 
 ## Key Concepts
 
 - **ViewTextKey** (220 connections) — `src/core/view_i18n.rs`
+- **.tr_v()** (2 connections) — `src/app.rs`
 - **AboutActiveBadge** (1 connections) — `src/core/view_i18n.rs`
 - **AboutBullet1** (1 connections) — `src/core/view_i18n.rs`
 - **AboutBullet2** (1 connections) — `src/core/view_i18n.rs`
@@ -28,27 +29,26 @@
 - **AutoCenterProfilesSubtitle** (1 connections) — `src/core/view_i18n.rs`
 - **AutoCenterProfilesTitle** (1 connections) — `src/core/view_i18n.rs`
 - **COUNT** (1 connections) — `src/core/view_i18n.rs`
-- **DashboardCatBreakdownTitle** (1 connections) — `src/core/view_i18n.rs`
-- *... and 174 more nodes in this community*
+- *... and 175 more nodes in this community*
 
 ## Relationships
 
-- [WinBlastError](WinBlastError.md) (12 shared connections)
-- [Utc](Utc.md) (3 shared connections)
-- [elevation.rs](elevation.rs.md) (2 shared connections)
-- [advanced_matrix.rs](advanced_matrix.rs.md) (1 shared connections)
-- [updater.rs](updater.rs.md) (1 shared connections)
-- [storage.rs](storage.rs.md) (1 shared connections)
-- [task_scanner.rs](task_scanner.rs.md) (1 shared connections)
-- [.Toggle .Set .Apply](Toggle_.Set_.Apply.md) (1 shared connections)
+- [features_apps.rs](features_apps.rs.md) (14 shared connections)
+- [Disk Cleaning & Temporary File Purger](Disk_Cleaning_&_Temporary_File_Purger.md) (2 shared connections)
+- [ui_scrollbar_test.rs](ui_scrollbar_test.rs.md) (2 shared connections)
+- [enums](enums.md) (1 shared connections)
+- [RealBackend](RealBackend.md) (1 shared connections)
+- [WinBlastScrollable](WinBlastScrollable.md) (1 shared connections)
+- [clean_apps.rs](clean_apps.rs.md) (1 shared connections)
 
 ## Source Files
 
+- `src/app.rs`
 - `src/core/view_i18n.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 219 (100%)
+- EXTRACTED: 220 (100%)
 - INFERRED: 1 (0%)
 - AMBIGUOUS: 0 (0%)
 

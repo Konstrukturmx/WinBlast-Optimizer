@@ -1,39 +1,50 @@
 # ui_scrollbar_test.rs
 
-> 10 nodes · cohesion 0.47
+> 16 nodes · cohesion 0.17
 
 ## Key Concepts
 
-- **diff_modal.rs** (20 connections) — `src/ui/widgets/diff_modal.rs`
-- **view_items_with_palette()** (13 connections) — `src/ui/widgets/diff_modal.rs`
-- **El** (6 connections)
-- **view_with_palette()** (6 connections) — `src/ui/widgets/diff_modal.rs`
-- **diff_single_card()** (5 connections) — `src/ui/widgets/diff_modal.rs`
-- **view_state()** (5 connections) — `src/ui/widgets/diff_modal.rs`
-- **diff_pair_card()** (4 connections) — `src/ui/widgets/diff_modal.rs`
-- **directed_pair()** (4 connections) — `src/ui/widgets/diff_modal.rs`
-- **header_with_dir()** (3 connections) — `src/ui/widgets/diff_modal.rs`
-- **Color** (2 connections)
+- **super** (50 connections)
+- **i18n.rs** (12 connections) — `src/core/i18n.rs`
+- **I18n** (9 connections) — `src/core/i18n.rs`
+- **.translate()** (7 connections) — `src/core/i18n.rs`
+- **view_i18n.rs** (6 connections) — `src/core/view_i18n.rs`
+- **.get()** (4 connections) — `src/core/i18n.rs`
+- **tr_view()** (4 connections) — `src/core/view_i18n.rs`
+- **test_all_languages_and_all_keys_exhaustive()** (2 connections) — `src/core/i18n.rs`
+- **test_i18n_all_languages_populated()** (2 connections) — `src/core/i18n.rs`
+- **test_left_menu_translations_all_8_languages()** (2 connections) — `src/core/i18n.rs`
+- **test_view_translations_all_8_languages_complete()** (2 connections) — `src/core/view_i18n.rs`
+- **.fold_search_str()** (1 connections) — `src/core/i18n.rs`
+- **test_fold_search_str_turkish_and_ascii()** (1 connections) — `src/core/i18n.rs`
+- **test_turkish_translation()** (1 connections) — `src/core/i18n.rs`
+- **TRANSLATIONS** (1 connections) — `src/core/i18n.rs`
+- **VIEW_TRANSLATIONS** (1 connections) — `src/core/view_i18n.rs`
 
 ## Relationships
 
-- [.Toggle .Set .Apply](Toggle_.Set_.Apply.md) (6 shared connections)
-- [updater.rs](updater.rs.md) (6 shared connections)
-- [WinBlastError](WinBlastError.md) (4 shared connections)
-- [svc_mutator.rs](svc_mutator.rs.md) (4 shared connections)
+- [app.rs](app.rs.md) (9 shared connections)
+- [Core UI Internationalization & Text Catalog](Core_UI_Internationalization_&_Text_Catalog.md) (3 shared connections)
+- [startup.rs](startup.rs.md) (3 shared connections)
+- [deserialize](deserialize.md) (2 shared connections)
+- [theme.rs](theme.rs.md) (2 shared connections)
+- [.Reg State() Vendor()](Reg_State_Vendor.md) (2 shared connections)
+- [action_button_guarded](action_button_guarded.md) (2 shared connections)
+- [Scandetailkind Appxinstalled Appxinstalledps](Scandetailkind_Appxinstalled_Appxinstalledps.md) (2 shared connections)
 - [task_scanner.rs](task_scanner.rs.md) (2 shared connections)
-- [Core UI Internationalization & Text Catalog](Core_UI_Internationalization_&_Text_Catalog.md) (2 shared connections)
-- [advanced_matrix.rs](advanced_matrix.rs.md) (1 shared connections)
-- [Language](Language.md) (1 shared connections)
+- [WinBlast Optimizer](WinBlast_Optimizer.md) (2 shared connections)
+- [topological_scheduler.rs](topological_scheduler.rs.md) (2 shared connections)
+- [power.rs](power.rs.md) (2 shared connections)
 
 ## Source Files
 
-- `src/ui/widgets/diff_modal.rs`
+- `src/core/i18n.rs`
+- `src/core/view_i18n.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 46 (98%)
-- INFERRED: 1 (2%)
+- EXTRACTED: 84 (99%)
+- INFERRED: 1 (1%)
 - AMBIGUOUS: 0 (0%)
 
 ---

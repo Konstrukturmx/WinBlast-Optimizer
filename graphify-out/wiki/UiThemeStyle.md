@@ -1,50 +1,49 @@
 # UiThemeStyle
 
-> 16 nodes · cohesion 0.18
+> 14 nodes · cohesion 0.20
 
 ## Key Concepts
 
-- **FeatureInstallState** (26 connections) — `src/core/risk.rs`
-- **dism_error_from_output()** (7 connections) — `src/tools/features_apps.rs`
-- **query_dism_capabilities_locked()** (7 connections) — `src/tools/features_apps.rs`
-- **curated_windows_features_meta()** (6 connections) — `src/tools/features_apps.rs`
-- **query_dism_features_locked()** (6 connections) — `src/tools/features_apps.rs`
-- **set_optional_feature()** (6 connections) — `src/tools/features_apps.rs`
-- **list_optional_features()** (5 connections) — `src/tools/features_apps.rs`
-- **parse_dism_english_state()** (4 connections) — `src/tools/features_apps.rs`
-- **resolve_capability_identity_locked()** (4 connections) — `src/tools/features_apps.rs`
-- **validate_feature_name()** (2 connections) — `src/tools/features_apps.rs`
-- **Disabled** (1 connections) — `src/core/risk.rs`
-- **DisablePending** (1 connections) — `src/core/risk.rs`
-- **Enabled** (1 connections) — `src/core/risk.rs`
-- **EnablePending** (1 connections) — `src/core/risk.rs`
-- **Removed** (1 connections) — `src/core/risk.rs`
-- **Output** (1 connections)
+- **PlatformSecurityInfo** (16 connections) — `src/hardware/sys_inventory.rs`
+- **detect_platform_security_info()** (8 connections) — `src/hardware/sys_inventory.rs`
+- **RamDimmInfo** (7 connections) — `src/hardware/sys_inventory.rs`
+- **query_ram_dimms()** (5 connections) — `src/hardware/sys_inventory.rs`
+- **total_physical_ram_kb()** (4 connections) — `src/hardware/sys_inventory.rs`
+- **.detect_platform_security()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.detect_platform_security()** (3 connections) — `src/core/backend.rs`
+- **test_ram_and_platform_inventory_nonblocking()** (3 connections) — `src/hardware/sys_inventory.rs`
+- **.detect_platform_security()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.detect_platform_security()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.total_physical_ram_kb()** (2 connections) — `src/core/backend.rs`
+- **.detect_platform_security()** (2 connections) — `src/core/backend.rs`
+- **read_smbios_string()** (2 connections) — `src/hardware/sys_inventory.rs`
+- **smbios_mem_type_name()** (2 connections) — `src/hardware/sys_inventory.rs`
 
 ## Relationships
 
-- [parse_guid](parse_guid.md) (10 shared connections)
-- [svc_mutator.rs](svc_mutator.rs.md) (4 shared connections)
-- [SlowScanBackend](SlowScanBackend.md) (3 shared connections)
-- [ThemePalette](ThemePalette.md) (3 shared connections)
-- [enum_scm_services_by_type](enum_scm_services_by_type.md) (2 shared connections)
-- [RealBackend](RealBackend.md) (2 shared connections)
-- [Embedded Catalog Test](Embedded_Catalog_Test.md) (1 shared connections)
-- [power.rs](power.rs.md) (1 shared connections)
-- [InstalledAppxPackage](InstalledAppxPackage.md) (1 shared connections)
-- [deserialize](deserialize.md) (1 shared connections)
-- [System Architecture Changelog](System_Architecture_Changelog.md) (1 shared connections)
+- [topological_scheduler.rs](topological_scheduler.rs.md) (8 shared connections)
+- [driver_update.rs](driver_update.rs.md) (2 shared connections)
+- [.sign](sign.md) (2 shared connections)
+- [startup.rs](startup.rs.md) (2 shared connections)
+- [Disk Cleaning & Temporary File Purger](Disk_Cleaning_&_Temporary_File_Purger.md) (2 shared connections)
+- [app.rs](app.rs.md) (2 shared connections)
+- [backend.rs](backend.rs.md) (2 shared connections)
+- [Integration Suite: Tweak Sandbox E2E](Integration_Suite-_Tweak_Sandbox_E2E.md) (2 shared connections)
+- [FailAtMutationBackend](FailAtMutationBackend.md) (1 shared connections)
+- [OverallHealthGrade](OverallHealthGrade.md) (1 shared connections)
 - [PlatformSecurityInfo](PlatformSecurityInfo.md) (1 shared connections)
+- [in_progress_hud.rs](in_progress_hud.rs.md) (1 shared connections)
 
 ## Source Files
 
-- `src/core/risk.rs`
-- `src/tools/features_apps.rs`
+- `src/core/backend.rs`
+- `src/hardware/sys_inventory.rs`
+- `tests/tweak_sandbox_e2e.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 55 (96%)
-- INFERRED: 2 (4%)
+- EXTRACTED: 46 (100%)
+- INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 
 ---

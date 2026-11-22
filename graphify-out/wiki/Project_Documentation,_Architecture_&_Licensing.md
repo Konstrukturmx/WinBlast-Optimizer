@@ -1,52 +1,52 @@
 # Project Documentation, Architecture & Licensing
 
-> 19 nodes · cohesion 0.13
+> 18 nodes · cohesion 0.21
 
 ## Key Concepts
 
-- **SilentCommand** (13 connections) — `src/core/process.rs`
-- **tools/network_diag.rs** (12 connections) — `src/tools/network_diag.rs`
-- **NetworkDiagnostics** (8 connections) — `src/tools/network_diag.rs`
-- **duration** (6 connections)
-- **Command** (3 connections)
-- **process.rs** (3 connections) — `src/core/process.rs`
-- **.new()** (3 connections) — `src/core/process.rs`
-- **.default()** (3 connections) — `src/tools/network_diag.rs`
-- **DnsProbeResult** (2 connections) — `src/tools/network_diag.rs`
-- **.probe_live()** (2 connections) — `src/tools/network_diag.rs`
-- **query_local_ip()** (2 connections) — `src/tools/network_diag.rs`
-- **tcpstream** (2 connections)
-- **osstr** (1 connections)
-- **S** (1 connections)
-- **DNS_CATALOG** (1 connections) — `src/tools/network_diag.rs`
-- **.apply_dns_servers()** (1 connections) — `src/tools/network_diag.rs`
-- **.flush_dns()** (1 connections) — `src/tools/network_diag.rs`
-- **.reset_dns_dhcp()** (1 connections) — `src/tools/network_diag.rs`
-- **udpsocket** (1 connections)
+- **net_latency.rs** (20 connections) — `src/hardware/net_latency.rs`
+- **LatencyBenchmarkSnapshot** (18 connections) — `src/hardware/net_latency.rs`
+- **measure_dpc_jitter()** (5 connections) — `src/hardware/net_latency.rs`
+- **probe_network_target()** (5 connections) — `src/hardware/net_latency.rs`
+- **run_full_latency_benchmark()** (5 connections) — `src/hardware/net_latency.rs`
+- **DpcJitterResult** (4 connections) — `src/hardware/net_latency.rs`
+- **PingTarget** (4 connections) — `src/hardware/net_latency.rs`
+- **TargetPingResult** (4 connections) — `src/hardware/net_latency.rs`
+- **.run_latency_benchmark()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
+- **SocketAddr** (3 connections)
+- **.run_latency_benchmark()** (3 connections) — `src/core/backend.rs`
+- **.run_latency_benchmark()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.run_latency_benchmark()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.run_latency_benchmark()** (2 connections) — `src/core/backend.rs`
+- **PING_TARGETS** (2 connections) — `src/hardware/net_latency.rs`
+- **test_dpc_jitter_measurement()** (2 connections) — `src/hardware/net_latency.rs`
+- **test_probe_network_zero_probes()** (2 connections) — `src/hardware/net_latency.rs`
+- **test_targets_structure()** (1 connections) — `src/hardware/net_latency.rs`
 
 ## Relationships
 
-- [Reversibility Instant Requireslogoff](Reversibility_Instant_Requireslogoff.md) (4 shared connections)
-- [DriverUpdateItem](DriverUpdateItem.md) (3 shared connections)
-- [backend.rs](backend.rs.md) (1 shared connections)
-- [AppState](AppState.md) (1 shared connections)
-- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (1 shared connections)
-- [AppX Package & Modern App Scanner](AppX_Package_&_Modern_App_Scanner.md) (1 shared connections)
-- [theme.rs](theme.rs.md) (1 shared connections)
-- [Appx Package() Prefixes](Appx_Package_Prefixes.md) (1 shared connections)
-- [Multi-Language Tweak Localization Tables](Multi-Language_Tweak_Localization_Tables.md) (1 shared connections)
-- [RegRawSnapshot](RegRawSnapshot.md) (1 shared connections)
+- [backend.rs](backend.rs.md) (4 shared connections)
+- [appx_scanner.rs](appx_scanner.rs.md) (2 shared connections)
+- [ps_runner.rs](ps_runner.rs.md) (2 shared connections)
+- [WinBlast Optimizer — Developer & Architecture Guide](WinBlast_Optimizer_—_Developer_&_Architecture_Guide.md) (2 shared connections)
+- [latency_bench.rs](latency_bench.rs.md) (2 shared connections)
+- [Integration Suite: Tweak Sandbox E2E](Integration_Suite-_Tweak_Sandbox_E2E.md) (2 shared connections)
+- [driver_update.rs](driver_update.rs.md) (1 shared connections)
+- [FailAtMutationBackend](FailAtMutationBackend.md) (1 shared connections)
+- [ui_scrollbar_test.rs](ui_scrollbar_test.rs.md) (1 shared connections)
 - [deserialize](deserialize.md) (1 shared connections)
-- [.Reg .Set Power](Reg_.Set_Power.md) (1 shared connections)
+- [probe_physical_drive](probe_physical_drive.md) (1 shared connections)
+- [Disk Cleaning & Temporary File Purger](Disk_Cleaning_&_Temporary_File_Purger.md) (1 shared connections)
 
 ## Source Files
 
-- `src/core/process.rs`
-- `src/tools/network_diag.rs`
+- `src/core/backend.rs`
+- `src/hardware/net_latency.rs`
+- `tests/tweak_sandbox_e2e.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 43 (98%)
+- EXTRACTED: 57 (98%)
 - INFERRED: 1 (2%)
 - AMBIGUOUS: 0 (0%)
 

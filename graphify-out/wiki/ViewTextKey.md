@@ -36,10 +36,10 @@
 ### imports_from
 - easy_dashboard.rs `EXTRACTED`
 - [ui/mod.rs](ui-mod.rs.md) `EXTRACTED`
+- automation_center.rs `EXTRACTED`
 - hardware_view.rs `EXTRACTED`
 - driver_bios.rs `EXTRACTED`
 - views/gaming_stats.rs `EXTRACTED`
-- automation_center.rs `EXTRACTED`
 - views/game_prereqs.rs `EXTRACTED`
 - fault_diagnostics.rs `EXTRACTED`
 - goal_planner.rs `EXTRACTED`

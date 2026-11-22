@@ -1,33 +1,32 @@
 # progress_bar.rs
 
-> 9 nodes · cohesion 0.22
+> 10 nodes · cohesion 0.20
 
 ## Key Concepts
 
-- **PresetCategory** (10 connections) — `src/backup/preset_sharing.rs`
-- **.from_u8()** (3 connections) — `src/backup/preset_sharing.rs`
-- **Custom** (1 connections) — `src/backup/preset_sharing.rs`
-- **Gaming** (1 connections) — `src/backup/preset_sharing.rs`
-- **Latency** (1 connections) — `src/backup/preset_sharing.rs`
-- **PowerEfficiency** (1 connections) — `src/backup/preset_sharing.rs`
-- **Privacy** (1 connections) — `src/backup/preset_sharing.rs`
-- **.to_u8()** (1 connections) — `src/backup/preset_sharing.rs`
-- **Workstation** (1 connections) — `src/backup/preset_sharing.rs`
+- **assets/rules/registry_lag.toml** (11 connections) — `Project WinBlast0 Project Structure.md`
+- **1\. Domain Model & Risk Valuation Engine**** (1 connections) — `Project WinBlast0 Project Structure.md`
+- **2\. Declarative Rule Format**** (1 connections) — `Project WinBlast0 Project Structure.md`
+- **3\. Hardware GPU MSI Mode & Priority Optimizer Logic**** (1 connections) — `Project WinBlast0 Project Structure.md`
+- **4\. Auto-Elevation Manifest Setup**** (1 connections) — `Project WinBlast0 Project Structure.md`
+- **Architectural Enhancements**** (1 connections) — `Project WinBlast0 Project Structure.md`
+- **Core Architecture & Code Blueprint**** (1 connections) — `Project WinBlast0 Project Structure.md`
+- **Project Directory Structure**** (1 connections) — `Project WinBlast0 Project Structure.md`
+- **Project WinBlast0**** (1 connections) — `Project WinBlast0 Project Structure.md`
+- **Recommended Rust Tech Stack**** (1 connections) — `Project WinBlast0 Project Structure.md`
 
 ## Relationships
 
-- [PanickingBackend](PanickingBackend.md) (1 shared connections)
-- [startup.rs](startup.rs.md) (1 shared connections)
-- [path](path.md) (1 shared connections)
-- [spawn_guarded_worker](spawn_guarded_worker.md) (1 shared connections)
+- [registry_scanner.rs](registry_scanner.rs.md) (1 shared connections)
+- [app.rs](app.rs.md) (1 shared connections)
 
 ## Source Files
 
-- `src/backup/preset_sharing.rs`
+- `Project WinBlast0 Project Structure.md`
 
 ## Audit Trail
 
-- EXTRACTED: 12 (100%)
+- EXTRACTED: 11 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

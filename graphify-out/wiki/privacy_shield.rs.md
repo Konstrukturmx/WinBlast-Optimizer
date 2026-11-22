@@ -1,35 +1,38 @@
 # privacy_shield.rs
 
-> 11 nodes · cohesion 0.40
+> 13 nodes · cohesion 0.17
 
 ## Key Concepts
 
-- **.encode_canonical_payload()** (16 connections) — `src/backup/preset_sharing.rs`
-- **BinaryWriter** (10 connections) — `src/backup/preset_sharing.rs`
-- **.write_u32()** (5 connections) — `src/backup/preset_sharing.rs`
-- **.write_bytes()** (4 connections) — `src/backup/preset_sharing.rs`
-- **.write_opt_u32()** (4 connections) — `src/backup/preset_sharing.rs`
-- **.write_str()** (4 connections) — `src/backup/preset_sharing.rs`
-- **.write_u8()** (3 connections) — `src/backup/preset_sharing.rs`
-- **.into_bytes()** (2 connections) — `src/backup/preset_sharing.rs`
-- **.new()** (2 connections) — `src/backup/preset_sharing.rs`
-- **.write_i64()** (2 connections) — `src/backup/preset_sharing.rs`
-- **.write_u64()** (2 connections) — `src/backup/preset_sharing.rs`
+- **.sync_startup_tasks_busy()** (9 connections) — `src/app.rs`
+- **.scan_startup_and_tasks_async()** (5 connections) — `src/app.rs`
+- **.set_live_service_start_async()** (5 connections) — `src/app.rs`
+- **.batch_toggle_selected_startup_async()** (4 connections) — `src/app.rs`
+- **.batch_toggle_selected_tasks_async()** (4 connections) — `src/app.rs`
+- **.run_live_task_async()** (4 connections) — `src/app.rs`
+- **.toggle_live_task_async()** (4 connections) — `src/app.rs`
+- **.toggle_startup_entry_async()** (4 connections) — `src/app.rs`
+- **ScheduledTaskRunResult** (3 connections) — `src/app.rs`
+- **ServiceLiveUpdated** (2 connections) — `src/app.rs`
+- **StartupBatchToggled** (2 connections) — `src/app.rs`
+- **StartupEntryToggled** (2 connections) — `src/app.rs`
+- **TasksBatchToggled** (2 connections) — `src/app.rs`
 
 ## Relationships
 
-- [spawn_guarded_worker](spawn_guarded_worker.md) (4 shared connections)
-- [PanickingBackend](PanickingBackend.md) (4 shared connections)
-- [startup.rs](startup.rs.md) (1 shared connections)
-- [.all_physical](all_physical.md) (1 shared connections)
+- [Disk Cleaning & Temporary File Purger](Disk_Cleaning_&_Temporary_File_Purger.md) (8 shared connections)
+- [sys_inventory.rs](sys_inventory.rs.md) (7 shared connections)
+- [startup.rs](startup.rs.md) (7 shared connections)
+- [WindowsOptionalFeature](WindowsOptionalFeature.md) (1 shared connections)
+- [super](super.md) (1 shared connections)
 
 ## Source Files
 
-- `src/backup/preset_sharing.rs`
+- `src/app.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 32 (100%)
+- EXTRACTED: 37 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

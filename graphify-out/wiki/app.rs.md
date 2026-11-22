@@ -1,54 +1,62 @@
 # app.rs
 
-> 19 nodes · cohesion 0.14
+> 49 nodes · cohesion 0.07
 
 ## Key Concepts
 
-- **path** (12 connections)
-- **pathbuf** (10 connections)
-- **diagnostics.rs** (10 connections) — `src/tools/diagnostics.rs`
-- **FaultDiagnosticsReport** (10 connections) — `src/tools/diagnostics.rs`
-- **profile_io.rs** (8 connections) — `src/backup/profile_io.rs`
-- **export_profile()** (4 connections) — `src/backup/profile_io.rs`
-- **import_profile()** (3 connections) — `src/backup/profile_io.rs`
-- **test_profile_export_import()** (3 connections) — `src/backup/profile_io.rs`
-- **parse_multi_sz_lossless()** (3 connections) — `src/tools/diagnostics.rs`
-- **TweakProfile** (2 connections) — `src/backup/profile_io.rs`
-- **.new()** (2 connections) — `src/backup/profile_io.rs`
-- **.scan()** (2 connections) — `src/tools/diagnostics.rs`
-- **MinidumpEntry** (2 connections) — `src/tools/diagnostics.rs`
-- **PendingRebootStatus** (2 connections) — `src/tools/diagnostics.rs`
-- **test_unorthodox_multi_sz_odd_byte_lengths_and_corruptions()** (2 connections) — `tests/edge_cases_unorthodox.rs`
-- **.clear_cbs_reboot_flags()** (1 connections) — `src/tools/diagnostics.rs`
-- **.clear_minidumps()** (1 connections) — `src/tools/diagnostics.rs`
-- **.clear_pending_renames()** (1 connections) — `src/tools/diagnostics.rs`
-- **.restart_system()** (1 connections) — `src/tools/diagnostics.rs`
+- **Language** (53 connections) — `src/core/i18n.rs`
+- **tweak_i18n/mod.rs** (42 connections) — `src/core/tweak_i18n/mod.rs`
+- **localize_optional_feature()** (6 connections) — `src/core/tweak_i18n/mod.rs`
+- **lookup_text_table()** (6 connections) — `src/core/tweak_i18n/mod.rs`
+- **localize_power_scheme_name()** (5 connections) — `src/core/tweak_i18n/mod.rs`
+- **localize_winget()** (5 connections) — `src/core/tweak_i18n/mod.rs`
+- **lookup_pair_table()** (5 connections) — `src/core/tweak_i18n/mod.rs`
+- **non_english_idx()** (5 connections) — `src/core/tweak_i18n/mod.rs`
+- **test_winget_optional_features_and_telemetry_services()** (5 connections) — `src/core/tweak_i18n/mod.rs`
+- **is_privacy_or_telemetry_category()** (4 connections) — `src/core/tweak_i18n/mod.rs`
+- **localize_category()** (4 connections) — `src/core/tweak_i18n/mod.rs`
+- **localize_ledger_token()** (4 connections) — `src/core/tweak_i18n/mod.rs`
+- **localize_sub_category()** (4 connections) — `src/core/tweak_i18n/mod.rs`
+- **localize_telemetry_service()** (4 connections) — `src/core/tweak_i18n/mod.rs`
+- **test_all_11_gaming_latency_ultra_tweaks_localized_all_7_languages()** (4 connections) — `src/core/tweak_i18n/mod.rs`
+- **test_all_32_deep_opt_tweaks_localized_all_7_languages()** (4 connections) — `src/core/tweak_i18n/mod.rs`
+- **test_categories_and_sub_categories()** (4 connections) — `src/core/tweak_i18n/mod.rs`
+- **idx()** (3 connections) — `src/core/status_i18n.rs`
+- **localize_kfm_detail()** (3 connections) — `src/core/status_i18n.rs`
+- **test_power_schemes_and_ledger_tokens()** (3 connections) — `src/core/tweak_i18n/mod.rs`
+- **tweak_description()** (3 connections) — `src/core/tweak_i18n/mod.rs`
+- **tweak_title()** (3 connections) — `src/core/tweak_i18n/mod.rs`
+- **contains_ascii_ci()** (2 connections) — `src/core/tweak_i18n/mod.rs`
+- **NON_ENGLISH_LANGS** (2 connections) — `src/core/tweak_i18n/mod.rs`
+- **VERBOSE_LOCALES** (2 connections) — `tests/ui_responsive_e2e.rs`
+- *... and 24 more nodes in this community*
 
 ## Relationships
 
-- [Reversibility Instant Requireslogoff](Reversibility_Instant_Requireslogoff.md) (4 shared connections)
-- [SlowScanBackend](SlowScanBackend.md) (3 shared connections)
-- [Appx Package() Prefixes](Appx_Package_Prefixes.md) (2 shared connections)
-- [RegRawSnapshot](RegRawSnapshot.md) (2 shared connections)
-- [features_apps.rs](features_apps.rs.md) (2 shared connections)
-- [FailAtMutationBackend](FailAtMutationBackend.md) (2 shared connections)
-- [Disk Cleaning & Temporary File Purger](Disk_Cleaning_&_Temporary_File_Purger.md) (2 shared connections)
-- [WorkerEvent](WorkerEvent.md) (2 shared connections)
-- [backend.rs](backend.rs.md) (2 shared connections)
-- [CoreParkingState](CoreParkingState.md) (2 shared connections)
-- [ps_runner.rs](ps_runner.rs.md) (1 shared connections)
-- [.Reg .Set Power](Reg_.Set_Power.md) (1 shared connections)
+- [theme.rs](theme.rs.md) (15 shared connections)
+- [ui_scrollbar_test.rs](ui_scrollbar_test.rs.md) (6 shared connections)
+- [GPU Silicon & Hardware Tuning Policies](GPU_Silicon_&_Hardware_Tuning_Policies.md) (6 shared connections)
+- [features_apps.rs](features_apps.rs.md) (4 shared connections)
+- [parse_guid](parse_guid.md) (3 shared connections)
+- [.Reg State() Vendor()](Reg_State_Vendor.md) (3 shared connections)
+- [decode_oem_bytes](decode_oem_bytes.md) (2 shared connections)
+- [Disk Cleaning & Temporary File Purger](Disk_Cleaning_&_Temporary_File_Purger.md) (1 shared connections)
+- [full_telemetry_audit_with](full_telemetry_audit_with.md) (1 shared connections)
+- [spawn_guarded_worker](spawn_guarded_worker.md) (1 shared connections)
+- [app.rs](app.rs.md) (1 shared connections)
+- [Reversibility Instant Requireslogoff](Reversibility_Instant_Requireslogoff.md) (1 shared connections)
 
 ## Source Files
 
-- `src/backup/profile_io.rs`
-- `src/tools/diagnostics.rs`
-- `tests/edge_cases_unorthodox.rs`
+- `src/core/i18n.rs`
+- `src/core/status_i18n.rs`
+- `src/core/tweak_i18n/mod.rs`
+- `tests/ui_responsive_e2e.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 53 (96%)
-- INFERRED: 2 (4%)
+- EXTRACTED: 127 (98%)
+- INFERRED: 2 (2%)
 - AMBIGUOUS: 0 (0%)
 
 ---

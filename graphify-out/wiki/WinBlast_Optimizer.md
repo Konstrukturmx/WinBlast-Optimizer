@@ -1,59 +1,59 @@
 # WinBlast Optimizer
 
-> 50 nodes · cohesion 0.07
+> 30 nodes · cohesion 0.08
 
 ## Key Concepts
 
-- **BlastResult** (121 connections)
-- **.create_and_activate_performance_plan()** (5 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.detect_os()** (5 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.get_active_power_scheme()** (5 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.remove_appx_batch()** (5 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.detect_os()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.detect_os()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.create_restore_point()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.read_power_setting_index()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.remove_edge_preserve_webview2()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.request_system_reboot()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.restore_stock_parking()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.set_active_power_scheme()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.set_startup_entry_enabled_by_id()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.set_usb_root_hub_power_saving()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.uninstall_onedrive_safe()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.winget_install_package()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.write_hosts_file()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.create_and_activate_performance_plan()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.create_restore_point()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.get_active_power_scheme()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.read_power_setting_index()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.remove_appx_batch()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.remove_edge_preserve_webview2()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.request_system_reboot()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- *... and 25 more nodes in this community*
+- **power.rs** (60 connections) — `src/hardware/power.rs`
+- **fallback_scheme_name()** (6 connections) — `src/hardware/power.rs`
+- **test_ac_power_status_and_enumerated_range_noop()** (5 connections) — `src/hardware/power.rs`
+- **is_on_ac_power()** (3 connections) — `src/hardware/power.rs`
+- **resolve_indirect_string()** (2 connections) — `src/hardware/power.rs`
+- **strip_indirect_prefix()** (2 connections) — `src/hardware/power.rs`
+- **test_fallback_scheme_name_indirect_stripping()** (2 connections) — `src/hardware/power.rs`
+- **callntpowerinformation** (1 connections)
+- **getsystempowerstatus** (1 connections)
+- **hlocal** (1 connections)
+- **localfree** (1 connections)
+- **ntstatus** (1 connections)
+- **powerduplicatescheme** (1 connections)
+- **powergetactivescheme** (1 connections)
+- **powerreadacdefaultindex** (1 connections)
+- **powerreadacvalueindex** (1 connections)
+- **powerreaddcdefaultindex** (1 connections)
+- **powerreaddcvalueindex** (1 connections)
+- **powerreadvaluemax** (1 connections)
+- **powerreadvaluemin** (1 connections)
+- **powersetactivescheme** (1 connections)
+- **powerwriteacvalueindex** (1 connections)
+- **powerwritedcvalueindex** (1 connections)
+- **powerwritefriendlyname** (1 connections)
+- **powerwritevaluemax** (1 connections)
+- *... and 5 more nodes in this community*
 
 ## Relationships
 
-- [sys_inventory.rs](sys_inventory.rs.md) (48 shared connections)
-- [InstalledAppxPackage](InstalledAppxPackage.md) (28 shared connections)
-- [SlowScanBackend](SlowScanBackend.md) (17 shared connections)
-- [.poll](poll.md) (6 shared connections)
-- [progress_bar.rs](progress_bar.rs.md) (6 shared connections)
-- [features_apps.rs](features_apps.rs.md) (3 shared connections)
-- [Item](Item.md) (3 shared connections)
-- [enum_scm_services_by_type](enum_scm_services_by_type.md) (3 shared connections)
-- [WinBlast Optimizer — Developer & Architecture Guide](WinBlast_Optimizer_—_Developer_&_Architecture_Guide.md) (3 shared connections)
-- [RegStringValue](RegStringValue.md) (3 shared connections)
-- [main.rs](main.rs.md) (3 shared connections)
-- [CoreParkingState](CoreParkingState.md) (3 shared connections)
+- [normalize_guid_str](normalize_guid_str.md) (20 shared connections)
+- [AutoTuneProfile](AutoTuneProfile.md) (3 shared connections)
+- [PlatformSecurityInfo](PlatformSecurityInfo.md) (3 shared connections)
+- [backend.rs](backend.rs.md) (2 shared connections)
+- [deserialize](deserialize.md) (2 shared connections)
+- [svc_mutator.rs](svc_mutator.rs.md) (1 shared connections)
+- [ui_scrollbar_test.rs](ui_scrollbar_test.rs.md) (1 shared connections)
+- [WinBlast Optimizer — Developer & Architecture Guide](WinBlast_Optimizer_—_Developer_&_Architecture_Guide.md) (1 shared connections)
+- [AppxCache](AppxCache.md) (1 shared connections)
+- [startup.rs](startup.rs.md) (1 shared connections)
+- [set_usb_root_hub_power_saving](set_usb_root_hub_power_saving.md) (1 shared connections)
+- [advanced_matrix.rs](advanced_matrix.rs.md) (1 shared connections)
 
 ## Source Files
 
-- `tests/tweak_sandbox_e2e.rs`
+- `src/hardware/power.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 208 (100%)
-- INFERRED: 0 (0%)
+- EXTRACTED: 68 (97%)
+- INFERRED: 2 (3%)
 - AMBIGUOUS: 0 (0%)
 
 ---

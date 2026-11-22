@@ -1,48 +1,37 @@
 # deserialize
 
-> 17 nodes · cohesion 0.17
+> 15 nodes · cohesion 0.23
 
 ## Key Concepts
 
-- **thermal.rs** (17 connections) — `src/hardware/thermal.rs`
-- **ThermalHealth** (9 connections) — `src/hardware/thermal.rs`
-- **SystemThermalSnapshot** (7 connections) — `src/hardware/thermal.rs`
-- **.read()** (4 connections) — `src/hardware/thermal.rs`
-- **AtomicU8** (3 connections)
-- **ComponentThermal** (3 connections) — `src/hardware/thermal.rs`
-- **NVIDIA_SMI_STATUS** (2 connections) — `src/hardware/thermal.rs`
-- **probe_acpi_wmi_and_perf()** (2 connections) — `src/hardware/thermal.rs`
-- **probe_gpu_thermals()** (2 connections) — `src/hardware/thermal.rs`
-- **test_thermal_snapshot_read_no_panic()** (2 connections) — `src/hardware/thermal.rs`
-- **WMI_ACPI_STATUS** (2 connections) — `src/hardware/thermal.rs`
-- **test_thermal_health_labels()** (1 connections) — `src/hardware/thermal.rs`
-- **Cool** (1 connections) — `src/hardware/thermal.rs`
-- **Hot** (1 connections) — `src/hardware/thermal.rs`
-- **.label()** (1 connections) — `src/hardware/thermal.rs`
-- **Optimal** (1 connections) — `src/hardware/thermal.rs`
-- **Warm** (1 connections) — `src/hardware/thermal.rs`
+- **MaintenanceTaskKind** (14 connections) — `src/tools/automation.rs`
+- **.task_name()** (6 connections) — `src/tools/automation.rs`
+- **install_maintenance_task()** (5 connections) — `src/tools/automation.rs`
+- **query_all_maintenance_tasks()** (5 connections) — `src/tools/automation.rs`
+- **test_iso_29119_maintenance_tasks_specification()** (5 connections) — `src/tools/automation.rs`
+- **is_maintenance_task_installed()** (4 connections) — `src/tools/automation.rs`
+- **MaintenanceTaskStatus** (4 connections) — `src/tools/automation.rs`
+- **.schedule_frequency()** (3 connections) — `src/tools/automation.rs`
+- **.trigger_time()** (3 connections) — `src/tools/automation.rs`
+- **remove_maintenance_task()** (3 connections) — `src/tools/automation.rs`
+- **.all()** (1 connections) — `src/tools/automation.rs`
+- **DailyMemoryPurge** (1 connections) — `src/tools/automation.rs`
+- **.description()** (1 connections) — `src/tools/automation.rs`
+- **TelemetryGuard** (1 connections) — `src/tools/automation.rs`
+- **WeeklyTempCleaner** (1 connections) — `src/tools/automation.rs`
 
 ## Relationships
 
-- [CoreParkingState](CoreParkingState.md) (2 shared connections)
-- [Reversibility Instant Requireslogoff](Reversibility_Instant_Requireslogoff.md) (2 shared connections)
-- [parking.rs](parking.rs.md) (1 shared connections)
-- [.take_injected_error](take_injected_error.md) (1 shared connections)
-- [Project Documentation, Architecture & Licensing](Project_Documentation,_Architecture_&_Licensing.md) (1 shared connections)
-- [State Ledger & Restore Point Engine](State_Ledger_&_Restore_Point_Engine.md) (1 shared connections)
-- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (1 shared connections)
-- [Embedded Catalog Test](Embedded_Catalog_Test.md) (1 shared connections)
-- [.Toggle .Set .Apply](Toggle_.Set_.Apply.md) (1 shared connections)
-- [WinBlastError](WinBlastError.md) (1 shared connections)
-- [enums](enums.md) (1 shared connections)
+- [RestorePoint](RestorePoint.md) (7 shared connections)
+- [Disk Cleaning & Temporary File Purger](Disk_Cleaning_&_Temporary_File_Purger.md) (2 shared connections)
 
 ## Source Files
 
-- `src/hardware/thermal.rs`
+- `src/tools/automation.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 34 (94%)
+- EXTRACTED: 31 (94%)
 - INFERRED: 2 (6%)
 - AMBIGUOUS: 0 (0%)
 

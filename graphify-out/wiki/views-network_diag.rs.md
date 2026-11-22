@@ -1,10 +1,14 @@
 # views/network_diag.rs
 
-> 1 nodes · cohesion 1.00
+> 5 nodes · cohesion 0.70
 
 ## Key Concepts
 
-- **tools/mod.rs** (0 connections) — `src/tools/mod.rs`
+- **main.rs** (4 connections) — `src/main.rs`
+- **main()** (3 connections) — `src/main.rs`
+- **run_rune()** (3 connections) — `src/main.rs`
+- **detect_screen_workarea()** (2 connections) — `src/main.rs`
+- **run_slint()** (2 connections) — `src/main.rs`
 
 ## Relationships
 
@@ -12,11 +16,11 @@
 
 ## Source Files
 
-- `src/tools/mod.rs`
+- `src/main.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 0 (0%)
+- EXTRACTED: 7 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

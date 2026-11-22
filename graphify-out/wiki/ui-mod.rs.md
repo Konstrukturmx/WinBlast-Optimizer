@@ -1,27 +1,31 @@
 # ui/mod.rs
 
-> 6 nodes · cohesion 0.33
+> 8 nodes · cohesion 0.29
 
 ## Key Concepts
 
-- **build.rs** (5 connections) — `build.rs`
-- **asinvoker** (1 connections)
-- **main()** (1 connections) — `build.rs`
-- **embed_manifest** (1 connections)
-- **highestavailable** (1 connections)
-- **new_manifest** (1 connections)
+- **Spring** (8 connections)
+- **.motion()** (5 connections) — `src/ui/theme.rs`
+- **.easing_spring()** (3 connections) — `src/ui/theme.rs`
+- **EASING_CLASSIC** (2 connections) — `src/ui/theme.rs`
+- **EASING_COMPACT** (2 connections) — `src/ui/theme.rs`
+- **EASING_GLASSY** (2 connections) — `src/ui/theme.rs`
+- **EASING_MATERIALISTIC** (2 connections) — `src/ui/theme.rs`
+- **EASING_MINIMALISTIC** (2 connections) — `src/ui/theme.rs`
 
 ## Relationships
 
-- No strong cross-community connections detected
+- [Project History & Release Version Ledger](Project_History_&_Release_Version_Ledger.md) (5 shared connections)
+- [RegRawSnapshot](RegRawSnapshot.md) (4 shared connections)
+- [RealBackend](RealBackend.md) (1 shared connections)
 
 ## Source Files
 
-- `build.rs`
+- `src/ui/theme.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 5 (100%)
+- EXTRACTED: 18 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

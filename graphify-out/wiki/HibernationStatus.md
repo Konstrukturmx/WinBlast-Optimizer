@@ -1,52 +1,54 @@
 # HibernationStatus
 
-> 17 nodes · cohesion 0.15
+> 22 nodes · cohesion 0.13
 
 ## Key Concepts
 
-- **HibernationStatus** (22 connections) — `src/hardware/power.rs`
-- **PowerSchemeInfo** (15 connections) — `src/hardware/power.rs`
-- **RollbackRefreshData** (6 connections) — `src/app.rs`
-- **.list_power_schemes()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.query_hibernation_status()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
-- **query_hibernation_and_standby()** (3 connections) — `src/hardware/power.rs`
-- **set_hibernation_enabled()** (3 connections) — `src/hardware/power.rs`
-- **.list_power_schemes()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.query_hibernation_status()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.list_power_schemes()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.query_hibernation_status()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.list_power_schemes()** (2 connections) — `src/core/backend.rs`
-- **.query_hibernation_status()** (2 connections) — `src/core/backend.rs`
-- **.set_hibernation_enabled()** (2 connections) — `src/core/backend.rs`
-- **.list_power_schemes()** (2 connections) — `src/core/backend.rs`
-- **.query_hibernation_status()** (2 connections) — `src/core/backend.rs`
-- **.set_hibernation_enabled()** (2 connections) — `src/core/backend.rs`
+- **FailAtMutationBackend** (79 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.maybe_arm_error()** (12 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.reg_set_raw()** (5 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.reg_delete_tree()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.reg_delete_value()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.reg_set_binary()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.reg_set_dword()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.reg_set_string()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.remove_appx_package()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.set_scheduled_task_enabled()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.set_service_start_type()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.write_power_setting_index()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.reg_delete_value()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.remove_appx_package()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.reg_delete_value()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.remove_appx_package()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.get_task_enabled()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.set_mpo_disabled()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.get_task_enabled()** (2 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.set_mpo_disabled()** (2 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.get_task_enabled()** (2 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.set_mpo_disabled()** (2 connections) — `tests/tweak_sandbox_e2e.rs`
 
 ## Relationships
 
-- [SlowScanBackend](SlowScanBackend.md) (6 shared connections)
-- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (4 shared connections)
-- [sys_inventory.rs](sys_inventory.rs.md) (4 shared connections)
-- [Embedded Catalog Test](Embedded_Catalog_Test.md) (3 shared connections)
-- [Integration Suite: Tweak Sandbox E2E](Integration_Suite-_Tweak_Sandbox_E2E.md) (3 shared connections)
-- [startup.rs](startup.rs.md) (3 shared connections)
-- [.Toggle .Set .Apply](Toggle_.Set_.Apply.md) (2 shared connections)
-- [Project History & Release Version Ledger](Project_History_&_Release_Version_Ledger.md) (2 shared connections)
-- [deserialize](deserialize.md) (2 shared connections)
-- [theme.rs](theme.rs.md) (2 shared connections)
-- [full_telemetry_audit_with](full_telemetry_audit_with.md) (2 shared connections)
-- [InstalledAppxPackage](InstalledAppxPackage.md) (2 shared connections)
+- [automation.rs](automation.rs.md) (28 shared connections)
+- [Integration Suite: Tweak Sandbox E2E](Integration_Suite-_Tweak_Sandbox_E2E.md) (27 shared connections)
+- [registry_scanner.rs](registry_scanner.rs.md) (10 shared connections)
+- [task_scanner.rs](task_scanner.rs.md) (3 shared connections)
+- [WinBlastError](WinBlastError.md) (2 shared connections)
+- [.all_physical](all_physical.md) (2 shared connections)
+- [.maybe_arm_error](maybe_arm_error.md) (1 shared connections)
+- [in_progress_hud.rs](in_progress_hud.rs.md) (1 shared connections)
+- [FailAtMutationBackend](FailAtMutationBackend.md) (1 shared connections)
+- [DiskSubsystemReport](DiskSubsystemReport.md) (1 shared connections)
+- [RegStringValue](RegStringValue.md) (1 shared connections)
+- [adaptive_tuning.rs](adaptive_tuning.rs.md) (1 shared connections)
 
 ## Source Files
 
-- `src/app.rs`
-- `src/core/backend.rs`
-- `src/hardware/power.rs`
 - `tests/tweak_sandbox_e2e.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 60 (100%)
+- EXTRACTED: 129 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

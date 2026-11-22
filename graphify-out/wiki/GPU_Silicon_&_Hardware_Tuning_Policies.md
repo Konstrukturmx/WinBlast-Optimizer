@@ -1,55 +1,57 @@
 # GPU Silicon & Hardware Tuning Policies
 
-> 35 nodes · cohesion 0.07
+> 31 nodes · cohesion 0.12
 
 ## Key Concepts
 
-- **spawn_guarded_worker()** (48 connections) — `src/app.rs`
-- **.sync_clean_apps_busy()** (10 connections) — `src/app.rs`
-- **.execute_clean_selected()** (5 connections) — `src/app.rs`
-- **.scan_appx_and_features_async()** (5 connections) — `src/app.rs`
-- **WorkerDropGuard** (5 connections) — `src/app.rs`
-- **.install_selected_winget_async()** (4 connections) — `src/app.rs`
-- **.remove_edge_async()** (4 connections) — `src/app.rs`
-- **.remove_selected_appx_async()** (4 connections) — `src/app.rs`
-- **.rollback_entry()** (4 connections) — `src/app.rs`
-- **.start_latency_benchmark()** (4 connections) — `src/app.rs`
-- **.toggle_optional_feature_async()** (4 connections) — `src/app.rs`
-- **.uninstall_onedrive_async()** (4 connections) — `src/app.rs`
-- **Waker** (4 connections)
-- **Sender** (3 connections)
-- **.block_telemetry_hosts()** (3 connections) — `src/app.rs`
-- **.restart_explorer_safely()** (3 connections) — `src/app.rs`
-- **panic_payload_to_string()** (3 connections) — `src/app.rs`
-- **OneDriveEdgeResult** (3 connections) — `src/app.rs`
-- **P** (2 connections)
-- **.activate_winblast_ultimate_power_plan()** (2 connections) — `src/app.rs`
-- **.set_active_power_plan()** (2 connections) — `src/app.rs`
-- **.toggle_gpu_msi()** (2 connections) — `src/app.rs`
-- **.toggle_hags()** (2 connections) — `src/app.rs`
-- **.toggle_hibernation()** (2 connections) — `src/app.rs`
-- **.toggle_mpo()** (2 connections) — `src/app.rs`
-- *... and 10 more nodes in this community*
+- **LocalizedTweakText** (16 connections) — `src/core/tweak_i18n/mod.rs`
+- **localize_tweak()** (14 connections) — `src/core/tweak_i18n/mod.rs`
+- **lookup()** (5 connections) — `src/core/tweak_i18n/de.rs`
+- **lookup()** (5 connections) — `src/core/tweak_i18n/es.rs`
+- **lookup()** (5 connections) — `src/core/tweak_i18n/fr.rs`
+- **lookup()** (5 connections) — `src/core/tweak_i18n/ja.rs`
+- **lookup()** (5 connections) — `src/core/tweak_i18n/ru.rs`
+- **lookup()** (5 connections) — `src/core/tweak_i18n/tr.rs`
+- **lookup()** (5 connections) — `src/core/tweak_i18n/zh.rs`
+- **de.rs** (4 connections) — `src/core/tweak_i18n/de.rs`
+- **es.rs** (4 connections) — `src/core/tweak_i18n/es.rs`
+- **fr.rs** (4 connections) — `src/core/tweak_i18n/fr.rs`
+- **ja.rs** (4 connections) — `src/core/tweak_i18n/ja.rs`
+- **ru.rs** (4 connections) — `src/core/tweak_i18n/ru.rs`
+- **tr.rs** (4 connections) — `src/core/tweak_i18n/tr.rs`
+- **zh.rs** (4 connections) — `src/core/tweak_i18n/zh.rs`
+- **test_all_230_tweaks_localized_all_7_languages()** (3 connections) — `src/core/tweak_i18n/mod.rs`
+- **tweak_description()** (2 connections) — `src/core/tweak_i18n/de.rs`
+- **tweak_title()** (2 connections) — `src/core/tweak_i18n/de.rs`
+- **tweak_description()** (2 connections) — `src/core/tweak_i18n/es.rs`
+- **tweak_title()** (2 connections) — `src/core/tweak_i18n/es.rs`
+- **tweak_description()** (2 connections) — `src/core/tweak_i18n/fr.rs`
+- **tweak_title()** (2 connections) — `src/core/tweak_i18n/fr.rs`
+- **tweak_description()** (2 connections) — `src/core/tweak_i18n/ja.rs`
+- **tweak_title()** (2 connections) — `src/core/tweak_i18n/ja.rs`
+- *... and 6 more nodes in this community*
 
 ## Relationships
 
-- [.Toggle .Set .Apply](Toggle_.Set_.Apply.md) (24 shared connections)
-- [Embedded Catalog Test](Embedded_Catalog_Test.md) (16 shared connections)
-- [registry_scanner.rs](registry_scanner.rs.md) (7 shared connections)
-- [AppxCache](AppxCache.md) (6 shared connections)
-- [WinBlastScrollable](WinBlastScrollable.md) (5 shared connections)
-- [power_governor.rs](power_governor.rs.md) (4 shared connections)
-- [SlowScanBackend](SlowScanBackend.md) (3 shared connections)
-- [svc_mutator.rs](svc_mutator.rs.md) (1 shared connections)
+- [app.rs](app.rs.md) (6 shared connections)
+- [theme.rs](theme.rs.md) (1 shared connections)
+- [in_progress_hud.rs](in_progress_hud.rs.md) (1 shared connections)
 
 ## Source Files
 
-- `src/app.rs`
+- `src/core/tweak_i18n/de.rs`
+- `src/core/tweak_i18n/es.rs`
+- `src/core/tweak_i18n/fr.rs`
+- `src/core/tweak_i18n/ja.rs`
+- `src/core/tweak_i18n/mod.rs`
+- `src/core/tweak_i18n/ru.rs`
+- `src/core/tweak_i18n/tr.rs`
+- `src/core/tweak_i18n/zh.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 109 (100%)
-- INFERRED: 0 (0%)
+- EXTRACTED: 65 (98%)
+- INFERRED: 1 (2%)
 - AMBIGUOUS: 0 (0%)
 
 ---

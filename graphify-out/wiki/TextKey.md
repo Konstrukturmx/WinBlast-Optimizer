@@ -45,11 +45,11 @@
 - [advanced_matrix.rs](advanced_matrix.rs.md) `EXTRACTED`
 - button.rs `EXTRACTED`
 - [privacy_shield.rs](privacy_shield.rs.md) `EXTRACTED`
-- [diff_modal.rs](diff_modal.rs.md) `EXTRACTED`
+- diff_modal.rs `EXTRACTED`
+- automation_center.rs `EXTRACTED`
 - hardware_view.rs `EXTRACTED`
 - driver_bios.rs `EXTRACTED`
 - views/gaming_stats.rs `EXTRACTED`
-- automation_center.rs `EXTRACTED`
 - views/game_prereqs.rs `EXTRACTED`
 - [latency_bench.rs](latency_bench.rs.md) `EXTRACTED`
 - backup_center.rs `EXTRACTED`

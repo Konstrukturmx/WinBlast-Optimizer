@@ -1,22 +1,31 @@
 # clean_exe_path
 
-> 1 nodes · cohesion 1.00
+> 5 nodes · cohesion 0.60
 
 ## Key Concepts
 
-- **lib.rs** (0 connections) — `src/lib.rs`
+- **.sample()** (8 connections) — `src/hardware/monitor.rs`
+- **SystemMonitor** (7 connections) — `src/hardware/monitor.rs`
+- **.new()** (5 connections) — `src/hardware/monitor.rs`
+- **test_monitor_cold_main_thread_never_sleeps_or_spikes()** (3 connections) — `src/hardware/monitor.rs`
+- **test_monitor_sample()** (3 connections) — `src/hardware/monitor.rs`
 
 ## Relationships
 
-- No strong cross-community connections detected
+- [ps_runner.rs](ps_runner.rs.md) (6 shared connections)
+- [ThemePalette](ThemePalette.md) (4 shared connections)
+- [FeatureInstallState](FeatureInstallState.md) (1 shared connections)
+- [DateTime](DateTime.md) (1 shared connections)
+- [backend.rs](backend.rs.md) (1 shared connections)
+- [.sync_startup_tasks_busy](sync_startup_tasks_busy.md) (1 shared connections)
 
 ## Source Files
 
-- `src/lib.rs`
+- `src/hardware/monitor.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 0 (0%)
+- EXTRACTED: 20 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

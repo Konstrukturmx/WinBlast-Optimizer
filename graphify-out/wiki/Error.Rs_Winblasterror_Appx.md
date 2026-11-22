@@ -1,48 +1,42 @@
 # Error.Rs Winblasterror Appx
 
-> 22 nodes · cohesion 0.09
+> 20 nodes · cohesion 0.10
 
 ## Key Concepts
 
-- **SandboxOp** (25 connections) — `src/core/backend.rs`
-- **.create_restore_point()** (5 connections) — `src/core/backend.rs`
-- **.ensure_preflight_restore_point()** (3 connections) — `src/core/backend.rs`
-- **CreateRestorePoint** (2 connections) — `src/core/backend.rs`
-- **AppxRemove** (1 connections) — `src/core/backend.rs`
-- **BlockHosts** (1 connections) — `src/core/backend.rs`
-- **CleanExecuted** (1 connections) — `src/core/backend.rs`
-- **ExplorerRestarted** (1 connections) — `src/core/backend.rs`
-- **FeatureSet** (1 connections) — `src/core/backend.rs`
-- **GpuMsi** (1 connections) — `src/core/backend.rs`
-- **PowerCfgSet** (1 connections) — `src/core/backend.rs`
-- **RebootRequested** (1 connections) — `src/core/backend.rs`
-- **RegDelete** (1 connections) — `src/core/backend.rs`
-- **RegDeleteTree** (1 connections) — `src/core/backend.rs`
-- **RegSet** (1 connections) — `src/core/backend.rs`
-- **RegSetBinary** (1 connections) — `src/core/backend.rs`
-- **RegSetString** (1 connections) — `src/core/backend.rs`
-- **RestoreParking** (1 connections) — `src/core/backend.rs`
-- **ServiceSet** (1 connections) — `src/core/backend.rs`
-- **StartupToggled** (1 connections) — `src/core/backend.rs`
-- **TaskSet** (1 connections) — `src/core/backend.rs`
-- **UnparkCores** (1 connections) — `src/core/backend.rs`
+- **WinBlast Optimizer** (21 connections) — `README.md`
+- **1. 🦀 Pure-Rust Rune Engine & Zero-Lag GUI** (1 connections) — `README.md`
+- **2. 🛡️ Dual-Layer Transactional Rollback & Safety** (1 connections) — `README.md`
+- **3. ⏱️ NT Kernel Telemetry & Microsecond Latency Suite** (1 connections) — `README.md`
+- **4. 🧠 Intelligent Hardware & CPU Core Parking Engine** (1 connections) — `README.md`
+- **Advanced Optimization Matrix (168 Curated Tweaks)** (1 connections) — `README.md`
+- **Build Commands** (1 connections) — `README.md`
+- **Building & Verification** (1 connections) — `README.md`
+- **Comprehensive Quality Assurance & Test Matrix** (1 connections) — `README.md`
+- **CPU Core Parking & Hybrid Architecture Visualizer** (1 connections) — `README.md`
+- **Declarative Tweak Catalogs (168 Audited Tweaks)** (1 connections) — `README.md`
+- **Easy Dashboard (One-Click Profiles & Live Hardware Telemetry)** (1 connections) — `README.md`
+- **Full-Stack Internationalization (i18n)** (1 connections) — `README.md`
+- **GPU Silicon Tuning & Hardware Vendor Gating** (1 connections) — `README.md`
+- **Interface Preview** (1 connections) — `README.md`
+- **Key Architecture & Capabilities** (1 connections) — `README.md`
+- **License** (1 connections) — `README.md`
+- **Next-Generation, Pure-Rust Windows System Optimizer & Hardware Latency Engine** (1 connections) — `README.md`
+- **Prerequisites** (1 connections) — `README.md`
+- **Security & VirusTotal Transparency** (1 connections) — `README.md`
 
 ## Relationships
 
-- [power.rs](power.rs.md) (4 shared connections)
-- [full_telemetry_audit_with](full_telemetry_audit_with.md) (3 shared connections)
-- [svc_mutator.rs](svc_mutator.rs.md) (1 shared connections)
-- [Project History & Release Version Ledger](Project_History_&_Release_Version_Ledger.md) (1 shared connections)
-- [deserialize](deserialize.md) (1 shared connections)
-- [startup.rs](startup.rs.md) (1 shared connections)
+- [power_governor.rs](power_governor.rs.md) (1 shared connections)
+- [ps_runner.rs](ps_runner.rs.md) (1 shared connections)
 
 ## Source Files
 
-- `src/core/backend.rs`
+- `README.md`
 
 ## Audit Trail
 
-- EXTRACTED: 32 (100%)
+- EXTRACTED: 21 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

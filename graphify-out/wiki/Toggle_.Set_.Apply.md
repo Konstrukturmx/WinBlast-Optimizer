@@ -1,60 +1,51 @@
 # .Toggle .Set .Apply
 
-> 62 nodes · cohesion 0.05
+> 61 nodes · cohesion 0.07
 
 ## Key Concepts
 
-- **AppState** (348 connections) — `src/app.rs`
-- **views/network_diag.rs** (14 connections) — `src/ui/views/network_diag.rs`
-- **.handle_switch_click()** (8 connections) — `src/app.rs`
-- **view()** (8 connections) — `src/ui/views/network_diag.rs`
-- **.run_scan_internal()** (7 connections) — `src/app.rs`
-- **.get_tweak_scan()** (6 connections) — `src/app.rs`
-- **.apply_selected()** (5 connections) — `src/app.rs`
-- **.drain_worker_events_bounded()** (5 connections) — `src/app.rs`
-- **.new_with_backend()** (5 connections) — `src/app.rs`
-- **.poll()** (5 connections) — `src/app.rs`
-- **.start_scan()** (4 connections) — `src/app.rs`
-- **.sync_search_state()** (4 connections) — `src/app.rs`
-- **.tr()** (4 connections) — `src/app.rs`
-- **.cycle_telemetry_interval()** (3 connections) — `src/app.rs`
-- **.force_scan()** (3 connections) — `src/app.rs`
-- **.is_switch_active()** (3 connections) — `src/app.rs`
-- **.new()** (3 connections) — `src/app.rs`
-- **.set_theme_mode()** (3 connections) — `src/app.rs`
-- **.telemetry_interval_ms()** (3 connections) — `src/app.rs`
-- **localize_dns_category()** (3 connections) — `src/ui/views/network_diag.rs`
-- **localize_dns_status()** (3 connections) — `src/ui/views/network_diag.rs`
-- **.calculate_before_after_impact()** (2 connections) — `src/app.rs`
-- **.default()** (2 connections) — `src/app.rs`
-- **.drain_worker_events()** (2 connections) — `src/app.rs`
-- **.install_all_missing_prereqs()** (2 connections) — `src/app.rs`
-- *... and 37 more nodes in this community*
+- **heuristic_scanner.rs** (41 connections) — `src/tools/heuristic_scanner.rs`
+- **.scan_line()** (20 connections) — `src/tools/heuristic_scanner.rs`
+- **BugRule** (9 connections) — `src/tools/heuristic_scanner.rs`
+- **HeuristicBugScanner** (9 connections) — `src/tools/heuristic_scanner.rs`
+- **Severity** (8 connections) — `src/tools/heuristic_scanner.rs`
+- **.scan_source_with()** (7 connections) — `src/tools/heuristic_scanner.rs`
+- **emit_finding()** (6 connections) — `src/tools/heuristic_scanner.rs`
+- **.scan_source()** (6 connections) — `src/tools/heuristic_scanner.rs`
+- **is_ident_byte()** (6 connections) — `src/tools/heuristic_scanner.rs`
+- **ScanReport** (6 connections) — `src/tools/heuristic_scanner.rs`
+- **FileScanState** (5 connections) — `src/tools/heuristic_scanner.rs`
+- **.new()** (5 connections) — `src/tools/heuristic_scanner.rs`
+- **.scan_directory()** (5 connections) — `src/tools/heuristic_scanner.rs`
+- **.scan_single_file()** (5 connections) — `src/tools/heuristic_scanner.rs`
+- **is_indexing_hazard()** (5 connections) — `src/tools/heuristic_scanner.rs`
+- **matches_keyword_at()** (5 connections) — `src/tools/heuristic_scanner.rs`
+- **OwnedFinding** (5 connections) — `src/tools/heuristic_scanner.rs`
+- **ScanStats** (5 connections) — `src/tools/heuristic_scanner.rs`
+- **.to_owned_finding()** (4 connections) — `src/tools/heuristic_scanner.rs`
+- **matches_truncating_cast()** (4 connections) — `src/tools/heuristic_scanner.rs`
+- **ScannerConfig** (4 connections) — `src/tools/heuristic_scanner.rs`
+- **.default_severity()** (3 connections) — `src/tools/heuristic_scanner.rs`
+- **contains_bytes()** (3 connections) — `src/tools/heuristic_scanner.rs`
+- **detects_all_four_hazard_categories()** (3 connections) — `src/tools/heuristic_scanner.rs`
+- **find_matching_bracket()** (3 connections) — `src/tools/heuristic_scanner.rs`
+- *... and 36 more nodes in this community*
 
 ## Relationships
 
-- [WinBlastError](WinBlastError.md) (30 shared connections)
-- [registry_scanner.rs](registry_scanner.rs.md) (27 shared connections)
-- [GPU Silicon & Hardware Tuning Policies](GPU_Silicon_&_Hardware_Tuning_Policies.md) (24 shared connections)
-- [elevation.rs](elevation.rs.md) (18 shared connections)
-- [task_scanner.rs](task_scanner.rs.md) (17 shared connections)
-- [Scandetailkind Appxinstalled Appxinstalledps](Scandetailkind_Appxinstalled_Appxinstalledps.md) (16 shared connections)
-- [.Reg .Set Power](Reg_.Set_Power.md) (15 shared connections)
-- [Embedded Catalog Test](Embedded_Catalog_Test.md) (13 shared connections)
-- [updater.rs](updater.rs.md) (13 shared connections)
-- [SlowScanBackend](SlowScanBackend.md) (13 shared connections)
-- [AppxCache](AppxCache.md) (10 shared connections)
-- [PlatformSecurityInfo](PlatformSecurityInfo.md) (8 shared connections)
+- [AppxCache](AppxCache.md) (1 shared connections)
+- [path](path.md) (1 shared connections)
+- [Reversibility Instant Requireslogoff](Reversibility_Instant_Requireslogoff.md) (1 shared connections)
+- [ui_scrollbar_test.rs](ui_scrollbar_test.rs.md) (1 shared connections)
 
 ## Source Files
 
-- `src/app.rs`
-- `src/ui/views/network_diag.rs`
+- `src/tools/heuristic_scanner.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 384 (93%)
-- INFERRED: 30 (7%)
+- EXTRACTED: 124 (100%)
+- INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 
 ---

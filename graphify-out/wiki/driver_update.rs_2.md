@@ -1,51 +1,58 @@
 # driver_update.rs
 
-> 25 nodes · cohesion 0.16
+> 38 nodes · cohesion 0.09
 
 ## Key Concepts
 
-- **theme.rs** (38 connections) — `src/ui/theme.rs`
-- **Color** (29 connections)
-- **ACCENT** (2 connections) — `src/ui/theme.rs`
-- **ACCENT_HOVER** (2 connections) — `src/ui/theme.rs`
-- **ACCENT_PRESS** (2 connections) — `src/ui/theme.rs`
-- **BG_CARD** (2 connections) — `src/ui/theme.rs`
-- **BG_CARD_HOVER** (2 connections) — `src/ui/theme.rs`
-- **BG_PRIMARY** (2 connections) — `src/ui/theme.rs`
-- **BG_SIDEBAR** (2 connections) — `src/ui/theme.rs`
-- **BORDER** (2 connections) — `src/ui/theme.rs`
-- **BORDER_ACCENT** (2 connections) — `src/ui/theme.rs`
-- **BORDER_HOVER** (2 connections) — `src/ui/theme.rs`
-- **BTN_SECONDARY** (2 connections) — `src/ui/theme.rs`
-- **BTN_SECONDARY_HOVER** (2 connections) — `src/ui/theme.rs`
-- **BTN_SECONDARY_PRESS** (2 connections) — `src/ui/theme.rs`
-- **DANGER** (2 connections) — `src/ui/theme.rs`
-- **NEUTRAL_BADGE** (2 connections) — `src/ui/theme.rs`
-- **SPARKLINE_BG** (2 connections) — `src/ui/theme.rs`
-- **SPARKLINE_CPU** (2 connections) — `src/ui/theme.rs`
-- **SPARKLINE_RAM** (2 connections) — `src/ui/theme.rs`
-- **SUCCESS** (2 connections) — `src/ui/theme.rs`
-- **TEXT_MUTED** (2 connections) — `src/ui/theme.rs`
-- **TEXT_PRIMARY** (2 connections) — `src/ui/theme.rs`
-- **TEXT_SECONDARY** (2 connections) — `src/ui/theme.rs`
-- **WARNING** (2 connections) — `src/ui/theme.rs`
+- **lazy_loader.rs** (26 connections) — `src/hardware/lazy_loader.rs`
+- **LazyLoader** (19 connections) — `src/hardware/lazy_loader.rs`
+- **LazyPayload** (12 connections) — `src/hardware/lazy_loader.rs`
+- **arc** (10 connections)
+- **.spawn_probe()** (10 connections) — `src/hardware/lazy_loader.rs`
+- **background_probe_delivers_payload_without_blocking()** (5 connections) — `src/hardware/lazy_loader.rs`
+- **.is_any_loading()** (5 connections) — `src/hardware/lazy_loader.rs`
+- **.new()** (5 connections) — `src/hardware/lazy_loader.rs`
+- **background_panic_is_contained_and_clears_in_flight_flag()** (4 connections) — `src/hardware/lazy_loader.rs`
+- **.spawn_probe_drivers()** (4 connections) — `src/hardware/lazy_loader.rs`
+- **.try_recv()** (4 connections) — `src/hardware/lazy_loader.rs`
+- **extract_panic_message()** (3 connections) — `src/hardware/lazy_loader.rs`
+- **InFlightGuard** (3 connections) — `src/hardware/lazy_loader.rs`
+- **.drain_ready()** (3 connections) — `src/hardware/lazy_loader.rs`
+- **.is_drivers_loading()** (3 connections) — `src/hardware/lazy_loader.rs`
+- **.spawn_probe_bios()** (3 connections) — `src/hardware/lazy_loader.rs`
+- **.spawn_probe_disks()** (3 connections) — `src/hardware/lazy_loader.rs`
+- **.spawn_probe_thermals()** (3 connections) — `src/hardware/lazy_loader.rs`
+- **Drivers** (3 connections) — `src/hardware/lazy_loader.rs`
+- **thread** (3 connections)
+- **assertunwindsafe** (2 connections)
+- **.default()** (2 connections) — `src/hardware/lazy_loader.rs`
+- **.is_bios_loading()** (2 connections) — `src/hardware/lazy_loader.rs`
+- **.is_disks_loading()** (2 connections) — `src/hardware/lazy_loader.rs`
+- **.is_thermals_loading()** (2 connections) — `src/hardware/lazy_loader.rs`
+- *... and 13 more nodes in this community*
 
 ## Relationships
 
-- [updater.rs](updater.rs.md) (5 shared connections)
-- [boot_config.rs](boot_config.rs.md) (5 shared connections)
-- [backend.rs](backend.rs.md) (4 shared connections)
-- [Reversibility Instant Requireslogoff](Reversibility_Instant_Requireslogoff.md) (2 shared connections)
-- [.setup](setup.md) (2 shared connections)
-- [RegTreeSnapshot](RegTreeSnapshot.md) (1 shared connections)
+- [Integration Suite: Tweak Sandbox E2E](Integration_Suite-_Tweak_Sandbox_E2E.md) (4 shared connections)
+- [.setup](setup.md) (3 shared connections)
+- [adaptive_tuning.rs](adaptive_tuning.rs.md) (3 shared connections)
+- [AppState](AppState.md) (2 shared connections)
+- [PowerSchemeInfo](PowerSchemeInfo.md) (2 shared connections)
+- [.maybe_arm_error](maybe_arm_error.md) (2 shared connections)
+- [deserialize](deserialize.md) (2 shared connections)
+- [sysprep_engine.rs](sysprep_engine.rs.md) (2 shared connections)
+- [app.rs](app.rs.md) (1 shared connections)
+- [backend.rs](backend.rs.md) (1 shared connections)
+- [selection_automation_e2e.rs](selection_automation_e2e.rs.md) (1 shared connections)
+- [in_progress_hud.rs](in_progress_hud.rs.md) (1 shared connections)
 
 ## Source Files
 
-- `src/ui/theme.rs`
+- `src/hardware/lazy_loader.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 66 (100%)
+- EXTRACTED: 95 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

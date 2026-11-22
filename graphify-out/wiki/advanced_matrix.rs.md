@@ -1,47 +1,47 @@
 # advanced_matrix.rs
 
-> 13 nodes · cohesion 0.32
+> 12 nodes · cohesion 0.24
 
 ## Key Concepts
 
-- **ui/mod.rs** (29 connections) — `src/ui/mod.rs`
-- **view()** (25 connections) — `src/ui/mod.rs`
-- **build_sidebar()** (11 connections) — `src/ui/mod.rs`
-- **build_dropdown_overlay()** (7 connections) — `src/ui/mod.rs`
-- **El** (7 connections)
-- **mode_tab()** (6 connections) — `src/ui/mod.rs`
-- **nav_button()** (6 connections) — `src/ui/mod.rs`
-- **AppMode** (5 connections) — `src/app.rs`
-- **nav_section_header()** (4 connections) — `src/ui/mod.rs`
-- **Cx** (2 connections)
-- **tier_from_rect()** (2 connections) — `src/ui/mod.rs`
-- **Advanced** (1 connections) — `src/app.rs`
-- **Easy** (1 connections) — `src/app.rs`
+- **CoreParkingState** (20 connections) — `src/hardware/parking.rs`
+- **.detect_internal()** (8 connections) — `src/hardware/parking.rs`
+- **.detect_core_parking()** (5 connections) — `src/core/backend.rs`
+- **.detect_core_parking()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.detect_core_parking_sampled()** (3 connections) — `src/core/backend.rs`
+- **.detect()** (3 connections) — `src/hardware/parking.rs`
+- **.detect_core_parking()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.detect_core_parking()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.detect_core_parking()** (2 connections) — `src/core/backend.rs`
+- **.detect_core_parking_sampled()** (2 connections) — `src/core/backend.rs`
+- **.detect_core_parking()** (2 connections) — `src/core/backend.rs`
+- **.detect_sampled()** (2 connections) — `src/hardware/parking.rs`
 
 ## Relationships
 
-- [WinBlastError](WinBlastError.md) (14 shared connections)
-- [elevation.rs](elevation.rs.md) (8 shared connections)
-- [.Toggle .Set .Apply](Toggle_.Set_.Apply.md) (7 shared connections)
-- [updater.rs](updater.rs.md) (7 shared connections)
-- [task_scanner.rs](task_scanner.rs.md) (6 shared connections)
-- [.Reg State() Vendor()](Reg_State_Vendor.md) (2 shared connections)
-- [.setup](setup.md) (2 shared connections)
-- [SlowScanBackend](SlowScanBackend.md) (1 shared connections)
-- [enums](enums.md) (1 shared connections)
-- [FailAtMutationBackend](FailAtMutationBackend.md) (1 shared connections)
-- [Core UI Internationalization & Text Catalog](Core_UI_Internationalization_&_Text_Catalog.md) (1 shared connections)
-- [action_button_guarded](action_button_guarded.md) (1 shared connections)
+- [AutoTuneProfile](AutoTuneProfile.md) (5 shared connections)
+- [driver_update.rs](driver_update.rs.md) (2 shared connections)
+- [WinBlastError](WinBlastError.md) (2 shared connections)
+- [FailAtMutationBackend](FailAtMutationBackend.md) (2 shared connections)
+- [startup.rs](startup.rs.md) (2 shared connections)
+- [Integration Suite: Tweak Sandbox E2E](Integration_Suite-_Tweak_Sandbox_E2E.md) (2 shared connections)
+- [spawn_guarded_worker](spawn_guarded_worker.md) (1 shared connections)
+- [Disk Cleaning & Temporary File Purger](Disk_Cleaning_&_Temporary_File_Purger.md) (1 shared connections)
+- [PlatformSecurityInfo](PlatformSecurityInfo.md) (1 shared connections)
+- [app.rs](app.rs.md) (1 shared connections)
+- [backend.rs](backend.rs.md) (1 shared connections)
+- [in_progress_hud.rs](in_progress_hud.rs.md) (1 shared connections)
 
 ## Source Files
 
-- `src/app.rs`
-- `src/ui/mod.rs`
+- `src/core/backend.rs`
+- `src/hardware/parking.rs`
+- `tests/tweak_sandbox_e2e.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 76 (94%)
-- INFERRED: 5 (6%)
+- EXTRACTED: 41 (100%)
+- INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 
 ---

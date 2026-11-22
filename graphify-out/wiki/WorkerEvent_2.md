@@ -1,53 +1,59 @@
 # WorkerEvent
 
-> 19 nodes · cohesion 0.21
+> God node · 85 connections · `src/app.rs`
 
-## Key Concepts
+**Community:** [startup.rs](startup.rs.md)
 
-- **startup.rs** (48 connections) — `src/tools/startup.rs`
-- **list_live_services()** (7 connections) — `src/tools/startup.rs`
-- **is_protected_core_service()** (6 connections) — `src/tools/startup.rs`
-- **enum_scm_services_by_type()** (5 connections) — `src/tools/startup.rs`
-- **query_scm_win32_services()** (5 connections) — `src/tools/startup.rs`
-- **SC_HANDLE** (4 connections)
-- **expand_system_root_vars()** (4 connections) — `src/tools/startup.rs`
-- **is_microsoft_service_binary()** (4 connections) — `src/tools/startup.rs`
-- **query_scm_service_config()** (4 connections) — `src/tools/startup.rs`
-- **ScHandleGuard** (4 connections) — `src/tools/startup.rs`
-- **is_microsoft_run_command()** (3 connections) — `src/tools/startup.rs`
-- **ScmServiceRecord** (3 connections) — `src/tools/startup.rs`
-- **ENUM_SERVICE_TYPE** (2 connections)
-- **replace_ascii_ci()** (2 connections) — `src/tools/startup.rs`
-- **resolve_indirect_display_string()** (2 connections) — `src/tools/startup.rs`
-- **.drop()** (2 connections) — `src/tools/startup.rs`
-- **test_critical_service_blocklist_protects_core_services()** (2 connections) — `src/tools/startup.rs`
-- **fromregvalue** (1 connections)
-- **CRITICAL_CORE_SERVICES** (1 connections) — `src/tools/startup.rs`
+## Connections by Relation
 
-## Relationships
+### case_of
+- StatusUpdate `EXTRACTED`
+- TelemetryServicesNeutralized `EXTRACTED`
+- OneDriveEdgeResult `EXTRACTED`
+- ScheduledTaskRunResult `EXTRACTED`
+- ThermalSnapshot `EXTRACTED`
+- ScanCompleted `EXTRACTED`
+- ScanFailed `EXTRACTED`
+- ApplyCompleted `EXTRACTED`
+- RestorePointsLoaded `EXTRACTED`
+- RestorePointCreated `EXTRACTED`
+- RollbackCompleted `EXTRACTED`
+- LatencyUpdated `EXTRACTED`
+- TelemetryAuditCompleted `EXTRACTED`
+- MetricsSnapshot `EXTRACTED`
+- LatencyBenchmarkCompleted `EXTRACTED`
+- LatencyBenchmarkFailed `EXTRACTED`
+- CoreParkingUpdated `EXTRACTED`
+- HagsUpdated `EXTRACTED`
+- MpoUpdated `EXTRACTED`
+- TelemetryHostsBlocked `EXTRACTED`
+- *…and 29 more `case_of` connection(s) not listed (lowest-degree first to go)*
 
-- [restart_explorer_safely](restart_explorer_safely.md) (9 shared connections)
-- [WindowsOptionalFeature](WindowsOptionalFeature.md) (3 shared connections)
-- [Reversibility Instant Requireslogoff](Reversibility_Instant_Requireslogoff.md) (2 shared connections)
-- [CoreParkingState](CoreParkingState.md) (2 shared connections)
-- [parking.rs](parking.rs.md) (2 shared connections)
-- [app.rs](app.rs.md) (2 shared connections)
-- [Item](Item.md) (2 shared connections)
-- [reg_helpers.rs](reg_helpers.rs.md) (2 shared connections)
-- [LazyLoader](LazyLoader.md) (2 shared connections)
-- [test_wave1_compound_actions_deep_edge_cases](test_wave1_compound_actions_deep_edge_cases.md) (2 shared connections)
-- [deserialize](deserialize.md) (1 shared connections)
-- [backend.rs](backend.rs.md) (1 shared connections)
+### contains
+- [app.rs](app.rs.md) `EXTRACTED`
 
-## Source Files
-
-- `src/tools/startup.rs`
-
-## Audit Trail
-
-- EXTRACTED: 71 (97%)
-- INFERRED: 2 (3%)
-- AMBIGUOUS: 0 (0%)
+### references
+- [AppState](AppState.md) `EXTRACTED`
+- spawn_guarded_worker() `EXTRACTED`
+- .apply_worker_event() `EXTRACTED`
+- ScanResult `EXTRACTED`
+- [FeatureInstallState](FeatureInstallState.md) `EXTRACTED`
+- StartupEntry `EXTRACTED`
+- [HibernationStatus](HibernationStatus.md) `EXTRACTED`
+- CoreParkingState `EXTRACTED`
+- LatencySnapshot `EXTRACTED`
+- LatencyBenchmarkSnapshot `EXTRACTED`
+- [WindowsOptionalFeature](WindowsOptionalFeature.md) `EXTRACTED`
+- DetectedGpu `EXTRACTED`
+- [PlatformSecurityInfo](PlatformSecurityInfo.md) `EXTRACTED`
+- [DriverUpdateItem](DriverUpdateItem.md) `INFERRED`
+- [PowerSchemeInfo](PowerSchemeInfo.md) `EXTRACTED`
+- CleanTargetScan `EXTRACTED`
+- InstalledAppxPackage `EXTRACTED`
+- SystemMetrics `EXTRACTED`
+- [RestorePoint](RestorePoint.md) `EXTRACTED`
+- CleanExecutionReport `EXTRACTED`
+- *…and 15 more `references` connection(s) not listed (lowest-degree first to go)*
 
 ---
 

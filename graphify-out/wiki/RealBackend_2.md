@@ -2,7 +2,7 @@
 
 > God node · 84 connections · `src/core/backend.rs`
 
-**Community:** [Integration Suite: Tweak Sandbox E2E](Integration_Suite-_Tweak_Sandbox_E2E.md)
+**Community:** [driver_update.rs](driver_update.rs.md)
 
 ## Connections by Relation
 
@@ -20,13 +20,9 @@
 
 ### method
 - .execute_clean_targets() `EXTRACTED`
-- .is_elevated() `EXTRACTED`
-- .scan_clean_targets() `EXTRACTED`
 - .list_optional_features() `EXTRACTED`
 - .set_optional_feature() `EXTRACTED`
-- .detect_os() `EXTRACTED`
-- .default_ledger_path() `EXTRACTED`
-- .default_profile_path() `EXTRACTED`
+- .is_elevated() `EXTRACTED`
 - .reg_get_string() `EXTRACTED`
 - .reg_get_raw() `EXTRACTED`
 - .reg_set_raw() `EXTRACTED`
@@ -36,9 +32,13 @@
 - .list_power_schemes() `EXTRACTED`
 - .query_hibernation_status() `EXTRACTED`
 - .set_hibernation_enabled() `EXTRACTED`
-- .load_task_cache() `EXTRACTED`
-- .load_appx_cache() `EXTRACTED`
 - .list_restore_points() `EXTRACTED`
+- .detect_gpus() `EXTRACTED`
+- .apply_parking_snapshot() `EXTRACTED`
+- .run_latency_benchmark() `EXTRACTED`
+- .scan_clean_targets() `EXTRACTED`
+- .list_installed_appx_detailed() `EXTRACTED`
+- .list_startup_entries() `EXTRACTED`
 - *…and 58 more `method` connection(s) not listed (lowest-degree first to go)*
 
 ---

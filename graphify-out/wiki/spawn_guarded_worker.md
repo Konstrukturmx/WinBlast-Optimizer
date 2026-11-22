@@ -33,12 +33,12 @@
 
 ## Relationships
 
-- [GameProfile](GameProfile.md) (6 shared connections)
-- [FailAtMutationBackend](FailAtMutationBackend.md) (2 shared connections)
-- [System Architecture Changelog](System_Architecture_Changelog.md) (2 shared connections)
-- [.Toggle .Set .Apply](Toggle_.Set_.Apply.md) (1 shared connections)
-- [SlowScanBackend](SlowScanBackend.md) (1 shared connections)
-- [registry_scanner.rs](registry_scanner.rs.md) (1 shared connections)
+- [test_status_i18n_all_languages_and_core_specs](test_status_i18n_all_languages_and_core_specs.md) (6 shared connections)
+- [app.rs](app.rs.md) (2 shared connections)
+- [theme.rs](theme.rs.md) (2 shared connections)
+- [Disk Cleaning & Temporary File Purger](Disk_Cleaning_&_Temporary_File_Purger.md) (1 shared connections)
+- [RegStringValue](RegStringValue.md) (1 shared connections)
+- [super](super.md) (1 shared connections)
 
 ## Source Files
 

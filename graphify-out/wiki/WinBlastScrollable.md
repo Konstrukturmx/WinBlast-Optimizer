@@ -1,39 +1,51 @@
 # WinBlastScrollable
 
-> 12 nodes · cohesion 0.21
+> 18 nodes · cohesion 0.18
 
 ## Key Concepts
 
-- **.setup()** (10 connections) — `src/app.rs`
-- **.run_telemetry_audit()** (7 connections) — `src/app.rs`
-- **.refresh_restore_points()** (6 connections) — `src/app.rs`
-- **StatusUpdate** (6 connections) — `src/app.rs`
-- **.refresh_latency()** (5 connections) — `src/app.rs`
-- **.refresh_platform_inventory()** (5 connections) — `src/app.rs`
-- **.check_for_updates()** (4 connections) — `src/app.rs`
-- **LatencyUpdated** (2 connections) — `src/app.rs`
-- **MetricsSnapshot** (2 connections) — `src/app.rs`
-- **RestorePointsLoaded** (2 connections) — `src/app.rs`
-- **TelemetryAuditCompleted** (2 connections) — `src/app.rs`
-- **UpdateCheckCompleted** (2 connections) — `src/app.rs`
+- **WinBlastScrollable** (32 connections) — `src/ui/widgets/scrollbar.rs`
+- **goal_planner.rs** (14 connections) — `src/ui/views/goal_planner.rs`
+- **view()** (8 connections) — `src/ui/views/goal_planner.rs`
+- **scrollbar.rs** (8 connections) — `src/ui/widgets/scrollbar.rs`
+- **metric_pill()** (5 connections) — `src/ui/views/goal_planner.rs`
+- **winblast_scrollbar_style()** (5 connections) — `src/ui/widgets/scrollbar.rs`
+- **El** (4 connections)
+- **.winblast_scroll()** (4 connections) — `src/ui/widgets/scrollbar.rs`
+- **.winblast_scroll_smooth()** (4 connections) — `src/ui/widgets/scrollbar.rs`
+- **El** (3 connections)
+- **rune::El** (3 connections) — `src/ui/widgets/scrollbar.rs`
+- **.winblast_scroll()** (3 connections) — `src/ui/widgets/scrollbar.rs`
+- **.winblast_scroll_smooth()** (3 connections) — `src/ui/widgets/scrollbar.rs`
+- **ScrollBarStyle** (2 connections)
+- **Color** (2 connections)
+- **SCROLL_MIN_VELOCITY** (1 connections) — `src/ui/widgets/scrollbar.rs`
+- **SCROLL_MOMENTUM_FRICTION** (1 connections) — `src/ui/widgets/scrollbar.rs`
+- **SCROLL_VELOCITY_DECAY** (1 connections) — `src/ui/widgets/scrollbar.rs`
 
 ## Relationships
 
-- [Embedded Catalog Test](Embedded_Catalog_Test.md) (9 shared connections)
-- [.Toggle .Set .Apply](Toggle_.Set_.Apply.md) (7 shared connections)
-- [GPU Silicon & Hardware Tuning Policies](GPU_Silicon_&_Hardware_Tuning_Policies.md) (5 shared connections)
-- [AppxCache](AppxCache.md) (2 shared connections)
-- [Appx Package() Prefixes](Appx_Package_Prefixes.md) (1 shared connections)
-- [Scandetailkind Appxinstalled Appxinstalledps](Scandetailkind_Appxinstalled_Appxinstalledps.md) (1 shared connections)
+- [features_apps.rs](features_apps.rs.md) (21 shared connections)
+- [RealBackend](RealBackend.md) (8 shared connections)
+- [clean_apps.rs](clean_apps.rs.md) (6 shared connections)
+- [.Reg State() Vendor()](Reg_State_Vendor.md) (4 shared connections)
+- [Disk Cleaning & Temporary File Purger](Disk_Cleaning_&_Temporary_File_Purger.md) (3 shared connections)
+- [enums](enums.md) (2 shared connections)
+- [action_button_guarded](action_button_guarded.md) (1 shared connections)
+- [startup.rs](startup.rs.md) (1 shared connections)
+- [RegRawSnapshot](RegRawSnapshot.md) (1 shared connections)
+- [latency_bench.rs](latency_bench.rs.md) (1 shared connections)
+- [boot_config.rs](boot_config.rs.md) (1 shared connections)
 
 ## Source Files
 
-- `src/app.rs`
+- `src/ui/views/goal_planner.rs`
+- `src/ui/widgets/scrollbar.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 38 (97%)
-- INFERRED: 1 (3%)
+- EXTRACTED: 73 (96%)
+- INFERRED: 3 (4%)
 - AMBIGUOUS: 0 (0%)
 
 ---

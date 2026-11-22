@@ -1,36 +1,45 @@
 # PdhParkingCollector
 
-> 10 nodes · cohesion 0.22
+> 11 nodes · cohesion 0.25
 
 ## Key Concepts
 
-- **elevation.rs** (13 connections) — `src/core/elevation.rs`
-- **closehandle** (4 connections)
-- **is_elevated()** (4 connections) — `src/core/elevation.rs`
-- **openprocesstoken** (2 connections)
-- **check_elevation()** (2 connections) — `src/core/elevation.rs`
-- **token_query** (2 connections)
-- **getcurrentprocess** (1 connections)
-- **gettokeninformation** (1 connections)
-- **token_elevation** (1 connections)
-- **tokenelevation** (1 connections)
+- **LatencySnapshot** (18 connections) — `src/hardware/latency.rs`
+- **latency.rs** (4 connections) — `src/hardware/latency.rs`
+- **.capture_latency()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.capture_latency()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.capture_latency()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.capture_latency()** (2 connections) — `src/core/backend.rs`
+- **.capture_latency()** (2 connections) — `src/core/backend.rs`
+- **DateTime** (2 connections)
+- **Utc** (2 connections)
+- **.ram_display()** (1 connections) — `src/hardware/latency.rs`
+- **.timer_resolution_display()** (1 connections) — `src/hardware/latency.rs`
 
 ## Relationships
 
-- [super](super.md) (5 shared connections)
-- [Multi-Language Tweak Localization Tables](Multi-Language_Tweak_Localization_Tables.md) (2 shared connections)
-- [.logical_core_count](logical_core_count.md) (1 shared connections)
-- [deserialize](deserialize.md) (1 shared connections)
-- [Appx Package() Prefixes](Appx_Package_Prefixes.md) (1 shared connections)
-- [Integration Suite: Tweak Sandbox E2E](Integration_Suite-_Tweak_Sandbox_E2E.md) (1 shared connections)
+- [Integration Suite: Tweak Sandbox E2E](Integration_Suite-_Tweak_Sandbox_E2E.md) (2 shared connections)
+- [driver_update.rs](driver_update.rs.md) (1 shared connections)
+- [FailAtMutationBackend](FailAtMutationBackend.md) (1 shared connections)
+- [FeatureInstallState](FeatureInstallState.md) (1 shared connections)
+- [startup.rs](startup.rs.md) (1 shared connections)
+- [PlatformSecurityInfo](PlatformSecurityInfo.md) (1 shared connections)
+- [Disk Cleaning & Temporary File Purger](Disk_Cleaning_&_Temporary_File_Purger.md) (1 shared connections)
+- [app.rs](app.rs.md) (1 shared connections)
+- [backend.rs](backend.rs.md) (1 shared connections)
+- [in_progress_hud.rs](in_progress_hud.rs.md) (1 shared connections)
+- [WinBlastError](WinBlastError.md) (1 shared connections)
+- [ps_runner.rs](ps_runner.rs.md) (1 shared connections)
 
 ## Source Files
 
-- `src/core/elevation.rs`
+- `src/core/backend.rs`
+- `src/hardware/latency.rs`
+- `tests/tweak_sandbox_e2e.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 21 (100%)
+- EXTRACTED: 28 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

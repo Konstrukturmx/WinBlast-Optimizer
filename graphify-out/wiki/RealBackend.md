@@ -1,59 +1,63 @@
 # RealBackend
 
-> 36 nodes · cohesion 0.09
+> 32 nodes · cohesion 0.18
 
 ## Key Concepts
 
-- **tweak_i18n/mod.rs** (42 connections) — `src/core/tweak_i18n/mod.rs`
-- **lookup_text_table()** (6 connections) — `src/core/tweak_i18n/mod.rs`
-- **localize_category()** (5 connections) — `src/core/tweak_i18n/mod.rs`
-- **localize_optional_feature()** (5 connections) — `src/core/tweak_i18n/mod.rs`
-- **localize_sub_category()** (5 connections) — `src/core/tweak_i18n/mod.rs`
-- **localize_winget()** (5 connections) — `src/core/tweak_i18n/mod.rs`
-- **lookup_pair_table()** (5 connections) — `src/core/tweak_i18n/mod.rs`
-- **non_english_idx()** (5 connections) — `src/core/tweak_i18n/mod.rs`
-- **test_winget_optional_features_and_telemetry_services()** (5 connections) — `src/core/tweak_i18n/mod.rs`
-- **is_privacy_or_telemetry_category()** (4 connections) — `src/core/tweak_i18n/mod.rs`
-- **localize_ledger_token()** (4 connections) — `src/core/tweak_i18n/mod.rs`
-- **localize_power_scheme_name()** (4 connections) — `src/core/tweak_i18n/mod.rs`
-- **localize_telemetry_service()** (4 connections) — `src/core/tweak_i18n/mod.rs`
-- **test_all_11_gaming_latency_ultra_tweaks_localized_all_7_languages()** (4 connections) — `src/core/tweak_i18n/mod.rs`
-- **test_all_32_deep_opt_tweaks_localized_all_7_languages()** (4 connections) — `src/core/tweak_i18n/mod.rs`
-- **test_categories_and_sub_categories()** (4 connections) — `src/core/tweak_i18n/mod.rs`
-- **test_power_schemes_and_ledger_tokens()** (3 connections) — `src/core/tweak_i18n/mod.rs`
-- **tweak_description()** (3 connections) — `src/core/tweak_i18n/mod.rs`
-- **tweak_title()** (3 connections) — `src/core/tweak_i18n/mod.rs`
-- **.tweak_category()** (2 connections) — `src/app.rs`
-- **.tweak_sub_category()** (2 connections) — `src/app.rs`
-- **contains_ascii_ci()** (2 connections) — `src/core/tweak_i18n/mod.rs`
-- **NON_ENGLISH_LANGS** (2 connections) — `src/core/tweak_i18n/mod.rs`
-- **CAT_BROWSERS** (1 connections) — `src/core/tweak_i18n/mod.rs`
-- **CAT_DEVELOPMENT** (1 connections) — `src/core/tweak_i18n/mod.rs`
-- *... and 11 more nodes in this community*
+- **ThemePalette** (88 connections) — `src/ui/theme.rs`
+- **easy_dashboard.rs** (31 connections) — `src/ui/views/easy_dashboard.rs`
+- **view()** (16 connections) — `src/ui/views/easy_dashboard.rs`
+- **progress_bar.rs** (14 connections) — `src/ui/widgets/progress_bar.rs`
+- **El** (11 connections)
+- **rgb()** (10 connections) — `src/ui/theme.rs`
+- **sparkline.rs** (10 connections) — `src/ui/widgets/sparkline.rs`
+- **progress_bar_styled()** (9 connections) — `src/ui/widgets/progress_bar.rs`
+- **before_after_card()** (7 connections) — `src/ui/views/easy_dashboard.rs`
+- **live_telemetry_card()** (7 connections) — `src/ui/views/easy_dashboard.rs`
+- **quick_actions_card()** (7 connections) — `src/ui/views/easy_dashboard.rs`
+- **sparkline_with_palette()** (7 connections) — `src/ui/widgets/sparkline.rs`
+- **admin_warning_banner()** (6 connections) — `src/ui/views/easy_dashboard.rs`
+- **quick_action_card()** (6 connections) — `src/ui/views/easy_dashboard.rs`
+- **score_ring_badge()** (6 connections) — `src/ui/views/easy_dashboard.rs`
+- **updater_status_card()** (6 connections) — `src/ui/views/easy_dashboard.rs`
+- **Color** (6 connections)
+- **El** (6 connections)
+- **.card_fill_styled()** (5 connections) — `src/ui/theme.rs`
+- **hardware_overview_card()** (5 connections) — `src/ui/views/easy_dashboard.rs`
+- **optimization_categories_summary()** (5 connections) — `src/ui/views/easy_dashboard.rs`
+- **progress_bar()** (5 connections) — `src/ui/widgets/progress_bar.rs`
+- **progress_bar_labeled()** (5 connections) — `src/ui/widgets/progress_bar.rs`
+- **BeforeAfterImpact** (4 connections) — `src/app.rs`
+- **health_color()** (4 connections) — `src/ui/views/easy_dashboard.rs`
+- *... and 7 more nodes in this community*
 
 ## Relationships
 
-- [FailAtMutationBackend](FailAtMutationBackend.md) (12 shared connections)
-- [driver_update.rs](driver_update.rs.md) (5 shared connections)
-- [.Toggle .Set .Apply](Toggle_.Set_.Apply.md) (2 shared connections)
-- [UiThemeStyle](UiThemeStyle.md) (2 shared connections)
-- [PlatformSecurityInfo](PlatformSecurityInfo.md) (2 shared connections)
-- [parking.rs](parking.rs.md) (1 shared connections)
-- [theme.rs](theme.rs.md) (1 shared connections)
-- [Scandetailkind Appxinstalled Appxinstalledps](Scandetailkind_Appxinstalled_Appxinstalledps.md) (1 shared connections)
-- [parse_guid](parse_guid.md) (1 shared connections)
-- [RegTreeSnapshot](RegTreeSnapshot.md) (1 shared connections)
-- [elevation.rs](elevation.rs.md) (1 shared connections)
+- [clean_apps.rs](clean_apps.rs.md) (26 shared connections)
+- [.Reg State() Vendor()](Reg_State_Vendor.md) (18 shared connections)
+- [features_apps.rs](features_apps.rs.md) (17 shared connections)
+- [Disk Cleaning & Temporary File Purger](Disk_Cleaning_&_Temporary_File_Purger.md) (13 shared connections)
+- [RegRawSnapshot](RegRawSnapshot.md) (11 shared connections)
+- [enums](enums.md) (8 shared connections)
+- [WinBlastScrollable](WinBlastScrollable.md) (8 shared connections)
+- [boot_config.rs](boot_config.rs.md) (6 shared connections)
+- [Project History & Release Version Ledger](Project_History_&_Release_Version_Ledger.md) (5 shared connections)
+- [power.rs](power.rs.md) (5 shared connections)
+- [app.rs](app.rs.md) (2 shared connections)
+- [Reversibility Instant Requireslogoff](Reversibility_Instant_Requireslogoff.md) (2 shared connections)
 
 ## Source Files
 
 - `src/app.rs`
-- `src/core/tweak_i18n/mod.rs`
+- `src/ui/theme.rs`
+- `src/ui/views/easy_dashboard.rs`
+- `src/ui/widgets/progress_bar.rs`
+- `src/ui/widgets/sparkline.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 83 (98%)
-- INFERRED: 2 (2%)
+- EXTRACTED: 206 (95%)
+- INFERRED: 11 (5%)
 - AMBIGUOUS: 0 (0%)
 
 ---

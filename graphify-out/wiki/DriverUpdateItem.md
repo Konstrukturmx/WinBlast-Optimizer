@@ -1,53 +1,41 @@
 # DriverUpdateItem
 
-> 18 nodes · cohesion 0.20
+> 18 nodes · cohesion 0.16
 
 ## Key Concepts
 
-- **net_latency.rs** (20 connections) — `src/hardware/net_latency.rs`
-- **LatencyBenchmarkSnapshot** (18 connections) — `src/hardware/net_latency.rs`
-- **measure_dpc_jitter()** (5 connections) — `src/hardware/net_latency.rs`
-- **probe_network_target()** (5 connections) — `src/hardware/net_latency.rs`
-- **DpcJitterResult** (4 connections) — `src/hardware/net_latency.rs`
-- **PingTarget** (4 connections) — `src/hardware/net_latency.rs`
-- **run_full_latency_benchmark()** (4 connections) — `src/hardware/net_latency.rs`
-- **TargetPingResult** (4 connections) — `src/hardware/net_latency.rs`
-- **.run_latency_benchmark()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
-- **SocketAddr** (3 connections)
-- **.run_latency_benchmark()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.run_latency_benchmark()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.run_latency_benchmark()** (2 connections) — `src/core/backend.rs`
-- **.run_latency_benchmark()** (2 connections) — `src/core/backend.rs`
-- **PING_TARGETS** (2 connections) — `src/hardware/net_latency.rs`
-- **test_dpc_jitter_measurement()** (2 connections) — `src/hardware/net_latency.rs`
-- **test_probe_network_zero_probes()** (2 connections) — `src/hardware/net_latency.rs`
-- **test_targets_structure()** (1 connections) — `src/hardware/net_latency.rs`
+- **probe_physical_drive()** (10 connections) — `src/hardware/disks.rs`
+- **HANDLE** (6 connections)
+- **DriveSmartData** (5 connections) — `src/hardware/disks.rs`
+- **HandleGuard** (5 connections) — `src/hardware/disks.rs`
+- **query_ata_smart_ioctl()** (5 connections) — `src/hardware/disks.rs`
+- **query_disk_performance_ioctl()** (5 connections) — `src/hardware/disks.rs`
+- **query_nvme_smart_ioctl()** (5 connections) — `src/hardware/disks.rs`
+- **parse_ata_smart_attributes()** (4 connections) — `src/hardware/disks.rs`
+- **parse_nvme_smart_log()** (4 connections) — `src/hardware/disks.rs`
+- **query_disk_capacity_ioctl()** (3 connections) — `src/hardware/disks.rs`
+- **query_smart_health_wmi()** (3 connections) — `src/hardware/disks.rs`
+- **test_kernel_disk_performance_live_probe()** (3 connections) — `src/hardware/disks.rs`
+- **DiskPerformanceSnapshot** (2 connections) — `src/hardware/disks.rs`
+- **extract_null_terminated_str()** (2 connections) — `src/hardware/disks.rs`
+- **test_parse_ata_smart_attributes_synthetic()** (2 connections) — `src/hardware/disks.rs`
+- **test_parse_nvme_smart_log_synthetic()** (2 connections) — `src/hardware/disks.rs`
+- **test_query_smart_health_wmi_fallback()** (2 connections) — `src/hardware/disks.rs`
+- **.drop()** (1 connections) — `src/hardware/disks.rs`
 
 ## Relationships
 
-- [deserialize](deserialize.md) (4 shared connections)
-- [Project Documentation, Architecture & Licensing](Project_Documentation,_Architecture_&_Licensing.md) (3 shared connections)
-- [Reversibility Instant Requireslogoff](Reversibility_Instant_Requireslogoff.md) (3 shared connections)
-- [AppX Package & Modern App Scanner](AppX_Package_&_Modern_App_Scanner.md) (2 shared connections)
-- [Language](Language.md) (2 shared connections)
-- [sys_inventory.rs](sys_inventory.rs.md) (2 shared connections)
-- [Integration Suite: Tweak Sandbox E2E](Integration_Suite-_Tweak_Sandbox_E2E.md) (1 shared connections)
-- [startup.rs](startup.rs.md) (1 shared connections)
-- [parking.rs](parking.rs.md) (1 shared connections)
-- [.Toggle .Set .Apply](Toggle_.Set_.Apply.md) (1 shared connections)
-- [Project History & Release Version Ledger](Project_History_&_Release_Version_Ledger.md) (1 shared connections)
-- [Embedded Catalog Test](Embedded_Catalog_Test.md) (1 shared connections)
+- [topological_scheduler.rs](topological_scheduler.rs.md) (17 shared connections)
+- [sysprep_engine.rs](sysprep_engine.rs.md) (2 shared connections)
 
 ## Source Files
 
-- `src/core/backend.rs`
-- `src/hardware/net_latency.rs`
-- `tests/tweak_sandbox_e2e.rs`
+- `src/hardware/disks.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 56 (98%)
-- INFERRED: 1 (2%)
+- EXTRACTED: 44 (100%)
+- INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 
 ---

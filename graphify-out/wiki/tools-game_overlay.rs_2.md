@@ -1,35 +1,38 @@
 # tools/game_overlay.rs
 
-> 9 nodes · cohesion 0.31
+> 10 nodes · cohesion 0.38
 
 ## Key Concepts
 
-- **sysprep_engine.rs** (11 connections) — `src/executor/sysprep_engine.rs`
-- **propagate_hkcu_dword()** (7 connections) — `src/executor/sysprep_engine.rs`
-- **acquire_registry_mount_privileges()** (3 connections) — `src/executor/sysprep_engine.rs`
-- **.drop()** (2 connections) — `src/executor/sysprep_engine.rs`
-- **SysprepPropagationReport** (2 connections) — `src/executor/sysprep_engine.rs`
-- **test_sysprep_propagation_sandbox()** (2 connections) — `src/executor/sysprep_engine.rs`
-- **HiveMountGuard** (1 connections) — `src/executor/sysprep_engine.rs`
-- **HiveMountGuard<'a>** (1 connections) — `src/executor/sysprep_engine.rs`
+- **adaptive_tuning.rs** (16 connections) — `src/executor/adaptive_tuning.rs`
+- **evaluate_adaptive_tuning()** (7 connections) — `src/executor/adaptive_tuning.rs`
+- **apply_adaptive_tuning()** (5 connections) — `src/executor/adaptive_tuning.rs`
+- **AdaptiveTuningConfig** (3 connections) — `src/executor/adaptive_tuning.rs`
+- **MemoryStats** (3 connections) — `src/executor/adaptive_tuning.rs`
+- **test_apply_adaptive_tuning_sandbox()** (3 connections) — `src/executor/adaptive_tuning.rs`
+- **query_physical_ram()** (2 connections) — `src/executor/adaptive_tuning.rs`
+- **test_evaluate_adaptive_tuning_high_spec_nvme()** (2 connections) — `src/executor/adaptive_tuning.rs`
+- **test_evaluate_adaptive_tuning_low_spec_hdd()** (2 connections) — `src/executor/adaptive_tuning.rs`
 - **B** (1 connections)
 
 ## Relationships
 
-- [parking.rs](parking.rs.md) (3 shared connections)
-- [Reversibility Instant Requireslogoff](Reversibility_Instant_Requireslogoff.md) (2 shared connections)
-- [startup.rs](startup.rs.md) (1 shared connections)
-- [full_telemetry_audit_with](full_telemetry_audit_with.md) (1 shared connections)
-- [Multi-Language Tweak Localization Tables](Multi-Language_Tweak_Localization_Tables.md) (1 shared connections)
+- [test_wave1_compound_actions_deep_edge_cases](test_wave1_compound_actions_deep_edge_cases.md) (3 shared connections)
+- [svc_mutator.rs](svc_mutator.rs.md) (2 shared connections)
+- [deserialize](deserialize.md) (1 shared connections)
+- [WinBlast Optimizer — Developer & Architecture Guide](WinBlast_Optimizer_—_Developer_&_Architecture_Guide.md) (1 shared connections)
+- [ui_scrollbar_test.rs](ui_scrollbar_test.rs.md) (1 shared connections)
+- [WinBlastError](WinBlastError.md) (1 shared connections)
+- [FailAtMutationBackend](FailAtMutationBackend.md) (1 shared connections)
 
 ## Source Files
 
-- `src/executor/sysprep_engine.rs`
+- `src/executor/adaptive_tuning.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 17 (89%)
-- INFERRED: 2 (11%)
+- EXTRACTED: 27 (100%)
+- INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 
 ---

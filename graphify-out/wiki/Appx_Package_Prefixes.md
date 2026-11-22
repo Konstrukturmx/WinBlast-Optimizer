@@ -1,58 +1,55 @@
 # Appx Package() Prefixes
 
-> 36 nodes · cohesion 0.07
+> 36 nodes · cohesion 0.06
 
 ## Key Concepts
 
-- **updater.rs** (21 connections) — `src/core/updater.rs`
-- **UpdateStatus** (10 connections) — `src/app.rs`
-- **UpdateState** (9 connections) — `src/core/updater.rs`
-- **.download_and_install_update()** (5 connections) — `src/app.rs`
-- **check_latest_release()** (5 connections) — `src/core/updater.rs`
-- **clean_exe_path()** (5 connections) — `src/core/updater.rs`
-- **ReleaseInfo** (5 connections) — `src/core/updater.rs`
-- **Failed** (4 connections) — `src/app.rs`
-- **apply_and_restart()** (4 connections) — `src/core/updater.rs`
-- **is_version_newer()** (4 connections) — `src/core/updater.rs`
-- **.apply_and_restart()** (3 connections) — `src/app.rs`
-- **.relaunch_elevated()** (2 connections) — `src/app.rs`
-- **Available** (2 connections) — `src/app.rs`
-- **UpdateDownloadCompleted** (2 connections) — `src/app.rs`
-- **relaunch_as_admin()** (2 connections) — `src/core/elevation.rs`
-- **download_release_asset()** (2 connections) — `src/core/updater.rs`
-- **fetch_url_json()** (2 connections) — `src/core/updater.rs`
-- **GhAsset** (2 connections) — `src/core/updater.rs`
-- **GhRelease** (2 connections) — `src/core/updater.rs`
-- **test_clean_windows_exe_path()** (2 connections) — `src/core/updater.rs`
-- **test_release_info_structure()** (2 connections) — `src/core/updater.rs`
-- **test_version_comparison_logic()** (2 connections) — `src/core/updater.rs`
-- **Checking** (1 connections) — `src/app.rs`
-- **Downloading** (1 connections) — `src/app.rs`
-- **Idle** (1 connections) — `src/app.rs`
+- **explorer_ctrl.rs** (49 connections) — `src/tools/explorer_ctrl.rs`
+- **request_system_reboot()** (3 connections) — `src/tools/explorer_ctrl.rs`
+- **.request_system_reboot()** (2 connections) — `src/core/backend.rs`
+- **c_void** (1 connections)
+- **create_unicode_environment** (1 connections)
+- **createenvironmentblock** (1 connections)
+- **createprocesswithtokenw** (1 connections)
+- **destroyenvironmentblock** (1 connections)
+- **duplicatetokenex** (1 connections)
+- **getshellwindow** (1 connections)
+- **getwindowthreadprocessid** (1 connections)
+- **hwnd_broadcast** (1 connections)
+- **logon_with_profile** (1 connections)
+- **lparam** (1 connections)
+- **openprocess** (1 connections)
+- **process_information** (1 connections)
+- **process_query_limited_information** (1 connections)
+- **process_synchronize** (1 connections)
+- **process_terminate** (1 connections)
+- **pwstr** (1 connections)
+- **securityimpersonation** (1 connections)
+- **sendmessagetimeoutw** (1 connections)
+- **shchangenotify** (1 connections)
+- **shcne_assocchanged** (1 connections)
+- **shcnf_flush** (1 connections)
 - *... and 11 more nodes in this community*
 
 ## Relationships
 
-- [Embedded Catalog Test](Embedded_Catalog_Test.md) (6 shared connections)
-- [.Toggle .Set .Apply](Toggle_.Set_.Apply.md) (4 shared connections)
-- [Reversibility Instant Requireslogoff](Reversibility_Instant_Requireslogoff.md) (2 shared connections)
-- [app.rs](app.rs.md) (2 shared connections)
-- [SlowScanBackend](SlowScanBackend.md) (1 shared connections)
-- [PdhParkingCollector](PdhParkingCollector.md) (1 shared connections)
-- [parking.rs](parking.rs.md) (1 shared connections)
-- [Project Documentation, Architecture & Licensing](Project_Documentation,_Architecture_&_Licensing.md) (1 shared connections)
-- [WinBlastScrollable](WinBlastScrollable.md) (1 shared connections)
+- [progress_bar.rs](progress_bar.rs.md) (6 shared connections)
+- [Low-Level NT Core & Kernel Architecture](Low-Level_NT_Core_&_Kernel_Architecture.md) (4 shared connections)
+- [backend.rs](backend.rs.md) (2 shared connections)
+- [decode_oem_bytes](decode_oem_bytes.md) (2 shared connections)
+- [driver_update.rs](driver_update.rs.md) (1 shared connections)
+- [svc_mutator.rs](svc_mutator.rs.md) (1 shared connections)
+- [power.rs](power.rs.md) (1 shared connections)
 
 ## Source Files
 
-- `src/app.rs`
-- `src/core/elevation.rs`
-- `src/core/updater.rs`
+- `src/core/backend.rs`
+- `src/tools/explorer_ctrl.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 60 (92%)
-- INFERRED: 5 (8%)
+- EXTRACTED: 51 (98%)
+- INFERRED: 1 (2%)
 - AMBIGUOUS: 0 (0%)
 
 ---

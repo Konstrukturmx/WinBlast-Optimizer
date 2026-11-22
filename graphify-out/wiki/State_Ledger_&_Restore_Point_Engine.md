@@ -1,50 +1,45 @@
 # State Ledger & Restore Point Engine
 
-> 24 nodes · cohesion 0.16
+> 12 nodes · cohesion 0.23
 
 ## Key Concepts
 
-- **LazyLoader** (19 connections) — `src/hardware/lazy_loader.rs`
-- **LazyPayload** (12 connections) — `src/hardware/lazy_loader.rs`
-- **.spawn_probe()** (10 connections) — `src/hardware/lazy_loader.rs`
-- **background_probe_delivers_payload_without_blocking()** (5 connections) — `src/hardware/lazy_loader.rs`
-- **.is_any_loading()** (5 connections) — `src/hardware/lazy_loader.rs`
-- **.new()** (5 connections) — `src/hardware/lazy_loader.rs`
-- **background_panic_is_contained_and_clears_in_flight_flag()** (4 connections) — `src/hardware/lazy_loader.rs`
-- **.spawn_probe_drivers()** (4 connections) — `src/hardware/lazy_loader.rs`
-- **.try_recv()** (4 connections) — `src/hardware/lazy_loader.rs`
-- **.drain_ready()** (3 connections) — `src/hardware/lazy_loader.rs`
-- **.is_drivers_loading()** (3 connections) — `src/hardware/lazy_loader.rs`
-- **.spawn_probe_bios()** (3 connections) — `src/hardware/lazy_loader.rs`
-- **.spawn_probe_disks()** (3 connections) — `src/hardware/lazy_loader.rs`
-- **.spawn_probe_thermals()** (3 connections) — `src/hardware/lazy_loader.rs`
-- **Drivers** (3 connections) — `src/hardware/lazy_loader.rs`
-- **.default()** (2 connections) — `src/hardware/lazy_loader.rs`
-- **.is_bios_loading()** (2 connections) — `src/hardware/lazy_loader.rs`
-- **.is_disks_loading()** (2 connections) — `src/hardware/lazy_loader.rs`
-- **.is_thermals_loading()** (2 connections) — `src/hardware/lazy_loader.rs`
-- **Bios** (2 connections) — `src/hardware/lazy_loader.rs`
-- **Disks** (2 connections) — `src/hardware/lazy_loader.rs`
-- **Thermals** (2 connections) — `src/hardware/lazy_loader.rs`
-- **try_recv_is_non_blocking_when_empty()** (2 connections) — `src/hardware/lazy_loader.rs`
-- **F** (1 connections)
+- **AppxCache** (20 connections) — `src/scanner/appx_scanner.rs`
+- **.evaluate_package()** (4 connections) — `src/scanner/appx_scanner.rs`
+- **.load_appx_cache()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.is_package_removed()** (3 connections) — `src/scanner/appx_scanner.rs`
+- **check_package_removed()** (3 connections) — `src/scanner/appx_scanner.rs`
+- **.load_appx_cache()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.load_appx_cache()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
+- **.load_appx_cache()** (2 connections) — `src/core/backend.rs`
+- **.load_appx_cache()** (2 connections) — `src/core/backend.rs`
+- **.iter()** (2 connections) — `src/scanner/appx_scanner.rs`
+- **.load()** (2 connections) — `src/scanner/appx_scanner.rs`
+- **Item** (1 connections)
 
 ## Relationships
 
-- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (8 shared connections)
-- [sys_inventory.rs](sys_inventory.rs.md) (2 shared connections)
-- [lazy_loader.rs](lazy_loader.rs.md) (2 shared connections)
-- [CoreParkingState](CoreParkingState.md) (1 shared connections)
-- [deserialize](deserialize.md) (1 shared connections)
-- [Multi-Language Tweak Localization Tables](Multi-Language_Tweak_Localization_Tables.md) (1 shared connections)
+- [appx_scanner.rs](appx_scanner.rs.md) (6 shared connections)
+- [WinBlast Optimizer — Developer & Architecture Guide](WinBlast_Optimizer_—_Developer_&_Architecture_Guide.md) (2 shared connections)
+- [CachedScanBackend<'a>](CachedScanBackend_'a_.md) (2 shared connections)
+- [Integration Suite: Tweak Sandbox E2E](Integration_Suite-_Tweak_Sandbox_E2E.md) (2 shared connections)
+- [driver_update.rs](driver_update.rs.md) (1 shared connections)
+- [FailAtMutationBackend](FailAtMutationBackend.md) (1 shared connections)
+- [registry_scanner.rs](registry_scanner.rs.md) (1 shared connections)
+- [backend.rs](backend.rs.md) (1 shared connections)
+- [features_apps.rs](features_apps.rs.md) (1 shared connections)
+- [in_progress_hud.rs](in_progress_hud.rs.md) (1 shared connections)
+- [HibernationStatus](HibernationStatus.md) (1 shared connections)
 
 ## Source Files
 
-- `src/hardware/lazy_loader.rs`
+- `src/core/backend.rs`
+- `src/scanner/appx_scanner.rs`
+- `tests/tweak_sandbox_e2e.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 59 (100%)
+- EXTRACTED: 34 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

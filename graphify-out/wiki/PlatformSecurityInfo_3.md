@@ -1,41 +1,42 @@
 # PlatformSecurityInfo
 
-> 11 nodes · cohesion 0.25
+> 15 nodes · cohesion 0.16
 
 ## Key Concepts
 
-- **i18n.rs** (13 connections) — `src/core/i18n.rs`
-- **I18n** (8 connections) — `src/core/i18n.rs`
-- **.translate()** (7 connections) — `src/core/i18n.rs`
-- **.get()** (4 connections) — `src/core/i18n.rs`
-- **test_all_languages_and_all_keys_exhaustive()** (2 connections) — `src/core/i18n.rs`
-- **test_i18n_all_languages_populated()** (2 connections) — `src/core/i18n.rs`
-- **test_left_menu_translations_all_8_languages()** (2 connections) — `src/core/i18n.rs`
-- **.fold_search_str()** (1 connections) — `src/core/i18n.rs`
-- **test_fold_search_str_turkish_and_ascii()** (1 connections) — `src/core/i18n.rs`
-- **test_turkish_translation()** (1 connections) — `src/core/i18n.rs`
-- **TRANSLATIONS** (1 connections) — `src/core/i18n.rs`
+- **.setup()** (11 connections) — `src/app.rs`
+- **.run_telemetry_audit()** (7 connections) — `src/app.rs`
+- **.refresh_restore_points()** (6 connections) — `src/app.rs`
+- **StatusUpdate** (6 connections) — `src/app.rs`
+- **.refresh_core_parking()** (5 connections) — `src/app.rs`
+- **.refresh_latency()** (5 connections) — `src/app.rs`
+- **.refresh_platform_inventory()** (5 connections) — `src/app.rs`
+- **.check_for_updates()** (3 connections) — `src/app.rs`
+- **.setup_slint()** (2 connections) — `src/app.rs`
+- **CoreParkingUpdated** (2 connections) — `src/app.rs`
+- **LatencyUpdated** (2 connections) — `src/app.rs`
+- **MetricsSnapshot** (2 connections) — `src/app.rs`
+- **RestorePointsLoaded** (2 connections) — `src/app.rs`
+- **TelemetryAuditCompleted** (2 connections) — `src/app.rs`
+- **UpdateCheckCompleted** (2 connections) — `src/app.rs`
 
 ## Relationships
 
-- [FailAtMutationBackend](FailAtMutationBackend.md) (3 shared connections)
-- [Core UI Internationalization & Text Catalog](Core_UI_Internationalization_&_Text_Catalog.md) (3 shared connections)
-- [Reversibility Instant Requireslogoff](Reversibility_Instant_Requireslogoff.md) (2 shared connections)
-- [parking.rs](parking.rs.md) (1 shared connections)
-- [System Architecture Changelog](System_Architecture_Changelog.md) (1 shared connections)
-- [SlowScanBackend](SlowScanBackend.md) (1 shared connections)
-- [task_scanner.rs](task_scanner.rs.md) (1 shared connections)
-- [PlatformSecurityInfo](PlatformSecurityInfo.md) (1 shared connections)
-- [elevation.rs](elevation.rs.md) (1 shared connections)
+- [startup.rs](startup.rs.md) (10 shared connections)
+- [Disk Cleaning & Temporary File Purger](Disk_Cleaning_&_Temporary_File_Purger.md) (8 shared connections)
+- [sys_inventory.rs](sys_inventory.rs.md) (6 shared connections)
+- [WindowsOptionalFeature](WindowsOptionalFeature.md) (2 shared connections)
+- [parse_guid](parse_guid.md) (1 shared connections)
+- [.run_scan_internal](run_scan_internal.md) (1 shared connections)
 
 ## Source Files
 
-- `src/core/i18n.rs`
+- `src/app.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 28 (100%)
-- INFERRED: 0 (0%)
+- EXTRACTED: 44 (98%)
+- INFERRED: 1 (2%)
 - AMBIGUOUS: 0 (0%)
 
 ---

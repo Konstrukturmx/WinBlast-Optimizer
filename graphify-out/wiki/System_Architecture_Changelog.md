@@ -1,56 +1,65 @@
 # System Architecture Changelog
 
-> 38 nodes · cohesion 0.05
+> 53 nodes · cohesion 0.06
 
 ## Key Concepts
 
-- **status_i18n.rs** (59 connections) — `src/core/status_i18n.rs`
-- **PresetKey** (6 connections) — `src/core/status_i18n.rs`
-- **ADMIN_RUN_MSG** (1 connections) — `src/core/status_i18n.rs`
-- **ERROR_PREFIX_TABLE** (1 connections) — `src/core/status_i18n.rs`
-- **KFM_REDIRECT_MSG** (1 connections) — `src/core/status_i18n.rs`
-- **POLICY_LOCKED_LABEL** (1 connections) — `src/core/status_i18n.rs`
-- **Gaming** (1 connections) — `src/core/status_i18n.rs`
-- **LaptopBattery** (1 connections) — `src/core/status_i18n.rs`
-- **ProAudio** (1 connections) — `src/core/status_i18n.rs`
-- **STATIC_APPX_SCANNING** (1 connections) — `src/core/status_i18n.rs`
-- **STATIC_BASELINE_RESET_OK** (1 connections) — `src/core/status_i18n.rs`
-- **STATIC_BASELINE_RESETTING** (1 connections) — `src/core/status_i18n.rs`
-- **STATIC_CHANGELOG_CLEARED** (1 connections) — `src/core/status_i18n.rs`
-- **STATIC_DESELECTED_ALL** (1 connections) — `src/core/status_i18n.rs`
-- **STATIC_DISK_SCANNING** (1 connections) — `src/core/status_i18n.rs`
-- **STATIC_EDGE_REMOVED** (1 connections) — `src/core/status_i18n.rs`
-- **STATIC_EXPLORER_RESTARTED** (1 connections) — `src/core/status_i18n.rs`
-- **STATIC_GPU_MSI_OK** (1 connections) — `src/core/status_i18n.rs`
-- **STATIC_LATENCY_BASELINE_SAVED** (1 connections) — `src/core/status_i18n.rs`
-- **STATIC_LATENCY_DONE** (1 connections) — `src/core/status_i18n.rs`
-- **STATIC_LATENCY_RUN_FIRST** (1 connections) — `src/core/status_i18n.rs`
-- **STATIC_LATENCY_RUNNING** (1 connections) — `src/core/status_i18n.rs`
-- **STATIC_MODE_INSTANT** (1 connections) — `src/core/status_i18n.rs`
-- **STATIC_MODE_NORMAL** (1 connections) — `src/core/status_i18n.rs`
-- **STATIC_NO_CLEANUP_SELECTED** (1 connections) — `src/core/status_i18n.rs`
-- *... and 13 more nodes in this community*
+- **ActiveView** (49 connections) — `src/app.rs`
+- **ui_scrollbar_test.rs** (24 connections) — `tests/ui_scrollbar_test.rs`
+- **runtime_for()** (9 connections) — `tests/ui_scrollbar_test.rs`
+- **thumb_rects()** (8 connections) — `tests/ui_scrollbar_test.rs`
+- **content_thumb()** (7 connections) — `tests/ui_scrollbar_test.rs`
+- **frames()** (7 connections) — `tests/ui_scrollbar_test.rs`
+- **Runtime** (7 connections)
+- **create_test_state()** (6 connections) — `tests/ui_scrollbar_test.rs`
+- **sidebar_thumb()** (5 connections) — `tests/ui_scrollbar_test.rs`
+- **test_advanced_matrix_scrollbar_structure_and_drag()** (5 connections) — `tests/ui_scrollbar_test.rs`
+- **test_wheel_scroll_moves_content_and_sidebar_thumbs()** (5 connections) — `tests/ui_scrollbar_test.rs`
+- **count_key()** (4 connections) — `tests/ui_scrollbar_test.rs`
+- **test_iso_29119_driver_section_scrollbar_bounds_and_filtering()** (4 connections) — `tests/ui_scrollbar_test.rs`
+- **test_scrollbars_render_across_all_main_views()** (4 connections) — `tests/ui_scrollbar_test.rs`
+- **test_themed_thumb_widens_under_the_pointer()** (4 connections) — `tests/ui_scrollbar_test.rs`
+- **.nav_prev_view()** (3 connections) — `src/app.rs`
+- **AdvancedMatrix** (2 connections) — `src/app.rs`
+- **CoreParking** (2 connections) — `src/app.rs`
+- **EasyDashboard** (2 connections) — `src/app.rs`
+- **GpuTuning** (2 connections) — `src/app.rs`
+- **.prev()** (2 connections) — `src/app.rs`
+- **ALL_VIEWS** (2 connections) — `tests/ui_responsive_e2e.rs`
+- **Advanced Optimization Matrix UI** (1 connections) — `assets/screenshots/advanced_matrix.png`
+- **CPU Core Parking Topology Visualizer UI** (1 connections) — `assets/screenshots/cpu_parking.png`
+- **Easy Mode Telemetry Dashboard UI** (1 connections) — `assets/screenshots/dashboard.png`
+- *... and 28 more nodes in this community*
 
 ## Relationships
 
-- [FailAtMutationBackend](FailAtMutationBackend.md) (16 shared connections)
-- [SlowScanBackend](SlowScanBackend.md) (2 shared connections)
-- [spawn_guarded_worker](spawn_guarded_worker.md) (2 shared connections)
-- [GameProfile](GameProfile.md) (2 shared connections)
-- [parking.rs](parking.rs.md) (1 shared connections)
-- [PlatformSecurityInfo](PlatformSecurityInfo.md) (1 shared connections)
-- [Core UI Internationalization & Text Catalog](Core_UI_Internationalization_&_Text_Catalog.md) (1 shared connections)
-- [UiThemeStyle](UiThemeStyle.md) (1 shared connections)
-- [in_progress_hud.rs](in_progress_hud.rs.md) (1 shared connections)
+- [Disk Cleaning & Temporary File Purger](Disk_Cleaning_&_Temporary_File_Purger.md) (10 shared connections)
+- [PowerSchemeInfo](PowerSchemeInfo.md) (3 shared connections)
+- [in_progress_hud.rs](in_progress_hud.rs.md) (3 shared connections)
+- [enums](enums.md) (2 shared connections)
+- [RealBackend](RealBackend.md) (2 shared connections)
+- [clean_apps.rs](clean_apps.rs.md) (2 shared connections)
+- [parse_guid](parse_guid.md) (2 shared connections)
+- [WindowsOptionalFeature](WindowsOptionalFeature.md) (2 shared connections)
+- [full_telemetry_audit_with](full_telemetry_audit_with.md) (1 shared connections)
+- [Reversibility Instant Requireslogoff](Reversibility_Instant_Requireslogoff.md) (1 shared connections)
+- [bridge.rs](bridge.rs.md) (1 shared connections)
+- [features_apps.rs](features_apps.rs.md) (1 shared connections)
 
 ## Source Files
 
-- `src/core/status_i18n.rs`
+- `assets/screenshots/advanced_matrix.png`
+- `assets/screenshots/cpu_parking.png`
+- `assets/screenshots/dashboard.png`
+- `assets/screenshots/gpu_tuning.png`
+- `src/app.rs`
+- `tests/ui_responsive_e2e.rs`
+- `tests/ui_scrollbar_test.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 64 (100%)
-- INFERRED: 0 (0%)
+- EXTRACTED: 111 (97%)
+- INFERRED: 3 (3%)
 - AMBIGUOUS: 0 (0%)
 
 ---

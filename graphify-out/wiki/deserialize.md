@@ -1,62 +1,54 @@
 # deserialize
 
-> 27 nodes · cohesion 0.11
+> 19 nodes · cohesion 0.13
 
 ## Key Concepts
 
-- **backend.rs** (77 connections) — `src/core/backend.rs`
-- **SystemMetrics** (14 connections) — `src/hardware/monitor.rs`
-- **MetricsSampler** (11 connections) — `src/core/backend.rs`
-- **RegStringValue** (11 connections) — `src/core/reg_helpers.rs`
-- **test_sandbox_core_parking_labels_metrics_and_power_sync()** (7 connections) — `src/core/backend.rs`
-- **.unpark_all_cores()** (5 connections) — `src/core/backend.rs`
-- **SandboxMetricsSampler** (5 connections) — `src/core/backend.rs`
-- **.reg_get_string()** (5 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.create_metrics_sampler()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
-- **RwLock** (3 connections)
-- **.create_metrics_sampler()** (3 connections) — `src/core/backend.rs`
-- **.sample()** (3 connections) — `src/core/backend.rs`
-- **.create_metrics_sampler()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.reg_get_string()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.create_metrics_sampler()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.reg_get_string()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **OnceLock** (2 connections)
-- **.sample()** (2 connections) — `src/core/backend.rs`
-- **.create_metrics_sampler()** (2 connections) — `src/core/backend.rs`
-- **.reg_get_string()** (2 connections) — `src/core/backend.rs`
-- **.create_metrics_sampler()** (2 connections) — `src/core/backend.rs`
-- **.reg_get_string()** (2 connections) — `src/core/backend.rs`
-- **SystemMonitor** (2 connections) — `src/core/backend.rs`
-- **.sample()** (2 connections) — `src/core/backend.rs`
-- **normalize_task_path** (1 connections)
-- *... and 2 more nodes in this community*
+- **deserialize** (36 connections)
+- **RegKey** (18 connections)
+- **BiosSystemInfo** (10 connections) — `src/hardware/bios.rs`
+- **WindowsInfo** (6 connections) — `src/core/os_detect.rs`
+- **bios.rs** (6 connections) — `src/hardware/bios.rs`
+- **GameProfile** (6 connections) — `src/tools/game_profiles.rs`
+- **os_detect.rs** (5 connections) — `src/core/os_detect.rs`
+- **tools/game_profiles.rs** (5 connections) — `src/tools/game_profiles.rs`
+- **test_windows_info_detect_host()** (2 connections) — `src/core/os_detect.rs`
+- **.detect()** (2 connections) — `src/core/os_detect.rs`
+- **DisplayDriverInfo** (2 connections) — `src/hardware/bios.rs`
+- **.all()** (2 connections) — `src/tools/game_profiles.rs`
+- **.check_applied()** (2 connections) — `src/tools/game_profiles.rs`
+- **.has_recall()** (1 connections) — `src/core/os_detect.rs`
+- **.supports_hags()** (1 connections) — `src/core/os_detect.rs`
+- **.has_warning()** (1 connections) — `src/hardware/bios.rs`
+- **.probe()** (1 connections) — `src/hardware/bios.rs`
+- **.apply()** (1 connections) — `src/tools/game_profiles.rs`
+- **.revert()** (1 connections) — `src/tools/game_profiles.rs`
 
 ## Relationships
 
-- [Hardware Diagnostics & GPU Silicon Tuning](Hardware_Diagnostics_&_GPU_Silicon_Tuning.md) (6 shared connections)
-- [power.rs](power.rs.md) (5 shared connections)
-- [Project History & Release Version Ledger](Project_History_&_Release_Version_Ledger.md) (5 shared connections)
-- [DriverUpdateItem](DriverUpdateItem.md) (4 shared connections)
-- [features_apps.rs](features_apps.rs.md) (4 shared connections)
-- [full_telemetry_audit_with](full_telemetry_audit_with.md) (4 shared connections)
-- [Integration Suite: Tweak Sandbox E2E](Integration_Suite-_Tweak_Sandbox_E2E.md) (4 shared connections)
-- [sys_inventory.rs](sys_inventory.rs.md) (4 shared connections)
-- [Win32 Registry Scanner & Mutator](Win32_Registry_Scanner_&_Mutator.md) (3 shared connections)
-- [clean_apps.rs](clean_apps.rs.md) (3 shared connections)
-- [reg_mutator.rs](reg_mutator.rs.md) (3 shared connections)
-- [edge_cases_unorthodox.rs](edge_cases_unorthodox.rs.md) (3 shared connections)
+- [WinBlast Optimizer — Developer & Architecture Guide](WinBlast_Optimizer_—_Developer_&_Architecture_Guide.md) (4 shared connections)
+- [app.rs](app.rs.md) (4 shared connections)
+- [AppxCache](AppxCache.md) (4 shared connections)
+- [topological_scheduler.rs](topological_scheduler.rs.md) (3 shared connections)
+- [Disk Cleaning & Temporary File Purger](Disk_Cleaning_&_Temporary_File_Purger.md) (3 shared connections)
+- [ui_scrollbar_test.rs](ui_scrollbar_test.rs.md) (2 shared connections)
+- [tools/game_overlay.rs](tools-game_overlay.rs.md) (2 shared connections)
+- [parking.rs](parking.rs.md) (2 shared connections)
+- [WinBlast Optimizer](WinBlast_Optimizer.md) (2 shared connections)
+- [Project History & Release Version Ledger](Project_History_&_Release_Version_Ledger.md) (2 shared connections)
+- [.setup](setup.md) (2 shared connections)
+- [RestorePoint](RestorePoint.md) (2 shared connections)
 
 ## Source Files
 
-- `src/core/backend.rs`
-- `src/core/reg_helpers.rs`
-- `src/hardware/monitor.rs`
-- `tests/tweak_sandbox_e2e.rs`
+- `src/core/os_detect.rs`
+- `src/hardware/bios.rs`
+- `src/tools/game_profiles.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 141 (99%)
-- INFERRED: 1 (1%)
+- EXTRACTED: 83 (97%)
+- INFERRED: 3 (3%)
 - AMBIGUOUS: 0 (0%)
 
 ---

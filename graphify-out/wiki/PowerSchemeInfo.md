@@ -1,47 +1,50 @@
 # PowerSchemeInfo
 
-> 12 nodes · cohesion 0.20
+> 15 nodes · cohesion 0.14
 
 ## Key Concepts
 
-- **InstalledAppxPackage** (15 connections) — `src/tools/features_apps.rs`
-- **AppxSafetyTier** (10 connections) — `src/tools/features_apps.rs`
-- **.list_installed_appx_detailed()** (4 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.list_installed_appx_detailed()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.list_installed_appx_detailed()** (3 connections) — `tests/tweak_sandbox_e2e.rs`
-- **.list_installed_appx_detailed()** (2 connections) — `src/core/backend.rs`
-- **.list_installed_appx_detailed()** (2 connections) — `src/core/backend.rs`
-- **AiBloat** (1 connections) — `src/tools/features_apps.rs`
-- **.as_label()** (1 connections) — `src/tools/features_apps.rs`
-- **Caution** (1 connections) — `src/tools/features_apps.rs`
-- **ProtectedCore** (1 connections) — `src/tools/features_apps.rs`
-- **SafeBloat** (1 connections) — `src/tools/features_apps.rs`
+- **edge_cases_unorthodox.rs** (27 connections) — `tests/edge_cases_unorthodox.rs`
+- **decode_hex()** (12 connections) — `src/core/reg_helpers.rs`
+- **EngineMode** (8 connections) — `src/app.rs`
+- **env** (3 connections)
+- **test_unorthodox_concurrent_worker_event_stress()** (3 connections) — `tests/edge_cases_unorthodox.rs`
+- **test_unorthodox_extreme_registry_corruption()** (3 connections) — `tests/edge_cases_unorthodox.rs`
+- **ui** (3 connections)
+- **test_unorthodox_micro_and_ultrawide_viewports()** (2 connections) — `tests/edge_cases_unorthodox.rs`
+- **encode_hex** (1 connections)
+- **parse_multi_sz_lossless** (1 connections)
+- **Runtime** (1 connections)
+- **Instant** (1 connections) — `src/app.rs`
+- **Normal** (1 connections) — `src/app.rs`
+- **systemthermalsnapshot** (1 connections)
+- **test_unorthodox_hardware_sensor_anomalies()** (1 connections) — `tests/edge_cases_unorthodox.rs`
 
 ## Relationships
 
-- [parse_guid](parse_guid.md) (5 shared connections)
-- [deserialize](deserialize.md) (2 shared connections)
-- [sys_inventory.rs](sys_inventory.rs.md) (2 shared connections)
-- [Integration Suite: Tweak Sandbox E2E](Integration_Suite-_Tweak_Sandbox_E2E.md) (1 shared connections)
-- [startup.rs](startup.rs.md) (1 shared connections)
-- [PlatformSecurityInfo](PlatformSecurityInfo.md) (1 shared connections)
-- [.Toggle .Set .Apply](Toggle_.Set_.Apply.md) (1 shared connections)
-- [Embedded Catalog Test](Embedded_Catalog_Test.md) (1 shared connections)
-- [full_telemetry_audit_with](full_telemetry_audit_with.md) (1 shared connections)
-- [SlowScanBackend](SlowScanBackend.md) (1 shared connections)
-- [theme.rs](theme.rs.md) (1 shared connections)
-- [InstalledAppxPackage](InstalledAppxPackage.md) (1 shared connections)
+- [Scandetailkind Appxinstalled Appxinstalledps](Scandetailkind_Appxinstalled_Appxinstalledps.md) (5 shared connections)
+- [in_progress_hud.rs](in_progress_hud.rs.md) (4 shared connections)
+- [System Architecture Changelog](System_Architecture_Changelog.md) (3 shared connections)
+- [parse_guid](parse_guid.md) (2 shared connections)
+- [selection_automation_e2e.rs](selection_automation_e2e.rs.md) (2 shared connections)
+- [app.rs](app.rs.md) (2 shared connections)
+- [WinBlastError](WinBlastError.md) (2 shared connections)
+- [PlatformSecurityInfo](PlatformSecurityInfo.md) (2 shared connections)
+- [Changelog](Changelog.md) (2 shared connections)
+- [.setup](setup.md) (2 shared connections)
+- [driver_update.rs](driver_update.rs.md) (2 shared connections)
+- [registry_scanner.rs](registry_scanner.rs.md) (2 shared connections)
 
 ## Source Files
 
-- `src/core/backend.rs`
-- `src/tools/features_apps.rs`
-- `tests/tweak_sandbox_e2e.rs`
+- `src/app.rs`
+- `src/core/reg_helpers.rs`
+- `tests/edge_cases_unorthodox.rs`
 
 ## Audit Trail
 
-- EXTRACTED: 31 (100%)
-- INFERRED: 0 (0%)
+- EXTRACTED: 45 (85%)
+- INFERRED: 8 (15%)
 - AMBIGUOUS: 0 (0%)
 
 ---
