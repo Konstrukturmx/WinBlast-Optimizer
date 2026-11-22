@@ -624,10 +624,11 @@ pub enum TextKey {
     RevertDefaultsBtn,
     DeselectCategoryBtn,
     ValueDetecting,
+    SelectSafeAiBtn,
 }
 
 impl TextKey {
-    pub const COUNT: usize = 515;
+    pub const COUNT: usize = 516;
 }
 
 /// Translations indexed by [Language as usize][TextKey as usize]
@@ -1152,6 +1153,7 @@ static TRANSLATIONS: [[&str; TextKey::COUNT]; 8] = [
         "Revert Defaults",
         "Deselect Category",
         "Detecting…",
+        "Select Safe & AI",
     ],
     // 1: Turkish (Türkçe)
     [
@@ -1673,6 +1675,7 @@ static TRANSLATIONS: [[&str; TextKey::COUNT]; 8] = [
         "Varsayılanlara Dön",
         "Kategori Seçimini Kaldır",
         "Algılanıyor…",
+        "Güvenli ve YZ Seç",
     ],
     // 2: German (Deutsch)
     [
@@ -2194,6 +2197,7 @@ static TRANSLATIONS: [[&str; TextKey::COUNT]; 8] = [
         "Standard wiederherstellen",
         "Kategorie abwählen",
         "Wird erkannt…",
+        "Sicher & KI auswählen",
     ],
     // 3: French (Français)
     [
@@ -2715,6 +2719,7 @@ static TRANSLATIONS: [[&str; TextKey::COUNT]; 8] = [
         "Rétablir les valeurs par défaut",
         "Désélectionner la catégorie",
         "Détection…",
+        "Sélectionner sûrs et IA",
     ],
     // 4: Spanish (Español)
     [
@@ -3236,6 +3241,7 @@ static TRANSLATIONS: [[&str; TextKey::COUNT]; 8] = [
         "Restaurar valores predeterminados",
         "Deseleccionar categoría",
         "Detectando…",
+        "Seleccionar seguros e IA",
     ],
     // 5: Russian (Русский)
     [
@@ -3757,6 +3763,7 @@ static TRANSLATIONS: [[&str; TextKey::COUNT]; 8] = [
         "Вернуть по умолчанию",
         "Снять выбор категории",
         "Определение…",
+        "Выбрать безопасные и ИИ",
     ],
     // 6: Chinese Simplified (简体中文)
     [
@@ -4278,6 +4285,7 @@ static TRANSLATIONS: [[&str; TextKey::COUNT]; 8] = [
         "恢复默认",
         "取消选择类别",
         "正在检测…",
+        "选择安全与 AI 项",
     ],
     // 7: Japanese (日本語)
     [
@@ -4799,6 +4807,7 @@ static TRANSLATIONS: [[&str; TextKey::COUNT]; 8] = [
         "既定値に戻す",
         "カテゴリの選択を解除",
         "検出中…",
+        "安全項目とAIを選択",
     ],
 ];
 

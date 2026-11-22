@@ -1,0 +1,54 @@
+// ui/stores/clean_apps.slint
+// Clean & Apps store (port of v1.6.1 clean_apps): disk cleaner (8 targets), AppX bloat +
+// optional features (DISM) + OneDrive/Edge, WinGet installer. Written by views/clean_apps.rs.
+
+export struct CleanTargetRow { id: string, label: string, path: string, size: string, files: string, selected: bool, admin: bool, error: string }
+export struct AppxRow { family: string, name: string, tier-text: string, tier-tone: string, protected: bool, selected: bool }
+export struct FeatureRow { name: string, title: string, desc: string, enabled: bool }
+export struct WingetRow { id: string, name: string, category: string, desc: string, selected: bool }
+
+export global CleanAppsStore {
+    in-out property <int> sub-tab; // 0 disk cleaner, 1 appx & features, 2 winget
+    in-out property <bool> busy;
+
+    // Disk cleaner
+    in-out property <[CleanTargetRow]> targets: [];
+    in-out property <string> total-reclaimable;
+    in-out property <string> selected-reclaimable;
+    in-out property <string> last-freed;
+    in-out property <string> clean-errors;
+
+    // AppX & features
+    in-out property <string> appx-filter;
+    in-out property <[AppxRow]> appx: [];
+    in-out property <int> appx-total;
+    in-out property <int> appx-selected;
+    in-out property <string> kfm-warning;
+    in-out property <[FeatureRow]> features: [];
+
+    // WinGet
+    in-out property <string> winget-filter;
+    in-out property <[WingetRow]> winget: [];
+    in-out property <int> winget-selected;
+
+    callback set-sub-tab(int);
+    callback select-all-targets();
+    callback deselect-all-targets();
+    callback scan-targets();
+    callback clean-selected();
+    callback toggle-target(string);
+    callback scan-appx();
+    callback remove-appx();
+    callback appx-filter-edited(string);
+    callback select-filtered-appx();
+    callback select-safe-ai();
+    callback deselect-appx();
+    callback remove-onedrive();
+    callback remove-edge();
+    callback toggle-appx(string);
+    callback toggle-feature(string, bool);
+    callback winget-filter-edited(string);
+    callback deselect-winget();
+    callback install-winget();
+    callback toggle-winget(string);
+}

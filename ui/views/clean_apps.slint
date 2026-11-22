@@ -1,265 +1,242 @@
 // ui/views/clean_apps.slint
-// WinBlast0 Disk Cleaner & AppX Debloater View in Slint 1.19
-
-import { Scale, Theme } from "../theme.slint";
+// Clean & Apps (port of v1.6.1): Disk Cleaner (8 targets) · AppX bloat & optional features
+// (DISM) with OneDrive/Edge safe removal · curated WinGet installer.
+import { ScrollView } from "std-widgets.slint";
+import { Scale, Theme, Tr } from "../theme.slint";
+import { CleanAppsStore } from "../stores/clean_apps.slint";
+import { WbChip } from "../components/chip.slint";
 import { WbButton } from "../components/button.slint";
-import { WbCard } from "../components/card.slint";
-import { WbBadge } from "../components/badge.slint";
-import { WbProgressBar } from "../components/progress_bar.slint";
-import { WbSwitch } from "../components/switch.slint";
 import { WbSearchInput } from "../components/search_input.slint";
+import { WbToggle, WbPill, WbPanel } from "../components/toggle.slint";
 
-export struct CleanCategoryItem {
-    id: string,
-    name: string,
-    description: string,
-    size-text: string,
-    size-bytes: int,
-    selected: bool,
+component EmptyCard inherits WbPanel {
+    in property <string> text;
+    height: Scale.px(72px);
+    Text { text: root.text; font-size: Scale.font-sm; color: Theme.text-muted; wrap: word-wrap; horizontal-alignment: center; }
 }
 
-export struct AppxPackageItem {
-    id: string,
-    name: string,
-    publisher: string,
-    size-text: string,
-    is-protected: bool,
-    selected: bool,
+component SelectRow inherits Rectangle {
+    in property <bool> selected;
+    in property <bool> locked;
+    in property <bool> busy;
+    callback toggled();
+    border-radius: Scale.px(Theme.card-radius);
+    background: locked ? Theme.bg-card.with-alpha(0.75) : selected ? Theme.bg-card-hover : Theme.bg-card;
+    border-width: 1px;
+    border-color: locked ? Theme.danger.with-alpha(0.28) : selected ? Theme.accent.with-alpha(0.35) : Theme.border;
+    TouchArea {
+        enabled: !root.locked && !root.busy;
+        mouse-cursor: self.enabled ? pointer : default;
+        clicked => { root.toggled(); }
+    }
+    @children
 }
 
-export component CleanAppsView inherits Flickable {
+export component CleanAppsView inherits Rectangle {
     in property <int> tier;
-    in-out property <string> active-tab: "cleaner"; // "cleaner" | "debloater"
-    in-out property <string> search-query: "";
-    in property <bool> is-scanning: false;
-    in property <bool> is-cleaning: false;
-    in property <float> clean-progress: 0.0;
-    in property <string> total-reclaimable-text: "0 B";
 
-    in property <[CleanCategoryItem]> clean-categories: [];
-    in property <[AppxPackageItem]> appx-packages: [];
+    ScrollView {
+        VerticalLayout {
+            padding: root.tier == 0 ? Scale.px(10px) : Scale.px(14px);
+            spacing: Scale.px(12px);
+            alignment: start;
 
-    callback tab-selected(string);
-    callback scan-disk-clicked();
-    callback clean-disk-clicked();
-    callback category-toggled(string, bool);
-    callback appx-toggled(string, bool);
-    callback uninstall-selected-appx();
-
-    content-height: content.preferred-height;
-
-    content := VerticalLayout {
-        padding: Scale.space-lg;
-        spacing: Scale.space-md;
-
-        // Header Card with Tabs & Actions
-        WbCard {
-            VerticalLayout {
-                spacing: Scale.space-md;
-
-                HorizontalLayout {
-                    alignment: space-between;
-
-                    // Tab Switcher
+            // ---- Header + sub-tabs ----
+            WbPanel {
+                VerticalLayout {
+                    padding: Scale.px(Theme.card-padding);
+                    spacing: Scale.px(8px);
                     HorizontalLayout {
-                        spacing: Scale.space-xs;
-                        alignment: start;
-
-                        Rectangle {
-                            height: Scale.control-md;
-                            border-radius: Scale.radius-sm;
-                            background: root.active-tab == "cleaner" ? Theme.accent : Theme.bg-surface;
-                            HorizontalLayout {
-                                padding-left: Scale.space-lg;
-                                padding-right: Scale.space-lg;
-                                alignment: center;
-                                Text {
-                                    text: "🧹 Disk Junk Cleaner";
-                                    font-size: Scale.font-sm;
-                                    font-weight: 700;
-                                    color: root.active-tab == "cleaner" ? Theme.text-on-accent : Theme.text-secondary;
-                                    vertical-alignment: center;
-                                }
-                            }
-                            TouchArea {
-                                mouse-cursor: pointer;
-                                clicked => { root.active-tab = "cleaner"; root.tab-selected("cleaner"); }
-                            }
-                        }
-
-                        Rectangle {
-                            height: Scale.control-md;
-                            border-radius: Scale.radius-sm;
-                            background: root.active-tab == "debloater" ? Theme.accent : Theme.bg-surface;
-                            HorizontalLayout {
-                                padding-left: Scale.space-lg;
-                                padding-right: Scale.space-lg;
-                                alignment: center;
-                                Text {
-                                    text: "📦 AppX Debloater";
-                                    font-size: Scale.font-sm;
-                                    font-weight: 700;
-                                    color: root.active-tab == "debloater" ? Theme.text-on-accent : Theme.text-secondary;
-                                    vertical-alignment: center;
-                                }
-                            }
-                            TouchArea {
-                                mouse-cursor: pointer;
-                                clicked => { root.active-tab = "debloater"; root.tab-selected("debloater"); }
-                            }
-                        }
+                        spacing: Scale.px(8px);
+                        Text { text: Tr.s("CleanAppsTitle"); font-size: Scale.font-xl; font-weight: 800; color: Theme.text-primary; vertical-alignment: center; }
+                        if CleanAppsStore.busy : WbPill { text: Tr.s("BusyWorking"); tone: "accent"; y: (parent.height - self.height) / 2; }
+                        Rectangle { horizontal-stretch: 1; }
                     }
+                    Text { text: Tr.s("CleanAppsSub"); font-size: Scale.font-xs; color: Theme.text-muted; wrap: word-wrap; }
+                    FlexboxLayout {
+                        spacing: Scale.px(6px);
+                        WbChip { text: Tr.s("SubTabDiskCleaner"); active: CleanAppsStore.sub-tab == 0; clicked => { CleanAppsStore.set-sub-tab(0); } }
+                        WbChip { text: Tr.s("SubTabAppxFeatures"); active: CleanAppsStore.sub-tab == 1; clicked => { CleanAppsStore.set-sub-tab(1); } }
+                        WbChip { text: Tr.s("SubTabWinGet"); active: CleanAppsStore.sub-tab == 2; clicked => { CleanAppsStore.set-sub-tab(2); } }
+                    }
+                }
+            }
 
-                    // Contextual Action Buttons
-                    HorizontalLayout {
-                        spacing: Scale.space-sm;
-                        alignment: end;
-
-                        if root.active-tab == "cleaner" : HorizontalLayout {
-                            spacing: Scale.space-sm;
-                            WbButton {
-                                variant: "ghost";
-                                text: "Scan Junk";
-                                loading: root.is-scanning;
-                                enabled: !root.is-scanning && !root.is-cleaning;
-                                clicked => { root.scan-disk-clicked(); }
-                            }
+            // ═════════ Disk cleaner ═════════
+            if CleanAppsStore.sub-tab == 0 : VerticalLayout {
+                spacing: Scale.px(10px);
+                WbPanel {
+                    VerticalLayout {
+                        padding: Scale.px(12px);
+                        spacing: Scale.px(8px);
+                        FlexboxLayout {
+                            spacing: Scale.px(6px);
+                            WbButton { variant: "secondary"; text: Tr.s("SelectAll"); clicked => { CleanAppsStore.select-all-targets(); } }
+                            WbButton { variant: "secondary"; text: Tr.s("DeselectAll"); clicked => { CleanAppsStore.deselect-all-targets(); } }
+                            WbButton { variant: "secondary"; text: Tr.s("ScanCleanupTargets"); enabled: !CleanAppsStore.busy; clicked => { CleanAppsStore.scan-targets(); } }
                             WbButton {
                                 variant: "primary";
-                                text: "Clean (" + root.total-reclaimable-text + ")";
-                                loading: root.is-cleaning;
-                                enabled: !root.is-cleaning && !root.is-scanning;
-                                clicked => { root.clean-disk-clicked(); }
+                                text: Tr.s("CleanSelectedNow") + " (" + CleanAppsStore.selected-reclaimable + ")";
+                                enabled: !CleanAppsStore.busy;
+                                loading: CleanAppsStore.busy;
+                                clicked => { CleanAppsStore.clean-selected(); }
                             }
                         }
-
-                        if root.active-tab == "debloater" : WbButton {
-                            variant: "danger";
-                            text: "Uninstall Selected";
-                            clicked => { root.uninstall-selected-appx(); }
+                        FlexboxLayout {
+                            spacing: Scale.px(14px);
+                            Text { text: CleanAppsStore.total-reclaimable; font-size: Scale.font-sm; font-weight: 700; color: Theme.accent; }
+                            Text { text: CleanAppsStore.last-freed; font-size: Scale.font-sm; color: Theme.success; }
                         }
                     }
                 }
-
-                if root.is-cleaning : VerticalLayout {
-                    spacing: Scale.space-xs;
-                    Text {
-                        text: "Purging selected system caches and junk files...";
-                        font-size: Scale.font-xs;
-                        color: Theme.accent;
-                    }
-                    WbProgressBar {
-                        progress: root.clean-progress;
-                    }
+                if CleanAppsStore.clean-errors != "" : Rectangle {
+                    border-radius: Scale.px(Theme.card-radius);
+                    background: Theme.danger.with-alpha(0.12);
+                    border-width: 1px;
+                    border-color: Theme.danger.with-alpha(0.4);
+                    Text { x: Scale.px(10px); width: parent.width - Scale.px(20px); text: CleanAppsStore.clean-errors; font-size: Scale.font-xs; color: Theme.danger; wrap: word-wrap; }
+                    min-height: Scale.px(36px);
                 }
-            }
-        }
-
-        // Tab Content: Cleaner
-        if root.active-tab == "cleaner" : VerticalLayout {
-            spacing: Scale.space-xs;
-
-            for cat in root.clean-categories: WbCard {
-                HorizontalLayout {
-                    alignment: space-between;
-
+                if CleanAppsStore.targets.length == 0 : EmptyCard { text: CleanAppsStore.busy ? Tr.s("Scanning") : Tr.s("EmptyCleanTargets"); }
+                for t in CleanAppsStore.targets : SelectRow {
+                    selected: t.selected;
+                    busy: CleanAppsStore.busy;
+                    toggled => { CleanAppsStore.toggle-target(t.id); }
                     HorizontalLayout {
-                        spacing: Scale.space-md;
-                        alignment: start;
-
-                        WbSwitch {
-                            checked: cat.selected;
-                            toggled(c) => { root.category-toggled(cat.id, c); }
-                        }
-
+                        padding: Scale.px(10px);
+                        spacing: Scale.px(10px);
+                        WbToggle { on: t.selected; busy: CleanAppsStore.busy; accessible-name: t.label; y: (parent.height - self.height) / 2; clicked => { CleanAppsStore.toggle-target(t.id); } }
                         VerticalLayout {
-                            spacing: Scale.space-2xs;
-                            alignment: center;
-                            Text {
-                                text: cat.name;
-                                font-size: Scale.font-md;
-                                font-weight: 600;
-                                color: Theme.text-primary;
-                            }
-                            Text {
-                                text: cat.description;
-                                font-size: Scale.font-xs;
-                                color: Theme.text-secondary;
-                            }
+                            horizontal-stretch: 1;
+                            min-width: 0;
+                            Text { text: t.label; font-size: Scale.font-sm; font-weight: 600; color: Theme.text-primary; wrap: word-wrap; }
+                            Text { text: t.path; font-size: Scale.font-2xs; color: Theme.text-muted; overflow: elide; }
+                            if t.error != "" : Text { text: t.error; font-size: Scale.font-2xs; color: Theme.danger; wrap: word-wrap; }
                         }
-                    }
-
-                    WbBadge {
-                        text: cat.size-text;
-                        variant: cat.size-bytes > 0 ? "moderate" : "neutral";
+                        Text { text: t.size + " · " + t.files; font-size: Scale.font-xs; color: Theme.accent; vertical-alignment: center; }
+                        if t.admin : WbPill { text: Tr.s("AdminBadge"); tone: "warning"; y: (parent.height - self.height) / 2; }
                     }
                 }
             }
-        }
 
-        // Tab Content: AppX Debloater
-        if root.active-tab == "debloater" : VerticalLayout {
-            spacing: Scale.space-sm;
-
-            WbSearchInput {
-                text <=> root.search-query;
-                placeholder: "Filter AppX packages by name or publisher...";
-            }
-
-            VerticalLayout {
-                spacing: Scale.space-xs;
-
-                for pkg in root.appx-packages: WbCard {
+            // ═════════ AppX & features ═════════
+            if CleanAppsStore.sub-tab == 1 : VerticalLayout {
+                spacing: Scale.px(10px);
+                WbPanel {
+                    VerticalLayout {
+                        padding: Scale.px(12px);
+                        spacing: Scale.px(8px);
+                        FlexboxLayout {
+                            spacing: Scale.px(6px);
+                            WbButton { variant: "secondary"; text: Tr.s("ScanAppsFeatures"); enabled: !CleanAppsStore.busy; clicked => { CleanAppsStore.scan-appx(); } }
+                            WbButton { variant: "danger"; text: Tr.s("RemoveSelectedAppx") + " (" + CleanAppsStore.appx-selected + ")"; enabled: !CleanAppsStore.busy; clicked => { CleanAppsStore.remove-appx(); } }
+                        }
+                        FlexboxLayout {
+                            spacing: Scale.px(6px);
+                            WbChip { text: Tr.s("SelectAll"); clicked => { CleanAppsStore.select-filtered-appx(); } }
+                            WbChip { text: Tr.s("SelectSafeAiBtn"); tone: "accent"; clicked => { CleanAppsStore.select-safe-ai(); } }
+                            WbChip { text: Tr.s("DeselectAllBtn"); clicked => { CleanAppsStore.deselect-appx(); } }
+                            WbChip { text: Tr.s("RemoveOneDriveSafe"); tone: "warning"; enabled: !CleanAppsStore.busy; clicked => { CleanAppsStore.remove-onedrive(); } }
+                            WbChip { text: Tr.s("RemoveEdgeSafe"); tone: "warning"; enabled: !CleanAppsStore.busy; clicked => { CleanAppsStore.remove-edge(); } }
+                        }
+                        WbSearchInput {
+                            placeholder: Tr.s("SearchPlaceholder");
+                            text: CleanAppsStore.appx-filter;
+                            changed(t) => { CleanAppsStore.appx-filter-edited(t); }
+                        }
+                        if CleanAppsStore.kfm-warning != "" : Text { text: CleanAppsStore.kfm-warning; font-size: Scale.font-xs; color: Theme.warning; wrap: word-wrap; }
+                    }
+                }
+                if CleanAppsStore.appx.length == 0 : EmptyCard { text: CleanAppsStore.busy ? Tr.s("Scanning") : Tr.s("EmptyAppxList"); }
+                for p in CleanAppsStore.appx : SelectRow {
+                    selected: p.selected;
+                    locked: p.protected;
+                    busy: CleanAppsStore.busy;
+                    toggled => { CleanAppsStore.toggle-appx(p.family); }
                     HorizontalLayout {
-                        alignment: space-between;
-
-                        HorizontalLayout {
-                            spacing: Scale.space-md;
-                            alignment: start;
-
-                            if !pkg.is-protected : WbSwitch {
-                                checked: pkg.selected;
-                                toggled(c) => { root.appx-toggled(pkg.id, c); }
-                            }
-
-                            if pkg.is-protected : Rectangle {
-                                width: Scale.px(42px);
-                                height: Scale.px(22px);
-                                Text {
-                                    text: "🔒";
-                                    font-size: Scale.font-sm;
-                                    horizontal-alignment: center;
-                                    vertical-alignment: center;
+                        padding: Scale.px(10px);
+                        spacing: Scale.px(10px);
+                        if p.protected : Text { text: "🔒"; width: Scale.px(40px); horizontal-alignment: center; vertical-alignment: center; }
+                        if !p.protected : WbToggle { on: p.selected; busy: CleanAppsStore.busy; accessible-name: p.name; y: (parent.height - self.height) / 2; clicked => { CleanAppsStore.toggle-appx(p.family); } }
+                        VerticalLayout {
+                            horizontal-stretch: 1;
+                            min-width: 0;
+                            Text { text: p.name; font-size: Scale.font-sm; font-weight: 600; color: Theme.text-primary; overflow: elide; }
+                            Text { text: p.family; font-size: Scale.font-2xs; color: Theme.text-muted; overflow: elide; }
+                        }
+                        WbPill { text: p.tier-text; tone: p.tier-tone; y: (parent.height - self.height) / 2; }
+                    }
+                }
+                WbPanel {
+                    VerticalLayout {
+                        padding: Scale.px(12px);
+                        spacing: Scale.px(6px);
+                        Text { text: Tr.s("OptionalFeaturesTitle"); font-size: Scale.font-md; font-weight: 700; color: Theme.text-primary; }
+                        if CleanAppsStore.features.length == 0 : Text { text: CleanAppsStore.busy ? Tr.s("Scanning") : Tr.s("EmptyFeaturesList"); font-size: Scale.font-xs; color: Theme.text-muted; }
+                        for f in CleanAppsStore.features : Rectangle {
+                            border-radius: Scale.px(Theme.btn-radius);
+                            background: Theme.bg-primary;
+                            HorizontalLayout {
+                                padding: Scale.px(8px);
+                                spacing: Scale.px(8px);
+                                VerticalLayout {
+                                    horizontal-stretch: 1;
+                                    min-width: 0;
+                                    Text { text: f.title; font-size: Scale.font-sm; font-weight: 600; color: Theme.text-primary; wrap: word-wrap; }
+                                    Text { text: f.desc; font-size: Scale.font-2xs; color: Theme.text-muted; wrap: word-wrap; }
                                 }
-                            }
-
-                            VerticalLayout {
-                                spacing: Scale.space-2xs;
-                                alignment: center;
-                                HorizontalLayout {
-                                    spacing: Scale.space-sm;
-                                    Text {
-                                        text: pkg.name;
-                                        font-size: Scale.font-md;
-                                        font-weight: 600;
-                                        color: Theme.text-primary;
-                                    }
-                                    if pkg.is-protected : WbBadge {
-                                        text: "Protected Core";
-                                        variant: "safe";
-                                    }
-                                }
-                                Text {
-                                    text: pkg.publisher;
-                                    font-size: Scale.font-xs;
-                                    color: Theme.text-secondary;
+                                WbPill { text: f.enabled ? Tr.s("StateEnabled") : Tr.s("StateDisabled"); tone: f.enabled ? "success" : "muted"; y: (parent.height - self.height) / 2; }
+                                WbButton {
+                                    variant: f.enabled ? "secondary" : "primary";
+                                    text: f.enabled ? Tr.s("ToggleDisable") : Tr.s("ToggleEnable");
+                                    enabled: !CleanAppsStore.busy;
+                                    clicked => { CleanAppsStore.toggle-feature(f.name, !f.enabled); }
                                 }
                             }
                         }
+                    }
+                }
+            }
 
-                        WbBadge {
-                            text: pkg.size-text;
-                            variant: "neutral";
+            // ═════════ WinGet ═════════
+            if CleanAppsStore.sub-tab == 2 : VerticalLayout {
+                spacing: Scale.px(10px);
+                WbPanel {
+                    VerticalLayout {
+                        padding: Scale.px(12px);
+                        spacing: Scale.px(8px);
+                        Text { text: Tr.s("WinGetStatusReady"); font-size: Scale.font-xs; color: Theme.success; wrap: word-wrap; }
+                        FlexboxLayout {
+                            spacing: Scale.px(6px);
+                            WbButton { variant: "secondary"; text: Tr.s("DeselectAllBtn"); clicked => { CleanAppsStore.deselect-winget(); } }
+                            WbButton { variant: "primary"; text: Tr.s("InstallSelectedWinGet") + " (" + CleanAppsStore.winget-selected + ")"; enabled: !CleanAppsStore.busy; clicked => { CleanAppsStore.install-winget(); } }
+                        }
+                        WbSearchInput {
+                            placeholder: Tr.s("SearchPlaceholder");
+                            text: CleanAppsStore.winget-filter;
+                            changed(t) => { CleanAppsStore.winget-filter-edited(t); }
+                        }
+                    }
+                }
+                if CleanAppsStore.winget.length == 0 : EmptyCard { text: Tr.s("EmptyWingetList"); }
+                FlexboxLayout {
+                    spacing: Scale.px(8px);
+                    for a in CleanAppsStore.winget : SelectRow {
+                        min-width: Scale.px(260px);
+                        horizontal-stretch: 1;
+                        selected: a.selected;
+                        busy: CleanAppsStore.busy;
+                        toggled => { CleanAppsStore.toggle-winget(a.id); }
+                        VerticalLayout {
+                            padding: Scale.px(10px);
+                            spacing: Scale.px(4px);
+                            HorizontalLayout {
+                                spacing: Scale.px(8px);
+                                WbToggle { on: a.selected; busy: CleanAppsStore.busy; accessible-name: a.name; clicked => { CleanAppsStore.toggle-winget(a.id); } }
+                                Text { text: a.name; font-size: Scale.font-sm; font-weight: 600; color: Theme.text-primary; vertical-alignment: center; horizontal-stretch: 1; overflow: elide; }
+                                WbPill { text: a.category; tone: "accent"; }
+                            }
+                            Text { text: a.desc; font-size: Scale.font-2xs; color: Theme.text-muted; wrap: word-wrap; }
                         }
                     }
                 }

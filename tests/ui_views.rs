@@ -13,9 +13,11 @@ use winblast0::app::{ActiveView, AppState, MatrixSortMode};
 use winblast0::core::backend::SandboxEnv;
 use winblast0::core::risk::load_embedded_rules;
 use winblast0::ui_slint::bridge::SlintBridge;
-use winblast0::ui_slint::{AppStore, DashboardStore, MainWindow, MatrixStore};
+use winblast0::ui_slint::{AppStore, CleanAppsStore, DashboardStore, MainWindow, MatrixStore};
 
 struct Harness {
+    #[allow(dead_code)]
+    sbx: Arc<SandboxEnv>,
     window: MainWindow,
     state: Rc<RefCell<AppState>>,
     bridge: Rc<SlintBridge>,
@@ -25,9 +27,9 @@ impl Harness {
     /// Sandbox seeded with the full embedded tweak catalog and an initial scan completed.
     fn scanned() -> Self {
         i_slint_backend_testing::init_no_event_loop();
-        let sbx = SandboxEnv::new();
+        let sbx = Arc::new(SandboxEnv::new());
         sbx.seed_all_tweaks(&load_embedded_rules());
-        let mut st = AppState::new_with_backend(Arc::new(sbx));
+        let mut st = AppState::new_with_backend(sbx.clone());
         st.start_scan();
         let start = Instant::now();
         loop {
@@ -42,7 +44,7 @@ impl Harness {
         let window = MainWindow::new().expect("MainWindow");
         let state = Rc::new(RefCell::new(st));
         let bridge = SlintBridge::new_ephemeral(window.clone_strong(), state.clone());
-        Self { window, state, bridge }
+        Self { sbx, window, state, bridge }
     }
 
     fn goto(&self, view: ActiveView) {
@@ -317,4 +319,103 @@ fn dashboard_telemetry_and_impact_cards_are_consistent() {
     h.wait("baseline reset finished", |s| !s.baseline_reset_inflight);
     assert_eq!(st.get_impact_available(), h.state.borrow().calculate_before_after_impact().is_some());
     assert!(!st.get_baseline_reset_inflight());
+}
+
+// ───────────────────────────── Clean & Apps ─────────────────────────────
+
+#[test]
+fn clean_apps_sub_tabs_drive_state() {
+    let h = Harness::scanned();
+    h.goto(ActiveView::CleanAndApps);
+    let st = h.window.global::<CleanAppsStore>();
+    for i in [1, 2, 0, 7, -3] {
+        st.invoke_set_sub_tab(i);
+        h.bridge.sync();
+        let expect = if (0..=2).contains(&i) { i } else { 0 };
+        assert_eq!(st.get_sub_tab(), expect, "tab {i}");
+    }
+}
+
+#[test]
+fn clean_apps_disk_cleaner_scan_toggle_and_clean_in_sandbox() {
+    let h = Harness::scanned();
+    h.goto(ActiveView::CleanAndApps);
+    let st = h.window.global::<CleanAppsStore>();
+    st.invoke_scan_targets();
+    h.wait("clean scan", |s| !s.clean_apps_busy);
+    let n = st.get_targets().row_count();
+    assert_eq!(n, h.state.borrow().clean_targets.len());
+    if n == 0 {
+        return; // sandbox exposes no cleanup targets in this configuration
+    }
+    st.invoke_deselect_all_targets();
+    h.bridge.sync();
+    assert!(st.get_targets().iter().all(|t| !t.selected));
+    let first = st.get_targets().row_data(0).unwrap();
+    st.invoke_toggle_target(first.id.clone());
+    h.bridge.sync();
+    assert!(st.get_targets().row_data(0).unwrap().selected);
+    st.invoke_toggle_target("NotARealTarget".into()); // ignored
+    st.invoke_select_all_targets();
+    h.bridge.sync();
+    assert!(st.get_targets().iter().all(|t| t.selected));
+    st.invoke_clean_selected();
+    h.wait("clean executed", |s| !s.clean_apps_busy && s.last_clean_report.is_some());
+    assert!(st.get_last_freed().contains("MB") || st.get_last_freed().contains("GB"));
+}
+
+#[test]
+fn clean_apps_appx_filter_protected_core_and_selection() {
+    let h = Harness::scanned();
+    h.goto(ActiveView::CleanAndApps);
+    let st = h.window.global::<CleanAppsStore>();
+    st.invoke_set_sub_tab(1);
+    st.invoke_scan_appx();
+    h.wait("appx scan", |s| !s.clean_apps_busy);
+    let rows: Vec<_> = st.get_appx().iter().collect();
+    assert_eq!(rows.len(), h.state.borrow().installed_appx.len());
+    // Protected-core packages can never be selected.
+    if let Some(core) = rows.iter().find(|r| r.protected) {
+        st.invoke_toggle_appx(core.family.clone());
+        h.bridge.sync();
+        assert!(!h.state.borrow().selected_appx.contains(core.family.as_str()));
+    }
+    if let Some(bloat) = rows.iter().find(|r| !r.protected) {
+        st.invoke_toggle_appx(bloat.family.clone());
+        h.bridge.sync();
+        assert!(h.state.borrow().selected_appx.contains(bloat.family.as_str()));
+        st.invoke_deselect_appx();
+        h.bridge.sync();
+        assert_eq!(st.get_appx_selected(), 0);
+        // Filter narrows the list.
+        st.invoke_appx_filter_edited(bloat.name.clone());
+        h.bridge.sync();
+        assert!(st.get_appx().iter().all(|r| r.name.to_lowercase().contains(&bloat.name.to_lowercase()) || r.family.to_lowercase().contains(&bloat.name.to_lowercase())));
+    }
+    st.invoke_select_safe_ai();
+    h.bridge.sync();
+    assert!(h.state.borrow().selected_appx.iter().all(|f| !rows.iter().any(|r| r.protected && r.family.as_str() == f)));
+}
+
+#[test]
+fn clean_apps_winget_catalog_filter_and_selection() {
+    let h = Harness::scanned();
+    h.goto(ActiveView::CleanAndApps);
+    let st = h.window.global::<CleanAppsStore>();
+    st.invoke_set_sub_tab(2);
+    h.bridge.sync();
+    let all = st.get_winget().row_count();
+    assert_eq!(all, winblast0::tools::features_apps::CURATED_WINGET_APPS.len());
+    let first = st.get_winget().row_data(0).unwrap();
+    st.invoke_toggle_winget(first.id.clone());
+    h.bridge.sync();
+    assert_eq!(st.get_winget_selected(), 1);
+    st.invoke_winget_filter_edited("zzzz-no-such-app".into());
+    h.bridge.sync();
+    assert_eq!(st.get_winget().row_count(), 0);
+    st.invoke_winget_filter_edited("".into());
+    st.invoke_deselect_winget();
+    h.bridge.sync();
+    assert_eq!(st.get_winget().row_count(), all);
+    assert_eq!(st.get_winget_selected(), 0);
 }
