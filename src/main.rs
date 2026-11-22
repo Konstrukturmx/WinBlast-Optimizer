@@ -9,9 +9,14 @@ fn run_slint() {
     let window =
         winblast0::ui_slint::SlintMainWindow::new().expect("Failed to create Slint MainWindow");
 
-    let bridge = winblast0::ui_slint::bridge::SlintBridge::new(window.clone_strong());
-    let state = winblast0::app::AppState::new();
-    bridge.sync_from_state(&state);
+    let mut state = winblast0::app::AppState::new();
+    state.setup_slint();
+
+    let mut bridge = winblast0::ui_slint::bridge::SlintBridge::new(window.clone_strong());
+    bridge.init(&state);
+
+    let state_rc = std::rc::Rc::new(std::cell::RefCell::new(state));
+    bridge.bind_callbacks(state_rc.clone());
 
     let win_handle = window.as_weak();
     window.on_close_window(move || {
@@ -35,6 +40,20 @@ fn run_slint() {
             w.window().set_maximized(!is_max);
         }
     });
+
+    let bridge_rc = std::rc::Rc::new(std::cell::RefCell::new(bridge));
+    let timer = slint::Timer::default();
+    let timer_state = state_rc.clone();
+    let timer_bridge = bridge_rc.clone();
+    timer.start(
+        slint::TimerMode::Repeated,
+        std::time::Duration::from_millis(100),
+        move || {
+            let mut s = timer_state.borrow_mut();
+            s.poll_headless();
+            timer_bridge.borrow_mut().poll_sync(&s);
+        },
+    );
 
     window.run().expect("Failed to run Slint event loop");
 }

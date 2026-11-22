@@ -81,6 +81,141 @@ export component MainWindow inherits Window {
     callback search-triggered();
     callback quick-boost-triggered();
 
+    // -------------------------------------------------------------------------
+    // Sub-view Data Models & Action Callbacks
+    // -------------------------------------------------------------------------
+
+    // 1. Easy Dashboard
+    in-out property <int> dashboard-health-score: 85;
+    in-out property <int> dashboard-total-tweaks: 230;
+    in-out property <int> dashboard-applied-tweaks: 0;
+    in-out property <float> dashboard-gpu-usage: 0.0;
+    in-out property <float> dashboard-disk-usage: 0.0;
+    in-out property <string> dashboard-cpu-model: "";
+    in-out property <string> dashboard-gpu-model: "";
+    in-out property <string> dashboard-ram-capacity: "";
+    in-out property <string> dashboard-os-version: "";
+    callback scan-system-clicked();
+    callback apply-dashboard-preset(string);
+
+    // 2. Advanced Matrix (230 Tweaks)
+    in-out property <[TweakItemData]> matrix-tweaks: [];
+    in-out property <int> matrix-total-count: 230;
+    in-out property <int> matrix-optimized-count: 0;
+    in-out property <string> matrix-search-query: "";
+    in-out property <string> matrix-selected-category: "All";
+    in-out property <string> matrix-selected-risk: "All";
+    callback tweak-toggled(string, bool);
+    callback apply-all-safe();
+    callback revert-all();
+    callback refresh-scan();
+    callback inspect-diff(string);
+
+    // 3. Clean & Apps (Disk Cleaner & AppX Debloater)
+    in-out property <[CleanCategoryItem]> clean-categories: [];
+    in-out property <[AppxPackageItem]> appx-packages: [];
+    in-out property <string> clean-total-reclaimable: "0 B";
+    in-out property <bool> clean-is-scanning: false;
+    in-out property <bool> clean-is-cleaning: false;
+    in-out property <float> clean-progress: 0.0;
+    in-out property <bool> clean-confirmation-required: false;
+    in-out property <string> clean-confirmation-message: "";
+    callback scan-disk-clicked();
+    callback clean-disk-clicked();
+    callback category-toggled(string, bool);
+    callback appx-toggled(string, bool);
+    callback uninstall-selected-appx();
+    callback clean-select-all-filtered();
+    callback clean-deselect-all();
+    callback confirm-dangerous-clean();
+    callback cancel-dangerous-clean();
+
+    // 4. Startup Tasks & Services
+    in-out property <[StartupItemData]> startup-items: [];
+    in-out property <int> startup-total-items: 0;
+    in-out property <int> startup-disabled-items: 0;
+    callback startup-item-toggled(string, bool);
+    callback disable-high-impact-clicked();
+    callback enable-all-startup-clicked();
+    callback refresh-startup-clicked();
+
+    // 5. GPU Tuning
+    in-out property <string> gpu-name: "";
+    in-out property <string> gpu-driver-version: "";
+    in-out property <bool> gpu-is-msi-enabled: false;
+    in-out property <bool> gpu-is-hags-enabled: false;
+    in-out property <int> gpu-core-clock-offset: 0;
+    in-out property <int> gpu-memory-clock-offset: 0;
+    in-out property <int> gpu-power-limit: 100;
+    in-out property <int> gpu-fan-speed: 50;
+    callback apply-gpu-tuning();
+    callback reset-gpu-defaults();
+    callback gpu-msi-toggled(bool);
+    callback gpu-hags-toggled(bool);
+
+    // 6. CPU Parking
+    in-out property <string> cpu-name: "";
+    in-out property <int> cpu-logical-cores: 0;
+    in-out property <int> cpu-physical-cores: 0;
+    in-out property <int> cpu-parked-count: 0;
+    in-out property <int> cpu-min-unparked-percent: 100;
+    in-out property <string> cpu-active-power-scheme: "";
+    in-out property <[CoreStateItem]> cpu-cores: [];
+    callback apply-cpu-parking();
+    callback set-power-scheme(string);
+    callback reset-cpu-defaults();
+
+    // 7. Hardware Specs
+    in-out property <string> hw-cpu-name: "";
+    in-out property <string> hw-cpu-cores: "";
+    in-out property <string> hw-cpu-base-clock: "";
+    in-out property <string> hw-cpu-l3-cache: "";
+    in-out property <string> hw-gpu-name: "";
+    in-out property <string> hw-gpu-vram: "";
+    in-out property <string> hw-gpu-driver: "";
+    in-out property <string> hw-gpu-pcie-link: "";
+    in-out property <string> hw-mobo-name: "";
+    in-out property <string> hw-mobo-bios: "";
+    in-out property <string> hw-mobo-chipset: "";
+    in-out property <string> hw-ram-total: "";
+    in-out property <string> hw-ram-speed: "";
+    in-out property <string> hw-ram-timings: "";
+    callback refresh-hardware-specs();
+    callback copy-specs-clicked();
+
+    // 8. Thermal & Storage
+    in-out property <[SensorReading]> thermal-sensors: [];
+    callback refresh-thermal();
+    in-out property <[PhysicalDiskInfo]> physical-disks: [];
+    callback refresh-disks();
+
+    // 9. System Integrity & Repair
+    in-out property <[RepairTaskItem]> repair-tasks: [];
+    in-out property <bool> repair-any-running: false;
+    in-out property <float> repair-progress: 0.0;
+    in-out property <string> repair-active-label: "";
+    callback run-repair-task(string);
+    callback run-all-repairs();
+
+    // 10. Backup & Restore Points
+    in-out property <[RestorePointItem]> restore-points: [];
+    in-out property <bool> restore-point-is-creating: false;
+    callback create-restore-point();
+    callback create-tweak-snapshot();
+    callback restore-point-clicked(string);
+
+    // 11. Automation Center
+    in-out property <[AutomationRuleItem]> automation-rules: [];
+    callback automation-rule-toggled(string, bool);
+    callback run-automation-now();
+
+    // 12. Privacy Shield
+    in-out property <[PrivacyItemData]> privacy-items: [];
+    in-out property <int> privacy-blocked-count: 0;
+    callback privacy-item-toggled(string, bool);
+    callback enable-all-privacy();
+    callback reset-privacy-defaults();
+
     forward-focus: root-focus;
 
     root-focus := FocusScope {
@@ -138,31 +273,118 @@ export component MainWindow inherits Window {
                     background: Theme.bg-canvas;
 
                     if root.active-view == "dashboard" : EasyDashboardView {
+                        health-score: root.dashboard-health-score;
+                        total-tweaks: root.dashboard-total-tweaks;
+                        applied-tweaks: root.dashboard-applied-tweaks;
+                        is-admin: root.is-elevated;
                         cpu-usage: root.cpu-usage;
                         ram-usage: root.ram-usage;
                         ram-text: root.ram-text;
-                        is-admin: root.is-elevated;
+                        gpu-usage: root.dashboard-gpu-usage;
+                        disk-usage: root.dashboard-disk-usage;
+                        cpu-model: root.dashboard-cpu-model;
+                        gpu-model: root.dashboard-gpu-model;
+                        ram-capacity: root.dashboard-ram-capacity;
+                        os-version: root.dashboard-os-version;
                         quick-boost-clicked => { root.quick-boost-triggered(); }
+                        scan-system-clicked => { root.scan-system-clicked(); }
                         navigate-to-view(v) => { root.active-view = v; root.navigate(v); }
                     }
 
                     if root.active-view == "matrix" || root.active-view == "tweaks" : AdvancedMatrixView {
-                        inspect-diff(id) => { root.diff-modal-open = true; }
+                        tweaks: root.matrix-tweaks;
+                        total-count: root.matrix-total-count;
+                        optimized-count: root.matrix-optimized-count;
+                        search-query <=> root.matrix-search-query;
+                        selected-category <=> root.matrix-selected-category;
+                        selected-risk <=> root.matrix-selected-risk;
+                        tweak-toggled(id, val) => { root.tweak-toggled(id, val); }
+                        inspect-diff(id) => { root.inspect-diff(id); }
+                        apply-all-safe => { root.apply-all-safe(); }
+                        revert-all => { root.revert-all(); }
+                        refresh-scan => { root.refresh-scan(); }
                     }
 
-                    if root.active-view == "clean_apps" || root.active-view == "cleaner" || root.active-view == "debloater" : CleanAppsView {}
+                    if root.active-view == "clean_apps" || root.active-view == "cleaner" || root.active-view == "debloater" : CleanAppsView {
+                        clean-categories: root.clean-categories;
+                        appx-packages: root.appx-packages;
+                        total-reclaimable-text: root.clean-total-reclaimable;
+                        is-scanning: root.clean-is-scanning;
+                        is-cleaning: root.clean-is-cleaning;
+                        clean-progress: root.clean-progress;
+                        scan-disk-clicked => { root.scan-disk-clicked(); }
+                        clean-disk-clicked => { root.clean-disk-clicked(); }
+                        category-toggled(id, val) => { root.category-toggled(id, val); }
+                        appx-toggled(id, val) => { root.appx-toggled(id, val); }
+                        uninstall-selected-appx => { root.uninstall-selected-appx(); }
+                    }
 
-                    if root.active-view == "startup_tasks" || root.active-view == "services" : StartupTasksView {}
+                    if root.active-view == "startup_tasks" || root.active-view == "services" : StartupTasksView {
+                        items: root.startup-items;
+                        total-items: root.startup-total-items;
+                        disabled-items: root.startup-disabled-items;
+                        item-toggled(id, val) => { root.startup-item-toggled(id, val); }
+                        disable-high-impact-clicked => { root.disable-high-impact-clicked(); }
+                        enable-all-clicked => { root.enable-all-startup-clicked(); }
+                        refresh-clicked => { root.refresh-startup-clicked(); }
+                    }
 
-                    if root.active-view == "gpu" || root.active-view == "gpu-tuning" : GpuTuningView {}
+                    if root.active-view == "gpu" || root.active-view == "gpu-tuning" : GpuTuningView {
+                        gpu-name: root.gpu-name;
+                        driver-version: root.gpu-driver-version;
+                        is-msi-enabled: root.gpu-is-msi-enabled;
+                        is-hags-enabled: root.gpu-is-hags-enabled;
+                        core-clock-offset <=> root.gpu-core-clock-offset;
+                        memory-clock-offset <=> root.gpu-memory-clock-offset;
+                        power-limit <=> root.gpu-power-limit;
+                        fan-speed <=> root.gpu-fan-speed;
+                        apply-tuning => { root.apply-gpu-tuning(); }
+                        reset-defaults => { root.reset-gpu-defaults(); }
+                        msi-toggled(val) => { root.gpu-msi-toggled(val); }
+                        hags-toggled(val) => { root.gpu-hags-toggled(val); }
+                    }
 
-                    if root.active-view == "cpu_parking" : CpuParkingView {}
+                    if root.active-view == "cpu_parking" : CpuParkingView {
+                        cpu-name: root.cpu-name;
+                        logical-cores: root.cpu-logical-cores;
+                        physical-cores: root.cpu-physical-cores;
+                        parked-count: root.cpu-parked-count;
+                        min-unparked-percent <=> root.cpu-min-unparked-percent;
+                        active-power-scheme: root.cpu-active-power-scheme;
+                        cores: root.cpu-cores;
+                        apply-parking => { root.apply-cpu-parking(); }
+                        set-power-scheme(s) => { root.set-power-scheme(s); }
+                        reset-defaults => { root.reset-cpu-defaults(); }
+                    }
 
-                    if root.active-view == "hardware" : HardwareViewComponent {}
+                    if root.active-view == "hardware" : HardwareViewComponent {
+                        cpu-name: root.hw-cpu-name;
+                        cpu-cores: root.hw-cpu-cores;
+                        cpu-base-clock: root.hw-cpu-base-clock;
+                        cpu-l3-cache: root.hw-cpu-l3-cache;
+                        gpu-name: root.hw-gpu-name;
+                        gpu-vram: root.hw-gpu-vram;
+                        gpu-driver: root.hw-gpu-driver;
+                        gpu-pcie-link: root.hw-gpu-pcie-link;
+                        mobo-name: root.hw-mobo-name;
+                        mobo-bios: root.hw-mobo-bios;
+                        mobo-chipset: root.hw-mobo-chipset;
+                        ram-total: root.hw-ram-total;
+                        ram-speed: root.hw-ram-speed;
+                        ram-timings: root.hw-ram-timings;
+                        refresh-specs-clicked => { root.refresh-hardware-specs(); }
+                        copy-specs-clicked => { root.copy-specs-clicked(); }
+                    }
 
-                    if root.active-view == "thermal" || root.active-view == "telemetry" : ThermalMonitorView {}
+                    if root.active-view == "thermal" || root.active-view == "telemetry" : ThermalMonitorView {
+                        sensors: root.thermal-sensors;
+                        refresh-thermals => { root.refresh-thermal(); }
+                    }
 
-                    if root.active-view == "disk_health" : DiskHealthView {}
+                    if root.active-view == "disk_health" : DiskHealthView {
+                        disks: root.physical-disks;
+                        refresh-disks => { root.refresh-disks(); }
+                    }
 
                     if root.active-view == "driver_bios" : DriverBiosView {}
 
@@ -184,17 +406,40 @@ export component MainWindow inherits Window {
 
                     if root.active-view == "game_prereqs" || root.active-view == "game-mode" : GamePrereqsView {}
 
-                    if root.active-view == "automation" : AutomationCenterView {}
+                    if root.active-view == "automation" : AutomationCenterView {
+                        rules: root.automation-rules;
+                        rule-toggled(id, val) => { root.automation-rule-toggled(id, val); }
+                        run-all-now => { root.run-automation-now(); }
+                    }
 
                     if root.active-view == "goal_planner" : GoalPlannerView {}
 
-                    if root.active-view == "windows_repair" : WindowsRepairView {}
+                    if root.active-view == "windows_repair" : WindowsRepairView {
+                        tasks: root.repair-tasks;
+                        any-running: root.repair-any-running;
+                        progress: root.repair-progress;
+                        active-task-label: root.repair-active-label;
+                        run-task(id) => { root.run-repair-task(id); }
+                        run-all-repairs => { root.run-all-repairs(); }
+                    }
 
                     if root.active-view == "fault_diagnostics" : FaultDiagnosticsView {}
 
-                    if root.active-view == "backup" || root.active-view == "restore" : BackupCenterView {}
+                    if root.active-view == "backup" || root.active-view == "restore" : BackupCenterView {
+                        restore-points: root.restore-points;
+                        is-creating: root.restore-point-is-creating;
+                        create-restore-point => { root.create-restore-point(); }
+                        create-tweak-snapshot => { root.create-tweak-snapshot(); }
+                        restore-point(id) => { root.restore-point-clicked(id); }
+                    }
 
-                    if root.active-view == "privacy" : PrivacyShieldView {}
+                    if root.active-view == "privacy" : PrivacyShieldView {
+                        items: root.privacy-items;
+                        blocked-trackers-count: root.privacy-blocked-count;
+                        item-toggled(id, val) => { root.privacy-item-toggled(id, val); }
+                        enable-all-privacy => { root.enable-all-privacy(); }
+                        reset-defaults => { root.reset-privacy-defaults(); }
+                    }
 
                     if root.active-view == "support_about" || root.active-view == "settings" : SupportAboutView {
                         app-version: root.app-version;

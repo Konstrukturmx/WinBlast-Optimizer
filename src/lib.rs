@@ -15,3 +15,5 @@ pub mod ui;
 
 #[cfg(feature = "ui-slint")]
 pub mod ui_slint;
+
+pub mod ui_sync;

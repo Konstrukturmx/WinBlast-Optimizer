@@ -1013,6 +1013,27 @@ impl AppState {
         });
     }
 
+    /// Slint & headless lifecycle setup: spawns background monitoring, telemetry, inventory and updates.
+    pub fn setup_slint(&mut self) {
+        #[cfg(feature = "ui-rune")]
+        let waker: rune::Waker = std::sync::Arc::new(|| {});
+        #[cfg(not(feature = "ui-rune"))]
+        let waker = std::sync::Arc::new(|| {});
+        self.setup(waker);
+    }
+
+    /// Slint framework lifecycle poll hook. Drains bounded worker events without requiring Rune types.
+    pub fn poll_headless(&mut self) -> bool {
+        let now = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap_or_default()
+            .as_secs_f64();
+        self.current_time_secs = now;
+        self.sync_search_state();
+        let processed = self.drain_worker_events_bounded(64);
+        processed > 0 || self.is_in_progress() || !self.rx_events.is_empty()
+    }
+
     /// Synchronize `search_query` and `search_edit.text` so clearing either never resurrects stale text.
     pub fn sync_search_state(&mut self) {
         if self.search_edit.text != self.last_synced_search {
