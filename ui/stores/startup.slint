@@ -1,0 +1,40 @@
+// ui/stores/startup.slint
+// Startup Apps, Scheduled Tasks & Live Services store (port of v1.6.1 startup_tasks).
+
+export struct StartupRow {
+    id: string,          // entry id | task path | service name
+    name: string,
+    sub: string,         // command | task path | binary path
+    source: string,      // localized startup source (entries only)
+    enabled: bool,       // enabled (entries/tasks) or running (services)
+    selected: bool,
+    run-once: bool,
+    locked: bool,        // policy locked (entries) / protected core (services)
+    start-label: string, // services: Auto/Manual/Disabled/Boot
+}
+
+export global StartupStore {
+    in-out property <int> sub-tab;            // 0 apps, 1 tasks, 2 services
+    in-out property <bool> busy;
+    in-out property <string> filter-text;
+    in-out property <int> status-filter;       // 0 all, 1 active, 2 inactive
+    in-out property <string> sort-label;
+    in-out property <bool> hide-microsoft;
+    in-out property <int> selected-count;
+    in-out property <int> total-count;
+    in-out property <[StartupRow]> rows: [];
+
+    callback set-sub-tab(int);
+    callback filter-edited(string);
+    callback set-status-filter(int);
+    callback cycle-sort();
+    callback toggle-hide-microsoft();
+    callback refresh();
+    callback select-all-filtered();
+    callback deselect-all();
+    callback batch-set(bool);
+    callback toggle-select(string);
+    callback set-enabled(string, bool);
+    callback run-task(string);
+    callback set-service-start(string, int);   // 2 auto, 3 manual, 4 disabled
+}

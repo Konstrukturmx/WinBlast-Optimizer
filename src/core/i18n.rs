@@ -625,10 +625,17 @@ pub enum TextKey {
     DeselectCategoryBtn,
     ValueDetecting,
     SelectSafeAiBtn,
+    DisableSelectedBtn,
+    EnableSelectedBtn,
+    FilterActive,
+    FilterInactive,
+    SortActiveFirst,
+    SortInactiveFirst,
+    SortSource,
 }
 
 impl TextKey {
-    pub const COUNT: usize = 516;
+    pub const COUNT: usize = 523;
 }
 
 /// Translations indexed by [Language as usize][TextKey as usize]
@@ -1154,6 +1161,13 @@ static TRANSLATIONS: [[&str; TextKey::COUNT]; 8] = [
         "Deselect Category",
         "Detecting…",
         "Select Safe & AI",
+        "Disable Selected",
+        "Enable Selected",
+        "Active",
+        "Inactive",
+        "Sort: Active First",
+        "Sort: Inactive First",
+        "Sort: Source / Folder",
     ],
     // 1: Turkish (Türkçe)
     [
@@ -1676,6 +1690,13 @@ static TRANSLATIONS: [[&str; TextKey::COUNT]; 8] = [
         "Kategori Seçimini Kaldır",
         "Algılanıyor…",
         "Güvenli ve YZ Seç",
+        "Seçilenleri Devre Dışı Bırak",
+        "Seçilenleri Etkinleştir",
+        "Etkin",
+        "Devre dışı",
+        "Sırala: Önce Etkin",
+        "Sırala: Önce Devre Dışı",
+        "Sırala: Kaynak / Klasör",
     ],
     // 2: German (Deutsch)
     [
@@ -2198,6 +2219,13 @@ static TRANSLATIONS: [[&str; TextKey::COUNT]; 8] = [
         "Kategorie abwählen",
         "Wird erkannt…",
         "Sicher & KI auswählen",
+        "Auswahl deaktivieren",
+        "Auswahl aktivieren",
+        "Aktiv",
+        "Inaktiv",
+        "Sortierung: Aktive zuerst",
+        "Sortierung: Inaktive zuerst",
+        "Sortierung: Quelle / Ordner",
     ],
     // 3: French (Français)
     [
@@ -2720,6 +2748,13 @@ static TRANSLATIONS: [[&str; TextKey::COUNT]; 8] = [
         "Désélectionner la catégorie",
         "Détection…",
         "Sélectionner sûrs et IA",
+        "Désactiver la sélection",
+        "Activer la sélection",
+        "Actifs",
+        "Inactifs",
+        "Tri : actifs d'abord",
+        "Tri : inactifs d'abord",
+        "Tri : source / dossier",
     ],
     // 4: Spanish (Español)
     [
@@ -3242,6 +3277,13 @@ static TRANSLATIONS: [[&str; TextKey::COUNT]; 8] = [
         "Deseleccionar categoría",
         "Detectando…",
         "Seleccionar seguros e IA",
+        "Desactivar seleccionados",
+        "Activar seleccionados",
+        "Activos",
+        "Inactivos",
+        "Ordenar: activos primero",
+        "Ordenar: inactivos primero",
+        "Ordenar: origen / carpeta",
     ],
     // 5: Russian (Русский)
     [
@@ -3764,6 +3806,13 @@ static TRANSLATIONS: [[&str; TextKey::COUNT]; 8] = [
         "Снять выбор категории",
         "Определение…",
         "Выбрать безопасные и ИИ",
+        "Отключить выбранные",
+        "Включить выбранные",
+        "Активные",
+        "Неактивные",
+        "Сортировка: сначала активные",
+        "Сортировка: сначала неактивные",
+        "Сортировка: источник / папка",
     ],
     // 6: Chinese Simplified (简体中文)
     [
@@ -4286,6 +4335,13 @@ static TRANSLATIONS: [[&str; TextKey::COUNT]; 8] = [
         "取消选择类别",
         "正在检测…",
         "选择安全与 AI 项",
+        "禁用所选",
+        "启用所选",
+        "已启用",
+        "未启用",
+        "排序：启用优先",
+        "排序：未启用优先",
+        "排序：来源/文件夹",
     ],
     // 7: Japanese (日本語)
     [
@@ -4808,6 +4864,13 @@ static TRANSLATIONS: [[&str; TextKey::COUNT]; 8] = [
         "カテゴリの選択を解除",
         "検出中…",
         "安全項目とAIを選択",
+        "選択項目を無効化",
+        "選択項目を有効化",
+        "有効",
+        "無効",
+        "並べ替え: 有効を先頭",
+        "並べ替え: 無効を先頭",
+        "並べ替え: ソース / フォルダー",
     ],
 ];
 

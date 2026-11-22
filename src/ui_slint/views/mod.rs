@@ -3,6 +3,7 @@
 pub mod clean_apps;
 pub mod dashboard;
 pub mod matrix;
+pub mod startup;
 
 use crate::app::{ActiveView, AppState};
 
@@ -14,17 +15,19 @@ pub struct Views {
     matrix: matrix::MatrixView,
     dashboard: dashboard::DashboardView,
     clean_apps: clean_apps::CleanAppsView,
+    startup: startup::StartupView,
 }
 
 impl Views {
     pub fn new(window: &MainWindow) -> Self {
-        Self { matrix: matrix::MatrixView::new(window), dashboard: dashboard::DashboardView::new(window), clean_apps: clean_apps::CleanAppsView::new(window) }
+        Self { matrix: matrix::MatrixView::new(window), dashboard: dashboard::DashboardView::new(window), clean_apps: clean_apps::CleanAppsView::new(window), startup: startup::StartupView::new(window) }
     }
 
     pub fn bind(&self, window: &MainWindow, ctx: &Ctx) {
         self.matrix.bind(window, ctx);
         self.dashboard.bind(window, ctx);
         self.clean_apps.bind(window, ctx);
+        self.startup.bind(window, ctx);
     }
 
     /// Sync the active view's store (inactive views are refreshed when navigated to).
@@ -33,6 +36,7 @@ impl Views {
             ActiveView::AdvancedMatrix => self.matrix.sync(window, s),
             ActiveView::EasyDashboard => self.dashboard.sync(window, s),
             ActiveView::CleanAndApps => self.clean_apps.sync(window, s),
+            ActiveView::StartupAndTasks => self.startup.sync(window, s),
             _ => {}
         }
     }

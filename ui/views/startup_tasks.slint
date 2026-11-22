@@ -1,186 +1,160 @@
 // ui/views/startup_tasks.slint
-// WinBlast0 Startup & Scheduled Tasks Manager in Slint 1.19
-
-import { Scale, Theme } from "../theme.slint";
+// Startup Apps · Scheduled Tasks · Live Services (port of v1.6.1) with virtualized lists so
+// 300+ services stay smooth.
+import { ListView } from "std-widgets.slint";
+import { Scale, Theme, Tr } from "../theme.slint";
+import { StartupStore, StartupRow } from "../stores/startup.slint";
+import { WbChip } from "../components/chip.slint";
 import { WbButton } from "../components/button.slint";
-import { WbCard } from "../components/card.slint";
-import { WbBadge } from "../components/badge.slint";
-import { WbSwitch } from "../components/switch.slint";
 import { WbSearchInput } from "../components/search_input.slint";
+import { WbToggle, WbPill, WbPanel } from "../components/toggle.slint";
 
-export struct StartupItemData {
-    id: string,
-    name: string,
-    command: string,
-    publisher: string,
-    impact: string,          // "high" | "moderate" | "low"
-    is-task: bool,           // false = startup app, true = scheduled task
-    enabled: bool,
+component Actions inherits FlexboxLayout {
+    in property <StartupRow> data;
+    in property <int> tab;
+    spacing: Scale.px(6px);
+    cross-axis-alignment: center;
+    // Startup apps
+    if root.tab == 0 : WbPill { text: data.source; tone: "accent"; }
+    if root.tab == 0 && data.run-once : WbPill { text: Tr.s("RunOnceBadge"); tone: "accent"; }
+    if root.tab == 0 && !data.run-once && data.locked : WbPill { text: Tr.s("PolicyLockedBadge"); tone: "warning"; }
+    if root.tab == 0 && !data.run-once && !data.locked : WbChip {
+        text: data.enabled ? Tr.s("ToggleDisable") : Tr.s("ToggleEnable");
+        tone: data.enabled ? "neutral" : "accent";
+        enabled: !StartupStore.busy;
+        clicked => { StartupStore.set-enabled(data.id, !data.enabled); }
+    }
+    // Scheduled tasks
+    if root.tab == 1 : WbPill { text: data.enabled ? Tr.s("StateEnabled") : Tr.s("StateDisabled"); tone: data.enabled ? "success" : "muted"; }
+    if root.tab == 1 : WbChip { text: Tr.s("RunTaskBtn"); enabled: !StartupStore.busy; clicked => { StartupStore.run-task(data.id); } }
+    if root.tab == 1 : WbChip {
+        text: data.enabled ? Tr.s("ToggleDisable") : Tr.s("ToggleEnable");
+        tone: data.enabled ? "warning" : "accent";
+        enabled: !StartupStore.busy;
+        clicked => { StartupStore.set-enabled(data.id, !data.enabled); }
+    }
+    // Services
+    if root.tab == 2 : WbPill { text: data.enabled ? Tr.s("StateRunning") : Tr.s("StateStopped"); tone: data.enabled ? "success" : "muted"; }
+    if root.tab == 2 : WbPill { text: data.start-label; tone: "accent"; }
+    if root.tab == 2 && data.locked : WbPill { text: Tr.s("ProtectedCoreBadge"); tone: "danger"; }
+    if root.tab == 2 && !data.locked : WbChip { text: Tr.s("StartManual"); enabled: !StartupStore.busy; clicked => { StartupStore.set-service-start(data.id, 3); } }
+    if root.tab == 2 && !data.locked : WbChip { text: Tr.s("StartAuto"); enabled: !StartupStore.busy; clicked => { StartupStore.set-service-start(data.id, 2); } }
+    if root.tab == 2 && !data.locked : WbChip { text: Tr.s("ToggleDisable"); tone: "warning"; enabled: !StartupStore.busy; clicked => { StartupStore.set-service-start(data.id, 4); } }
 }
 
-export component StartupTasksView inherits Flickable {
+component RowCard inherits Rectangle {
+    in property <StartupRow> data;
+    in property <int> tab;
+    border-radius: Scale.px(Theme.card-radius);
+    background: data.selected ? Theme.bg-card-hover : Theme.bg-card;
+    border-width: 1px;
+    border-color: data.selected ? Theme.accent.with-alpha(0.35) : Theme.border;
+
+    FlexboxLayout {
+        padding: Scale.px(10px);
+        spacing: Scale.px(8px);
+        alignment: stretch;
+        cross-axis-alignment: center;
+        if root.tab != 2 : WbChip {
+            text: data.selected ? "☑" : "☐";
+            active: data.selected;
+            clicked => { StartupStore.toggle-select(data.id); }
+        }
+        if root.tab == 0 : WbToggle {
+            on: data.enabled;
+            busy: StartupStore.busy;
+            enabled: !data.locked && !data.run-once;
+            accessible-name: data.name;
+            clicked => { StartupStore.set-enabled(data.id, !data.enabled); }
+        }
+        VerticalLayout {
+            horizontal-stretch: 1;
+            min-width: Scale.px(200px);
+            Text { text: data.name; font-size: Scale.font-sm; font-weight: 600; color: Theme.text-primary; overflow: elide; }
+            Text { text: data.sub; font-size: Scale.font-2xs; color: Theme.text-muted; overflow: elide; }
+        }
+        Actions { data: root.data; tab: root.tab; }
+    }
+}
+
+export component StartupTasksView inherits Rectangle {
     in property <int> tier;
-    in-out property <string> filter-type: "all"; // "all" | "apps" | "tasks"
-    in-out property <string> search-query: "";
-    in property <int> total-items: 0;
-    in property <int> disabled-items: 0;
-    in property <[StartupItemData]> items: [];
 
-    callback item-toggled(string, bool);
-    callback disable-high-impact-clicked();
-    callback enable-all-clicked();
-    callback refresh-clicked();
+    VerticalLayout {
+        padding: root.tier == 0 ? Scale.px(10px) : Scale.px(14px);
+        spacing: Scale.px(10px);
 
-    content-height: content.preferred-height;
-
-    content := VerticalLayout {
-        padding: Scale.space-lg;
-        spacing: Scale.space-md;
-
-        // Control Header
-        WbCard {
+        WbPanel {
             VerticalLayout {
-                spacing: Scale.space-md;
-
+                padding: Scale.px(Theme.card-padding);
+                spacing: Scale.px(8px);
                 HorizontalLayout {
-                    alignment: space-between;
-
-                    VerticalLayout {
-                        spacing: Scale.space-2xs;
-                        Text {
-                            text: "Startup & Background Tasks";
-                            font-size: Scale.font-xl;
-                            font-weight: 700;
-                            color: Theme.text-primary;
-                        }
-                        Text {
-                            text: root.disabled-items + " disabled of " + root.total-items + " autostart entries";
-                            font-size: Scale.font-sm;
-                            color: Theme.text-secondary;
-                        }
-                    }
-
-                    HorizontalLayout {
-                        spacing: Scale.space-sm;
-                        alignment: end;
-
-                        WbButton {
-                            variant: "ghost";
-                            text: "Refresh";
-                            min-height: Scale.control-sm;
-                            clicked => { root.refresh-clicked(); }
-                        }
-
-                        WbButton {
-                            variant: "secondary";
-                            text: "Enable All";
-                            min-height: Scale.control-sm;
-                            clicked => { root.enable-all-clicked(); }
-                        }
-
-                        WbButton {
-                            variant: "primary";
-                            text: "Disable High Impact";
-                            min-height: Scale.control-sm;
-                            clicked => { root.disable-high-impact-clicked(); }
-                        }
-                    }
+                    spacing: Scale.px(8px);
+                    Text { text: Tr.s("StartupTasksTitle"); font-size: Scale.font-xl; font-weight: 800; color: Theme.text-primary; vertical-alignment: center; }
+                    if StartupStore.busy : WbPill { text: Tr.s("BusyWorking"); tone: "accent"; y: (parent.height - self.height) / 2; }
+                    Rectangle { horizontal-stretch: 1; }
                 }
-
-                HorizontalLayout {
-                    spacing: Scale.space-md;
-
-                    WbSearchInput {
-                        horizontal-stretch: 1;
-                        text <=> root.search-query;
-                        placeholder: "Filter startup items and scheduled tasks...";
+                Text { text: Tr.s("StartupTasksSub"); font-size: Scale.font-xs; color: Theme.text-muted; wrap: word-wrap; }
+                FlexboxLayout {
+                    spacing: Scale.px(6px);
+                    WbChip { text: Tr.s("SubTabStartupApps"); active: StartupStore.sub-tab == 0; clicked => { StartupStore.set-sub-tab(0); } }
+                    WbChip { text: Tr.s("SubTabScheduledTasks"); active: StartupStore.sub-tab == 1; clicked => { StartupStore.set-sub-tab(1); } }
+                    WbChip { text: Tr.s("SubTabServices"); active: StartupStore.sub-tab == 2; clicked => { StartupStore.set-sub-tab(2); } }
+                }
+                FlexboxLayout {
+                    spacing: Scale.px(6px);
+                    if StartupStore.sub-tab != 2 : WbChip { text: Tr.s("SelectAll"); clicked => { StartupStore.select-all-filtered(); } }
+                    if StartupStore.sub-tab != 2 : WbChip { text: Tr.s("DeselectAll"); clicked => { StartupStore.deselect-all(); } }
+                    if StartupStore.sub-tab != 2 : WbChip {
+                        tone: "warning";
+                        text: StartupStore.selected-count == 0 ? Tr.s("DisableSelectedBtn") : Tr.s("DisableSelectedBtn") + " (" + StartupStore.selected-count + ")";
+                        enabled: !StartupStore.busy && StartupStore.selected-count > 0;
+                        clicked => { StartupStore.batch-set(false); }
                     }
-
-                    // Filter mode switcher
-                    HorizontalLayout {
-                        spacing: Scale.space-2xs;
-
-                        for f in ["all", "apps", "tasks"]: Rectangle {
-                            private property <bool> is-active: root.filter-type == f;
-                            height: Scale.control-md;
-                            border-radius: Scale.radius-sm;
-                            background: self.is-active ? Theme.accent : Theme.bg-surface;
-                            HorizontalLayout {
-                                padding-left: Scale.space-md;
-                                padding-right: Scale.space-md;
-                                alignment: center;
-                                Text {
-                                    text: f == "all" ? "All Items" : (f == "apps" ? "Startup Apps" : "Tasks");
-                                    font-size: Scale.font-xs;
-                                    font-weight: 600;
-                                    color: is-active ? Theme.text-on-accent : Theme.text-secondary;
-                                    vertical-alignment: center;
-                                }
-                            }
-                            TouchArea {
-                                mouse-cursor: pointer;
-                                clicked => { root.filter-type = f; }
-                            }
-                        }
+                    if StartupStore.sub-tab != 2 : WbChip {
+                        tone: "accent";
+                        text: StartupStore.selected-count == 0 ? Tr.s("EnableSelectedBtn") : Tr.s("EnableSelectedBtn") + " (" + StartupStore.selected-count + ")";
+                        enabled: !StartupStore.busy && StartupStore.selected-count > 0;
+                        clicked => { StartupStore.batch-set(true); }
                     }
+                    WbChip {
+                        text: (StartupStore.hide-microsoft ? "☑ " : "☐ ") + Tr.s("HideMicrosoftTasks");
+                        active: StartupStore.hide-microsoft;
+                        clicked => { StartupStore.toggle-hide-microsoft(); }
+                    }
+                    WbChip { text: Tr.s("RefreshStartupInventory"); enabled: !StartupStore.busy; clicked => { StartupStore.refresh(); } }
+                }
+                WbSearchInput {
+                    placeholder: Tr.s("SearchPlaceholder");
+                    text: StartupStore.filter-text;
+                    changed(t) => { StartupStore.filter-edited(t); }
+                }
+                FlexboxLayout {
+                    spacing: Scale.px(6px);
+                    WbChip { text: Tr.s("FilterAll"); active: StartupStore.status-filter == 0; clicked => { StartupStore.set-status-filter(0); } }
+                    WbChip { text: Tr.s("FilterActive"); tone: "success"; active: StartupStore.status-filter == 1; clicked => { StartupStore.set-status-filter(1); } }
+                    WbChip { text: Tr.s("FilterInactive"); tone: "warning"; active: StartupStore.status-filter == 2; clicked => { StartupStore.set-status-filter(2); } }
+                    WbChip { text: StartupStore.sort-label; tone: "accent"; clicked => { StartupStore.cycle-sort(); } }
                 }
             }
         }
 
-        // Items List
-        VerticalLayout {
-            spacing: Scale.space-xs;
-
-            for item in root.items: WbCard {
-                HorizontalLayout {
-                    alignment: space-between;
-
-                    HorizontalLayout {
-                        spacing: Scale.space-md;
-                        alignment: start;
-
-                        WbSwitch {
-                            checked: item.enabled;
-                            toggled(c) => { root.item-toggled(item.id, c); }
-                        }
-
-                        VerticalLayout {
-                            spacing: Scale.space-2xs;
-                            alignment: center;
-
-                            HorizontalLayout {
-                                spacing: Scale.space-sm;
-                                alignment: start;
-                                Text {
-                                    text: item.name;
-                                    font-size: Scale.font-md;
-                                    font-weight: 600;
-                                    color: Theme.text-primary;
-                                }
-                                WbBadge {
-                                    text: item.is-task ? "Task" : "Registry";
-                                    variant: "neutral";
-                                }
-                                WbBadge {
-                                    text: item.impact + " impact";
-                                    variant: item.impact == "high" ? "high" : (item.impact == "moderate" ? "moderate" : "safe");
-                                }
-                            }
-
-                            Text {
-                                text: item.command;
-                                font-size: Scale.font-xs;
-                                color: Theme.text-muted;
-                                overflow: elide;
-                            }
-                        }
-                    }
-
-                    WbBadge {
-                        text: item.enabled ? "Enabled" : "Disabled";
-                        variant: item.enabled ? "safe" : "neutral";
-                    }
-                }
+        if StartupStore.rows.length == 0 : WbPanel {
+            height: Scale.px(72px);
+            Text {
+                text: StartupStore.busy ? Tr.s("Scanning")
+                    : StartupStore.sub-tab == 0 ? Tr.s("EmptyStartupList")
+                    : StartupStore.sub-tab == 1 ? Tr.s("EmptyTasksList") : Tr.s("EmptyServicesList");
+                font-size: Scale.font-sm;
+                color: Theme.text-muted;
+            }
+        }
+        if StartupStore.rows.length > 0 : ListView {
+            vertical-stretch: 1;
+            min-height: Scale.px(160px);
+            for r in StartupStore.rows : VerticalLayout {
+                padding-bottom: Scale.px(6px);
+                RowCard { data: r; tab: StartupStore.sub-tab; }
             }
         }
     }

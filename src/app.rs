@@ -1900,6 +1900,9 @@ impl AppState {
             }
             WorkerEvent::StartupBatchToggled(res) => {
                 self.startup_mutating = false;
+                // v1.7.0 fix: the batch path incremented startup_tasks_inflight but never released
+                // it, leaving the Startup view (and the HUD) busy forever after any batch toggle.
+                self.startup_tasks_inflight = self.startup_tasks_inflight.saturating_sub(1);
                 self.sync_startup_tasks_busy();
                 match res {
                     Ok((count, enable)) => {
@@ -1920,6 +1923,7 @@ impl AppState {
             }
             WorkerEvent::TasksBatchToggled(res) => {
                 self.startup_mutating = false;
+                self.startup_tasks_inflight = self.startup_tasks_inflight.saturating_sub(1);
                 self.sync_startup_tasks_busy();
                 match res {
                     Ok((count, enable)) => {

@@ -13,7 +13,7 @@ use winblast0::app::{ActiveView, AppState, MatrixSortMode};
 use winblast0::core::backend::SandboxEnv;
 use winblast0::core::risk::load_embedded_rules;
 use winblast0::ui_slint::bridge::SlintBridge;
-use winblast0::ui_slint::{AppStore, CleanAppsStore, DashboardStore, MainWindow, MatrixStore};
+use winblast0::ui_slint::{AppStore, CleanAppsStore, DashboardStore, MainWindow, MatrixStore, StartupStore};
 
 struct Harness {
     #[allow(dead_code)]
@@ -418,4 +418,113 @@ fn clean_apps_winget_catalog_filter_and_selection() {
     h.bridge.sync();
     assert_eq!(st.get_winget().row_count(), all);
     assert_eq!(st.get_winget_selected(), 0);
+}
+
+// ───────────────────────────── Startup, Tasks & Services ─────────────────────────────
+
+fn startup_ready() -> Harness {
+    let h = Harness::scanned();
+    h.goto(ActiveView::StartupAndTasks);
+    h.window.global::<StartupStore>().invoke_refresh();
+    h.wait("startup inventory", |s| !s.startup_tasks_busy);
+    // "Hide Microsoft" is on by default and the sandbox seeds Microsoft-signed items: show them.
+    if h.state.borrow().hide_microsoft_tasks {
+        h.window.global::<StartupStore>().invoke_toggle_hide_microsoft();
+        h.bridge.sync();
+    }
+    h
+}
+
+#[test]
+fn startup_lists_filters_and_sorts() {
+    let h = startup_ready();
+    let st = h.window.global::<StartupStore>();
+    let entries = h.state.borrow().startup_entries.len();
+    assert!(entries > 0, "sandbox seeds startup entries");
+    assert_eq!(st.get_rows().row_count(), entries);
+
+    st.invoke_set_status_filter(1);
+    h.bridge.sync();
+    assert!(st.get_rows().iter().all(|r| r.enabled));
+    st.invoke_set_status_filter(2);
+    h.bridge.sync();
+    assert!(st.get_rows().iter().all(|r| !r.enabled));
+    st.invoke_set_status_filter(0);
+
+    let mut labels = std::collections::HashSet::new();
+    for _ in 0..5 {
+        st.invoke_cycle_sort();
+        h.bridge.sync();
+        labels.insert(st.get_sort_label().to_string());
+    }
+    assert_eq!(labels.len(), 5, "five distinct localized sort labels");
+    assert_eq!(h.state.borrow().startup_sort_mode, winblast0::app::StartupSortMode::NameAsc);
+    let names: Vec<String> = st.get_rows().iter().map(|r| r.name.to_lowercase()).collect();
+    let mut sorted = names.clone();
+    sorted.sort();
+    assert_eq!(names, sorted);
+
+    st.invoke_filter_edited("zzzz-nothing".into());
+    h.bridge.sync();
+    assert_eq!(st.get_rows().row_count(), 0);
+    st.invoke_filter_edited("".into());
+    let before = h.state.borrow().hide_microsoft_tasks;
+    st.invoke_toggle_hide_microsoft();
+    h.bridge.sync();
+    assert_eq!(st.get_hide_microsoft(), !before);
+    let visible_ms = h.state.borrow().startup_entries.iter().filter(|e| e.is_microsoft).count();
+    if st.get_hide_microsoft() {
+        assert_eq!(st.get_rows().row_count(), entries - visible_ms);
+    }
+}
+
+#[test]
+fn startup_batch_disable_selected_entries_in_sandbox() {
+    let h = startup_ready();
+    let st = h.window.global::<StartupStore>();
+    st.invoke_select_all_filtered();
+    h.bridge.sync();
+    let selected = h.state.borrow().selected_startup_entries.len();
+    assert!(selected > 0);
+    assert_eq!(st.get_selected_count() as usize, selected);
+    st.invoke_batch_set(false);
+    h.wait("batch disable", |s| !s.startup_tasks_busy);
+    let s = h.state.borrow();
+    let toggleable: Vec<_> = s
+        .startup_entries
+        .iter()
+        .filter(|e| !e.policy_locked && !winblast0::ui_slint::views::startup::is_run_once(e))
+        .collect();
+    assert!(toggleable.iter().all(|e| !e.enabled), "every toggleable selected entry is disabled");
+    drop(s);
+    st.invoke_deselect_all();
+    h.bridge.sync();
+    assert_eq!(st.get_selected_count(), 0);
+}
+
+#[test]
+fn services_respect_protected_core_and_reject_bad_start_types() {
+    let h = startup_ready();
+    let st = h.window.global::<StartupStore>();
+    st.invoke_set_sub_tab(2);
+    h.bridge.sync();
+    let rows: Vec<_> = st.get_rows().iter().collect();
+    assert_eq!(rows.len(), h.state.borrow().live_services.len());
+    if let Some(core) = rows.iter().find(|r| r.locked) {
+        let before = h.state.borrow().live_services.iter().find(|v| v.service_name == core.id.as_str()).unwrap().start_type;
+        st.invoke_set_service_start(core.id.clone(), 4);
+        h.wait("idle", |s| !s.startup_tasks_busy);
+        let after = h.state.borrow().live_services.iter().find(|v| v.service_name == core.id.as_str()).unwrap().start_type;
+        assert_eq!(before, after, "protected core service must never change");
+    }
+    if let Some(svc) = rows.iter().find(|r| !r.locked) {
+        st.invoke_set_service_start(svc.id.clone(), 99); // invalid start type ignored
+        st.invoke_set_service_start(svc.id.clone(), -1);
+        h.bridge.sync();
+        assert!(!h.state.borrow().startup_tasks_busy);
+        st.invoke_set_service_start(svc.id.clone(), 3);
+        h.wait("service start type", |s| !s.startup_tasks_busy);
+        let now = h.state.borrow().live_services.iter().find(|v| v.service_name == svc.id.as_str()).unwrap().start_type;
+        assert_eq!(now, 3);
+    }
 }

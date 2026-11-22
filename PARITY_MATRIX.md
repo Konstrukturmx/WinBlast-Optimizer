@@ -291,6 +291,7 @@ Status legend: **WIRED** = a Slint callback reaches this AppState action · **MI
 | View | Status | Tests |
 |---|---|---|
 | Shell (top bar, sidebar, progress, changelog, footer, dropdowns, HUD, diff) | DONE | tests/ui_parity.rs (14) |
+| Startup, Tasks & Services | DONE: 3 sub-tabs, filters, 5 sorts, hide-Microsoft, batch enable/disable, run task, service start types (protected core locked). Fixed a stuck-busy bug after batch toggles | tests/ui_views.rs startup_*/services_* (3) |
 | Clean & Apps | DONE: disk cleaner (8 targets), AppX bloat with locked protected core, optional features, OneDrive/Edge, WinGet; "Select Safe & AI" localized | tests/ui_views.rs clean_apps_* (4) |
 | Easy Dashboard | DONE: all cards and actions; removed invented fallbacks ("Intel / AMD Processor", made-up 12.5 MB update size) | tests/ui_views.rs dashboard_* (4) |
 | Advanced Matrix | DONE: all actions wired, plus fixes for risk filtering, consistent Select All matching and a real Export | tests/ui_views.rs matrix_* (8) |
