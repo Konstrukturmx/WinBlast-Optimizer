@@ -1,0 +1,35 @@
+// ui/stores/backup.slint
+// Backup Center store (port of v1.6.1): VSS restore points, .wb0 profile export/import,
+// Autounattend.xml generator, SQLite transaction ledger with per-entry Undo.
+
+export struct RestorePointRow { seq: string, description: string, created: string }
+export struct LedgerRow { id: string, title: string, action: string, timestamp: string, change: string, rolled-back: bool, reversible: bool }
+
+export global BackupStore {
+    in-out property <bool> restore-inflight;
+    in-out property <[RestorePointRow]> restore-points: [];
+    in-out property <[LedgerRow]> ledger: [];
+    in-out property <int> active-changes;
+    in-out property <bool> can-undo;
+    in-out property <bool> rolling-back;
+    in-out property <string> ledger-path;
+
+    // Autounattend options
+    in-out property <string> arch;
+    in-out property <bool> bypass-tpm;
+    in-out property <bool> bypass-msa;
+    in-out property <bool> skip-privacy;
+    in-out property <bool> include-tweaks;
+    in-out property <bool> auto-timezone;
+    in-out property <string> last-export;
+
+    callback create-restore-point();
+    callback refresh-restore-points();
+    callback export-profile();
+    callback import-profile();
+    callback rollback(string);
+    callback unattend-preset(string);          // minimal | privacy | gaming
+    callback toggle-arch();
+    callback toggle-option(string);            // tpm | msa | privacy | tweaks | timezone
+    callback export-unattend();
+}

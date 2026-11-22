@@ -13,7 +13,7 @@ use winblast0::app::{ActiveView, AppState, MatrixSortMode};
 use winblast0::core::backend::SandboxEnv;
 use winblast0::core::risk::load_embedded_rules;
 use winblast0::ui_slint::bridge::SlintBridge;
-use winblast0::ui_slint::{AppStore, CleanAppsStore, DashboardStore, MainWindow, MatrixStore, StartupStore};
+use winblast0::ui_slint::{AppStore, BackupStore, CleanAppsStore, DashboardStore, MainWindow, MatrixStore, StartupStore};
 
 struct Harness {
     #[allow(dead_code)]
@@ -527,4 +527,85 @@ fn services_respect_protected_core_and_reject_bad_start_types() {
         let now = h.state.borrow().live_services.iter().find(|v| v.service_name == svc.id.as_str()).unwrap().start_type;
         assert_eq!(now, 3);
     }
+}
+
+// ───────────────────────────── Backup Center ─────────────────────────────
+
+#[test]
+fn backup_restore_point_profile_and_unattend_roundtrip_in_sandbox() {
+    let h = Harness::scanned();
+    h.goto(ActiveView::BackupCenter);
+    let st = h.window.global::<BackupStore>();
+    st.invoke_create_restore_point();
+    h.wait("restore point", |s| !s.restore_point_inflight);
+    st.invoke_refresh_restore_points();
+    h.wait("restore list", |s| !s.restore_point_inflight);
+    assert_eq!(st.get_restore_points().row_count(), h.state.borrow().restore_points.len());
+
+    // Unattend options toggle both ways and the arch flips.
+    let arch0 = st.get_arch();
+    st.invoke_toggle_arch();
+    h.bridge.sync();
+    assert_ne!(st.get_arch(), arch0);
+    let read = |st: &BackupStore, opt: &str| match opt {
+        "tpm" => st.get_bypass_tpm(),
+        "msa" => st.get_bypass_msa(),
+        "privacy" => st.get_skip_privacy(),
+        "tweaks" => st.get_include_tweaks(),
+        _ => st.get_auto_timezone(),
+    };
+    for opt in ["tpm", "msa", "privacy", "tweaks", "timezone"] {
+        let before = read(&st, opt);
+        st.invoke_toggle_option(opt.into());
+        h.bridge.sync();
+        assert_eq!(read(&st, opt), !before, "{opt}");
+    }
+    st.invoke_toggle_option("bogus".into());
+    st.invoke_unattend_preset("bogus".into());
+    st.invoke_unattend_preset("privacy".into());
+    st.invoke_export_unattend();
+    h.bridge.sync();
+    let exported = st.get_last_export();
+    assert!(!exported.is_empty(), "export path shown");
+    assert!(std::path::Path::new(exported.as_str()).exists(), "autounattend.xml written to the sandbox profile dir");
+    assert!(exported.to_lowercase().contains("temp") || exported.contains("tmp") || exported.contains("sandbox"), "must stay inside the sandbox: {exported}");
+
+    st.invoke_export_profile();
+    h.bridge.sync();
+    st.invoke_import_profile();
+    h.bridge.sync();
+}
+
+#[test]
+fn backup_ledger_undo_reverts_an_applied_tweak() {
+    let h = Harness::scanned();
+    h.window.global::<AppStore>().invoke_set_engine_instant(true);
+    h.goto(ActiveView::AdvancedMatrix);
+    // A registry-DWORD tweak is always reversible.
+    let reg_ids: std::collections::HashSet<String> = h
+        .state
+        .borrow()
+        .tweaks
+        .iter()
+        .filter(|t| !t.actions.is_empty() && t.actions.iter().all(|a| matches!(a, winblast0::core::risk::TweakAction::RegistryDword { .. })))
+        .map(|t| t.id.clone())
+        .collect();
+    let target = tweak_rows(&h)
+        .into_iter()
+        .find(|r| !r.not_applicable && !r.active && r.risk_level <= 1 && reg_ids.contains(r.id.as_str()))
+        .expect("a low-risk registry tweak");
+    h.window.global::<MatrixStore>().invoke_switch_clicked(target.id.clone());
+    h.wait("applied", |s| s.in_flight_tweaks.is_empty() && !s.is_applying && s.is_switch_active(target.id.as_str()));
+    h.state.borrow_mut().refresh_ledger();
+    h.goto(ActiveView::BackupCenter);
+    let st = h.window.global::<BackupStore>();
+    let entry = st.get_ledger().iter().find(|e| !e.rolled_back && e.reversible).expect("a reversible ledger entry");
+    assert!(st.get_active_changes() >= 1);
+    st.invoke_rollback("not-a-number".into());
+    st.invoke_rollback(entry.id.clone());
+    h.wait("rolled back", |s| !s.is_rolling_back);
+    h.state.borrow_mut().refresh_ledger();
+    h.bridge.sync();
+    let after = st.get_ledger().iter().find(|e| e.id == entry.id).unwrap();
+    assert!(after.rolled_back, "ledger entry must be marked rolled back");
 }

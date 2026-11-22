@@ -1,103 +1,130 @@
 // ui/views/backup_center.slint
-// WinBlast0 System Restore Points & Registry Snapshot Rollback in Slint 1.19
-
-import { Scale, Theme } from "../theme.slint";
+// Backup Center (port of v1.6.1): restore points, profile export/import, Autounattend.xml
+// generator, SQLite transaction ledger with 1-click Undo.
+import { ScrollView } from "std-widgets.slint";
+import { Scale, Theme, Tr } from "../theme.slint";
+import { BackupStore } from "../stores/backup.slint";
+import { WbChip } from "../components/chip.slint";
 import { WbButton } from "../components/button.slint";
-import { WbCard } from "../components/card.slint";
-import { WbBadge } from "../components/badge.slint";
+import { WbPill, WbPanel } from "../components/toggle.slint";
 
-export struct RestorePointItem {
-    id: string,
-    description: string,
-    creation-time: string,
-    point-type: string,       // "System Restore Point" | "WinBlast Registry Snapshot"
+component Check inherits WbChip {
+    in property <bool> on;
+    in property <string> label;
+    text: (on ? "☑ " : "☐ ") + label;
+    active: on;
 }
 
-export component BackupCenterView inherits Flickable {
+export component BackupCenterView inherits Rectangle {
     in property <int> tier;
-    in property <bool> is-creating: false;
-    in property <[RestorePointItem]> restore-points: [];
 
-    callback create-restore-point();
-    callback create-tweak-snapshot();
-    callback restore-point(string);
+    ScrollView {
+        VerticalLayout {
+            padding: root.tier == 0 ? Scale.px(10px) : Scale.px(14px);
+            spacing: Scale.px(12px);
+            alignment: start;
 
-    content-height: content.preferred-height;
-
-    content := VerticalLayout {
-        padding: Scale.space-lg;
-        spacing: Scale.space-md;
-
-        // Header Card
-        WbCard {
-            HorizontalLayout {
-                alignment: space-between;
+            WbPanel {
                 VerticalLayout {
-                    spacing: Scale.space-2xs;
-                    Text {
-                        text: "System Snapshots & Rollback Recovery";
-                        font-size: Scale.font-xl;
-                        font-weight: 700;
-                        color: Theme.text-primary;
-                    }
-                    Text {
-                        text: "Create atomic Windows VSS System Restore Points and registry backup diffs prior to deep optimizations.";
-                        font-size: Scale.font-sm;
-                        color: Theme.text-secondary;
-                    }
-                }
-
-                HorizontalLayout {
-                    spacing: Scale.space-sm;
-                    WbButton {
-                        variant: "ghost";
-                        text: "Save Tweak Diff";
-                        clicked => { root.create-tweak-snapshot(); }
-                    }
-                    WbButton {
-                        variant: "primary";
-                        text: root.is-creating ? "Creating Point..." : "+ Create Restore Point";
-                        loading: root.is-creating;
-                        clicked => { root.create-restore-point(); }
+                    padding: Scale.px(Theme.card-padding);
+                    spacing: Scale.px(8px);
+                    Text { text: Tr.s("BackupTitle"); font-size: Scale.font-xl; font-weight: 800; color: Theme.text-primary; wrap: word-wrap; }
+                    Text { text: Tr.s("BackupSub"); font-size: Scale.font-xs; color: Theme.text-muted; wrap: word-wrap; }
+                    FlexboxLayout {
+                        spacing: Scale.px(6px);
+                        WbButton {
+                            variant: "primary";
+                            text: BackupStore.restore-inflight ? Tr.s("BusyWorking") : Tr.s("CreateRestorePointBtn");
+                            enabled: !BackupStore.restore-inflight;
+                            loading: BackupStore.restore-inflight;
+                            clicked => { BackupStore.create-restore-point(); }
+                        }
+                        WbButton { variant: "secondary"; text: Tr.s("RefreshRestorePointsBtn"); clicked => { BackupStore.refresh-restore-points(); } }
+                        WbButton { variant: "secondary"; text: Tr.s("ExportProfileBtn"); clicked => { BackupStore.export-profile(); } }
+                        WbButton { variant: "secondary"; text: Tr.s("ImportProfileBtn"); clicked => { BackupStore.import-profile(); } }
                     }
                 }
             }
-        }
 
-        // Restore Points List
-        VerticalLayout {
-            spacing: Scale.space-xs;
-
-            for pt in root.restore-points: WbCard {
-                HorizontalLayout {
-                    alignment: space-between;
-                    VerticalLayout {
-                        spacing: Scale.space-2xs;
+            WbPanel {
+                VerticalLayout {
+                    padding: Scale.px(12px);
+                    spacing: Scale.px(6px);
+                    Text { text: Tr.s("RestorePointsTitle"); font-size: Scale.font-md; font-weight: 700; color: Theme.text-primary; }
+                    if BackupStore.restore-points.length == 0 : Text { text: Tr.s("NoRestorePoints"); font-size: Scale.font-xs; color: Theme.text-muted; wrap: word-wrap; }
+                    for rp in BackupStore.restore-points : Rectangle {
+                        border-radius: Scale.px(Theme.btn-radius);
+                        background: Theme.bg-primary;
                         HorizontalLayout {
-                            spacing: Scale.space-sm;
-                            Text {
-                                text: pt.description;
-                                font-size: Scale.font-md;
-                                font-weight: 600;
-                                color: Theme.text-primary;
-                            }
-                            WbBadge {
-                                text: pt.point-type;
-                                variant: "info";
-                            }
-                        }
-                        Text {
-                            text: "Created: " + pt.creation-time;
-                            font-size: Scale.font-xs;
-                            color: Theme.text-secondary;
+                            padding: Scale.px(8px);
+                            spacing: Scale.px(10px);
+                            Text { text: rp.seq; font-size: Scale.font-xs; font-weight: 700; color: Theme.accent; vertical-alignment: center; }
+                            Text { text: rp.description; font-size: Scale.font-sm; color: Theme.text-primary; vertical-alignment: center; horizontal-stretch: 1; overflow: elide; }
+                            Text { text: rp.created; font-size: Scale.font-2xs; color: Theme.text-muted; vertical-alignment: center; }
                         }
                     }
+                }
+            }
 
-                    WbButton {
-                        variant: "secondary";
-                        text: "Restore";
-                        min-height: Scale.control-sm;
-                        clicked => { root.restore-point(pt.id); }
+            WbPanel {
+                VerticalLayout {
+                    padding: Scale.px(12px);
+                    spacing: Scale.px(8px);
+                    Text { text: Tr.s("UnattendTitle"); font-size: Scale.font-md; font-weight: 700; color: Theme.text-primary; }
+                    Text { text: Tr.s("UnattendSub"); font-size: Scale.font-xs; color: Theme.text-muted; wrap: word-wrap; }
+                    FlexboxLayout {
+                        spacing: Scale.px(6px);
+                        cross-axis-alignment: center;
+                        Text { text: Tr.s("UnattendPresetsLabel"); font-size: Scale.font-xs; color: Theme.text-secondary; }
+                        WbChip { text: Tr.s("UnattendPresetMinimal"); clicked => { BackupStore.unattend-preset("minimal"); } }
+                        WbChip { text: Tr.s("UnattendPresetPrivacy"); clicked => { BackupStore.unattend-preset("privacy"); } }
+                        WbChip { text: Tr.s("UnattendPresetGaming"); clicked => { BackupStore.unattend-preset("gaming"); } }
+                        WbChip { text: Tr.s("UnattendArchToggle") + " " + BackupStore.arch; tone: "accent"; clicked => { BackupStore.toggle-arch(); } }
+                    }
+                    FlexboxLayout {
+                        spacing: Scale.px(6px);
+                        Check { on: BackupStore.bypass-tpm; label: Tr.s("UnattendBypassTpm"); clicked => { BackupStore.toggle-option("tpm"); } }
+                        Check { on: BackupStore.bypass-msa; label: Tr.s("UnattendBypassMsa"); clicked => { BackupStore.toggle-option("msa"); } }
+                        Check { on: BackupStore.skip-privacy; label: Tr.s("UnattendSkipPrivacy"); clicked => { BackupStore.toggle-option("privacy"); } }
+                        Check { on: BackupStore.include-tweaks; label: Tr.s("UnattendIncludeTweaks"); clicked => { BackupStore.toggle-option("tweaks"); } }
+                        Check { on: BackupStore.auto-timezone; label: Tr.s("UnattendAutoTimezone"); clicked => { BackupStore.toggle-option("timezone"); } }
+                        WbButton { variant: "primary"; text: Tr.s("UnattendExportBtn"); clicked => { BackupStore.export-unattend(); } }
+                    }
+                    Text { text: Tr.s("LedgerDbLabel") + " " + BackupStore.ledger-path; font-size: Scale.font-2xs; color: Theme.text-muted; wrap: word-wrap; }
+                    if BackupStore.last-export != "" : Text { text: Tr.s("ExportedLabel") + " " + BackupStore.last-export; font-size: Scale.font-xs; color: Theme.success; wrap: word-wrap; }
+                }
+            }
+
+            HorizontalLayout {
+                spacing: Scale.px(8px);
+                Text { text: Tr.s("SqlLedgerTitle"); font-size: Scale.font-md; font-weight: 700; color: Theme.text-primary; vertical-alignment: center; horizontal-stretch: 1; }
+                WbPill { text: BackupStore.active-changes + " " + Tr.s("ActiveChanges"); tone: "accent"; }
+            }
+            if BackupStore.ledger.length == 0 : Text { text: Tr.s("ChangelogEmpty"); font-size: Scale.font-xs; color: Theme.text-muted; }
+            for e in BackupStore.ledger : WbPanel {
+                FlexboxLayout {
+                    padding: Scale.px(10px);
+                    spacing: Scale.px(8px);
+                    alignment: stretch;
+                    cross-axis-alignment: center;
+                    VerticalLayout {
+                        horizontal-stretch: 1;
+                        min-width: Scale.px(220px);
+                        Text { text: e.title; font-size: Scale.font-sm; font-weight: 600; color: Theme.text-primary; wrap: word-wrap; }
+                        HorizontalLayout {
+                            spacing: Scale.px(8px);
+                            Text { text: e.action; font-size: Scale.font-2xs; color: Theme.accent; }
+                            Text { text: e.timestamp; font-size: Scale.font-2xs; color: Theme.text-muted; }
+                        }
+                        Text { text: e.change; font-size: Scale.font-2xs; color: Theme.text-secondary; wrap: word-wrap; }
+                    }
+                    WbPill { text: e.rolled-back ? Tr.s("RolledBackBadge") : Tr.s("AppliedBadge"); tone: e.rolled-back ? "muted" : "success"; }
+                    if !e.rolled-back && !e.reversible : WbPill { text: Tr.s("NonReversibleBadge"); tone: "warning"; }
+                    if !e.rolled-back && e.reversible : WbChip {
+                        tone: "warning";
+                        enabled: BackupStore.can-undo;
+                        text: BackupStore.rolling-back ? Tr.s("BusyWorking") : Tr.s("UndoBtn");
+                        clicked => { BackupStore.rollback(e.id); }
                     }
                 }
             }

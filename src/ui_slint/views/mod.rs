@@ -1,5 +1,6 @@
 //! Per-view binders. Each module owns one Slint global store and keeps it in sync with AppState.
 
+pub mod backup;
 pub mod clean_apps;
 pub mod dashboard;
 pub mod matrix;
@@ -16,11 +17,12 @@ pub struct Views {
     dashboard: dashboard::DashboardView,
     clean_apps: clean_apps::CleanAppsView,
     startup: startup::StartupView,
+    backup: backup::BackupView,
 }
 
 impl Views {
     pub fn new(window: &MainWindow) -> Self {
-        Self { matrix: matrix::MatrixView::new(window), dashboard: dashboard::DashboardView::new(window), clean_apps: clean_apps::CleanAppsView::new(window), startup: startup::StartupView::new(window) }
+        Self { matrix: matrix::MatrixView::new(window), dashboard: dashboard::DashboardView::new(window), clean_apps: clean_apps::CleanAppsView::new(window), startup: startup::StartupView::new(window), backup: backup::BackupView::new(window) }
     }
 
     pub fn bind(&self, window: &MainWindow, ctx: &Ctx) {
@@ -28,6 +30,7 @@ impl Views {
         self.dashboard.bind(window, ctx);
         self.clean_apps.bind(window, ctx);
         self.startup.bind(window, ctx);
+        self.backup.bind(window, ctx);
     }
 
     /// Sync the active view's store (inactive views are refreshed when navigated to).
@@ -37,6 +40,7 @@ impl Views {
             ActiveView::EasyDashboard => self.dashboard.sync(window, s),
             ActiveView::CleanAndApps => self.clean_apps.sync(window, s),
             ActiveView::StartupAndTasks => self.startup.sync(window, s),
+            ActiveView::BackupCenter => self.backup.sync(window, s),
             _ => {}
         }
     }
