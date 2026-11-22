@@ -16,15 +16,17 @@ pub struct BenchmarkScore {
     pub total_composite_score: u64,
 }
 
+/// "Not measured" score. v1.6.1 returned invented numbers here (1850 / 14200 / 58.4 GB/s /
+/// 6850 MB/s / 9420), which the Performance page displayed before any benchmark had run.
 impl Default for BenchmarkScore {
     fn default() -> Self {
         Self {
-            cpu_single_score: 1850,
-            cpu_multi_score: 14200,
-            ram_read_gb_s: 58.4,
-            ram_latency_ns: 62.1,
-            disk_seq_read_mb_s: 6850.0,
-            total_composite_score: 9420,
+            cpu_single_score: 0,
+            cpu_multi_score: 0,
+            ram_read_gb_s: 0.0,
+            ram_latency_ns: 0.0,
+            disk_seq_read_mb_s: 0.0,
+            total_composite_score: 0,
         }
     }
 }

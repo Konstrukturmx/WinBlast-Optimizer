@@ -4,6 +4,7 @@ pub mod automation;
 pub mod backup;
 pub mod clean_apps;
 pub mod dashboard;
+pub mod diagnostics;
 pub mod drivers;
 pub mod gpu;
 pub mod hardware;
@@ -34,11 +35,12 @@ pub struct Views {
     latency: latency::LatencyView,
     planner: planner::PlannerView,
     automation: automation::AutomationView,
+    diagnostics: diagnostics::DiagnosticsView,
 }
 
 impl Views {
     pub fn new(window: &MainWindow) -> Self {
-        Self { matrix: matrix::MatrixView::new(window), dashboard: dashboard::DashboardView::new(window), clean_apps: clean_apps::CleanAppsView::new(window), startup: startup::StartupView::new(window), backup: backup::BackupView::new(window), privacy: privacy::PrivacyView::new(window), gpu: gpu::GpuView::new(window), hardware: hardware::HardwareView::new(window), sensors: sensors::SensorsView::new(window), drivers: drivers::DriversView::new(window), latency: latency::LatencyView::new(window), planner: planner::PlannerView::new(window), automation: automation::AutomationView::new(window) }
+        Self { matrix: matrix::MatrixView::new(window), dashboard: dashboard::DashboardView::new(window), clean_apps: clean_apps::CleanAppsView::new(window), startup: startup::StartupView::new(window), backup: backup::BackupView::new(window), privacy: privacy::PrivacyView::new(window), gpu: gpu::GpuView::new(window), hardware: hardware::HardwareView::new(window), sensors: sensors::SensorsView::new(window), drivers: drivers::DriversView::new(window), latency: latency::LatencyView::new(window), planner: planner::PlannerView::new(window), automation: automation::AutomationView::new(window), diagnostics: diagnostics::DiagnosticsView::new(window) }
     }
 
     pub fn bind(&self, window: &MainWindow, ctx: &Ctx) {
@@ -55,10 +57,14 @@ impl Views {
         self.latency.bind(window, ctx);
         self.planner.bind(window, ctx);
         self.automation.bind(window, ctx);
+        self.diagnostics.bind(window, ctx);
     }
 
     /// Sync the active view's store (inactive views are refreshed when navigated to).
     pub fn sync(&self, window: &MainWindow, _ctx: &Ctx, s: &AppState) {
+        if s.active_view != ActiveView::FaultDiagnostics {
+            self.diagnostics.disarm();
+        }
         match s.active_view {
             ActiveView::AdvancedMatrix => self.matrix.sync(window, s),
             ActiveView::EasyDashboard => self.dashboard.sync(window, s),
@@ -75,6 +81,9 @@ impl Views {
             ActiveView::LatencyTester => self.latency.sync(window, s),
             ActiveView::GoalPlanner => self.planner.sync(window, s),
             ActiveView::AutomationCenter => self.automation.sync(window, s),
+            ActiveView::FaultDiagnostics => self.diagnostics.sync_fault(window, s),
+            ActiveView::WindowsRepair => self.diagnostics.sync_repair(window, s),
+            ActiveView::PerformanceTests => self.diagnostics.sync_perf(window, s),
             _ => {}
         }
     }

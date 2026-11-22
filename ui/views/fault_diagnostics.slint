@@ -1,131 +1,99 @@
 // ui/views/fault_diagnostics.slint
-// WinBlast0 Windows Event Log BSOD & Hardware Error Scanner in Slint 1.19
-
-import { Scale, Theme } from "../theme.slint";
+// Fault Diagnostics (port of v1.6.1): BSOD minidumps, pending-reboot deep inspection with
+// remediation, component store recommendation. Restart requires a confirming second click.
+import { ScrollView } from "std-widgets.slint";
+import { Scale, Theme, Tr } from "../theme.slint";
+import { AppStore } from "../stores/app.slint";
+import { FaultStore } from "../stores/diagnostics.slint";
 import { WbButton } from "../components/button.slint";
-import { WbCard } from "../components/card.slint";
-import { WbBadge } from "../components/badge.slint";
+import { WbPill, WbPanel } from "../components/toggle.slint";
+import { WbTitledList, WbSection } from "../components/kv.slint";
 
-export struct CrashEventItem {
-    id: string,
-    event-type: string,       // "BSOD BugCheck" | "WHEA Hardware Error" | "Application Crash"
-    source: string,
-    time-text: string,
-    error-code: string,
-    summary: string,
-}
-
-export component FaultDiagnosticsView inherits Flickable {
+export component FaultDiagnosticsView inherits Rectangle {
     in property <int> tier;
-    in property <int> bsod-count: 0;
-    in property <int> whea-count: 0;
-    in property <int> app-crash-count: 2;
 
-    in property <[CrashEventItem]> events: [];
-
-    callback scan-events-clicked();
-    callback clear-event-logs();
-
-    content-height: content.preferred-height;
-
-    content := VerticalLayout {
-        padding: Scale.space-lg;
-        spacing: Scale.space-md;
-
-        // Header Card
-        WbCard {
-            HorizontalLayout {
-                alignment: space-between;
-                VerticalLayout {
-                    spacing: Scale.space-2xs;
-                    Text {
-                        text: "System Stability & Crash Fault Diagnostics";
-                        font-size: Scale.font-xl;
-                        font-weight: 700;
-                        color: Theme.text-primary;
-                    }
-                    Text {
-                        text: "Audit Windows Event Log for Kernel-Power 41 (BSOD), WHEA-Logger CPU/PCIe bus parity errors, and WER fault dumps.";
-                        font-size: Scale.font-sm;
-                        color: Theme.text-secondary;
-                    }
-                }
-
-                HorizontalLayout {
-                    spacing: Scale.space-sm;
-                    WbButton {
-                        variant: "ghost";
-                        text: "Scan Logs";
-                        clicked => { root.scan-events-clicked(); }
-                    }
-                }
-            }
-        }
-
-        // Summary Badges Row
-        HorizontalLayout {
-            spacing: Scale.space-md;
-
-            WbCard {
-                horizontal-stretch: 1;
-                VerticalLayout {
-                    spacing: Scale.space-xs;
-                    Text { text: "KERNEL BSOD BUGCHECKS"; font-size: Scale.font-xs; font-weight: 700; color: Theme.text-muted; }
-                    Text { text: root.bsod-count + ""; font-size: Scale.font-2xl; font-weight: 800; color: root.bsod-count > 0 ? Theme.high : Theme.safe; }
-                    Text { text: root.bsod-count == 0 ? "Zero kernel blue screens" : "Critical crashes recorded"; font-size: Scale.font-xs; color: Theme.text-secondary; }
-                }
-            }
-
-            WbCard {
-                horizontal-stretch: 1;
-                VerticalLayout {
-                    spacing: Scale.space-xs;
-                    Text { text: "WHEA HARDWARE ERRORS"; font-size: Scale.font-xs; font-weight: 700; color: Theme.text-muted; }
-                    Text { text: root.whea-count + ""; font-size: Scale.font-2xl; font-weight: 800; color: root.whea-count > 0 ? Theme.moderate : Theme.safe; }
-                    Text { text: root.whea-count == 0 ? "Zero CPU/PCIe bus errors" : "Unstable core/fabric detected"; font-size: Scale.font-xs; color: Theme.text-secondary; }
-                }
-            }
-
-            WbCard {
-                horizontal-stretch: 1;
-                VerticalLayout {
-                    spacing: Scale.space-xs;
-                    Text { text: "APPLICATION FAULTS"; font-size: Scale.font-xs; font-weight: 700; color: Theme.text-muted; }
-                    Text { text: root.app-crash-count + ""; font-size: Scale.font-2xl; font-weight: 800; color: Theme.accent; }
-                    Text { text: "User-space process aborts"; font-size: Scale.font-xs; color: Theme.text-secondary; }
-                }
-            }
-        }
-
-        // Events List
+    ScrollView {
         VerticalLayout {
-            spacing: Scale.space-xs;
+            padding: root.tier == 0 ? Scale.px(10px) : Scale.px(14px);
+            spacing: Scale.px(12px);
+            alignment: start;
 
-            for ev in root.events: WbCard {
-                HorizontalLayout {
-                    alignment: space-between;
+            WbPanel {
+                FlexboxLayout {
+                    padding: Scale.px(Theme.card-padding);
+                    spacing: Scale.px(8px);
+                    alignment: stretch;
+                    cross-axis-alignment: center;
                     VerticalLayout {
-                        spacing: Scale.space-2xs;
-                        HorizontalLayout {
-                            spacing: Scale.space-sm;
-                            Text {
-                                text: ev.event-type;
-                                font-size: Scale.font-md;
-                                font-weight: 600;
-                                color: Theme.text-primary;
-                            }
-                            WbBadge {
-                                text: ev.error-code;
-                                variant: ev.event-type == "BSOD BugCheck" ? "high" : "moderate";
-                            }
-                        }
-                        Text {
-                            text: ev.summary + " — " + ev.time-text + " (" + ev.source + ")";
-                            font-size: Scale.font-xs;
-                            color: Theme.text-secondary;
+                        horizontal-stretch: 1;
+                        min-width: Scale.px(220px);
+                        Text { text: Tr.s("FaultTitle"); font-size: Scale.font-xl; font-weight: 800; color: Theme.text-primary; wrap: word-wrap; }
+                    }
+                    WbPill {
+                        text: FaultStore.critical > 0 ? Tr.s("FaultAlertBadgePrefix") + FaultStore.critical + Tr.s("FaultAlertBadgeSuffix") : Tr.s("FaultSystemStable");
+                        tone: FaultStore.critical > 0 ? "danger" : "success";
+                    }
+                    WbButton { variant: "primary"; text: Tr.s("FaultRescanBtn"); loading: FaultStore.scanning; enabled: !FaultStore.scanning; clicked => { FaultStore.rescan(); } }
+                    WbButton { variant: "secondary"; text: Tr.s("FaultClearDumpsBtn"); enabled: !FaultStore.action-busy; clicked => { FaultStore.clear-dumps(); } }
+                    WbButton { variant: "secondary"; text: Tr.s("FaultReportToGithub"); clicked => { FaultStore.report-github(); } }
+                }
+            }
+
+            if FaultStore.pending : Rectangle {
+                border-radius: Scale.px(Theme.card-radius);
+                background: Theme.warning.with-alpha(0.10);
+                border-width: 1px;
+                border-color: Theme.warning.with-alpha(0.45);
+                VerticalLayout {
+                    padding: Scale.px(12px);
+                    spacing: Scale.px(6px);
+                    HorizontalLayout {
+                        spacing: Scale.px(6px);
+                        Text { text: "⚠"; color: Theme.warning; font-size: Scale.font-lg; }
+                        Text { text: Tr.s("FaultPendingRebootWarn"); font-size: Scale.font-md; font-weight: 700; color: Theme.warning; wrap: word-wrap; horizontal-stretch: 1; }
+                    }
+                    Text { text: FaultStore.pending-summary; font-size: Scale.font-xs; color: Theme.text-secondary; wrap: word-wrap; }
+                    if FaultStore.pending-rename : Text { text: Tr.s("FaultWhyPendingReboot"); font-size: Scale.font-xs; color: Theme.text-muted; wrap: word-wrap; }
+                    if FaultStore.pending-files.length > 0 : Rectangle {
+                        border-radius: 4px;
+                        background: Theme.bg-primary.with-alpha(0.6);
+                        VerticalLayout {
+                            padding: Scale.px(6px);
+                            spacing: Scale.px(3px);
+                            for f in FaultStore.pending-files : Text { text: f; font-size: Scale.font-2xs; color: Theme.text-secondary; overflow: elide; }
+                            if FaultStore.pending-more != "" : Text { text: FaultStore.pending-more; font-size: Scale.font-2xs; color: Theme.text-muted; }
                         }
                     }
+                    if FaultStore.cbs-or-wu : Text { text: Tr.s("FaultCbsStagedDesc"); font-size: Scale.font-xs; color: Theme.text-muted; wrap: word-wrap; }
+                    FlexboxLayout {
+                        spacing: Scale.px(8px);
+                        WbButton {
+                            variant: FaultStore.confirm-restart ? "danger" : "primary";
+                            text: FaultStore.confirm-restart ? "⚠ " + Tr.s("FaultRestartPcNow") + " ✓?" : Tr.s("FaultRestartPcNow");
+                            enabled: !FaultStore.action-busy;
+                            clicked => { FaultStore.restart-now(); }
+                        }
+                        if FaultStore.pending-rename : WbButton { variant: "secondary"; text: Tr.s("FaultClearPendingRenames"); enabled: !FaultStore.action-busy; clicked => { FaultStore.clear-renames(); } }
+                        if FaultStore.cbs-or-wu : WbButton { variant: "secondary"; text: "🧹 Clear CBS Reboot Lock"; enabled: !FaultStore.action-busy; clicked => { FaultStore.clear-cbs(); } }
+                    }
                 }
+            }
+            if !FaultStore.pending : WbPanel {
+                min-height: Scale.px(44px);
+                Text { x: Scale.px(12px); width: parent.width - Scale.px(24px); text: FaultStore.scanning ? Tr.s("Scanning") : Tr.s("FaultPendingRebootClean"); font-size: Scale.font-sm; color: Theme.success; wrap: word-wrap; }
+            }
+
+            WbSection {
+                title: "🛡️ " + Tr.s("FaultMinidumpSectionTitle");
+                HorizontalLayout { alignment: start; WbButton { variant: "secondary"; text: Tr.s("FaultOpenMinidumpFolder"); clicked => { FaultStore.open-minidump-folder(); } } }
+                if FaultStore.minidumps.length == 0 : Text { text: Tr.s("FaultMinidumpEmpty"); font-size: Scale.font-sm; color: Theme.text-muted; wrap: word-wrap; }
+                WbTitledList { rows: FaultStore.minidumps; }
+            }
+
+            WbSection {
+                title: Tr.s("FaultDismSectionTitle");
+                Text { text: Tr.s("FaultDismSectionDesc"); font-size: Scale.font-xs; color: Theme.text-muted; wrap: word-wrap; }
+                HorizontalLayout { alignment: start; WbButton { variant: "primary"; text: Tr.s("FaultOpenRepairBtn"); clicked => { AppStore.navigate("windows_repair"); } } }
             }
         }
     }

@@ -13,7 +13,7 @@ use winblast0::app::{ActiveView, AppState, MatrixSortMode};
 use winblast0::core::backend::SandboxEnv;
 use winblast0::core::risk::load_embedded_rules;
 use winblast0::ui_slint::bridge::SlintBridge;
-use winblast0::ui_slint::{AppStore, AutomationStore, BackupStore, DiskStore, DriverStore, LatencyStore, PlannerStore, GpuStore, HardwareStore, ParkingStore, ThermalStore, PrivacyStore, CleanAppsStore, DashboardStore, MainWindow, MatrixStore, StartupStore};
+use winblast0::ui_slint::{AppStore, AutomationStore, BackupStore, FaultStore, PerfStore, RepairStore, DiskStore, DriverStore, LatencyStore, PlannerStore, GpuStore, HardwareStore, ParkingStore, ThermalStore, PrivacyStore, CleanAppsStore, DashboardStore, MainWindow, MatrixStore, StartupStore};
 
 struct Harness {
     #[allow(dead_code)]
@@ -952,4 +952,72 @@ fn automation_profiles_autotune_trim_health_and_maintenance() {
     st.invoke_toggle_maintenance("NotATask".into());
     h.bridge.sync();
     assert!(!h.state.borrow().maintenance_inflight);
+}
+
+// ───────────────────────────── Fault diagnostics / Repair / Perf ─────────────────────────────
+
+#[test]
+fn fault_scan_is_async_and_restart_needs_confirmation() {
+    let h = Harness::scanned();
+    assert!(h.state.borrow().fault_report.is_none(), "constructor must not scan the host");
+    h.goto(ActiveView::FaultDiagnostics);
+    h.wait("fault scan", |s| !s.fault_scanning && s.fault_report.is_some());
+    let st = h.window.global::<FaultStore>();
+    assert_eq!(st.get_critical(), 0);
+
+    st.invoke_restart_now();
+    h.bridge.sync();
+    assert!(st.get_confirm_restart(), "first click only arms");
+    assert!(!h.state.borrow().fault_action_inflight);
+    st.invoke_restart_now();
+    h.wait("restart (sandbox)", |s| !s.fault_action_inflight && !s.fault_scanning);
+    assert!(h.state.borrow().status_message.contains("RestartSystem"), "{}", h.state.borrow().status_message);
+    assert!(!st.get_confirm_restart());
+
+    // Leaving the view disarms a pending confirmation.
+    st.invoke_restart_now();
+    h.goto(ActiveView::EasyDashboard);
+    h.goto(ActiveView::FaultDiagnostics);
+    assert!(!st.get_confirm_restart());
+
+    st.invoke_clear_dumps();
+    h.wait("clear dumps", |s| !s.fault_action_inflight && !s.fault_scanning);
+}
+
+#[test]
+fn repair_tasks_run_on_a_worker_and_log_results() {
+    let h = Harness::scanned();
+    h.goto(ActiveView::WindowsRepair);
+    let st = h.window.global::<RepairStore>();
+    let n = st.get_tasks().row_count();
+    assert!(n > 0);
+    let id = st.get_tasks().row_data(0).unwrap().id;
+    st.invoke_run("no-such-task".into());
+    h.bridge.sync();
+    assert!(h.state.borrow().repair_running.is_none());
+    st.invoke_run(id.clone());
+    assert_eq!(h.state.borrow().repair_running.as_deref(), Some(id.as_str()), "must not block the UI thread");
+    st.invoke_run("all".into()); // ignored while busy
+    h.wait("single repair", |s| s.repair_running.is_none());
+    assert_eq!(st.get_log().row_count(), 1);
+    st.invoke_run("all".into());
+    h.wait("all repairs", |s| s.repair_running.is_none());
+    assert_eq!(st.get_log().row_count(), 1 + n);
+    st.invoke_clear_log();
+    h.bridge.sync();
+    assert_eq!(st.get_log().row_count(), 0);
+}
+
+#[test]
+fn perf_benchmark_is_guarded_and_never_shows_fake_zeros() {
+    let h = Harness::scanned();
+    h.goto(ActiveView::PerformanceTests);
+    let st = h.window.global::<PerfStore>();
+    assert!(!st.get_has_score());
+    assert_eq!(st.get_composite().as_str(), "—");
+    st.invoke_start();
+    h.wait("benchmark", |s| !s.is_benchmarking_perf);
+    // Sandbox returns an empty score: placeholders stay, nothing claims a measured 0.
+    assert!(!st.get_has_score());
+    assert_eq!(st.get_cpu_multi().as_str(), "—");
 }

@@ -1,0 +1,46 @@
+// ui/stores/diagnostics.slint
+// Fault Diagnostics, Windows Repair and Performance Tests stores (ports of v1.6.1 views).
+import { TitledRow } from "common.slint";
+
+export struct RepairRow { id: string, icon: string, title: string, command: string, desc: string }
+
+export global FaultStore {
+    in-out property <bool> scanning;
+    in-out property <bool> action-busy;
+    in-out property <int> critical;
+    in-out property <bool> pending;
+    in-out property <string> pending-summary;
+    in-out property <bool> pending-rename;
+    in-out property <bool> cbs-or-wu;
+    in-out property <[string]> pending-files: [];
+    in-out property <string> pending-more;
+    in-out property <[TitledRow]> minidumps: [];
+    in-out property <bool> confirm-restart;
+    callback rescan();
+    callback clear-dumps();
+    callback report-github();
+    callback restart-now();
+    callback clear-renames();
+    callback clear-cbs();
+    callback open-minidump-folder();
+}
+
+export global RepairStore {
+    in-out property <[RepairRow]> tasks: [];
+    in-out property <string> running;     // "" | task id | "all"
+    in-out property <[string]> log: [];
+    callback run(string);
+    callback clear-log();
+}
+
+export global PerfStore {
+    in-out property <bool> running;
+    in-out property <bool> has-score;
+    in-out property <string> composite;
+    in-out property <string> cpu-multi;
+    in-out property <string> cpu-single;
+    in-out property <string> ram-read;
+    in-out property <string> ram-latency;
+    in-out property <string> disk-read;
+    callback start();
+}

@@ -19,6 +19,7 @@ import { DriverStore, DriverRow, DisplayDriverRow } from "stores/drivers.slint";
 import { LatencyStore, LatencyMetric, PingRow } from "stores/latency.slint";
 import { PlannerStore, PlanMetric, PlanStep } from "stores/planner.slint";
 import { AutomationStore, MaintenanceRow } from "stores/automation.slint";
+import { FaultStore, RepairStore, PerfStore, RepairRow } from "stores/diagnostics.slint";
 import { AppTopBar } from "shell/topbar.slint";
 import { AppSidebar } from "shell/sidebar.slint";
 import { AppProgressStrip, AppChangelog, AppFooter } from "shell/statusbar.slint";
@@ -52,7 +53,7 @@ import { BackupCenterView } from "views/backup_center.slint";
 import { PrivacyShieldView } from "views/privacy_shield.slint";
 import { SupportAboutView } from "views/support_about.slint";
 
-export { Scale, Theme, Motion, Tr, AppStore, ChangelogEntry, DiffRowData, ChoiceItem, MatrixStore, MatrixRow, MatrixCategory, DashboardStore, CategoryStat, CleanAppsStore, CleanTargetRow, AppxRow, FeatureRow, WingetRow, StartupStore, StartupRow, BackupStore, RestorePointRow, LedgerRow, PrivacyStore, GpuStore, GpuAdapterRow, GpuTweakRow, HardwareStore, KvRow, TitledRow, ChipItem, MeterCell, ParkingStore, ThermalStore, DiskStore, CoreCard, ThermalRow, DriveCard, DriverStore, DriverRow, DisplayDriverRow, LatencyStore, LatencyMetric, PingRow, PlannerStore, PlanMetric, PlanStep, AutomationStore, MaintenanceRow }
+export { Scale, Theme, Motion, Tr, AppStore, ChangelogEntry, DiffRowData, ChoiceItem, MatrixStore, MatrixRow, MatrixCategory, DashboardStore, CategoryStat, CleanAppsStore, CleanTargetRow, AppxRow, FeatureRow, WingetRow, StartupStore, StartupRow, BackupStore, RestorePointRow, LedgerRow, PrivacyStore, GpuStore, GpuAdapterRow, GpuTweakRow, HardwareStore, KvRow, TitledRow, ChipItem, MeterCell, ParkingStore, ThermalStore, DiskStore, CoreCard, ThermalRow, DriveCard, DriverStore, DriverRow, DisplayDriverRow, LatencyStore, LatencyMetric, PingRow, PlannerStore, PlanMetric, PlanStep, AutomationStore, MaintenanceRow, FaultStore, RepairStore, PerfStore, RepairRow }
 
 export component MainWindow inherits Window {
     title: "WinBlast0 v" + AppStore.app-version + " — Windows System Optimizer";

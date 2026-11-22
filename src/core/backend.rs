@@ -315,6 +315,36 @@ pub trait SystemBackend: Send + Sync + 'static {
         crate::hardware::driver_update::download_and_install_driver(item, staging_dir).map_err(|e| e.to_string())
     }
 
+    /// Run one Windows repair routine (SFC, DISM, Winsock, WU reset…). Mutating and slow.
+    fn run_repair_task(&self, id: &str) -> std::result::Result<String, String> {
+        crate::tools::windows_repair::RepairTask::execute(id)
+    }
+
+    /// Quick CPU / RAM / disk benchmark (read-only, CPU-heavy).
+    fn run_perf_benchmark(&self) -> crate::tools::performance_tests::BenchmarkScore {
+        crate::tools::performance_tests::BenchmarkRunner::run_quick()
+    }
+
+    /// BSOD minidumps, pending-reboot locks and component-store state (read-only).
+    fn scan_fault_report(&self) -> crate::tools::diagnostics::FaultDiagnosticsReport {
+        crate::tools::diagnostics::FaultDiagnosticsReport::scan()
+    }
+
+    /// Run a Fault Diagnostics remediation (mutating; RestartSystem reboots the machine).
+    fn fault_remediation(
+        &self,
+        action: crate::tools::diagnostics::FaultAction,
+        report: &crate::tools::diagnostics::FaultDiagnosticsReport,
+    ) -> std::result::Result<String, String> {
+        use crate::tools::diagnostics::{FaultAction, FaultDiagnosticsReport};
+        match action {
+            FaultAction::ClearMinidumps => report.clear_minidumps().map(|n| format!("Removed {n} minidump file(s)")),
+            FaultAction::ClearPendingRenames => FaultDiagnosticsReport::clear_pending_renames().map(|_| "Pending file renames cleared".into()),
+            FaultAction::ClearCbsRebootFlags => FaultDiagnosticsReport::clear_cbs_reboot_flags().map(|_| "CBS reboot lock cleared".into()),
+            FaultAction::RestartSystem => FaultDiagnosticsReport::restart_system().map(|_| "Restarting…".into()),
+        }
+    }
+
     /// Full system health assessment (read-only).
     fn assess_system_health(&self) -> crate::tools::automation::SystemHealthAssessment {
         crate::tools::automation::assess_system_health()
@@ -2916,6 +2946,32 @@ impl SystemBackend for SandboxEnv {
 
     fn check_onedrive_kfm_active(&self) -> Option<String> {
         self.state_read().onedrive_kfm_path.clone()
+    }
+
+    fn run_repair_task(&self, id: &str) -> std::result::Result<String, String> {
+        self.take_injected_error().map_err(|e| e.to_string())?;
+        if crate::tools::windows_repair::RepairTask::all().iter().any(|t| t.id == id) {
+            Ok(format!("Sandbox: repair task '{id}' simulated"))
+        } else {
+            Err(format!("Unknown repair task '{id}'"))
+        }
+    }
+
+    fn run_perf_benchmark(&self) -> crate::tools::performance_tests::BenchmarkScore {
+        crate::tools::performance_tests::BenchmarkScore::default()
+    }
+
+    fn scan_fault_report(&self) -> crate::tools::diagnostics::FaultDiagnosticsReport {
+        crate::tools::diagnostics::FaultDiagnosticsReport::default()
+    }
+
+    fn fault_remediation(
+        &self,
+        action: crate::tools::diagnostics::FaultAction,
+        _report: &crate::tools::diagnostics::FaultDiagnosticsReport,
+    ) -> std::result::Result<String, String> {
+        self.take_injected_error().map_err(|e| e.to_string())?;
+        Ok(format!("Sandbox: {action:?} simulated"))
     }
 
     fn assess_system_health(&self) -> crate::tools::automation::SystemHealthAssessment {

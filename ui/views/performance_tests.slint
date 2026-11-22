@@ -1,106 +1,70 @@
 // ui/views/performance_tests.slint
-// WinBlast0 Benchmark Performance Suites in Slint 1.19
-
-import { Scale, Theme } from "../theme.slint";
+// Performance benchmark suite (port of v1.6.1): composite score, CPU, RAM, disk.
+import { ScrollView } from "std-widgets.slint";
+import { Scale, Theme, Tr } from "../theme.slint";
+import { PerfStore } from "../stores/diagnostics.slint";
 import { WbButton } from "../components/button.slint";
-import { WbCard } from "../components/card.slint";
-import { WbBadge } from "../components/badge.slint";
-import { WbProgressBar } from "../components/progress_bar.slint";
+import { WbPanel } from "../components/toggle.slint";
 
-export component PerformanceTestsView inherits Flickable {
+component ScoreCard inherits WbPanel {
+    in property <string> label;
+    in property <string> value;
+    in property <string> sub;
+    min-width: Scale.px(220px);
+    horizontal-stretch: 1;
+    VerticalLayout {
+        padding: Scale.px(12px);
+        spacing: Scale.px(4px);
+        Text { text: root.label; font-size: Scale.font-xs; color: Theme.text-secondary; }
+        Text { text: root.value; font-size: Scale.font-xl; font-weight: 800; color: Theme.accent; }
+        if root.sub != "" : Text { text: root.sub; font-size: Scale.font-2xs; color: Theme.text-muted; }
+    }
+}
+
+export component PerformanceTestsView inherits Rectangle {
     in property <int> tier;
-    in property <bool> is-running: false;
-    in property <float> test-progress: 0.0;
-    in property <int> cpu-single-score: 1680;
-    in property <int> cpu-multi-score: 22450;
-    in property <float> memory-bandwidth-gb: 54.2;
-    in property <float> disk-seq-read-mb: 7120.0;
 
-    callback run-all-benchmarks();
+    ScrollView {
+        VerticalLayout {
+            padding: root.tier == 0 ? Scale.px(10px) : Scale.px(14px);
+            spacing: Scale.px(12px);
+            alignment: start;
 
-    content-height: content.preferred-height;
-
-    content := VerticalLayout {
-        padding: Scale.space-lg;
-        spacing: Scale.space-md;
-
-        // Header Card
-        WbCard {
-            HorizontalLayout {
-                alignment: space-between;
+            FlexboxLayout {
+                spacing: Scale.px(8px);
+                alignment: stretch;
+                cross-axis-alignment: center;
                 VerticalLayout {
-                    spacing: Scale.space-2xs;
-                    Text {
-                        text: "Hardware Performance Synthetic Benchmarks";
-                        font-size: Scale.font-xl;
-                        font-weight: 700;
-                        color: Theme.text-primary;
-                    }
-                    Text {
-                        text: "Measure real computing throughput across CPU execution, memory bandwidth, and storage IOPS.";
-                        font-size: Scale.font-sm;
-                        color: Theme.text-secondary;
-                    }
+                    horizontal-stretch: 1;
+                    min-width: Scale.px(220px);
+                    Text { text: Tr.s("PerfTitle"); font-size: Scale.font-xl; font-weight: 800; color: Theme.text-primary; wrap: word-wrap; }
+                    Text { text: Tr.s("PerfSubtitle"); font-size: Scale.font-xs; color: Theme.text-muted; wrap: word-wrap; }
                 }
                 WbButton {
                     variant: "primary";
-                    text: root.is-running ? "Benchmarking..." : "Run All Tests";
-                    loading: root.is-running;
-                    clicked => { root.run-all-benchmarks(); }
+                    text: PerfStore.running ? Tr.s("PerfBenchmarkingStatus") : Tr.s("PerfStartBtn");
+                    enabled: !PerfStore.running;
+                    loading: PerfStore.running;
+                    clicked => { PerfStore.start(); }
                 }
             }
-        }
 
-        if root.is-running : WbCard {
-            VerticalLayout {
-                spacing: Scale.space-xs;
-                Text { text: "Executing multi-threaded benchmark iterations..."; font-size: Scale.font-xs; color: Theme.accent; }
-                WbProgressBar { progress: root.test-progress; }
-            }
-        }
-
-        // Scores Grid
-        HorizontalLayout {
-            spacing: Scale.space-md;
-
-            WbCard {
-                horizontal-stretch: 1;
+            WbPanel {
                 VerticalLayout {
-                    spacing: Scale.space-xs;
-                    Text { text: "CPU SINGLE-THREAD"; font-size: Scale.font-xs; font-weight: 700; color: Theme.text-muted; }
-                    Text { text: root.cpu-single-score + ""; font-size: Scale.font-2xl; font-weight: 800; color: Theme.accent; }
-                    Text { text: "Integer & cryptographic throughput"; font-size: Scale.font-xs; color: Theme.text-secondary; }
+                    padding: Scale.px(16px);
+                    spacing: Scale.px(4px);
+                    Text { text: Tr.s("PerfCompositeScoreTitle"); font-size: Scale.font-sm; color: Theme.text-secondary; }
+                    Text { text: PerfStore.composite; font-size: Scale.font-2xl; font-weight: 800; color: Theme.accent; }
+                    Text { text: Tr.s("PerfHeroDesc"); font-size: Scale.font-xs; color: Theme.text-muted; wrap: word-wrap; }
                 }
             }
 
-            WbCard {
-                horizontal-stretch: 1;
-                VerticalLayout {
-                    spacing: Scale.space-xs;
-                    Text { text: "CPU MULTI-THREAD"; font-size: Scale.font-xs; font-weight: 700; color: Theme.text-muted; }
-                    Text { text: root.cpu-multi-score + ""; font-size: Scale.font-2xl; font-weight: 800; color: Theme.safe; }
-                    Text { text: "Full logical core parallel saturation"; font-size: Scale.font-xs; color: Theme.text-secondary; }
-                }
-            }
-
-            WbCard {
-                horizontal-stretch: 1;
-                VerticalLayout {
-                    spacing: Scale.space-xs;
-                    Text { text: "MEMORY BANDWIDTH"; font-size: Scale.font-xs; font-weight: 700; color: Theme.text-muted; }
-                    Text { text: round(root.memory-bandwidth-gb) + " GB/s"; font-size: Scale.font-2xl; font-weight: 800; color: Theme.info; }
-                    Text { text: "DRAM sustained read rate"; font-size: Scale.font-xs; color: Theme.text-secondary; }
-                }
-            }
-
-            WbCard {
-                horizontal-stretch: 1;
-                VerticalLayout {
-                    spacing: Scale.space-xs;
-                    Text { text: "STORAGE SEQ READ"; font-size: Scale.font-xs; font-weight: 700; color: Theme.text-muted; }
-                    Text { text: round(root.disk-seq-read-mb) + " MB/s"; font-size: Scale.font-2xl; font-weight: 800; color: Theme.moderate; }
-                    Text { text: "NVMe burst transfer speed"; font-size: Scale.font-xs; color: Theme.text-secondary; }
-                }
+            FlexboxLayout {
+                spacing: Scale.px(12px);
+                alignment: stretch;
+                ScoreCard { label: Tr.s("PerfCpuLabel"); value: PerfStore.cpu-multi; sub: PerfStore.cpu-single; }
+                ScoreCard { label: Tr.s("PerfRamLabel"); value: PerfStore.ram-read; sub: PerfStore.ram-latency; }
+                ScoreCard { label: Tr.s("PerfDiskLabel"); value: PerfStore.disk-read; sub: Tr.s("StorageDrivesTitle"); }
             }
         }
     }

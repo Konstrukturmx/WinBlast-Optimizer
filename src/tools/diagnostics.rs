@@ -28,6 +28,15 @@ pub struct PendingRebootStatus {
     pub pending_files: Vec<String>,
 }
 
+/// Remediation actions offered by the Fault Diagnostics view (all mutating).
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum FaultAction {
+    ClearMinidumps,
+    ClearPendingRenames,
+    ClearCbsRebootFlags,
+    RestartSystem,
+}
+
 /// Diagnostic health assessment summary.
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct FaultDiagnosticsReport {

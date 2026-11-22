@@ -291,6 +291,7 @@ Status legend: **WIRED** = a Slint callback reaches this AppState action · **MI
 | View | Status | Tests |
 |---|---|---|
 | Shell (top bar, sidebar, progress, changelog, footer, dropdowns, HUD, diff) | DONE | tests/ui_parity.rs (14) |
+| Fault Diagnostics / Windows Repair / Performance Tests | DONE: async scans/remediations/repairs/benchmark, two-click restart, live repair log, "Run All"; fake default benchmark removed | tests/ui_views.rs fault_/repair_/perf_ (3) |
 | Goal Planner | DONE: 3 goal presets, A* solve, stage plan, 6 metrics, Dijkstra schedule (localized) | tests/ui_views.rs planner_* (1) |
 | Automation Center | DONE: 4 profiles, plan preview, auto-tune, async memory trim, health assessment (new button), scheduled maintenance tasks (newly exposed) | tests/ui_views.rs automation_* (1) |
 | Latency Bench | DONE: run, before-baseline, clear, comparison, KPIs, per-target ping stats; the KPI strip now shows "Offline" instead of a negative ping | tests/ui_views.rs latency_* (1) |

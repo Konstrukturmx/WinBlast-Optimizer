@@ -493,6 +493,12 @@ pub enum WorkerEvent {
     DiskReportLoaded(crate::hardware::disks::DiskSubsystemReport),
     /// Result of an asynchronous ReTrim of all fixed volumes.
     DiskTrimCompleted(std::result::Result<String, String>),
+    /// One repair routine finished (log line + whether the run is complete).
+    RepairStepDone { id: String, result: std::result::Result<String, String>, finished: bool },
+    /// Fault diagnostics scan finished.
+    FaultReportLoaded(crate::tools::diagnostics::FaultDiagnosticsReport),
+    /// A fault remediation finished (a rescan follows automatically).
+    FaultActionDone(std::result::Result<String, String>),
     /// System health assessment finished.
     HealthAssessed(crate::tools::automation::SystemHealthAssessment),
     /// Memory / working-set trim finished.
@@ -712,6 +718,8 @@ pub struct AppState {
     pub bios_info: Option<crate::hardware::bios::BiosSystemInfo>,
     pub is_bios_scanning: bool,
     pub fault_report: Option<crate::tools::diagnostics::FaultDiagnosticsReport>,
+    pub fault_scanning: bool,
+    pub fault_action_inflight: bool,
     pub thermal_snapshot: Option<crate::hardware::thermal::SystemThermalSnapshot>,
     pub is_thermal_scanning: bool,
     pub disk_report: Option<crate::hardware::disks::DiskSubsystemReport>,
@@ -726,6 +734,8 @@ pub struct AppState {
     pub game_overlay: crate::tools::game_overlay::GameOverlaySettings,
     pub repair_tasks: Vec<crate::tools::windows_repair::RepairTask>,
     pub repair_log: Vec<String>,
+    /// Repair task currently running on the worker ("all" while running the whole suite).
+    pub repair_running: Option<String>,
     pub driver_updates: Vec<crate::hardware::driver_update::DriverUpdateItem>,
     pub is_driver_scanning: bool,
     pub driver_install_in_flight: Option<String>,
@@ -956,13 +966,15 @@ impl AppState {
             theme_style,
             bios_info: None,
             is_bios_scanning: false,
-            fault_report: Some(crate::tools::diagnostics::FaultDiagnosticsReport::scan()),
+            fault_report: None,
+            fault_scanning: false,
+            fault_action_inflight: false,
             thermal_snapshot: None,
             is_thermal_scanning: false,
             disk_report: None,
             is_disk_scanning: false,
             disk_trim_inflight: false,
-            perf_score: Some(crate::tools::performance_tests::BenchmarkScore::default()),
+            perf_score: None,
             is_benchmarking_perf: false,
             game_telemetry: crate::tools::gaming_stats::LiveGameTelemetry::default(),
             network_diag: None,
@@ -970,6 +982,7 @@ impl AppState {
             game_suitability: crate::tools::game_overlay::GameSuitabilityReport::default(),
             game_overlay: crate::tools::game_overlay::GameOverlaySettings::default(),
             repair_tasks: crate::tools::windows_repair::RepairTask::all(),
+            repair_running: None,
             repair_log: Vec::new(),
             driver_updates: Vec::new(),
             is_driver_scanning: false,
@@ -1017,6 +1030,7 @@ impl AppState {
         self.refresh_platform_inventory();
         self.refresh_restore_points();
         self.refresh_maintenance_tasks();
+        self.scan_fault_report_async();
         self.refresh_latency();
         self.run_telemetry_audit();
         self.check_for_updates();
@@ -1157,6 +1171,7 @@ impl AppState {
             || self.is_thermal_scanning
             || self.is_disk_scanning
             || self.disk_trim_inflight
+            || self.repair_running.is_some()
             || self.is_benchmarking_latency
     }
 
@@ -1188,6 +1203,9 @@ impl AppState {
         }
         if self.disk_trim_inflight {
             return "Issuing ReTrim to all fixed volumes...".to_string();
+        }
+        if let Some(ref id) = self.repair_running {
+            return format!("Running Windows repair routine: {id}...");
         }
         if self.clean_apps_busy {
             return "Executing system cleanup and app management...".to_string();
@@ -1839,7 +1857,7 @@ impl AppState {
             WorkerEvent::PerfBenchmarkCompleted(score) => {
                 self.perf_score = Some(score);
                 self.is_benchmarking_perf = false;
-                self.set_status("Performans testi başarıyla tamamlandı.");
+                self.set_status("Performance benchmark completed.");
             }
             WorkerEvent::UpdateCheckCompleted(res) => {
                 match res {
@@ -1909,6 +1927,33 @@ impl AppState {
                 self.maintenance_tasks = tasks;
                 if let Some(e) = error {
                     self.set_status(format!("Maintenance task update failed: {e}"));
+                }
+            }
+            WorkerEvent::FaultReportLoaded(report) => {
+                self.fault_scanning = false;
+                self.fault_report = Some(report);
+            }
+            WorkerEvent::FaultActionDone(res) => {
+                self.fault_action_inflight = false;
+                match res {
+                    Ok(msg) => self.set_status(msg),
+                    Err(e) => self.set_status(format!("Remediation failed: {e}")),
+                }
+                self.scan_fault_report_async();
+            }
+            WorkerEvent::RepairStepDone { id, result, finished } => {
+                match result {
+                    Ok(msg) => {
+                        self.repair_log.push(format!("✔ [{id}] {msg}"));
+                        self.set_status(format!("{}: {id}", self.tr_v(crate::core::view_i18n::ViewTextKey::RepairDonePrefix)));
+                    }
+                    Err(err) => {
+                        self.repair_log.push(format!("✖ [{id}] Error: {err}"));
+                        self.set_status(format!("{}: {err}", self.tr_v(crate::core::view_i18n::ViewTextKey::RepairErrPrefix)));
+                    }
+                }
+                if finished {
+                    self.repair_running = None;
                 }
             }
             WorkerEvent::DiskTrimCompleted(res) => {
@@ -2241,7 +2286,7 @@ impl AppState {
                 }
             }
             ActiveView::FaultDiagnostics if self.fault_report.is_none() => {
-                self.fault_report = Some(crate::tools::diagnostics::FaultDiagnosticsReport::scan());
+                self.scan_fault_report_async();
             }
             ActiveView::ThermalMonitor => {
                 if self.thermal_snapshot.is_none() && !self.is_thermal_scanning {
@@ -2316,6 +2361,43 @@ impl AppState {
             move |tx| {
                 let info = backend.probe_bios_info();
                 let _ = tx.send(WorkerEvent::BiosInfoLoaded(info));
+            },
+        );
+    }
+
+    /// Scan BSOD minidumps / pending reboot / CBS state on a worker thread via the backend.
+    /// (v1.6.1 scanned synchronously in the AppState constructor, on navigation, and from the
+    /// view function itself whenever no report existed — i.e. on every rendered frame.)
+    pub fn scan_fault_report_async(&mut self) {
+        if self.fault_scanning {
+            return;
+        }
+        self.fault_scanning = true;
+        let backend = Arc::clone(&self.backend);
+        spawn_guarded_worker(
+            self.tx_events.clone(),
+            self.waker.clone(),
+            |_msg| WorkerEvent::FaultReportLoaded(crate::tools::diagnostics::FaultDiagnosticsReport::default()),
+            move |tx| {
+                let _ = tx.send(WorkerEvent::FaultReportLoaded(backend.scan_fault_report()));
+            },
+        );
+    }
+
+    /// Run a Fault Diagnostics remediation on a worker thread, then rescan.
+    pub fn run_fault_action_async(&mut self, action: crate::tools::diagnostics::FaultAction) {
+        if self.fault_action_inflight || self.is_rolling_back {
+            return;
+        }
+        self.fault_action_inflight = true;
+        let backend = Arc::clone(&self.backend);
+        let report = self.fault_report.clone().unwrap_or_default();
+        spawn_guarded_worker(
+            self.tx_events.clone(),
+            self.waker.clone(),
+            |msg| WorkerEvent::FaultActionDone(Err(format!("worker panic: {msg}"))),
+            move |tx| {
+                let _ = tx.send(WorkerEvent::FaultActionDone(backend.fault_remediation(action, &report)));
             },
         );
     }
@@ -2457,23 +2539,53 @@ impl AppState {
         );
     }
 
-    /// Launch performance benchmark in an isolated worker thread so the UI never freezes.
+    /// Launch the performance benchmark on a guarded worker via the backend
+    /// (v1.6.1 used an unguarded thread: a panic left the button disabled forever).
     pub fn start_perf_benchmark_async(&mut self) {
         if self.is_benchmarking_perf {
             return;
         }
         self.is_benchmarking_perf = true;
-        self.set_status("Performans benchmark'ı çalıştırılıyor...");
-        let tx = self.tx_events.clone();
-        let waker = self.waker.clone();
+        self.set_status("Running performance benchmark...");
+        let backend = Arc::clone(&self.backend);
+        spawn_guarded_worker(
+            self.tx_events.clone(),
+            self.waker.clone(),
+            |_msg| WorkerEvent::PerfBenchmarkCompleted(crate::tools::performance_tests::BenchmarkScore::default()),
+            move |tx| {
+                let _ = tx.send(WorkerEvent::PerfBenchmarkCompleted(backend.run_perf_benchmark()));
+            },
+        );
+    }
 
-        std::thread::spawn(move || {
-            let score = crate::tools::performance_tests::BenchmarkRunner::run_quick();
-            let _ = tx.send(WorkerEvent::PerfBenchmarkCompleted(score));
-            if let Some(ref w) = waker {
-                w();
-            }
-        });
+    /// Run one repair routine (or "all" of them sequentially) on a worker thread via the backend.
+    /// (v1.6.1 executed SFC/DISM synchronously on the UI thread — minutes of frozen window.)
+    pub fn run_repair_task_async(&mut self, id: &str) {
+        if self.repair_running.is_some() || self.is_rolling_back {
+            return;
+        }
+        let ids: Vec<String> = if id == "all" {
+            self.repair_tasks.iter().map(|t| t.id.to_string()).collect()
+        } else if self.repair_tasks.iter().any(|t| t.id == id) {
+            vec![id.to_string()]
+        } else {
+            return;
+        };
+        self.repair_running = Some(id.to_string());
+        let backend = Arc::clone(&self.backend);
+        let label = id.to_string();
+        spawn_guarded_worker(
+            self.tx_events.clone(),
+            self.waker.clone(),
+            move |msg| WorkerEvent::RepairStepDone { id: label, result: Err(format!("worker panic: {msg}")), finished: true },
+            move |tx| {
+                let n = ids.len();
+                for (i, tid) in ids.into_iter().enumerate() {
+                    let result = backend.run_repair_task(&tid);
+                    let _ = tx.send(WorkerEvent::RepairStepDone { id: tid, result, finished: i + 1 == n });
+                }
+            },
+        );
     }
 
     /// Relaunch WinBlast0 with elevated administrator privileges via Windows UAC.
