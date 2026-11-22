@@ -1,0 +1,31 @@
+// ui/stores/drivers.slint
+// Driver & BIOS store (port of v1.6.1 driver_bios).
+import { KvRow } from "common.slint";
+
+export struct DriverRow { id: string, icon: string, name: string, details: string, versions: string, date: string, whql: bool, badge: string, badge-tone: string, update: bool, busy: bool }
+export struct DisplayDriverRow { name: string, provider: string, version: string, date: string }
+
+export global DriverStore {
+    in-out property <bool> scanning;
+    in-out property <bool> bios-scanning;
+    in-out property <bool> any-in-flight;
+    in-out property <string> search;
+    in-out property <string> category;       // "" = all, else DriverCategory debug name
+    in-out property <string> devices-scanned;
+    in-out property <int> total;
+    in-out property <[DriverRow]> drivers: [];
+    in-out property <string> board-title;
+    in-out property <string> board-sub;
+    in-out property <string> firmware-title;
+    in-out property <string> firmware-sub;
+    in-out property <bool> secure-boot;
+    in-out property <[DisplayDriverRow]> display-drivers: [];
+
+    callback scan-online();
+    callback test-sandbox-install();
+    callback rescan-bios();
+    callback search-edited(string);
+    callback set-category(string);
+    callback install(string);
+    callback backup(string);
+}

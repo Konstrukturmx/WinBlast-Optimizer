@@ -493,6 +493,8 @@ pub enum WorkerEvent {
     DiskReportLoaded(crate::hardware::disks::DiskSubsystemReport),
     /// Result of an asynchronous ReTrim of all fixed volumes.
     DiskTrimCompleted(std::result::Result<String, String>),
+    /// A driver install / backup finished; carries the updated item and a status line.
+    DriverItemUpdated { item: crate::hardware::driver_update::DriverUpdateItem, message: String },
     DriverScanCompleted(Vec<crate::hardware::driver_update::DriverUpdateItem>),
     AutoTuneCompleted(Result<crate::tools::automation::AutoTuneResult, String>),
     StartupBatchToggled(Result<(usize, bool), String>),
@@ -1893,6 +1895,16 @@ impl AppState {
                 self.driver_updates = updates;
                 self.is_driver_scanning = false;
             }
+            WorkerEvent::DriverItemUpdated { item, message } => {
+                if self.driver_install_in_flight.as_deref() == Some(item.id.as_str()) {
+                    self.driver_install_in_flight = None;
+                }
+                match self.driver_updates.iter_mut().find(|d| d.id == item.id) {
+                    Some(slot) => *slot = item,
+                    None => self.driver_updates.push(item),
+                }
+                self.set_status(message);
+            }
             WorkerEvent::AutoTuneCompleted(res) => {
                 self.is_running_automation = false;
                 match res {
@@ -2248,12 +2260,13 @@ impl AppState {
         self.is_driver_scanning = true;
         let tx = self.tx_events.clone();
         let waker = self.waker.clone();
+        let backend = Arc::clone(&self.backend);
         spawn_guarded_worker(
             tx,
             waker,
             |_err| WorkerEvent::DriverScanCompleted(Vec::new()),
-            |tx| {
-                let updates = crate::hardware::driver_update::scan_online_drivers();
+            move |tx| {
+                let updates = backend.scan_driver_updates();
                 let _ = tx.send(WorkerEvent::DriverScanCompleted(updates));
             },
         );
@@ -2267,18 +2280,18 @@ impl AppState {
         self.is_bios_scanning = true;
         let tx = self.tx_events.clone();
         let waker = self.waker.clone();
+        let backend = Arc::clone(&self.backend);
         spawn_guarded_worker(
             tx,
             waker,
             |_err| WorkerEvent::BiosInfoLoaded(crate::hardware::bios::BiosSystemInfo::default()),
-            |tx| {
-                let info = crate::hardware::bios::BiosSystemInfo::probe();
+            move |tx| {
+                let info = backend.probe_bios_info();
                 let _ = tx.send(WorkerEvent::BiosInfoLoaded(info));
             },
         );
     }
 
-    /// Probe disk subsystem and SMART telemetry asynchronously.
     /// Issue ReTrim to all fixed volumes on a worker thread via the backend
     /// (v1.6.1 ran Optimize-Volume synchronously on the UI thread, freezing the window,
     /// and bypassed the backend so it could not be sandboxed).
@@ -2299,6 +2312,7 @@ impl AppState {
         );
     }
 
+    /// Probe disk subsystem and SMART telemetry asynchronously.
     pub fn scan_disk_health_async(&mut self) {
         if self.is_disk_scanning {
             return;
@@ -2344,58 +2358,75 @@ impl AppState {
         );
     }
 
-    /// Download and stage driver update.
+    /// Download, verify and install a driver update on a worker thread via the backend.
+    /// (v1.6.1 ran this synchronously on the UI thread and set/cleared the in-flight flag in
+    /// the same call, so the window froze and the "Installing" state was never shown.)
     pub fn install_driver_update(&mut self, driver_id: String) {
+        if self.driver_install_in_flight.is_some() || self.is_rolling_back {
+            return;
+        }
+        let Some(item) = self.driver_updates.iter().find(|d| d.id == driver_id).cloned() else {
+            return;
+        };
         self.driver_install_in_flight = Some(driver_id.clone());
+        let backend = Arc::clone(&self.backend);
         let staging_dir = std::env::temp_dir().join("winblast_driver_staging");
-        if let Some(item) = self.driver_updates.iter_mut().find(|d| d.id == driver_id) {
-            let _ = crate::hardware::driver_update::download_and_install_driver(item, &staging_dir);
-        }
-        self.driver_install_in_flight = None;
-        if let Some(ref w) = self.waker {
-            w();
-        }
+        let failed_item = item.clone();
+        spawn_guarded_worker(
+            self.tx_events.clone(),
+            self.waker.clone(),
+            move |msg| WorkerEvent::DriverItemUpdated {
+                item: failed_item.clone(),
+                message: format!("Driver install worker panic: {msg}"),
+            },
+            move |tx| {
+                let mut item = item;
+                let message = match backend.install_driver(&mut item, &staging_dir) {
+                    Ok(m) => m,
+                    Err(e) => format!("Driver install failed: {e}"),
+                };
+                let _ = tx.send(WorkerEvent::DriverItemUpdated { item, message });
+            },
+        );
     }
 
-    /// Run isolated test driver install in virtual sandbox.
+    /// Run the isolated virtual test-driver install (adds the virtual item if needed).
     pub fn test_sandbox_driver_install(&mut self) {
-        self.driver_install_in_flight = Some("virtual_test_sandbox_driver".to_string());
-        let staging_dir = std::env::temp_dir().join("winblast_driver_sandbox");
-        if let Some(item) = self
-            .driver_updates
-            .iter_mut()
-            .find(|d| d.id == "virtual_test_sandbox_driver")
-        {
-            let _ = crate::hardware::driver_update::download_and_install_driver(item, &staging_dir);
-        } else {
-            let mut item = crate::hardware::driver_update::create_sandbox_test_item();
-            let _ = crate::hardware::driver_update::download_and_install_driver(
-                &mut item,
-                &staging_dir,
-            );
-            self.driver_updates.push(item);
+        let id = "virtual_test_sandbox_driver";
+        if !self.driver_updates.iter().any(|d| d.id == id) {
+            self.driver_updates.push(crate::hardware::driver_update::create_sandbox_test_item());
         }
-        self.driver_install_in_flight = None;
-        if let Some(ref w) = self.waker {
-            w();
-        }
+        self.install_driver_update(id.to_string());
     }
 
-    /// Backup an installed driver by ID to %TEMP%\winblast_driver_backup\.
+    /// Back up an installed driver package on a worker thread via the backend.
     pub fn backup_driver(&mut self, driver_id: String) {
-        if let Some(item) = self.driver_updates.iter_mut().find(|d| d.id == driver_id) {
-            match crate::hardware::driver_update::backup_driver(item, None) {
-                Ok(path) => {
-                    item.status_message = format!("Backup created at {}", path.display());
-                }
-                Err(e) => {
-                    item.status_message = format!("Backup failed: {}", e);
-                }
-            }
+        if self.driver_install_in_flight.is_some() {
+            return;
         }
-        if let Some(ref w) = self.waker {
-            w();
-        }
+        let Some(item) = self.driver_updates.iter().find(|d| d.id == driver_id).cloned() else {
+            return;
+        };
+        self.driver_install_in_flight = Some(driver_id);
+        let backend = Arc::clone(&self.backend);
+        let failed_item = item.clone();
+        spawn_guarded_worker(
+            self.tx_events.clone(),
+            self.waker.clone(),
+            move |msg| WorkerEvent::DriverItemUpdated {
+                item: failed_item.clone(),
+                message: format!("Driver backup worker panic: {msg}"),
+            },
+            move |tx| {
+                let mut item = item;
+                let message = match backend.backup_driver_package(&item) {
+                    Ok(path) => format!("Backup created at {}", path.display()),
+                    Err(e) => format!("Backup failed: {e}"),
+                };
+                item.status_message = message.clone();
+                let _ = tx.send(WorkerEvent::DriverItemUpdated { item, message });
+            },
+        );
     }
 
     /// Launch performance benchmark in an isolated worker thread so the UI never freezes.

@@ -295,6 +295,33 @@ pub trait SystemBackend: Send + Sync + 'static {
     fn read_thermal_snapshot(&self) -> crate::hardware::thermal::SystemThermalSnapshot {
         crate::hardware::thermal::SystemThermalSnapshot::read()
     }
+
+    /// Enumerate PnP devices and look up newer driver packages (read-only).
+    fn scan_driver_updates(&self) -> Vec<crate::hardware::driver_update::DriverUpdateItem> {
+        crate::hardware::driver_update::scan_online_drivers()
+    }
+
+    /// SMBIOS / UEFI / display-driver inventory (read-only).
+    fn probe_bios_info(&self) -> crate::hardware::bios::BiosSystemInfo {
+        crate::hardware::bios::BiosSystemInfo::probe()
+    }
+
+    /// Download, verify and install a driver package (mutating).
+    fn install_driver(
+        &self,
+        item: &mut crate::hardware::driver_update::DriverUpdateItem,
+        staging_dir: &std::path::Path,
+    ) -> std::result::Result<String, String> {
+        crate::hardware::driver_update::download_and_install_driver(item, staging_dir).map_err(|e| e.to_string())
+    }
+
+    /// Export the installed driver package to a backup folder.
+    fn backup_driver_package(
+        &self,
+        item: &crate::hardware::driver_update::DriverUpdateItem,
+    ) -> std::result::Result<std::path::PathBuf, String> {
+        crate::hardware::driver_update::backup_driver(item, None).map_err(|e| e.to_string())
+    }
     fn remove_edge_preserve_webview2(&self) -> Result<String>;
     fn winget_install_package(&self, package_id: &str) -> Result<String>;
 
@@ -2861,6 +2888,35 @@ impl SystemBackend for SandboxEnv {
 
     fn check_onedrive_kfm_active(&self) -> Option<String> {
         self.state_read().onedrive_kfm_path.clone()
+    }
+
+    fn scan_driver_updates(&self) -> Vec<crate::hardware::driver_update::DriverUpdateItem> {
+        vec![crate::hardware::driver_update::create_sandbox_test_item()]
+    }
+
+    fn probe_bios_info(&self) -> crate::hardware::bios::BiosSystemInfo {
+        crate::hardware::bios::BiosSystemInfo::default()
+    }
+
+    fn install_driver(
+        &self,
+        item: &mut crate::hardware::driver_update::DriverUpdateItem,
+        _staging_dir: &std::path::Path,
+    ) -> std::result::Result<String, String> {
+        self.take_injected_error().map_err(|e| e.to_string())?;
+        item.current_version = item.latest_version.clone();
+        item.state = crate::hardware::driver_update::DriverUpdateState::Installed;
+        item.status_message = "Sandbox: driver install simulated".to_string();
+        Ok(item.status_message.clone())
+    }
+
+    fn backup_driver_package(
+        &self,
+        item: &crate::hardware::driver_update::DriverUpdateItem,
+    ) -> std::result::Result<std::path::PathBuf, String> {
+        let dir = self.temp_dir.path.join("driver_backup").join(&item.id);
+        std::fs::create_dir_all(&dir).map_err(|e| e.to_string())?;
+        Ok(dir)
     }
 
     fn probe_disk_report(&self) -> crate::hardware::disks::DiskSubsystemReport {

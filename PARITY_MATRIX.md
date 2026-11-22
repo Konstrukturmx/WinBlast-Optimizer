@@ -291,6 +291,7 @@ Status legend: **WIRED** = a Slint callback reaches this AppState action · **MI
 | View | Status | Tests |
 |---|---|---|
 | Shell (top bar, sidebar, progress, changelog, footer, dropdowns, HUD, diff) | DONE | tests/ui_parity.rs (14) |
+| Driver & BIOS | DONE: online scan, 8 category chips, folded search, WHQL/state badges, async install/backup, sandbox test driver, board/firmware/Secure Boot, display drivers | tests/ui_views.rs drivers_* (1) |
 | Core Parking / Thermal / Disk Health | DONE: unpark/restore/refresh + per-core cards; thermal gauges + components; SMART drives + async TRIM. Fixed fake sensor values, a false DirectStorage claim and a UI-thread TRIM | tests/ui_views.rs core_parking_/thermal_/disk_ (3) |
 | Hardware | DONE: waveforms, CPU topology + per-core load, NT latency, power plans, Ultimate plan, hibernation, USB power, platform security, DIMMs, volumes | tests/ui_views.rs hardware_* (2) |
 | GPU Tuning | DONE: adapters, HAGS (OS-gated), MPO, MSI + interrupt priority per adapter, vendor-gated tweak cards with hide/unhide/inspect; fake overclock sliders from the pre-1.7.0 Slint view removed | tests/ui_views.rs gpu_* (2) |

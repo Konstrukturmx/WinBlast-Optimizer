@@ -1,120 +1,150 @@
 // ui/views/driver_bios.slint
-// WinBlast0 Driver & BIOS Firmware Diagnostics in Slint 1.19
-
-import { Scale, Theme } from "../theme.slint";
+// Driver & BIOS (port of v1.6.1): online driver center, motherboard / firmware / Secure Boot,
+// GPU display-driver stack.
+import { ListView, ScrollView } from "std-widgets.slint";
+import { Scale, Theme, Tr } from "../theme.slint";
+import { DriverStore } from "../stores/drivers.slint";
+import { WbChip } from "../components/chip.slint";
 import { WbButton } from "../components/button.slint";
-import { WbCard } from "../components/card.slint";
-import { WbBadge } from "../components/badge.slint";
+import { WbSearchInput } from "../components/search_input.slint";
+import { WbPill, WbPanel } from "../components/toggle.slint";
+import { WbSection } from "../components/kv.slint";
 
-export struct DriverStatusItem {
-    name: string,
-    category: string,
-    installed-version: string,
-    driver-date: string,
-    provider: string,
-    is-outdated: bool,
-}
-
-export component DriverBiosView inherits Flickable {
+export component DriverBiosView inherits Rectangle {
     in property <int> tier;
-    in property <string> bios-vendor: "American Megatrends Inc.";
-    in property <string> bios-version: "5013";
-    in property <string> bios-release-date: "03/22/2024";
-    in property <string> smbios-version: "3.3";
-    in property <bool> secure-boot-enabled: true;
 
-    in property <[DriverStatusItem]> drivers: [];
+    ScrollView {
+        VerticalLayout {
+            padding: root.tier == 0 ? Scale.px(10px) : Scale.px(14px);
+            spacing: Scale.px(12px);
+            alignment: start;
 
-    callback scan-updates-clicked();
-
-    content-height: content.preferred-height;
-
-    content := VerticalLayout {
-        padding: Scale.space-lg;
-        spacing: Scale.space-md;
-
-        // Header Card
-        WbCard {
-            HorizontalLayout {
-                alignment: space-between;
+            FlexboxLayout {
+                spacing: Scale.px(8px);
+                alignment: stretch;
+                cross-axis-alignment: center;
                 VerticalLayout {
-                    spacing: Scale.space-2xs;
-                    Text {
-                        text: "Driver & UEFI BIOS Firmware";
-                        font-size: Scale.font-xl;
-                        font-weight: 700;
-                        color: Theme.text-primary;
-                    }
-                    Text {
-                        text: "Motherboard UEFI SMBIOS revision and critical kernel device driver inventory.";
-                        font-size: Scale.font-sm;
-                        color: Theme.text-secondary;
-                    }
+                    horizontal-stretch: 1;
+                    min-width: Scale.px(220px);
+                    Text { text: Tr.s("NavDriverBios"); font-size: Scale.font-xl; font-weight: 800; color: Theme.text-primary; wrap: word-wrap; }
+                    Text { text: Tr.s("DriverBiosSubtitle"); font-size: Scale.font-xs; color: Theme.text-muted; wrap: word-wrap; }
                 }
                 WbButton {
-                    variant: "ghost";
-                    text: "Check Drivers";
-                    clicked => { root.scan-updates-clicked(); }
+                    variant: "primary";
+                    text: DriverStore.scanning ? Tr.s("Scanning") : Tr.s("DriverScanOnline");
+                    enabled: !DriverStore.scanning;
+                    loading: DriverStore.scanning;
+                    clicked => { DriverStore.scan-online(); }
                 }
+                WbButton { variant: "secondary"; text: Tr.s("DriverTestInstallSandbox"); enabled: !DriverStore.any-in-flight; clicked => { DriverStore.test-sandbox-install(); } }
+                WbButton { variant: "secondary"; text: "Rescan BIOS"; loading: DriverStore.bios-scanning; clicked => { DriverStore.rescan-bios(); } }
             }
-        }
 
-        // BIOS Firmware Status Card
-        WbCard {
-            VerticalLayout {
-                spacing: Scale.space-sm;
-                HorizontalLayout {
-                    alignment: space-between;
-                    Text { text: "MOTHERBOARD UEFI BIOS FIRMWARE"; font-size: Scale.font-xs; font-weight: 700; color: Theme.text-muted; }
-                    WbBadge {
-                        text: root.secure-boot-enabled ? "Secure Boot Active" : "Secure Boot Disabled";
-                        variant: root.secure-boot-enabled ? "safe" : "moderate";
-                        show-dot: true;
-                    }
+            WbSection {
+                title: "🌐 " + Tr.s("DriverBiosOnlineUpdateTitle");
+                Text { text: DriverStore.devices-scanned; font-size: Scale.font-xs; color: Theme.text-muted; }
+                WbSearchInput {
+                    placeholder: Tr.s("DriverSearchPlaceholder");
+                    text: DriverStore.search;
+                    changed(t) => { DriverStore.search-edited(t); }
                 }
-                HorizontalLayout {
-                    spacing: Scale.space-lg;
-                    VerticalLayout { Text { text: "BIOS Revision"; font-size: Scale.font-xs; color: Theme.text-muted; } Text { text: root.bios-version; font-size: Scale.font-sm; font-weight: 700; color: Theme.text-primary; } }
-                    VerticalLayout { Text { text: "Release Date"; font-size: Scale.font-xs; color: Theme.text-muted; } Text { text: root.bios-release-date; font-size: Scale.font-sm; font-weight: 700; color: Theme.text-primary; } }
-                    VerticalLayout { Text { text: "Vendor"; font-size: Scale.font-xs; color: Theme.text-muted; } Text { text: root.bios-vendor; font-size: Scale.font-sm; font-weight: 700; color: Theme.text-primary; } }
-                    VerticalLayout { Text { text: "SMBIOS Version"; font-size: Scale.font-xs; color: Theme.text-muted; } Text { text: root.smbios-version; font-size: Scale.font-sm; font-weight: 700; color: Theme.text-primary; } }
+                FlexboxLayout {
+                    spacing: Scale.px(6px);
+                    WbChip { text: Tr.s("DriverFilterAll"); active: DriverStore.category == ""; clicked => { DriverStore.set-category(""); } }
+                    WbChip { text: Tr.s("DriverFilterDisplay"); active: DriverStore.category == "Display"; clicked => { DriverStore.set-category("Display"); } }
+                    WbChip { text: Tr.s("DriverFilterNetwork"); active: DriverStore.category == "Network"; clicked => { DriverStore.set-category("Network"); } }
+                    WbChip { text: Tr.s("DriverFilterAudio"); active: DriverStore.category == "Audio"; clicked => { DriverStore.set-category("Audio"); } }
+                    WbChip { text: Tr.s("DriverFilterStorage"); active: DriverStore.category == "Storage"; clicked => { DriverStore.set-category("Storage"); } }
+                    WbChip { text: "⚙ Chipset"; active: DriverStore.category == "Chipset"; clicked => { DriverStore.set-category("Chipset"); } }
+                    WbChip { text: "🔌 USB"; active: DriverStore.category == "Usb"; clicked => { DriverStore.set-category("Usb"); } }
+                    WbChip { text: "🔷 Bluetooth"; active: DriverStore.category == "Bluetooth"; clicked => { DriverStore.set-category("Bluetooth"); } }
                 }
-            }
-        }
-
-        // Installed Driver Subsystems
-        VerticalLayout {
-            spacing: Scale.space-xs;
-
-            for d in root.drivers: WbCard {
-                HorizontalLayout {
-                    alignment: space-between;
-                    VerticalLayout {
-                        spacing: Scale.space-2xs;
-                        HorizontalLayout {
-                            spacing: Scale.space-sm;
-                            Text {
-                                text: d.name;
-                                font-size: Scale.font-md;
-                                font-weight: 600;
-                                color: Theme.text-primary;
-                            }
-                            WbBadge {
-                                text: d.category;
-                                variant: "neutral";
+                if DriverStore.total == 0 : Text {
+                    text: DriverStore.scanning ? "⟳ Scanning online driver catalogs and PnP devices..." : "🔍 Click 'Scan Drivers Online' or 'Test Sandbox Driver' to scan system hardware.";
+                    font-size: Scale.font-sm;
+                    color: Theme.text-muted;
+                    wrap: word-wrap;
+                }
+                if DriverStore.total > 0 && DriverStore.drivers.length == 0 : Text { text: Tr.s("DriverBiosNoDevicesFound"); font-size: Scale.font-sm; color: Theme.text-muted; }
+                if DriverStore.drivers.length > 0 : ListView {
+                    height: min(Scale.px(380px), DriverStore.drivers.length * Scale.px(92px));
+                    for d in DriverStore.drivers : VerticalLayout {
+                        padding-bottom: Scale.px(6px);
+                        Rectangle {
+                            border-radius: Scale.px(Theme.btn-radius);
+                            background: Theme.bg-primary;
+                            FlexboxLayout {
+                                padding: Scale.px(10px);
+                                spacing: Scale.px(10px);
+                                alignment: stretch;
+                                cross-axis-alignment: center;
+                                Text { text: d.icon; font-size: Scale.font-lg; }
+                                VerticalLayout {
+                                    horizontal-stretch: 1;
+                                    min-width: Scale.px(220px);
+                                    Text { text: d.name; font-size: Scale.font-sm; font-weight: 600; color: Theme.text-primary; overflow: elide; }
+                                    Text { text: d.details; font-size: Scale.font-2xs; color: Theme.text-muted; overflow: elide; }
+                                    Text { text: d.versions; font-size: Scale.font-2xs; color: Theme.text-secondary; }
+                                    Text { text: d.date; font-size: Scale.font-2xs; color: Theme.text-muted; }
+                                }
+                                WbPill { text: d.whql ? "✔ WHQL" : "Unverified"; tone: d.whql ? "success" : "muted"; }
+                                WbPill { text: d.badge; tone: d.badge-tone; }
+                                WbChip { text: "Backup"; enabled: !d.busy && !DriverStore.any-in-flight; clicked => { DriverStore.backup(d.id); } }
+                                WbChip {
+                                    text: d.busy ? Tr.s("DriverInstalling") : d.update ? Tr.s("DriverDownloadInstall") : "Verify / Update";
+                                    tone: d.update ? "accent" : "neutral";
+                                    enabled: !d.busy && !DriverStore.any-in-flight;
+                                    clicked => { DriverStore.install(d.id); }
+                                }
                             }
                         }
-                        Text {
-                            text: "Version: " + d.installed-version + " (" + d.driver-date + ") — " + d.provider;
-                            font-size: Scale.font-xs;
-                            color: Theme.text-secondary;
-                        }
                     }
+                }
+            }
 
-                    WbBadge {
-                        text: d.is-outdated ? "Update Available" : "Up to Date";
-                        variant: d.is-outdated ? "moderate" : "safe";
-                        show-dot: true;
+            FlexboxLayout {
+                spacing: Scale.px(12px);
+                alignment: stretch;
+                WbSection {
+                    min-width: Scale.px(260px);
+                    horizontal-stretch: 1;
+                    title: "🎛 " + Tr.s("DriverBiosMotherboardSection");
+                    Text { text: DriverStore.board-title; font-size: Scale.font-md; font-weight: 600; color: Theme.text-primary; wrap: word-wrap; }
+                    if DriverStore.board-sub != "" : Text { text: DriverStore.board-sub; font-size: Scale.font-xs; color: Theme.text-muted; wrap: word-wrap; }
+                }
+                WbSection {
+                    min-width: Scale.px(260px);
+                    horizontal-stretch: 1;
+                    title: "💾 " + Tr.s("DriverBiosFirmwareSection");
+                    Text { text: DriverStore.firmware-title; font-size: Scale.font-md; font-weight: 600; color: Theme.text-primary; wrap: word-wrap; }
+                    if DriverStore.firmware-sub != "" : Text { text: DriverStore.firmware-sub; font-size: Scale.font-xs; color: Theme.text-muted; wrap: word-wrap; }
+                    WbPill {
+                        text: DriverStore.secure-boot ? "✔ Secure Boot Active" : "⚠ Secure Boot Disabled / Setup Mode";
+                        tone: DriverStore.secure-boot ? "success" : "warning";
+                    }
+                }
+            }
+
+            WbSection {
+                title: "🎮 " + Tr.s("DriverBiosGpuDriversSection");
+                if DriverStore.display-drivers.length == 0 : Text { text: DriverStore.bios-scanning ? Tr.s("Scanning") : "—"; color: Theme.text-muted; }
+                for g in DriverStore.display-drivers : Rectangle {
+                    border-radius: Scale.px(Theme.btn-radius);
+                    background: Theme.bg-primary;
+                    FlexboxLayout {
+                        padding: Scale.px(8px);
+                        spacing: Scale.px(10px);
+                        alignment: stretch;
+                        VerticalLayout {
+                            horizontal-stretch: 1;
+                            min-width: Scale.px(220px);
+                            Text { text: g.name; font-size: Scale.font-sm; font-weight: 600; color: Theme.text-primary; wrap: word-wrap; }
+                            Text { text: g.provider; font-size: Scale.font-2xs; color: Theme.text-muted; wrap: word-wrap; }
+                        }
+                        VerticalLayout {
+                            Text { text: g.version; font-size: Scale.font-xs; color: Theme.text-secondary; }
+                            Text { text: g.date; font-size: Scale.font-2xs; color: Theme.text-muted; }
+                        }
                     }
                 }
             }

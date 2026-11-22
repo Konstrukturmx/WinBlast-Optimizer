@@ -13,7 +13,7 @@ use winblast0::app::{ActiveView, AppState, MatrixSortMode};
 use winblast0::core::backend::SandboxEnv;
 use winblast0::core::risk::load_embedded_rules;
 use winblast0::ui_slint::bridge::SlintBridge;
-use winblast0::ui_slint::{AppStore, BackupStore, DiskStore, GpuStore, HardwareStore, ParkingStore, ThermalStore, PrivacyStore, CleanAppsStore, DashboardStore, MainWindow, MatrixStore, StartupStore};
+use winblast0::ui_slint::{AppStore, BackupStore, DiskStore, DriverStore, GpuStore, HardwareStore, ParkingStore, ThermalStore, PrivacyStore, CleanAppsStore, DashboardStore, MainWindow, MatrixStore, StartupStore};
 
 struct Harness {
     #[allow(dead_code)]
@@ -815,4 +815,46 @@ fn disk_view_trim_is_async_and_direct_storage_is_not_claimed() {
     st.invoke_trim_all(); // second click while in flight is ignored
     h.wait("trim done", |s| !s.disk_trim_inflight && !s.is_disk_scanning);
     assert!(h.state.borrow().status_message.contains("ReTrim"), "status: {}", h.state.borrow().status_message);
+}
+
+// ───────────────────────────── Driver & BIOS ─────────────────────────────
+
+#[test]
+fn drivers_scan_filter_install_and_backup_are_async_and_sandboxed() {
+    let h = Harness::scanned();
+    h.goto(ActiveView::DriverBios);
+    let st = h.window.global::<DriverStore>();
+    st.invoke_scan_online();
+    h.wait("driver scan", |s| !s.is_driver_scanning);
+    assert_eq!(st.get_total() as usize, h.state.borrow().driver_updates.len());
+    let id = st.get_drivers().row_data(0).expect("sandbox exposes the virtual test driver").id;
+
+    // Category filter + folded search.
+    st.invoke_set_category("Audio".into());
+    h.bridge.sync();
+    assert!(st.get_drivers().iter().all(|d| d.details.starts_with("Audio") || d.details.contains("Audio")));
+    st.invoke_set_category("NotACategory".into());
+    h.bridge.sync();
+    assert_eq!(st.get_category().as_str(), "");
+    st.invoke_search_edited("zzzz-nope".into());
+    h.bridge.sync();
+    assert_eq!(st.get_drivers().row_count(), 0);
+    st.invoke_search_edited("".into());
+    h.bridge.sync();
+
+    // Install runs on a worker: the in-flight flag is visible until the worker reports back.
+    st.invoke_install(id.clone());
+    assert!(h.state.borrow().driver_install_in_flight.is_some(), "install must not block the UI thread");
+    st.invoke_install(id.clone()); // ignored while in flight
+    h.wait("install", |s| s.driver_install_in_flight.is_none());
+    let item = h.state.borrow().driver_updates.iter().find(|d| d.id == id.as_str()).cloned().unwrap();
+    assert_eq!(item.state, winblast0::hardware::driver_update::DriverUpdateState::Installed);
+
+    st.invoke_backup(id.clone());
+    h.wait("backup", |s| s.driver_install_in_flight.is_none());
+    assert!(h.state.borrow().status_message.contains("Backup created"), "{}", h.state.borrow().status_message);
+
+    st.invoke_rescan_bios();
+    h.wait("bios", |s| !s.is_bios_scanning);
+    assert_eq!(st.get_board_title().as_str(), "Detecting…", "sandbox board info is honest, not invented");
 }
