@@ -9,12 +9,9 @@ fn main() {
     println!("cargo:rerun-if-changed=slint-project.json");
     println!("cargo:rerun-if-changed=ui");
 
-    #[cfg(feature = "ui-slint")]
-    {
-        let config = slint_build::CompilerConfiguration::new().with_style("fluent-dark".into());
-        slint_build::compile_with_config("slint-project.json", config)
-            .expect("Failed to compile Slint 1.19 project");
-    }
+    let config = slint_build::CompilerConfiguration::new().with_style("fluent-dark".into());
+    slint_build::compile_with_config("slint-project.json", config)
+        .expect("Failed to compile Slint 1.19 project");
 
     if std::env::var_os("CARGO_CFG_WINDOWS").is_some() {
         // Set permanent executable icon and rich PE version metadata for Windows builds

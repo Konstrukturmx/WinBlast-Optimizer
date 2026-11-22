@@ -1,62 +1,54 @@
-//! Responsive, localized Diff Preview Modal showing pending mutations with dynamic theme support
-//! and a Close button for smooth overlay dismissal.
-
-use rune::{col, row, text, Color, El, ScrollSpec};
+//! Diff preview model: turns pending/inspected TweakActions into localized before/after rows
+//! for the Slint `DiffModal` overlay (port of the v1.6.1 Rune diff_modal widget logic).
 
 use crate::app::AppState;
 use crate::core::i18n::TextKey;
 use crate::core::risk::TweakAction;
-use crate::ui::theme::ThemePalette;
-use crate::ui::widgets::button::action_button;
-use crate::ui::widgets::scrollbar::WinBlastScrollable;
 
-fn diff_pair_card(p: &ThemePalette, header: String, left: String, right: String) -> El {
-    col()
-        .w_full()
-        .min_w(0.0)
-        .padding(8.0)
-        .radius(6.0)
-        .fill(p.bg_primary)
-        .border(1.0, p.border)
-        .gap(4.0)
-        .child(
-            text(header)
-                .font(rune::tok::type_::SECTION)
-                .color(p.text_primary)
-                .shrink()
-                .wrap()
-                .wrap_anywhere(),
-        )
-        .child(
-            row()
-                .w_full()
-                .min_w(0.0)
-                .flex_wrap()
-                .gap(10.0)
-                .child(text(left).color(p.danger).shrink().wrap().wrap_anywhere())
-                .child(text("➔").color(p.text_muted))
-                .child(text(right).color(p.success).shrink().wrap().wrap_anywhere()),
-        )
+/// Colour tone of a diff row's summary line.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Tone {
+    Success,
+    Warning,
+    Danger,
 }
 
-fn diff_single_card(p: &ThemePalette, header: String, summary: String, accent: Color) -> El {
-    col()
-        .w_full()
-        .min_w(0.0)
-        .padding(8.0)
-        .radius(6.0)
-        .fill(p.bg_primary)
-        .border(1.0, p.border)
-        .gap(4.0)
-        .child(
-            text(header)
-                .font(rune::tok::type_::SECTION)
-                .color(p.text_primary)
-                .shrink()
-                .wrap()
-                .wrap_anywhere(),
-        )
-        .child(text(summary).color(accent).shrink().wrap().wrap_anywhere())
+impl Tone {
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Tone::Success => "success",
+            Tone::Warning => "warning",
+            Tone::Danger => "danger",
+        }
+    }
+}
+
+struct Tones {
+    success: Tone,
+    warning: Tone,
+    #[allow(dead_code)]
+    danger: Tone,
+}
+
+const TONES: Tones = Tones { success: Tone::Success, warning: Tone::Warning, danger: Tone::Danger };
+
+/// One rendered diff entry. Pair rows fill `left`/`right`; single rows fill `summary`.
+#[derive(Debug, Clone, PartialEq)]
+pub struct DiffRow {
+    pub header: String,
+    pub left: String,
+    pub right: String,
+    pub summary: String,
+    pub tone: Tone,
+    pub is_pair: bool,
+}
+
+fn diff_pair_card(_p: &Tones, header: String, left: String, right: String) -> DiffRow {
+    DiffRow { header, left, right, summary: String::new(), tone: Tone::Success, is_pair: true }
+}
+
+fn diff_single_card(_p: &Tones, header: String, summary: String, accent: Tone) -> DiffRow {
+    DiffRow { header, left: String::new(), right: String::new(), summary, tone: accent, is_pair: false }
 }
 
 fn header_with_dir(s: &AppState, base: String, is_revert: bool) -> String {
@@ -84,49 +76,25 @@ fn directed_pair(
     }
 }
 
-/// Renders a localized, scrollable modal preview of staged items or a single inspected tweak.
-pub fn view_state(s: &AppState, p: &ThemePalette) -> El {
+/// Title and rows for the diff modal: the inspected tweak if any, else staged items, else pending actions.
+pub fn diff_view(s: &AppState) -> (String, Vec<DiffRow>) {
     if let Some((ref title, ref actions)) = s.inspected_tweak {
         let items: Vec<(TweakAction, bool)> = actions.iter().map(|a| (a.clone(), false)).collect();
-        let modal_title = format!("{} — {}", s.tr(TextKey::DiffModalTitle), title);
-        view_items_with_palette(&modal_title, &items, s, p)
+        (format!("{} — {}", s.tr(TextKey::DiffModalTitle), title), rows_for(&items, s))
     } else if !s.pending_items.is_empty() {
-        view_items_with_palette(s.tr(TextKey::DiffModalTitle), &s.pending_items, s, p)
+        (s.tr(TextKey::DiffModalTitle).to_string(), rows_for(&s.pending_items, s))
     } else {
-        let fallback: Vec<(TweakAction, bool)> = s
-            .pending_actions
-            .iter()
-            .map(|a| (a.clone(), false))
-            .collect();
-        view_items_with_palette(s.tr(TextKey::DiffModalTitle), &fallback, s, p)
+        let fallback: Vec<(TweakAction, bool)> =
+            s.pending_actions.iter().map(|a| (a.clone(), false)).collect();
+        (s.tr(TextKey::DiffModalTitle).to_string(), rows_for(&fallback, s))
     }
 }
 
-/// Legacy slice preview wrapper (assumes forward Apply direction).
-#[allow(dead_code)]
-pub fn view_with_palette(actions: &[TweakAction], s: &AppState, p: &ThemePalette) -> El {
-    let items: Vec<(TweakAction, bool)> = actions.iter().map(|a| (a.clone(), false)).collect();
-    view_items_with_palette(s.tr(TextKey::DiffModalTitle), &items, s, p)
-}
+fn rows_for(pending: &[(TweakAction, bool)], s: &AppState) -> Vec<DiffRow> {
+    let p = &TONES;
+    let mut items: Vec<DiffRow> = Vec::new();
 
-/// Renders a localized, scrollable modal preview of pending system mutations with Apply/Revert direction.
-pub fn view_items_with_palette(
-    modal_title: &str,
-    pending: &[(TweakAction, bool)],
-    s: &AppState,
-    p: &ThemePalette,
-) -> El {
-    let mut items = col().gap(8.0).w_full().min_w(0.0);
-
-    if pending.is_empty() {
-        items = items.child(
-            text(s.tr(TextKey::DiffModalEmpty))
-                .font(rune::tok::type_::BODY)
-                .color(p.text_muted)
-                .shrink()
-                .wrap(),
-        );
-    } else {
+    {
         for (action, is_revert) in pending {
             let is_revert = *is_revert;
             let row_card = match action {
@@ -149,13 +117,7 @@ pub fn view_items_with_palette(
                         p,
                         header_with_dir(
                             s,
-                            format!(
-                                "{}: {}\\{}\\{}",
-                                s.tr(TextKey::DiffActionRegDword),
-                                hive,
-                                path,
-                                name
-                            ),
+                            format!("{}: {}\\{}\\{}", s.tr(TextKey::DiffActionRegDword), hive, path, name),
                             is_revert,
                         ),
                         left,
@@ -223,12 +185,7 @@ pub fn view_items_with_palette(
                     p,
                     header_with_dir(
                         s,
-                        format!(
-                            "{}: {}\\{}",
-                            s.tr(TextKey::DiffActionRegTreeDelete),
-                            hive,
-                            path
-                        ),
+                        format!("{}: {}\\{}", s.tr(TextKey::DiffActionRegTreeDelete), hive, path),
                         is_revert,
                     ),
                     s.tr(TextKey::DiffActionRemoveTree).to_string(),
@@ -412,11 +369,7 @@ pub fn view_items_with_palette(
                             s.tr(TextKey::DiffStateDisable)
                         }
                         .to_string(),
-                        if effective_enable {
-                            p.success
-                        } else {
-                            p.warning
-                        },
+                        if effective_enable { p.success } else { p.warning },
                     )
                 }
                 TweakAction::AppXPackage { package_family } => diff_single_card(
@@ -448,66 +401,13 @@ pub fn view_items_with_palette(
                             s.tr(TextKey::DiffActionDisable)
                         }
                         .to_string(),
-                        if effective_enable {
-                            p.success
-                        } else {
-                            p.warning
-                        },
+                        if effective_enable { p.success } else { p.warning },
                     )
                 }
             };
-            items = items.child(row_card);
+            items.push(row_card);
         }
     }
 
-    col()
-        .w_full()
-        .max_w(720.0)
-        .h_full()
-        .max_h(420.0)
-        .min_w(0.0)
-        .min_h(0.0)
-        .padding(14.0)
-        .radius(10.0)
-        .fill(p.bg_card)
-        .border(1.5, p.border_accent)
-        .gap(10.0)
-        .child(
-            row()
-                .w_full()
-                .min_w(0.0)
-                .flex_wrap()
-                .justify_between()
-                .center_y()
-                .gap(8.0)
-                .child(
-                    text(modal_title)
-                        .font(rune::tok::type_::TITLE)
-                        .color(p.accent)
-                        .grow(1.0)
-                        .min_w(0.0)
-                        .shrink()
-                        .wrap(),
-                )
-                .child(action_button(
-                    s.tr(TextKey::CloseBtn),
-                    p.btn_secondary,
-                    p.text_primary,
-                    p,
-                    |s| {
-                        s.show_diff_preview = false;
-                        s.inspected_tweak = None;
-                    },
-                )),
-        )
-        .child(
-            items
-                .key("diff_modal_items_scroll")
-                .grow(1.0)
-                .min_h(0.0)
-                .scroll(ScrollSpec {
-                    stick_bottom: false,
-                })
-                .winblast_scroll(p),
-        )
+    items
 }

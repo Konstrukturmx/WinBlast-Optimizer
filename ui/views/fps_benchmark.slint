@@ -8,6 +8,7 @@ import { WbBadge } from "../components/badge.slint";
 import { WbSparkline } from "../components/sparkline.slint";
 
 export component FpsBenchmarkView inherits Flickable {
+    in property <int> tier;
     in property <bool> is-benchmarking: false;
     in property <string> target-process: "Cyberpunk2077.exe";
     in property <float> current-fps: 144.2;

@@ -17,6 +17,7 @@ export struct RepairTaskItem {
 }
 
 export component WindowsRepairView inherits Flickable {
+    in property <int> tier;
     in property <bool> any-running: false;
     in property <float> progress: 0.0;
     in property <string> active-task-label: "";

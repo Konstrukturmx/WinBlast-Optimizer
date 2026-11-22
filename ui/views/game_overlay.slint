@@ -8,6 +8,7 @@ import { WbBadge } from "../components/badge.slint";
 import { WbSwitch } from "../components/switch.slint";
 
 export component GameOverlayView inherits Flickable {
+    in property <int> tier;
     in-out property <bool> overlay-enabled: true;
     in-out property <string> overlay-position: "Top Left"; // "Top Left" | "Top Right" | "Bottom Left" | "Bottom Right"
     in-out property <string> toggle-hotkey: "Ctrl + Shift + O";

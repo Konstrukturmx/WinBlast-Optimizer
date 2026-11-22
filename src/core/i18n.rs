@@ -65,7 +65,7 @@ impl Language {
 
 /// Strongly-typed string catalog keys for complete UI coverage.
 #[allow(dead_code)]
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, strum::EnumString, strum::IntoStaticStr, strum::VariantArray)]
 #[repr(usize)]
 pub enum TextKey {
     // 0..9: Navigation & Header

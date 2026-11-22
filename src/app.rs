@@ -37,7 +37,17 @@ use crate::tools::autounattend::{generate_autounattend_xml, UnattendOptions};
 use crate::tools::cleaner::{CleanExecutionReport, CleanTargetKind, CleanTargetScan};
 use crate::tools::features_apps::{InstalledAppxPackage, WindowsOptionalFeature};
 use crate::tools::startup::{LiveScheduledTaskInfo, LiveServiceInfo, StartupEntry};
-use crate::ui::theme::{ColorScheme, ThemeMode, ThemePalette};
+use crate::core::theme::{ColorScheme, ThemeMode, ThemePalette};
+
+/// Thread-safe UI wake-up hook handed to background workers (the Slint bridge wires this to
+/// `slint::invoke_from_event_loop`; headless/test callers pass a no-op).
+pub type Waker = Arc<dyn Fn() + Send + Sync>;
+
+/// Toolkit-neutral single-line text buffer (replaces the Rune `TextEdit` widget state).
+#[derive(Debug, Clone, Default, PartialEq, Eq)]
+pub struct TextEdit {
+    pub text: String,
+}
 
 /// High-level application mode.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -466,7 +476,7 @@ pub enum WorkerEvent {
 
 struct WorkerDropGuard<P: FnOnce(String) -> WorkerEvent> {
     tx: crossbeam_channel::Sender<WorkerEvent>,
-    waker: Option<rune::Waker>,
+    waker: Option<Waker>,
     completed: bool,
     panic_msg: Option<String>,
     on_panic_event: Option<P>,
@@ -503,7 +513,7 @@ fn panic_payload_to_string(payload: Box<dyn std::any::Any + Send>) -> String {
 /// in-flight flags can NEVER become permanently stuck on unexpected panics.
 fn spawn_guarded_worker<F, P>(
     tx: crossbeam_channel::Sender<WorkerEvent>,
-    waker: Option<rune::Waker>,
+    waker: Option<Waker>,
     on_panic_event: P,
     body: F,
 ) where
@@ -562,7 +572,7 @@ pub struct AppState {
     pub pending_items: Vec<(TweakAction, bool)>,
     pub inspected_tweak: Option<(String, Vec<TweakAction>)>,
     pub search_query: String,
-    pub search_edit: rune::TextEdit,
+    pub search_edit: TextEdit,
     last_synced_search: String,
     pub selected_category: Option<String>,
     pub show_diff_preview: bool,
@@ -611,8 +621,8 @@ pub struct AppState {
     pub last_clean_report: Option<CleanExecutionReport>,
     pub installed_appx: Vec<InstalledAppxPackage>,
     pub selected_appx: HashSet<String>,
-    pub appx_filter_edit: rune::TextEdit,
-    pub winget_filter_edit: rune::TextEdit,
+    pub appx_filter_edit: TextEdit,
+    pub winget_filter_edit: TextEdit,
     pub optional_features: Vec<WindowsOptionalFeature>,
     pub selected_winget: HashSet<String>,
     pub onedrive_kfm_warning: Option<String>,
@@ -629,7 +639,7 @@ pub struct AppState {
     pub selected_scheduled_tasks: HashSet<String>,
     pub live_services: Vec<LiveServiceInfo>,
     pub hide_microsoft_tasks: bool,
-    pub startup_filter_edit: rune::TextEdit,
+    pub startup_filter_edit: TextEdit,
     pub startup_tasks_busy: bool,
     startup_tasks_inflight: usize,
     startup_scan_inflight: bool,
@@ -662,10 +672,10 @@ pub struct AppState {
     // Background worker communication channel
     pub rx_events: crossbeam_channel::Receiver<WorkerEvent>,
     pub tx_events: crossbeam_channel::Sender<WorkerEvent>,
-    pub waker: Option<rune::Waker>,
+    pub waker: Option<Waker>,
 
     // v1.1.0 Advanced Themes & Diagnostics Subsystems
-    pub theme_style: crate::ui::theme::UiThemeStyle,
+    pub theme_style: crate::core::theme::UiThemeStyle,
     pub bios_info: Option<crate::hardware::bios::BiosSystemInfo>,
     pub is_bios_scanning: bool,
     pub fault_report: Option<crate::tools::diagnostics::FaultDiagnosticsReport>,
@@ -687,12 +697,12 @@ pub struct AppState {
     pub driver_install_in_flight: Option<String>,
 
     // v1.4.0 Diagnostics, Game Prerequisites & Automation Subsystems
-    pub driver_search_edit: rune::TextEdit,
+    pub driver_search_edit: TextEdit,
     pub driver_category_filter: Option<crate::hardware::driver_update::DriverCategory>,
     pub game_prereqs: Vec<crate::tools::game_prereqs::GamePrerequisiteItem>,
     pub is_prereqs_scanning: bool,
     pub prereq_install_in_flight: Option<String>,
-    pub prereq_filter_edit: rune::TextEdit,
+    pub prereq_filter_edit: TextEdit,
     pub auto_tune_plan: Option<crate::tools::automation::AutoTunePlan>,
     pub auto_tune_result: Option<crate::tools::automation::AutoTuneResult>,
     pub selected_auto_tune_profile: crate::tools::automation::AutoTuneProfile,
@@ -778,7 +788,7 @@ impl AppState {
         let language = Language::default();
         let theme_mode = ThemeMode::default();
         let color_scheme = ColorScheme::default();
-        let theme_style = crate::ui::theme::UiThemeStyle::default();
+        let theme_style = crate::core::theme::UiThemeStyle::default();
         let theme_palette = ThemePalette::new(theme_mode, color_scheme, theme_style);
         let core_parking = backend.detect_core_parking();
 
@@ -810,7 +820,7 @@ impl AppState {
             pending_items: Vec::new(),
             inspected_tweak: None,
             search_query: String::new(),
-            search_edit: rune::TextEdit::default(),
+            search_edit: TextEdit::default(),
             last_synced_search: String::new(),
             selected_category: None,
             show_diff_preview: false,
@@ -863,8 +873,8 @@ impl AppState {
             last_clean_report: None,
             installed_appx: Vec::new(),
             selected_appx: HashSet::new(),
-            appx_filter_edit: rune::TextEdit::default(),
-            winget_filter_edit: rune::TextEdit::default(),
+            appx_filter_edit: TextEdit::default(),
+            winget_filter_edit: TextEdit::default(),
             optional_features: Vec::new(),
             selected_winget: HashSet::new(),
             onedrive_kfm_warning: None,
@@ -879,7 +889,7 @@ impl AppState {
             selected_scheduled_tasks: HashSet::new(),
             live_services: Vec::new(),
             hide_microsoft_tasks: true,
-            startup_filter_edit: rune::TextEdit::default(),
+            startup_filter_edit: TextEdit::default(),
             startup_tasks_busy: false,
             startup_tasks_inflight: 0,
             startup_scan_inflight: false,
@@ -927,12 +937,12 @@ impl AppState {
             driver_updates: Vec::new(),
             is_driver_scanning: false,
             driver_install_in_flight: None,
-            driver_search_edit: rune::TextEdit::default(),
+            driver_search_edit: TextEdit::default(),
             driver_category_filter: None,
             game_prereqs: Vec::new(),
             is_prereqs_scanning: false,
             prereq_install_in_flight: None,
-            prereq_filter_edit: rune::TextEdit::default(),
+            prereq_filter_edit: TextEdit::default(),
             auto_tune_plan: None,
             auto_tune_result: None,
             selected_auto_tune_profile: crate::tools::automation::AutoTuneProfile::GamingLowLatency,
@@ -962,7 +972,7 @@ impl AppState {
     }
 
     /// Rune framework lifecycle setup hook. Captures the window waker and starts async warmup tasks.
-    pub fn setup(&mut self, waker: rune::Waker) {
+    pub fn setup(&mut self, waker: Waker) {
         self.waker = Some(waker.clone());
         self.start_scan();
         self.refresh_platform_inventory();
@@ -1008,17 +1018,14 @@ impl AppState {
         std::thread::spawn(|| {
             for _ in 0..15 {
                 std::thread::sleep(std::time::Duration::from_millis(50));
-                crate::ui::window_icon::attach_window_icon();
+                crate::core::window_icon::attach_window_icon();
             }
         });
     }
 
     /// Slint & headless lifecycle setup: spawns background monitoring, telemetry, inventory and updates.
     pub fn setup_slint(&mut self) {
-        #[cfg(feature = "ui-rune")]
-        let waker: rune::Waker = std::sync::Arc::new(|| {});
-        #[cfg(not(feature = "ui-rune"))]
-        let waker = std::sync::Arc::new(|| {});
+        let waker: Waker = std::sync::Arc::new(|| {});
         self.setup(waker);
     }
 
@@ -1059,57 +1066,6 @@ impl AppState {
         self.last_interaction_secs = self.current_time_secs;
     }
 
-    /// Rune framework lifecycle poll hook. Drains bounded worker events (max 64/frame) so bursts never stutter UI.
-    pub fn poll(&mut self, now: f64, _tx: &mut rune::Tx) -> bool {
-        self.current_time_secs = now;
-
-        #[cfg(windows)]
-        if !self.window_icon_attached {
-            crate::ui::window_icon::attach_window_icon();
-            self.window_icon_attached = true;
-        }
-
-        self.sync_search_state();
-        let processed = self.drain_worker_events_bounded(64);
-
-        let in_progress = self.is_in_progress();
-        if in_progress || !self.rx_events.is_empty() {
-            if let Some(ref w) = self.waker {
-                w();
-            }
-            self.last_render_secs = now;
-            return true;
-        }
-
-        if processed > 0 {
-            // Milestone 2 Dirty-Rect GPU Frame Throttling:
-            // Calculate telemetry change delta across CPU and RAM.
-            let (cpu, ram) = if let Some(ref m) = self.realtime_metrics {
-                (m.cpu_usage, m.ram_percentage)
-            } else {
-                (0.0, 0.0)
-            };
-            let delta_cpu = (cpu - self.last_cpu_metric).abs();
-            let delta_ram = (ram - self.last_ram_metric).abs();
-            self.last_cpu_metric = cpu;
-            self.last_ram_metric = ram;
-
-            // Idle throttle: if user idle > 3.0s and telemetry delta < 1.0%, throttle to 5 FPS (200 ms interval)
-            let idle_duration = now - self.last_interaction_secs;
-            if idle_duration > 3.0
-                && delta_cpu < 1.0
-                && delta_ram < 1.0
-                && now - self.last_render_secs < 0.20
-            {
-                return false;
-            }
-
-            self.last_render_secs = now;
-            return true;
-        }
-
-        false
-    }
 
     /// Drain up to `limit` queued worker events.
     pub fn drain_worker_events_bounded(&mut self, limit: usize) -> usize {
@@ -2126,7 +2082,7 @@ impl AppState {
     }
 
     /// Set complete UI theme layout & geometry style (Minimalistic, Classic, Glassy, Compact, Materialistic).
-    pub fn set_theme_style(&mut self, style: crate::ui::theme::UiThemeStyle) {
+    pub fn set_theme_style(&mut self, style: crate::core::theme::UiThemeStyle) {
         self.theme_style = style;
         self.theme_palette = ThemePalette::new(self.theme_mode, self.color_scheme, style);
     }
@@ -4967,7 +4923,7 @@ impl AppState {
 
     /// Clear search input and category filter in Advanced Matrix.
     pub fn clear_advanced_filters(&mut self) {
-        self.search_edit = rune::TextEdit::default();
+        self.search_edit = TextEdit::default();
         self.search_query.clear();
         self.last_synced_search.clear();
         self.selected_category = None;

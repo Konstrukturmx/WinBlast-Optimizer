@@ -19,6 +19,7 @@ export struct StartupItemData {
 }
 
 export component StartupTasksView inherits Flickable {
+    in property <int> tier;
     in-out property <string> filter-type: "all"; // "all" | "apps" | "tasks"
     in-out property <string> search-query: "";
     in property <int> total-items: 0;

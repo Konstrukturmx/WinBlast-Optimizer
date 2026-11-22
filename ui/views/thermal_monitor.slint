@@ -15,6 +15,7 @@ export struct SensorReading {
 }
 
 export component ThermalMonitorView inherits Flickable {
+    in property <int> tier;
     in property <float> cpu-package-temp: 48.5;
     in property <float> gpu-core-temp: 42.0;
     in property <float> gpu-hotspot-temp: 51.5;

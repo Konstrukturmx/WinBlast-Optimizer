@@ -1,156 +1,76 @@
 // ui/components/diff_modal.slint
-// WinBlast0 Registry / System Diff Inspector Modal in Slint 1.19
-
-import { Scale, Theme } from "../theme.slint";
+// Localized diff preview overlay: before -> after for every pending or inspected mutation
+// (registry DWORD/SZ/binary/composite/dynamic, power cfg, services, tasks, AppX, features).
+import { ScrollView } from "std-widgets.slint";
+import { Scale, Theme, Tr } from "../theme.slint";
+import { AppStore, DiffRowData } from "../stores/app.slint";
 import { WbButton } from "button.slint";
-import { WbCard } from "card.slint";
-import { WbBadge } from "badge.slint";
 
 export component WbDiffModal inherits Rectangle {
-    in property <bool> is-open: false;
-    in property <string> tweak-title: "Disable Windows Telemetry";
-    in property <string> registry-path: "HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows\\DataCollection";
-    in property <string> value-name: "AllowTelemetry";
-    in property <string> original-value: "DWORD: 3 (Full Telemetry)";
-    in property <string> optimized-value: "DWORD: 0 (Security Only / Disabled)";
-    in property <string> impact-summary: "Prevents background diagnostic data upload to Microsoft telemetry endpoints.";
+    background: Theme.scrim;
+    TouchArea { clicked => { AppStore.close-diff(); } }
 
-    callback close-modal();
-    callback apply-diff();
-
-    width: 100%;
-    height: 100%;
-    background: #00000088;
-    visible: root.is-open;
-
-    // Modal Card
     Rectangle {
-        x: (parent.width - self.width) / 2;
-        y: (parent.height - self.height) / 2;
-        width: min(parent.width - Scale.px(48px), Scale.px(620px));
-        height: min(parent.height - Scale.px(48px), content-col.preferred-height + Scale.space-xl * 2);
-        border-radius: Scale.radius-lg;
-        background: Theme.bg-surface;
-        border-width: 1px;
-        border-color: Theme.border-strong;
-        drop-shadow-blur: 32px;
+        width: min(root.width - Scale.px(32px), Scale.px(720px));
+        height: min(root.height - Scale.px(48px), Scale.px(420px));
+        border-radius: Scale.px(Theme.card-radius);
+        background: Theme.bg-card;
+        border-width: 1.5px;
+        border-color: Theme.border-accent;
+        drop-shadow-blur: 24px;
         drop-shadow-color: Theme.shadow-lg;
+        TouchArea {}
 
-        content-col := VerticalLayout {
-            padding: Scale.space-xl;
-            spacing: Scale.space-lg;
-
-            // Modal Header
+        VerticalLayout {
+            padding: Scale.px(14px);
+            spacing: Scale.px(10px);
             HorizontalLayout {
-                alignment: space-between;
-                VerticalLayout {
-                    spacing: Scale.space-2xs;
-                    HorizontalLayout {
-                        spacing: Scale.space-sm;
-                        Text {
-                            text: "Policy Diff Inspection";
-                            font-size: Scale.font-lg;
-                            font-weight: 700;
-                            color: Theme.text-primary;
-                        }
-                        WbBadge {
-                            text: "Registry Delta";
-                            variant: "info";
-                        }
-                    }
-                    Text {
-                        text: root.tweak-title;
-                        font-size: Scale.font-sm;
-                        color: Theme.text-secondary;
-                    }
-                }
-
-                WbButton {
-                    variant: "ghost";
-                    text: "✕";
-                    min-width: Scale.px(32px);
-                    min-height: Scale.px(32px);
-                    clicked => { root.close-modal(); }
-                }
-            }
-
-            // Path & Value Key Card
-            Rectangle {
-                border-radius: Scale.radius-sm;
-                background: Theme.bg-canvas;
-                border-width: 1px;
-                border-color: Theme.border-subtle;
-
-                VerticalLayout {
-                    padding: Scale.space-md;
-                    spacing: Scale.space-xs;
-
-                    Text { text: "TARGET REGISTRY HIVE & VALUE"; font-size: Scale.font-2xs; font-weight: 700; color: Theme.text-muted; }
-                    Text { text: root.registry-path; font-size: Scale.font-xs; color: Theme.accent; overflow: elide; }
-                    Text { text: "Value: " + root.value-name; font-size: Scale.font-xs; font-weight: 600; color: Theme.text-primary; }
-                }
-            }
-
-            // Before / After Diff Visualizer
-            HorizontalLayout {
-                spacing: Scale.space-md;
-
-                // Before Card
-                Rectangle {
+                spacing: Scale.px(8px);
+                Text {
+                    text: AppStore.diff-title;
+                    font-size: Scale.font-lg;
+                    font-weight: 700;
+                    color: Theme.accent;
+                    wrap: word-wrap;
                     horizontal-stretch: 1;
-                    border-radius: Scale.radius-sm;
-                    background: Theme.danger.with-alpha(0.08);
-                    border-width: 1px;
-                    border-color: Theme.danger.with-alpha(0.25);
-
-                    VerticalLayout {
-                        padding: Scale.space-md;
-                        spacing: Scale.space-xs;
-                        Text { text: "ORIGINAL STATE (STOCK)"; font-size: Scale.font-2xs; font-weight: 700; color: Theme.danger; }
-                        Text { text: root.original-value; font-size: Scale.font-sm; color: Theme.text-primary; wrap: word-wrap; }
-                    }
+                    vertical-alignment: center;
                 }
-
-                // After Card
-                Rectangle {
-                    horizontal-stretch: 1;
-                    border-radius: Scale.radius-sm;
-                    background: Theme.safe.with-alpha(0.08);
-                    border-width: 1px;
-                    border-color: Theme.safe.with-alpha(0.25);
-
-                    VerticalLayout {
-                        padding: Scale.space-md;
-                        spacing: Scale.space-xs;
-                        Text { text: "OPTIMIZED STATE (PROPOSED)"; font-size: Scale.font-2xs; font-weight: 700; color: Theme.safe; }
-                        Text { text: root.optimized-value; font-size: Scale.font-sm; color: Theme.text-primary; wrap: word-wrap; }
-                    }
-                }
+                WbButton { variant: "secondary"; text: Tr.s("CloseBtn"); clicked => { AppStore.close-diff(); } }
             }
-
-            // Impact description
-            Text {
-                text: root.impact-summary;
-                font-size: Scale.font-xs;
-                color: Theme.text-secondary;
+            if AppStore.diff-rows.length == 0 : Text {
+                text: Tr.s("DiffModalEmpty");
+                font-size: Scale.font-sm;
+                color: Theme.text-muted;
                 wrap: word-wrap;
             }
-
-            // Actions row
-            HorizontalLayout {
-                spacing: Scale.space-sm;
-                alignment: end;
-
-                WbButton {
-                    variant: "secondary";
-                    text: "Dismiss";
-                    clicked => { root.close-modal(); }
-                }
-
-                WbButton {
-                    variant: "primary";
-                    text: "Apply Policy Diff";
-                    clicked => { root.apply-diff(); }
+            ScrollView {
+                vertical-stretch: 1;
+                VerticalLayout {
+                    spacing: Scale.px(8px);
+                    alignment: start;
+                    for r in AppStore.diff-rows : Rectangle {
+                        border-radius: Scale.px(6px);
+                        background: Theme.bg-primary;
+                        border-width: 1px;
+                        border-color: Theme.border;
+                        VerticalLayout {
+                            padding: Scale.px(8px);
+                            spacing: Scale.px(4px);
+                            Text { text: r.header; font-size: Scale.font-sm; font-weight: 600; color: Theme.text-primary; wrap: word-wrap; }
+                            if r.is-pair : HorizontalLayout {
+                                spacing: Scale.px(10px);
+                                Text { text: r.left; font-size: Scale.font-xs; color: Theme.danger; wrap: word-wrap; horizontal-stretch: 1; }
+                                Text { text: "➔"; color: Theme.text-muted; vertical-alignment: center; }
+                                Text { text: r.right; font-size: Scale.font-xs; color: Theme.success; wrap: word-wrap; horizontal-stretch: 1; }
+                            }
+                            if !r.is-pair : Text {
+                                text: r.summary;
+                                font-size: Scale.font-xs;
+                                color: r.tone == "success" ? Theme.success : r.tone == "danger" ? Theme.danger : Theme.warning;
+                                wrap: word-wrap;
+                            }
+                        }
+                    }
                 }
             }
         }

@@ -20,6 +20,7 @@ export struct GameSpecComparison {
 }
 
 export component GameSuitabilityView inherits Flickable {
+    in property <int> tier;
     in property <[GameSpecComparison]> games: [];
 
     callback refresh-suitability();

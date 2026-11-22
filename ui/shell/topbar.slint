@@ -1,0 +1,124 @@
+// ui/shell/topbar.slint
+// Responsive header bar (port of v1.6.1 top bar): sidebar drawer toggle, brand, language,
+// display mode, theme style, color scheme, Easy/Advanced mode, Instant/Normal engine mode,
+// live CPU/RAM pill, OS edition and elevation badge (click to relaunch as Administrator).
+import { Scale, Theme, Tr } from "../theme.slint";
+import { AppStore } from "../stores/app.slint";
+import { WbChip, WbSegmented } from "../components/chip.slint";
+
+export component AppTopBar inherits Rectangle {
+    in property <int> tier; // 0 compact, 1 medium, 2 wide
+
+    height: Scale.px(44px);
+    background: Theme.bg-sidebar;
+
+    Rectangle {
+        y: parent.height - Theme.border-width;
+        height: Theme.border-width;
+        background: Theme.border;
+    }
+
+    HorizontalLayout {
+        padding-left: Scale.px(12px);
+        padding-right: Scale.px(12px);
+        padding-top: Scale.px(4px);
+        padding-bottom: Scale.px(4px);
+        spacing: Scale.px(8px);
+
+        // ---- Brand group ----
+        HorizontalLayout {
+            spacing: Scale.px(8px);
+            alignment: start;
+            horizontal-stretch: 1;
+            min-width: 0;
+            if root.tier != 2 : WbChip {
+                text: "☰";
+                active: AppStore.sidebar-open;
+                clicked => { AppStore.toggle-sidebar(); }
+            }
+            Text {
+                text: Tr.s("AppTitle");
+                font-size: Scale.font-lg;
+                font-weight: 800;
+                color: Theme.accent;
+                vertical-alignment: center;
+            }
+            if root.tier == 2 : Text {
+                text: Tr.s("AppSubtitle");
+                font-size: Scale.font-xs;
+                color: Theme.text-muted;
+                vertical-alignment: center;
+                overflow: elide;
+                horizontal-stretch: 1;
+                min-width: 0;
+            }
+        }
+
+        // ---- Controls group ----
+        HorizontalLayout {
+            spacing: Scale.px(6px);
+            alignment: end;
+            lang-chip := WbChip {
+                text: "🌐 " + (root.tier == 0 ? AppStore.language-code : AppStore.language-label) + " ▾";
+                active: AppStore.dropdown == "language";
+                clicked => { AppStore.dropdown = AppStore.dropdown == "language" ? "" : "language"; }
+            }
+            WbChip {
+                text: (AppStore.theme-dark ? "🌙 " + Tr.s("ThemeDark") : "☀️ " + Tr.s("ThemeLight"));
+                clicked => { AppStore.dropdown = ""; AppStore.toggle-theme-mode(); }
+            }
+            WbChip {
+                text: "🎨 " + AppStore.theme-style-label + " ▾";
+                tone: "accent";
+                active: AppStore.dropdown == "style";
+                clicked => { AppStore.dropdown = AppStore.dropdown == "style" ? "" : "style"; }
+            }
+            if root.tier != 0 : WbChip {
+                text: AppStore.color-scheme-label + " ▾";
+                active: AppStore.dropdown == "scheme";
+                clicked => { AppStore.dropdown = AppStore.dropdown == "scheme" ? "" : "scheme"; }
+            }
+            if root.tier != 0 : WbSegmented {
+                left-text: root.tier == 1 ? "Dashboard" : Tr.s("EasyMode");
+                right-text: root.tier == 1 ? "Matrix" : Tr.s("AdvancedMatrix");
+                left-active: AppStore.mode-easy;
+                left-clicked => { AppStore.set-mode-easy(true); }
+                right-clicked => { AppStore.set-mode-easy(false); }
+            }
+            if root.tier != 0 : WbSegmented {
+                left-text: Tr.s("HeaderInstant");
+                right-text: Tr.s("HeaderNormal");
+                left-active: AppStore.engine-instant;
+                left-clicked => { AppStore.set-engine-instant(true); }
+                right-clicked => { AppStore.set-engine-instant(false); }
+            }
+            if root.tier == 2 && AppStore.metrics-available : Rectangle {
+                border-radius: Scale.px(Theme.badge-radius);
+                background: Theme.accent.with-alpha(0.12);
+                HorizontalLayout {
+                    padding-left: Scale.px(7px);
+                    padding-right: Scale.px(7px);
+                    Text {
+                        text: "CPU: " + round(AppStore.cpu-usage) + "% • RAM: " + round(AppStore.ram-usage) + "%";
+                        font-size: Scale.font-xs;
+                        color: Theme.accent;
+                        vertical-alignment: center;
+                    }
+                }
+            }
+            if root.tier == 2 && AppStore.os-desc != "" : Text {
+                text: AppStore.os-desc;
+                font-size: Scale.font-xs;
+                color: Theme.text-muted;
+                vertical-alignment: center;
+            }
+            WbChip {
+                tone: AppStore.is-elevated ? "success" : "warning";
+                text: AppStore.is-elevated
+                    ? (root.tier == 0 ? "Elevated ✓" : Tr.s("AdminElevated"))
+                    : (root.tier == 0 ? "Admin ↗" : Tr.s("AdminStandard") + " (↗)");
+                clicked => { if !AppStore.is-elevated { AppStore.relaunch-elevated(); } }
+            }
+        }
+    }
+}

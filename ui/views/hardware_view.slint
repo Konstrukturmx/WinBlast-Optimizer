@@ -7,6 +7,7 @@ import { WbCard } from "../components/card.slint";
 import { WbBadge } from "../components/badge.slint";
 
 export component HardwareViewComponent inherits Flickable {
+    in property <int> tier;
     in property <string> cpu-name: "AMD Ryzen 9 5900X 12-Core Processor";
     in property <string> cpu-cores: "12 Physical / 24 Logical";
     in property <string> cpu-base-clock: "3.70 GHz (Boost up to 4.80 GHz)";

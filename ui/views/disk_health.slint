@@ -20,6 +20,7 @@ export struct PhysicalDiskInfo {
 }
 
 export component DiskHealthView inherits Flickable {
+    in property <int> tier;
     in property <[PhysicalDiskInfo]> disks: [];
 
     callback refresh-disks();

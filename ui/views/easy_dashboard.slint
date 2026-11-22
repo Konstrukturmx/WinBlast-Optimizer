@@ -9,6 +9,7 @@ import { WbProgressBar } from "../components/progress_bar.slint";
 import { WbSparkline } from "../components/sparkline.slint";
 
 export component EasyDashboardView inherits Flickable {
+    in property <int> tier;
     in property <int> health-score: 85;
     in property <int> total-tweaks: 230;
     in property <int> applied-tweaks: 142;

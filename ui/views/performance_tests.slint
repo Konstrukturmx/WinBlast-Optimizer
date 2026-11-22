@@ -8,6 +8,7 @@ import { WbBadge } from "../components/badge.slint";
 import { WbProgressBar } from "../components/progress_bar.slint";
 
 export component PerformanceTestsView inherits Flickable {
+    in property <int> tier;
     in property <bool> is-running: false;
     in property <float> test-progress: 0.0;
     in property <int> cpu-single-score: 1680;

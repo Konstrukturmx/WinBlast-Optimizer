@@ -8,6 +8,7 @@ import { WbBadge } from "../components/badge.slint";
 import { WbSparkline } from "../components/sparkline.slint";
 
 export component NetworkDiagView inherits Flickable {
+    in property <int> tier;
     in property <bool> is-testing: false;
     in property <string> adapter-name: "Intel(R) Ethernet Controller I225-V #2";
     in property <int> current-mtu: 1500;

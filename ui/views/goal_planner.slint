@@ -16,6 +16,7 @@ export struct GoalPresetItem {
 }
 
 export component GoalPlannerView inherits Flickable {
+    in property <int> tier;
     in property <[GoalPresetItem]> goals: [];
 
     callback apply-goal(string);

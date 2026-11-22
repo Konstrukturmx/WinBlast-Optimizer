@@ -1,0 +1,99 @@
+// ui/components/chip.slint
+// Compact pill button used by the top bar, sidebar and view toolbars.
+import { Scale, Theme } from "../theme.slint";
+
+export component WbChip inherits Rectangle {
+    in property <string> text;
+    in property <bool> active: false;
+    in property <bool> enabled: true;
+    in property <string> tone: "neutral"; // "neutral" | "accent" | "success" | "warning" | "danger"
+    callback clicked();
+
+    private property <color> tone-color:
+        tone == "accent" ? Theme.accent :
+        tone == "success" ? Theme.success :
+        tone == "warning" ? Theme.warning :
+        tone == "danger" ? Theme.danger : Theme.text-secondary;
+
+    height: Scale.px(28px);
+    min-width: Scale.px(28px);
+    border-radius: Scale.px(Theme.btn-radius);
+    background: !enabled ? Theme.btn-secondary.with-alpha(0.5)
+        : touch.pressed ? (tone == "neutral" ? Theme.btn-secondary-press : tone-color.with-alpha(0.40))
+        : touch.has-hover ? (tone == "neutral" ? Theme.bg-card-hover : tone-color.with-alpha(0.30))
+        : active ? Theme.accent.with-alpha(0.22)
+        : tone == "neutral" ? Theme.bg-card : tone-color.with-alpha(0.18);
+    border-width: Theme.border-width;
+    border-color: active ? Theme.accent.with-alpha(0.7) : tone == "neutral" ? Theme.border : tone-color.with-alpha(0.55);
+    opacity: enabled ? 1.0 : 0.55;
+    accessible-role: button;
+    accessible-label: root.text;
+    accessible-enabled: root.enabled;
+    animate background, border-color { duration: Theme.anim; }
+
+    touch := TouchArea {
+        enabled: root.enabled;
+        mouse-cursor: root.enabled ? pointer : default;
+        clicked => { root.clicked(); }
+    }
+
+    HorizontalLayout {
+        padding-left: Scale.px(9px);
+        padding-right: Scale.px(9px);
+        alignment: center;
+        Text {
+            text: root.text;
+            font-size: Scale.font-xs;
+            font-weight: root.active ? 700 : 500;
+            color: root.active ? Theme.accent : (root.tone == "neutral" ? Theme.text-primary : root.tone-color);
+            vertical-alignment: center;
+            overflow: elide;
+        }
+    }
+}
+
+// Two-option segmented control (Easy/Advanced, Instant/Normal).
+export component WbSegmented inherits Rectangle {
+    in property <string> left-text;
+    in property <string> right-text;
+    in property <bool> left-active: true;
+    callback left-clicked();
+    callback right-clicked();
+
+    height: Scale.px(28px);
+    border-radius: Scale.px(Theme.btn-radius);
+    background: Theme.bg-card;
+    border-width: Theme.border-width;
+    border-color: Theme.border;
+
+    HorizontalLayout {
+        padding: Scale.px(2px);
+        spacing: Scale.px(2px);
+        for side in [0, 1] : Rectangle {
+            property <bool> on: side == 0 ? root.left-active : !root.left-active;
+            border-radius: Scale.px(Theme.btn-radius) - 2px;
+            background: on ? Theme.accent : seg-touch.has-hover ? Theme.bg-card-hover : transparent;
+            animate background { duration: Theme.anim; }
+            accessible-role: button;
+            accessible-label: side == 0 ? root.left-text : root.right-text;
+            accessible-checked: on;
+            seg-touch := TouchArea {
+                mouse-cursor: pointer;
+                clicked => { if side == 0 { root.left-clicked(); } else { root.right-clicked(); } }
+            }
+            HorizontalLayout {
+                padding-left: Scale.px(8px);
+                padding-right: Scale.px(8px);
+                Text {
+                    text: side == 0 ? root.left-text : root.right-text;
+                    font-size: Scale.font-xs;
+                    font-weight: on ? 700 : 500;
+                    color: on ? Theme.text-on-accent : Theme.text-secondary;
+                    vertical-alignment: center;
+                    horizontal-alignment: center;
+                    overflow: elide;
+                }
+            }
+        }
+    }
+}

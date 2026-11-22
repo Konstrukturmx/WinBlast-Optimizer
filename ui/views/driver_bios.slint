@@ -16,6 +16,7 @@ export struct DriverStatusItem {
 }
 
 export component DriverBiosView inherits Flickable {
+    in property <int> tier;
     in property <string> bios-vendor: "American Megatrends Inc.";
     in property <string> bios-version: "5013";
     in property <string> bios-release-date: "03/22/2024";

@@ -17,6 +17,7 @@ export struct GameProfileItem {
 }
 
 export component GameProfilesView inherits Flickable {
+    in property <int> tier;
     in property <[GameProfileItem]> profiles: [];
 
     callback add-profile-clicked();

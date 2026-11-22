@@ -1,173 +1,173 @@
 // ui/shell/statusbar.slint
-import { Scale, Theme } from "../theme.slint";
-import { WbBadge } from "../components/badge.slint";
+// Bottom chrome (port of v1.6.1): optimization progress strip with changelog toggle,
+// expandable localized transaction changelog with per-entry Undo, and footer status line.
+import { ScrollView } from "std-widgets.slint";
+import { Scale, Theme, Tr } from "../theme.slint";
+import { AppStore, ChangelogEntry } from "../stores/app.slint";
+import { WbChip } from "../components/chip.slint";
+import { WbProgressBar } from "../components/progress_bar.slint";
 
-export component AppStatusbar inherits Rectangle {
-    in property <float> cpu-percent: 0.0;        // 0.0..100.0
-    in property <float> ram-percent: 0.0;        // 0.0..100.0
-    in property <string> ram-used-text: "0.0 / 0.0 GB";
-    in property <bool> reboot-pending: false;
-    in property <bool> worker-active: false;
-    in property <string> worker-label: "Applying optimizations...";
-
-    callback reboot-clicked();
-
-    private property <float> cpu-clamped: clamp(root.cpu-percent, 0.0, 100.0);
-    private property <float> ram-clamped: clamp(root.ram-percent, 0.0, 100.0);
-    private property <float> spin-phase: mod(animation-tick() / 1ms, 900) / 900;
-
-    height: Scale.statusbar-height;
-    background: Theme.bg-glass-strong;
-    backdrop-blur: Theme.blur-radius;
-
-    // Top hairline divider
-    Rectangle {
-        y: 0px;
-        width: 100%;
-        height: 1px;
-        background: Theme.border-subtle;
-    }
-
+export component AppProgressStrip inherits Rectangle {
+    height: Scale.px(28px);
+    background: Theme.bg-sidebar;
     HorizontalLayout {
-        padding-left: Scale.space-md;
-        padding-right: Scale.space-md;
-        spacing: Scale.space-lg;
-        alignment: space-between;
+        padding-left: Scale.px(12px);
+        padding-right: Scale.px(12px);
+        padding-top: Scale.px(3px);
+        padding-bottom: Scale.px(3px);
+        spacing: Scale.px(10px);
+        Text {
+            text: AppStore.progress-text;
+            font-size: Scale.font-xs;
+            color: Theme.text-secondary;
+            vertical-alignment: center;
+            overflow: elide;
+            min-width: 0;
+            horizontal-stretch: 1;
+        }
+        WbProgressBar {
+            horizontal-stretch: 2;
+            height: Scale.px(7px);
+            y: (parent.height - self.height) / 2;
+            progress: AppStore.progress-value;
+            bar-color: AppStore.progress-tone == "warning" ? Theme.warning
+                : AppStore.progress-tone == "success" ? Theme.success : Theme.accent;
+        }
+        WbChip {
+            text: AppStore.show-changelog ? Tr.s("ChangelogToggleHide") : Tr.s("ChangelogToggleShow");
+            active: AppStore.show-changelog;
+            clicked => { AppStore.toggle-changelog(); }
+        }
+    }
+}
 
-        // Left: Live CPU & RAM telemetry strip
-        HorizontalLayout {
-            spacing: Scale.space-lg;
-            alignment: start;
-
-            // CPU Metric
+component ChangelogRow inherits Rectangle {
+    in property <ChangelogEntry> entry;
+    border-radius: Scale.px(Theme.badge-radius);
+    background: Theme.bg-card;
+    min-height: Scale.px(30px);
+    HorizontalLayout {
+        padding-left: Scale.px(8px);
+        padding-right: Scale.px(8px);
+        padding-top: Scale.px(4px);
+        padding-bottom: Scale.px(4px);
+        spacing: Scale.px(8px);
+        Text { text: entry.timestamp; font-size: Scale.font-2xs; color: Theme.text-muted; vertical-alignment: center; }
+        Rectangle {
+            border-radius: Scale.px(Theme.badge-radius);
+            background: Theme.accent.with-alpha(0.15);
             HorizontalLayout {
-                spacing: Scale.space-xs;
-                alignment: start;
-
-                Rectangle {
-                    width: Scale.px(6px);
-                    height: Scale.px(6px);
-                    y: (parent.height - self.height) / 2;
-                    border-radius: Scale.radius-pill;
-                    background:
-                        root.cpu-clamped >= 85 ? Theme.high :
-                        root.cpu-clamped >= 60 ? Theme.moderate :
-                                                 Theme.safe;
-                }
-
-                Text {
-                    text: "CPU " + round(root.cpu-clamped) + "%";
-                    color: Theme.text-secondary;
-                    font-size: Scale.font-xs;
-                    font-weight: 600;
-                    vertical-alignment: center;
-                }
+                padding-left: Scale.px(5px);
+                padding-right: Scale.px(5px);
+                Text { text: entry.action; font-size: Scale.font-2xs; color: Theme.accent; vertical-alignment: center; }
             }
-
-            // Separator
-            Rectangle {
-                width: 1px;
-                height: Scale.px(12px);
-                y: (parent.height - self.height) / 2;
-                background: Theme.border-subtle;
-            }
-
-            // RAM Metric
+        }
+        Text {
+            text: entry.title;
+            font-size: Scale.font-xs;
+            color: Theme.text-primary;
+            vertical-alignment: center;
+            overflow: elide;
+            horizontal-stretch: 1;
+            min-width: 0;
+        }
+        badge := Rectangle {
+            property <color> tone: entry.rolled-back ? Theme.text-muted : !entry.reversible ? Theme.warning : Theme.success;
+            border-radius: Scale.px(Theme.badge-radius);
+            background: tone.with-alpha(0.16);
             HorizontalLayout {
-                spacing: Scale.space-xs;
-                alignment: start;
-
-                Rectangle {
-                    width: Scale.px(6px);
-                    height: Scale.px(6px);
-                    y: (parent.height - self.height) / 2;
-                    border-radius: Scale.radius-pill;
-                    background:
-                        root.ram-clamped >= 85 ? Theme.high :
-                        root.ram-clamped >= 70 ? Theme.moderate :
-                                                 Theme.info;
-                }
-
+                padding-left: Scale.px(5px);
+                padding-right: Scale.px(5px);
                 Text {
-                    text: "RAM " + round(root.ram-clamped) + "% (" + root.ram-used-text + ")";
-                    color: Theme.text-secondary;
-                    font-size: Scale.font-xs;
-                    font-weight: 600;
+                    text: entry.rolled-back ? Tr.s("RolledBackBadge") : !entry.reversible ? Tr.s("NonReversibleBadge") : Tr.s("AppliedBadge");
+                    font-size: Scale.font-2xs;
+                    color: badge.tone;
                     vertical-alignment: center;
                 }
             }
         }
+        if !entry.rolled-back && entry.reversible : WbChip {
+            tone: "warning";
+            enabled: AppStore.can-undo;
+            text: AppStore.is-rolling-back ? Tr.s("BusyWorking") : Tr.s("UndoBtn");
+            clicked => { if !AppStore.is-rolling-back { AppStore.rollback(entry.id); } }
+        }
+    }
+}
 
-        // Right: Active worker spinner & pending reboot badge
+export component AppChangelog inherits Rectangle {
+    in property <int> tier;
+    height: tier == 0 ? Scale.px(110px) : Scale.px(150px);
+    background: Theme.bg-primary;
+    Rectangle { height: Theme.border-width; y: 0; background: Theme.border; }
+    VerticalLayout {
+        padding-left: Scale.px(12px);
+        padding-right: Scale.px(12px);
+        padding-top: Scale.px(6px);
+        spacing: Scale.px(4px);
         HorizontalLayout {
-            spacing: Scale.space-md;
-            alignment: end;
-
-            if root.worker-active : HorizontalLayout {
-                spacing: Scale.space-xs;
-                alignment: center;
-
-                Rectangle {
-                    width: Scale.px(13px);
-                    height: Scale.px(13px);
-                    y: (parent.height - self.height) / 2;
-                    background: transparent;
-
-                    Rectangle {
-                        width: parent.width;
-                        height: parent.height;
-                        border-radius: parent.width / 2;
-                        border-width: Scale.px(1.8px);
-                        border-color: Theme.accent.with-alpha(0.28);
-                        background: transparent;
-                    }
-
-                    Rectangle {
-                        private property <angle> theta: root.spin-phase * 360deg;
-                        x: (parent.width - self.width) / 2 + cos(self.theta) * (parent.width / 2 - Scale.px(2px));
-                        y: (parent.height - self.height) / 2 + sin(self.theta) * (parent.height / 2 - Scale.px(2px));
-                        width: Scale.px(3.5px);
-                        height: Scale.px(3.5px);
-                        border-radius: Scale.radius-pill;
-                        background: Theme.accent;
-                    }
-                }
-
-                Text {
-                    text: root.worker-label;
-                    color: Theme.text-primary;
-                    font-size: Scale.font-xs;
-                    font-weight: 500;
-                    vertical-alignment: center;
-                }
-            }
-
-            if !root.worker-active : Text {
-                text: "Ready";
-                color: Theme.text-muted;
-                font-size: Scale.font-xs;
+            spacing: Scale.px(8px);
+            Text {
+                text: Tr.s("ChangelogTitle");
+                font-size: Scale.font-sm;
+                font-weight: 700;
+                color: Theme.text-primary;
                 vertical-alignment: center;
+                horizontal-stretch: 1;
             }
+            WbChip { text: Tr.s("ChangelogClear"); tone: "danger"; clicked => { AppStore.clear-changelog(); } }
+        }
+        if AppStore.changelog.length == 0 : Text {
+            text: Tr.s("ChangelogEmpty");
+            font-size: Scale.font-xs;
+            color: Theme.text-muted;
+        }
+        if AppStore.changelog.length > 0 : ScrollView {
+            vertical-stretch: 1;
+            VerticalLayout {
+                spacing: Scale.px(4px);
+                padding-bottom: Scale.px(6px);
+                alignment: start;
+                for e in AppStore.changelog : ChangelogRow { entry: e; }
+            }
+        }
+    }
+}
 
-            if root.reboot-pending : Rectangle {
-                height: Scale.px(20px);
-                y: (parent.height - self.height) / 2;
-                border-radius: Scale.radius-pill;
-                background: transparent;
-
-                WbBadge {
-                    height: Scale.px(20px);
-                    text: "Reboot Required";
-                    variant: "moderate";
-                    show-dot: true;
-                }
-
-                TouchArea {
-                    mouse-cursor: pointer;
-                    clicked => {
-                        root.reboot-clicked();
-                    }
-                }
+export component AppFooter inherits Rectangle {
+    in property <int> tier;
+    height: Scale.px(26px);
+    background: Theme.bg-sidebar;
+    Rectangle { height: Theme.border-width; y: 0; background: Theme.border; }
+    HorizontalLayout {
+        padding-left: Scale.px(12px);
+        padding-right: Scale.px(8px);
+        spacing: Scale.px(10px);
+        Text {
+            text: AppStore.status-message;
+            font-size: Scale.font-xs;
+            color: Theme.text-secondary;
+            vertical-alignment: center;
+            overflow: elide;
+            horizontal-stretch: 1;
+            min-width: 0;
+        }
+        if root.tier != 0 : Text {
+            text: Tr.s("FooterStatus");
+            font-size: Scale.font-2xs;
+            color: Theme.text-muted;
+            vertical-alignment: center;
+            overflow: elide;
+        }
+        report := TouchArea {
+            width: report-text.preferred-width + Scale.px(12px);
+            mouse-cursor: pointer;
+            clicked => { AppStore.open-bug-report(); }
+            report-text := Text {
+                text: Tr.s("FooterReportBug");
+                font-size: Scale.font-xs;
+                color: report.has-hover ? Theme.accent-hover : Theme.accent;
+                vertical-alignment: center;
             }
         }
     }

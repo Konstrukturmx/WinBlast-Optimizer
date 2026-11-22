@@ -9,6 +9,7 @@ import { WbProgressBar } from "../components/progress_bar.slint";
 import { WbSparkline } from "../components/sparkline.slint";
 
 export component LatencyBenchView inherits Flickable {
+    in property <int> tier;
     in property <bool> is-monitoring: false;
     in property <float> current-latency-us: 42.0;
     in property <float> max-latency-us: 128.5;

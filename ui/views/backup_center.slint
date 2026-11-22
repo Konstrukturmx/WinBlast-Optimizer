@@ -14,6 +14,7 @@ export struct RestorePointItem {
 }
 
 export component BackupCenterView inherits Flickable {
+    in property <int> tier;
     in property <bool> is-creating: false;
     in property <[RestorePointItem]> restore-points: [];
 

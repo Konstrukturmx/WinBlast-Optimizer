@@ -9,6 +9,7 @@ import { WbSwitch } from "../components/switch.slint";
 import { WbProgressBar } from "../components/progress_bar.slint";
 
 export component GpuTuningView inherits Flickable {
+    in property <int> tier;
     in property <string> gpu-name: "NVIDIA GeForce RTX 4080 (16GB)";
     in property <string> driver-version: "566.14 (WHQL)";
     in property <bool> is-msi-enabled: true;

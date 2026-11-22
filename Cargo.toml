@@ -5,20 +5,14 @@ edition = "2021"
 description = "WinBlast0 – Windows System Optimizer & Debloater"
 
 [features]
-default = ["ui-slint", "ui-rune"]
-ui-rune = ["dep:rune", "dep:rune-kit", "dep:rune-motion"]
-ui-slint = ["dep:slint", "dep:slint-build"]
+default = []
 live-preview = ["slint/live-preview"]
 
 [dependencies]
-# GUI – Rune native GPU-rendered framework & Rune Kit
-rune = { path = "C:/Hive/rune-framework/crates/rune", optional = true }
-rune-kit = { path = "C:/Hive/rune-framework/crates/rune-kit", optional = true }
-rune-motion = { path = "C:/Hive/rune-framework/crates/rune-motion", optional = true }
 crossbeam-channel = "0.5"
 
 # Slint 1.19.0 Declarative GUI Toolkit
-slint = { version = "1.19.0", optional = true, default-features = false, features = [
+slint = { version = "1.19.0", default-features = false, features = [
     "std",
     "backend-winit",
     "renderer-femtovg-wgpu",
@@ -29,7 +23,7 @@ slint = { version = "1.19.0", optional = true, default-features = false, feature
     "compat-1-2",
 ] }
 
-# Official Microsoft Win32 Rust bindings (matching rune's 0.62 version)
+# Official Microsoft Win32 Rust bindings
 windows = { version = "0.62", features = [
     "Win32_Foundation",
     "Win32_Globalization",
@@ -75,6 +69,7 @@ sha2 = "0.10"
 # Serialization
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
+strum = { version = "0.27", features = ["derive"] }
 toml = "0.8"
 
 # Async runtime
@@ -94,23 +89,15 @@ uuid = { version = "1", features = ["v4"] }
 [dev-dependencies]
 proptest = "1.6"
 i-slint-backend-testing = "1.19.0"
-rune = { path = "C:/Hive/rune-framework/crates/rune" }
-rune-kit = { path = "C:/Hive/rune-framework/crates/rune-kit" }
 
 [build-dependencies]
 embed-manifest = "1.4"
 winres = "0.1"
-slint-build = { version = "1.19.0", optional = true }
+slint-build = "1.19.0"
 
 [profile.release]
 opt-level = 3
 lto = "thin"
 codegen-units = 1
 strip = true
-
-[patch.crates-io]
-parley_engine = { path = "C:/Hive/rune-framework/vendor/parley_engine" }
-wgpu-hal = { path = "C:/Hive/rune-framework/vendor/wgpu-hal" }
-winit = { path = "C:/Hive/rune-framework/vendor/winit" }
-accesskit_windows = { path = "C:/Hive/rune-framework/vendor/accesskit_windows" }
 

@@ -28,6 +28,7 @@ export struct AppxPackageItem {
 }
 
 export component CleanAppsView inherits Flickable {
+    in property <int> tier;
     in-out property <string> active-tab: "cleaner"; // "cleaner" | "debloater"
     in-out property <string> search-query: "";
     in property <bool> is-scanning: false;

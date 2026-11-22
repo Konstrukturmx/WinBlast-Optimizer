@@ -2,104 +2,49 @@
 
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-#[cfg(feature = "ui-slint")]
 fn run_slint() {
-    use slint::ComponentHandle;
-    tracing::info!("Initializing WinBlast0 Slint 1.19 Presentation Layer");
-    let window =
-        winblast0::ui_slint::SlintMainWindow::new().expect("Failed to create Slint MainWindow");
+    use std::cell::RefCell;
+    use std::rc::Rc;
 
+    use slint::ComponentHandle;
+    use winblast0::core::settings::UserSettings;
+    use winblast0::ui_slint::bridge::{apply_settings, SlintBridge};
+
+    tracing::info!("Initializing WinBlast0 Slint 1.19 presentation layer");
+    let window = match winblast0::ui_slint::SlintMainWindow::new() {
+        Ok(w) => w,
+        Err(e) => {
+            tracing::error!("Failed to create the main window: {e}");
+            std::process::exit(1);
+        }
+    };
+
+    let settings = UserSettings::load();
     let mut state = winblast0::app::AppState::new();
+    apply_settings(&mut state, &settings);
     state.setup_slint();
 
-    let mut bridge = winblast0::ui_slint::bridge::SlintBridge::new(window.clone_strong());
-    bridge.init(&state);
+    let (w, h) = detect_screen_workarea();
+    window.window().set_size(slint::LogicalSize::new(w.min(1600.0), h.min(1000.0)));
+    window.window().set_maximized(true);
 
-    let state_rc = std::rc::Rc::new(std::cell::RefCell::new(state));
-    bridge.bind_callbacks(state_rc.clone());
-
-    let win_handle = window.as_weak();
-    window.on_close_window(move || {
-        if let Some(w) = win_handle.upgrade() {
-            let _ = w.hide();
+    let state = Rc::new(RefCell::new(state));
+    let bridge = SlintBridge::new(window.clone_strong(), state, settings);
+    #[cfg(windows)]
+    {
+        let attach = slint::Timer::default();
+        attach.start(slint::TimerMode::SingleShot, std::time::Duration::from_millis(300), || {
+            winblast0::core::window_icon::attach_window_icon();
+        });
+        if let Err(e) = bridge.run() {
+            tracing::error!("Slint event loop failed: {e}");
         }
-        std::process::exit(0);
-    });
-
-    let win_handle2 = window.as_weak();
-    window.on_minimize_window(move || {
-        if let Some(w) = win_handle2.upgrade() {
-            w.window().set_minimized(true);
-        }
-    });
-
-    let win_handle3 = window.as_weak();
-    window.on_toggle_maximize(move || {
-        if let Some(w) = win_handle3.upgrade() {
-            let is_max = w.window().is_maximized();
-            w.window().set_maximized(!is_max);
-        }
-    });
-
-    let bridge_rc = std::rc::Rc::new(std::cell::RefCell::new(bridge));
-    let timer = slint::Timer::default();
-    let timer_state = state_rc.clone();
-    let timer_bridge = bridge_rc.clone();
-    timer.start(
-        slint::TimerMode::Repeated,
-        std::time::Duration::from_millis(100),
-        move || {
-            let mut s = timer_state.borrow_mut();
-            s.poll_headless();
-            timer_bridge.borrow_mut().poll_sync(&s);
-        },
-    );
-
-    window.run().expect("Failed to run Slint event loop");
-}
-
-#[cfg(feature = "ui-rune")]
-fn run_rune() {
-    use rune::AppSpec;
-    use winblast0::{app, ui};
-
-    let title = concat!(
-        "WinBlast0 v",
-        env!("CARGO_PKG_VERSION"),
-        " — Windows System Optimizer"
-    );
-    let initial_size = detect_screen_workarea();
-    tracing::info!(
-        "Launching WinBlast0 Rune UI with detected work area: {}x{}",
-        initial_size.0,
-        initial_size.1
-    );
-
-    let mut spec = AppSpec::new(title, initial_size, app::AppState::new, ui::view);
-    spec.min_size = Some((420.0, 400.0));
-    spec.setup = Some(app::AppState::setup);
-    spec.poll = Some(app::AppState::poll);
-    spec.scenes = &[
-        ("gpu", |s: &mut app::AppState| {
-            s.navigate(app::ActiveView::GpuTuning);
-        }),
-        ("cpu", |s: &mut app::AppState| {
-            s.navigate(app::ActiveView::CoreParking);
-        }),
-        ("matrix", |s: &mut app::AppState| {
-            s.navigate(app::ActiveView::AdvancedMatrix);
-        }),
-        ("dashboard", |s: &mut app::AppState| {
-            s.navigate(app::ActiveView::EasyDashboard);
-        }),
-    ];
-
-    let mut argv: Vec<String> = std::env::args().skip(1).collect();
-    if !argv.iter().any(|a| a == "--scroll-bars") {
-        argv.push("--scroll-bars".to_string());
-        argv.push("always".to_string());
+        drop(attach);
     }
-    rune::App::new(spec).maximized(true).args(argv).run();
+    #[cfg(not(windows))]
+    if let Err(e) = bridge.run() {
+        tracing::error!("Slint event loop failed: {e}");
+    }
 }
 
 fn main() {
@@ -115,20 +60,7 @@ fn main() {
         tracing::info!("Running with Administrator privileges");
     }
 
-    let args: Vec<String> = std::env::args().collect();
-    let prefer_rune = args.iter().any(|a| a == "--ui=rune" || a == "--rune");
-
-    #[cfg(feature = "ui-rune")]
-    if prefer_rune {
-        run_rune();
-        return;
-    }
-
-    #[cfg(feature = "ui-slint")]
     run_slint();
-
-    #[cfg(all(feature = "ui-rune", not(feature = "ui-slint")))]
-    run_rune();
 }
 
 /// Automatically detect the primary display resolution and return the full desktop work area

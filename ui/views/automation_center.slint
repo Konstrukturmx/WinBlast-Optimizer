@@ -17,6 +17,7 @@ export struct AutomationRuleItem {
 }
 
 export component AutomationCenterView inherits Flickable {
+    in property <int> tier;
     in property <[AutomationRuleItem]> rules: [];
 
     callback rule-toggled(string, bool);

@@ -16,6 +16,7 @@ export struct PrereqItemData {
 }
 
 export component GamePrereqsView inherits Flickable {
+    in property <int> tier;
     in property <[PrereqItemData]> prereqs: [];
     in property <bool> is-installing-all: false;
 

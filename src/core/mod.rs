@@ -17,3 +17,6 @@ pub mod status_i18n;
 pub mod tweak_i18n;
 pub mod updater;
 pub mod view_i18n;
+pub mod theme;
+pub mod window_icon;
+pub mod settings;

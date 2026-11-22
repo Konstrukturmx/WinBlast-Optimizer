@@ -1,78 +1,70 @@
 // ui/components/in_progress_hud.slint
-// WinBlast0 Non-Blocking Progress HUD Indicator in Slint 1.19
-
-import { Scale, Theme } from "../theme.slint";
-import { WbButton } from "button.slint";
-import { WbProgressBar } from "progress_bar.slint";
+// Centered modal "IN PROGRESS" HUD (port of v1.6.1 in_progress_hud): orbit spinner, pulsing
+// lightning badge, elapsed timer and wrapped live status. Click outside / Dismiss hides it
+// (the operation keeps running in the background, exactly like v1.6.1).
+import { Scale, Theme, Tr } from "../theme.slint";
+import { AppStore } from "../stores/app.slint";
 
 export component WbInProgressHud inherits Rectangle {
-    in property <bool> is-active: false;
-    in property <string> task-title: "Applying Optimizations";
-    in property <string> current-step: "Writing registry policy: Disable Telemetry (14/42)...";
-    in property <float> progress: 0.35;
-    in property <bool> can-cancel: true;
+    background: Theme.scrim;
+    private property <float> phase: Theme.reduced-motion ? 0 : mod(animation-tick() / 1ms, 1800) / 1800;
 
-    callback cancel-operation();
+    TouchArea { clicked => { AppStore.dismiss-hud(); } }
 
-    width: 100%;
-    height: 100%;
-    background: #00000066;
-    visible: root.is-active;
-
-    // Center HUD Card
-    Rectangle {
-        x: (parent.width - self.width) / 2;
-        y: (parent.height - self.height) / 2;
-        width: min(parent.width - Scale.px(48px), Scale.px(440px));
-        height: content-col.preferred-height + Scale.space-lg * 2;
-        border-radius: Scale.radius-md;
-        background: Theme.bg-surface;
-        border-width: 1px;
-        border-color: Theme.border-strong;
+    card := Rectangle {
+        width: min(root.width - Scale.px(32px), Scale.px(420px));
+        height: content.preferred-height;
+        border-radius: Scale.px(Theme.card-radius);
+        background: Theme.bg-card;
+        border-width: 1.5px;
+        border-color: Theme.border-accent;
         drop-shadow-blur: 24px;
-        drop-shadow-color: Theme.shadow-md;
+        drop-shadow-color: Theme.shadow-lg;
+        TouchArea {}
 
-        content-col := VerticalLayout {
-            padding: Scale.space-lg;
-            spacing: Scale.space-md;
-
+        content := VerticalLayout {
+            padding: Scale.px(20px);
+            spacing: Scale.px(12px);
+            alignment: center;
+            Rectangle {
+                height: Scale.px(72px);
+                // 10-dot orbital radar
+                for i in 10 : Rectangle {
+                    property <angle> a: (i / 10) * 360deg + root.phase * 360deg;
+                    width: Scale.px(6px);
+                    height: Scale.px(6px);
+                    border-radius: self.width / 2;
+                    x: parent.width / 2 + cos(a) * Scale.px(30px) - self.width / 2;
+                    y: parent.height / 2 + sin(a) * Scale.px(30px) - self.height / 2;
+                    background: Theme.accent.with-alpha(0.25 + 0.75 * (i / 10));
+                }
+                Rectangle {
+                    width: Scale.px(36px);
+                    height: Scale.px(36px);
+                    border-radius: self.width / 2;
+                    background: Theme.accent.with-alpha(0.18 + 0.12 * abs(sin(root.phase * 360deg)));
+                    Text { text: "⚡"; font-size: Scale.font-lg; color: Theme.accent; }
+                }
+            }
             HorizontalLayout {
-                alignment: space-between;
-                Text {
-                    text: root.task-title;
-                    font-size: Scale.font-md;
-                    font-weight: 700;
-                    color: Theme.text-primary;
-                    vertical-alignment: center;
-                }
-                Text {
-                    text: round(root.progress * 100) + "%";
-                    font-size: Scale.font-sm;
-                    font-weight: 700;
-                    color: Theme.accent;
-                    vertical-alignment: center;
-                }
+                alignment: center;
+                spacing: Scale.px(6px);
+                Text { text: "IN PROGRESS"; font-size: Scale.font-xs; font-weight: 800; letter-spacing: 1.2px; color: Theme.accent; }
+                if AppStore.hud-elapsed != "" : Text { text: "•"; font-size: Scale.font-xs; color: Theme.text-muted; }
+                if AppStore.hud-elapsed != "" : Text { text: AppStore.hud-elapsed; font-size: Scale.font-xs; color: Theme.text-muted; }
             }
-
-            WbProgressBar {
-                progress: root.progress;
-            }
-
             Text {
-                text: root.current-step;
-                font-size: Scale.font-xs;
-                color: Theme.text-secondary;
-                overflow: elide;
+                text: AppStore.hud-status == "" ? "Optimizing Windows..." : AppStore.hud-status;
+                font-size: Scale.font-md;
+                color: Theme.text-primary;
+                wrap: word-wrap;
+                horizontal-alignment: center;
             }
-
-            if root.can-cancel : HorizontalLayout {
-                alignment: end;
-                WbButton {
-                    variant: "ghost";
-                    text: "Cancel";
-                    min-height: Scale.control-sm;
-                    clicked => { root.cancel-operation(); }
-                }
+            Text {
+                text: Tr.s("CloseBtn");
+                font-size: Scale.font-2xs;
+                color: Theme.text-muted;
+                horizontal-alignment: center;
             }
         }
     }

@@ -12,7 +12,7 @@
 
 use crate::core::i18n::Language;
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, strum::EnumString, strum::IntoStaticStr, strum::VariantArray)]
 #[repr(usize)]
 pub enum ViewTextKey {
     // ── Support / About View ───────────────────────────────────────────────

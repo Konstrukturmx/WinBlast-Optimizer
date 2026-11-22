@@ -1,13 +1,20 @@
-//! WinBlast0 Slint 1.19 Presentation Layer.
+//! WinBlast0 Slint 1.19 presentation layer.
 //!
-//! Exposes the compiled Slint UI components, bridge orchestration,
-//! and native desktop event loop.
+//! Architecture: every screen area owns a Slint `global` store (see `ui/stores/*.slint`) and a
+//! Rust module here that (a) binds the store's callbacks to `AppState` actions and (b) syncs the
+//! store's properties/models from `AppState` on every UI tick. Callbacks only mutate state and
+//! request a sync; they never touch Slint while holding the `AppState` borrow, which rules out
+//! RefCell double-borrow panics from re-entrant Slint callbacks.
 
-#[cfg(feature = "ui-slint")]
 slint::include_modules!();
 
-#[cfg(feature = "ui-slint")]
 pub mod bridge;
+pub mod ctx;
+pub mod diff;
+pub mod i18n;
+pub mod models;
+pub mod shell;
+pub mod theme;
+pub mod views;
 
-#[cfg(feature = "ui-slint")]
 pub use MainWindow as SlintMainWindow;

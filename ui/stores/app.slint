@@ -1,0 +1,111 @@
+// ui/stores/app.slint
+// Shell-level state shared by the top bar, sidebar, progress strip, changelog drawer, footer,
+// dropdown overlay, in-progress HUD and diff modal. Written by src/ui_slint/shell.rs.
+
+export struct ChangelogEntry {
+    id: string,
+    timestamp: string,
+    action: string,
+    title: string,
+    rolled-back: bool,
+    reversible: bool,
+}
+
+export struct DiffRowData {
+    header: string,
+    left: string,
+    right: string,
+    summary: string,
+    tone: string,   // "success" | "warning" | "danger"
+    is-pair: bool,
+}
+
+export struct ChoiceItem {
+    label: string,
+    detail: string,
+    selected: bool,
+}
+
+export global AppStore {
+    // ---- Identity / environment ----
+    in-out property <string> app-version: "";
+    in-out property <bool> is-elevated: false;
+    in-out property <string> os-desc: "";
+    in-out property <bool> metrics-available: false;
+    in-out property <float> cpu-usage: 0;
+    in-out property <float> ram-usage: 0;
+
+    // ---- Navigation ----
+    in-out property <string> active-view: "dashboard";
+    in-out property <bool> mode-easy: true;
+    in-out property <bool> engine-instant: true;
+    in-out property <bool> sidebar-open: false;
+    in-out property <string> nav-search: "";
+    in-out property <int> fault-count: 0;
+
+    // ---- Top-bar selectors ----
+    in-out property <string> dropdown: "";          // "" | "language" | "style" | "scheme"
+    in-out property <string> language-label: "English";
+    in-out property <string> language-code: "en";
+    in-out property <[ChoiceItem]> languages: [];
+    in-out property <bool> theme-dark: true;
+    in-out property <string> theme-style-label: "";
+    in-out property <[ChoiceItem]> theme-styles: [];
+    in-out property <string> color-scheme-label: "";
+    in-out property <[ChoiceItem]> color-schemes: [];
+    in-out property <float> zoom: 1.0;
+
+    // ---- Scan / staging ----
+    in-out property <bool> is-scanning: false;
+    in-out property <int> staged-count: 0;
+    in-out property <int> total-tweaks: 0;
+
+    // ---- Progress strip ----
+    in-out property <float> progress-value: 0;
+    in-out property <string> progress-tone: "accent";   // "warning" | "success" | "accent"
+    in-out property <string> progress-text: "";
+
+    // ---- Changelog drawer ----
+    in-out property <bool> show-changelog: false;
+    in-out property <[ChangelogEntry]> changelog: [];
+    in-out property <bool> can-undo: true;
+    in-out property <bool> is-rolling-back: false;
+
+    // ---- Footer ----
+    in-out property <string> status-message: "";
+
+    // ---- In-progress HUD ----
+    in-out property <bool> hud-visible: false;
+    in-out property <string> hud-status: "";
+    in-out property <string> hud-elapsed: "";
+
+    // ---- Diff modal ----
+    in-out property <bool> diff-visible: false;
+    in-out property <string> diff-title: "";
+    in-out property <[DiffRowData]> diff-rows: [];
+
+    // ---- Callbacks (handled in Rust) ----
+    callback navigate(string);
+    callback set-mode-easy(bool);
+    callback set-engine-instant(bool);
+    callback toggle-sidebar();
+    callback set-language(int);
+    callback toggle-theme-mode();
+    callback set-theme-style(int);
+    callback set-color-scheme(int);
+    callback cycle-color-scheme();
+    callback cycle-theme-style();
+    callback set-zoom(float);
+    callback relaunch-elevated();
+    callback nav-prev();
+    callback nav-next();
+    callback start-scan();
+    callback toggle-changelog();
+    callback clear-changelog();
+    callback rollback(string);
+    callback open-bug-report();
+    callback dismiss-hud();
+    callback close-diff();
+    // Accent/diacritic-folding search match used by the sidebar filter (Rust: I18n::fold_search_str).
+    pure callback nav-matches(string /* label */, string /* query */) -> bool;
+}

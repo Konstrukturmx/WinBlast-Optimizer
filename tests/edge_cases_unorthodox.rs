@@ -11,8 +11,6 @@ use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
 use std::thread;
 
-use rune::{Env, Runtime};
-
 use winblast0::app::{ActiveView, AppState, EngineMode};
 use winblast0::core::backend::SandboxEnv;
 use winblast0::core::i18n::Language;
@@ -21,8 +19,7 @@ use winblast0::core::risk::load_embedded_rules;
 use winblast0::hardware::thermal::{SystemThermalSnapshot, ThermalHealth};
 use winblast0::scanner::scan_all_tweaks_parallel_with;
 use winblast0::tools::diagnostics::parse_multi_sz_lossless;
-use winblast0::ui;
-use winblast0::ui::theme::{ColorScheme, ThemeMode, UiThemeStyle};
+use winblast0::core::theme::{ColorScheme, ThemeMode, UiThemeStyle};
 
 // ============================================================================
 // 1. Multi-SZ Odd Byte Lengths & Corrupted Buffers
@@ -164,46 +161,37 @@ fn test_unorthodox_hardware_sensor_anomalies() {
 
 #[test]
 fn test_unorthodox_micro_and_ultrawide_viewports() {
+    use slint::ComponentHandle;
+    i_slint_backend_testing::init_no_event_loop();
+
     let sbx = SandboxEnv::new();
     let tweaks = load_embedded_rules();
     sbx.seed_all_tweaks(&tweaks);
 
-    let state = AppState::new_with_backend(Arc::new(sbx));
+    let state = std::rc::Rc::new(std::cell::RefCell::new(AppState::new_with_backend(Arc::new(sbx))));
+    let window = winblast0::ui_slint::SlintMainWindow::new().expect("create Slint MainWindow");
+    let bridge = winblast0::ui_slint::bridge::SlintBridge::new_ephemeral(window.clone_strong(), state.clone());
 
-    let extreme_viewports: &[(f32, f32)] = &[
+    let extreme_viewports: &[(u32, u32)] = &[
         // Micro viewports
-        (50.0, 50.0),
-        (120.0, 100.0),
-        (320.0, 240.0),
+        (50, 50),
+        (120, 100),
+        (320, 240),
         // Narrow vertical banner
-        (280.0, 3840.0),
+        (280, 3840),
         // Ultra-wide 32:9 and multi-monitor setups
-        (5120.0, 1440.0),
-        (7680.0, 2160.0),
+        (5120, 1440),
+        (7680, 2160),
         // Extreme ribbon / ticker banner
-        (8000.0, 300.0),
+        (8000, 300),
     ];
 
-    let test_views = [
-        ActiveView::EasyDashboard,
-        ActiveView::AdvancedMatrix,
-        ActiveView::DriverBios,
-        ActiveView::HardwareView,
-        ActiveView::FaultDiagnostics,
-        ActiveView::NetworkDiag,
-        ActiveView::ThermalMonitor,
-        ActiveView::DiskHealth,
-    ];
-
-    let mut rt = Runtime::new(state, ui::view, (800.0, 600.0), Env::new(true, 1.0));
     for &(w, h) in extreme_viewports {
-        rt.set_viewport((w, h), 1.0);
-        for &view in &test_views {
-            rt.update(|s, _| {
-                s.active_view = view;
-            });
-            rt.settle_all();
-            rt.frame(0.016);
+        window.window().set_size(slint::PhysicalSize::new(w, h));
+        for &view in &ActiveView::ALL_VIEWS {
+            state.borrow_mut().active_view = view;
+            bridge.sync();
+            assert_eq!(window.global::<winblast0::ui_slint::AppStore>().get_active_view().as_str(), view.name());
         }
     }
 }

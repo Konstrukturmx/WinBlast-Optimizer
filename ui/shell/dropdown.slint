@@ -1,0 +1,95 @@
+// ui/shell/dropdown.slint
+// Floating selector for Language / Theme Style / Color Scheme (port of v1.6.1 dropdown overlay).
+// A full-window scrim closes it on outside click.
+import { Scale, Theme, Tr } from "../theme.slint";
+import { AppStore, ChoiceItem } from "../stores/app.slint";
+
+export component AppDropdown inherits Rectangle {
+    in property <length> anchor-x;
+    in property <length> anchor-y;
+
+    property <string> title: AppStore.dropdown == "language" ? "🌐 Select Language"
+        : AppStore.dropdown == "style" ? "🎨 Theme Style" : "🌈 Color Scheme";
+    property <[ChoiceItem]> items: AppStore.dropdown == "language" ? AppStore.languages
+        : AppStore.dropdown == "style" ? AppStore.theme-styles : AppStore.color-schemes;
+
+    // Scrim (closes on outside click)
+    TouchArea { clicked => { AppStore.dropdown = ""; } }
+
+    panel := Rectangle {
+        x: min(max(0px, root.anchor-x), root.width - self.width - Scale.px(8px));
+        y: root.anchor-y;
+        width: Scale.px(290px);
+        height: list.preferred-height;
+        border-radius: Scale.px(Theme.card-radius);
+        background: Theme.bg-card;
+        border-width: Theme.border-width;
+        border-color: Theme.border-accent;
+        drop-shadow-blur: 18px;
+        drop-shadow-color: Theme.shadow-md;
+
+        TouchArea {} // swallow clicks inside the panel
+
+        list := VerticalLayout {
+            padding: Scale.px(8px);
+            spacing: Scale.px(2px);
+            HorizontalLayout {
+                padding-bottom: Scale.px(6px);
+                Text {
+                    text: root.title;
+                    font-size: Scale.font-xs;
+                    color: Theme.text-muted;
+                    horizontal-stretch: 1;
+                    vertical-alignment: center;
+                }
+                close := TouchArea {
+                    width: Scale.px(24px);
+                    mouse-cursor: pointer;
+                    clicked => { AppStore.dropdown = ""; }
+                    Text { text: "✕"; color: close.has-hover ? Theme.text-primary : Theme.text-muted; }
+                }
+            }
+            for item[i] in root.items : Rectangle {
+                height: Scale.px(32px);
+                border-radius: Scale.px(Theme.btn-radius);
+                background: row-touch.has-hover ? Theme.bg-card-hover : transparent;
+                accessible-role: button;
+                accessible-label: item.label;
+                accessible-checked: item.selected;
+                row-touch := TouchArea {
+                    mouse-cursor: pointer;
+                    clicked => {
+                        if AppStore.dropdown == "language" { AppStore.set-language(i); }
+                        else if AppStore.dropdown == "style" { AppStore.set-theme-style(i); }
+                        else { AppStore.set-color-scheme(i); }
+                        AppStore.dropdown = "";
+                    }
+                }
+                HorizontalLayout {
+                    padding-left: Scale.px(10px);
+                    padding-right: Scale.px(10px);
+                    spacing: Scale.px(6px);
+                    Text {
+                        text: item.label;
+                        font-size: Scale.font-sm;
+                        color: item.selected ? Theme.accent : Theme.text-primary;
+                        vertical-alignment: center;
+                    }
+                    Text {
+                        text: item.detail == "" ? "" : "(" + item.detail + ")";
+                        font-size: Scale.font-2xs;
+                        color: Theme.text-muted;
+                        vertical-alignment: center;
+                        horizontal-stretch: 1;
+                    }
+                    Text {
+                        text: item.selected ? "✓" : "";
+                        font-size: Scale.font-md;
+                        color: Theme.accent;
+                        vertical-alignment: center;
+                    }
+                }
+            }
+        }
+    }
+}

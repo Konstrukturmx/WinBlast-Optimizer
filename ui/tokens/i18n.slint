@@ -1,0 +1,13 @@
+// ui/tokens/i18n.slint
+// Live 8-language string lookup backed by the Rust catalogs (TextKey / ViewTextKey).
+// Usage: Tr.s("NavHardware"). Reading rev inside s() makes every binding re-evaluate when
+// the Rust side bumps rev after a language switch, so no restart is needed.
+export global Tr {
+    in-out property <int> rev: 0;
+    // Rust handler: (catalog key, revision) -> localized text. Unknown keys echo the key.
+    pure callback lookup(string, int) -> string;
+
+    public pure function s(key: string) -> string {
+        return root.lookup(key, root.rev);
+    }
+}

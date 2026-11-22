@@ -1,4 +1,4 @@
-//! Dynamic theming system for WinBlast0 in Rune.
+//! Dynamic theming system for WinBlast0 (framework-agnostic palette model consumed by the Slint bridge).
 //!
 //! Provides Light & Dark modes paired with 4 distinct WCAG AA compliant color schemes:
 //! - Cyber Indigo (Default)
@@ -6,8 +6,63 @@
 //! - Emerald Mint
 //! - Crimson Sunset
 
-use rune::color::Color;
 use serde::{Deserialize, Serialize};
+
+/// Colour in **linear** sRGB with straight alpha (same convention the v1.6.1 palette was authored in).
+#[derive(Clone, Copy, Debug, PartialEq, Default)]
+pub struct Color {
+    pub r: f32,
+    pub g: f32,
+    pub b: f32,
+    pub a: f32,
+}
+
+impl Color {
+    /// Same colour with a different alpha.
+    pub fn alpha(self, a: f32) -> Color {
+        Color { a, ..self }
+    }
+
+    /// Encode to gamma-corrected 8-bit sRGB (r, g, b, a) for display toolkits such as Slint.
+    pub fn to_srgb8(self) -> [u8; 4] {
+        fn enc(c: f32) -> u8 {
+            let c = if c.is_finite() { c.clamp(0.0, 1.0) } else { 0.0 };
+            let s = if c <= 0.003_130_8 {
+                c * 12.92
+            } else {
+                1.055 * c.powf(1.0 / 2.4) - 0.055
+            };
+            (s * 255.0).round().clamp(0.0, 255.0) as u8
+        }
+        let a = if self.a.is_finite() { self.a.clamp(0.0, 1.0) } else { 1.0 };
+        [enc(self.r), enc(self.g), enc(self.b), (a * 255.0).round() as u8]
+    }
+}
+
+/// Spring motion description (perceptual duration in seconds + bounce in (-1, 1)).
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct Spring {
+    pub duration: f32,
+    pub bounce: f32,
+}
+
+impl Spring {
+    pub const fn new(duration: f32, bounce: f32) -> Spring {
+        assert!(duration > 0.0 && duration < 1e4, "spring duration must be positive seconds");
+        assert!(bounce > -1.0 && bounce < 1.0, "spring bounce must be in (-1, 1)");
+        Spring { duration, bounce }
+    }
+    /// Effectively instant.
+    pub const NONE: Spring = Spring::new(1e-6, 0.0);
+    pub const SMOOTH: Spring = Spring::new(0.5, 0.0);
+    pub const SNAPPY: Spring = Spring::new(0.5, 0.15);
+    pub const BOUNCY: Spring = Spring::new(0.5, 0.3);
+
+    /// Duration in whole milliseconds (0 for NONE).
+    pub fn duration_ms(self) -> u32 {
+        (self.duration * 1000.0).round() as u32
+    }
+}
 
 pub const fn rgb(r: f32, g: f32, b: f32) -> Color {
     Color { r, g, b, a: 1.0 }
@@ -135,18 +190,18 @@ impl UiThemeStyle {
     }
 
     /// Motion spring for interactive transitions and element animations.
-    pub const fn motion(self) -> rune_motion::Spring {
+    pub const fn motion(self) -> Spring {
         match self {
-            UiThemeStyle::Minimalistic => rune_motion::Spring::NONE,
-            UiThemeStyle::Classic => rune_motion::Spring::new(0.15, 0.0),
-            UiThemeStyle::Compact => rune_motion::Spring::SNAPPY,
-            UiThemeStyle::Glassy => rune_motion::Spring::BOUNCY,
-            UiThemeStyle::Materialistic => rune_motion::Spring::SMOOTH,
+            UiThemeStyle::Minimalistic => Spring::NONE,
+            UiThemeStyle::Classic => Spring::new(0.15, 0.0),
+            UiThemeStyle::Compact => Spring::SNAPPY,
+            UiThemeStyle::Glassy => Spring::BOUNCY,
+            UiThemeStyle::Materialistic => Spring::SMOOTH,
         }
     }
 
     /// Smooth transition spring easing constant.
-    pub const fn easing_spring(self) -> rune_motion::Spring {
+    pub const fn easing_spring(self) -> Spring {
         self.motion()
     }
 
@@ -174,11 +229,11 @@ impl UiThemeStyle {
 }
 
 /// Global transition easing spring constants.
-pub const EASING_GLASSY: rune_motion::Spring = rune_motion::Spring::BOUNCY;
-pub const EASING_MINIMALISTIC: rune_motion::Spring = rune_motion::Spring::NONE;
-pub const EASING_CLASSIC: rune_motion::Spring = rune_motion::Spring::new(0.15, 0.0);
-pub const EASING_COMPACT: rune_motion::Spring = rune_motion::Spring::SNAPPY;
-pub const EASING_MATERIALISTIC: rune_motion::Spring = rune_motion::Spring::SMOOTH;
+pub const EASING_GLASSY: Spring = Spring::BOUNCY;
+pub const EASING_MINIMALISTIC: Spring = Spring::NONE;
+pub const EASING_CLASSIC: Spring = Spring::new(0.15, 0.0);
+pub const EASING_COMPACT: Spring = Spring::SNAPPY;
+pub const EASING_MATERIALISTIC: Spring = Spring::SMOOTH;
 
 /// Mode determining baseline dark vs light tone.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize, Default)]
@@ -255,7 +310,7 @@ pub struct ThemePalette {
     pub card_padding: f32,
     pub border_width: f32,
     pub sidebar_width: f32,
-    pub motion: rune_motion::Spring,
+    pub motion: Spring,
 
     pub bg_primary: Color,
     pub bg_sidebar: Color,

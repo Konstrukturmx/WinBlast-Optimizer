@@ -16,6 +16,7 @@ export struct CrashEventItem {
 }
 
 export component FaultDiagnosticsView inherits Flickable {
+    in property <int> tier;
     in property <int> bsod-count: 0;
     in property <int> whea-count: 0;
     in property <int> app-crash-count: 2;

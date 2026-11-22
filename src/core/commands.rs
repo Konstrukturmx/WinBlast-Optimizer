@@ -6,7 +6,7 @@
 use crate::app::ActiveView;
 use crate::core::i18n::Language;
 use crate::tools::automation::AutoTuneProfile;
-use crate::ui::theme::{ColorScheme, ThemeMode, UiThemeStyle};
+use crate::core::theme::{ColorScheme, ThemeMode, UiThemeStyle};
 use std::path::PathBuf;
 
 #[derive(Debug, Clone)]

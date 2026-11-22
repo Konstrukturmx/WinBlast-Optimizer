@@ -16,6 +16,7 @@ export struct PrivacyItemData {
 }
 
 export component PrivacyShieldView inherits Flickable {
+    in property <int> tier;
     in property <int> blocked-trackers-count: 48;
     in property <[PrivacyItemData]> items: [];
 

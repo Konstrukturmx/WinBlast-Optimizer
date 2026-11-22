@@ -16,6 +16,7 @@ export struct GameSessionData {
 }
 
 export component GamingStatsView inherits Flickable {
+    in property <int> tier;
     in property <bool> game-active: false;
     in property <string> active-game-title: "None (Desktop)";
     in property <int> total-games-tracked: 8;
