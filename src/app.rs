@@ -3658,6 +3658,38 @@ impl AppState {
         }
     }
 
+    /// Privacy Shield "Select All": every eligible privacy/telemetry tweak, using the same
+    /// category predicate as the Privacy list and the same safety rules as the matrix
+    /// (risk below High, compatible with this OS/hardware, Easy-mode inclusion). Staging only
+    /// happens in Normal engine mode for tweaks that are not already optimized.
+    /// (v1.6.1 used a different substring test, ignored compatibility and staged in Instant mode.)
+    pub fn select_privacy_tweaks(&mut self) {
+        let is_normal = self.engine_mode == EngineMode::Normal;
+        let ids: Vec<String> = self
+            .tweaks
+            .iter()
+            .filter(|t| {
+                crate::core::tweak_i18n::is_privacy_or_telemetry_category(&t.category)
+                    && t.valuation.stability_risk < RiskLevel::High
+                    && (self.mode != AppMode::Easy || t.easy_mode_included)
+                    && self.is_tweak_compatible_and_applicable(t)
+                    && self.get_tweak_scan(&t.id).is_some_and(|r| r.current_state != TweakState::NotApplicable)
+            })
+            .map(|t| t.id.clone())
+            .collect();
+        for id in &ids {
+            self.selected_tweaks.insert(id.clone());
+            if is_normal {
+                let optimized = self.get_tweak_scan(id).is_some_and(|r| r.current_state == TweakState::AlreadyOptimized);
+                if !optimized {
+                    self.staged_transitions.insert(id.clone(), StagedTransition::StageApply);
+                }
+            }
+        }
+        self.refresh_pending_actions();
+        self.set_status_spec(StatusMessageSpec::SelectedCount(self.selected_tweaks.len()));
+    }
+
     /// Shared Advanced-Matrix filter used by the list, Select-All and Deselect-All so they can
     /// never disagree: accent/diacritic-folded match against raw and localized title, category,
     /// description and id, plus risk keywords ("safe", "low", "moderate", "high", "extreme")

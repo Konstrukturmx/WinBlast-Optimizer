@@ -1,114 +1,134 @@
 // ui/views/privacy_shield.slint
-// WinBlast0 Windows Telemetry & Privacy Shield in Slint 1.19
-
-import { Scale, Theme } from "../theme.slint";
+// Privacy Shield (port of v1.6.1): stats, hosts & services telemetry audit, privacy switches.
+import { ScrollView } from "std-widgets.slint";
+import { Scale, Theme, Tr } from "../theme.slint";
+import { PrivacyStore } from "../stores/privacy.slint";
+import { MatrixStore } from "../stores/matrix.slint";
 import { WbButton } from "../components/button.slint";
-import { WbCard } from "../components/card.slint";
-import { WbBadge } from "../components/badge.slint";
-import { WbSwitch } from "../components/switch.slint";
+import { WbToggle, WbRiskBadge, WbPill, WbPanel } from "../components/toggle.slint";
 
-export struct PrivacyItemData {
-    id: string,
-    title: string,
-    description: string,
-    category: string,
-    enabled: bool,
+component Stat inherits VerticalLayout {
+    in property <int> value;
+    in property <string> label;
+    in property <color> tone;
+    min-width: Scale.px(130px);
+    horizontal-stretch: 1;
+    alignment: center;
+    Text { text: root.value; font-size: Scale.font-xl; font-weight: 800; color: root.tone; horizontal-alignment: center; }
+    Text { text: root.label; font-size: Scale.font-xs; color: Theme.text-muted; horizontal-alignment: center; wrap: word-wrap; }
 }
 
-export component PrivacyShieldView inherits Flickable {
+export component PrivacyShieldView inherits Rectangle {
     in property <int> tier;
-    in property <int> blocked-trackers-count: 48;
-    in property <[PrivacyItemData]> items: [];
 
-    callback item-toggled(string, bool);
-    callback enable-all-privacy();
-    callback reset-defaults();
+    ScrollView {
+        VerticalLayout {
+            padding: root.tier == 0 ? Scale.px(10px) : Scale.px(14px);
+            spacing: Scale.px(12px);
+            alignment: start;
 
-    content-height: content.preferred-height;
+            VerticalLayout {
+                spacing: Scale.px(4px);
+                Text { text: Tr.s("PrivacyTitle"); font-size: Scale.font-xl; font-weight: 800; color: Theme.text-primary; wrap: word-wrap; }
+                Text { text: Tr.s("PrivacySub"); font-size: Scale.font-xs; color: Theme.text-muted; wrap: word-wrap; }
+            }
 
-    content := VerticalLayout {
-        padding: Scale.space-lg;
-        spacing: Scale.space-md;
-
-        // Header Card
-        WbCard {
-            HorizontalLayout {
-                alignment: space-between;
-                VerticalLayout {
-                    spacing: Scale.space-2xs;
-                    Text {
-                        text: "Windows Telemetry & Privacy Shield";
-                        font-size: Scale.font-xl;
-                        font-weight: 700;
-                        color: Theme.text-primary;
-                    }
-                    Text {
-                        text: "Kill diagnostic data uploads, telemetry host endpoints, Cortana, Windows Recall, and Advertising ID tracking.";
-                        font-size: Scale.font-sm;
-                        color: Theme.text-secondary;
-                    }
+            WbPanel {
+                FlexboxLayout {
+                    padding: Scale.px(Theme.card-padding);
+                    spacing: Scale.px(16px);
+                    alignment: stretch;
+                    Stat { value: PrivacyStore.optimized; label: Tr.s("PrivacyBlockedStat"); tone: Theme.success; }
+                    Stat { value: PrivacyStore.not-optimized; label: Tr.s("PrivacyActiveStat"); tone: Theme.danger; }
+                    Stat { value: PrivacyStore.partial; label: Tr.s("PrivacyPartialStat"); tone: Theme.warning; }
                 }
+            }
 
-                HorizontalLayout {
-                    spacing: Scale.space-sm;
-                    WbButton {
-                        variant: "ghost";
-                        text: "Defaults";
-                        clicked => { root.reset-defaults(); }
+            WbPanel {
+                VerticalLayout {
+                    padding: Scale.px(12px);
+                    spacing: Scale.px(8px);
+                    HorizontalLayout {
+                        spacing: Scale.px(8px);
+                        Text { text: Tr.s("HostsAuditTitle"); font-size: Scale.font-md; font-weight: 700; color: Theme.text-primary; vertical-alignment: center; horizontal-stretch: 1; wrap: word-wrap; }
+                        WbButton { variant: "secondary"; text: Tr.s("RunAuditBtn"); clicked => { PrivacyStore.run-audit(); } }
                     }
-                    WbButton {
-                        variant: "primary";
-                        text: "Engage Maximum Shield";
-                        clicked => { root.enable-all-privacy(); }
+                    if PrivacyStore.audit-available : FlexboxLayout {
+                        spacing: Scale.px(10px);
+                        cross-axis-alignment: center;
+                        Text { text: PrivacyStore.hosts-status; font-size: Scale.font-sm; color: Theme.text-secondary; min-width: Scale.px(180px); }
+                        WbButton {
+                            variant: "primary";
+                            text: PrivacyStore.hosts-inflight ? Tr.s("BusyWorking") : Tr.s("BlockTelemetryHostsBtn");
+                            enabled: !PrivacyStore.hosts-inflight && !PrivacyStore.busy;
+                            loading: PrivacyStore.hosts-inflight;
+                            clicked => { PrivacyStore.block-hosts(); }
+                        }
+                    }
+                    if PrivacyStore.audit-available : FlexboxLayout {
+                        spacing: Scale.px(10px);
+                        cross-axis-alignment: center;
+                        Text { text: PrivacyStore.services-status; font-size: Scale.font-sm; color: Theme.text-secondary; min-width: Scale.px(180px); }
+                        WbButton {
+                            variant: "danger";
+                            text: PrivacyStore.services-inflight ? Tr.s("BusyWorking") : Tr.s("NeutralizeServicesBtn");
+                            enabled: !PrivacyStore.services-inflight && !PrivacyStore.busy;
+                            loading: PrivacyStore.services-inflight;
+                            clicked => { PrivacyStore.neutralize-services(); }
+                        }
                     }
                 }
             }
-        }
 
-        // Privacy Items List
-        VerticalLayout {
-            spacing: Scale.space-xs;
+            FlexboxLayout {
+                spacing: Scale.px(6px);
+                WbButton { variant: "secondary"; text: Tr.s("SelectAll"); clicked => { PrivacyStore.select-all(); } }
+                WbButton { variant: "secondary"; text: Tr.s("DeselectAll"); clicked => { PrivacyStore.deselect-all(); } }
+                WbButton {
+                    variant: "primary";
+                    text: PrivacyStore.is-applying ? Tr.s("BusyWorking")
+                        : PrivacyStore.selected-count == 0 ? Tr.s("ApplySelected")
+                        : Tr.s("ApplySelected") + " (" + PrivacyStore.selected-count + ")";
+                    enabled: !PrivacyStore.is-applying && !PrivacyStore.busy;
+                    clicked => { PrivacyStore.apply-selected(); }
+                }
+            }
 
-            for item in root.items: WbCard {
-                HorizontalLayout {
-                    alignment: space-between;
-                    HorizontalLayout {
-                        spacing: Scale.space-md;
-                        alignment: start;
-
-                        WbSwitch {
-                            checked: item.enabled;
-                            toggled(c) => { root.item-toggled(item.id, c); }
-                        }
-
-                        VerticalLayout {
-                            spacing: Scale.space-2xs;
-                            alignment: center;
-                            HorizontalLayout {
-                                spacing: Scale.space-sm;
-                                Text {
-                                    text: item.title;
-                                    font-size: Scale.font-md;
-                                    font-weight: 600;
-                                    color: Theme.text-primary;
-                                }
-                                WbBadge {
-                                    text: item.category;
-                                    variant: "neutral";
-                                }
-                            }
-                            Text {
-                                text: item.description;
-                                font-size: Scale.font-xs;
-                                color: Theme.text-secondary;
-                            }
-                        }
+            if PrivacyStore.rows.length == 0 : Text {
+                text: PrivacyStore.is-scanning ? Tr.s("ScanningEvaluating") : Tr.s("NoEligibleTweaks");
+                font-size: Scale.font-sm;
+                color: Theme.text-muted;
+            }
+            for r in PrivacyStore.rows : WbPanel {
+                border-color: r.active ? Theme.accent.with-alpha(0.35) : Theme.border;
+                FlexboxLayout {
+                    padding: Scale.px(10px);
+                    spacing: Scale.px(10px);
+                    alignment: stretch;
+                    cross-axis-alignment: center;
+                    if r.not-applicable : WbPill { text: Tr.s("StatusNotApplicable"); }
+                    if !r.not-applicable : WbToggle {
+                        on: r.active;
+                        busy: r.in-flight;
+                        accessible-name: r.title;
+                        clicked => { MatrixStore.switch-clicked(r.id); }
                     }
-
-                    WbBadge {
-                        text: item.enabled ? "Blocked" : "Allowing";
-                        variant: item.enabled ? "safe" : "moderate";
-                        show-dot: item.enabled;
+                    VerticalLayout {
+                        horizontal-stretch: 1;
+                        min-width: Scale.px(200px);
+                        Text { text: r.title; font-size: Scale.font-sm; font-weight: 600; color: Theme.text-primary; wrap: word-wrap; }
+                        Text { text: r.category-label; font-size: Scale.font-2xs; color: Theme.text-muted; }
+                    }
+                    WbRiskBadge { level: r.risk-level; label: r.risk-label; }
+                    VerticalLayout {
+                        min-width: Scale.px(150px);
+                        Text {
+                            text: r.state-text;
+                            font-size: Scale.font-xs;
+                            font-weight: 600;
+                            color: r.state-tone == "success" ? Theme.success : r.state-tone == "danger" ? Theme.danger : r.state-tone == "warning" ? Theme.warning : Theme.text-muted;
+                        }
+                        Text { text: r.detail; font-size: Scale.font-2xs; color: Theme.text-muted; overflow: elide; }
                     }
                 }
             }

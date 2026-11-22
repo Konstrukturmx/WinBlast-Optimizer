@@ -10,6 +10,7 @@ import { DashboardStore, CategoryStat } from "stores/dashboard.slint";
 import { CleanAppsStore, CleanTargetRow, AppxRow, FeatureRow, WingetRow } from "stores/clean_apps.slint";
 import { StartupStore, StartupRow } from "stores/startup.slint";
 import { BackupStore, RestorePointRow, LedgerRow } from "stores/backup.slint";
+import { PrivacyStore } from "stores/privacy.slint";
 import { AppTopBar } from "shell/topbar.slint";
 import { AppSidebar } from "shell/sidebar.slint";
 import { AppProgressStrip, AppChangelog, AppFooter } from "shell/statusbar.slint";
@@ -43,7 +44,7 @@ import { BackupCenterView } from "views/backup_center.slint";
 import { PrivacyShieldView } from "views/privacy_shield.slint";
 import { SupportAboutView } from "views/support_about.slint";
 
-export { Scale, Theme, Motion, Tr, AppStore, ChangelogEntry, DiffRowData, ChoiceItem, MatrixStore, MatrixRow, MatrixCategory, DashboardStore, CategoryStat, CleanAppsStore, CleanTargetRow, AppxRow, FeatureRow, WingetRow, StartupStore, StartupRow, BackupStore, RestorePointRow, LedgerRow }
+export { Scale, Theme, Motion, Tr, AppStore, ChangelogEntry, DiffRowData, ChoiceItem, MatrixStore, MatrixRow, MatrixCategory, DashboardStore, CategoryStat, CleanAppsStore, CleanTargetRow, AppxRow, FeatureRow, WingetRow, StartupStore, StartupRow, BackupStore, RestorePointRow, LedgerRow, PrivacyStore }
 
 export component MainWindow inherits Window {
     title: "WinBlast0 v" + AppStore.app-version + " — Windows System Optimizer";

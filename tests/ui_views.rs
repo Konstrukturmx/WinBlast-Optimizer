@@ -13,7 +13,7 @@ use winblast0::app::{ActiveView, AppState, MatrixSortMode};
 use winblast0::core::backend::SandboxEnv;
 use winblast0::core::risk::load_embedded_rules;
 use winblast0::ui_slint::bridge::SlintBridge;
-use winblast0::ui_slint::{AppStore, BackupStore, CleanAppsStore, DashboardStore, MainWindow, MatrixStore, StartupStore};
+use winblast0::ui_slint::{AppStore, BackupStore, PrivacyStore, CleanAppsStore, DashboardStore, MainWindow, MatrixStore, StartupStore};
 
 struct Harness {
     #[allow(dead_code)]
@@ -608,4 +608,52 @@ fn backup_ledger_undo_reverts_an_applied_tweak() {
     h.bridge.sync();
     let after = st.get_ledger().iter().find(|e| e.id == entry.id).unwrap();
     assert!(after.rolled_back, "ledger entry must be marked rolled back");
+}
+
+// ───────────────────────────── Privacy Shield ─────────────────────────────
+
+#[test]
+fn privacy_stats_list_and_select_all_are_consistent() {
+    let h = Harness::scanned();
+    h.goto(ActiveView::PrivacyShield);
+    let st = h.window.global::<PrivacyStore>();
+    let rows: Vec<_> = st.get_rows().iter().collect();
+    assert!(!rows.is_empty(), "catalog has privacy/telemetry tweaks");
+    let applicable = rows.iter().filter(|r| !r.not_applicable).count() as i32;
+    assert!(st.get_optimized() + st.get_not_optimized() + st.get_partial() <= applicable);
+
+    st.invoke_select_all();
+    h.bridge.sync();
+    let s = h.state.borrow();
+    let row_ids: std::collections::HashSet<&str> = rows.iter().map(|r| r.id.as_str()).collect();
+    assert!(!s.selected_tweaks.is_empty());
+    for id in &s.selected_tweaks {
+        assert!(row_ids.contains(id.as_str()), "Select All picked a non-privacy tweak: {id}");
+        let t = s.tweaks.iter().find(|t| &t.id == id).unwrap();
+        assert!(t.valuation.stability_risk < winblast0::core::risk::RiskLevel::High, "{id} is high risk");
+    }
+    // Instant mode must not stage transitions.
+    if s.engine_mode == winblast0::app::EngineMode::Instant {
+        assert!(s.staged_transitions.is_empty());
+    }
+    drop(s);
+    st.invoke_deselect_all();
+    h.bridge.sync();
+    assert_eq!(st.get_selected_count(), 0);
+}
+
+#[test]
+fn privacy_audit_and_hosts_block_run_in_sandbox() {
+    let h = Harness::scanned();
+    h.goto(ActiveView::PrivacyShield);
+    let st = h.window.global::<PrivacyStore>();
+    st.invoke_run_audit();
+    h.wait("audit", |s| s.telemetry_audit.is_some());
+    assert!(st.get_audit_available());
+    assert!(st.get_hosts_status().contains('✔'));
+    st.invoke_block_hosts();
+    h.wait("hosts blocked", |s| !s.telemetry_hosts_inflight);
+    st.invoke_neutralize_services();
+    h.wait("services neutralized", |s| !s.telemetry_services_inflight);
+    assert!(!st.get_hosts_inflight() && !st.get_services_inflight());
 }

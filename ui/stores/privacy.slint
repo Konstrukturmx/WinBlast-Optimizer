@@ -1,0 +1,27 @@
+// ui/stores/privacy.slint
+// Privacy Shield store (port of v1.6.1): privacy stats, hosts/services telemetry audit,
+// block hosts, neutralize services, privacy tweak switch list.
+import { MatrixRow } from "matrix.slint";
+
+export global PrivacyStore {
+    in-out property <int> optimized;
+    in-out property <int> not-optimized;
+    in-out property <int> partial;
+    in-out property <bool> audit-available;
+    in-out property <string> hosts-status;
+    in-out property <string> services-status;
+    in-out property <bool> hosts-inflight;
+    in-out property <bool> services-inflight;
+    in-out property <bool> busy;
+    in-out property <bool> is-applying;
+    in-out property <bool> is-scanning;
+    in-out property <int> selected-count;
+    in-out property <[MatrixRow]> rows: [];
+
+    callback run-audit();
+    callback block-hosts();
+    callback neutralize-services();
+    callback select-all();
+    callback deselect-all();
+    callback apply-selected();
+}
