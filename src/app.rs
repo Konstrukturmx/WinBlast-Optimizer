@@ -493,6 +493,12 @@ pub enum WorkerEvent {
     DiskReportLoaded(crate::hardware::disks::DiskSubsystemReport),
     /// Result of an asynchronous ReTrim of all fixed volumes.
     DiskTrimCompleted(std::result::Result<String, String>),
+    /// System health assessment finished.
+    HealthAssessed(crate::tools::automation::SystemHealthAssessment),
+    /// Memory / working-set trim finished.
+    MemoryTrimmed(crate::tools::automation::MemoryTrimResult),
+    /// Scheduled maintenance task statuses (after a refresh or toggle).
+    MaintenanceTasksLoaded { tasks: Vec<crate::tools::automation::MaintenanceTaskStatus>, error: Option<String> },
     /// A driver install / backup finished; carries the updated item and a status line.
     DriverItemUpdated { item: crate::hardware::driver_update::DriverUpdateItem, message: String },
     DriverScanCompleted(Vec<crate::hardware::driver_update::DriverUpdateItem>),
@@ -739,6 +745,8 @@ pub struct AppState {
     pub maintenance_tasks: Vec<crate::tools::automation::MaintenanceTaskStatus>,
     pub last_memory_trim_result: Option<crate::tools::automation::MemoryTrimResult>,
     pub is_running_automation: bool,
+    pub is_assessing_health: bool,
+    pub maintenance_inflight: bool,
 
     // v1.5.0 Self-Updater, Unified Hubs, and Sorting
     pub update_status: UpdateStatus,
@@ -977,9 +985,11 @@ impl AppState {
             selected_auto_tune_profile: crate::tools::automation::AutoTuneProfile::GamingLowLatency,
             system_health: None,
             system_health_assessment: None,
-            maintenance_tasks: crate::tools::automation::query_all_maintenance_tasks(),
+            maintenance_tasks: Vec::new(),
             last_memory_trim_result: None,
             is_running_automation: false,
+            is_assessing_health: false,
+            maintenance_inflight: false,
 
             // v1.5.0 Self-Updater, Unified Hubs, and Sorting
             update_status: UpdateStatus::Idle,
@@ -1006,6 +1016,7 @@ impl AppState {
         self.start_scan();
         self.refresh_platform_inventory();
         self.refresh_restore_points();
+        self.refresh_maintenance_tasks();
         self.refresh_latency();
         self.run_telemetry_audit();
         self.check_for_updates();
@@ -1882,6 +1893,23 @@ impl AppState {
             WorkerEvent::DiskReportLoaded(report) => {
                 self.disk_report = Some(report);
                 self.is_disk_scanning = false;
+            }
+            WorkerEvent::HealthAssessed(assessment) => {
+                self.is_assessing_health = false;
+                self.system_health = Some(assessment.clone());
+                self.system_health_assessment = Some(assessment);
+            }
+            WorkerEvent::MemoryTrimmed(res) => {
+                self.is_running_automation = false;
+                self.set_status(res.message.clone());
+                self.last_memory_trim_result = Some(res);
+            }
+            WorkerEvent::MaintenanceTasksLoaded { tasks, error } => {
+                self.maintenance_inflight = false;
+                self.maintenance_tasks = tasks;
+                if let Some(e) = error {
+                    self.set_status(format!("Maintenance task update failed: {e}"));
+                }
             }
             WorkerEvent::DiskTrimCompleted(res) => {
                 self.disk_trim_inflight = false;
@@ -5145,30 +5173,57 @@ impl AppState {
         }
     }
 
+    /// Run the health assessment on a worker thread via the backend (v1.6.1 ran it on the UI thread).
     pub fn refresh_system_health(&mut self) {
-        let assessment = crate::tools::automation::assess_system_health();
-        self.system_health = Some(assessment.clone());
-        self.system_health_assessment = Some(assessment);
-        if let Some(ref w) = self.waker {
-            w();
+        if self.is_assessing_health {
+            return;
         }
+        self.is_assessing_health = true;
+        let backend = Arc::clone(&self.backend);
+        spawn_guarded_worker(
+            self.tx_events.clone(),
+            self.waker.clone(),
+            |_msg| WorkerEvent::StatusUpdate("Health assessment worker panic".into()),
+            move |tx| {
+                let _ = tx.send(WorkerEvent::HealthAssessed(backend.assess_system_health()));
+            },
+        );
     }
 
+    /// Reload scheduled maintenance task status on a worker thread via the backend.
     pub fn refresh_maintenance_tasks(&mut self) {
-        self.maintenance_tasks = crate::tools::automation::query_all_maintenance_tasks();
-        if let Some(ref w) = self.waker {
-            w();
+        if self.maintenance_inflight {
+            return;
         }
+        self.maintenance_inflight = true;
+        let backend = Arc::clone(&self.backend);
+        spawn_guarded_worker(
+            self.tx_events.clone(),
+            self.waker.clone(),
+            |msg| WorkerEvent::MaintenanceTasksLoaded { tasks: Vec::new(), error: Some(format!("worker panic: {msg}")) },
+            move |tx| {
+                let _ = tx.send(WorkerEvent::MaintenanceTasksLoaded { tasks: backend.list_maintenance_tasks(), error: None });
+            },
+        );
     }
 
+    /// Install or remove a scheduled maintenance task (worker thread, via the backend).
     pub fn toggle_maintenance_task(&mut self, kind: crate::tools::automation::MaintenanceTaskKind) {
-        let is_installed = crate::tools::automation::is_maintenance_task_installed(kind);
-        if is_installed {
-            let _ = crate::tools::automation::remove_maintenance_task(kind);
-        } else {
-            let _ = crate::tools::automation::install_maintenance_task(kind);
+        if self.maintenance_inflight {
+            return;
         }
-        self.refresh_maintenance_tasks();
+        let installed = self.maintenance_tasks.iter().any(|t| t.kind == kind && t.is_installed);
+        self.maintenance_inflight = true;
+        let backend = Arc::clone(&self.backend);
+        spawn_guarded_worker(
+            self.tx_events.clone(),
+            self.waker.clone(),
+            |msg| WorkerEvent::MaintenanceTasksLoaded { tasks: Vec::new(), error: Some(format!("worker panic: {msg}")) },
+            move |tx| {
+                let error = backend.set_maintenance_task(kind, !installed).err();
+                let _ = tx.send(WorkerEvent::MaintenanceTasksLoaded { tasks: backend.list_maintenance_tasks(), error });
+            },
+        );
     }
 
     pub fn generate_auto_tune_plan(&mut self, profile: crate::tools::automation::AutoTuneProfile) {
@@ -5243,13 +5298,27 @@ impl AppState {
         self.execute_memory_trim();
     }
 
+    /// Trim working sets / standby caches on a worker thread via the backend
+    /// (v1.6.1 ran it on the UI thread, freezing the window).
     pub fn execute_memory_trim(&mut self) {
-        self.is_running_automation = true;
-        let res = crate::tools::automation::trim_system_memory_and_cache();
-        self.last_memory_trim_result = Some(res);
-        self.is_running_automation = false;
-        if let Some(ref w) = self.waker {
-            w();
+        if self.is_running_automation {
+            return;
         }
+        self.is_running_automation = true;
+        let backend = Arc::clone(&self.backend);
+        spawn_guarded_worker(
+            self.tx_events.clone(),
+            self.waker.clone(),
+            |msg| WorkerEvent::MemoryTrimmed(crate::tools::automation::MemoryTrimResult {
+                freed_mb_estimated: 0.0,
+                processes_trimmed: 0,
+                duration_ms: 0,
+                success: false,
+                message: format!("Memory trim worker panic: {msg}"),
+            }),
+            move |tx| {
+                let _ = tx.send(WorkerEvent::MemoryTrimmed(backend.trim_memory()));
+            },
+        );
     }
 }

@@ -1,104 +1,131 @@
 // ui/views/automation_center.slint
-// WinBlast0 Scheduled Automation & Background Maintenance in Slint 1.19
-
-import { Scale, Theme } from "../theme.slint";
+// Automation Center (port of v1.6.1): 1-click auto-tune with 4 profiles + plan preview,
+// memory/cache trim, health assessment, scheduled maintenance tasks.
+import { ScrollView } from "std-widgets.slint";
+import { Scale, Theme, Tr } from "../theme.slint";
+import { AutomationStore } from "../stores/automation.slint";
+import { WbChip } from "../components/chip.slint";
 import { WbButton } from "../components/button.slint";
-import { WbCard } from "../components/card.slint";
-import { WbBadge } from "../components/badge.slint";
-import { WbSwitch } from "../components/switch.slint";
+import { WbToggle, WbPill, WbPanel } from "../components/toggle.slint";
+import { WbSection } from "../components/kv.slint";
 
-export struct AutomationRuleItem {
-    id: string,
-    title: string,
-    description: string,
-    schedule-type: string,    // "Daily" | "Weekly" | "On Idle"
-    last-run: string,
-    enabled: bool,
-}
-
-export component AutomationCenterView inherits Flickable {
+export component AutomationCenterView inherits Rectangle {
     in property <int> tier;
-    in property <[AutomationRuleItem]> rules: [];
 
-    callback rule-toggled(string, bool);
-    callback run-all-now();
+    ScrollView {
+        VerticalLayout {
+            padding: root.tier == 0 ? Scale.px(10px) : Scale.px(14px);
+            spacing: Scale.px(12px);
+            alignment: start;
 
-    content-height: content.preferred-height;
-
-    content := VerticalLayout {
-        padding: Scale.space-lg;
-        spacing: Scale.space-md;
-
-        // Header Card
-        WbCard {
-            HorizontalLayout {
-                alignment: space-between;
-                VerticalLayout {
-                    spacing: Scale.space-2xs;
-                    Text {
-                        text: "Autonomous Optimization & Maintenance Engine";
-                        font-size: Scale.font-xl;
-                        font-weight: 700;
-                        color: Theme.text-primary;
+            WbPanel {
+                FlexboxLayout {
+                    padding: Scale.px(Theme.card-padding);
+                    spacing: Scale.px(8px);
+                    alignment: stretch;
+                    cross-axis-alignment: center;
+                    VerticalLayout {
+                        horizontal-stretch: 1;
+                        min-width: Scale.px(220px);
+                        Text { text: Tr.s("AutomationTitle"); font-size: Scale.font-xl; font-weight: 800; color: Theme.text-primary; wrap: word-wrap; }
+                        Text { text: Tr.s("AutomationSub"); font-size: Scale.font-xs; color: Theme.text-muted; wrap: word-wrap; }
                     }
-                    Text {
-                        text: "Automated junk collection, memory defragmentation, and tweak persistence schedules.";
-                        font-size: Scale.font-sm;
-                        color: Theme.text-secondary;
+                    WbButton {
+                        variant: "primary";
+                        text: AutomationStore.running ? Tr.s("BusyWorking") : Tr.s("AutomationOneClick");
+                        enabled: !AutomationStore.running;
+                        loading: AutomationStore.running;
+                        clicked => { AutomationStore.run-auto-tune(); }
                     }
-                }
-                WbButton {
-                    variant: "primary";
-                    text: "Execute All Now";
-                    clicked => { root.run-all-now(); }
+                    WbButton { variant: "secondary"; text: "Trim Memory & Cache"; enabled: !AutomationStore.running; clicked => { AutomationStore.trim-memory(); } }
                 }
             }
-        }
 
-        // Automation Rules List
-        VerticalLayout {
-            spacing: Scale.space-xs;
+            if AutomationStore.has-result : WbSection {
+                title: "✅ Auto-Tune Execution Results";
+                Text { text: AutomationStore.result-message; font-size: Scale.font-xs; color: Theme.text-secondary; wrap: word-wrap; }
+                FlexboxLayout {
+                    spacing: Scale.px(6px);
+                    WbPill { text: AutomationStore.result-duration; tone: "accent"; }
+                    WbPill { text: "Applied: " + AutomationStore.result-applied; tone: "success"; }
+                    WbPill { text: "Failed/Skipped: " + AutomationStore.result-failed; tone: AutomationStore.result-failed > 0 ? "warning" : "muted"; }
+                }
+            }
+            if AutomationStore.has-trim : WbSection {
+                title: "🧹 Memory & Working Set Cache Trimmed";
+                Text { text: AutomationStore.trim-text; font-size: Scale.font-xs; color: Theme.success; wrap: word-wrap; }
+            }
 
-            for rule in root.rules: WbCard {
-                HorizontalLayout {
-                    alignment: space-between;
+            FlexboxLayout {
+                spacing: Scale.px(12px);
+                alignment: stretch;
+                WbSection {
+                    min-width: Scale.px(280px);
+                    horizontal-stretch: 1;
+                    title: "⚡ " + Tr.s("AutoCenterProfilesTitle");
+                    Text { text: Tr.s("AutoCenterProfilesSubtitle"); font-size: Scale.font-xs; color: Theme.text-muted; wrap: word-wrap; }
+                    FlexboxLayout {
+                        spacing: Scale.px(6px);
+                        WbChip { text: "🎮 Ultra Gaming"; active: AutomationStore.profile == "GamingLowLatency"; clicked => { AutomationStore.set-profile("GamingLowLatency"); } }
+                        WbChip { text: "🎵 Pro Audio / DAW"; active: AutomationStore.profile == "ProAudioDpc"; clicked => { AutomationStore.set-profile("ProAudioDpc"); } }
+                        WbChip { text: "🛡 Privacy & Workstation"; active: AutomationStore.profile == "WorkstationStability"; clicked => { AutomationStore.set-profile("WorkstationStability"); } }
+                        WbChip { text: "🔋 Laptop Battery"; active: AutomationStore.profile == "LaptopBatterySaving"; clicked => { AutomationStore.set-profile("LaptopBatterySaving"); } }
+                    }
+                }
+                WbSection {
+                    min-width: Scale.px(280px);
+                    horizontal-stretch: 1;
+                    title: "🩺 " + Tr.s("AutoCenterHealthAssessment");
+                    if AutomationStore.has-health : Text { text: AutomationStore.health-grade; font-size: Scale.font-md; font-weight: 700; color: Theme.accent; }
+                    if AutomationStore.has-health : Text { text: AutomationStore.health-detail; font-size: Scale.font-xs; color: Theme.text-secondary; wrap: word-wrap; }
+                    if !AutomationStore.has-health : Text { text: Tr.s("AutoCenterHealthPending"); font-size: Scale.font-xs; color: Theme.text-muted; }
+                    if !AutomationStore.has-health : Text { text: Tr.s("AutoCenterHealthRunPrompt"); font-size: Scale.font-xs; color: Theme.text-muted; wrap: word-wrap; }
                     HorizontalLayout {
-                        spacing: Scale.space-md;
                         alignment: start;
-
-                        WbSwitch {
-                            checked: rule.enabled;
-                            toggled(c) => { root.rule-toggled(rule.id, c); }
-                        }
-
-                        VerticalLayout {
-                            spacing: Scale.space-2xs;
-                            alignment: center;
-                            HorizontalLayout {
-                                spacing: Scale.space-sm;
-                                Text {
-                                    text: rule.title;
-                                    font-size: Scale.font-md;
-                                    font-weight: 600;
-                                    color: Theme.text-primary;
-                                }
-                                WbBadge {
-                                    text: rule.schedule-type;
-                                    variant: "info";
-                                }
-                            }
-                            Text {
-                                text: rule.description + " — Last run: " + rule.last-run;
-                                font-size: Scale.font-xs;
-                                color: Theme.text-secondary;
-                            }
+                        WbButton {
+                            variant: "secondary";
+                            text: AutomationStore.assessing ? Tr.s("BusyWorking") : "🩺 Assess Health";
+                            enabled: !AutomationStore.assessing;
+                            loading: AutomationStore.assessing;
+                            clicked => { AutomationStore.assess-health(); }
                         }
                     }
+                }
+            }
 
-                    WbBadge {
-                        text: rule.enabled ? "Active" : "Disabled";
-                        variant: rule.enabled ? "safe" : "neutral";
-                        show-dot: rule.enabled;
+            WbSection {
+                title: "📋 Profile Plan Preview (" + AutomationStore.plan-count + " Optimizations)";
+                WbPill { text: AutomationStore.profile-label; tone: "accent"; }
+                FlexboxLayout {
+                    spacing: Scale.px(6px);
+                    for p in AutomationStore.plan : WbPill { text: p.label; tone: p.active ? "success" : "accent"; }
+                    if AutomationStore.plan-more > 0 : WbPill { text: "+" + AutomationStore.plan-more + " more optimizations"; tone: "muted"; }
+                }
+            }
+
+            WbSection {
+                title: "🗓 Scheduled Maintenance Tasks";
+                HorizontalLayout {
+                    alignment: start;
+                    WbButton { variant: "secondary"; text: Tr.s("RefreshStartupInventory"); enabled: !AutomationStore.maintenance-busy; clicked => { AutomationStore.refresh-maintenance(); } }
+                }
+                if AutomationStore.maintenance.length == 0 : Text { text: AutomationStore.maintenance-busy ? Tr.s("Scanning") : "—"; color: Theme.text-muted; }
+                for m in AutomationStore.maintenance : Rectangle {
+                    border-radius: Scale.px(Theme.btn-radius);
+                    background: Theme.bg-primary;
+                    FlexboxLayout {
+                        padding: Scale.px(8px);
+                        spacing: Scale.px(10px);
+                        alignment: stretch;
+                        cross-axis-alignment: center;
+                        WbToggle { on: m.installed; busy: AutomationStore.maintenance-busy; accessible-name: m.name; clicked => { AutomationStore.toggle-maintenance(m.id); } }
+                        VerticalLayout {
+                            horizontal-stretch: 1;
+                            min-width: Scale.px(220px);
+                            Text { text: m.name; font-size: Scale.font-sm; font-weight: 600; color: Theme.text-primary; }
+                            Text { text: m.desc; font-size: Scale.font-2xs; color: Theme.text-muted; wrap: word-wrap; }
+                        }
+                        WbPill { text: m.schedule; tone: m.installed ? "success" : "muted"; }
                     }
                 }
             }

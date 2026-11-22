@@ -315,6 +315,34 @@ pub trait SystemBackend: Send + Sync + 'static {
         crate::hardware::driver_update::download_and_install_driver(item, staging_dir).map_err(|e| e.to_string())
     }
 
+    /// Full system health assessment (read-only).
+    fn assess_system_health(&self) -> crate::tools::automation::SystemHealthAssessment {
+        crate::tools::automation::assess_system_health()
+    }
+
+    /// Trim process working sets and flush standby caches (mutating, reversible by nature).
+    fn trim_memory(&self) -> crate::tools::automation::MemoryTrimResult {
+        crate::tools::automation::trim_system_memory_and_cache()
+    }
+
+    /// Status of WinBlast scheduled maintenance tasks.
+    fn list_maintenance_tasks(&self) -> Vec<crate::tools::automation::MaintenanceTaskStatus> {
+        crate::tools::automation::query_all_maintenance_tasks()
+    }
+
+    /// Install (true) or remove (false) a WinBlast scheduled maintenance task (mutating).
+    fn set_maintenance_task(
+        &self,
+        kind: crate::tools::automation::MaintenanceTaskKind,
+        install: bool,
+    ) -> std::result::Result<(), String> {
+        if install {
+            crate::tools::automation::install_maintenance_task(kind)
+        } else {
+            crate::tools::automation::remove_maintenance_task(kind)
+        }
+    }
+
     /// Export the installed driver package to a backup folder.
     fn backup_driver_package(
         &self,
@@ -2888,6 +2916,70 @@ impl SystemBackend for SandboxEnv {
 
     fn check_onedrive_kfm_active(&self) -> Option<String> {
         self.state_read().onedrive_kfm_path.clone()
+    }
+
+    fn assess_system_health(&self) -> crate::tools::automation::SystemHealthAssessment {
+        use crate::tools::automation::{OverallHealthGrade, SystemHealthAssessment};
+        SystemHealthAssessment {
+            score: 100,
+            overall_score: 100,
+            overall_grade: OverallHealthGrade::Optimal,
+            grade: OverallHealthGrade::Optimal,
+            telemetry_leak_grade: "Sandbox".into(),
+            dpc_latency_grade: "Sandbox".into(),
+            bloat_services_grade: "Sandbox".into(),
+            gaming_latency_score: 100,
+            privacy_score: 100,
+            storage_hygiene_score: 100,
+            memory_efficiency_score: 100,
+            detected_issues: Vec::new(),
+            recommended_actions: Vec::new(),
+            timestamp: chrono::Utc::now().to_rfc3339(),
+        }
+    }
+
+    fn trim_memory(&self) -> crate::tools::automation::MemoryTrimResult {
+        crate::tools::automation::MemoryTrimResult {
+            freed_mb_estimated: 0.0,
+            processes_trimmed: 0,
+            duration_ms: 0,
+            success: true,
+            message: "Sandbox: memory trim simulated".into(),
+        }
+    }
+
+    fn list_maintenance_tasks(&self) -> Vec<crate::tools::automation::MaintenanceTaskStatus> {
+        use crate::tools::automation::{MaintenanceTaskKind, MaintenanceTaskStatus};
+        let dir = self.temp_dir.path.join("maintenance_tasks");
+        MaintenanceTaskKind::all()
+            .iter()
+            .map(|k| MaintenanceTaskStatus {
+                kind: *k,
+                is_installed: dir.join(k.task_name()).exists(),
+                task_name: k.task_name().to_string(),
+                schedule: format!("{} {}", k.schedule_frequency(), k.trigger_time()),
+                last_run_result: None,
+            })
+            .collect()
+    }
+
+    fn set_maintenance_task(
+        &self,
+        kind: crate::tools::automation::MaintenanceTaskKind,
+        install: bool,
+    ) -> std::result::Result<(), String> {
+        let dir = self.temp_dir.path.join("maintenance_tasks");
+        std::fs::create_dir_all(&dir).map_err(|e| e.to_string())?;
+        let marker = dir.join(kind.task_name());
+        if install {
+            std::fs::write(&marker, b"installed").map_err(|e| e.to_string())
+        } else {
+            match std::fs::remove_file(&marker) {
+                Ok(()) => Ok(()),
+                Err(e) if e.kind() == std::io::ErrorKind::NotFound => Ok(()),
+                Err(e) => Err(e.to_string()),
+            }
+        }
     }
 
     fn scan_driver_updates(&self) -> Vec<crate::hardware::driver_update::DriverUpdateItem> {

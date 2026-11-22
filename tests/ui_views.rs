@@ -13,7 +13,7 @@ use winblast0::app::{ActiveView, AppState, MatrixSortMode};
 use winblast0::core::backend::SandboxEnv;
 use winblast0::core::risk::load_embedded_rules;
 use winblast0::ui_slint::bridge::SlintBridge;
-use winblast0::ui_slint::{AppStore, BackupStore, DiskStore, DriverStore, LatencyStore, GpuStore, HardwareStore, ParkingStore, ThermalStore, PrivacyStore, CleanAppsStore, DashboardStore, MainWindow, MatrixStore, StartupStore};
+use winblast0::ui_slint::{AppStore, AutomationStore, BackupStore, DiskStore, DriverStore, LatencyStore, PlannerStore, GpuStore, HardwareStore, ParkingStore, ThermalStore, PrivacyStore, CleanAppsStore, DashboardStore, MainWindow, MatrixStore, StartupStore};
 
 struct Harness {
     #[allow(dead_code)]
@@ -881,4 +881,75 @@ fn latency_run_baseline_compare_and_clear() {
     st.invoke_clear();
     h.bridge.sync();
     assert!(!st.get_has_comparison());
+}
+
+// ───────────────────────────── Goal Planner ─────────────────────────────
+
+#[test]
+fn planner_goals_solve_and_stage() {
+    let h = Harness::scanned();
+    h.goto(ActiveView::GoalPlanner);
+    let st = h.window.global::<PlannerStore>();
+    for g in ["gaming", "privacy", "balanced"] {
+        st.invoke_select_goal(g.into());
+        h.bridge.sync();
+        assert_eq!(st.get_active_goal().as_str(), g);
+        assert_eq!(st.get_metrics().row_count(), 6);
+    }
+    st.invoke_select_goal("bogus".into());
+    h.bridge.sync();
+    assert_eq!(st.get_active_goal().as_str(), "balanced");
+    st.invoke_solve();
+    h.bridge.sync();
+    assert!(st.get_has_plan(), "A* must produce a plan for the balanced goal");
+    assert!(st.get_steps().iter().all(|s| !s.title.is_empty() && !s.badge.is_empty()));
+    let before = h.state.borrow().selected_tweaks.len();
+    st.invoke_stage();
+    h.bridge.sync();
+    assert!(h.state.borrow().selected_tweaks.len() >= before);
+}
+
+// ───────────────────────────── Automation Center ─────────────────────────────
+
+#[test]
+fn automation_profiles_autotune_trim_health_and_maintenance() {
+    let h = Harness::scanned();
+    h.goto(ActiveView::AutomationCenter);
+    let st = h.window.global::<AutomationStore>();
+    for p in ["GamingLowLatency", "ProAudioDpc", "WorkstationStability", "LaptopBatterySaving"] {
+        st.invoke_set_profile(p.into());
+        h.bridge.sync();
+        assert_eq!(st.get_profile().as_str(), p);
+        assert!(st.get_plan().row_count() <= 24);
+        assert_eq!(st.get_plan_more(), (st.get_plan_count() - 24).max(0));
+    }
+    st.invoke_set_profile("Nope".into());
+    h.bridge.sync();
+    assert_eq!(st.get_profile().as_str(), "LaptopBatterySaving");
+
+    st.invoke_run_auto_tune();
+    h.wait("auto-tune", |s| !s.is_running_automation && s.auto_tune_result.is_some());
+    assert!(st.get_has_result());
+
+    st.invoke_trim_memory();
+    assert!(h.state.borrow().is_running_automation, "trim runs on a worker");
+    h.wait("trim", |s| !s.is_running_automation && s.last_memory_trim_result.is_some());
+    assert!(st.get_has_trim());
+
+    st.invoke_assess_health();
+    h.wait("health", |s| !s.is_assessing_health && s.system_health_assessment.is_some());
+    assert!(st.get_has_health());
+
+    st.invoke_refresh_maintenance();
+    h.wait("maintenance list", |s| !s.maintenance_inflight);
+    let rows: Vec<_> = st.get_maintenance().iter().collect();
+    assert_eq!(rows.len(), 3);
+    let first = rows[0].clone();
+    st.invoke_toggle_maintenance(first.id.clone());
+    h.wait("maintenance toggle", |s| !s.maintenance_inflight);
+    let after = st.get_maintenance().iter().find(|m| m.id == first.id).unwrap();
+    assert_eq!(after.installed, !first.installed, "toggle flips the scheduled task (sandbox marker)");
+    st.invoke_toggle_maintenance("NotATask".into());
+    h.bridge.sync();
+    assert!(!h.state.borrow().maintenance_inflight);
 }

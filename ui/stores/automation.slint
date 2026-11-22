@@ -1,0 +1,35 @@
+// ui/stores/automation.slint
+// Automation Center store (port of v1.6.1 automation_center, plus the maintenance tasks and
+// health assessment that v1.6.1 computed but never exposed).
+import { ChipItem } from "common.slint";
+
+export struct MaintenanceRow { id: string, name: string, desc: string, schedule: string, installed: bool }
+
+export global AutomationStore {
+    in-out property <bool> running;
+    in-out property <bool> assessing;
+    in-out property <bool> maintenance-busy;
+    in-out property <string> profile;               // GamingLowLatency | ProAudioDpc | WorkstationStability | LaptopBatterySaving
+    in-out property <string> profile-label;
+    in-out property <int> plan-count;
+    in-out property <[ChipItem]> plan: [];          // id = tweak id, label, active = already optimized
+    in-out property <int> plan-more;
+    in-out property <bool> has-result;
+    in-out property <string> result-message;
+    in-out property <string> result-duration;
+    in-out property <int> result-applied;
+    in-out property <int> result-failed;
+    in-out property <bool> has-trim;
+    in-out property <string> trim-text;
+    in-out property <bool> has-health;
+    in-out property <string> health-grade;
+    in-out property <string> health-detail;
+    in-out property <[MaintenanceRow]> maintenance: [];
+
+    callback run-auto-tune();
+    callback trim-memory();
+    callback set-profile(string);
+    callback assess-health();
+    callback refresh-maintenance();
+    callback toggle-maintenance(string);
+}

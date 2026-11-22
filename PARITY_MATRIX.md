@@ -291,6 +291,8 @@ Status legend: **WIRED** = a Slint callback reaches this AppState action · **MI
 | View | Status | Tests |
 |---|---|---|
 | Shell (top bar, sidebar, progress, changelog, footer, dropdowns, HUD, diff) | DONE | tests/ui_parity.rs (14) |
+| Goal Planner | DONE: 3 goal presets, A* solve, stage plan, 6 metrics, Dijkstra schedule (localized) | tests/ui_views.rs planner_* (1) |
+| Automation Center | DONE: 4 profiles, plan preview, auto-tune, async memory trim, health assessment (new button), scheduled maintenance tasks (newly exposed) | tests/ui_views.rs automation_* (1) |
 | Latency Bench | DONE: run, before-baseline, clear, comparison, KPIs, per-target ping stats; the KPI strip now shows "Offline" instead of a negative ping | tests/ui_views.rs latency_* (1) |
 | Driver & BIOS | DONE: online scan, 8 category chips, folded search, WHQL/state badges, async install/backup, sandbox test driver, board/firmware/Secure Boot, display drivers | tests/ui_views.rs drivers_* (1) |
 | Core Parking / Thermal / Disk Health | DONE: unpark/restore/refresh + per-core cards; thermal gauges + components; SMART drives + async TRIM. Fixed fake sensor values, a false DirectStorage claim and a UI-thread TRIM | tests/ui_views.rs core_parking_/thermal_/disk_ (3) |

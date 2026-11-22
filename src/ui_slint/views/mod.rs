@@ -1,5 +1,6 @@
 //! Per-view binders. Each module owns one Slint global store and keeps it in sync with AppState.
 
+pub mod automation;
 pub mod backup;
 pub mod clean_apps;
 pub mod dashboard;
@@ -8,6 +9,7 @@ pub mod gpu;
 pub mod hardware;
 pub mod latency;
 pub mod matrix;
+pub mod planner;
 pub mod privacy;
 pub mod sensors;
 pub mod startup;
@@ -30,11 +32,13 @@ pub struct Views {
     sensors: sensors::SensorsView,
     drivers: drivers::DriversView,
     latency: latency::LatencyView,
+    planner: planner::PlannerView,
+    automation: automation::AutomationView,
 }
 
 impl Views {
     pub fn new(window: &MainWindow) -> Self {
-        Self { matrix: matrix::MatrixView::new(window), dashboard: dashboard::DashboardView::new(window), clean_apps: clean_apps::CleanAppsView::new(window), startup: startup::StartupView::new(window), backup: backup::BackupView::new(window), privacy: privacy::PrivacyView::new(window), gpu: gpu::GpuView::new(window), hardware: hardware::HardwareView::new(window), sensors: sensors::SensorsView::new(window), drivers: drivers::DriversView::new(window), latency: latency::LatencyView::new(window) }
+        Self { matrix: matrix::MatrixView::new(window), dashboard: dashboard::DashboardView::new(window), clean_apps: clean_apps::CleanAppsView::new(window), startup: startup::StartupView::new(window), backup: backup::BackupView::new(window), privacy: privacy::PrivacyView::new(window), gpu: gpu::GpuView::new(window), hardware: hardware::HardwareView::new(window), sensors: sensors::SensorsView::new(window), drivers: drivers::DriversView::new(window), latency: latency::LatencyView::new(window), planner: planner::PlannerView::new(window), automation: automation::AutomationView::new(window) }
     }
 
     pub fn bind(&self, window: &MainWindow, ctx: &Ctx) {
@@ -49,6 +53,8 @@ impl Views {
         self.sensors.bind(window, ctx);
         self.drivers.bind(window, ctx);
         self.latency.bind(window, ctx);
+        self.planner.bind(window, ctx);
+        self.automation.bind(window, ctx);
     }
 
     /// Sync the active view's store (inactive views are refreshed when navigated to).
@@ -67,6 +73,8 @@ impl Views {
             ActiveView::DiskHealth => self.sensors.sync_disks(window, s),
             ActiveView::DriverBios => self.drivers.sync(window, s),
             ActiveView::LatencyTester => self.latency.sync(window, s),
+            ActiveView::GoalPlanner => self.planner.sync(window, s),
+            ActiveView::AutomationCenter => self.automation.sync(window, s),
             _ => {}
         }
     }

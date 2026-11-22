@@ -1,90 +1,105 @@
 // ui/views/goal_planner.slint
-// WinBlast0 Guided Optimization Goal Planner in Slint 1.19
-
-import { Scale, Theme } from "../theme.slint";
+// A* Goal Planner (port of v1.6.1): goal presets, solve + stage, metrics, Dijkstra schedule.
+import { ScrollView } from "std-widgets.slint";
+import { Scale, Theme, Tr } from "../theme.slint";
+import { PlannerStore } from "../stores/planner.slint";
 import { WbButton } from "../components/button.slint";
-import { WbCard } from "../components/card.slint";
-import { WbBadge } from "../components/badge.slint";
+import { WbPill, WbPanel } from "../components/toggle.slint";
 
-export struct GoalPresetItem {
-    id: string,
-    title: string,
-    description: string,
-    included-tweaks: int,
-    risk-profile: string,     // "Safe" | "Performance" | "Aggressive"
-    is-applied: bool,
+component GoalCard inherits WbPanel {
+    in property <string> goal;
+    in property <string> title-key;
+    in property <string> desc-key;
+    property <bool> active: PlannerStore.active-goal == root.goal;
+    min-width: Scale.px(220px);
+    horizontal-stretch: 1;
+    border-color: active ? Theme.accent.with-alpha(0.5) : Theme.border;
+    VerticalLayout {
+        padding: Scale.px(12px);
+        spacing: Scale.px(6px);
+        Text { text: Tr.s(root.title-key); font-size: Scale.font-md; font-weight: 700; color: Theme.text-primary; wrap: word-wrap; }
+        Text { text: Tr.s(root.desc-key); font-size: Scale.font-xs; color: Theme.text-muted; wrap: word-wrap; vertical-stretch: 1; }
+        WbButton {
+            variant: root.active ? "primary" : "secondary";
+            text: root.active ? Tr.s("GoalActiveBadge") : Tr.s("GoalSelectBtn");
+            clicked => { PlannerStore.select-goal(root.goal); }
+        }
+    }
 }
 
-export component GoalPlannerView inherits Flickable {
+export component GoalPlannerView inherits Rectangle {
     in property <int> tier;
-    in property <[GoalPresetItem]> goals: [];
 
-    callback apply-goal(string);
+    ScrollView {
+        VerticalLayout {
+            padding: root.tier == 0 ? Scale.px(10px) : Scale.px(14px);
+            spacing: Scale.px(12px);
+            alignment: start;
 
-    content-height: content.preferred-height;
-
-    content := VerticalLayout {
-        padding: Scale.space-lg;
-        spacing: Scale.space-md;
-
-        // Header Card
-        WbCard {
-            VerticalLayout {
-                spacing: Scale.space-2xs;
-                Text {
-                    text: "Guided Workload Optimization Goals";
-                    font-size: Scale.font-xl;
-                    font-weight: 700;
-                    color: Theme.text-primary;
-                }
-                Text {
-                    text: "One-click curated presets engineered for specialized hardware workloads and user requirements.";
-                    font-size: Scale.font-sm;
-                    color: Theme.text-secondary;
+            WbPanel {
+                FlexboxLayout {
+                    padding: Scale.px(Theme.card-padding);
+                    spacing: Scale.px(8px);
+                    alignment: stretch;
+                    cross-axis-alignment: center;
+                    VerticalLayout {
+                        horizontal-stretch: 1;
+                        min-width: Scale.px(220px);
+                        Text { text: Tr.s("GoalPlannerTitle"); font-size: Scale.font-xl; font-weight: 800; color: Theme.text-primary; wrap: word-wrap; }
+                        Text { text: Tr.s("GoalPlannerSubtitle"); font-size: Scale.font-xs; color: Theme.text-muted; wrap: word-wrap; }
+                    }
+                    WbButton { variant: "primary"; text: Tr.s("GoalSolveBtn"); clicked => { PlannerStore.solve(); } }
+                    WbButton { variant: "secondary"; text: Tr.s("GoalStageBtn"); enabled: PlannerStore.has-plan; clicked => { PlannerStore.stage(); } }
                 }
             }
-        }
 
-        // Preset Cards Grid
-        VerticalLayout {
-            spacing: Scale.space-md;
+            FlexboxLayout {
+                spacing: Scale.px(10px);
+                alignment: stretch;
+                GoalCard { goal: "gaming"; title-key: "GoalPresetGamingTitle"; desc-key: "GoalPlannerPresetMaxFps"; }
+                GoalCard { goal: "privacy"; title-key: "GoalPresetPrivacyTitle"; desc-key: "GoalPlannerPresetMaxPrivacy"; }
+                GoalCard { goal: "balanced"; title-key: "GoalPresetBalancedTitle"; desc-key: "GoalPlannerPresetBalanced"; }
+            }
 
-            for g in root.goals: WbCard {
-                HorizontalLayout {
-                    alignment: space-between;
+            FlexboxLayout {
+                spacing: Scale.px(8px);
+                alignment: stretch;
+                for m in PlannerStore.metrics : WbPanel {
+                    min-width: Scale.px(150px);
+                    horizontal-stretch: 1;
                     VerticalLayout {
-                        spacing: Scale.space-2xs;
-                        HorizontalLayout {
-                            spacing: Scale.space-sm;
-                            Text {
-                                text: g.title;
-                                font-size: Scale.font-lg;
-                                font-weight: 700;
-                                color: Theme.text-primary;
-                            }
-                            WbBadge {
-                                text: g.risk-profile;
-                                variant: g.risk-profile == "Aggressive" ? "high" : (g.risk-profile == "Performance" ? "moderate" : "safe");
-                            }
-                        }
+                        padding: Scale.px(10px);
+                        Text { text: m.label; font-size: Scale.font-2xs; color: Theme.text-muted; wrap: word-wrap; }
                         Text {
-                            text: g.description;
-                            font-size: Scale.font-xs;
-                            color: Theme.text-secondary;
-                            wrap: word-wrap;
-                        }
-                        Text {
-                            text: "Includes " + g.included-tweaks + " specialized system, kernel, and background policy tweaks.";
-                            font-size: Scale.font-2xs;
-                            color: Theme.text-muted;
+                            text: m.value;
+                            font-size: Scale.font-lg;
+                            font-weight: 800;
+                            color: m.tone == "danger" ? Theme.danger : m.tone == "success" ? Theme.success : m.tone == "warning" ? Theme.warning : m.tone == "accent" ? Theme.accent : Theme.text-primary;
                         }
                     }
+                }
+            }
 
-                    WbButton {
-                        variant: g.is-applied ? "secondary" : "primary";
-                        text: g.is-applied ? "Applied" : "Apply Goal";
-                        enabled: !g.is-applied;
-                        clicked => { root.apply-goal(g.id); }
+            WbPanel {
+                VerticalLayout {
+                    padding: Scale.px(12px);
+                    spacing: Scale.px(6px);
+                    Text { text: Tr.s("GoalPlannerScheduleTitle"); font-size: Scale.font-md; font-weight: 700; color: Theme.text-primary; }
+                    if PlannerStore.steps.length == 0 : Text { text: Tr.s("GoalPlannerSolvePrompt"); font-size: Scale.font-sm; color: Theme.text-muted; wrap: word-wrap; }
+                    for st in PlannerStore.steps : Rectangle {
+                        border-radius: Scale.px(Theme.btn-radius);
+                        background: Theme.bg-primary;
+                        HorizontalLayout {
+                            padding: Scale.px(8px);
+                            spacing: Scale.px(10px);
+                            Text { text: st.index; font-size: Scale.font-xs; font-weight: 700; color: Theme.accent; vertical-alignment: center; width: Scale.px(32px); }
+                            VerticalLayout {
+                                horizontal-stretch: 1;
+                                Text { text: st.title; font-size: Scale.font-sm; color: Theme.text-primary; wrap: word-wrap; }
+                                Text { text: st.sub; font-size: Scale.font-2xs; color: Theme.text-muted; }
+                            }
+                            WbPill { text: st.badge; tone: st.tone; y: (parent.height - self.height) / 2; }
+                        }
                     }
                 }
             }

@@ -1,0 +1,15 @@
+// ui/stores/planner.slint
+// A* Goal Planner / Raven conflict evaluator / Dijkstra scheduler store (port of v1.6.1).
+
+export struct PlanMetric { label: string, value: string, tone: string }
+export struct PlanStep { index: string, title: string, sub: string, badge: string, tone: string }
+
+export global PlannerStore {
+    in-out property <string> active-goal;   // "gaming" | "privacy" | "balanced" | ""
+    in-out property <bool> has-plan;
+    in-out property <[PlanMetric]> metrics: [];
+    in-out property <[PlanStep]> steps: [];
+    callback solve();
+    callback stage();
+    callback select-goal(string);
+}
