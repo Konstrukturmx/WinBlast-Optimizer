@@ -623,10 +623,11 @@ pub enum TextKey {
     BatchActionsTitle,
     RevertDefaultsBtn,
     DeselectCategoryBtn,
+    ValueDetecting,
 }
 
 impl TextKey {
-    pub const COUNT: usize = 514;
+    pub const COUNT: usize = 515;
 }
 
 /// Translations indexed by [Language as usize][TextKey as usize]
@@ -1150,6 +1151,7 @@ static TRANSLATIONS: [[&str; TextKey::COUNT]; 8] = [
         "Batch Actions",
         "Revert Defaults",
         "Deselect Category",
+        "Detecting…",
     ],
     // 1: Turkish (Türkçe)
     [
@@ -1670,6 +1672,7 @@ static TRANSLATIONS: [[&str; TextKey::COUNT]; 8] = [
         "Toplu İşlemler",
         "Varsayılanlara Dön",
         "Kategori Seçimini Kaldır",
+        "Algılanıyor…",
     ],
     // 2: German (Deutsch)
     [
@@ -2190,6 +2193,7 @@ static TRANSLATIONS: [[&str; TextKey::COUNT]; 8] = [
         "Stapelaktionen",
         "Standard wiederherstellen",
         "Kategorie abwählen",
+        "Wird erkannt…",
     ],
     // 3: French (Français)
     [
@@ -2710,6 +2714,7 @@ static TRANSLATIONS: [[&str; TextKey::COUNT]; 8] = [
         "Actions groupées",
         "Rétablir les valeurs par défaut",
         "Désélectionner la catégorie",
+        "Détection…",
     ],
     // 4: Spanish (Español)
     [
@@ -3230,6 +3235,7 @@ static TRANSLATIONS: [[&str; TextKey::COUNT]; 8] = [
         "Acciones por lotes",
         "Restaurar valores predeterminados",
         "Deseleccionar categoría",
+        "Detectando…",
     ],
     // 5: Russian (Русский)
     [
@@ -3750,6 +3756,7 @@ static TRANSLATIONS: [[&str; TextKey::COUNT]; 8] = [
         "Пакетные действия",
         "Вернуть по умолчанию",
         "Снять выбор категории",
+        "Определение…",
     ],
     // 6: Chinese Simplified (简体中文)
     [
@@ -4270,6 +4277,7 @@ static TRANSLATIONS: [[&str; TextKey::COUNT]; 8] = [
         "批量操作",
         "恢复默认",
         "取消选择类别",
+        "正在检测…",
     ],
     // 7: Japanese (日本語)
     [
@@ -4790,6 +4798,7 @@ static TRANSLATIONS: [[&str; TextKey::COUNT]; 8] = [
         "一括操作",
         "既定値に戻す",
         "カテゴリの選択を解除",
+        "検出中…",
     ],
 ];
 

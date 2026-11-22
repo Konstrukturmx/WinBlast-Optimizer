@@ -13,7 +13,7 @@ use winblast0::app::{ActiveView, AppState, MatrixSortMode};
 use winblast0::core::backend::SandboxEnv;
 use winblast0::core::risk::load_embedded_rules;
 use winblast0::ui_slint::bridge::SlintBridge;
-use winblast0::ui_slint::{AppStore, MainWindow, MatrixStore};
+use winblast0::ui_slint::{AppStore, DashboardStore, MainWindow, MatrixStore};
 
 struct Harness {
     window: MainWindow,
@@ -239,4 +239,82 @@ fn matrix_presets_unknown_kind_is_ignored() {
     h.bridge.sync();
     let s = h.state.borrow();
     assert!(!s.selected_tweaks.is_empty() || s.is_applying || !s.status_message.is_empty());
+}
+
+// ───────────────────────────── Easy Dashboard ─────────────────────────────
+
+#[test]
+fn dashboard_health_score_and_category_breakdown_match_scan() {
+    let h = Harness::scanned();
+    h.goto(ActiveView::EasyDashboard);
+    let st = h.window.global::<DashboardStore>();
+    let s = h.state.borrow();
+    let expected = winblast0::ui_slint::views::dashboard::health_score(&s.scan_results);
+    assert_eq!(st.get_health_score() as u32, expected);
+    assert!(expected <= 100);
+    let applicable = s.scan_results.iter().filter(|r| r.current_state != winblast0::scanner::TweakState::NotApplicable).count();
+    let cats: Vec<_> = st.get_categories().iter().collect();
+    assert_eq!(cats.len(), 4);
+    assert_eq!(cats.iter().map(|c| c.total as usize).sum::<usize>(), applicable);
+    assert!(cats.iter().all(|c| c.optimized <= c.total));
+}
+
+#[test]
+fn dashboard_never_shows_fabricated_hardware() {
+    let h = Harness::scanned();
+    h.goto(ActiveView::EasyDashboard);
+    let st = h.window.global::<DashboardStore>();
+    let s = h.state.borrow();
+    match &s.cpu_info {
+        Some(c) => assert_eq!(st.get_hw_cpu().as_str(), c.model_name),
+        None => assert_eq!(st.get_hw_cpu().as_str(), "Detecting…"),
+    }
+    match s.gpus.first() {
+        Some(g) => assert_eq!(st.get_hw_gpu().as_str(), g.name),
+        None => assert_eq!(st.get_hw_gpu().as_str(), "Detecting…"),
+    }
+    for bogus in ["Intel / AMD Processor", "Discrete / Integrated GPU", "DDR4/DDR5 Memory", "Standard PC Motherboard"] {
+        assert_ne!(st.get_hw_cpu().as_str(), bogus);
+        assert_ne!(st.get_hw_gpu().as_str(), bogus);
+        assert_ne!(st.get_hw_ram().as_str(), bogus);
+        assert_ne!(st.get_hw_board().as_str(), bogus);
+    }
+}
+
+#[test]
+fn dashboard_updater_states_map_to_the_store() {
+    use winblast0::app::UpdateStatus;
+    let h = Harness::scanned();
+    h.goto(ActiveView::EasyDashboard);
+    let st = h.window.global::<DashboardStore>();
+    for (status, expect) in [
+        (UpdateStatus::Idle, "idle"),
+        (UpdateStatus::Checking, "checking"),
+        (UpdateStatus::UpToDate, "uptodate"),
+        (UpdateStatus::Downloading { progress_pct: 50.0 }, "downloading"),
+        (UpdateStatus::Failed("network down".into()), "failed"),
+    ] {
+        h.state.borrow_mut().update_status = status;
+        h.bridge.sync();
+        assert_eq!(st.get_update_state().as_str(), expect);
+    }
+    assert!(st.get_update_title().contains("network down"));
+    h.state.borrow_mut().update_status = UpdateStatus::Downloading { progress_pct: 250.0 };
+    h.bridge.sync();
+    assert!((st.get_update_progress() - 1.0).abs() < 1e-6, "progress must clamp");
+}
+
+#[test]
+fn dashboard_telemetry_and_impact_cards_are_consistent() {
+    let h = Harness::scanned();
+    h.goto(ActiveView::EasyDashboard);
+    let st = h.window.global::<DashboardStore>();
+    let has_metrics = h.state.borrow().realtime_metrics.is_some();
+    assert_eq!(st.get_metrics_available(), has_metrics);
+    assert!(st.get_cpu_points().row_count() <= 30);
+    assert_eq!(st.get_impact_available(), h.state.borrow().calculate_before_after_impact().is_some());
+    st.invoke_reset_baseline();
+    h.wait("baseline reset finished", |s| !s.baseline_reset_inflight);
+    assert_eq!(st.get_impact_available(), h.state.borrow().calculate_before_after_impact().is_some());
+    assert!(!st.get_baseline_reset_inflight());
 }

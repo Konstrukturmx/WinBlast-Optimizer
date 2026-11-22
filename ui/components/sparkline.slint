@@ -4,13 +4,13 @@
 import { Scale, Theme } from "../theme.slint";
 
 export component WbSparkline inherits Rectangle {
-    in property <[float]> values: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0];
+    in property <[float]> values: [];
     in property <color> stroke-color: Theme.accent;
     in property <color> fill-color: Theme.accent-subtle;
     in property <float> max-val: 100.0;
     in property <string> unit: "%";
 
-    height: Scale.px(36px);
+    height: Scale.px(42px);
     min-width: Scale.px(80px);
     border-radius: Scale.radius-sm;
     background: Theme.bg-surface;

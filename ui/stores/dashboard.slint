@@ -1,0 +1,71 @@
+// ui/stores/dashboard.slint
+// Easy Dashboard store (port of v1.6.1 easy_dashboard). Written by src/ui_slint/views/dashboard.rs.
+
+export struct CategoryStat {
+    label: string,
+    optimized: int,
+    total: int,
+    tone: string, // accent | success | warning | muted
+}
+
+export global DashboardStore {
+    in-out property <bool> admin-required;
+
+    // Self-updater
+    in-out property <string> update-state: "idle"; // idle checking available downloading ready uptodate failed
+    in-out property <string> update-title;
+    in-out property <string> update-detail;
+    in-out property <float> update-progress;
+
+    // Health
+    in-out property <int> health-score;
+    in-out property <string> health-tone: "danger";
+    in-out property <bool> is-scanning;
+
+    // Live telemetry
+    in-out property <bool> metrics-available;
+    in-out property <string> cpu-title;
+    in-out property <string> cpu-text;
+    in-out property <[float]> cpu-points: [];
+    in-out property <string> ram-title;
+    in-out property <string> ram-text;
+    in-out property <[float]> ram-points: [];
+
+    // Category breakdown
+    in-out property <[CategoryStat]> categories: [];
+
+    // Before / after impact
+    in-out property <bool> impact-available;
+    in-out property <bool> baseline-reset-inflight;
+    in-out property <string> ram-now;
+    in-out property <string> ram-was;
+    in-out property <string> ram-delta;
+    in-out property <bool> ram-good;
+    in-out property <string> proc-now;
+    in-out property <string> proc-was;
+    in-out property <string> proc-delta;
+    in-out property <bool> proc-good;
+    in-out property <string> timer-now;
+    in-out property <string> timer-was;
+    in-out property <bool> timer-good;
+    in-out property <string> opt-now;
+    in-out property <string> opt-was;
+    in-out property <string> opt-delta;
+    in-out property <bool> opt-gained;
+
+    // Hardware summary (real detection only; "Detecting…" until probed)
+    in-out property <string> hw-cpu;
+    in-out property <string> hw-cpu-topology;
+    in-out property <string> hw-gpu;
+    in-out property <string> hw-gpu-detail;
+    in-out property <string> hw-ram;
+    in-out property <string> hw-board;
+    in-out property <string> hw-uptime;
+    in-out property <string> hw-rules;
+
+    callback relaunch-admin();
+    callback check-updates();
+    callback download-update();
+    callback apply-restart();
+    callback reset-baseline();
+}

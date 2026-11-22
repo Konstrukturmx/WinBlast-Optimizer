@@ -1,420 +1,288 @@
 // ui/views/easy_dashboard.slint
-// WinBlast0 Easy Dashboard Overview View in Slint 1.19
-
-import { Scale, Theme } from "../theme.slint";
+// Easy Mode Dashboard (port of v1.6.1): admin banner, self-updater, health ring + scan,
+// live CPU/RAM waveforms, category breakdown, before/after impact, hardware summary,
+// 1-click presets and quick-launch cards.
+import { ScrollView } from "std-widgets.slint";
+import { Scale, Theme, Tr } from "../theme.slint";
+import { AppStore } from "../stores/app.slint";
+import { MatrixStore } from "../stores/matrix.slint";
+import { DashboardStore } from "../stores/dashboard.slint";
 import { WbButton } from "../components/button.slint";
-import { WbCard } from "../components/card.slint";
-import { WbBadge } from "../components/badge.slint";
-import { WbProgressBar } from "../components/progress_bar.slint";
+import { WbPanel } from "../components/toggle.slint";
 import { WbSparkline } from "../components/sparkline.slint";
+import { WbProgressBar } from "../components/progress_bar.slint";
 
-export component EasyDashboardView inherits Flickable {
+component CardTitle inherits HorizontalLayout {
+    in property <string> icon;
+    in property <string> text;
+    spacing: Scale.px(6px);
+    Text { text: root.icon; font-size: Scale.font-sm; vertical-alignment: center; }
+    Text { text: root.text; font-size: Scale.font-md; font-weight: 700; color: Theme.text-primary; vertical-alignment: center; wrap: word-wrap; horizontal-stretch: 1; }
+}
+
+component Metric inherits VerticalLayout {
+    in property <string> label;
+    in property <string> now;
+    in property <string> was;
+    in property <string> delta;
+    in property <color> delta-color;
+    spacing: Scale.px(2px);
+    min-width: Scale.px(150px);
+    Text { text: root.label; font-size: Scale.font-xs; color: Theme.text-muted; }
+    HorizontalLayout {
+        spacing: Scale.px(6px);
+        Text { text: root.now; font-size: Scale.font-lg; font-weight: 700; color: Theme.text-primary; }
+        Text { text: root.was; font-size: Scale.font-xs; color: Theme.text-muted; vertical-alignment: center; }
+    }
+    Text { text: root.delta; font-size: Scale.font-xs; color: root.delta-color; wrap: word-wrap; }
+}
+
+component QuickCard inherits WbPanel {
+    in property <string> title-key;
+    in property <string> desc-key;
+    in property <string> btn-key;
+    in property <string> view;
+    in property <bool> accent;
+    min-width: Scale.px(200px);
+    VerticalLayout {
+        padding: Scale.px(12px);
+        spacing: Scale.px(6px);
+        Text { text: Tr.s(root.title-key); font-size: Scale.font-sm; font-weight: 700; color: Theme.text-primary; wrap: word-wrap; }
+        Text { text: Tr.s(root.desc-key); font-size: Scale.font-xs; color: Theme.text-muted; wrap: word-wrap; vertical-stretch: 1; }
+        WbButton { variant: root.accent ? "primary" : "secondary"; text: Tr.s(root.btn-key); clicked => { AppStore.navigate(root.view); } }
+    }
+}
+
+component HwCell inherits VerticalLayout {
+    in property <string> label;
+    in property <string> value;
+    in property <string> sub;
+    spacing: Scale.px(2px);
+    min-width: Scale.px(180px);
+    Text { text: root.label; font-size: Scale.font-xs; color: Theme.accent; }
+    Text { text: root.value; font-size: Scale.font-md; font-weight: 600; color: Theme.text-primary; wrap: word-wrap; }
+    if root.sub != "" : Text { text: root.sub; font-size: Scale.font-xs; color: Theme.text-muted; wrap: word-wrap; }
+}
+
+export component EasyDashboardView inherits Rectangle {
     in property <int> tier;
-    in property <int> health-score: 85;
-    in property <int> total-tweaks: 230;
-    in property <int> applied-tweaks: 142;
-    in property <bool> is-admin: true;
-    in property <bool> optimizing: false;
+    private property <color> health-color: DashboardStore.health-tone == "success" ? Theme.success : DashboardStore.health-tone == "warning" ? Theme.warning : Theme.danger;
 
-    // Hardware Telemetry Snapshots
-    in property <float> cpu-usage: 12.5;
-    in property <float> ram-usage: 44.2;
-    in property <string> ram-text: "7.1 / 16.0 GB";
-    in property <float> gpu-usage: 20.0;
-    in property <float> disk-usage: 35.0;
-    in property <[float]> cpu-history: [10.0, 15.0, 12.0, 18.0, 14.0, 11.0, 22.0, 16.0, 13.0, 12.5];
+    ScrollView {
+        VerticalLayout {
+            padding: root.tier == 0 ? Scale.px(10px) : Scale.px(14px);
+            spacing: Scale.px(12px);
+            alignment: start;
 
-    // Hardware Specs
-    in property <string> cpu-model: "AMD Ryzen 9 5900X (12C/24T)";
-    in property <string> gpu-model: "NVIDIA GeForce RTX 4080 (16GB)";
-    in property <string> ram-capacity: "32.0 GB DDR4-3600";
-    in property <string> os-version: "Windows 11 Pro 24H2 (Build 26100)";
-
-    // Update Banner
-    in property <bool> update-available: false;
-    in property <string> update-version: "";
-
-    callback quick-boost-clicked();
-    callback scan-system-clicked();
-    callback navigate-to-view(string);
-    callback download-update-clicked();
-
-    content-height: content.preferred-height;
-
-    content := VerticalLayout {
-        padding: Scale.space-lg;
-        spacing: Scale.space-md;
-
-        // Elevation warning banner
-        if !root.is-admin : WbCard {
-            background: Theme.danger.with-alpha(0.12);
-            border-color: Theme.danger.with-alpha(0.3);
-
-            HorizontalLayout {
-                spacing: Scale.space-md;
-                alignment: space-between;
-
-                HorizontalLayout {
-                    spacing: Scale.space-sm;
-                    alignment: start;
-                    Text {
-                        text: "⚠";
-                        font-size: Scale.font-lg;
-                        color: Theme.danger;
-                        vertical-alignment: center;
-                    }
+            // ---- Administrator warning ----
+            if DashboardStore.admin-required : Rectangle {
+                border-radius: Scale.px(Theme.card-radius);
+                background: Theme.warning.with-alpha(0.14);
+                border-width: 1px;
+                border-color: Theme.warning.with-alpha(0.55);
+                FlexboxLayout {
+                    padding: Scale.px(12px);
+                    spacing: Scale.px(10px);
+                    cross-axis-alignment: center;
+                    Text { text: "⚠️"; font-size: Scale.font-lg; }
                     VerticalLayout {
-                        spacing: Scale.space-2xs;
-                        Text {
-                            text: "Administrator Privileges Required";
-                            font-size: Scale.font-md;
-                            font-weight: 700;
-                            color: Theme.text-primary;
-                        }
-                        Text {
-                            text: "Some kernel tweaks, services, and system repair routines require elevation to execute.";
-                            font-size: Scale.font-sm;
-                            color: Theme.text-secondary;
-                        }
+                        min-width: Scale.px(220px);
+                        Text { text: Tr.s("AdminRequiredTitle"); font-size: Scale.font-md; font-weight: 700; color: Theme.warning; wrap: word-wrap; }
+                        Text { text: Tr.s("AdminRequiredDesc"); font-size: Scale.font-xs; color: Theme.text-secondary; wrap: word-wrap; }
                     }
-                }
-
-                WbButton {
-                    variant: "danger";
-                    text: "Restart as Admin";
-                    min-height: Scale.control-sm;
-                    clicked => { root.quick-boost-clicked(); }
+                    WbButton { variant: "secondary"; text: Tr.s("RelaunchAdminBtn"); clicked => { DashboardStore.relaunch-admin(); } }
                 }
             }
-        }
 
-        // Top Hero Card: System Health Gauge & Quick Boost CTA
-        WbCard {
-            elevation: 1;
+            // ---- Self-updater ----
+            WbPanel {
+                FlexboxLayout {
+                    padding: Scale.px(10px);
+                    spacing: Scale.px(10px);
+                    cross-axis-alignment: center;
+                    Text {
+                        text: DashboardStore.update-state == "available" ? "🚀" : DashboardStore.update-state == "downloading" ? "📥"
+                            : DashboardStore.update-state == "checking" ? "⟳" : DashboardStore.update-state == "failed" ? "⚠"
+                            : DashboardStore.update-state == "idle" ? "📦" : "✔";
+                        font-size: Scale.font-md;
+                        color: DashboardStore.update-state == "failed" ? Theme.danger : Theme.accent;
+                    }
+                    VerticalLayout {
+                        min-width: Scale.px(200px);
+                        Text { text: DashboardStore.update-title; font-size: Scale.font-sm; font-weight: 600; color: DashboardStore.update-state == "failed" ? Theme.danger : Theme.text-primary; wrap: word-wrap; }
+                        if DashboardStore.update-detail != "" : Text { text: DashboardStore.update-detail; font-size: Scale.font-xs; color: Theme.text-muted; wrap: word-wrap; }
+                        if DashboardStore.update-state == "downloading" : WbProgressBar { height: Scale.px(6px); progress: DashboardStore.update-progress; }
+                    }
+                    if DashboardStore.update-state == "idle" || DashboardStore.update-state == "uptodate" || DashboardStore.update-state == "failed" : WbButton {
+                        variant: "secondary"; text: Tr.s("UpdateCheckBtn"); clicked => { DashboardStore.check-updates(); }
+                    }
+                    if DashboardStore.update-state == "available" : WbButton {
+                        variant: "primary"; text: Tr.s("UpdateDownloadInstallBtn"); clicked => { DashboardStore.download-update(); }
+                    }
+                    if DashboardStore.update-state == "ready" : WbButton {
+                        variant: "primary"; text: Tr.s("UpdateReadyRestartBtn"); clicked => { DashboardStore.apply-restart(); }
+                    }
+                }
+            }
 
-            HorizontalLayout {
-                spacing: Scale.space-xl;
-                alignment: space-between;
-
-                // Left: Circular health indicator & score
-                HorizontalLayout {
-                    spacing: Scale.space-lg;
-                    alignment: start;
-
-                    Rectangle {
-                        width: Scale.px(84px);
-                        height: Scale.px(84px);
-                        border-radius: Scale.radius-pill;
-                        background: Theme.bg-surface;
-                        border-width: Scale.px(4px);
-                        border-color: root.health-score >= 80 ? Theme.safe : (root.health-score >= 50 ? Theme.moderate : Theme.danger);
-
+            // ---- Header: title + health ring + scan ----
+            WbPanel {
+                FlexboxLayout {
+                    padding: Scale.px(Theme.card-padding);
+                    spacing: Scale.px(14px);
+                    cross-axis-alignment: center;
+                    VerticalLayout {
+                        min-width: Scale.px(220px);
+                        spacing: Scale.px(4px);
+                        Text { text: Tr.s("NavSystemPanel"); font-size: Scale.font-xl; font-weight: 800; color: Theme.text-primary; wrap: word-wrap; }
+                        Text { text: Tr.s("DashboardSubtitle"); font-size: Scale.font-xs; color: Theme.text-muted; wrap: word-wrap; }
+                    }
+                    HorizontalLayout {
+                        spacing: Scale.px(10px);
+                        Rectangle {
+                            width: Scale.px(64px);
+                            height: Scale.px(64px);
+                            border-radius: self.width / 2;
+                            border-width: Scale.px(5px);
+                            border-color: root.health-color;
+                            background: root.health-color.with-alpha(0.10);
+                            Text { text: DashboardStore.health-score + "%"; font-size: Scale.font-lg; font-weight: 800; color: root.health-color; }
+                        }
                         VerticalLayout {
                             alignment: center;
-                            spacing: 0;
-                            Text {
-                                text: root.health-score + "%";
-                                font-size: Scale.font-xl;
-                                font-weight: 800;
-                                color: Theme.text-primary;
-                                horizontal-alignment: center;
-                            }
-                            Text {
-                                text: "HEALTH";
-                                font-size: Scale.font-2xs;
-                                font-weight: 700;
-                                color: Theme.text-muted;
-                                horizontal-alignment: center;
-                            }
+                            Text { text: Tr.s("SystemHealth"); font-size: Scale.font-sm; font-weight: 700; color: Theme.text-primary; }
+                            Text { text: Tr.s("OptimizedLabel"); font-size: Scale.font-xs; color: Theme.text-muted; }
                         }
                     }
-
-                    VerticalLayout {
-                        alignment: center;
-                        spacing: Scale.space-2xs;
-
-                        Text {
-                            text: root.health-score >= 80 ? "System Highly Optimized" : (root.health-score >= 50 ? "System Partially Optimized" : "Optimization Recommended");
-                            font-size: Scale.font-lg;
-                            font-weight: 700;
-                            color: Theme.text-primary;
-                        }
-
-                        Text {
-                            text: root.applied-tweaks + " of " + root.total-tweaks + " optimization policies active";
-                            font-size: Scale.font-sm;
-                            color: Theme.text-secondary;
-                        }
-
-                        HorizontalLayout {
-                            spacing: Scale.space-xs;
-                            alignment: start;
-                            WbBadge {
-                                text: root.health-score >= 80 ? "Peak State" : "Action Needed";
-                                variant: root.health-score >= 80 ? "safe" : "moderate";
-                                show-dot: true;
-                            }
-                            WbBadge {
-                                text: "Zero Telemetry";
-                                variant: "info";
-                            }
-                        }
-                    }
-                }
-
-                // Right: Action buttons
-                HorizontalLayout {
-                    spacing: Scale.space-sm;
-                    alignment: end;
-
-                    WbButton {
-                        variant: "ghost";
-                        text: "Scan System";
-                        enabled: !root.optimizing;
-                        min-height: Scale.control-md;
-                        clicked => { root.scan-system-clicked(); }
-                    }
-
                     WbButton {
                         variant: "primary";
-                        text: root.optimizing ? "Optimizing..." : "Quick Boost";
-                        loading: root.optimizing;
-                        enabled: !root.optimizing;
-                        min-height: Scale.control-md;
-                        clicked => { root.quick-boost-clicked(); }
-                    }
-                }
-            }
-        }
-
-        // Live Real-Time Telemetry Row
-        HorizontalLayout {
-            spacing: Scale.space-md;
-            alignment: stretch;
-
-            // CPU Card
-            WbCard {
-                horizontal-stretch: 1;
-
-                VerticalLayout {
-                    spacing: Scale.space-xs;
-                    HorizontalLayout {
-                        alignment: space-between;
-                        Text {
-                            text: "CPU LOAD";
-                            font-size: Scale.font-xs;
-                            font-weight: 700;
-                            color: Theme.text-muted;
-                        }
-                        Text {
-                            text: round(root.cpu-usage) + "%";
-                            font-size: Scale.font-sm;
-                            font-weight: 700;
-                            color: root.cpu-usage >= 80 ? Theme.high : Theme.safe;
-                        }
-                    }
-                    WbSparkline {
-                        values: root.cpu-history;
-                        stroke-color: root.cpu-usage >= 80 ? Theme.high : Theme.accent;
+                        text: DashboardStore.is-scanning ? Tr.s("Scanning") : Tr.s("ScanSystem");
+                        enabled: !DashboardStore.is-scanning;
+                        loading: DashboardStore.is-scanning;
+                        clicked => { AppStore.start-scan(); }
                     }
                 }
             }
 
-            // RAM Card
-            WbCard {
-                horizontal-stretch: 1;
-
-                VerticalLayout {
-                    spacing: Scale.space-xs;
-                    HorizontalLayout {
-                        alignment: space-between;
-                        Text {
-                            text: "MEMORY";
-                            font-size: Scale.font-xs;
-                            font-weight: 700;
-                            color: Theme.text-muted;
-                        }
-                        Text {
-                            text: round(root.ram-usage) + "%";
-                            font-size: Scale.font-sm;
-                            font-weight: 700;
-                            color: root.ram-usage >= 85 ? Theme.high : Theme.info;
-                        }
-                    }
-                    WbProgressBar {
-                        progress: root.ram-usage / 100.0;
-                    }
-                    Text {
-                        text: root.ram-text;
-                        font-size: Scale.font-xs;
-                        color: Theme.text-secondary;
-                    }
-                }
-            }
-
-            // GPU Card
-            WbCard {
-                horizontal-stretch: 1;
-
-                VerticalLayout {
-                    spacing: Scale.space-xs;
-                    HorizontalLayout {
-                        alignment: space-between;
-                        Text {
-                            text: "GPU ENGINE";
-                            font-size: Scale.font-xs;
-                            font-weight: 700;
-                            color: Theme.text-muted;
-                        }
-                        Text {
-                            text: round(root.gpu-usage) + "%";
-                            font-size: Scale.font-sm;
-                            font-weight: 700;
-                            color: Theme.accent;
-                        }
-                    }
-                    WbProgressBar {
-                        progress: root.gpu-usage / 100.0;
-                    }
-                    Text {
-                        text: root.gpu-model;
-                        font-size: Scale.font-xs;
-                        color: Theme.text-secondary;
-                        overflow: elide;
-                    }
-                }
-            }
-        }
-
-        // Quick Navigation Launchers Row
-        HorizontalLayout {
-            spacing: Scale.space-md;
-            alignment: stretch;
-
-            WbCard {
-                horizontal-stretch: 1;
-                interactive: true;
-
-                VerticalLayout {
-                    spacing: Scale.space-xs;
-                    Text {
-                        text: "🎮 Gaming Optimization";
-                        font-size: Scale.font-md;
-                        font-weight: 700;
-                        color: Theme.text-primary;
-                    }
-                    Text {
-                        text: "GPU clocks, MSI mode, game DVR blocker, and core parking tuning.";
-                        font-size: Scale.font-xs;
-                        color: Theme.text-secondary;
-                        wrap: word-wrap;
-                    }
-                    WbButton {
-                        variant: "ghost";
-                        text: "Open Gaming";
-                        min-height: Scale.control-sm;
-                        clicked => { root.navigate-to-view("game_profiles"); }
-                    }
-                }
-            }
-
-            WbCard {
-                horizontal-stretch: 1;
-                interactive: true;
-
-                VerticalLayout {
-                    spacing: Scale.space-xs;
-                    Text {
-                        text: "🧹 Deep Junk Cleaner";
-                        font-size: Scale.font-md;
-                        font-weight: 700;
-                        color: Theme.text-primary;
-                    }
-                    Text {
-                        text: "Reclaim GBs of temp files, crash dumps, and Windows update cache safely.";
-                        font-size: Scale.font-xs;
-                        color: Theme.text-secondary;
-                        wrap: word-wrap;
-                    }
-                    WbButton {
-                        variant: "ghost";
-                        text: "Open Cleaner";
-                        min-height: Scale.control-sm;
-                        clicked => { root.navigate-to-view("clean_apps"); }
-                    }
-                }
-            }
-
-            WbCard {
-                horizontal-stretch: 1;
-                interactive: true;
-
-                VerticalLayout {
-                    spacing: Scale.space-xs;
-                    Text {
-                        text: "🛡️ Privacy & Shield";
-                        font-size: Scale.font-md;
-                        font-weight: 700;
-                        color: Theme.text-primary;
-                    }
-                    Text {
-                        text: "Block telemetry endpoints, diagnostics tracking, and background tracking.";
-                        font-size: Scale.font-xs;
-                        color: Theme.text-secondary;
-                        wrap: word-wrap;
-                    }
-                    WbButton {
-                        variant: "ghost";
-                        text: "Open Privacy";
-                        min-height: Scale.control-sm;
-                        clicked => { root.navigate-to-view("privacy"); }
-                    }
-                }
-            }
-        }
-
-        // Hardware Specification Card
-        WbCard {
-            VerticalLayout {
-                spacing: Scale.space-sm;
-
-                Text {
-                    text: "SYSTEM HARDWARE & PLATFORM";
-                    font-size: Scale.font-xs;
-                    font-weight: 700;
-                    color: Theme.text-muted;
-                }
-
-                HorizontalLayout {
-                    spacing: Scale.space-lg;
-                    alignment: stretch;
-
+            // ---- Live telemetry ----
+            if DashboardStore.metrics-available : FlexboxLayout {
+                spacing: Scale.px(12px);
+                WbPanel {
+                    min-width: root.tier == 0 ? Scale.px(240px) : Scale.px(300px);
+                    horizontal-stretch: 1;
                     VerticalLayout {
-                        horizontal-stretch: 1;
-                        spacing: Scale.space-2xs;
-                        Text { text: "Processor"; font-size: Scale.font-xs; color: Theme.text-muted; }
-                        Text { text: root.cpu-model; font-size: Scale.font-sm; font-weight: 600; color: Theme.text-primary; }
+                        padding: Scale.px(12px);
+                        spacing: Scale.px(6px);
+                        Text { text: DashboardStore.cpu-title; font-size: Scale.font-sm; font-weight: 700; color: Theme.text-primary; }
+                        Text { text: DashboardStore.cpu-text; font-size: Scale.font-xs; color: Theme.sparkline-cpu; }
+                        WbSparkline { values: DashboardStore.cpu-points; stroke-color: Theme.sparkline-cpu; max-val: 100; }
                     }
-
+                }
+                WbPanel {
+                    min-width: root.tier == 0 ? Scale.px(240px) : Scale.px(300px);
+                    horizontal-stretch: 1;
                     VerticalLayout {
-                        horizontal-stretch: 1;
-                        spacing: Scale.space-2xs;
-                        Text { text: "Graphics"; font-size: Scale.font-xs; color: Theme.text-muted; }
-                        Text { text: root.gpu-model; font-size: Scale.font-sm; font-weight: 600; color: Theme.text-primary; }
+                        padding: Scale.px(12px);
+                        spacing: Scale.px(6px);
+                        Text { text: DashboardStore.ram-title; font-size: Scale.font-sm; font-weight: 700; color: Theme.text-primary; }
+                        Text { text: DashboardStore.ram-text; font-size: Scale.font-xs; color: Theme.sparkline-ram; }
+                        WbSparkline { values: DashboardStore.ram-points; stroke-color: Theme.sparkline-ram; max-val: 100; }
                     }
+                }
+            }
 
-                    VerticalLayout {
-                        horizontal-stretch: 1;
-                        spacing: Scale.space-2xs;
-                        Text { text: "Memory"; font-size: Scale.font-xs; color: Theme.text-muted; }
-                        Text { text: root.ram-capacity; font-size: Scale.font-sm; font-weight: 600; color: Theme.text-primary; }
+            // ---- Category breakdown ----
+            WbPanel {
+                VerticalLayout {
+                    padding: Scale.px(12px);
+                    spacing: Scale.px(10px);
+                    CardTitle { icon: "📊"; text: Tr.s("DashboardCatBreakdownTitle"); }
+                    FlexboxLayout {
+                        spacing: Scale.px(14px);
+                        for c in DashboardStore.categories : VerticalLayout {
+                            min-width: Scale.px(140px);
+                            horizontal-stretch: 1;
+                            spacing: Scale.px(4px);
+                            HorizontalLayout {
+                                Text { text: c.label; font-size: Scale.font-xs; color: Theme.text-secondary; horizontal-stretch: 1; overflow: elide; }
+                                Text { text: c.optimized + "/" + c.total; font-size: Scale.font-xs; font-weight: 700; color: Theme.text-primary; }
+                            }
+                            WbProgressBar {
+                                height: Scale.px(6px);
+                                progress: c.total > 0 ? c.optimized / c.total : 0;
+                                bar-color: c.tone == "accent" ? Theme.accent : c.tone == "success" ? Theme.success : c.tone == "warning" ? Theme.warning : Theme.text-secondary;
+                            }
+                        }
                     }
+                }
+            }
 
-                    VerticalLayout {
-                        horizontal-stretch: 1;
-                        spacing: Scale.space-2xs;
-                        Text { text: "Operating System"; font-size: Scale.font-xs; color: Theme.text-muted; }
-                        Text { text: root.os-version; font-size: Scale.font-sm; font-weight: 600; color: Theme.text-primary; }
+            // ---- Before / after impact ----
+            if DashboardStore.impact-available : WbPanel {
+                VerticalLayout {
+                    padding: Scale.px(12px);
+                    spacing: Scale.px(10px);
+                    FlexboxLayout {
+                        spacing: Scale.px(10px);
+                        cross-axis-alignment: center;
+                        VerticalLayout {
+                            min-width: Scale.px(220px);
+                            Text { text: Tr.s("BeforeAfterImpact"); font-size: Scale.font-md; font-weight: 700; color: Theme.text-primary; }
+                            Text { text: Tr.s("BeforeAfterSub"); font-size: Scale.font-xs; color: Theme.text-muted; wrap: word-wrap; }
+                        }
+                        WbButton {
+                            variant: "secondary";
+                            text: DashboardStore.baseline-reset-inflight ? Tr.s("BusyWorking") : Tr.s("ResetBaseline");
+                            enabled: !DashboardStore.baseline-reset-inflight;
+                            clicked => { DashboardStore.reset-baseline(); }
+                        }
+                    }
+                    FlexboxLayout {
+                        spacing: Scale.px(16px);
+                        Metric { label: Tr.s("RamUsage"); now: DashboardStore.ram-now; was: DashboardStore.ram-was; delta: DashboardStore.ram-delta; delta-color: DashboardStore.ram-good ? Theme.success : Theme.warning; }
+                        Metric { label: Tr.s("BackgroundProcesses"); now: DashboardStore.proc-now; was: DashboardStore.proc-was; delta: DashboardStore.proc-delta; delta-color: DashboardStore.proc-good ? Theme.success : Theme.warning; }
+                        Metric { label: Tr.s("TimerResolution"); now: DashboardStore.timer-now; was: ""; delta: DashboardStore.timer-was; delta-color: DashboardStore.timer-good ? Theme.success : Theme.text-secondary; }
+                        Metric { label: Tr.s("ActiveOptimizations"); now: DashboardStore.opt-now; was: DashboardStore.opt-was; delta: DashboardStore.opt-delta; delta-color: DashboardStore.opt-gained ? Theme.success : Theme.text-muted; }
+                    }
+                }
+            }
+
+            // ---- Hardware summary ----
+            WbPanel {
+                VerticalLayout {
+                    padding: Scale.px(12px);
+                    spacing: Scale.px(10px);
+                    CardTitle { icon: "💻"; text: Tr.s("DashboardHwSummaryTitle"); }
+                    FlexboxLayout {
+                        spacing: Scale.px(16px);
+                        HwCell { label: Tr.s("DashboardHwCpu"); value: DashboardStore.hw-cpu; sub: DashboardStore.hw-cpu-topology; }
+                        HwCell { label: Tr.s("DashboardHwGpu"); value: DashboardStore.hw-gpu; sub: DashboardStore.hw-gpu-detail; }
+                        HwCell { label: Tr.s("DashboardHwRam"); value: DashboardStore.hw-ram; sub: DashboardStore.hw-board; }
+                        HwCell { label: Tr.s("DashboardHwPlatform"); value: DashboardStore.hw-uptime; sub: DashboardStore.hw-rules; }
+                    }
+                }
+            }
+
+            // ---- Quick actions ----
+            WbPanel {
+                VerticalLayout {
+                    padding: Scale.px(12px);
+                    spacing: Scale.px(10px);
+                    FlexboxLayout {
+                        spacing: Scale.px(8px);
+                        cross-axis-alignment: center;
+                        CardTitle { icon: "⚡"; text: Tr.s("QuickActionsTitle"); min-width: Scale.px(180px); }
+                        WbButton { variant: "primary"; text: Tr.s("GamingPreset"); clicked => { MatrixStore.apply-preset("gaming"); } }
+                        WbButton { variant: "secondary"; text: Tr.s("ProAudioPreset"); clicked => { MatrixStore.apply-preset("pro_audio"); } }
+                        WbButton { variant: "secondary"; text: Tr.s("LaptopBatteryPreset"); clicked => { MatrixStore.apply-preset("laptop_battery"); } }
+                    }
+                    FlexboxLayout {
+                        spacing: Scale.px(10px);
+                        QuickCard { title-key: "DashboardQaFpsTitle"; desc-key: "DashboardQaFpsDesc"; btn-key: "DashboardQaFpsBtn"; view: "matrix"; accent: true; }
+                        QuickCard { title-key: "DashboardQaCleanTitle"; desc-key: "DashboardQaCleanDesc"; btn-key: "DashboardQaCleanBtn"; view: "clean_apps"; }
+                        QuickCard { title-key: "DashboardQaCpuTitle"; desc-key: "DashboardQaCpuDesc"; btn-key: "DashboardQaCpuBtn"; view: "cpu_parking"; }
+                        QuickCard { title-key: "DashboardQaDriverTitle"; desc-key: "DashboardQaDriverDesc"; btn-key: "DashboardQaDriverBtn"; view: "driver_bios"; }
+                        QuickCard { title-key: "DashboardQaFaultTitle"; desc-key: "DashboardQaFaultDesc"; btn-key: "DashboardQaFaultBtn"; view: "fault_diagnostics"; }
                     }
                 }
             }
