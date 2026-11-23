@@ -15,7 +15,7 @@ use super::super::{FaultStore, MainWindow, PerfStore, RepairRow, RepairStore, Ti
 
 pub const ISSUES_URL: &str = "https://github.com/Konstrukturmx/WinBlast-Optimizer/issues/new";
 
-fn open_external(target: &str) {
+pub(crate) fn open_external(target: &str) {
     #[cfg(windows)]
     {
         let _ = crate::core::process::SilentCommand::new("rundll32").args(["url.dll,FileProtocolHandler", target]).spawn();

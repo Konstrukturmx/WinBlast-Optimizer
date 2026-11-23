@@ -13,7 +13,7 @@ use winblast0::app::{ActiveView, AppState, MatrixSortMode};
 use winblast0::core::backend::SandboxEnv;
 use winblast0::core::risk::load_embedded_rules;
 use winblast0::ui_slint::bridge::SlintBridge;
-use winblast0::ui_slint::{AppStore, AutomationStore, BackupStore, FaultStore, PerfStore, RepairStore, DiskStore, DriverStore, LatencyStore, PlannerStore, GpuStore, HardwareStore, ParkingStore, ThermalStore, PrivacyStore, CleanAppsStore, DashboardStore, MainWindow, MatrixStore, StartupStore, GamingStore, PrereqStore, NetworkStore};
+use winblast0::ui_slint::{AppStore, AutomationStore, BackupStore, FaultStore, PerfStore, RepairStore, DiskStore, DriverStore, LatencyStore, PlannerStore, GpuStore, HardwareStore, ParkingStore, ThermalStore, PrivacyStore, CleanAppsStore, DashboardStore, MainWindow, MatrixStore, StartupStore, GamingStore, PrereqStore, NetworkStore, AboutStore};
 
 struct Harness {
     #[allow(dead_code)]
@@ -1147,4 +1147,24 @@ fn network_probe_and_dns_actions_report_real_outcome() {
     n.invoke_reset_dns();
     h.wait("reset dns", |s| !s.network_action_inflight);
     assert!(h.state.borrow().status_message.contains("ResetDnsDhcp"), "{}", h.state.borrow().status_message);
+}
+
+// ───────────────────────────── Support & About ─────────────────────────────
+
+#[test]
+fn about_shows_real_version_and_style_studio_switches_style() {
+    let h = Harness::scanned();
+    h.goto(ActiveView::SupportAbout);
+    let app = h.window.global::<AppStore>();
+    assert_eq!(app.get_app_version().as_str(), env!("CARGO_PKG_VERSION"));
+    let a = h.window.global::<AboutStore>();
+    assert!(a.get_repo_url().starts_with("https://github.com/"));
+    let styles = app.get_theme_styles();
+    assert_eq!(styles.row_count(), 5);
+    let target = (0..styles.row_count()).find(|&i| !styles.row_data(i).unwrap().selected).unwrap();
+    let before = h.state.borrow().theme_style;
+    app.invoke_set_theme_style(target as i32);
+    h.bridge.sync();
+    assert_ne!(h.state.borrow().theme_style, before);
+    assert!(app.get_theme_styles().row_data(target).unwrap().selected);
 }

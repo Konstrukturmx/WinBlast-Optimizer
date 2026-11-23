@@ -671,10 +671,19 @@ pub enum TextKey {
     NetNotProbed,
     PrereqInstallBtn,
     PrereqReinstallBtn,
+    AboutTagline,
+    AboutBuiltWith,
+    AboutWhatsNewTitle,
+    AboutNew1,
+    AboutNew2,
+    AboutNew3,
+    AboutNew4,
+    AboutNew5,
+    AboutNew6,
 }
 
 impl TextKey {
-    pub const COUNT: usize = 562;
+    pub const COUNT: usize = 571;
 }
 
 /// Translations indexed by [Language as usize][TextKey as usize]
@@ -1246,6 +1255,15 @@ static TRANSLATIONS: [[&str; TextKey::COUNT]; 8] = [
         "Not probed yet — run the ping probe.",
         "Install Runtime",
         "Reinstall / Verify",
+        "Open-source Windows optimization & low-latency engine.",
+        "Built with the Slint UI toolkit and a pure-Rust Win32 core. License: MIT.",
+        "What's new in 1.7.0",
+        "• New native Slint interface — the Rune UI engine has been removed.",
+        "• Long tasks (drivers, SFC/DISM, TRIM, health checks, installs) run in the background — the window no longer freezes.",
+        "• Honest data only: invented hardware values, benchmark scores and FPS claims were removed or clearly labelled.",
+        "• Game Bar, DNS and profile actions now report their real result instead of always claiming success.",
+        "• Live switching between 8 languages, 6 colour schemes, 5 styles, dark/light mode and zoom.",
+        "• All 230 tweaks kept, including the low-level kernel tweaks.",
     ],
     // 1: Turkish (Türkçe)
     [
@@ -1814,6 +1832,15 @@ static TRANSLATIONS: [[&str; TextKey::COUNT]; 8] = [
         "Henüz ölçülmedi — ping testini çalıştırın.",
         "Çalışma Zamanını Yükle",
         "Yeniden Yükle / Doğrula",
+        "Açık kaynaklı Windows iyileştirme ve düşük gecikme motoru.",
+        "Slint arayüz kitiyle ve saf Rust Win32 çekirdeğiyle geliştirildi. Lisans: MIT.",
+        "1.7.0 sürümündeki yenilikler",
+        "• Yeni yerel Slint arayüzü — Rune UI motoru kaldırıldı.",
+        "• Uzun işlemler (sürücüler, SFC/DISM, TRIM, sağlık denetimleri, kurulumlar) arka planda çalışır — pencere artık donmaz.",
+        "• Yalnızca gerçek veriler: uydurma donanım değerleri, test puanları ve FPS iddiaları kaldırıldı ya da açıkça etiketlendi.",
+        "• Game Bar, DNS ve profil işlemleri artık her zaman başarı bildirmek yerine gerçek sonucu gösterir.",
+        "• 8 dil, 6 renk şeması, 5 stil, koyu/açık mod ve yakınlaştırma arasında anında geçiş.",
+        "• Düşük seviyeli çekirdek ayarları dahil 230 ayarın tümü korundu.",
     ],
     // 2: German (Deutsch)
     [
@@ -2382,6 +2409,15 @@ static TRANSLATIONS: [[&str; TextKey::COUNT]; 8] = [
         "Noch nicht gemessen — Ping-Test ausführen.",
         "Laufzeit installieren",
         "Neu installieren / Prüfen",
+        "Quelloffene Windows-Optimierung und Low-Latency-Engine.",
+        "Erstellt mit dem Slint-UI-Toolkit und einem reinen Rust-Win32-Kern. Lizenz: MIT.",
+        "Neu in 1.7.0",
+        "• Neue native Slint-Oberfläche — die Rune-UI-Engine wurde entfernt.",
+        "• Lange Aufgaben (Treiber, SFC/DISM, TRIM, Zustandsprüfungen, Installationen) laufen im Hintergrund — das Fenster friert nicht mehr ein.",
+        "• Nur echte Daten: erfundene Hardwarewerte, Benchmark-Ergebnisse und FPS-Angaben wurden entfernt oder klar gekennzeichnet.",
+        "• Game-Bar-, DNS- und Profilaktionen melden jetzt ihr echtes Ergebnis, statt immer Erfolg anzuzeigen.",
+        "• Sofortiger Wechsel zwischen 8 Sprachen, 6 Farbschemata, 5 Stilen, Dunkel-/Hellmodus und Zoom.",
+        "• Alle 230 Tweaks bleiben erhalten, einschließlich der Low-Level-Kernel-Tweaks.",
     ],
     // 3: French (Français)
     [
@@ -2950,6 +2986,15 @@ static TRANSLATIONS: [[&str; TextKey::COUNT]; 8] = [
         "Pas encore mesuré — lancez le test ping.",
         "Installer le runtime",
         "Réinstaller / Vérifier",
+        "Moteur open source d'optimisation Windows et de faible latence.",
+        "Conçu avec la boîte à outils d'interface Slint et un noyau Win32 en Rust pur. Licence : MIT.",
+        "Nouveautés de la 1.7.0",
+        "• Nouvelle interface native Slint — le moteur d'interface Rune a été supprimé.",
+        "• Les tâches longues (pilotes, SFC/DISM, TRIM, bilans, installations) s'exécutent en arrière-plan — la fenêtre ne se fige plus.",
+        "• Des données honnêtes : les valeurs matérielles, scores et gains FPS inventés ont été supprimés ou clairement signalés.",
+        "• Les actions Game Bar, DNS et profils indiquent désormais leur vrai résultat au lieu d'annoncer toujours un succès.",
+        "• Changement instantané entre 8 langues, 6 palettes, 5 styles, mode sombre/clair et zoom.",
+        "• Les 230 réglages sont conservés, y compris les réglages bas niveau du noyau.",
     ],
     // 4: Spanish (Español)
     [
@@ -3518,6 +3563,15 @@ static TRANSLATIONS: [[&str; TextKey::COUNT]; 8] = [
         "Aún no medido: ejecute la prueba de ping.",
         "Instalar runtime",
         "Reinstalar / Verificar",
+        "Motor de código abierto de optimización de Windows y baja latencia.",
+        "Creado con el kit de interfaz Slint y un núcleo Win32 en Rust puro. Licencia: MIT.",
+        "Novedades de la 1.7.0",
+        "• Nueva interfaz nativa Slint: se eliminó el motor de interfaz Rune.",
+        "• Las tareas largas (controladores, SFC/DISM, TRIM, comprobaciones, instalaciones) se ejecutan en segundo plano: la ventana ya no se congela.",
+        "• Solo datos reales: se eliminaron o etiquetaron claramente valores de hardware, puntuaciones y cifras de FPS inventados.",
+        "• Las acciones de Game Bar, DNS y perfiles ahora informan su resultado real en lugar de indicar siempre éxito.",
+        "• Cambio instantáneo entre 8 idiomas, 6 esquemas de color, 5 estilos, modo oscuro/claro y zoom.",
+        "• Se conservan los 230 ajustes, incluidos los de bajo nivel del kernel.",
     ],
     // 5: Russian (Русский)
     [
@@ -4086,6 +4140,15 @@ static TRANSLATIONS: [[&str; TextKey::COUNT]; 8] = [
         "Ещё не измерено — запустите пинг-тест.",
         "Установить",
         "Переустановить / Проверить",
+        "Движок оптимизации Windows и низкой задержки с открытым исходным кодом.",
+        "Создано на UI-фреймворке Slint и ядре Win32 на чистом Rust. Лицензия: MIT.",
+        "Что нового в 1.7.0",
+        "• Новый нативный интерфейс на Slint — движок Rune UI удалён.",
+        "• Долгие задачи (драйверы, SFC/DISM, TRIM, проверки, установки) выполняются в фоне — окно больше не зависает.",
+        "• Только честные данные: вымышленные значения оборудования, баллы тестов и FPS удалены или явно помечены.",
+        "• Действия Game Bar, DNS и профилей теперь сообщают реальный результат, а не всегда «успешно».",
+        "• Мгновенное переключение 8 языков, 6 цветовых схем, 5 стилей, тёмной/светлой темы и масштаба.",
+        "• Сохранены все 230 твиков, включая низкоуровневые твики ядра.",
     ],
     // 6: Chinese Simplified (简体中文)
     [
@@ -4654,6 +4717,15 @@ static TRANSLATIONS: [[&str; TextKey::COUNT]; 8] = [
         "尚未探测 — 请运行 Ping 探测。",
         "安装运行库",
         "重新安装 / 验证",
+        "开源的 Windows 优化与低延迟引擎。",
+        "基于 Slint 界面工具包和纯 Rust Win32 内核构建。许可证：MIT。",
+        "1.7.0 新功能",
+        "• 全新原生 Slint 界面 — 已移除 Rune UI 引擎。",
+        "• 耗时任务（驱动、SFC/DISM、TRIM、健康检查、安装）在后台运行 — 窗口不再卡死。",
+        "• 只显示真实数据：虚构的硬件数值、跑分和 FPS 宣称已移除或明确标注。",
+        "• Game Bar、DNS 和配置文件操作现在报告真实结果，而不再总是显示成功。",
+        "• 即时切换 8 种语言、6 种配色、5 种风格、深色/浅色模式和缩放。",
+        "• 保留全部 230 项优化，包括底层内核优化。",
     ],
     // 7: Japanese (日本語)
     [
@@ -5222,6 +5294,15 @@ static TRANSLATIONS: [[&str; TextKey::COUNT]; 8] = [
         "未計測 — Ping テストを実行してください。",
         "ランタイムをインストール",
         "再インストール / 検証",
+        "オープンソースの Windows 最適化・低遅延エンジン。",
+        "Slint UI ツールキットと純粋な Rust Win32 コアで構築。ライセンス: MIT。",
+        "1.7.0 の新機能",
+        "• 新しいネイティブ Slint インターフェース — Rune UI エンジンを削除しました。",
+        "• 時間のかかる処理（ドライバー、SFC/DISM、TRIM、ヘルスチェック、インストール）はバックグラウンドで実行され、ウィンドウが固まらなくなりました。",
+        "• 正直なデータのみ: 架空のハードウェア値・ベンチマークスコア・FPS の主張は削除または明示しました。",
+        "• Game Bar・DNS・プロファイルの操作は、常に成功と表示する代わりに実際の結果を報告します。",
+        "• 8 言語・6 配色・5 スタイル・ダーク/ライト・ズームを即時切り替え。",
+        "• 低レベルのカーネル調整を含む 230 件すべての調整を維持。",
     ],
 ];
 

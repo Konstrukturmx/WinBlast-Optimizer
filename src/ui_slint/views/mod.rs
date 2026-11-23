@@ -1,5 +1,6 @@
 //! Per-view binders. Each module owns one Slint global store and keeps it in sync with AppState.
 
+pub mod about;
 pub mod automation;
 pub mod backup;
 pub mod clean_apps;
@@ -38,11 +39,12 @@ pub struct Views {
     automation: automation::AutomationView,
     diagnostics: diagnostics::DiagnosticsView,
     gaming: gaming::GamingView,
+    about: about::AboutView,
 }
 
 impl Views {
     pub fn new(window: &MainWindow) -> Self {
-        Self { matrix: matrix::MatrixView::new(window), dashboard: dashboard::DashboardView::new(window), clean_apps: clean_apps::CleanAppsView::new(window), startup: startup::StartupView::new(window), backup: backup::BackupView::new(window), privacy: privacy::PrivacyView::new(window), gpu: gpu::GpuView::new(window), hardware: hardware::HardwareView::new(window), sensors: sensors::SensorsView::new(window), drivers: drivers::DriversView::new(window), latency: latency::LatencyView::new(window), planner: planner::PlannerView::new(window), automation: automation::AutomationView::new(window), diagnostics: diagnostics::DiagnosticsView::new(window), gaming: gaming::GamingView::new(window) }
+        Self { matrix: matrix::MatrixView::new(window), dashboard: dashboard::DashboardView::new(window), clean_apps: clean_apps::CleanAppsView::new(window), startup: startup::StartupView::new(window), backup: backup::BackupView::new(window), privacy: privacy::PrivacyView::new(window), gpu: gpu::GpuView::new(window), hardware: hardware::HardwareView::new(window), sensors: sensors::SensorsView::new(window), drivers: drivers::DriversView::new(window), latency: latency::LatencyView::new(window), planner: planner::PlannerView::new(window), automation: automation::AutomationView::new(window), diagnostics: diagnostics::DiagnosticsView::new(window), gaming: gaming::GamingView::new(window), about: about::AboutView::new(window) }
     }
 
     pub fn bind(&self, window: &MainWindow, ctx: &Ctx) {
@@ -61,6 +63,7 @@ impl Views {
         self.automation.bind(window, ctx);
         self.diagnostics.bind(window, ctx);
         self.gaming.bind(window, ctx);
+        self.about.bind(window, ctx);
     }
 
     /// Sync the active view's store (inactive views are refreshed when navigated to).

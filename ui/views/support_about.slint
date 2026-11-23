@@ -1,166 +1,100 @@
 // ui/views/support_about.slint
-// WinBlast0 Support, Settings & Slint Attribution View in Slint 1.19
-
-import { Scale, Theme } from "../theme.slint";
+// Support & About (port of v1.6.1 support_about): version, repository links, bug report,
+// 1.7.0 release highlights and the live UI style studio.
+import { ScrollView } from "std-widgets.slint";
+import { Scale, Theme, Tr } from "../theme.slint";
+import { AppStore } from "../stores/app.slint";
+import { AboutStore } from "../stores/about.slint";
 import { WbButton } from "../components/button.slint";
-import { WbCard } from "../components/card.slint";
-import { WbBadge } from "../components/badge.slint";
-import { WbSwitch } from "../components/switch.slint";
-import { WbProgressBar } from "../components/progress_bar.slint";
+import { WbPill, WbPanel } from "../components/toggle.slint";
 
-export component SupportAboutView inherits Flickable {
+component Note inherits Text {
+    font-size: Scale.font-xs;
+    color: Theme.text-secondary;
+    wrap: word-wrap;
+}
+
+export component SupportAboutView inherits Rectangle {
     in property <int> tier;
-    in property <string> app-version: "1.6.1";
-    in property <string> slint-version: "1.19.0";
-    in property <string> rustc-version: "1.99.0";
+    ScrollView {
+        VerticalLayout {
+            padding: root.tier == 0 ? Scale.px(10px) : Scale.px(14px);
+            spacing: Scale.px(12px);
+            alignment: start;
 
-    in-out property <float> zoom-scale: 1.0;
-    in-out property <bool> is-dark-theme: true;
-    in-out property <float> accent-hue: 235.0;
-
-    callback check-updates-clicked();
-    callback open-github-clicked();
-    callback reset-preferences-clicked();
-    callback zoom-changed(float);
-    callback dark-toggled(bool);
-
-    content-height: content.preferred-height;
-
-    content := VerticalLayout {
-        padding: Scale.space-lg;
-        spacing: Scale.space-md;
-
-        // About & Branding Card
-        WbCard {
             VerticalLayout {
-                spacing: Scale.space-md;
+                spacing: Scale.px(4px);
+                Text { text: Tr.s("AboutTitle"); font-size: Scale.font-xl; font-weight: 800; color: Theme.text-primary; wrap: word-wrap; }
+                Text { text: Tr.s("PrereqVersionLabel") + " " + AppStore.app-version + " • " + Tr.s("AboutTagline"); font-size: Scale.font-xs; color: Theme.text-muted; wrap: word-wrap; }
+            }
 
-                HorizontalLayout {
-                    alignment: space-between;
-                    HorizontalLayout {
-                        spacing: Scale.space-md;
-                        Rectangle {
-                            width: Scale.px(48px);
-                            height: Scale.px(48px);
-                            border-radius: Scale.radius-md;
-                            background: Theme.accent;
-                            Text {
-                                text: "⚡";
-                                font-size: Scale.font-2xl;
-                                horizontal-alignment: center;
-                                vertical-alignment: center;
-                            }
-                        }
-
+            WbPanel {
+                VerticalLayout {
+                    padding: Scale.px(12px);
+                    spacing: Scale.px(8px);
+                    FlexboxLayout {
+                        spacing: Scale.px(10px);
+                        alignment: stretch;
+                        cross-axis-alignment: center;
                         VerticalLayout {
-                            spacing: Scale.space-2xs;
-                            alignment: center;
-                            Text {
-                                text: "WinBlast0 — Next-Gen Windows System Optimizer";
-                                font-size: Scale.font-xl;
-                                font-weight: 800;
-                                color: Theme.text-primary;
-                            }
-                            Text {
-                                text: "Version " + root.app-version + " • Built with Rust " + root.rustc-version;
-                                font-size: Scale.font-xs;
-                                color: Theme.text-secondary;
-                            }
+                            min-width: Scale.px(220px);
+                            horizontal-stretch: 1;
+                            spacing: Scale.px(2px);
+                            Text { text: Tr.s("AboutRepoLabel"); font-size: Scale.font-xs; color: Theme.text-secondary; wrap: word-wrap; }
+                            Text { text: AboutStore.repo-name; font-size: Scale.font-lg; font-weight: 800; color: Theme.accent; wrap: word-wrap; }
+                            Text { text: AboutStore.repo-url; font-size: Scale.font-xs; color: Theme.text-muted; wrap: word-wrap; }
                         }
+                        WbButton { variant: "primary"; text: Tr.s("AboutOpenGithub"); clicked => { AboutStore.open-github(); } }
+                        WbButton { variant: "danger"; text: Tr.s("FaultReportToGithub"); clicked => { AppStore.open-bug-report(); } }
                     }
-
-                    HorizontalLayout {
-                        spacing: Scale.space-sm;
-                        alignment: end;
-                        WbButton {
-                            variant: "ghost";
-                            text: "GitHub Repository";
-                            clicked => { root.open-github-clicked(); }
-                        }
-                        WbButton {
-                            variant: "primary";
-                            text: "Check for Updates";
-                            clicked => { root.check-updates-clicked(); }
-                        }
-                    }
-                }
-
-                // Licensing & Slint Attribution Badges
-                HorizontalLayout {
-                    spacing: Scale.space-sm;
-                    WbBadge {
-                        text: "MIT License — Free & Open Source";
-                        variant: "safe";
-                    }
-                    WbBadge {
-                        text: "GUI Engine: Slint " + root.slint-version + " (Royalty-Free Desktop)";
-                        variant: "info";
-                        show-dot: true;
-                    }
-                    WbBadge {
-                        text: "100% Authentic Telemetry (No Fabricated Data)";
-                        variant: "neutral";
-                    }
+                    Note { text: Tr.s("AboutBuiltWith"); }
                 }
             }
-        }
 
-        // Appearance & Display Customization Card
-        WbCard {
-            VerticalLayout {
-                spacing: Scale.space-md;
-                Text { text: "UI APPEARANCE & DISPLAY SCALING"; font-size: Scale.font-xs; font-weight: 700; color: Theme.text-muted; }
-
-                // Theme Mode
-                HorizontalLayout {
-                    alignment: space-between;
-                    VerticalLayout {
-                        spacing: Scale.space-2xs;
-                        Text { text: "Dark Mode Surface"; font-size: Scale.font-sm; color: Theme.text-primary; }
-                        Text { text: "High-contrast dark glass surface styling with OKLCH perceptual tokens."; font-size: Scale.font-xs; color: Theme.text-secondary; }
-                    }
-                    WbSwitch {
-                        checked: root.is-dark-theme;
-                        toggled(c) => {
-                            root.is-dark-theme = c;
-                            root.dark-toggled(c);
-                        }
-                    }
-                }
-
-                // UI Zoom Scaling
+            WbPanel {
                 VerticalLayout {
-                    spacing: Scale.space-2xs;
-                    HorizontalLayout {
-                        alignment: space-between;
-                        Text { text: "Interface Zoom Factor (DPI Scaling)"; font-size: Scale.font-sm; color: Theme.text-primary; }
-                        Text { text: round(root.zoom-scale * 100) + "%"; font-size: Scale.font-sm; font-weight: 700; color: Theme.accent; }
-                    }
-                    HorizontalLayout {
-                        spacing: Scale.space-md;
-                        WbButton {
-                            variant: "ghost";
-                            text: "0.85x";
-                            min-height: Scale.control-sm;
-                            clicked => { root.zoom-scale = 0.85; root.zoom-changed(0.85); }
-                        }
-                        WbButton {
-                            variant: "secondary";
-                            text: "1.00x (Default)";
-                            min-height: Scale.control-sm;
-                            clicked => { root.zoom-scale = 1.00; root.zoom-changed(1.00); }
-                        }
-                        WbButton {
-                            variant: "ghost";
-                            text: "1.25x";
-                            min-height: Scale.control-sm;
-                            clicked => { root.zoom-scale = 1.25; root.zoom-changed(1.25); }
-                        }
-                        WbButton {
-                            variant: "ghost";
-                            text: "1.50x";
-                            min-height: Scale.control-sm;
-                            clicked => { root.zoom-scale = 1.50; root.zoom-changed(1.50); }
+                    padding: Scale.px(12px);
+                    spacing: Scale.px(6px);
+                    Text { text: Tr.s("AboutWhatsNewTitle"); font-size: Scale.font-md; font-weight: 700; color: Theme.text-primary; wrap: word-wrap; }
+                    Note { text: Tr.s("AboutNew1"); }
+                    Note { text: Tr.s("AboutNew2"); }
+                    Note { text: Tr.s("AboutNew3"); }
+                    Note { text: Tr.s("AboutNew4"); }
+                    Note { text: Tr.s("AboutNew5"); }
+                    Note { text: Tr.s("AboutNew6"); }
+                }
+            }
+
+            WbPanel {
+                VerticalLayout {
+                    padding: Scale.px(12px);
+                    spacing: Scale.px(8px);
+                    Text { text: Tr.s("AboutStudioTitle"); font-size: Scale.font-md; font-weight: 700; color: Theme.text-primary; wrap: word-wrap; }
+                    Note { text: Tr.s("AboutStudioSubtitle"); }
+                    FlexboxLayout {
+                        spacing: Scale.px(8px);
+                        alignment: stretch;
+                        for st[i] in AppStore.theme-styles : Rectangle {
+                            min-width: Scale.px(170px);
+                            horizontal-stretch: 1;
+                            border-radius: Scale.px(Theme.card-radius);
+                            background: st.selected ? Theme.accent.with-alpha(0.18) : ta.has-hover ? Theme.bg-card-hover : Theme.bg-card;
+                            border-width: Theme.border-width;
+                            border-color: st.selected ? Theme.accent : Theme.border;
+                            ta := TouchArea {
+                                mouse-cursor: pointer;
+                                clicked => { AppStore.set-theme-style(i); }
+                            }
+                            VerticalLayout {
+                                padding: Scale.px(10px);
+                                spacing: Scale.px(4px);
+                                HorizontalLayout {
+                                    spacing: Scale.px(6px);
+                                    Text { text: st.label; font-size: Scale.font-sm; font-weight: 700; color: st.selected ? Theme.accent : Theme.text-primary; horizontal-stretch: 1; vertical-alignment: center; overflow: elide; }
+                                    if st.selected : WbPill { text: Tr.s("AboutActiveBadge"); tone: "accent"; }
+                                }
+                                if st.detail != "" : Text { text: st.detail; font-size: Scale.font-2xs; color: Theme.text-muted; wrap: word-wrap; }
+                            }
                         }
                     }
                 }

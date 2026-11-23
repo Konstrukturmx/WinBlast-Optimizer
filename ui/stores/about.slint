@@ -1,0 +1,8 @@
+// ui/stores/about.slint
+// Support & About store (port of v1.6.1 support_about).
+
+export global AboutStore {
+    in-out property <string> repo-name;
+    in-out property <string> repo-url;
+    callback open-github();
+}
