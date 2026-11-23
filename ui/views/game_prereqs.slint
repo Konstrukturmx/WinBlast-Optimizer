@@ -1,106 +1,101 @@
 // ui/views/game_prereqs.slint
-// WinBlast0 Gaming Runtimes & Dependencies Installer in Slint 1.19
-
-import { Scale, Theme } from "../theme.slint";
+// Game runtime prerequisites (port of v1.6.1 game_prereqs): real detection, backend-routed installs.
+import { ScrollView } from "std-widgets.slint";
+import { Scale, Theme, Tr } from "../theme.slint";
+import { PrereqStore, PrereqRow } from "../stores/gaming.slint";
 import { WbButton } from "../components/button.slint";
-import { WbCard } from "../components/card.slint";
-import { WbBadge } from "../components/badge.slint";
+import { WbSearchInput } from "../components/search_input.slint";
+import { WbPill, WbPanel } from "../components/toggle.slint";
 
-export struct PrereqItemData {
-    id: string,
-    name: string,
-    description: string,
-    installed-version: string,
-    is-installed: bool,
-    download-url: string,
+component Count inherits WbPanel {
+    in property <string> label;
+    in property <int> value;
+    in property <color> c: Theme.text-primary;
+    min-width: Scale.px(150px);
+    horizontal-stretch: 1;
+    VerticalLayout {
+        padding: Scale.px(12px);
+        spacing: Scale.px(2px);
+        Text { text: root.label; font-size: Scale.font-xs; color: root.c; wrap: word-wrap; }
+        Text { text: root.value; font-size: Scale.font-xl; font-weight: 800; color: root.c; }
+    }
 }
 
-export component GamePrereqsView inherits Flickable {
+export component GamePrereqsView inherits Rectangle {
     in property <int> tier;
-    in property <[PrereqItemData]> prereqs: [];
-    in property <bool> is-installing-all: false;
+    ScrollView {
+        VerticalLayout {
+            padding: root.tier == 0 ? Scale.px(10px) : Scale.px(14px);
+            spacing: Scale.px(12px);
+            alignment: start;
 
-    callback install-prereq(string);
-    callback install-all-missing();
-    callback refresh-prereqs();
-
-    content-height: content.preferred-height;
-
-    content := VerticalLayout {
-        padding: Scale.space-lg;
-        spacing: Scale.space-md;
-
-        // Header Card
-        WbCard {
-            HorizontalLayout {
-                alignment: space-between;
-                VerticalLayout {
-                    spacing: Scale.space-2xs;
-                    Text {
-                        text: "Gaming Runtimes & Redistributables";
-                        font-size: Scale.font-xl;
-                        font-weight: 700;
-                        color: Theme.text-primary;
-                    }
-                    Text {
-                        text: "Visual C++ runtimes (2005-2022), DirectX 9.0c End-User Runtimes, and .NET Desktop dependencies.";
-                        font-size: Scale.font-sm;
-                        color: Theme.text-secondary;
-                    }
+            VerticalLayout {
+                spacing: Scale.px(4px);
+                Text { text: Tr.s("GamePrereqsTitle"); font-size: Scale.font-xl; font-weight: 800; color: Theme.text-primary; wrap: word-wrap; }
+                Text { text: Tr.s("GamePrereqsSub"); font-size: Scale.font-xs; color: Theme.text-muted; wrap: word-wrap; }
+            }
+            FlexboxLayout {
+                spacing: Scale.px(6px);
+                WbButton {
+                    variant: "primary";
+                    text: PrereqStore.scanning ? Tr.s("Scanning") : Tr.s("GamePrereqsScan");
+                    enabled: !PrereqStore.scanning && !PrereqStore.busy;
+                    loading: PrereqStore.scanning;
+                    clicked => { PrereqStore.scan(); }
                 }
-
-                HorizontalLayout {
-                    spacing: Scale.space-sm;
-                    WbButton {
-                        variant: "ghost";
-                        text: "Refresh";
-                        clicked => { root.refresh-prereqs(); }
-                    }
-                    WbButton {
-                        variant: "primary";
-                        text: "Install All Missing";
-                        loading: root.is-installing-all;
-                        clicked => { root.install-all-missing(); }
-                    }
+                WbButton {
+                    variant: "secondary";
+                    text: Tr.s("GamePrereqsInstallAll");
+                    enabled: PrereqStore.missing > 0 && !PrereqStore.scanning && !PrereqStore.busy;
+                    loading: PrereqStore.busy;
+                    clicked => { PrereqStore.install-all(); }
                 }
             }
-        }
-
-        // Dependencies List
-        VerticalLayout {
-            spacing: Scale.space-xs;
-
-            for item in root.prereqs: WbCard {
-                HorizontalLayout {
-                    alignment: space-between;
+            FlexboxLayout {
+                spacing: Scale.px(10px);
+                alignment: stretch;
+                Count { label: Tr.s("GamePrereqsTotalTracked"); value: PrereqStore.total; }
+                Count { label: Tr.s("GamePrereqsVerified"); value: PrereqStore.installed; c: Theme.success; }
+                Count { label: Tr.s("GamePrereqsMissing"); value: PrereqStore.missing; c: PrereqStore.missing > 0 ? Theme.warning : Theme.text-secondary; }
+            }
+            WbSearchInput {
+                placeholder: Tr.s("SearchPlaceholder");
+                text: PrereqStore.filter;
+                changed(t) => { PrereqStore.filter-edited(t); }
+            }
+            if PrereqStore.items.length == 0 : WbPanel {
+                height: Scale.px(72px);
+                Text {
+                    text: PrereqStore.scanning ? Tr.s("Scanning") : PrereqStore.total == 0 ? Tr.s("PrereqsEmpty") : Tr.s("PrereqsNoMatch");
+                    font-size: Scale.font-sm;
+                    color: Theme.text-muted;
+                    wrap: word-wrap;
+                    horizontal-alignment: center;
+                    vertical-alignment: center;
+                }
+            }
+            for i in PrereqStore.items : WbPanel {
+                FlexboxLayout {
+                    padding: Scale.px(12px);
+                    spacing: Scale.px(10px);
+                    alignment: stretch;
+                    cross-axis-alignment: center;
                     VerticalLayout {
-                        spacing: Scale.space-2xs;
-                        HorizontalLayout {
-                            spacing: Scale.space-sm;
-                            Text {
-                                text: item.name;
-                                font-size: Scale.font-md;
-                                font-weight: 600;
-                                color: Theme.text-primary;
-                            }
-                            WbBadge {
-                                text: item.is-installed ? "Installed" : "Missing";
-                                variant: item.is-installed ? "safe" : "moderate";
-                                show-dot: item.is-installed;
-                            }
-                        }
-                        Text {
-                            text: item.description + (item.is-installed ? (" (" + item.installed-version + ")") : "");
-                            font-size: Scale.font-xs;
-                            color: Theme.text-secondary;
-                        }
+                        min-width: Scale.px(220px);
+                        horizontal-stretch: 1;
+                        spacing: Scale.px(2px);
+                        Text { text: i.name; font-size: Scale.font-sm; font-weight: 700; color: Theme.text-primary; wrap: word-wrap; }
+                        Text { text: i.sub; font-size: Scale.font-xs; color: Theme.text-muted; wrap: word-wrap; }
+                        Text { text: i.version; font-size: Scale.font-2xs; color: Theme.text-secondary; wrap: word-wrap; }
+                        if i.status != "" : Text { text: i.status; font-size: Scale.font-2xs; color: Theme.text-muted; wrap: word-wrap; }
                     }
-
+                    WbPill { text: i.state; tone: i.tone; }
                     WbButton {
-                        variant: item.is-installed ? "ghost" : "secondary";
-                        text: item.is-installed ? "Reinstall" : "Install";
-                        min-height: Scale.control-sm;
-                        clicked => { root.install-prereq(item.id); }
+                        variant: i.installed ? "secondary" : "primary";
+                        text: i.busy ? Tr.s("PrereqStateInstalling") : i.installed ? Tr.s("PrereqReinstallBtn") : Tr.s("PrereqInstallBtn");
+                        enabled: !PrereqStore.busy && !PrereqStore.scanning;
+                        loading: i.busy;
+                        clicked => { PrereqStore.install(i.id); }
                     }
                 }
             }

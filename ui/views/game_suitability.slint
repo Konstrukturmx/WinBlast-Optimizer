@@ -1,109 +1,67 @@
 // ui/views/game_suitability.slint
-// WinBlast0 Hardware Game Suitability Checker in Slint 1.19
+// Gaming readiness (port of v1.6.1 game_suitability). Only scored once real CPU/RAM/GPU data exist.
+import { ScrollView } from "std-widgets.slint";
+import { Scale, Theme, Tr } from "../theme.slint";
+import { GamingStore, CheckRow } from "../stores/gaming.slint";
+import { WbPill, WbPanel } from "../components/toggle.slint";
 
-import { Scale, Theme } from "../theme.slint";
-import { WbButton } from "../components/button.slint";
-import { WbCard } from "../components/card.slint";
-import { WbBadge } from "../components/badge.slint";
-
-export struct GameSpecComparison {
-    game-title: string,
-    min-cpu: string,
-    rec-cpu: string,
-    min-gpu: string,
-    rec-gpu: string,
-    min-ram-gb: int,
-    rec-ram-gb: int,
-    meets-minimum: bool,
-    meets-recommended: bool,
-    expected-tier: string,    // "Ultra 144+ FPS" | "High 60+ FPS" | "Medium 60 FPS" | "Below Minimum"
-}
-
-export component GameSuitabilityView inherits Flickable {
+export component GameSuitabilityBody inherits VerticalLayout {
     in property <int> tier;
-    in property <[GameSpecComparison]> games: [];
+    spacing: Scale.px(10px);
+    alignment: start;
 
-    callback refresh-suitability();
-
-    content-height: content.preferred-height;
-
-    content := VerticalLayout {
-        padding: Scale.space-lg;
-        spacing: Scale.space-md;
-
-        // Header Card
-        WbCard {
-            HorizontalLayout {
-                alignment: space-between;
-                VerticalLayout {
-                    spacing: Scale.space-2xs;
-                    Text {
-                        text: "Hardware Game Suitability Matrix";
-                        font-size: Scale.font-xl;
-                        font-weight: 700;
-                        color: Theme.text-primary;
-                    }
-                    Text {
-                        text: "Compare installed CPU, GPU, and RAM against official publisher hardware tiers.";
-                        font-size: Scale.font-sm;
-                        color: Theme.text-secondary;
-                    }
-                }
-                WbButton {
-                    variant: "ghost";
-                    text: "Refresh";
-                    clicked => { root.refresh-suitability(); }
-                }
+    VerticalLayout {
+        spacing: Scale.px(4px);
+        Text { text: Tr.s("SuitabilityTitle"); font-size: Scale.font-xl; font-weight: 800; color: Theme.text-primary; wrap: word-wrap; }
+        Text { text: Tr.s("SuitabilitySubtitle"); font-size: Scale.font-xs; color: Theme.text-muted; wrap: word-wrap; }
+    }
+    if !GamingStore.suitability-ready : WbPanel {
+        height: Scale.px(72px);
+        Text { text: Tr.s("SuitabilityNeedsData"); font-size: Scale.font-sm; color: Theme.text-muted; wrap: word-wrap; horizontal-alignment: center; vertical-alignment: center; }
+    }
+    if GamingStore.suitability-ready : WbPanel {
+        border-color: Theme.accent;
+        FlexboxLayout {
+            padding: Scale.px(14px);
+            spacing: Scale.px(12px);
+            alignment: stretch;
+            cross-axis-alignment: center;
+            VerticalLayout {
+                min-width: Scale.px(200px);
+                horizontal-stretch: 1;
+                Text { text: Tr.s("SuitabilityHeroTitle"); font-size: Scale.font-xs; color: Theme.text-secondary; wrap: word-wrap; }
+                Text { text: GamingStore.tier-label; font-size: Scale.font-xl; font-weight: 800; color: Theme.accent; wrap: word-wrap; }
+                Text { text: Tr.s("SuitabilityRating"); font-size: Scale.font-xs; color: Theme.text-muted; wrap: word-wrap; }
+            }
+            WbPill {
+                text: GamingStore.score + "% " + (GamingStore.score >= 70 ? Tr.s("SuitabilityReadyBadge") : Tr.s("SuitabilityLimitedBadge"));
+                tone: GamingStore.score >= 70 ? "success" : "warning";
             }
         }
-
-        // Games Suitability Cards
+    }
+    if GamingStore.suitability-ready : Text { text: Tr.s("SuitabilityHardwareMatrixTitle"); font-size: Scale.font-md; font-weight: 700; color: Theme.text-primary; wrap: word-wrap; }
+    for c in GamingStore.checks : WbPanel {
         VerticalLayout {
-            spacing: Scale.space-xs;
-
-            for g in root.games: WbCard {
-                VerticalLayout {
-                    spacing: Scale.space-sm;
-
-                    HorizontalLayout {
-                        alignment: space-between;
-                        Text {
-                            text: g.game-title;
-                            font-size: Scale.font-lg;
-                            font-weight: 700;
-                            color: Theme.text-primary;
-                        }
-
-                        WbBadge {
-                            text: g.expected-tier;
-                            variant: g.meets-recommended ? "safe" : (g.meets-minimum ? "moderate" : "high");
-                            show-dot: true;
-                        }
-                    }
-
-                    HorizontalLayout {
-                        spacing: Scale.space-lg;
-                        VerticalLayout {
-                            horizontal-stretch: 1;
-                            spacing: Scale.space-2xs;
-                            Text { text: "CPU Compatibility"; font-size: Scale.font-xs; color: Theme.text-muted; }
-                            Text { text: g.rec-cpu; font-size: Scale.font-sm; color: Theme.text-secondary; }
-                        }
-                        VerticalLayout {
-                            horizontal-stretch: 1;
-                            spacing: Scale.space-2xs;
-                            Text { text: "GPU Compatibility"; font-size: Scale.font-xs; color: Theme.text-muted; }
-                            Text { text: g.rec-gpu; font-size: Scale.font-sm; color: Theme.text-secondary; }
-                        }
-                        VerticalLayout {
-                            horizontal-stretch: 1;
-                            spacing: Scale.space-2xs;
-                            Text { text: "RAM Requirement"; font-size: Scale.font-xs; color: Theme.text-muted; }
-                            Text { text: g.rec-ram-gb + " GB Recommended"; font-size: Scale.font-sm; color: Theme.text-secondary; }
-                        }
-                    }
-                }
+            padding: Scale.px(12px);
+            spacing: Scale.px(4px);
+            HorizontalLayout {
+                spacing: Scale.px(8px);
+                Text { text: c.name; font-size: Scale.font-sm; font-weight: 700; color: Theme.text-primary; vertical-alignment: center; horizontal-stretch: 1; wrap: word-wrap; }
+                WbPill { text: c.ok ? "✔ " + Tr.s("SuitabilityReadyBadge") : Tr.s("SuitabilityLimitedBadge"); tone: c.ok ? "success" : "warning"; }
             }
+            Text { text: c.desc; font-size: Scale.font-xs; color: Theme.text-secondary; wrap: word-wrap; }
+            if c.recommendation != "" : Text { text: c.recommendation; font-size: Scale.font-xs; color: Theme.text-muted; wrap: word-wrap; }
+        }
+    }
+}
+
+export component GameSuitabilityView inherits Rectangle {
+    in property <int> tier;
+    ScrollView {
+        VerticalLayout {
+            padding: root.tier == 0 ? Scale.px(10px) : Scale.px(14px);
+            alignment: start;
+            GameSuitabilityBody { tier: root.tier; }
         }
     }
 }

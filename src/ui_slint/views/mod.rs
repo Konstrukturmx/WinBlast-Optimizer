@@ -6,6 +6,7 @@ pub mod clean_apps;
 pub mod dashboard;
 pub mod diagnostics;
 pub mod drivers;
+pub mod gaming;
 pub mod gpu;
 pub mod hardware;
 pub mod latency;
@@ -36,11 +37,12 @@ pub struct Views {
     planner: planner::PlannerView,
     automation: automation::AutomationView,
     diagnostics: diagnostics::DiagnosticsView,
+    gaming: gaming::GamingView,
 }
 
 impl Views {
     pub fn new(window: &MainWindow) -> Self {
-        Self { matrix: matrix::MatrixView::new(window), dashboard: dashboard::DashboardView::new(window), clean_apps: clean_apps::CleanAppsView::new(window), startup: startup::StartupView::new(window), backup: backup::BackupView::new(window), privacy: privacy::PrivacyView::new(window), gpu: gpu::GpuView::new(window), hardware: hardware::HardwareView::new(window), sensors: sensors::SensorsView::new(window), drivers: drivers::DriversView::new(window), latency: latency::LatencyView::new(window), planner: planner::PlannerView::new(window), automation: automation::AutomationView::new(window), diagnostics: diagnostics::DiagnosticsView::new(window) }
+        Self { matrix: matrix::MatrixView::new(window), dashboard: dashboard::DashboardView::new(window), clean_apps: clean_apps::CleanAppsView::new(window), startup: startup::StartupView::new(window), backup: backup::BackupView::new(window), privacy: privacy::PrivacyView::new(window), gpu: gpu::GpuView::new(window), hardware: hardware::HardwareView::new(window), sensors: sensors::SensorsView::new(window), drivers: drivers::DriversView::new(window), latency: latency::LatencyView::new(window), planner: planner::PlannerView::new(window), automation: automation::AutomationView::new(window), diagnostics: diagnostics::DiagnosticsView::new(window), gaming: gaming::GamingView::new(window) }
     }
 
     pub fn bind(&self, window: &MainWindow, ctx: &Ctx) {
@@ -58,6 +60,7 @@ impl Views {
         self.planner.bind(window, ctx);
         self.automation.bind(window, ctx);
         self.diagnostics.bind(window, ctx);
+        self.gaming.bind(window, ctx);
     }
 
     /// Sync the active view's store (inactive views are refreshed when navigated to).
@@ -84,6 +87,9 @@ impl Views {
             ActiveView::FaultDiagnostics => self.diagnostics.sync_fault(window, s),
             ActiveView::WindowsRepair => self.diagnostics.sync_repair(window, s),
             ActiveView::PerformanceTests => self.diagnostics.sync_perf(window, s),
+            ActiveView::GamingStats | ActiveView::FpsBenchmark | ActiveView::GameProfiles | ActiveView::GameOverlay | ActiveView::GameSuitability => self.gaming.sync_gaming(window, s),
+            ActiveView::GamePrerequisites => self.gaming.sync_prereqs(window, s),
+            ActiveView::NetworkDiag => self.gaming.sync_network(window, s),
             _ => {}
         }
     }

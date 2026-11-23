@@ -254,16 +254,16 @@ impl GamingView {
                 .filter(|i| q.is_empty() || [i.name.as_str(), i.category.as_str(), i.description.as_str(), i.id.as_str()].iter().any(|f| I18n::fold_search_str(f).contains(&q)))
                 .map(|i| {
                     let (state, tone) = match i.state {
-                        PrereqInstallState::Installed => ("Installed ✔", "success"),
-                        PrereqInstallState::NotInstalled => ("Missing ⚠", "warning"),
-                        PrereqInstallState::Installing => ("Installing ⟳", "accent"),
-                        PrereqInstallState::Failed => ("Failed ✘", "danger"),
+                        PrereqInstallState::Installed => (s.tr(TextKey::PrereqStateInstalled), "success"),
+                        PrereqInstallState::NotInstalled => (s.tr(TextKey::PrereqStateMissing), "warning"),
+                        PrereqInstallState::Installing => (s.tr(TextKey::PrereqStateInstalling), "accent"),
+                        PrereqInstallState::Failed => (s.tr(TextKey::PrereqStateFailed), "danger"),
                     };
                     PrereqRow {
                         id: i.id.as_str().into(),
                         name: i.name.as_str().into(),
                         sub: format!("{} • {}", i.category, i.description).into(),
-                        version: format!("Version: {}", i.installed_version.as_deref().unwrap_or("Not Detected")).into(),
+                        version: format!("{}: {}", s.tr(TextKey::PrereqVersionLabel), i.installed_version.as_deref().unwrap_or(s.tr(TextKey::PrereqNotDetected))).into(),
                         status: i.status_message.as_str().into(),
                         state: state.into(),
                         tone: tone.into(),
@@ -300,11 +300,11 @@ impl GamingView {
                 .map(|p| DnsRow {
                     name: p.name.as_str().into(),
                     category: dns_category(s, &p.category).into(),
-                    ips: format!("Primary: {} • Secondary: {}", p.primary_ip, p.secondary_ip).into(),
+                    ips: format!("{}: {} • {}: {}", s.tr(TextKey::NetPrimaryLabel), p.primary_ip, s.tr(TextKey::NetSecondaryLabel), p.secondary_ip).into(),
                     primary: p.primary_ip.as_str().into(),
                     secondary: p.secondary_ip.as_str().into(),
-                    ping: p.ping_ms.map(|ms| format!("{ms} ms")).unwrap_or_else(|| if p.status.starts_with("Ready") { "—".into() } else { "Timeout".into() }).into(),
-                    status: dns_status(s, &p.status).into(),
+                    ping: p.ping_ms.map(|ms| format!("{ms} ms")).unwrap_or_else(|| if p.status.starts_with("Ready") { "—".into() } else { s.tr(TextKey::NetTimeout).into() }).into(),
+                    status: if p.ping_ms.is_none() && p.status.starts_with("Ready") { s.tr(TextKey::NetNotProbed).into() } else { dns_status(s, &p.status).into() },
                     tone: match p.ping_ms {
                         Some(ms) if ms < 20 => "success",
                         Some(ms) if ms < 50 => "warning",

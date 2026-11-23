@@ -13,7 +13,7 @@ use winblast0::app::{ActiveView, AppState, MatrixSortMode};
 use winblast0::core::backend::SandboxEnv;
 use winblast0::core::risk::load_embedded_rules;
 use winblast0::ui_slint::bridge::SlintBridge;
-use winblast0::ui_slint::{AppStore, AutomationStore, BackupStore, FaultStore, PerfStore, RepairStore, DiskStore, DriverStore, LatencyStore, PlannerStore, GpuStore, HardwareStore, ParkingStore, ThermalStore, PrivacyStore, CleanAppsStore, DashboardStore, MainWindow, MatrixStore, StartupStore};
+use winblast0::ui_slint::{AppStore, AutomationStore, BackupStore, FaultStore, PerfStore, RepairStore, DiskStore, DriverStore, LatencyStore, PlannerStore, GpuStore, HardwareStore, ParkingStore, ThermalStore, PrivacyStore, CleanAppsStore, DashboardStore, MainWindow, MatrixStore, StartupStore, GamingStore, PrereqStore, NetworkStore};
 
 struct Harness {
     #[allow(dead_code)]
@@ -1020,4 +1020,131 @@ fn perf_benchmark_is_guarded_and_never_shows_fake_zeros() {
     // Sandbox returns an empty score: placeholders stay, nothing claims a measured 0.
     assert!(!st.get_has_score());
     assert_eq!(st.get_cpu_multi().as_str(), "—");
+}
+
+// ───────────────────────────── Gaming hub / Prerequisites / Network ─────────────────────────────
+
+#[test]
+fn gaming_hub_tabs_profiles_overlay_and_honest_monitor() {
+    let h = Harness::scanned();
+    h.goto(ActiveView::GamingStats);
+    h.wait("game probe", |s| !s.game_probe_inflight);
+    let g = h.window.global::<GamingStore>();
+    assert_eq!(g.get_sub_tab(), 0);
+    assert!(h.state.borrow().game_telemetry.active_game_detected.is_none());
+    assert!(!g.get_detected_game().is_empty(), "shows the localized 'no game' text, not a blank");
+    assert_eq!(g.get_fps().row_count(), 5);
+
+    // Out-of-range sub-tab is ignored.
+    g.invoke_set_sub_tab(99);
+    h.bridge.sync();
+    assert_eq!(g.get_sub_tab(), 0);
+
+    // Profiles: switching tab loads them on a worker; toggling flips the real (sandbox) state.
+    g.invoke_set_sub_tab(2);
+    h.wait("profiles", |s| s.game_profile_inflight.is_none() && !s.game_profiles.is_empty());
+    assert_eq!(g.get_sub_tab(), 2);
+    let first = g.get_profiles().row_data(0).unwrap();
+    g.invoke_toggle_profile(first.id.clone());
+    assert!(h.state.borrow().game_profile_inflight.is_some(), "apply runs on a worker");
+    h.wait("profile toggle", |s| s.game_profile_inflight.is_none());
+    let after = g.get_profiles().iter().find(|p| p.id == first.id).unwrap();
+    assert_eq!(after.applied, !first.applied);
+    g.invoke_toggle_profile("no-such-profile".into());
+    h.bridge.sync();
+    assert!(h.state.borrow().game_profile_inflight.is_none());
+
+    // Overlay: the switch really changes the (sandbox) registry state.
+    g.invoke_set_sub_tab(3);
+    h.wait("overlay read", |s| !s.overlay_inflight);
+    let before = g.get_game_bar_disabled();
+    g.invoke_set_overlay("gamebar".into(), !before);
+    h.wait("overlay set", |s| !s.overlay_inflight);
+    assert_eq!(g.get_game_bar_disabled(), !before);
+    g.invoke_set_overlay("bogus".into(), true);
+    h.bridge.sync();
+    assert!(!h.state.borrow().overlay_inflight);
+
+    // Suitability is only scored with real CPU / RAM / GPU data.
+    g.invoke_set_sub_tab(4);
+    h.bridge.sync();
+    let has_data = {
+        let s = h.state.borrow();
+        s.cpu_info.is_some() && s.realtime_metrics.is_some() && !s.gpus.is_empty()
+    };
+    assert_eq!(g.get_suitability_ready(), has_data);
+    if !has_data {
+        assert_eq!(g.get_checks().row_count(), 0);
+    }
+}
+
+#[test]
+fn prereqs_scan_filter_and_install_run_on_workers() {
+    let h = Harness::scanned();
+    h.goto(ActiveView::GamePrerequisites);
+    h.wait("prereq scan", |s| !s.is_prereqs_scanning && !s.game_prereqs.is_empty());
+    let p = h.window.global::<PrereqStore>();
+    let total = p.get_total();
+    assert!(total > 0);
+    assert_eq!(p.get_installed() + p.get_missing(), total);
+    assert_eq!(p.get_items().row_count() as i32, total);
+
+    let first = p.get_items().row_data(0).unwrap();
+    p.invoke_filter_edited("zz-no-such-runtime".into());
+    h.bridge.sync();
+    assert_eq!(p.get_items().row_count(), 0);
+    p.invoke_filter_edited(first.name.clone());
+    h.bridge.sync();
+    assert!(p.get_items().iter().any(|r| r.id == first.id));
+    p.invoke_filter_edited("".into());
+    h.bridge.sync();
+
+    let installed_before = p.get_installed();
+    p.invoke_install(first.id.clone());
+    assert!(h.state.borrow().prereq_install_in_flight.is_some(), "install must not block the UI thread");
+    p.invoke_install_all(); // ignored while busy
+    h.wait("single install", |s| s.prereq_install_in_flight.is_none());
+    assert_eq!(p.get_installed(), installed_before + i32::from(!first.installed));
+
+    p.invoke_install_all();
+    h.wait("install all", |s| s.prereq_install_in_flight.is_none());
+    assert_eq!(p.get_missing(), 0);
+    assert!(p.get_items().iter().all(|r| r.installed && r.tone == "success"));
+}
+
+#[test]
+fn network_probe_and_dns_actions_report_real_outcome() {
+    let h = Harness::scanned();
+    h.goto(ActiveView::NetworkDiag);
+    let n = h.window.global::<NetworkStore>();
+    assert!(n.get_probes().row_count() > 0);
+    // Nothing measured yet: no invented adapter or ping values.
+    assert_eq!(n.get_adapter().as_str(), "—");
+    assert!(n.get_probes().iter().all(|r| r.ping.as_str() == "—" && r.tone == "muted"));
+
+    n.invoke_ping();
+    assert!(h.state.borrow().network_probe_inflight);
+    h.wait("network probe", |s| !s.network_probe_inflight);
+
+    n.invoke_flush_dns();
+    assert!(h.state.borrow().network_action_inflight);
+    h.wait("flush", |s| !s.network_action_inflight);
+    assert!(h.state.borrow().status_message.contains("FlushDns"), "{}", h.state.borrow().status_message);
+
+    // Malformed addresses never reach netsh.
+    n.invoke_apply_dns("1.1.1.1; calc".into(), "".into(), "x".into());
+    h.bridge.sync();
+    assert!(!h.state.borrow().network_action_inflight);
+    n.invoke_apply_dns("1.1.1.1".into(), "bad".into(), "x".into());
+    h.bridge.sync();
+    assert!(!h.state.borrow().network_action_inflight);
+
+    n.invoke_apply_dns(" 1.1.1.1 ".into(), "1.0.0.1".into(), "Cloudflare".into());
+    assert!(h.state.borrow().network_action_inflight);
+    h.wait("apply dns", |s| !s.network_action_inflight);
+    assert!(h.state.borrow().status_message.contains("ApplyDns"), "{}", h.state.borrow().status_message);
+
+    n.invoke_reset_dns();
+    h.wait("reset dns", |s| !s.network_action_inflight);
+    assert!(h.state.borrow().status_message.contains("ResetDnsDhcp"), "{}", h.state.borrow().status_message);
 }

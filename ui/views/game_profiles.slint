@@ -1,132 +1,75 @@
 // ui/views/game_profiles.slint
-// WinBlast0 Per-Game Custom Tweak Profiles in Slint 1.19
-
-import { Scale, Theme } from "../theme.slint";
+// Per-game optimization profiles (port of v1.6.1 game_profiles), applied/reverted via the backend.
+import { ScrollView } from "std-widgets.slint";
+import { Scale, Theme, Tr } from "../theme.slint";
+import { GamingStore, ProfileRow } from "../stores/gaming.slint";
 import { WbButton } from "../components/button.slint";
-import { WbCard } from "../components/card.slint";
-import { WbBadge } from "../components/badge.slint";
-import { WbSwitch } from "../components/switch.slint";
+import { WbPanel } from "../components/toggle.slint";
 
-export struct GameProfileItem {
-    id: string,
-    title: string,
-    exe-name: string,
-    preset: string,           // "Ultra Low Latency" | "Maximum FPS" | "Balanced"
-    auto-apply: bool,
-    active: bool,
+component Bullet inherits Text {
+    font-size: Scale.font-xs;
+    color: Theme.text-secondary;
+    wrap: word-wrap;
 }
 
-export component GameProfilesView inherits Flickable {
+export component GameProfilesBody inherits VerticalLayout {
     in property <int> tier;
-    in property <[GameProfileItem]> profiles: [];
+    spacing: Scale.px(10px);
+    alignment: start;
 
-    callback add-profile-clicked();
-    callback auto-apply-toggled(string, bool);
-    callback activate-profile(string);
-
-    content-height: content.preferred-height;
-
-    content := VerticalLayout {
-        padding: Scale.space-lg;
-        spacing: Scale.space-md;
-
-        // Header Card
-        WbCard {
-            HorizontalLayout {
-                alignment: space-between;
+    VerticalLayout {
+        spacing: Scale.px(4px);
+        Text { text: Tr.s("GameProfilesTitle"); font-size: Scale.font-xl; font-weight: 800; color: Theme.text-primary; wrap: word-wrap; }
+        Text { text: Tr.s("GameProfilesSubtitle"); font-size: Scale.font-xs; color: Theme.text-muted; wrap: word-wrap; }
+    }
+    if GamingStore.profiles.length == 0 : WbPanel {
+        VerticalLayout {
+            padding: Scale.px(16px);
+            spacing: Scale.px(4px);
+            Text { text: "🎮"; font-size: Scale.font-lg; horizontal-alignment: center; }
+            Text { text: Tr.s("GameProfilesEmptyTitle"); font-size: Scale.font-md; font-weight: 700; color: Theme.text-primary; horizontal-alignment: center; wrap: word-wrap; }
+            Text { text: Tr.s("GameProfilesEmptyDesc"); font-size: Scale.font-xs; color: Theme.text-muted; horizontal-alignment: center; wrap: word-wrap; }
+        }
+    }
+    for p in GamingStore.profiles : WbPanel {
+        border-color: p.applied ? Theme.success : Theme.border;
+        VerticalLayout {
+            padding: Scale.px(12px);
+            spacing: Scale.px(6px);
+            FlexboxLayout {
+                spacing: Scale.px(10px);
+                alignment: stretch;
+                cross-axis-alignment: center;
+                Text { text: p.icon; font-size: Scale.font-lg; }
                 VerticalLayout {
-                    spacing: Scale.space-2xs;
-                    Text {
-                        text: "Per-Game Optimization Profiles";
-                        font-size: Scale.font-xl;
-                        font-weight: 700;
-                        color: Theme.text-primary;
-                    }
-                    Text {
-                        text: "Automatically engage custom GPU, CPU priority, and network profiles upon game executable launch.";
-                        font-size: Scale.font-sm;
-                        color: Theme.text-secondary;
-                    }
+                    min-width: Scale.px(180px);
+                    horizontal-stretch: 1;
+                    Text { text: p.title; font-size: Scale.font-md; font-weight: 700; color: Theme.text-primary; wrap: word-wrap; }
+                    Text { text: p.target; font-size: Scale.font-xs; color: Theme.text-muted; wrap: word-wrap; }
                 }
                 WbButton {
-                    variant: "primary";
-                    text: "+ Add Game Profile";
-                    clicked => { root.add-profile-clicked(); }
+                    variant: p.applied ? "secondary" : "primary";
+                    text: p.applied ? Tr.s("GameProfilesActiveBtn") : Tr.s("GameProfilesApplyBtn");
+                    enabled: !GamingStore.profile-busy;
+                    loading: p.busy;
+                    clicked => { GamingStore.toggle-profile(p.id); }
                 }
             }
+            Text { text: p.desc; font-size: Scale.font-xs; color: Theme.text-secondary; wrap: word-wrap; }
+            if p.high-priority : Bullet { text: Tr.s("GameProfileHighPriority"); }
+            if p.disable-fso : Bullet { text: Tr.s("GameProfileDisableFso"); }
+            if p.unpark : Bullet { text: Tr.s("GameProfileUnparkCores"); }
         }
+    }
+}
 
-        // Profiles List
+export component GameProfilesView inherits Rectangle {
+    in property <int> tier;
+    ScrollView {
         VerticalLayout {
-            spacing: Scale.space-xs;
-
-            for prof in root.profiles: WbCard {
-                HorizontalLayout {
-                    alignment: space-between;
-                    HorizontalLayout {
-                        spacing: Scale.space-md;
-                        alignment: start;
-
-                        Rectangle {
-                            width: Scale.px(36px);
-                            height: Scale.px(36px);
-                            border-radius: Scale.radius-sm;
-                            background: prof.active ? Theme.accent : Theme.bg-surface;
-                            Text {
-                                text: "🎮";
-                                font-size: Scale.font-md;
-                                horizontal-alignment: center;
-                                vertical-alignment: center;
-                            }
-                        }
-
-                        VerticalLayout {
-                            spacing: Scale.space-2xs;
-                            alignment: center;
-                            HorizontalLayout {
-                                spacing: Scale.space-sm;
-                                Text {
-                                    text: prof.title;
-                                    font-size: Scale.font-md;
-                                    font-weight: 600;
-                                    color: Theme.text-primary;
-                                }
-                                WbBadge {
-                                    text: prof.preset;
-                                    variant: prof.preset == "Ultra Low Latency" ? "high" : "safe";
-                                }
-                            }
-                            Text {
-                                text: prof.exe-name;
-                                font-size: Scale.font-xs;
-                                color: Theme.text-secondary;
-                            }
-                        }
-                    }
-
-                    HorizontalLayout {
-                        spacing: Scale.space-md;
-                        alignment: end;
-
-                        HorizontalLayout {
-                            spacing: Scale.space-xs;
-                            alignment: center;
-                            Text { text: "Auto-Apply"; font-size: Scale.font-xs; color: Theme.text-muted; }
-                            WbSwitch {
-                                checked: prof.auto-apply;
-                                toggled(c) => { root.auto-apply-toggled(prof.id, c); }
-                            }
-                        }
-
-                        WbButton {
-                            variant: prof.active ? "secondary" : "ghost";
-                            text: prof.active ? "Active" : "Activate";
-                            enabled: !prof.active;
-                            clicked => { root.activate-profile(prof.id); }
-                        }
-                    }
-                }
-            }
+            padding: root.tier == 0 ? Scale.px(10px) : Scale.px(14px);
+            alignment: start;
+            GameProfilesBody { tier: root.tier; }
         }
     }
 }

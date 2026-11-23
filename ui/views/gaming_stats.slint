@@ -1,144 +1,105 @@
 // ui/views/gaming_stats.slint
-// WinBlast0 Active Gaming Statistics & Session Analytics in Slint 1.19
-
-import { Scale, Theme } from "../theme.slint";
+// Gaming & Performance hub (port of v1.6.1 gaming_stats): live monitor + FPS / profiles / overlay /
+// suitability sub-tabs. The live monitor only shows what is actually detected; frame-time capture
+// is not implemented and says so (v1.6.1 displayed invented frame pacing / DirectX values).
+import { ScrollView } from "std-widgets.slint";
+import { Scale, Theme, Tr } from "../theme.slint";
+import { GamingStore } from "../stores/gaming.slint";
 import { WbButton } from "../components/button.slint";
-import { WbCard } from "../components/card.slint";
-import { WbBadge } from "../components/badge.slint";
+import { WbChip } from "../components/chip.slint";
+import { WbPill, WbPanel } from "../components/toggle.slint";
+import { FpsBenchmarkBody } from "fps_benchmark.slint";
+import { GameProfilesBody } from "game_profiles.slint";
+import { GameOverlayBody } from "game_overlay.slint";
+import { GameSuitabilityBody } from "game_suitability.slint";
 
-export struct GameSessionData {
-    title: string,
-    exe-name: string,
-    playtime-hours: float,
-    last-played: string,
-    avg-fps: int,
-    gpu-temp-peak: int,
+component InfoCard inherits WbPanel {
+    in property <string> label;
+    in property <string> value;
+    in property <string> note;
+    in property <color> c: Theme.text-primary;
+    min-width: Scale.px(220px);
+    horizontal-stretch: 1;
+    VerticalLayout {
+        padding: Scale.px(12px);
+        spacing: Scale.px(4px);
+        Text { text: root.label; font-size: Scale.font-xs; color: Theme.text-secondary; wrap: word-wrap; }
+        Text { text: root.value; font-size: Scale.font-md; font-weight: 700; color: root.c; wrap: word-wrap; }
+        if root.note != "" : Text { text: root.note; font-size: Scale.font-2xs; color: Theme.text-muted; wrap: word-wrap; }
+    }
 }
 
-export component GamingStatsView inherits Flickable {
+component LiveMonitorBody inherits VerticalLayout {
     in property <int> tier;
-    in property <bool> game-active: false;
-    in property <string> active-game-title: "None (Desktop)";
-    in property <int> total-games-tracked: 8;
-    in property <float> total-playtime-hours: 142.5;
+    spacing: Scale.px(10px);
+    alignment: start;
+    FlexboxLayout {
+        spacing: Scale.px(10px);
+        alignment: stretch;
+        InfoCard {
+            label: Tr.s("GamingStatsActiveProcess");
+            value: GamingStore.detected-game;
+            note: Tr.s("GamingDetectHint");
+            c: Theme.accent;
+        }
+        InfoCard {
+            label: Tr.s("GamingStatsFpsTelemetry");
+            value: Tr.s("GamingNotMeasured");
+            note: "";
+            c: Theme.text-muted;
+        }
+    }
+    WbPanel {
+        FlexboxLayout {
+            padding: Scale.px(12px);
+            spacing: Scale.px(10px);
+            alignment: stretch;
+            cross-axis-alignment: center;
+            Text { text: Tr.s("GamingStatsWddmScheduling"); font-size: Scale.font-sm; font-weight: 700; color: Theme.text-primary; min-width: Scale.px(200px); horizontal-stretch: 1; wrap: word-wrap; }
+            WbPill { text: GamingStore.hags-text; tone: GamingStore.hags-on ? "success" : "muted"; }
+        }
+    }
+}
 
-    in property <[GameSessionData]> sessions: [];
-
-    callback refresh-stats();
-
-    content-height: content.preferred-height;
-
-    content := VerticalLayout {
-        padding: Scale.space-lg;
-        spacing: Scale.space-md;
-
-        // Header Card
-        WbCard {
-            HorizontalLayout {
-                alignment: space-between;
+export component GamingStatsView inherits Rectangle {
+    in property <int> tier;
+    ScrollView {
+        VerticalLayout {
+            padding: root.tier == 0 ? Scale.px(10px) : Scale.px(14px);
+            spacing: Scale.px(12px);
+            alignment: start;
+            FlexboxLayout {
+                spacing: Scale.px(10px);
+                alignment: stretch;
+                cross-axis-alignment: center;
                 VerticalLayout {
-                    spacing: Scale.space-2xs;
-                    Text {
-                        text: "Gaming Session Telemetry & Statistics";
-                        font-size: Scale.font-xl;
-                        font-weight: 700;
-                        color: Theme.text-primary;
-                    }
-                    Text {
-                        text: "Hardware utilization history, game process detection, and performance logs.";
-                        font-size: Scale.font-sm;
-                        color: Theme.text-secondary;
-                    }
+                    min-width: Scale.px(200px);
+                    horizontal-stretch: 1;
+                    spacing: Scale.px(4px);
+                    Text { text: Tr.s("NavGamingHub"); font-size: Scale.font-xl; font-weight: 800; color: Theme.text-primary; wrap: word-wrap; }
+                    Text { text: Tr.s("GamingStatsFooterDesc"); font-size: Scale.font-xs; color: Theme.text-muted; wrap: word-wrap; }
                 }
                 WbButton {
-                    variant: "ghost";
-                    text: "Refresh";
-                    clicked => { root.refresh-stats(); }
+                    variant: "primary";
+                    text: Tr.s("GamingStatsRefreshBtn");
+                    enabled: !GamingStore.probing;
+                    loading: GamingStore.probing;
+                    clicked => { GamingStore.refresh(); }
                 }
             }
-        }
-
-        // Active Game Banner
-        WbCard {
-            HorizontalLayout {
-                alignment: space-between;
-                HorizontalLayout {
-                    spacing: Scale.space-md;
-                    Rectangle {
-                        width: Scale.px(42px);
-                        height: Scale.px(42px);
-                        border-radius: Scale.radius-sm;
-                        background: root.game-active ? Theme.safe : Theme.bg-surface;
-                        Text {
-                            text: "🎮";
-                            font-size: Scale.font-lg;
-                            horizontal-alignment: center;
-                            vertical-alignment: center;
-                        }
-                    }
-                    VerticalLayout {
-                        spacing: Scale.space-2xs;
-                        alignment: center;
-                        Text {
-                            text: root.game-active ? ("ACTIVE: " + root.active-game-title) : "No Game Running Currently";
-                            font-size: Scale.font-md;
-                            font-weight: 700;
-                            color: Theme.text-primary;
-                        }
-                        Text {
-                            text: root.game-active ? "Game Mode boost profile engaged automatically" : "Standby — auto-detects launched DirectX/Vulkan game processes";
-                            font-size: Scale.font-xs;
-                            color: Theme.text-secondary;
-                        }
-                    }
-                }
-
-                WbBadge {
-                    text: root.game-active ? "Game Mode Live" : "Standby";
-                    variant: root.game-active ? "safe" : "neutral";
-                    show-dot: root.game-active;
-                }
+            FlexboxLayout {
+                spacing: Scale.px(6px);
+                WbChip { text: Tr.s("TabInGameMonitor"); active: GamingStore.sub-tab == 0; clicked => { GamingStore.set-sub-tab(0); } }
+                WbChip { text: Tr.s("TabFpsBench"); active: GamingStore.sub-tab == 1; clicked => { GamingStore.set-sub-tab(1); } }
+                WbChip { text: Tr.s("TabGameProfiles"); active: GamingStore.sub-tab == 2; clicked => { GamingStore.set-sub-tab(2); } }
+                WbChip { text: Tr.s("TabGameOverlay"); active: GamingStore.sub-tab == 3; clicked => { GamingStore.set-sub-tab(3); } }
+                WbChip { text: Tr.s("TabGameSuitability"); active: GamingStore.sub-tab == 4; clicked => { GamingStore.set-sub-tab(4); } }
             }
-        }
-
-        // Tracked Games List
-        VerticalLayout {
-            spacing: Scale.space-xs;
-
-            for g in root.sessions: WbCard {
-                HorizontalLayout {
-                    alignment: space-between;
-                    VerticalLayout {
-                        spacing: Scale.space-2xs;
-                        Text {
-                            text: g.title;
-                            font-size: Scale.font-md;
-                            font-weight: 600;
-                            color: Theme.text-primary;
-                        }
-                        Text {
-                            text: g.exe-name + " — Last played " + g.last-played;
-                            font-size: Scale.font-xs;
-                            color: Theme.text-secondary;
-                        }
-                    }
-
-                    HorizontalLayout {
-                        spacing: Scale.space-lg;
-                        alignment: end;
-                        VerticalLayout {
-                            alignment: center;
-                            Text { text: "PLAYTIME"; font-size: Scale.font-2xs; color: Theme.text-muted; }
-                            Text { text: round(g.playtime-hours) + "h"; font-size: Scale.font-sm; font-weight: 700; color: Theme.text-primary; }
-                        }
-                        VerticalLayout {
-                            alignment: center;
-                            Text { text: "AVG FPS"; font-size: Scale.font-2xs; color: Theme.text-muted; }
-                            Text { text: g.avg-fps + ""; font-size: Scale.font-sm; font-weight: 700; color: Theme.safe; }
-                        }
-                    }
-                }
-            }
+            if GamingStore.sub-tab == 0 : LiveMonitorBody { tier: root.tier; }
+            if GamingStore.sub-tab == 1 : FpsBenchmarkBody { tier: root.tier; }
+            if GamingStore.sub-tab == 2 : GameProfilesBody { tier: root.tier; }
+            if GamingStore.sub-tab == 3 : GameOverlayBody { tier: root.tier; }
+            if GamingStore.sub-tab == 4 : GameSuitabilityBody { tier: root.tier; }
         }
     }
 }

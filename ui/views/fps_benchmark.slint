@@ -1,133 +1,60 @@
 // ui/views/fps_benchmark.slint
-// WinBlast0 Frame Rate & Frametime Micro-Stutter Benchmark in Slint 1.19
+// FPS reference table (port of v1.6.1 fps_benchmark). The figures are a static reference catalog,
+// never presented as measurements of this PC.
+import { ScrollView } from "std-widgets.slint";
+import { Scale, Theme, Tr } from "../theme.slint";
+import { GamingStore, FpsRow } from "../stores/gaming.slint";
+import { WbPill, WbPanel } from "../components/toggle.slint";
 
-import { Scale, Theme } from "../theme.slint";
-import { WbButton } from "../components/button.slint";
-import { WbCard } from "../components/card.slint";
-import { WbBadge } from "../components/badge.slint";
-import { WbSparkline } from "../components/sparkline.slint";
+component Stat inherits VerticalLayout {
+    in property <string> k;
+    in property <string> v;
+    in property <color> c: Theme.text-primary;
+    min-width: Scale.px(150px);
+    horizontal-stretch: 1;
+    spacing: Scale.px(2px);
+    Text { text: root.k; font-size: Scale.font-2xs; color: Theme.text-muted; wrap: word-wrap; }
+    Text { text: root.v; font-size: Scale.font-sm; font-weight: 700; color: root.c; wrap: word-wrap; }
+}
 
-export component FpsBenchmarkView inherits Flickable {
+export component FpsBenchmarkBody inherits VerticalLayout {
     in property <int> tier;
-    in property <bool> is-benchmarking: false;
-    in property <string> target-process: "Cyberpunk2077.exe";
-    in property <float> current-fps: 144.2;
-    in property <float> avg-fps: 138.6;
-    in property <float> one-percent-low: 112.4;
-    in property <float> point-one-percent-low: 89.1;
-    in property <int> elapsed-seconds: 120;
-    in property <[float]> frametime-history: [6.9, 7.1, 7.0, 7.2, 8.5, 6.8, 7.0, 7.1, 6.9, 7.0];
+    spacing: Scale.px(10px);
+    alignment: start;
 
-    callback toggle-benchmark();
-    callback export-results();
-
-    content-height: content.preferred-height;
-
-    content := VerticalLayout {
-        padding: Scale.space-lg;
-        spacing: Scale.space-md;
-
-        // Header Card
-        WbCard {
+    VerticalLayout {
+        spacing: Scale.px(4px);
+        Text { text: Tr.s("FpsBenchTitle"); font-size: Scale.font-xl; font-weight: 800; color: Theme.text-primary; wrap: word-wrap; }
+        Text { text: Tr.s("FpsReferenceNotice"); font-size: Scale.font-xs; color: Theme.text-muted; wrap: word-wrap; }
+    }
+    for f in GamingStore.fps : WbPanel {
+        VerticalLayout {
+            padding: Scale.px(12px);
+            spacing: Scale.px(8px);
             HorizontalLayout {
-                alignment: space-between;
-                VerticalLayout {
-                    spacing: Scale.space-2xs;
-                    Text {
-                        text: "DirectX / Vulkan Frame Rate Benchmark";
-                        font-size: Scale.font-xl;
-                        font-weight: 700;
-                        color: Theme.text-primary;
-                    }
-                    Text {
-                        text: "DXGI SwapChain Present() telemetry with 1% and 0.1% micro-stutter tracking.";
-                        font-size: Scale.font-sm;
-                        color: Theme.text-secondary;
-                    }
-                }
-
-                HorizontalLayout {
-                    spacing: Scale.space-sm;
-                    WbButton {
-                        variant: "ghost";
-                        text: "Export CSV";
-                        clicked => { root.export-results(); }
-                    }
-                    WbButton {
-                        variant: root.is-benchmarking ? "danger" : "primary";
-                        text: root.is-benchmarking ? "Stop Benchmark" : "Start Benchmark";
-                        clicked => { root.toggle-benchmark(); }
-                    }
-                }
+                spacing: Scale.px(8px);
+                Text { text: f.icon; font-size: Scale.font-lg; vertical-alignment: center; }
+                Text { text: f.title; font-size: Scale.font-md; font-weight: 700; color: Theme.text-primary; vertical-alignment: center; horizontal-stretch: 1; overflow: elide; }
+                WbPill { text: f.gain; tone: "success"; }
+            }
+            FlexboxLayout {
+                spacing: Scale.px(12px);
+                alignment: stretch;
+                Stat { k: Tr.s("FpsBenchAvgFps"); v: f.avg; }
+                Stat { k: Tr.s("FpsOnePctLow"); v: f.low; c: Theme.success; }
+                Stat { k: Tr.s("FpsBenchInputLatencyReduction"); v: f.latency; c: Theme.accent; }
             }
         }
+    }
+}
 
-        // FPS Metrics Gauges Row
-        HorizontalLayout {
-            spacing: Scale.space-md;
-
-            WbCard {
-                horizontal-stretch: 1;
-                VerticalLayout {
-                    spacing: Scale.space-xs;
-                    Text { text: "AVERAGE FPS"; font-size: Scale.font-xs; font-weight: 700; color: Theme.text-muted; }
-                    Text {
-                        text: round(root.avg-fps) + "";
-                        font-size: Scale.font-2xl;
-                        font-weight: 800;
-                        color: Theme.safe;
-                    }
-                    Text { text: "Mean frame rendering rate"; font-size: Scale.font-xs; color: Theme.text-secondary; }
-                }
-            }
-
-            WbCard {
-                horizontal-stretch: 1;
-                VerticalLayout {
-                    spacing: Scale.space-xs;
-                    Text { text: "1% LOW FPS"; font-size: Scale.font-xs; font-weight: 700; color: Theme.text-muted; }
-                    Text {
-                        text: round(root.one-percent-low) + "";
-                        font-size: Scale.font-2xl;
-                        font-weight: 800;
-                        color: Theme.accent;
-                    }
-                    Text { text: "99th percentile consistency"; font-size: Scale.font-xs; color: Theme.text-secondary; }
-                }
-            }
-
-            WbCard {
-                horizontal-stretch: 1;
-                VerticalLayout {
-                    spacing: Scale.space-xs;
-                    Text { text: "0.1% LOW FPS"; font-size: Scale.font-xs; font-weight: 700; color: Theme.text-muted; }
-                    Text {
-                        text: round(root.point-one-percent-low) + "";
-                        font-size: Scale.font-2xl;
-                        font-weight: 800;
-                        color: root.point-one-percent-low < 60 ? Theme.moderate : Theme.safe;
-                    }
-                    Text { text: "Peak worst-frame stutter"; font-size: Scale.font-xs; color: Theme.text-secondary; }
-                }
-            }
-        }
-
-        // Frametime Graph
-        WbCard {
-            VerticalLayout {
-                spacing: Scale.space-sm;
-                HorizontalLayout {
-                    alignment: space-between;
-                    Text { text: "FRAMETIME GRAPH (MILLISECONDS)"; font-size: Scale.font-xs; font-weight: 700; color: Theme.text-muted; }
-                    Text { text: "Target: " + root.target-process; font-size: Scale.font-xs; color: Theme.text-secondary; }
-                }
-                WbSparkline {
-                    values: root.frametime-history;
-                    max-val: 25.0;
-                    unit: "ms";
-                    stroke-color: Theme.accent;
-                }
-            }
+export component FpsBenchmarkView inherits Rectangle {
+    in property <int> tier;
+    ScrollView {
+        VerticalLayout {
+            padding: root.tier == 0 ? Scale.px(10px) : Scale.px(14px);
+            alignment: start;
+            FpsBenchmarkBody { tier: root.tier; }
         }
     }
 }

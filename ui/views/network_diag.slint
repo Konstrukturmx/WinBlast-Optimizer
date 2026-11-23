@@ -1,133 +1,110 @@
 // ui/views/network_diag.slint
-// WinBlast0 Network Diagnostics, Ping Jitter & MTU Optimizer in Slint 1.19
-
-import { Scale, Theme } from "../theme.slint";
+// Network diagnostics (port of v1.6.1 network_diag): real adapter / TCP registry state, DNS
+// round-trip probes on a worker, and DNS actions whose real outcome is reported.
+import { ScrollView } from "std-widgets.slint";
+import { Scale, Theme, Tr } from "../theme.slint";
+import { NetworkStore, DnsRow } from "../stores/gaming.slint";
 import { WbButton } from "../components/button.slint";
-import { WbCard } from "../components/card.slint";
-import { WbBadge } from "../components/badge.slint";
-import { WbSparkline } from "../components/sparkline.slint";
+import { WbChip } from "../components/chip.slint";
+import { WbPill, WbPanel } from "../components/toggle.slint";
 
-export component NetworkDiagView inherits Flickable {
+component StateCard inherits WbPanel {
+    in property <string> label;
+    in property <bool> ok;
+    min-width: Scale.px(200px);
+    horizontal-stretch: 1;
+    VerticalLayout {
+        padding: Scale.px(12px);
+        spacing: Scale.px(4px);
+        Text { text: root.label; font-size: Scale.font-xs; color: Theme.text-secondary; wrap: word-wrap; }
+        Text {
+            text: root.ok ? Tr.s("NetDiagLowLatencyBadge") : Tr.s("NetDiagDefaultLatencyBadge");
+            font-size: Scale.font-md;
+            font-weight: 700;
+            color: root.ok ? Theme.success : Theme.text-muted;
+        }
+    }
+}
+
+export component NetworkDiagView inherits Rectangle {
     in property <int> tier;
-    in property <bool> is-testing: false;
-    in property <string> adapter-name: "Intel(R) Ethernet Controller I225-V #2";
-    in property <int> current-mtu: 1500;
-    in property <float> ping-ms: 14.2;
-    in property <float> jitter-ms: 1.1;
-    in property <float> packet-loss-pct: 0.0;
-    in property <[float]> ping-history: [14.0, 15.0, 14.2, 13.9, 14.5, 14.1, 14.0, 14.3, 14.2, 14.2];
+    ScrollView {
+        VerticalLayout {
+            padding: root.tier == 0 ? Scale.px(10px) : Scale.px(14px);
+            spacing: Scale.px(12px);
+            alignment: start;
 
-    callback start-test();
-    callback optimize-tcp-stack();
-    callback flush-dns();
-
-    content-height: content.preferred-height;
-
-    content := VerticalLayout {
-        padding: Scale.space-lg;
-        spacing: Scale.space-md;
-
-        // Header Card
-        WbCard {
-            HorizontalLayout {
-                alignment: space-between;
-                VerticalLayout {
-                    spacing: Scale.space-2xs;
-                    Text {
-                        text: "Network Latency & TCP Stack Tuning";
-                        font-size: Scale.font-xl;
-                        font-weight: 700;
-                        color: Theme.text-primary;
-                    }
-                    Text {
-                        text: "ICMP jitter measurement, Nagle's algorithm disablement, and DNS cache optimizer.";
-                        font-size: Scale.font-sm;
-                        color: Theme.text-secondary;
-                    }
-                }
-
-                HorizontalLayout {
-                    spacing: Scale.space-sm;
-                    WbButton {
-                        variant: "ghost";
-                        text: "Flush DNS";
-                        clicked => { root.flush-dns(); }
-                    }
-                    WbButton {
-                        variant: "secondary";
-                        text: "Optimize TCP";
-                        clicked => { root.optimize-tcp-stack(); }
-                    }
-                    WbButton {
-                        variant: "primary";
-                        text: root.is-testing ? "Testing..." : "Run Test";
-                        loading: root.is-testing;
-                        clicked => { root.start-test(); }
-                    }
-                }
-            }
-        }
-
-        // Metrics Gauges Row
-        HorizontalLayout {
-            spacing: Scale.space-md;
-
-            WbCard {
-                horizontal-stretch: 1;
-                VerticalLayout {
-                    spacing: Scale.space-xs;
-                    Text { text: "GATEWAY PING"; font-size: Scale.font-xs; font-weight: 700; color: Theme.text-muted; }
-                    Text {
-                        text: round(root.ping-ms) + " ms";
-                        font-size: Scale.font-2xl;
-                        font-weight: 800;
-                        color: root.ping-ms >= 50 ? Theme.moderate : Theme.safe;
-                    }
-                    Text { text: "Round-trip response time"; font-size: Scale.font-xs; color: Theme.text-secondary; }
-                }
-            }
-
-            WbCard {
-                horizontal-stretch: 1;
-                VerticalLayout {
-                    spacing: Scale.space-xs;
-                    Text { text: "JITTER"; font-size: Scale.font-xs; font-weight: 700; color: Theme.text-muted; }
-                    Text {
-                        text: round(root.jitter-ms) + " ms";
-                        font-size: Scale.font-2xl;
-                        font-weight: 800;
-                        color: root.jitter-ms >= 5 ? Theme.moderate : Theme.safe;
-                    }
-                    Text { text: "Packet delivery variance"; font-size: Scale.font-xs; color: Theme.text-secondary; }
-                }
-            }
-
-            WbCard {
-                horizontal-stretch: 1;
-                VerticalLayout {
-                    spacing: Scale.space-xs;
-                    Text { text: "PACKET LOSS"; font-size: Scale.font-xs; font-weight: 700; color: Theme.text-muted; }
-                    Text {
-                        text: root.packet-loss-pct + "%";
-                        font-size: Scale.font-2xl;
-                        font-weight: 800;
-                        color: root.packet-loss-pct > 0 ? Theme.danger : Theme.safe;
-                    }
-                    Text { text: "Unacknowledged packets"; font-size: Scale.font-xs; color: Theme.text-secondary; }
-                }
-            }
-        }
-
-        // Ping History Sparkline Card
-        WbCard {
             VerticalLayout {
-                spacing: Scale.space-sm;
-                Text { text: "LIVE PING LATENCY TRACE"; font-size: Scale.font-xs; font-weight: 700; color: Theme.text-muted; }
-                WbSparkline {
-                    values: root.ping-history;
-                    max-val: 50.0;
-                    unit: "ms";
-                    stroke-color: Theme.accent;
+                spacing: Scale.px(4px);
+                Text { text: Tr.s("NetDiagTitle"); font-size: Scale.font-xl; font-weight: 800; color: Theme.text-primary; wrap: word-wrap; }
+                Text { text: Tr.s("NetDiagSubtitle"); font-size: Scale.font-xs; color: Theme.text-muted; wrap: word-wrap; }
+            }
+            FlexboxLayout {
+                spacing: Scale.px(6px);
+                WbButton {
+                    variant: "primary";
+                    text: Tr.s("NetDiagPingBtn");
+                    enabled: !NetworkStore.probing;
+                    loading: NetworkStore.probing;
+                    clicked => { NetworkStore.ping(); }
+                }
+                WbButton { variant: "secondary"; text: Tr.s("NetDiagResetDnsBtn"); enabled: !NetworkStore.busy; loading: NetworkStore.busy; clicked => { NetworkStore.reset-dns(); } }
+                WbButton { variant: "secondary"; text: Tr.s("NetDiagFlushDnsBtn"); enabled: !NetworkStore.busy; clicked => { NetworkStore.flush-dns(); } }
+            }
+            FlexboxLayout {
+                spacing: Scale.px(10px);
+                alignment: stretch;
+                WbPanel {
+                    min-width: Scale.px(220px);
+                    horizontal-stretch: 1;
+                    VerticalLayout {
+                        padding: Scale.px(12px);
+                        spacing: Scale.px(4px);
+                        Text { text: Tr.s("NetDiagAdapterLabel"); font-size: Scale.font-xs; color: Theme.text-secondary; wrap: word-wrap; }
+                        Text { text: NetworkStore.adapter; font-size: Scale.font-md; font-weight: 700; color: Theme.accent; wrap: word-wrap; }
+                        Text { text: NetworkStore.ip-mtu; font-size: Scale.font-2xs; color: Theme.text-muted; wrap: word-wrap; }
+                    }
+                }
+                StateCard { label: Tr.s("NetDiagTcpAckLabel"); ok: NetworkStore.ack-optimized; }
+                StateCard { label: Tr.s("NetDiagTcpNoDelayLabel"); ok: NetworkStore.nodelay-optimized; }
+            }
+            HorizontalLayout {
+                spacing: Scale.px(8px);
+                Text { text: "🌐 " + Tr.s("NetDiagDnsBenchmarkTitle"); font-size: Scale.font-md; font-weight: 700; color: Theme.text-primary; horizontal-stretch: 1; wrap: word-wrap; vertical-alignment: center; }
+                WbPill { text: NetworkStore.tracked; tone: "accent"; }
+            }
+            for d in NetworkStore.probes : WbPanel {
+                FlexboxLayout {
+                    padding: Scale.px(12px);
+                    spacing: Scale.px(10px);
+                    alignment: stretch;
+                    cross-axis-alignment: center;
+                    VerticalLayout {
+                        min-width: Scale.px(220px);
+                        horizontal-stretch: 1;
+                        spacing: Scale.px(2px);
+                        HorizontalLayout {
+                            spacing: Scale.px(6px);
+                            Text { text: d.name; font-size: Scale.font-sm; font-weight: 700; color: Theme.text-primary; vertical-alignment: center; }
+                            WbPill { text: d.category; tone: "muted"; }
+                        }
+                        Text { text: d.ips; font-size: Scale.font-xs; color: Theme.text-muted; wrap: word-wrap; }
+                    }
+                    VerticalLayout {
+                        min-width: Scale.px(120px);
+                        Text {
+                            text: d.ping;
+                            font-size: Scale.font-lg;
+                            font-weight: 800;
+                            color: d.tone == "success" ? Theme.success : d.tone == "warning" ? Theme.warning : d.tone == "danger" ? Theme.danger : Theme.text-muted;
+                        }
+                        Text { text: d.status; font-size: Scale.font-2xs; color: Theme.text-muted; wrap: word-wrap; }
+                    }
+                    WbChip {
+                        text: Tr.s("NetDiagSetDnsBtn");
+                        enabled: !NetworkStore.busy;
+                        clicked => { NetworkStore.apply-dns(d.primary, d.secondary, d.name); }
+                    }
                 }
             }
         }
