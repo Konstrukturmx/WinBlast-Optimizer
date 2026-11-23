@@ -74,7 +74,7 @@ pub fn get_standard_game_benchmarks() -> Vec<GameFpsComparison> {
         },
         GameFpsComparison {
             game_title: "Call of Duty: Warzone".to_string(),
-            icon_glyph: "🪖",
+            icon_glyph: "🎖️",
             stock_avg_fps: 118,
             optimized_avg_fps: 145,
             stock_1pct_low: 68,

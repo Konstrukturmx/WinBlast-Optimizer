@@ -62,7 +62,7 @@ impl GameProfile {
                 id: "warzone",
                 title: "Call of Duty: Warzone",
                 executable: "cod.exe",
-                icon_glyph: "🪖",
+                icon_glyph: "🎖️",
                 description: "Optimizes CPU worker thread allocation in adv_options.ini, prevents packet burst lag.",
                 is_applied: false,
                 high_priority: true,

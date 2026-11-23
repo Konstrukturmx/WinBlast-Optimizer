@@ -79,7 +79,7 @@ export component ThermalMonitorView inherits Rectangle {
             FlexboxLayout {
                 spacing: Scale.px(12px);
                 alignment: stretch;
-                Gauge { icon: "❄"; label: Tr.s("ThermalCpuPackage"); value: ThermalStore.cpu-temp; detail: ThermalStore.cpu-detail; tone: ThermalStore.cpu-tone; }
+                Gauge { icon: "❄️"; label: Tr.s("ThermalCpuPackage"); value: ThermalStore.cpu-temp; detail: ThermalStore.cpu-detail; tone: ThermalStore.cpu-tone; }
                 Gauge { icon: "🎮"; label: Tr.s("ThermalGpuCore"); value: ThermalStore.gpu-temp; detail: ThermalStore.gpu-detail; tone: ThermalStore.gpu-tone; }
                 Gauge { icon: "💨"; label: Tr.s("ThermalFanRpm"); value: ThermalStore.fan-text; detail: ThermalStore.fan-detail; tone: "muted"; }
             }

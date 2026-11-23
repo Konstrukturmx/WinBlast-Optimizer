@@ -71,11 +71,13 @@ export component MainWindow inherits Window {
     // Updated from change handlers (not a binding) so tier-dependent layout constraints cannot
     // form a width -> layout -> width binding loop.
     in-out property <int> tier: 2;
+    // Wide enough for the top bar's live CPU/RAM badge and OS text next to all controls.
+    in-out property <bool> wide-header: true;
     pure function compute-tier() -> int {
         return root.width / Scale.factor < 680px ? 0 : root.width / Scale.factor < 1020px ? 1 : 2;
     }
-    init => { root.tier = root.compute-tier(); }
-    changed width => { root.tier = root.compute-tier(); }
+    init => { root.tier = root.compute-tier(); root.wide-header = root.width / Scale.factor >= 1360px; }
+    changed width => { root.tier = root.compute-tier(); root.wide-header = root.width / Scale.factor >= 1360px; }
 
     forward-focus: keys;
     keys := FocusScope {
@@ -100,7 +102,7 @@ export component MainWindow inherits Window {
 
         VerticalLayout {
             spacing: 0;
-            topbar := AppTopBar { tier: root.tier; }
+            topbar := AppTopBar { tier: root.tier; roomy: root.wide-header; }
             HorizontalLayout {
                 spacing: 0;
                 vertical-stretch: 1;

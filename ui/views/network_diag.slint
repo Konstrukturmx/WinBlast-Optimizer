@@ -85,8 +85,9 @@ export component NetworkDiagView inherits Rectangle {
                         spacing: Scale.px(2px);
                         HorizontalLayout {
                             spacing: Scale.px(6px);
-                            Text { text: d.name; font-size: Scale.font-sm; font-weight: 700; color: Theme.text-primary; vertical-alignment: center; }
-                            WbPill { text: d.category; tone: "muted"; }
+                            Text { text: d.name; font-size: Scale.font-sm; font-weight: 700; color: Theme.text-primary; vertical-alignment: center; horizontal-stretch: 0; }
+                            WbPill { text: d.category; tone: "muted"; horizontal-stretch: 0; }
+                            Rectangle { horizontal-stretch: 1; }
                         }
                         Text { text: d.ips; font-size: Scale.font-xs; color: Theme.text-muted; wrap: word-wrap; }
                     }

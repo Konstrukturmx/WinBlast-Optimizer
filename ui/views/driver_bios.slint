@@ -108,7 +108,7 @@ export component DriverBiosView inherits Rectangle {
                 WbSection {
                     min-width: Scale.px(260px);
                     horizontal-stretch: 1;
-                    title: "🎛 " + Tr.s("DriverBiosMotherboardSection");
+                    title: "🎛️ " + Tr.s("DriverBiosMotherboardSection");
                     Text { text: DriverStore.board-title; font-size: Scale.font-md; font-weight: 600; color: Theme.text-primary; wrap: word-wrap; }
                     if DriverStore.board-sub != "" : Text { text: DriverStore.board-sub; font-size: Scale.font-xs; color: Theme.text-muted; wrap: word-wrap; }
                 }

@@ -8,6 +8,9 @@ import { WbChip, WbSegmented } from "../components/chip.slint";
 
 export component AppTopBar inherits Rectangle {
     in property <int> tier; // 0 compact, 1 medium, 2 wide
+    // The live CPU/RAM badge and OS text only fit next to all controls on wide windows.
+    // Set by MainWindow from width change handlers (a binding on our own width forms a layout loop).
+    in property <bool> roomy;
 
     height: Scale.px(44px);
     background: Theme.bg-sidebar;
@@ -42,6 +45,8 @@ export component AppTopBar inherits Rectangle {
                 font-weight: 800;
                 color: Theme.accent;
                 vertical-alignment: center;
+                // Never squeezed under the controls (it overlapped them at ~1024 px).
+                min-width: self.preferred-width;
             }
             if root.tier == 2 : Text {
                 text: Tr.s("AppSubtitle");
@@ -92,7 +97,7 @@ export component AppTopBar inherits Rectangle {
                 left-clicked => { AppStore.set-engine-instant(true); }
                 right-clicked => { AppStore.set-engine-instant(false); }
             }
-            if root.tier == 2 && AppStore.metrics-available : Rectangle {
+            if root.tier == 2 && root.roomy && AppStore.metrics-available : Rectangle {
                 border-radius: Scale.px(Theme.badge-radius);
                 background: Theme.accent.with-alpha(0.12);
                 HorizontalLayout {
@@ -106,7 +111,7 @@ export component AppTopBar inherits Rectangle {
                     }
                 }
             }
-            if root.tier == 2 && AppStore.os-desc != "" : Text {
+            if root.tier == 2 && root.roomy && AppStore.os-desc != "" : Text {
                 text: AppStore.os-desc;
                 font-size: Scale.font-xs;
                 color: Theme.text-muted;

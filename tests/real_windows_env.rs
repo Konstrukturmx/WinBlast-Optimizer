@@ -111,20 +111,21 @@ impl Drop for TempTestEnvGuard {
 fn test_real_backend_readonly_live_host_audit() {
     let backend = RealBackend;
 
-    // 1. OS Detection (Build 26300 / Win11+)
+    // 1. OS Detection (supported: Windows 10 2004 / build 19041 and later, incl. Windows 11)
     let os = backend.detect_os().expect("RealBackend::detect_os failed");
     let os_direct = WindowsInfo::detect().expect("WindowsInfo::detect failed");
     assert_eq!(os.build_number, os_direct.build_number);
     assert_eq!(os.edition, os_direct.edition);
     assert_eq!(os.display_version, os_direct.display_version);
     assert!(
-        os.build_number >= 22000,
-        "Expected Windows 11 build >= 22000, got {}",
+        os.build_number >= 19041,
+        "Expected a supported Windows build (>= 19041), got {}",
         os.build_number
     );
-    assert!(
+    assert_eq!(
         os.is_win11,
-        "Expected is_win11 == true on build {}",
+        os.build_number >= 22000,
+        "is_win11 must match the build number ({})",
         os.build_number
     );
     assert_ne!(os.edition, "Unknown", "OS edition must not be Unknown");

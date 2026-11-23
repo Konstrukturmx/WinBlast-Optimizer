@@ -80,12 +80,12 @@ impl DriverCategory {
             DriverCategory::Network => "📶",
             DriverCategory::Audio => "🔊",
             DriverCategory::Storage => "🖴",
-            DriverCategory::Chipset => "⚙",
+            DriverCategory::Chipset => "⚙️",
             DriverCategory::Bluetooth => "🔷",
             DriverCategory::Usb => "🔌",
             DriverCategory::Biometric => "👆",
             DriverCategory::Camera => "📷",
-            DriverCategory::Input => "⌨",
+            DriverCategory::Input => "⌨️",
             DriverCategory::VirtualSandbox => "🧪",
         }
     }

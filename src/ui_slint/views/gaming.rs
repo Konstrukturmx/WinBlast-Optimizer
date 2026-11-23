@@ -292,7 +292,10 @@ impl GamingView {
         );
         n.set_ack_optimized(net.tcp_ack_frequency_optimized);
         n.set_nodelay_optimized(net.tcp_no_delay_optimized);
-        n.set_tracked(s.tr_v(ViewTextKey::NetDiagDnsTrackedLabel).replace("{}", &net.probes.len().to_string()).into());
+        let tracked = s.tr_v(ViewTextKey::NetDiagDnsTrackedLabel);
+        let count = net.probes.len().to_string();
+        // Some catalogs carry a "{}" placeholder, others are a bare label: always show the count.
+        n.set_tracked(if tracked.contains("{}") { tracked.replace("{}", &count) } else { format!("{count} {tracked}") }.into());
         sync_vec(
             &self.dns,
             net.probes
