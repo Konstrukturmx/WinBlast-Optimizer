@@ -8,6 +8,7 @@ import { WbChip } from "../components/chip.slint";
 import { WbButton } from "../components/button.slint";
 import { WbToggle, WbPill, WbPanel } from "../components/toggle.slint";
 import { WbSection } from "../components/kv.slint";
+import { WbShimmer } from "../components/fx.slint";
 
 export component AutomationCenterView inherits Rectangle {
     in property <int> tier;
@@ -84,7 +85,7 @@ export component AutomationCenterView inherits Rectangle {
                         alignment: start;
                         WbButton {
                             variant: "secondary";
-                            text: AutomationStore.assessing ? Tr.s("BusyWorking") : "🩺 Assess Health";
+                            text: AutomationStore.assessing ? Tr.s("BusyWorking") : Tr.s("AutomationAssessHealthBtn");
                             enabled: !AutomationStore.assessing;
                             loading: AutomationStore.assessing;
                             clicked => { AutomationStore.assess-health(); }
@@ -99,7 +100,7 @@ export component AutomationCenterView inherits Rectangle {
                 FlexboxLayout {
                     spacing: Scale.px(6px);
                     for p in AutomationStore.plan : WbPill { text: p.label; tone: p.active ? "success" : "accent"; }
-                    if AutomationStore.plan-more > 0 : WbPill { text: "+" + AutomationStore.plan-more + " more optimizations"; tone: "muted"; }
+                    if AutomationStore.plan-more > 0 : WbPill { text: "+" + AutomationStore.plan-more + " " + Tr.s("AutomationMoreSuffix"); tone: "muted"; }
                 }
             }
 
@@ -109,7 +110,8 @@ export component AutomationCenterView inherits Rectangle {
                     alignment: start;
                     WbButton { variant: "secondary"; text: Tr.s("RefreshStartupInventory"); enabled: !AutomationStore.maintenance-busy; clicked => { AutomationStore.refresh-maintenance(); } }
                 }
-                if AutomationStore.maintenance.length == 0 : Text { text: AutomationStore.maintenance-busy ? Tr.s("Scanning") : "—"; color: Theme.text-muted; }
+                if AutomationStore.maintenance.length == 0 && AutomationStore.maintenance-busy : WbShimmer { lines: 3; }
+                if AutomationStore.maintenance.length == 0 && !AutomationStore.maintenance-busy : Text { text: "—"; color: Theme.text-muted; }
                 for m in AutomationStore.maintenance : Rectangle {
                     border-radius: Scale.px(Theme.btn-radius);
                     background: Theme.bg-primary;

@@ -1,10 +1,12 @@
 // ui/main.slint
-// WinBlast0 v1.7.0 root window (Slint 1.19). Native window frame (Windows snap layouts, DPI).
+// WinBlast0 v1.8.0 root window (Slint 1.19). Native window frame (Windows snap layouts, DPI).
 // Layout mirrors v1.6.1: top bar / [sidebar | view host] / changelog drawer / progress strip / footer,
 // plus overlays: compact sidebar drawer, settings dropdown, diff modal, in-progress HUD.
 
-import { Scale, Theme, Motion, Tr } from "theme.slint";
-import { AppStore, ChangelogEntry, DiffRowData, ChoiceItem } from "stores/app.slint";
+import "fonts/Inter-UI.ttf";
+import "fonts/JetBrainsMono-UI.ttf";
+import { Scale, Theme, Motion, Tr, Typo, Fx } from "theme.slint";
+import { AppStore, ChangelogEntry, DiffRowData, ChoiceItem, PaletteItem, ToastItem } from "stores/app.slint";
 import { MatrixStore, MatrixRow, MatrixCategory } from "stores/matrix.slint";
 import { DashboardStore, CategoryStat } from "stores/dashboard.slint";
 import { CleanAppsStore, CleanTargetRow, AppxRow, FeatureRow, WingetRow } from "stores/clean_apps.slint";
@@ -28,6 +30,9 @@ import { AppProgressStrip, AppChangelog, AppFooter } from "shell/statusbar.slint
 import { AppDropdown } from "shell/dropdown.slint";
 import { WbDiffModal } from "components/diff_modal.slint";
 import { WbInProgressHud } from "components/in_progress_hud.slint";
+import { WbViewEnter, WbAurora } from "components/fx.slint";
+import { AppCommandPalette } from "shell/command_palette.slint";
+import { AppToasts } from "shell/toast.slint";
 import { EasyDashboardView } from "views/easy_dashboard.slint";
 import { AdvancedMatrixView } from "views/advanced_matrix.slint";
 import { CleanAppsView } from "views/clean_apps.slint";
@@ -55,12 +60,13 @@ import { BackupCenterView } from "views/backup_center.slint";
 import { PrivacyShieldView } from "views/privacy_shield.slint";
 import { SupportAboutView } from "views/support_about.slint";
 
-export { Scale, Theme, Motion, Tr, AppStore, ChangelogEntry, DiffRowData, ChoiceItem, MatrixStore, MatrixRow, MatrixCategory, DashboardStore, CategoryStat, CleanAppsStore, CleanTargetRow, AppxRow, FeatureRow, WingetRow, StartupStore, StartupRow, BackupStore, RestorePointRow, LedgerRow, PrivacyStore, GpuStore, GpuAdapterRow, GpuTweakRow, HardwareStore, KvRow, TitledRow, ChipItem, MeterCell, ParkingStore, ThermalStore, DiskStore, CoreCard, ThermalRow, DriveCard, DriverStore, DriverRow, DisplayDriverRow, LatencyStore, LatencyMetric, PingRow, PlannerStore, PlanMetric, PlanStep, AutomationStore, MaintenanceRow, FaultStore, RepairStore, PerfStore, RepairRow, GamingStore, PrereqStore, NetworkStore, FpsRow, ProfileRow, CheckRow, PrereqRow, DnsRow, AboutStore }
+export { Scale, Theme, Motion, Tr, Typo, Fx, AppStore, ChangelogEntry, DiffRowData, ChoiceItem, PaletteItem, ToastItem, MatrixStore, MatrixRow, MatrixCategory, DashboardStore, CategoryStat, CleanAppsStore, CleanTargetRow, AppxRow, FeatureRow, WingetRow, StartupStore, StartupRow, BackupStore, RestorePointRow, LedgerRow, PrivacyStore, GpuStore, GpuAdapterRow, GpuTweakRow, HardwareStore, KvRow, TitledRow, ChipItem, MeterCell, ParkingStore, ThermalStore, DiskStore, CoreCard, ThermalRow, DriveCard, DriverStore, DriverRow, DisplayDriverRow, LatencyStore, LatencyMetric, PingRow, PlannerStore, PlanMetric, PlanStep, AutomationStore, MaintenanceRow, FaultStore, RepairStore, PerfStore, RepairRow, GamingStore, PrereqStore, NetworkStore, FpsRow, ProfileRow, CheckRow, PrereqRow, DnsRow, AboutStore }
 
 export component MainWindow inherits Window {
     title: "WinBlast0 v" + AppStore.app-version + " — Windows System Optimizer";
     icon: @image-url("../winblast.png");
     default-font-size: Scale.font-md;
+    default-font-family: Typo.ui;
     background: Theme.bg-primary;
     preferred-width: 1280px;
     preferred-height: 800px;
@@ -82,7 +88,13 @@ export component MainWindow inherits Window {
     forward-focus: keys;
     keys := FocusScope {
         key-pressed(event) => {
+            if event.modifiers.control && (event.text == "k" || event.text == "K") {
+                AppStore.dropdown = "";
+                AppStore.palette-open = !AppStore.palette-open;
+                return accept;
+            }
             if event.text == Key.Escape {
+                if AppStore.palette-open { AppStore.palette-open = false; return accept; }
                 if AppStore.dropdown != "" { AppStore.dropdown = ""; return accept; }
                 if AppStore.diff-visible { AppStore.close-diff(); return accept; }
                 if AppStore.sidebar-open && root.tier != 2 { AppStore.toggle-sidebar(); return accept; }
@@ -111,32 +123,33 @@ export component MainWindow inherits Window {
                     horizontal-stretch: 1;
                     clip: true;
                     background: Theme.bg-primary;
-                if AppStore.active-view == "dashboard" : EasyDashboardView { tier: root.tier; }
-                if AppStore.active-view == "matrix" : AdvancedMatrixView { tier: root.tier; }
-                if AppStore.active-view == "clean_apps" : CleanAppsView { tier: root.tier; }
-                if AppStore.active-view == "startup_tasks" : StartupTasksView { tier: root.tier; }
-                if AppStore.active-view == "gpu" : GpuTuningView { tier: root.tier; }
-                if AppStore.active-view == "cpu_parking" : CpuParkingView { tier: root.tier; }
-                if AppStore.active-view == "hardware" : HardwareViewComponent { tier: root.tier; }
-                if AppStore.active-view == "thermal" : ThermalMonitorView { tier: root.tier; }
-                if AppStore.active-view == "disk_health" : DiskHealthView { tier: root.tier; }
-                if AppStore.active-view == "driver_bios" : DriverBiosView { tier: root.tier; }
-                if AppStore.active-view == "latency" : LatencyBenchView { tier: root.tier; }
-                if AppStore.active-view == "fps_benchmark" : FpsBenchmarkView { tier: root.tier; }
-                if AppStore.active-view == "gaming_stats" : GamingStatsView { tier: root.tier; }
-                if AppStore.active-view == "network_diag" : NetworkDiagView { tier: root.tier; }
-                if AppStore.active-view == "performance_tests" : PerformanceTestsView { tier: root.tier; }
-                if AppStore.active-view == "game_profiles" : GameProfilesView { tier: root.tier; }
-                if AppStore.active-view == "game_overlay" : GameOverlayView { tier: root.tier; }
-                if AppStore.active-view == "game_suitability" : GameSuitabilityView { tier: root.tier; }
-                if AppStore.active-view == "game_prereqs" : GamePrereqsView { tier: root.tier; }
-                if AppStore.active-view == "automation" : AutomationCenterView { tier: root.tier; }
-                if AppStore.active-view == "goal_planner" : GoalPlannerView { tier: root.tier; }
-                if AppStore.active-view == "windows_repair" : WindowsRepairView { tier: root.tier; }
-                if AppStore.active-view == "fault_diagnostics" : FaultDiagnosticsView { tier: root.tier; }
-                if AppStore.active-view == "backup" : BackupCenterView { tier: root.tier; }
-                if AppStore.active-view == "privacy" : PrivacyShieldView { tier: root.tier; }
-                if AppStore.active-view == "support_about" : SupportAboutView { tier: root.tier; }
+                WbAurora { seed: Fx.view-serial; }
+                if AppStore.active-view == "dashboard" : WbViewEnter { EasyDashboardView { tier: root.tier; } }
+                if AppStore.active-view == "matrix" : WbViewEnter { AdvancedMatrixView { tier: root.tier; } }
+                if AppStore.active-view == "clean_apps" : WbViewEnter { CleanAppsView { tier: root.tier; } }
+                if AppStore.active-view == "startup_tasks" : WbViewEnter { StartupTasksView { tier: root.tier; } }
+                if AppStore.active-view == "gpu" : WbViewEnter { GpuTuningView { tier: root.tier; } }
+                if AppStore.active-view == "cpu_parking" : WbViewEnter { CpuParkingView { tier: root.tier; } }
+                if AppStore.active-view == "hardware" : WbViewEnter { HardwareViewComponent { tier: root.tier; } }
+                if AppStore.active-view == "thermal" : WbViewEnter { ThermalMonitorView { tier: root.tier; } }
+                if AppStore.active-view == "disk_health" : WbViewEnter { DiskHealthView { tier: root.tier; } }
+                if AppStore.active-view == "driver_bios" : WbViewEnter { DriverBiosView { tier: root.tier; } }
+                if AppStore.active-view == "latency" : WbViewEnter { LatencyBenchView { tier: root.tier; } }
+                if AppStore.active-view == "fps_benchmark" : WbViewEnter { FpsBenchmarkView { tier: root.tier; } }
+                if AppStore.active-view == "gaming_stats" : WbViewEnter { GamingStatsView { tier: root.tier; } }
+                if AppStore.active-view == "network_diag" : WbViewEnter { NetworkDiagView { tier: root.tier; } }
+                if AppStore.active-view == "performance_tests" : WbViewEnter { PerformanceTestsView { tier: root.tier; } }
+                if AppStore.active-view == "game_profiles" : WbViewEnter { GameProfilesView { tier: root.tier; } }
+                if AppStore.active-view == "game_overlay" : WbViewEnter { GameOverlayView { tier: root.tier; } }
+                if AppStore.active-view == "game_suitability" : WbViewEnter { GameSuitabilityView { tier: root.tier; } }
+                if AppStore.active-view == "game_prereqs" : WbViewEnter { GamePrereqsView { tier: root.tier; } }
+                if AppStore.active-view == "automation" : WbViewEnter { AutomationCenterView { tier: root.tier; } }
+                if AppStore.active-view == "goal_planner" : WbViewEnter { GoalPlannerView { tier: root.tier; } }
+                if AppStore.active-view == "windows_repair" : WbViewEnter { WindowsRepairView { tier: root.tier; } }
+                if AppStore.active-view == "fault_diagnostics" : WbViewEnter { FaultDiagnosticsView { tier: root.tier; } }
+                if AppStore.active-view == "backup" : WbViewEnter { BackupCenterView { tier: root.tier; } }
+                if AppStore.active-view == "privacy" : WbViewEnter { PrivacyShieldView { tier: root.tier; } }
+                if AppStore.active-view == "support_about" : WbViewEnter { SupportAboutView { tier: root.tier; } }
                 }
             }
             if AppStore.show-changelog : AppChangelog { tier: root.tier; }
@@ -161,5 +174,21 @@ export component MainWindow inherits Window {
         }
         if AppStore.diff-visible : WbDiffModal {}
         if AppStore.hud-visible : WbInProgressHud {}
+        toasts := AppToasts {
+            width: min(Scale.px(380px), root.width - Scale.px(32px));
+            x: root.width - self.width - Scale.px(16px);
+            y: root.height - self.preferred-height - Scale.px(56px);
+            height: self.preferred-height;
+        }
+        if AppStore.palette-open : AppCommandPalette {
+            closed => { keys.focus(); }
+        }
+    }
+
+    // Ends the staggered card entrance window opened by Rust on navigation.
+    Timer {
+        interval: 700ms;
+        running: Fx.entering;
+        triggered => { Fx.entering = false; }
     }
 }

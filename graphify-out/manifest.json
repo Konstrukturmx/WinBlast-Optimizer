@@ -1,8 +1,8 @@
 {
   "Cargo.toml": {
-    "mtime": 1795426606.604664,
-    "seen": 1795443512.5020769,
-    "ast_hash": "6d901d7ebb241ce56b1da83d2d86c686",
+    "mtime": 1795463796.295475,
+    "seen": 1795466843.6243615,
+    "ast_hash": "db65f730f9b884fdea3fe24823656d07",
     "semantic_hash": ""
   },
   "build.rs": {
@@ -60,9 +60,9 @@
     "semantic_hash": "003d1424d83a1fc0e768698e9b2e8cec"
   },
   "src/core/i18n.rs": {
-    "mtime": 1795441009.5651608,
-    "seen": 1795443512.5021155,
-    "ast_hash": "ba2b28b77f3d269cd09ed9a981867976",
+    "mtime": 1795465381.7338555,
+    "seen": 1795466843.6244004,
+    "ast_hash": "d19767ffaaf5ee623390addbfd1241a4",
     "semantic_hash": ""
   },
   "src/core/mod.rs": {
@@ -330,9 +330,9 @@
     "semantic_hash": ""
   },
   "CHANGELOG.md": {
-    "mtime": 1795442872.248488,
-    "seen": 1795443512.5023117,
-    "ast_hash": "ec0209dba326463174ffd29e0418945c",
+    "mtime": 1795466368.2033293,
+    "seen": 1795466843.62457,
+    "ast_hash": "4effab5918f3cf420e46f31845ac0fef",
     "semantic_hash": ""
   },
   "DEVELOPMENT.md": {
@@ -348,9 +348,9 @@
     "semantic_hash": "e3fa3528630a8cd577262679cf2230c7"
   },
   "README.md": {
-    "mtime": 1795442876.602008,
-    "seen": 1795443512.5023203,
-    "ast_hash": "420ebd344ba5bf6d68cdc602f966681c",
+    "mtime": 1795466368.6444533,
+    "seen": 1795466843.6245782,
+    "ast_hash": "e1873e20bca6536fbcb23540b8d43486",
     "semantic_hash": ""
   },
   "assets/screenshots/advanced_matrix.png": {
@@ -690,9 +690,9 @@
     "semantic_hash": ""
   },
   "src/ui_slint/mod.rs": {
-    "mtime": 1795367750.941198,
-    "seen": 1795373840.0666022,
-    "ast_hash": "720edacf910fe6248b1c333ff17da60a",
+    "mtime": 1795463744.8070827,
+    "seen": 1795466843.6245122,
+    "ast_hash": "2e5dac2f97fdd9a0653f8dcf730bbf4e",
     "semantic_hash": ""
   },
   "tests/ui_parity.rs": {
@@ -834,9 +834,9 @@
     "semantic_hash": ""
   },
   "src/ui_slint/shell.rs": {
-    "mtime": 1795367719.2025275,
-    "seen": 1795373840.0666044,
-    "ast_hash": "c5a7c9cb43793e3ae545b785b3a31470",
+    "mtime": 1795463776.0667388,
+    "seen": 1795466843.624517,
+    "ast_hash": "8abd0eaaf43435f4d4fd09885b2ca8be",
     "semantic_hash": ""
   },
   "src/ui_slint/theme.rs": {
@@ -948,9 +948,9 @@
     "semantic_hash": ""
   },
   "CHECKLIST.md": {
-    "mtime": 1795428848.440831,
-    "seen": 1795443512.502313,
-    "ast_hash": "cc0e7c461504871be4635af148b6af2f",
+    "mtime": 1795466378.5532382,
+    "seen": 1795466843.624571,
+    "ast_hash": "c4cc47cc065987e98422e4f82feed934",
     "semantic_hash": ""
   },
   "PARITY_MATRIX.md": {
@@ -969,6 +969,36 @@
     "mtime": 1795425848.714942,
     "seen": 1795443512.5022566,
     "ast_hash": "c092e3c5a945ae2d9b3c988766d42e66",
+    "semantic_hash": ""
+  },
+  "src/ui_slint/palette.rs": {
+    "mtime": 1795463715.1281602,
+    "seen": 1795466843.624515,
+    "ast_hash": "63ef8337d639138640003c23e0f8585b",
+    "semantic_hash": ""
+  },
+  "tests/ui_render_preview.rs": {
+    "mtime": 1795464970.9483595,
+    "seen": 1795466843.6245627,
+    "ast_hash": "3552c24b1ee611722a49a2f0e0a0ae2b",
+    "semantic_hash": ""
+  },
+  "ui/fonts/LICENSE-Inter.txt": {
+    "mtime": 1795463417.3806033,
+    "seen": 1795466843.6245875,
+    "ast_hash": "082d8cc7db39783f598b7eda8c911f9d",
+    "semantic_hash": ""
+  },
+  "ui/fonts/LICENSE-JetBrainsMono.txt": {
+    "mtime": 1795463417.4749863,
+    "seen": 1795466843.6245887,
+    "ast_hash": "43dc1a748ef82aa746d6a645d52578a9",
+    "semantic_hash": ""
+  },
+  "ui/fonts/README.md": {
+    "mtime": 1795463418.2555082,
+    "seen": 1795466843.62459,
+    "ast_hash": "d0924da5f20c10003f1792b3082f2484",
     "semantic_hash": ""
   }
 }

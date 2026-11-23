@@ -8,8 +8,8 @@ export component AppDropdown inherits Rectangle {
     in property <length> anchor-x;
     in property <length> anchor-y;
 
-    property <string> title: AppStore.dropdown == "language" ? "🌐 Select Language"
-        : AppStore.dropdown == "style" ? "🎨 Theme Style" : "🌈 Color Scheme";
+    property <string> title: AppStore.dropdown == "language" ? Tr.s("DropdownLanguageTitle")
+        : AppStore.dropdown == "style" ? Tr.s("DropdownStyleTitle") : Tr.s("DropdownSchemeTitle");
     property <[ChoiceItem]> items: AppStore.dropdown == "language" ? AppStore.languages
         : AppStore.dropdown == "style" ? AppStore.theme-styles : AppStore.color-schemes;
 
@@ -46,7 +46,7 @@ export component AppDropdown inherits Rectangle {
                     width: Scale.px(24px);
                     mouse-cursor: pointer;
                     clicked => { AppStore.dropdown = ""; }
-                    Text { text: "✕"; color: close.has-hover ? Theme.text-primary : Theme.text-muted; }
+                    Text { text: "×"; font-size: Scale.font-lg; color: close.has-hover ? Theme.text-primary : Theme.text-muted; }
                 }
             }
             for item[i] in root.items : Rectangle {

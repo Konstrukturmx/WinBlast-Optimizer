@@ -9,6 +9,7 @@ import { WbChip } from "../components/chip.slint";
 import { WbButton } from "../components/button.slint";
 import { WbSearchInput } from "../components/search_input.slint";
 import { WbToggle, WbRiskBadge, WbPill, WbPanel } from "../components/toggle.slint";
+import { WbShimmer } from "../components/fx.slint";
 
 component SectionTitle inherits Text {
     font-size: Scale.font-sm;
@@ -231,10 +232,18 @@ export component AdvancedMatrixView inherits Rectangle {
             }
 
             // ---- Grouped tweak list ----
-            if MatrixStore.filtered-count == 0 : WbPanel {
+            if MatrixStore.filtered-count == 0 && AppStore.is-scanning : WbPanel {
+                VerticalLayout {
+                    padding: Scale.px(14px);
+                    spacing: Scale.px(6px);
+                    Text { text: Tr.s("ScanningEvaluating"); font-size: Scale.font-sm; color: Theme.text-muted; wrap: word-wrap; }
+                    WbShimmer { lines: 4; }
+                }
+            }
+            if MatrixStore.filtered-count == 0 && !AppStore.is-scanning : WbPanel {
                 height: Scale.px(80px);
                 Text {
-                    text: AppStore.is-scanning ? Tr.s("ScanningEvaluating") : Tr.s("EmptyMatrixList");
+                    text: Tr.s("EmptyMatrixList");
                     font-size: Scale.font-sm;
                     color: Theme.text-muted;
                     wrap: word-wrap;

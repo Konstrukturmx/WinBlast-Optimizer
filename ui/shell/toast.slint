@@ -1,0 +1,93 @@
+// ui/shell/toast.slint
+// Bottom-right toast stack. Rust appends an item whenever a finished action changes the status
+// message; each toast removes itself after a timeout (longer for errors) or on click.
+import { Scale, Theme, Tr } from "../theme.slint";
+import { AppStore, ToastItem } from "../stores/app.slint";
+
+component WbToast inherits Rectangle {
+    in property <ToastItem> item;
+    private property <bool> shown: Theme.reduced-motion;
+    private property <duration> life: root.item.tone == "danger" ? 9s : root.item.tone == "warning" ? 7s : 5s;
+    private property <color> tone: root.item.tone == "success" ? Theme.success : root.item.tone == "warning" ? Theme.warning
+        : root.item.tone == "danger" ? Theme.danger : Theme.accent;
+
+    min-height: Scale.px(44px);
+    border-radius: Scale.px(Theme.card-radius);
+    background: Theme.bg-glass-strong;
+    border-width: 1px;
+    border-color: root.tone.with-alpha(0.55);
+    drop-shadow-blur: 20px;
+    drop-shadow-offset-y: 6px;
+    drop-shadow-color: Theme.shadow-md;
+    clip: true;
+    opacity: root.shown ? 1 : 0;
+    transform-scale: root.shown ? 1 : 0.94;
+    animate opacity, transform-scale { duration: Theme.anim-enter; easing: cubic-bezier(0.2, 0.9, 0.25, 1); }
+    accessible-role: text;
+    accessible-label: root.item.text;
+
+    Timer {
+        interval: 16ms;
+        running: !root.shown;
+        triggered => { root.shown = true; }
+    }
+    Timer {
+        interval: root.life;
+        running: true;
+        triggered => { AppStore.dismiss-toast(root.item.id); }
+    }
+
+    TouchArea {
+        mouse-cursor: pointer;
+        clicked => { AppStore.dismiss-toast(root.item.id); }
+    }
+
+    // Tone bar
+    Rectangle { x: 0; width: Scale.px(4px); background: root.tone; }
+    // Countdown line (static with reduced motion)
+    if !Theme.reduced-motion : Rectangle {
+        x: 0;
+        y: parent.height - self.height;
+        height: 2px;
+        width: root.shown ? 0px : root.width;
+        background: root.tone.with-alpha(0.6);
+        animate width { duration: root.life; easing: linear; }
+    }
+
+    HorizontalLayout {
+        padding-left: Scale.px(14px);
+        padding-right: Scale.px(10px);
+        padding-top: Scale.px(8px);
+        padding-bottom: Scale.px(10px);
+        spacing: Scale.px(10px);
+        Text {
+            text: root.item.tone == "success" ? "✓" : root.item.tone == "warning" ? "⚠" : root.item.tone == "danger" ? "×" : "i";
+            font-size: Scale.font-md;
+            font-weight: 700;
+            color: root.tone;
+            vertical-alignment: center;
+        }
+        Text {
+            text: root.item.text;
+            font-size: Scale.font-sm;
+            color: Theme.text-primary;
+            wrap: word-wrap;
+            vertical-alignment: center;
+            horizontal-stretch: 1;
+        }
+        Text {
+            text: "×";
+            font-size: Scale.font-xs;
+            color: Theme.text-muted;
+            vertical-alignment: center;
+            accessible-role: button;
+            accessible-label: Tr.s("ToastDismiss");
+        }
+    }
+}
+
+export component AppToasts inherits VerticalLayout {
+    spacing: Scale.px(8px);
+    alignment: end;
+    for t in AppStore.toasts : WbToast { item: t; }
+}

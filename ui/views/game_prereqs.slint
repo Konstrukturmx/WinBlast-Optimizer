@@ -6,6 +6,7 @@ import { PrereqStore, PrereqRow } from "../stores/gaming.slint";
 import { WbButton } from "../components/button.slint";
 import { WbSearchInput } from "../components/search_input.slint";
 import { WbPill, WbPanel } from "../components/toggle.slint";
+import { WbShimmer } from "../components/fx.slint";
 
 component Count inherits WbPanel {
     in property <string> label;
@@ -63,10 +64,13 @@ export component GamePrereqsView inherits Rectangle {
                 text: PrereqStore.filter;
                 changed(t) => { PrereqStore.filter-edited(t); }
             }
-            if PrereqStore.items.length == 0 : WbPanel {
+            if PrereqStore.items.length == 0 && PrereqStore.scanning : WbPanel {
+                VerticalLayout { padding: Scale.px(14px); WbShimmer { lines: 3; } }
+            }
+            if PrereqStore.items.length == 0 && !PrereqStore.scanning : WbPanel {
                 height: Scale.px(72px);
                 Text {
-                    text: PrereqStore.scanning ? Tr.s("Scanning") : PrereqStore.total == 0 ? Tr.s("PrereqsEmpty") : Tr.s("PrereqsNoMatch");
+                    text: PrereqStore.total == 0 ? Tr.s("PrereqsEmpty") : Tr.s("PrereqsNoMatch");
                     font-size: Scale.font-sm;
                     color: Theme.text-muted;
                     wrap: word-wrap;

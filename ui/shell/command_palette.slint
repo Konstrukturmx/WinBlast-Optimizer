@@ -1,0 +1,170 @@
+// ui/shell/command_palette.slint
+// Ctrl+K command palette: jump to any view, run a shell action or hand a query to the
+// tweak matrix search. Results are ranked in Rust (AppStore.palette-search); keyboard:
+// Up/Down to move, Enter to run, Esc to close.
+import { Scale, Theme, Tr, Typo } from "../theme.slint";
+import { AppStore, PaletteItem } from "../stores/app.slint";
+import { MatrixStore } from "../stores/matrix.slint";
+import { WbSearchInput } from "../components/search_input.slint";
+
+export component AppCommandPalette inherits Rectangle {
+    callback closed();
+
+    private property <bool> shown: Theme.reduced-motion;
+
+    background: Theme.scrim;
+
+    function close() {
+        AppStore.palette-open = false;
+        AppStore.palette-query = "";
+        AppStore.palette-index = 0;
+        root.closed();
+    }
+    function run(item: PaletteItem) {
+        root.close();
+        if item.kind == "view" {
+            AppStore.navigate(item.id);
+        } else if item.kind == "tweaks" {
+            AppStore.navigate("matrix");
+            MatrixStore.query = item.id;
+            MatrixStore.query-edited(item.id);
+        } else if item.id == "scan" {
+            if !AppStore.is-scanning { AppStore.start-scan(); }
+        } else if item.id == "theme" {
+            AppStore.toggle-theme-mode();
+        } else if item.id == "motion" {
+            AppStore.toggle-reduced-motion();
+        } else if item.id == "changelog" {
+            AppStore.toggle-changelog();
+        }
+    }
+
+    init => {
+        AppStore.palette-index = 0;
+        AppStore.palette-search(AppStore.palette-query);
+        search.focus();
+    }
+    Timer {
+        interval: 16ms;
+        running: !root.shown;
+        triggered => { root.shown = true; }
+    }
+
+    // Scrim: outside click closes.
+    TouchArea { clicked => { root.close(); } }
+
+    panel := Rectangle {
+        width: min(Scale.px(580px), root.width - Scale.px(24px));
+        x: (root.width - self.width) / 2;
+        y: min(Scale.px(80px), root.height * 0.12) + (root.shown ? 0px : Scale.px(-10px));
+        height: min(body.preferred-height, root.height - self.y - Scale.px(16px));
+        border-radius: Scale.px(Theme.card-radius) + 2px;
+        background: Theme.bg-glass-strong;
+        border-width: 1px;
+        border-color: Theme.border-accent;
+        drop-shadow-blur: 32px;
+        drop-shadow-offset-y: 8px;
+        drop-shadow-color: Theme.shadow-lg;
+        opacity: root.shown ? 1 : 0;
+        clip: true;
+        animate opacity, y { duration: Theme.anim-enter; easing: cubic-bezier(0.2, 0.9, 0.25, 1); }
+        accessible-role: list;
+        accessible-label: Tr.s("PaletteOpenTip");
+
+        TouchArea {} // swallow clicks inside the panel
+
+        FocusScope {
+            capture-key-pressed(event) => {
+                if event.text == Key.Escape { root.close(); return accept; }
+                if event.text == Key.DownArrow {
+                    AppStore.palette-index = min(AppStore.palette-index + 1, AppStore.palette-items.length - 1);
+                    return accept;
+                }
+                if event.text == Key.UpArrow {
+                    AppStore.palette-index = max(AppStore.palette-index - 1, 0);
+                    return accept;
+                }
+                if event.text == Key.Return {
+                    if AppStore.palette-items.length > 0 {
+                        root.run(AppStore.palette-items[clamp(AppStore.palette-index, 0, AppStore.palette-items.length - 1)]);
+                    }
+                    return accept;
+                }
+                reject
+            }
+
+            body := VerticalLayout {
+                padding: Scale.px(10px);
+                spacing: Scale.px(4px);
+
+                search := WbSearchInput {
+                    placeholder: Tr.s("PalettePlaceholder");
+                    text <=> AppStore.palette-query;
+                    changed(t) => {
+                        AppStore.palette-index = 0;
+                        AppStore.palette-search(t);
+                    }
+                }
+                Rectangle { height: Scale.px(4px); }
+
+                for item[i] in AppStore.palette-items : Rectangle {
+                    property <bool> current: i == AppStore.palette-index;
+                    height: Scale.px(36px);
+                    border-radius: Scale.px(Theme.btn-radius);
+                    background: current ? Theme.accent.with-alpha(0.20) : transparent;
+                    animate background { duration: Theme.anim; }
+                    accessible-role: list-item;
+                    accessible-label: item.label;
+                    accessible-item-selected: current;
+                    row-touch := TouchArea {
+                        mouse-cursor: pointer;
+                        moved => { AppStore.palette-index = i; }
+                        clicked => { root.run(item); }
+                    }
+                    if current : Rectangle {
+                        x: Scale.px(4px);
+                        width: Scale.px(3px);
+                        height: parent.height - Scale.px(14px);
+                        border-radius: 2px;
+                        background: Theme.accent;
+                    }
+                    HorizontalLayout {
+                        padding-left: Scale.px(14px);
+                        padding-right: Scale.px(10px);
+                        spacing: Scale.px(10px);
+                        Text { text: item.icon; width: Scale.px(20px); font-size: Scale.font-md; vertical-alignment: center; }
+                        Text {
+                            text: item.label;
+                            font-size: Scale.font-md;
+                            font-weight: current ? 600 : 400;
+                            color: current ? Theme.text-primary : Theme.text-secondary;
+                            vertical-alignment: center;
+                            overflow: elide;
+                            horizontal-stretch: 1;
+                            min-width: 0;
+                        }
+                        Text { text: item.hint; font-size: Scale.font-2xs; color: Theme.text-muted; vertical-alignment: center; }
+                    }
+                }
+
+                if AppStore.palette-items.length == 0 : Text {
+                    text: Tr.s("PaletteNoResults");
+                    font-size: Scale.font-sm;
+                    color: Theme.text-muted;
+                    horizontal-alignment: center;
+                    height: Scale.px(40px);
+                    vertical-alignment: center;
+                }
+
+                Rectangle { height: 1px; background: Theme.border; }
+                Text {
+                    text: Tr.s("PaletteHint");
+                    font-size: Scale.font-2xs;
+                    font-family: Typo.mono;
+                    color: Theme.text-muted;
+                    horizontal-alignment: right;
+                }
+            }
+        }
+    }
+}

@@ -1,11 +1,15 @@
 // ui/components/badge.slint
-import { Scale, Theme } from "../theme.slint";
+import { Scale, Theme, Tr } from "../theme.slint";
+import { WbTip } from "fx.slint";
 
 export component WbBadge inherits Rectangle {
     in property <string> text: "";
     // "safe" | "low" | "moderate" | "high" | "info" | "neutral"
     in property <string> variant: "neutral";
     in property <bool> show-dot: false;
+    // Hover explanation; risk variants get a localized default.
+    in property <string> tooltip: root.variant == "safe" ? Tr.s("RiskTipSafe") : root.variant == "low" ? Tr.s("RiskTipLow")
+        : root.variant == "moderate" ? Tr.s("RiskTipModerate") : root.variant == "high" ? Tr.s("RiskTipHigh") : "";
 
     private property <color> fg-color:
         root.variant == "safe"     ? Theme.safe :
@@ -39,6 +43,9 @@ export component WbBadge inherits Rectangle {
 
     accessible-role: AccessibleRole.text;
     accessible-label: root.text;
+    accessible-description: root.tooltip;
+
+    if root.tooltip != "" : Tooltip { WbTip { text: root.tooltip; } }
 
     HorizontalLayout {
         padding-left: Scale.space-sm;

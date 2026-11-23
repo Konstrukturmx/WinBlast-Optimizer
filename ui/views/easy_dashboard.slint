@@ -3,7 +3,7 @@
 // live CPU/RAM waveforms, category breakdown, before/after impact, hardware summary,
 // 1-click presets and quick-launch cards.
 import { ScrollView } from "std-widgets.slint";
-import { Scale, Theme, Tr } from "../theme.slint";
+import { Scale, Theme, Tr, Typo } from "../theme.slint";
 import { AppStore } from "../stores/app.slint";
 import { MatrixStore } from "../stores/matrix.slint";
 import { DashboardStore } from "../stores/dashboard.slint";
@@ -11,6 +11,7 @@ import { WbButton } from "../components/button.slint";
 import { WbPanel } from "../components/toggle.slint";
 import { WbSparkline } from "../components/sparkline.slint";
 import { WbProgressBar } from "../components/progress_bar.slint";
+import { WbGauge } from "../components/fx.slint";
 
 component CardTitle inherits HorizontalLayout {
     in property <string> icon;
@@ -31,7 +32,7 @@ component Metric inherits VerticalLayout {
     Text { text: root.label; font-size: Scale.font-xs; color: Theme.text-muted; }
     HorizontalLayout {
         spacing: Scale.px(6px);
-        Text { text: root.now; font-size: Scale.font-lg; font-weight: 700; color: Theme.text-primary; }
+        Text { text: root.now; font-family: Typo.mono; font-size: Scale.font-lg; font-weight: 700; color: Theme.text-primary; }
         Text { text: root.was; font-size: Scale.font-xs; color: Theme.text-muted; vertical-alignment: center; }
     }
     Text { text: root.delta; font-size: Scale.font-xs; color: root.delta-color; wrap: word-wrap; }
@@ -127,6 +128,7 @@ export component EasyDashboardView inherits Rectangle {
 
             // ---- Header: title + health ring + scan ----
             WbPanel {
+                glow: true;
                 FlexboxLayout {
                     padding: Scale.px(Theme.card-padding);
                     spacing: Scale.px(14px);
@@ -139,14 +141,10 @@ export component EasyDashboardView inherits Rectangle {
                     }
                     HorizontalLayout {
                         spacing: Scale.px(10px);
-                        Rectangle {
-                            width: Scale.px(64px);
-                            height: Scale.px(64px);
-                            border-radius: self.width / 2;
-                            border-width: Scale.px(5px);
-                            border-color: root.health-color;
-                            background: root.health-color.with-alpha(0.10);
-                            Text { text: DashboardStore.health-score + "%"; font-size: Scale.font-lg; font-weight: 800; color: root.health-color; }
+                        WbGauge {
+                            width: Scale.px(72px);
+                            value: DashboardStore.health-score;
+                            tone: root.health-color;
                         }
                         VerticalLayout {
                             alignment: center;
@@ -173,8 +171,16 @@ export component EasyDashboardView inherits Rectangle {
                     VerticalLayout {
                         padding: Scale.px(12px);
                         spacing: Scale.px(6px);
-                        Text { text: DashboardStore.cpu-title; font-size: Scale.font-sm; font-weight: 700; color: Theme.text-primary; }
-                        Text { text: DashboardStore.cpu-text; font-size: Scale.font-xs; color: Theme.sparkline-cpu; }
+                        HorizontalLayout {
+                            spacing: Scale.px(12px);
+                            WbGauge { width: Scale.px(64px); value: AppStore.cpu-usage; available: AppStore.metrics-available; tone: Theme.sparkline-cpu; }
+                            VerticalLayout {
+                                alignment: center;
+                                spacing: Scale.px(2px);
+                                Text { text: DashboardStore.cpu-title; font-size: Scale.font-sm; font-weight: 700; color: Theme.text-primary; wrap: word-wrap; }
+                                Text { text: DashboardStore.cpu-text; font-family: Typo.mono; font-size: Scale.font-xs; color: Theme.sparkline-cpu; wrap: word-wrap; }
+                            }
+                        }
                         WbSparkline { values: DashboardStore.cpu-points; stroke-color: Theme.sparkline-cpu; max-val: 100; }
                     }
                 }
@@ -184,8 +190,16 @@ export component EasyDashboardView inherits Rectangle {
                     VerticalLayout {
                         padding: Scale.px(12px);
                         spacing: Scale.px(6px);
-                        Text { text: DashboardStore.ram-title; font-size: Scale.font-sm; font-weight: 700; color: Theme.text-primary; }
-                        Text { text: DashboardStore.ram-text; font-size: Scale.font-xs; color: Theme.sparkline-ram; }
+                        HorizontalLayout {
+                            spacing: Scale.px(12px);
+                            WbGauge { width: Scale.px(64px); value: AppStore.ram-usage; available: AppStore.metrics-available; tone: Theme.sparkline-ram; }
+                            VerticalLayout {
+                                alignment: center;
+                                spacing: Scale.px(2px);
+                                Text { text: DashboardStore.ram-title; font-size: Scale.font-sm; font-weight: 700; color: Theme.text-primary; wrap: word-wrap; }
+                                Text { text: DashboardStore.ram-text; font-family: Typo.mono; font-size: Scale.font-xs; color: Theme.sparkline-ram; wrap: word-wrap; }
+                            }
+                        }
                         WbSparkline { values: DashboardStore.ram-points; stroke-color: Theme.sparkline-ram; max-val: 100; }
                     }
                 }

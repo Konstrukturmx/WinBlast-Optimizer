@@ -8,6 +8,7 @@ import { WbChip } from "../components/chip.slint";
 import { WbButton } from "../components/button.slint";
 import { WbSearchInput } from "../components/search_input.slint";
 import { WbToggle, WbPill, WbPanel } from "../components/toggle.slint";
+import { WbShimmer } from "../components/fx.slint";
 
 component EmptyCard inherits WbPanel {
     in property <string> text;
@@ -97,7 +98,8 @@ export component CleanAppsView inherits Rectangle {
                     Text { x: Scale.px(10px); width: parent.width - Scale.px(20px); text: CleanAppsStore.clean-errors; font-size: Scale.font-xs; color: Theme.danger; wrap: word-wrap; }
                     min-height: Scale.px(36px);
                 }
-                if CleanAppsStore.targets.length == 0 : EmptyCard { text: CleanAppsStore.busy ? Tr.s("Scanning") : Tr.s("EmptyCleanTargets"); }
+                if CleanAppsStore.targets.length == 0 && CleanAppsStore.busy : WbShimmer { lines: 3; }
+                if CleanAppsStore.targets.length == 0 && !CleanAppsStore.busy : EmptyCard { text: Tr.s("EmptyCleanTargets"); }
                 for t in CleanAppsStore.targets : SelectRow {
                     selected: t.selected;
                     busy: CleanAppsStore.busy;
@@ -147,7 +149,8 @@ export component CleanAppsView inherits Rectangle {
                         if CleanAppsStore.kfm-warning != "" : Text { text: CleanAppsStore.kfm-warning; font-size: Scale.font-xs; color: Theme.warning; wrap: word-wrap; }
                     }
                 }
-                if CleanAppsStore.appx.length == 0 : EmptyCard { text: CleanAppsStore.busy ? Tr.s("Scanning") : Tr.s("EmptyAppxList"); }
+                if CleanAppsStore.appx.length == 0 && CleanAppsStore.busy : WbShimmer { lines: 4; }
+                if CleanAppsStore.appx.length == 0 && !CleanAppsStore.busy : EmptyCard { text: Tr.s("EmptyAppxList"); }
                 for p in CleanAppsStore.appx : SelectRow {
                     selected: p.selected;
                     locked: p.protected;
@@ -172,7 +175,8 @@ export component CleanAppsView inherits Rectangle {
                         padding: Scale.px(12px);
                         spacing: Scale.px(6px);
                         Text { text: Tr.s("OptionalFeaturesTitle"); font-size: Scale.font-md; font-weight: 700; color: Theme.text-primary; }
-                        if CleanAppsStore.features.length == 0 : Text { text: CleanAppsStore.busy ? Tr.s("Scanning") : Tr.s("EmptyFeaturesList"); font-size: Scale.font-xs; color: Theme.text-muted; }
+                        if CleanAppsStore.features.length == 0 && CleanAppsStore.busy : WbShimmer { lines: 3; }
+                        if CleanAppsStore.features.length == 0 && !CleanAppsStore.busy : Text { text: Tr.s("EmptyFeaturesList"); font-size: Scale.font-xs; color: Theme.text-muted; }
                         for f in CleanAppsStore.features : Rectangle {
                             border-radius: Scale.px(Theme.btn-radius);
                             background: Theme.bg-primary;

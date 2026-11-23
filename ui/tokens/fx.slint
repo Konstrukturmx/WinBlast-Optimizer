@@ -1,0 +1,16 @@
+// ui/tokens/fx.slint
+// Typography families (embedded fonts) and shared motion state for the 1.8.0 visual layer.
+
+export global Typo {
+    // Family names as stored in the embedded font files (ui/fonts/).
+    out property <string> ui: "Inter Variable";
+    out property <string> mono: "JetBrains Mono";
+}
+
+export global Fx {
+    // Written by Rust on every navigation (src/ui_slint/shell.rs). Panels created while
+    // `entering` is true play the staggered entrance; `view-serial` re-seeds the aurora backdrop.
+    in-out property <bool> entering: false;
+    in-out property <int> stagger: 0;
+    in-out property <int> view-serial: 0;
+}

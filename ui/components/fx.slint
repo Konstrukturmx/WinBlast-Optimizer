@@ -1,0 +1,176 @@
+// ui/components/fx.slint
+// 1.8.0 visual layer: view transition wrapper, aurora backdrop, animated radial gauge,
+// shimmer skeleton and the themed tooltip body. Every effect honours Theme.reduced-motion
+// (durations collapse to 0 and nothing animates continuously).
+import { Scale, Theme, Typo } from "../theme.slint";
+
+// Fades and slides a freshly created view in. Wraps each view in the main view host.
+export component WbViewEnter inherits Rectangle {
+    private property <bool> shown: Theme.reduced-motion;
+    opacity: root.shown ? 1 : 0;
+    animate opacity { duration: Theme.anim-enter; easing: ease-out; }
+    // One frame after creation so the hidden state is rendered once before animating.
+    Timer {
+        interval: 16ms;
+        running: !root.shown;
+        triggered => { root.shown = true; }
+    }
+    Rectangle {
+        y: root.shown ? 0px : Scale.px(14px);
+        animate y { duration: Theme.anim-enter; easing: cubic-bezier(0.2, 0.9, 0.25, 1); }
+        @children
+    }
+}
+
+// Soft accent glows behind the content. They drift to new positions on every navigation
+// (seeded by Fx.view-serial) and are static otherwise, so the backdrop costs nothing at idle.
+export component WbAurora inherits Rectangle {
+    in property <int> seed;
+    private property <float> k: Theme.dark ? 1.0 : 0.6;
+    private property <length> span: max(root.width, root.height);
+    clip: true;
+
+    Rectangle {
+        width: root.span * 0.95;
+        height: self.width;
+        x: root.width * (0.70 + 0.22 * cos(root.seed * 137.5deg)) - self.width / 2;
+        y: root.height * (0.10 + 0.18 * sin(root.seed * 137.5deg)) - self.height / 2;
+        background: @radial-gradient(circle, Theme.accent.with-alpha(0.14 * root.k) 0%, Theme.accent.with-alpha(0) 68%);
+        animate x, y { duration: Theme.anim-slow; easing: ease-in-out; }
+    }
+    Rectangle {
+        width: root.span * 0.80;
+        height: self.width;
+        x: root.width * (0.15 + 0.20 * sin(root.seed * 97deg)) - self.width / 2;
+        y: root.height * (0.85 + 0.15 * cos(root.seed * 97deg)) - self.height / 2;
+        background: @radial-gradient(circle, Theme.sparkline-ram.with-alpha(0.10 * root.k) 0%, Theme.sparkline-ram.with-alpha(0) 66%);
+        animate x, y { duration: Theme.anim-slow; easing: ease-in-out; }
+    }
+    Rectangle {
+        width: root.span * 0.55;
+        height: self.width;
+        x: root.width * (0.45 + 0.30 * cos(root.seed * 61deg + 90deg)) - self.width / 2;
+        y: root.height * (0.50 + 0.25 * sin(root.seed * 61deg + 90deg)) - self.height / 2;
+        background: @radial-gradient(circle, Theme.sparkline-cpu.with-alpha(0.07 * root.k) 0%, Theme.sparkline-cpu.with-alpha(0) 64%);
+        animate x, y { duration: Theme.anim-slow; easing: ease-in-out; }
+    }
+}
+
+// Radial gauge for a real 0..100 measurement. The arc and the number tween to new values.
+export component WbGauge inherits Rectangle {
+    in property <float> value;
+    in property <color> tone: Theme.accent;
+    in property <string> suffix: "%";
+    in property <bool> available: true;
+
+    private property <float> shown: root.available ? clamp(root.value, 0, 100) : 0;
+    animate shown { duration: Theme.anim-gauge; easing: ease-out; }
+    // Arc end angle; capped just below a full turn (a closed arc has identical endpoints).
+    private property <angle> sweep: min(root.shown, 99.9) * 3.6deg;
+
+    width: Scale.px(72px);
+    height: self.width;
+
+    // Soft glow behind the ring.
+    Rectangle {
+        background: @radial-gradient(circle, root.tone.with-alpha(0.20) 0%, root.tone.with-alpha(0) 70%);
+    }
+    // Track
+    Path {
+        width: 100%;
+        height: 100%;
+        viewbox-x: 0;
+        viewbox-y: 0;
+        viewbox-width: 100;
+        viewbox-height: 100;
+        fill: transparent;
+        stroke: root.tone.with-alpha(0.18);
+        stroke-width: root.width * 0.085;
+        MoveTo { x: 50; y: 8; }
+        ArcTo { x: 50; y: 92; radius-x: 42; radius-y: 42; sweep: true; }
+        ArcTo { x: 50; y: 8; radius-x: 42; radius-y: 42; sweep: true; }
+    }
+    // Value arc
+    if root.available && root.shown > 0.3 : Path {
+        width: 100%;
+        height: 100%;
+        viewbox-x: 0;
+        viewbox-y: 0;
+        viewbox-width: 100;
+        viewbox-height: 100;
+        fill: transparent;
+        stroke: root.tone;
+        stroke-width: root.width * 0.085;
+        stroke-line-cap: round;
+        MoveTo { x: 50; y: 8; }
+        ArcTo {
+            x: 50 + 42 * sin(root.sweep);
+            y: 50 - 42 * cos(root.sweep);
+            radius-x: 42;
+            radius-y: 42;
+            large-arc: root.shown > 50;
+            sweep: true;
+        }
+    }
+    Text {
+        text: root.available ? round(root.shown) + root.suffix : "—";
+        font-family: Typo.mono;
+        font-size: root.width * 0.22;
+        font-weight: 700;
+        color: root.tone;
+        horizontal-alignment: center;
+        vertical-alignment: center;
+    }
+}
+
+// Skeleton placeholder with a moving highlight, shown while a probe is still running.
+// Lives only inside `if <loading>` blocks, so its frame clock stops once data arrives.
+export component WbShimmer inherits VerticalLayout {
+    in property <int> lines: 3;
+    private property <float> phase: Theme.reduced-motion ? 0.35 : mod(animation-tick() / 1ms, 1500) / 1500;
+
+    spacing: Scale.px(8px);
+    padding-top: Scale.px(4px);
+    padding-bottom: Scale.px(4px);
+    accessible-role: progress-indicator;
+
+    for i in root.lines : Rectangle {
+        height: Scale.px(12px);
+        Rectangle {
+            x: 0;
+            width: parent.width * (i == root.lines - 1 ? 0.55 : mod(i, 2) == 0 ? 0.92 : 0.78);
+            border-radius: Scale.px(6px);
+            background: Theme.text-muted.with-alpha(0.14);
+            clip: true;
+            Rectangle {
+                width: parent.width * 0.4;
+                x: (root.phase * 1.8 - 0.4) * parent.width;
+                background: @linear-gradient(90deg, Theme.text-primary.with-alpha(0) 0%, Theme.text-primary.with-alpha(0.13) 50%, Theme.text-primary.with-alpha(0) 100%);
+            }
+        }
+    }
+}
+
+// Themed body for Slint's built-in Tooltip (custom content mode).
+export component WbTip inherits Rectangle {
+    in property <string> text;
+    background: Theme.bg-glass-strong;
+    border-radius: Scale.px(6px);
+    border-width: 1px;
+    border-color: Theme.border-accent;
+    drop-shadow-blur: 14px;
+    drop-shadow-color: Theme.shadow-md;
+    VerticalLayout {
+        padding-left: Scale.px(10px);
+        padding-right: Scale.px(10px);
+        padding-top: Scale.px(6px);
+        padding-bottom: Scale.px(6px);
+        Text {
+            text: root.text;
+            max-width: Scale.px(300px);
+            wrap: word-wrap;
+            font-size: Scale.font-xs;
+            color: Theme.text-primary;
+        }
+    }
+}

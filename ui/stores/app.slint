@@ -20,6 +20,22 @@ export struct DiffRowData {
     is-pair: bool,
 }
 
+// Command palette result (built in Rust by src/ui_slint/palette.rs).
+export struct PaletteItem {
+    kind: string,   // "view" | "action" | "tweaks"
+    id: string,     // view id, action id, or the tweak query
+    icon: string,
+    label: string,
+    hint: string,
+}
+
+// Non-blocking notification raised when the status message changes (src/ui_slint/shell.rs).
+export struct ToastItem {
+    id: int,
+    text: string,
+    tone: string,   // "success" | "warning" | "danger" | "info"
+}
+
 export struct ChoiceItem {
     label: string,
     detail: string,
@@ -79,6 +95,15 @@ export global AppStore {
     in-out property <string> hud-status: "";
     in-out property <string> hud-elapsed: "";
 
+    // ---- Command palette (Ctrl+K) ----
+    in-out property <bool> palette-open: false;
+    in-out property <string> palette-query: "";
+    in-out property <int> palette-index: 0;
+    in-out property <[PaletteItem]> palette-items: [];
+
+    // ---- Toasts ----
+    in-out property <[ToastItem]> toasts: [];
+
     // ---- Diff modal ----
     in-out property <bool> diff-visible: false;
     in-out property <string> diff-title: "";
@@ -106,6 +131,9 @@ export global AppStore {
     callback open-bug-report();
     callback dismiss-hud();
     callback close-diff();
+    callback palette-search(string);
+    callback dismiss-toast(int);
+    callback toggle-reduced-motion();
     // Accent/diacritic-folding search match used by the sidebar filter (Rust: I18n::fold_search_str).
     pure callback nav-matches(string /* label */, string /* query */) -> bool;
 }

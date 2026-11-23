@@ -1,5 +1,6 @@
 // ui/components/button.slint
 import { Scale, Theme } from "../theme.slint";
+import { WbTip } from "fx.slint";
 
 export component WbButton inherits Rectangle {
     in property <string> variant: "primary"; // "primary" | "secondary" | "ghost" | "danger"
@@ -7,6 +8,7 @@ export component WbButton inherits Rectangle {
     in property <image> icon;
     in property <bool> enabled: true;
     in property <bool> loading: false;
+    in property <string> tooltip: "";
 
     callback clicked();
 
@@ -53,6 +55,14 @@ export component WbButton inherits Rectangle {
     border-width: root.variant == "secondary" || root.variant == "ghost" ? 1px : 0px;
     border-color: root.default-border;
     opacity: 1.0;
+    // Glow: primary buttons get a soft accent halo (stronger on hover); any focused button glows.
+    drop-shadow-blur: !root.interactive ? 0px
+        : focus-scope.has-focus ? Scale.px(14px)
+        : root.variant == "primary" ? (ta.has-hover ? Scale.px(16px) : Scale.px(8px)) : 0px;
+    drop-shadow-offset-y: root.variant == "primary" && root.interactive ? Scale.px(2px) : 0px;
+    drop-shadow-color: !root.interactive ? Theme.glow.with-alpha(0)
+        : focus-scope.has-focus ? Theme.glow
+        : root.variant == "primary" ? Theme.glow.with-alpha(ta.has-hover ? 0.55 : 0.28) : Theme.glow.with-alpha(0);
 
     accessible-role: button;
     accessible-label: root.text;
@@ -64,6 +74,9 @@ export component WbButton inherits Rectangle {
         duration: 180ms;
         easing: spring(0.1);
     }
+    animate drop-shadow-blur, drop-shadow-color { duration: Theme.anim; }
+
+    if root.tooltip != "" : Tooltip { WbTip { text: root.tooltip; } }
 
     // Keyboard focus ring
     Rectangle {

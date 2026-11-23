@@ -4,6 +4,28 @@ All notable changes to **WinBlast Optimizer** are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
+## [v1.8.0] - 2026-11-23
+
+### Added
+- **Typography**: Inter (UI) and JetBrains Mono (numbers, logs, telemetry) are embedded in the executable (SIL OFL 1.1, subset to Latin/Greek/Cyrillic and symbols; ~560 KB). Chinese and Japanese text falls back to the Windows system fonts. Sources and rebuild steps: `ui/fonts/README.md`.
+- **Motion**: views fade and slide in; cards appear with a short stagger right after a view switch; the sidebar's active highlight is a pill that glides between entries; cards lift (accent border + soft shadow) on hover.
+- **Visual effects**: an aurora backdrop of accent-coloured glows that drifts to a new position on each navigation and is static otherwise (no idle redraws); glowing primary buttons and focus rings; a gradient border on the dashboard header card.
+- **Live gauges**: animated radial gauges for system health, CPU and RAM on the dashboard. They show only real readings and display "—" when metrics are unavailable.
+- **Shimmer placeholders** while disk, driver, clean-up, AppX, feature, maintenance, matrix, prerequisite and startup lists are loading.
+- **Command palette (Ctrl+K, or the 🔍 chip in the top bar)**: accent-insensitive search over all 26 views and four actions (scan, dark/light, reduced motion, change log); any query can also be sent to the Advanced Matrix tweak search. Arrow keys, Enter and Esc work.
+- **Toasts**: finished actions show a non-blocking notification (success, warning, error or info) in the bottom-right corner; progress and selection messages stay in the footer only.
+- **Tooltips** on risk badges explaining each risk level, and on the command palette chip.
+- **Reduced motion** switch in Support & About → UI Design & Theme Studio (also in the palette). It turns every new animation off and is saved in `settings.json`.
+
+### Fixed
+- 17 English-only labels localised in all 8 languages: Windows Repair "Run All", Automation "Assess Health" and "+N more optimizations", Driver & BIOS scan and Secure Boot status lines, the progress overlay text, the language/style/scheme dropdown titles and the compact top-bar labels.
+- Symbols that neither embedded font contains (☰ ✕ ✖) were replaced with ones that render reliably (≡ ×).
+
+### Testing
+- Host suite (sandboxed): 273 passed, 0 failed, 7 ignored (6 VM-only tests and one manual render check); clippy `-D warnings` clean.
+- New tests: command-palette catalogue covers every view and only known i18n keys, ranking and accent-insensitive search; toast tone classification.
+- New manual check `tests/ui_render_preview.rs` renders the real `MainWindow` offline with Slint's software renderer (dashboard, toasts, palette, shimmer, About, light theme, compact width).
+
 ## [v1.7.0] - 2026-11-23
 
 ### Changed

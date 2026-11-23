@@ -1,20 +1,54 @@
 //! Shell binder: top bar, sidebar, progress strip, changelog, footer, dropdowns, HUD, diff modal.
 
-use std::cell::Cell;
+use std::cell::{Cell, RefCell};
 use std::rc::Rc;
 use std::time::Instant;
 
-use slint::{ComponentHandle, ModelRc, SharedString, VecModel};
+use slint::{ComponentHandle, Model, ModelRc, SharedString, VecModel};
 
 use crate::app::{ActiveView, AppMode, AppState, EngineMode};
 use crate::core::i18n::{I18n, Language, TextKey};
 use crate::core::settings::UserSettings;
+use crate::core::status_i18n::StatusMessageSpec;
 use crate::core::theme::{ColorScheme, ThemeMode, UiThemeStyle};
 use crate::scanner::TweakState;
 
 use super::ctx::Ctx;
 use super::models::{new_model, sync_vec};
-use super::{i18n, theme, AppStore, ChangelogEntry, ChoiceItem, DiffRowData, MainWindow, Scale};
+use super::{i18n, palette, theme, AppStore, ChangelogEntry, ChoiceItem, DiffRowData, Fx, MainWindow, PaletteItem, Scale, ToastItem};
+
+/// Most toasts kept on screen at once (oldest is dropped first).
+pub const MAX_TOASTS: usize = 3;
+
+/// Toast tone for a finished status message, or `None` when the message is progress/selection
+/// chatter that the footer already shows (no toast).
+pub fn toast_tone(spec: &StatusMessageSpec, text: &str) -> Option<&'static str> {
+    let dbg = format!("{spec:?}");
+    let name = dbg.split(['(', ' ', '{']).next().unwrap_or_default();
+    if text.trim().is_empty() || name.ends_with("ing") || name == "ScanningStart" {
+        return None;
+    }
+    if matches!(name, "StagedCount" | "SelectedCount" | "DeselectedAll" | "LanguageChanged") {
+        return None;
+    }
+    if ["Fail", "Error", "Panic", "Refused", "NotFound"].iter().any(|k| name.contains(k)) {
+        return Some("danger");
+    }
+    if matches!(name, "NothingStaged" | "NoCleanupSelected" | "LatencyRunTestFirst") {
+        return Some("warning");
+    }
+    if matches!(name, "Raw" | "ActionMessage" | "WinGetResult") {
+        let t = text.trim_end();
+        if t.ends_with("...") || t.ends_with('…') {
+            return None; // free-form progress line
+        }
+        return Some("info");
+    }
+    if name.starts_with("ModeSwitched") {
+        return Some("info");
+    }
+    Some("success")
+}
 
 pub const THEME_STYLES: [(UiThemeStyle, &str); 5] = [
     (UiThemeStyle::Glassy, "💎 Glassy (Mica / Acrylic)"),
@@ -53,6 +87,11 @@ pub struct Shell {
     applied_theme: Cell<Option<(ThemeMode, ColorScheme, UiThemeStyle, bool)>>,
     zoom: Rc<Cell<f32>>,
     reduced_motion: Rc<Cell<bool>>,
+    palette: Rc<VecModel<PaletteItem>>,
+    toasts: Rc<VecModel<ToastItem>>,
+    /// Last status spec seen by `sync` (None until the first sync, which never toasts).
+    last_status: RefCell<Option<StatusMessageSpec>>,
+    toast_seq: Cell<i32>,
 }
 
 impl Shell {
@@ -63,6 +102,10 @@ impl Shell {
         let (languages, l_rc) = new_model();
         let (styles, s_rc) = new_model();
         let (schemes, sc_rc) = new_model();
+        let (palette, p_rc) = new_model();
+        let (toasts, t_rc) = new_model();
+        store.set_palette_items(p_rc);
+        store.set_toasts(t_rc);
         store.set_changelog(c_rc);
         store.set_diff_rows(d_rc);
         store.set_languages(l_rc);
@@ -82,6 +125,10 @@ impl Shell {
             applied_theme: Cell::new(None),
             zoom: Rc::new(Cell::new(zoom)),
             reduced_motion: Rc::new(Cell::new(settings.reduced_motion)),
+            palette,
+            toasts,
+            last_status: RefCell::new(None),
+            toast_seq: Cell::new(0),
         }
     }
 
@@ -192,6 +239,21 @@ impl Shell {
         store.on_toggle_changelog(move || {
             c.act(|s| s.toggle_changelog());
         });
+        let (lang, model) = (ctx.lang.clone(), self.palette.clone());
+        store.on_palette_search(move |query| {
+            sync_vec(&model, palette::search(lang.get(), query.as_str()));
+        });
+        let model = self.toasts.clone();
+        store.on_dismiss_toast(move |id| {
+            if let Some(i) = model.iter().position(|t| t.id == id) {
+                model.remove(i);
+            }
+        });
+        let (c, rm) = (ctx.clone(), self.reduced_motion.clone());
+        store.on_toggle_reduced_motion(move || {
+            rm.set(!rm.get());
+            c.dirty.set(true); // next sync re-applies the theme and persists the setting
+        });
         let c = ctx.clone();
         store.on_clear_changelog(move || {
             c.act(|s| s.clear_changelog());
@@ -226,6 +288,29 @@ impl Shell {
             let q = I18n::fold_search_str(query.trim());
             q.is_empty() || I18n::fold_search_str(label.as_str()).contains(&q)
         });
+    }
+
+    /// Raise a toast when a finished action changed the status (not on the first sync, not for
+    /// re-localization of the same message, not for progress chatter).
+    fn push_toast_if_new(&self, s: &AppState) {
+        let mut last = self.last_status.borrow_mut();
+        let first = last.is_none();
+        if last.as_ref() == Some(&s.status_spec) {
+            return;
+        }
+        *last = Some(s.status_spec.clone());
+        if first {
+            return;
+        }
+        let Some(tone) = toast_tone(&s.status_spec, &s.status_message) else {
+            return;
+        };
+        let id = self.toast_seq.get().wrapping_add(1);
+        self.toast_seq.set(id);
+        while self.toasts.row_count() >= MAX_TOASTS {
+            self.toasts.remove(0);
+        }
+        self.toasts.push(ToastItem { id, text: s.status_message.as_str().into(), tone: tone.into() });
     }
 
     /// Current persisted-preference snapshot.
@@ -269,6 +354,11 @@ impl Shell {
 
         let view_name: SharedString = s.active_view.name().into();
         if store.get_active_view() != view_name {
+            // Open the staggered-entrance window for the new view's cards and re-seed the aurora.
+            let fx = window.global::<Fx>();
+            fx.set_entering(true);
+            fx.set_stagger(0);
+            fx.set_view_serial(fx.get_view_serial().wrapping_add(1));
             store.set_active_view(view_name);
         }
         store.set_mode_easy(s.mode == AppMode::Easy);
@@ -356,6 +446,7 @@ impl Shell {
 
         // Footer
         store.set_status_message(s.status_message.as_str().into());
+        self.push_toast_if_new(s);
 
         // HUD
         let hud = s.is_in_progress();
@@ -427,5 +518,18 @@ mod tests {
         assert_eq!(format_elapsed(0), "0s");
         assert_eq!(format_elapsed(59), "59s");
         assert_eq!(format_elapsed(65), "1m 05s");
+    }
+
+    #[test]
+    fn toast_tone_classifies_outcomes_and_skips_progress() {
+        use crate::core::status_i18n::StatusMessageSpec as S;
+        assert_eq!(toast_tone(&S::ScanningStart, "Scanning"), None);
+        assert_eq!(toast_tone(&S::ScanCompleted(3), "Done"), Some("success"));
+        assert_eq!(toast_tone(&S::NothingStaged, "Nothing"), Some("warning"));
+        assert_eq!(toast_tone(&S::ScanFailed("x".into()), "Scan failed"), Some("danger"));
+        assert_eq!(toast_tone(&S::Raw("Applying tweaks...".into()), "Applying tweaks..."), None);
+        assert_eq!(toast_tone(&S::Raw("Exported".into()), "Exported"), Some("info"));
+        assert_eq!(toast_tone(&S::Raw(String::new()), ""), None);
+        assert_eq!(toast_tone(&S::DeselectedAll, "Deselected"), None);
     }
 }

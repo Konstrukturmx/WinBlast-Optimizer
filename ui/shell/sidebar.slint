@@ -15,12 +15,30 @@ struct NavGroup { title-key: string, items: [NavDef] }
 component NavButton inherits Rectangle {
     in property <NavDef> def;
     in property <int> badge: 0;
+    // y of the enclosing group inside the scrolled list (for the gliding active pill).
+    in property <length> group-y;
+    // When true the sidebar draws the active highlight as a shared gliding pill.
+    in property <bool> pill-mode;
     property <bool> active: AppStore.active-view == def.view;
+    property <length> slot-y: self.y + root.group-y;
+    property <bool> pending: false;
+    // Reports the active slot to the sidebar (content coordinates).
+    callback report(length /* y */, length /* height */);
+
+    init => { root.pending = root.active; }
+    changed active => { if root.active { root.pending = true; } }
+    changed slot-y => { if root.active { root.report(root.slot-y, root.height); } }
+    // Layout settles after creation, so report one frame later.
+    Timer {
+        interval: 16ms;
+        running: root.pending;
+        triggered => { root.pending = false; if root.active { root.report(root.slot-y, root.height); } }
+    }
 
     height: Scale.px(32px);
     border-radius: Scale.px(Theme.btn-radius);
     background: touch.pressed ? Theme.accent.with-alpha(0.38)
-        : active ? Theme.accent.with-alpha(0.20)
+        : active ? (root.pill-mode ? transparent : Theme.accent.with-alpha(0.20))
         : touch.has-hover ? Theme.bg-card-hover : transparent;
     animate background { duration: Theme.anim; }
     accessible-role: button;
@@ -41,7 +59,7 @@ component NavButton inherits Rectangle {
             height: Scale.px(18px);
             y: (parent.height - self.height) / 2;
             border-radius: 2px;
-            background: Theme.accent;
+            background: root.pill-mode ? transparent : Theme.accent;
             animate width { duration: Theme.anim; }
         }
         Text {
@@ -123,6 +141,12 @@ export component AppSidebar inherits Rectangle {
         ] },
     ];
 
+    // Gliding active-item pill (content coordinates of the nav list).
+    property <length> pill-y: 0;
+    property <length> pill-h: 0;
+    property <bool> pill-ready: false;
+    property <bool> pill-mode: AppStore.nav-search == "";
+
     width: Scale.px(Theme.sidebar-width);
     background: Theme.bg-sidebar;
 
@@ -144,10 +168,29 @@ export component AppSidebar inherits Rectangle {
         ScrollView {
             vertical-stretch: 1;
             min-height: Scale.px(80px);
+            Rectangle {
+            if root.pill-mode && root.pill-h > 0 : Rectangle {
+                y: root.pill-y;
+                height: root.pill-h;
+                border-radius: Scale.px(Theme.btn-radius);
+                background: @linear-gradient(90deg, Theme.accent.with-alpha(0.28) 0%, Theme.accent.with-alpha(0.12) 100%);
+                border-width: 1px;
+                border-color: Theme.accent.with-alpha(0.25);
+                drop-shadow-blur: 10px;
+                drop-shadow-color: Theme.accent.with-alpha(0.18);
+                animate y, height { duration: root.pill-ready ? Theme.anim-enter : 0ms; easing: cubic-bezier(0.2, 0.9, 0.25, 1); }
+                Rectangle {
+                    x: Scale.px(8px);
+                    width: Scale.px(3.5px);
+                    height: Scale.px(18px);
+                    border-radius: 2px;
+                    background: Theme.accent;
+                }
+            }
             VerticalLayout {
                 spacing: Scale.px(2px);
                 alignment: start;
-                for group in root.groups : VerticalLayout {
+                for group in root.groups : grp := VerticalLayout {
                     spacing: Scale.px(2px);
                     Text {
                         text: Tr.s(group.title-key);
@@ -160,11 +203,19 @@ export component AppSidebar inherits Rectangle {
                     }
                     for item in group.items : NavButton {
                         def: item;
+                        group-y: grp.y;
+                        pill-mode: root.pill-mode;
+                        report(y, h) => {
+                            root.pill-y = y;
+                            root.pill-h = h;
+                            root.pill-ready = true;
+                        }
                         badge: item.view == "fault_diagnostics" ? AppStore.fault-count : 0;
                         visible: AppStore.nav-search == "" || AppStore.nav-matches(Tr.s(item.key) + " " + item.icon, AppStore.nav-search);
                         height: self.visible ? Scale.px(32px) : 0px;
                     }
                 }
+            }
             }
         }
 

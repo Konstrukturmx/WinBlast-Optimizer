@@ -13,6 +13,7 @@ pub mod ctx;
 pub mod diff;
 pub mod i18n;
 pub mod models;
+pub mod palette;
 pub mod shell;
 pub mod theme;
 pub mod views;

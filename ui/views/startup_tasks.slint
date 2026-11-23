@@ -8,6 +8,7 @@ import { WbChip } from "../components/chip.slint";
 import { WbButton } from "../components/button.slint";
 import { WbSearchInput } from "../components/search_input.slint";
 import { WbToggle, WbPill, WbPanel } from "../components/toggle.slint";
+import { WbShimmer } from "../components/fx.slint";
 
 component Actions inherits FlexboxLayout {
     in property <StartupRow> data;
@@ -139,11 +140,13 @@ export component StartupTasksView inherits Rectangle {
             }
         }
 
-        if StartupStore.rows.length == 0 : WbPanel {
+        if StartupStore.rows.length == 0 && StartupStore.busy : WbPanel {
+            VerticalLayout { padding: Scale.px(14px); WbShimmer { lines: 4; } }
+        }
+        if StartupStore.rows.length == 0 && !StartupStore.busy : WbPanel {
             height: Scale.px(72px);
             Text {
-                text: StartupStore.busy ? Tr.s("Scanning")
-                    : StartupStore.sub-tab == 0 ? Tr.s("EmptyStartupList")
+                text: StartupStore.sub-tab == 0 ? Tr.s("EmptyStartupList")
                     : StartupStore.sub-tab == 1 ? Tr.s("EmptyTasksList") : Tr.s("EmptyServicesList");
                 font-size: Scale.font-sm;
                 color: Theme.text-muted;

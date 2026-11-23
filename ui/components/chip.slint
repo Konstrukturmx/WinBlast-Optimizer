@@ -1,12 +1,16 @@
 // ui/components/chip.slint
 // Compact pill button used by the top bar, sidebar and view toolbars.
-import { Scale, Theme } from "../theme.slint";
+import { Scale, Theme, Typo } from "../theme.slint";
+import { WbTip } from "fx.slint";
 
 export component WbChip inherits Rectangle {
     in property <string> text;
     in property <bool> active: false;
     in property <bool> enabled: true;
     in property <string> tone: "neutral"; // "neutral" | "accent" | "success" | "warning" | "danger"
+    in property <string> tooltip: "";
+    // Render the label in the mono family (glyphs such as ≡ only exist there).
+    in property <bool> mono: false;
     callback clicked();
 
     private property <color> tone-color:
@@ -31,6 +35,8 @@ export component WbChip inherits Rectangle {
     accessible-enabled: root.enabled;
     animate background, border-color { duration: Theme.anim; }
 
+    if root.tooltip != "" : Tooltip { WbTip { text: root.tooltip; } }
+
     touch := TouchArea {
         enabled: root.enabled;
         mouse-cursor: root.enabled ? pointer : default;
@@ -45,6 +51,7 @@ export component WbChip inherits Rectangle {
             text: root.text;
             font-size: Scale.font-xs;
             font-weight: root.active ? 700 : 500;
+            font-family: root.mono ? Typo.mono : Typo.ui;
             color: root.active ? Theme.accent : (root.tone == "neutral" ? Theme.text-primary : root.tone-color);
             vertical-alignment: center;
             overflow: elide;

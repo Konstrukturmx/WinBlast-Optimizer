@@ -54,7 +54,7 @@ export component WbInProgressHud inherits Rectangle {
                 if AppStore.hud-elapsed != "" : Text { text: AppStore.hud-elapsed; font-size: Scale.font-xs; color: Theme.text-muted; }
             }
             Text {
-                text: AppStore.hud-status == "" ? "Optimizing Windows..." : AppStore.hud-status;
+                text: AppStore.hud-status == "" ? Tr.s("HudOptimizing") : AppStore.hud-status;
                 font-size: Scale.font-md;
                 color: Theme.text-primary;
                 wrap: word-wrap;

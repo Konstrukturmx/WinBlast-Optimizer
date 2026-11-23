@@ -2,7 +2,7 @@
 // Windows component repair suite (port of v1.6.1): SFC, DISM, Winsock, WU reset… now run on
 // a worker thread with a live log (v1.6.1 froze the window while they ran).
 import { ScrollView } from "std-widgets.slint";
-import { Scale, Theme, Tr } from "../theme.slint";
+import { Scale, Theme, Tr, Typo } from "../theme.slint";
 import { RepairStore } from "../stores/diagnostics.slint";
 import { WbButton } from "../components/button.slint";
 import { WbChip } from "../components/chip.slint";
@@ -29,7 +29,7 @@ export component WindowsRepairView inherits Rectangle {
                 }
                 WbButton {
                     variant: "primary";
-                    text: RepairStore.running == "all" ? Tr.s("BusyWorking") : "▶ Run All";
+                    text: RepairStore.running == "all" ? Tr.s("BusyWorking") : Tr.s("RepairRunAllBtn");
                     enabled: RepairStore.running == "";
                     loading: RepairStore.running == "all";
                     clicked => { RepairStore.run("all"); }
@@ -79,8 +79,8 @@ export component WindowsRepairView inherits Rectangle {
                             padding: Scale.px(10px);
                             spacing: Scale.px(2px);
                             alignment: start;
-                            if RepairStore.log.length == 0 : Text { text: Tr.s("RepairReadyStatus"); font-family: "Consolas"; font-size: Scale.font-xs; color: #8fbf8f; }
-                            for l in RepairStore.log : Text { text: l; font-family: "Consolas"; font-size: Scale.font-xs; color: #d6e2d6; wrap: word-wrap; }
+                            if RepairStore.log.length == 0 : Text { text: Tr.s("RepairReadyStatus"); font-family: Typo.mono; font-size: Scale.font-xs; color: #8fbf8f; }
+                            for l in RepairStore.log : Text { text: l; font-family: Typo.mono; font-size: Scale.font-xs; color: #d6e2d6; wrap: word-wrap; }
                         }
                     }
                 }

@@ -2,7 +2,7 @@
 // Responsive header bar (port of v1.6.1 top bar): sidebar drawer toggle, brand, language,
 // display mode, theme style, color scheme, Easy/Advanced mode, Instant/Normal engine mode,
 // live CPU/RAM pill, OS edition and elevation badge (click to relaunch as Administrator).
-import { Scale, Theme, Tr } from "../theme.slint";
+import { Scale, Theme, Tr, Typo } from "../theme.slint";
 import { AppStore } from "../stores/app.slint";
 import { WbChip, WbSegmented } from "../components/chip.slint";
 
@@ -35,7 +35,8 @@ export component AppTopBar inherits Rectangle {
             horizontal-stretch: 1;
             min-width: 0;
             if root.tier != 2 : WbChip {
-                text: "☰";
+                text: "≡";
+                mono: true;
                 active: AppStore.sidebar-open;
                 clicked => { AppStore.toggle-sidebar(); }
             }
@@ -63,6 +64,12 @@ export component AppTopBar inherits Rectangle {
         HorizontalLayout {
             spacing: Scale.px(6px);
             alignment: end;
+            WbChip {
+                text: root.tier == 0 ? "🔍" : "🔍 Ctrl+K";
+                tooltip: Tr.s("PaletteOpenTip");
+                active: AppStore.palette-open;
+                clicked => { AppStore.dropdown = ""; AppStore.palette-open = true; }
+            }
             lang-chip := WbChip {
                 text: "🌐 " + (root.tier == 0 ? AppStore.language-code : AppStore.language-label) + " ▾";
                 active: AppStore.dropdown == "language";
@@ -84,8 +91,8 @@ export component AppTopBar inherits Rectangle {
                 clicked => { AppStore.dropdown = AppStore.dropdown == "scheme" ? "" : "scheme"; }
             }
             if root.tier != 0 : WbSegmented {
-                left-text: root.tier == 1 ? "Dashboard" : Tr.s("EasyMode");
-                right-text: root.tier == 1 ? "Matrix" : Tr.s("AdvancedMatrix");
+                left-text: root.tier == 1 ? Tr.s("TopbarDashboardShort") : Tr.s("EasyMode");
+                right-text: root.tier == 1 ? Tr.s("TopbarMatrixShort") : Tr.s("AdvancedMatrix");
                 left-active: AppStore.mode-easy;
                 left-clicked => { AppStore.set-mode-easy(true); }
                 right-clicked => { AppStore.set-mode-easy(false); }
@@ -105,6 +112,7 @@ export component AppTopBar inherits Rectangle {
                     padding-right: Scale.px(7px);
                     Text {
                         text: "CPU: " + round(AppStore.cpu-usage) + "% • RAM: " + round(AppStore.ram-usage) + "%";
+                        font-family: Typo.mono;
                         font-size: Scale.font-xs;
                         color: Theme.accent;
                         vertical-alignment: center;
@@ -120,8 +128,8 @@ export component AppTopBar inherits Rectangle {
             WbChip {
                 tone: AppStore.is-elevated ? "success" : "warning";
                 text: AppStore.is-elevated
-                    ? (root.tier == 0 ? "Elevated ✓" : Tr.s("AdminElevated"))
-                    : (root.tier == 0 ? "Admin ↗" : Tr.s("AdminStandard") + " (↗)");
+                    ? (root.tier == 0 ? Tr.s("TopbarElevatedShort") : Tr.s("AdminElevated"))
+                    : (root.tier == 0 ? Tr.s("TopbarAdminShort") : Tr.s("AdminStandard") + " (↗)");
                 clicked => { if !AppStore.is-elevated { AppStore.relaunch-elevated(); } }
             }
         }

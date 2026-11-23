@@ -1,12 +1,12 @@
 // ui/views/support_about.slint
 // Support & About (port of v1.6.1 support_about): version, repository links, bug report,
-// 1.7.0 release highlights and the live UI style studio.
+// 1.8.0 release highlights, the live UI style studio and the reduced-motion switch.
 import { ScrollView, AboutSlint } from "std-widgets.slint";
 import { Scale, Theme, Tr } from "../theme.slint";
 import { AppStore } from "../stores/app.slint";
 import { AboutStore } from "../stores/about.slint";
 import { WbButton } from "../components/button.slint";
-import { WbPill, WbPanel } from "../components/toggle.slint";
+import { WbPill, WbPanel, WbToggle } from "../components/toggle.slint";
 
 component Note inherits Text {
     font-size: Scale.font-xs;
@@ -80,6 +80,23 @@ export component SupportAboutView inherits Rectangle {
                     spacing: Scale.px(8px);
                     Text { text: Tr.s("AboutStudioTitle"); font-size: Scale.font-md; font-weight: 700; color: Theme.text-primary; wrap: word-wrap; }
                     Note { text: Tr.s("AboutStudioSubtitle"); }
+                    HorizontalLayout {
+                        spacing: Scale.px(10px);
+                        VerticalLayout {
+                            horizontal-stretch: 1;
+                            spacing: Scale.px(2px);
+                            Text { text: Tr.s("ReducedMotionLabel"); font-size: Scale.font-sm; font-weight: 700; color: Theme.text-primary; wrap: word-wrap; }
+                            Note { text: Tr.s("ReducedMotionDesc"); }
+                        }
+                        VerticalLayout {
+                            alignment: center;
+                            WbToggle {
+                                on: Theme.reduced-motion;
+                                accessible-name: Tr.s("ReducedMotionLabel");
+                                clicked => { AppStore.toggle-reduced-motion(); }
+                            }
+                        }
+                    }
                     FlexboxLayout {
                         spacing: Scale.px(8px);
                         alignment: stretch;

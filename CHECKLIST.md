@@ -1,4 +1,18 @@
-# WinBlast0 v1.7.0 — Migration Checklist (updated 2026-11-23 — v1.7.0 complete, local only)
+# WinBlast0 — Release Checklist
+
+## v1.8.0 (2026-11-23, local branch `1.8.0`, not pushed)
+- [x] Embedded fonts: Inter (UI) + JetBrains Mono (mono), subset, OFL licences in `ui/fonts/`
+- [x] Motion: view transitions, staggered card entrance, gliding sidebar pill, hover lift
+- [x] Visual FX: aurora backdrop (static at idle), glow accents, live radial gauges, shimmer loaders
+- [x] UX: Ctrl+K command palette, toasts, risk-badge tooltips, Reduced motion switch (persisted)
+- [x] i18n: 31 new keys × 8 languages (palette, motion, tooltips, toasts + 17 previously English-only labels); What's New updated to 1.8.0
+- [x] Heuristic sweep: strict clippy lints (unwrap/expect/panic/indexing/slicing/truncation) on production code — no unguarded panics found; glyphs missing from the fonts replaced
+- [x] Host tests: 273 passed, 0 failed, 7 ignored; clippy `-D warnings` clean
+- [x] Offline render check (`tests/ui_render_preview.rs`): dashboard, toasts, palette, shimmer, About, light theme, compact width
+- [ ] VM suite with `--features vm-tests` (needs the test VM login; no backend code changed in 1.8.0)
+- [ ] Push / tag / publish (owner)
+
+# v1.7.0 — Migration Checklist (v1.7.0 complete, local only)
 
 Branch: `1.7.0` (local only, never pushed). Reference: tag `v1.6.1` in `../WinBlast0-v161`.
 

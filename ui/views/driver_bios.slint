@@ -9,6 +9,7 @@ import { WbButton } from "../components/button.slint";
 import { WbSearchInput } from "../components/search_input.slint";
 import { WbPill, WbPanel } from "../components/toggle.slint";
 import { WbSection } from "../components/kv.slint";
+import { WbShimmer } from "../components/fx.slint";
 
 export component DriverBiosView inherits Rectangle {
     in property <int> tier;
@@ -60,7 +61,7 @@ export component DriverBiosView inherits Rectangle {
                     WbChip { text: "🔷 Bluetooth"; active: DriverStore.category == "Bluetooth"; clicked => { DriverStore.set-category("Bluetooth"); } }
                 }
                 if DriverStore.total == 0 : Text {
-                    text: DriverStore.scanning ? "⟳ Scanning online driver catalogs and PnP devices..." : "🔍 Click 'Scan Drivers Online' or 'Test Sandbox Driver' to scan system hardware.";
+                    text: DriverStore.scanning ? Tr.s("DriverScanningCatalogs") : Tr.s("DriverScanHint");
                     font-size: Scale.font-sm;
                     color: Theme.text-muted;
                     wrap: word-wrap;
@@ -119,7 +120,7 @@ export component DriverBiosView inherits Rectangle {
                     Text { text: DriverStore.firmware-title; font-size: Scale.font-md; font-weight: 600; color: Theme.text-primary; wrap: word-wrap; }
                     if DriverStore.firmware-sub != "" : Text { text: DriverStore.firmware-sub; font-size: Scale.font-xs; color: Theme.text-muted; wrap: word-wrap; }
                     WbPill {
-                        text: DriverStore.secure-boot ? "✔ Secure Boot Active" : "⚠ Secure Boot Disabled / Setup Mode";
+                        text: DriverStore.secure-boot ? Tr.s("SecureBootActive") : Tr.s("SecureBootDisabled");
                         tone: DriverStore.secure-boot ? "success" : "warning";
                     }
                 }
@@ -127,7 +128,8 @@ export component DriverBiosView inherits Rectangle {
 
             WbSection {
                 title: "🎮 " + Tr.s("DriverBiosGpuDriversSection");
-                if DriverStore.display-drivers.length == 0 : Text { text: DriverStore.bios-scanning ? Tr.s("Scanning") : "—"; color: Theme.text-muted; }
+                if DriverStore.display-drivers.length == 0 && DriverStore.bios-scanning : WbShimmer { lines: 2; }
+                if DriverStore.display-drivers.length == 0 && !DriverStore.bios-scanning : Text { text: "—"; color: Theme.text-muted; }
                 for g in DriverStore.display-drivers : Rectangle {
                     border-radius: Scale.px(Theme.btn-radius);
                     background: Theme.bg-primary;
