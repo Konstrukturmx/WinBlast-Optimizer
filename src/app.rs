@@ -5419,7 +5419,13 @@ impl AppState {
                 for (i, mut item) in items.into_iter().enumerate() {
                     let message = match backend.install_game_prereq(&mut item) {
                         Ok(m) => m,
-                        Err(e) => format!("Install failed for {}: {e}", item.name),
+                        Err(e) => {
+                            // Show the real outcome on the row (it used to stay "Missing").
+                            let msg = format!("Install failed for {}: {e}", item.name);
+                            item.state = crate::tools::game_prereqs::PrereqInstallState::Failed;
+                            item.status_message = msg.clone();
+                            msg
+                        }
                     };
                     let _ = tx.send(WorkerEvent::PrereqInstalled { item, message, finished: i + 1 == n });
                 }

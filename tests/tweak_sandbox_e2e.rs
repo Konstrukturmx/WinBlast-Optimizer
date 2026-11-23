@@ -1197,6 +1197,7 @@ fn test_app_state_hardware_and_privacy_ledger_recording() {
 }
 
 #[test]
+#[cfg_attr(not(feature = "vm-tests"), ignore = "touches the real host; run only inside the test VM: cargo test --features vm-tests")]
 fn test_real_win32_hkcu_reg_sz_and_cleanup() {
     let scratch_path = format!("Software\\WinBlast0_KernelSmoke_{}", Uuid::new_v4());
     let _guard = HkcuScratchGuard {
@@ -2788,12 +2789,16 @@ fn test_wave1_presets_policy_locked_winget_appx_and_autounattend_permutations() 
         .remove_appx_batch(&["Microsoft.SecHealthUI_8wekyb3d8bbwe".to_string()], false)
         .expect_err("SandboxEnv must refuse ProtectedCore-only AppX batch removal");
     assert!(matches!(core_err_sbx, WinBlastError::AppX(_)));
-    let core_err_real = features_apps::remove_appx_batch(
-        &["Microsoft.WindowsStore_8wekyb3d8bbwe".to_string()],
-        false,
-    )
-    .expect_err("features_apps::remove_appx_batch must refuse ProtectedCore before PowerShell");
-    assert!(matches!(core_err_real, WinBlastError::AppX(_)));
+    // The real-host refusal check would uninstall the Store if the guard ever regressed: VM only.
+    #[cfg(feature = "vm-tests")]
+    {
+        let core_err_real = features_apps::remove_appx_batch(
+            &["Microsoft.WindowsStore_8wekyb3d8bbwe".to_string()],
+            false,
+        )
+        .expect_err("features_apps::remove_appx_batch must refuse ProtectedCore before PowerShell");
+        assert!(matches!(core_err_real, WinBlastError::AppX(_)));
+    }
 
     // 4. autounattend.xml permutations: Arm64, bypass_msa_oobe without bypass_tpm, XML special escaping
     let arm_opts = UnattendOptions {
@@ -2862,6 +2867,8 @@ fn test_wave1_presets_policy_locked_winget_appx_and_autounattend_permutations() 
         "pkg\n--silent",
         "$(calc)",
     ] {
+        // Real winget only inside the VM (a validation regression would run an install on the host).
+        #[cfg(feature = "vm-tests")]
         assert!(
             features_apps::winget_install_package(bad).is_err(),
             "RealBackend winget_install_package must reject invalid/injection ID {:?}",
@@ -4240,10 +4247,12 @@ fn test_left_menu_translations_all_8_languages_e2e() {
 #[test]
 fn test_iso_29119_game_prerequisites_cascade_and_detection() {
     let sbx = SandboxEnv::new();
-    let mut state = AppState::new_with_backend(Arc::new(sbx));
+    let sbx = Arc::new(sbx);
+    let mut state = AppState::new_with_backend(sbx.clone());
 
-    // 1. Initial scan
+    // 1. Initial scan (runs on a worker since v1.7.0)
     state.scan_game_prereqs();
+    drain_until(&mut state, Duration::from_secs(5), "prereq scan", |s| !s.is_prereqs_scanning);
     assert!(!state.is_prereqs_scanning);
     assert_eq!(
         state.game_prereqs.len(),
@@ -4263,44 +4272,23 @@ fn test_iso_29119_game_prerequisites_cascade_and_detection() {
     assert!(ids.contains(&"openal".to_string()));
     assert!(ids.contains(&"xna_framework_4".to_string()));
 
-    // 2. Cascade installation of single item via Tier 3 direct URL fallback
-    if let Some(item) = state
-        .game_prereqs
-        .iter_mut()
-        .find(|p| p.id == "directx_june2010")
-    {
-        item.winget_id = None;
-        item.choco_id = None;
-    }
+    // 2. Single install goes through the backend on a worker (the winget -> choco -> direct-URL
+    //    cascade itself runs real installers and is covered by the VM suite only).
     state.install_game_prereq("directx_june2010".to_string());
-    assert!(
-        state.prereq_install_in_flight.is_none(),
-        "Lock must be released"
-    );
+    assert!(state.prereq_install_in_flight.is_some(), "install must lock while the worker runs");
+    drain_until(&mut state, Duration::from_secs(5), "prereq install", |s| s.prereq_install_in_flight.is_none());
     let dx_item = state
         .game_prereqs
         .iter()
         .find(|p| p.id == "directx_june2010")
         .unwrap();
-    assert!(
-        dx_item.status_message.contains("portal") || dx_item.status_message.contains("DirectX")
-    );
+    assert!(dx_item.installed);
+    assert!(dx_item.status_message.contains("Sandbox"), "{}", dx_item.status_message);
 
-    // 3. Error recovery on total source failure (empty URL and no package managers)
-    if let Some(item) = state
-        .game_prereqs
-        .iter_mut()
-        .find(|p| p.id == "xna_framework_4")
-    {
-        item.winget_id = None;
-        item.choco_id = None;
-        item.direct_url = String::new();
-    }
+    // 3. Error recovery: a backend failure marks the row Failed and releases the lock.
+    sbx.state_write().inject_next_error = Some("all install sources failed".into());
     state.install_game_prereq("xna_framework_4".to_string());
-    assert!(
-        state.prereq_install_in_flight.is_none(),
-        "Lock must be released on failure"
-    );
+    drain_until(&mut state, Duration::from_secs(5), "failed prereq install", |s| s.prereq_install_in_flight.is_none());
     let xna_item = state
         .game_prereqs
         .iter()
@@ -4347,6 +4335,9 @@ fn test_iso_29119_automation_engine_workflows() {
 
     // 1. System Health Assessment Workflow
     state.refresh_system_health();
+    drain_until(&mut state, Duration::from_secs(10), "health assessment", |s| {
+        !s.is_assessing_health && s.system_health_assessment.is_some()
+    });
     let health = state
         .system_health_assessment
         .as_ref()
@@ -4400,6 +4391,7 @@ fn test_iso_29119_automation_engine_workflows() {
 
     // 3. Scheduled Maintenance Task Management Workflow
     state.refresh_maintenance_tasks();
+    drain_until(&mut state, Duration::from_secs(5), "maintenance tasks", |s| !s.maintenance_inflight);
     assert_eq!(
         state.maintenance_tasks.len(),
         3,
@@ -4412,6 +4404,9 @@ fn test_iso_29119_automation_engine_workflows() {
 
     // 4. Automated Memory & Cache Trim Workflow
     state.execute_memory_trim();
+    drain_until(&mut state, Duration::from_secs(5), "memory trim", |s| {
+        !s.is_running_automation && s.last_memory_trim_result.is_some()
+    });
     assert!(!state.is_running_automation);
     let trim_res = state
         .last_memory_trim_result

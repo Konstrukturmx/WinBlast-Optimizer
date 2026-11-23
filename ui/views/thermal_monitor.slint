@@ -99,7 +99,7 @@ export component ThermalMonitorView inherits Rectangle {
                             VerticalLayout {
                                 horizontal-stretch: 1;
                                 Text { text: c.name; font-size: Scale.font-sm; color: Theme.text-primary; }
-                                Text { text: "Thermal Threshold: " + c.threshold; font-size: Scale.font-2xs; color: Theme.text-muted; }
+                                Text { text: Tr.s("ThermalThresholdLabel") + ": " + c.threshold; font-size: Scale.font-2xs; color: Theme.text-muted; }
                             }
                             Text { text: c.temp; font-size: Scale.font-md; font-weight: 700; color: Theme.text-primary; vertical-alignment: center; }
                             WbPill { text: c.status; tone: c.tone; y: (parent.height - self.height) / 2; }

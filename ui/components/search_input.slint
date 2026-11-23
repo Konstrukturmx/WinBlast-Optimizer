@@ -1,5 +1,5 @@
 // ui/components/search_input.slint
-import { Scale, Theme } from "../theme.slint";
+import { Scale, Theme, Tr } from "../theme.slint";
 
 export component WbSearchInput inherits Rectangle {
     in-out property <string> text: "";
@@ -104,7 +104,7 @@ export component WbSearchInput inherits Rectangle {
                                              transparent;
 
             accessible-role: button;
-            accessible-label: "Clear search";
+            accessible-label: Tr.s("SearchClearA11y");
 
             animate background {
                 duration: 140ms;

@@ -37,7 +37,7 @@ export component DriverBiosView inherits Rectangle {
                     clicked => { DriverStore.scan-online(); }
                 }
                 WbButton { variant: "secondary"; text: Tr.s("DriverTestInstallSandbox"); enabled: !DriverStore.any-in-flight; clicked => { DriverStore.test-sandbox-install(); } }
-                WbButton { variant: "secondary"; text: "Rescan BIOS"; loading: DriverStore.bios-scanning; clicked => { DriverStore.rescan-bios(); } }
+                WbButton { variant: "secondary"; text: Tr.s("DriverRescanBios"); loading: DriverStore.bios-scanning; clicked => { DriverStore.rescan-bios(); } }
             }
 
             WbSection {
@@ -55,7 +55,7 @@ export component DriverBiosView inherits Rectangle {
                     WbChip { text: Tr.s("DriverFilterNetwork"); active: DriverStore.category == "Network"; clicked => { DriverStore.set-category("Network"); } }
                     WbChip { text: Tr.s("DriverFilterAudio"); active: DriverStore.category == "Audio"; clicked => { DriverStore.set-category("Audio"); } }
                     WbChip { text: Tr.s("DriverFilterStorage"); active: DriverStore.category == "Storage"; clicked => { DriverStore.set-category("Storage"); } }
-                    WbChip { text: "⚙ Chipset"; active: DriverStore.category == "Chipset"; clicked => { DriverStore.set-category("Chipset"); } }
+                    WbChip { text: Tr.s("DriverCatChipset"); active: DriverStore.category == "Chipset"; clicked => { DriverStore.set-category("Chipset"); } }
                     WbChip { text: "🔌 USB"; active: DriverStore.category == "Usb"; clicked => { DriverStore.set-category("Usb"); } }
                     WbChip { text: "🔷 Bluetooth"; active: DriverStore.category == "Bluetooth"; clicked => { DriverStore.set-category("Bluetooth"); } }
                 }
@@ -89,7 +89,7 @@ export component DriverBiosView inherits Rectangle {
                                 }
                                 WbPill { text: d.whql ? "✔ WHQL" : "Unverified"; tone: d.whql ? "success" : "muted"; }
                                 WbPill { text: d.badge; tone: d.badge-tone; }
-                                WbChip { text: "Backup"; enabled: !d.busy && !DriverStore.any-in-flight; clicked => { DriverStore.backup(d.id); } }
+                                WbChip { text: Tr.s("DriverBackupBtn"); enabled: !d.busy && !DriverStore.any-in-flight; clicked => { DriverStore.backup(d.id); } }
                                 WbChip {
                                     text: d.busy ? Tr.s("DriverInstalling") : d.update ? Tr.s("DriverDownloadInstall") : "Verify / Update";
                                     tone: d.update ? "accent" : "neutral";

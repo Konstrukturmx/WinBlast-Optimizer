@@ -74,7 +74,7 @@ export component FaultDiagnosticsView inherits Rectangle {
                             clicked => { FaultStore.restart-now(); }
                         }
                         if FaultStore.pending-rename : WbButton { variant: "secondary"; text: Tr.s("FaultClearPendingRenames"); enabled: !FaultStore.action-busy; clicked => { FaultStore.clear-renames(); } }
-                        if FaultStore.cbs-or-wu : WbButton { variant: "secondary"; text: "🧹 Clear CBS Reboot Lock"; enabled: !FaultStore.action-busy; clicked => { FaultStore.clear-cbs(); } }
+                        if FaultStore.cbs-or-wu : WbButton { variant: "secondary"; text: Tr.s("FaultClearCbsBtn"); enabled: !FaultStore.action-busy; clicked => { FaultStore.clear-cbs(); } }
                     }
                 }
             }

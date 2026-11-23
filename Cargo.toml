@@ -7,6 +7,9 @@ description = "WinBlast0 – Windows System Optimizer & Debloater"
 [features]
 default = []
 live-preview = ["slint/live-preview"]
+# Enables tests that read/write the real Windows host (registry, filesystem, live probes).
+# Only ever enabled inside the disposable Hyper-V test VM — never on a developer machine.
+vm-tests = []
 
 [dependencies]
 crossbeam-channel = "0.5"

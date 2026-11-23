@@ -107,6 +107,7 @@ impl Drop for TempTestEnvGuard {
 }
 
 #[test]
+#[cfg_attr(not(feature = "vm-tests"), ignore = "touches the real host; run only inside the test VM: cargo test --features vm-tests")]
 fn test_real_backend_readonly_live_host_audit() {
     let backend = RealBackend;
 
@@ -386,6 +387,7 @@ fn test_real_backend_readonly_live_host_audit() {
 }
 
 #[test]
+#[cfg_attr(not(feature = "vm-tests"), ignore = "touches the real host; run only inside the test VM: cargo test --features vm-tests")]
 fn test_real_win32_registry_types_numeric_sz_binary_and_tree_roundtrip() {
     let root_subkey = format!("Software\\WinBlast0_TestEnv_{}", Uuid::new_v4());
     let _guard = HkcuTestEnvGuard {
@@ -736,6 +738,7 @@ fn test_real_win32_registry_types_numeric_sz_binary_and_tree_roundtrip() {
 }
 
 #[test]
+#[cfg_attr(not(feature = "vm-tests"), ignore = "touches the real host; run only inside the test VM: cargo test --features vm-tests")]
 fn test_ntfs_junction_and_readonly_cleanup_sandbox() {
     // Child-process isolation mode: only executed when spawned explicitly by this test
     // with TMP & TEMP strictly pointing at the synthetic sandbox <cleanup_dir>.
@@ -904,6 +907,7 @@ fn test_ntfs_junction_and_readonly_cleanup_sandbox() {
 }
 
 #[test]
+#[cfg_attr(not(feature = "vm-tests"), ignore = "touches the real host; run only inside the test VM: cargo test --features vm-tests")]
 fn test_real_windows_disk_and_thermal_telemetry() {
     let report = winblast0::hardware::disks::DiskSubsystemReport::probe();
     println!("Found {} physical drives on host:", report.drives.len());

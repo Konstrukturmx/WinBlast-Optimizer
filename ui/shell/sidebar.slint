@@ -197,8 +197,8 @@ export component AppSidebar inherits Rectangle {
 
         HorizontalLayout {
             spacing: Scale.px(4px);
-            WbChip { horizontal-stretch: 1; text: "◀ Prev"; clicked => { AppStore.nav-prev(); } }
-            WbChip { horizontal-stretch: 1; text: "Next ▶"; clicked => { AppStore.nav-next(); } }
+            WbChip { horizontal-stretch: 1; text: Tr.s("NavPrevBtn"); clicked => { AppStore.nav-prev(); } }
+            WbChip { horizontal-stretch: 1; text: Tr.s("NavNextBtn"); clicked => { AppStore.nav-next(); } }
         }
         WbButton {
             variant: "primary";

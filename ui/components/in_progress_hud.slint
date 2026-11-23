@@ -49,7 +49,7 @@ export component WbInProgressHud inherits Rectangle {
             HorizontalLayout {
                 alignment: center;
                 spacing: Scale.px(6px);
-                Text { text: "IN PROGRESS"; font-size: Scale.font-xs; font-weight: 800; letter-spacing: 1.2px; color: Theme.accent; }
+                Text { text: Tr.s("HudInProgress"); font-size: Scale.font-xs; font-weight: 800; letter-spacing: 1.2px; color: Theme.accent; }
                 if AppStore.hud-elapsed != "" : Text { text: "•"; font-size: Scale.font-xs; color: Theme.text-muted; }
                 if AppStore.hud-elapsed != "" : Text { text: AppStore.hud-elapsed; font-size: Scale.font-xs; color: Theme.text-muted; }
             }

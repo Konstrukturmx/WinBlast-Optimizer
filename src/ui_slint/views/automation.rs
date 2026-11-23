@@ -6,6 +6,7 @@ use std::rc::Rc;
 use slint::{ComponentHandle, VecModel};
 
 use crate::app::AppState;
+use crate::core::i18n::TextKey;
 use crate::scanner::TweakState;
 use crate::tools::automation::{create_auto_tune_plan, AutoTuneProfile, MaintenanceTaskKind};
 
@@ -13,11 +14,11 @@ use super::super::ctx::Ctx;
 use super::super::models::{new_model, sync_vec};
 use super::super::{AutomationStore, ChipItem, MainWindow, MaintenanceRow};
 
-pub const PROFILES: [(AutoTuneProfile, &str, &str); 4] = [
-    (AutoTuneProfile::GamingLowLatency, "GamingLowLatency", "🎮 Ultra Gaming"),
-    (AutoTuneProfile::ProAudioDpc, "ProAudioDpc", "🎵 Pro Audio / DAW"),
-    (AutoTuneProfile::WorkstationStability, "WorkstationStability", "🛡 Privacy & Workstation"),
-    (AutoTuneProfile::LaptopBatterySaving, "LaptopBatterySaving", "🔋 Laptop Battery"),
+pub const PROFILES: [(AutoTuneProfile, &str, TextKey); 4] = [
+    (AutoTuneProfile::GamingLowLatency, "GamingLowLatency", TextKey::AutoProfileGaming),
+    (AutoTuneProfile::ProAudioDpc, "ProAudioDpc", TextKey::AutoProfileAudio),
+    (AutoTuneProfile::WorkstationStability, "WorkstationStability", TextKey::AutoProfileWorkstation),
+    (AutoTuneProfile::LaptopBatterySaving, "LaptopBatterySaving", TextKey::LaptopBatteryPreset),
 ];
 
 pub struct AutomationView {
@@ -78,7 +79,7 @@ impl AutomationView {
         st.set_maintenance_busy(s.maintenance_inflight);
         let (_, pid, plabel) = PROFILES.iter().find(|(p, _, _)| *p == s.selected_auto_tune_profile).copied().unwrap_or(PROFILES[0]);
         st.set_profile(pid.into());
-        st.set_profile_label(plabel.into());
+        st.set_profile_label(s.tr(plabel).into());
 
         let plan = create_auto_tune_plan(&s.tweaks, s.selected_auto_tune_profile);
         st.set_plan_count(plan.recommended_tweak_ids.len() as i32);

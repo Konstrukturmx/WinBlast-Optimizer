@@ -111,12 +111,12 @@ impl DriversView {
                         DriverUpdateState::Installed => (s.tr(TextKey::DriverInstalledSuccess), "success"),
                         DriverUpdateState::UpdateAvailable => (s.tr(TextKey::DriverUpdateAvailable), "warning"),
                         DriverUpdateState::UpToDate => (s.tr(TextKey::DriverUpToDate), "muted"),
-                        DriverUpdateState::Downloading => ("Downloading...", "accent"),
+                        DriverUpdateState::Downloading => (s.tr(TextKey::DriverDownloading), "accent"),
                         DriverUpdateState::Installing => (s.tr(TextKey::DriverInstalling), "accent"),
-                        DriverUpdateState::Failed => ("Failed ✘", "danger"),
-                        DriverUpdateState::ReadyToInstall => ("Ready to Install", "accent"),
+                        DriverUpdateState::Failed => (s.tr(TextKey::PrereqStateFailed), "danger"),
+                        DriverUpdateState::ReadyToInstall => (s.tr(TextKey::DriverReadyToInstall), "accent"),
                     };
-                    let mut details = format!("{} • Provider: {}", d.category.display_name(), d.provider);
+                    let mut details = format!("{} • {}: {}", d.category.display_name(), s.tr(TextKey::DriverProviderLabel), d.provider);
                     if !d.hardware_id.is_empty() {
                         details.push_str(&format!(" • HW: {}", d.hardware_id));
                     }
@@ -128,11 +128,11 @@ impl DriversView {
                         icon: d.category.icon().into(),
                         name: d.name.as_str().into(),
                         details: details.into(),
-                        versions: format!("Current: {} ➔ Latest: {}", d.current_version, d.latest_version).into(),
+                        versions: format!("{}: {} ➔ {}: {}", s.tr(TextKey::DriverCurrentLabel), d.current_version, s.tr(TextKey::DriverLatestLabel), d.latest_version).into(),
                         date: if d.download_size_mb > 0.0 {
-                            format!("Date: {} ({:.1} MB)", d.release_date, d.download_size_mb).into()
+                            format!("{}: {} ({:.1} MB)", s.tr(TextKey::DriverDateLabel), d.release_date, d.download_size_mb).into()
                         } else {
-                            format!("Date: {}", d.release_date).into()
+                            format!("{}: {}", s.tr(TextKey::DriverDateLabel), d.release_date).into()
                         },
                         whql: d.is_whql_signed,
                         badge: badge.into(),
@@ -152,7 +152,7 @@ impl DriversView {
         let have_fw = !b.bios_vendor.is_empty() || !b.bios_version.is_empty();
         st.set_firmware_title(if have_fw { format!("{} ver. {}", b.bios_vendor, b.bios_version).into() } else { detecting.into() });
         st.set_firmware_sub(if have_fw {
-            format!("Release Date: {} • UEFI Boot: {}", b.bios_release_date, if b.uefi_boot { "Active" } else { "Legacy" }).into()
+            format!("{}: {} • {}: {}", s.tr(TextKey::BiosReleaseDateLabel), b.bios_release_date, s.tr(TextKey::BiosUefiBootLabel), if b.uefi_boot { s.tr(TextKey::BiosBootActive) } else { s.tr(TextKey::BiosBootLegacy) }).into()
         } else {
             SharedString::new()
         });

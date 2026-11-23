@@ -25,9 +25,13 @@ fn test_filter_locality_invariant_i1() {
     let initial_telemetry_ids: Vec<String> = state.selected_tweaks.iter().cloned().collect();
     for id in &initial_telemetry_ids {
         let t = state.tweaks.iter().find(|t| &t.id == id).unwrap();
+        // Select-All uses the same matcher as the search box, which also matches the category
+        // (raw and localized) since the v1.7.0 search/select-all parity fix.
         let matches = t.title.to_lowercase().contains("telemetry")
             || t.description.to_lowercase().contains("telemetry")
-            || t.id.to_lowercase().contains("telemetry");
+            || t.id.to_lowercase().contains("telemetry")
+            || t.category.as_str().to_lowercase().contains("telemetry")
+            || state.tweak_category(t.category.as_str()).to_lowercase().contains("telemetry");
         assert!(matches, "Tweak {} must match telemetry filter", id);
     }
 

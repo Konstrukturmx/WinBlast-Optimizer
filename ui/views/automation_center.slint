@@ -37,22 +37,22 @@ export component AutomationCenterView inherits Rectangle {
                         loading: AutomationStore.running;
                         clicked => { AutomationStore.run-auto-tune(); }
                     }
-                    WbButton { variant: "secondary"; text: "Trim Memory & Cache"; enabled: !AutomationStore.running; clicked => { AutomationStore.trim-memory(); } }
+                    WbButton { variant: "secondary"; text: Tr.s("AutoTrimMemoryBtn"); enabled: !AutomationStore.running; clicked => { AutomationStore.trim-memory(); } }
                 }
             }
 
             if AutomationStore.has-result : WbSection {
-                title: "✅ Auto-Tune Execution Results";
+                title: Tr.s("AutoTuneResultsTitle");
                 Text { text: AutomationStore.result-message; font-size: Scale.font-xs; color: Theme.text-secondary; wrap: word-wrap; }
                 FlexboxLayout {
                     spacing: Scale.px(6px);
                     WbPill { text: AutomationStore.result-duration; tone: "accent"; }
-                    WbPill { text: "Applied: " + AutomationStore.result-applied; tone: "success"; }
-                    WbPill { text: "Failed/Skipped: " + AutomationStore.result-failed; tone: AutomationStore.result-failed > 0 ? "warning" : "muted"; }
+                    WbPill { text: Tr.s("AutoAppliedLabel") + ": " + AutomationStore.result-applied; tone: "success"; }
+                    WbPill { text: Tr.s("AutoFailedSkippedLabel") + ": " + AutomationStore.result-failed; tone: AutomationStore.result-failed > 0 ? "warning" : "muted"; }
                 }
             }
             if AutomationStore.has-trim : WbSection {
-                title: "🧹 Memory & Working Set Cache Trimmed";
+                title: Tr.s("AutoTrimmedTitle");
                 Text { text: AutomationStore.trim-text; font-size: Scale.font-xs; color: Theme.success; wrap: word-wrap; }
             }
 
@@ -66,10 +66,10 @@ export component AutomationCenterView inherits Rectangle {
                     Text { text: Tr.s("AutoCenterProfilesSubtitle"); font-size: Scale.font-xs; color: Theme.text-muted; wrap: word-wrap; }
                     FlexboxLayout {
                         spacing: Scale.px(6px);
-                        WbChip { text: "🎮 Ultra Gaming"; active: AutomationStore.profile == "GamingLowLatency"; clicked => { AutomationStore.set-profile("GamingLowLatency"); } }
-                        WbChip { text: "🎵 Pro Audio / DAW"; active: AutomationStore.profile == "ProAudioDpc"; clicked => { AutomationStore.set-profile("ProAudioDpc"); } }
-                        WbChip { text: "🛡 Privacy & Workstation"; active: AutomationStore.profile == "WorkstationStability"; clicked => { AutomationStore.set-profile("WorkstationStability"); } }
-                        WbChip { text: "🔋 Laptop Battery"; active: AutomationStore.profile == "LaptopBatterySaving"; clicked => { AutomationStore.set-profile("LaptopBatterySaving"); } }
+                        WbChip { text: Tr.s("AutoProfileGaming"); active: AutomationStore.profile == "GamingLowLatency"; clicked => { AutomationStore.set-profile("GamingLowLatency"); } }
+                        WbChip { text: Tr.s("AutoProfileAudio"); active: AutomationStore.profile == "ProAudioDpc"; clicked => { AutomationStore.set-profile("ProAudioDpc"); } }
+                        WbChip { text: Tr.s("AutoProfileWorkstation"); active: AutomationStore.profile == "WorkstationStability"; clicked => { AutomationStore.set-profile("WorkstationStability"); } }
+                        WbChip { text: Tr.s("LaptopBatteryPreset"); active: AutomationStore.profile == "LaptopBatterySaving"; clicked => { AutomationStore.set-profile("LaptopBatterySaving"); } }
                     }
                 }
                 WbSection {
@@ -94,7 +94,7 @@ export component AutomationCenterView inherits Rectangle {
             }
 
             WbSection {
-                title: "📋 Profile Plan Preview (" + AutomationStore.plan-count + " Optimizations)";
+                title: Tr.s("AutoPlanPreviewTitle") + " (" + AutomationStore.plan-count + ")";
                 WbPill { text: AutomationStore.profile-label; tone: "accent"; }
                 FlexboxLayout {
                     spacing: Scale.px(6px);
@@ -104,7 +104,7 @@ export component AutomationCenterView inherits Rectangle {
             }
 
             WbSection {
-                title: "🗓 Scheduled Maintenance Tasks";
+                title: Tr.s("AutoScheduledTitle");
                 HorizontalLayout {
                     alignment: start;
                     WbButton { variant: "secondary"; text: Tr.s("RefreshStartupInventory"); enabled: !AutomationStore.maintenance-busy; clicked => { AutomationStore.refresh-maintenance(); } }

@@ -492,6 +492,7 @@ mod tests {
     }
 
     #[test]
+    #[cfg_attr(not(feature = "vm-tests"), ignore = "touches the real host; run only inside the test VM: cargo test --features vm-tests")]
     fn test_strict_reg_type_dispatch_and_negative_numeric_sz() {
         let subkey = format!("Software\\WinBlast0_TypeTest_{}", Uuid::new_v4());
         let _cleanup = ScratchCleanup(subkey.clone());
