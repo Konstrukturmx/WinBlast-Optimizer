@@ -1,6 +1,6 @@
 //! Unidirectional UI-to-Core Command Contract for WinBlast0.
 //!
-//! Every user-initiated interaction in the GUI (whether Rune or Slint) maps to
+//! Every user-initiated interaction in the GUI (Slint) maps to
 //! a strongly-typed `UiCommand`, ensuring zero backend coupling to UI callbacks.
 
 use crate::app::ActiveView;

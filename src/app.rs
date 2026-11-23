@@ -1,8 +1,8 @@
-//! Top-level application state machine for WinBlast0 under the Rune framework.
+//! Top-level application state machine for WinBlast0 (toolkit-neutral; driven by the Slint UI).
 //!
 //! Manages navigation between Easy and Advanced modes, orchestrates background
 //! workers via injected [`SystemBackend`], tracks live mutations in SQLite WAL
-//! [`StateLedger`], and maintains reactive state for responsive Rune views.
+//! [`StateLedger`], and maintains reactive state for the Slint views.
 
 use std::collections::{HashMap, HashSet};
 use std::path::PathBuf;
@@ -1047,7 +1047,7 @@ impl AppState {
         }
     }
 
-    /// Rune framework lifecycle setup hook. Captures the window waker and starts async warmup tasks.
+    /// UI lifecycle setup hook. Captures the window waker and starts async warmup tasks.
     pub fn setup(&mut self, waker: Waker) {
         self.waker = Some(waker.clone());
         self.start_scan();
@@ -1109,7 +1109,7 @@ impl AppState {
         self.setup(waker);
     }
 
-    /// Slint framework lifecycle poll hook. Drains bounded worker events without requiring Rune types.
+    /// Slint framework lifecycle poll hook. Drains bounded worker events without requiring UI-toolkit types.
     pub fn poll_headless(&mut self) -> bool {
         let now = std::time::SystemTime::now()
             .duration_since(std::time::UNIX_EPOCH)
