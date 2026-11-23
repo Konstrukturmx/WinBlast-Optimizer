@@ -71,7 +71,8 @@ export component DiskHealthView inherits Rectangle {
                     HorizontalLayout {
                         spacing: Scale.px(8px);
                         Text { text: d.health-text; font-size: Scale.font-xs; color: Theme.text-secondary; }
-                        WbProgressBar {
+                        // health < 0 = not reported by the drive: no bar rather than an invented one.
+                        if d.health >= 0 : WbProgressBar {
                             height: Scale.px(6px);
                             y: (parent.height - self.height) / 2;
                             horizontal-stretch: 1;

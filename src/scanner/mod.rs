@@ -197,6 +197,19 @@ pub fn resolve_dynamic_dword(
     }
 }
 
+/// True when the hardware value a dynamic DWORD formula depends on could actually be read.
+/// The executor refuses to write a value derived from an unknown (0) RAM size or core count.
+pub fn dynamic_dword_input_available(
+    backend: &dyn SystemBackend,
+    formula: crate::core::risk::DynamicDwordFormula,
+) -> bool {
+    use crate::core::risk::DynamicDwordFormula as F;
+    match formula {
+        F::TotalRamInKb | F::TotalRamInKbPlusMargin => backend.total_physical_ram_kb() > 0,
+        F::LogicalCoreCount => backend.logical_core_count() > 0,
+    }
+}
+
 enum ActionEval {
     Evaluated {
         optimized: bool,

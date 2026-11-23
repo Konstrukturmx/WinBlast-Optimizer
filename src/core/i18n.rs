@@ -709,10 +709,12 @@ pub enum TextKey {
     BiosUefiBootLabel,
     BiosBootActive,
     BiosBootLegacy,
+    AutoRamGainedLabel,
+    AutoProcessesTrimmedLabel,
 }
 
 impl TextKey {
-    pub const COUNT: usize = 600;
+    pub const COUNT: usize = 602;
 }
 
 /// Translations indexed by [Language as usize][TextKey as usize]
@@ -1322,6 +1324,8 @@ static TRANSLATIONS: [[&str; TextKey::COUNT]; 8] = [
         "UEFI Boot",
         "Active",
         "Legacy",
+        "Available RAM gained (measured)",
+        "processes trimmed",
     ],
     // 1: Turkish (Türkçe)
     [
@@ -1928,6 +1932,8 @@ static TRANSLATIONS: [[&str; TextKey::COUNT]; 8] = [
         "UEFI Önyükleme",
         "Etkin",
         "Eski (Legacy)",
+        "Kazanılan kullanılabilir RAM (ölçülen)",
+        "işlem kırpıldı",
     ],
     // 2: German (Deutsch)
     [
@@ -2534,6 +2540,8 @@ static TRANSLATIONS: [[&str; TextKey::COUNT]; 8] = [
         "UEFI-Start",
         "Aktiv",
         "Legacy",
+        "Gewonnener verfügbarer RAM (gemessen)",
+        "Prozesse bereinigt",
     ],
     // 3: French (Français)
     [
@@ -3140,6 +3148,8 @@ static TRANSLATIONS: [[&str; TextKey::COUNT]; 8] = [
         "Démarrage UEFI",
         "Actif",
         "Hérité (Legacy)",
+        "RAM disponible gagnée (mesurée)",
+        "processus réduits",
     ],
     // 4: Spanish (Español)
     [
@@ -3746,6 +3756,8 @@ static TRANSLATIONS: [[&str; TextKey::COUNT]; 8] = [
         "Arranque UEFI",
         "Activo",
         "Heredado (Legacy)",
+        "RAM disponible ganada (medida)",
+        "procesos recortados",
     ],
     // 5: Russian (Русский)
     [
@@ -4352,6 +4364,8 @@ static TRANSLATIONS: [[&str; TextKey::COUNT]; 8] = [
         "Загрузка UEFI",
         "Активна",
         "Legacy",
+        "Освобождено ОЗУ (измерено)",
+        "процессов обработано",
     ],
     // 6: Chinese Simplified (简体中文)
     [
@@ -4958,6 +4972,8 @@ static TRANSLATIONS: [[&str; TextKey::COUNT]; 8] = [
         "UEFI 启动",
         "已启用",
         "传统 (Legacy)",
+        "增加的可用内存（实测）",
+        "个进程已清理",
     ],
     // 7: Japanese (日本語)
     [
@@ -5564,6 +5580,8 @@ static TRANSLATIONS: [[&str; TextKey::COUNT]; 8] = [
         "UEFI ブート",
         "有効",
         "レガシー",
+        "増えた空きメモリ（実測）",
+        "個のプロセスを解放",
     ],
 ];
 

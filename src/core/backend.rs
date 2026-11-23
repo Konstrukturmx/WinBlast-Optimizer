@@ -613,9 +613,10 @@ impl SystemBackend for RealBackend {
     }
 
     fn logical_core_count(&self) -> u32 {
+        // 0 = unknown; never guessed (dynamic DWORD tweaks refuse to write when unknown).
         std::thread::available_parallelism()
             .map(|n| n.get() as u32)
-            .unwrap_or(8)
+            .unwrap_or(0)
     }
 
     fn detect_platform_security(&self) -> PlatformSecurityInfo {

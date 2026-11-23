@@ -23,12 +23,6 @@ pub struct GameSuitabilityReport {
     pub checks: Vec<SuitabilityCheck>,
 }
 
-impl Default for GameSuitabilityReport {
-    fn default() -> Self {
-        Self::evaluate(8, 16384, "NVIDIA GeForce RTX", true, true)
-    }
-}
-
 impl GameSuitabilityReport {
     /// Evaluate real hardware capabilities against modern gaming requirements.
     pub fn evaluate(

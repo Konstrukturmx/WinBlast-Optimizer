@@ -116,7 +116,7 @@ impl AutomationView {
                 st.set_has_trim(true);
                 st.set_trim_text(
                     if t.success {
-                        format!("Freed ≈{:.1} MB • {} Processes Trimmed", t.freed_mb_estimated, t.processes_trimmed)
+                        format!("{}: {:.0} MB • {} {}", s.tr(TextKey::AutoRamGainedLabel), t.freed_mb_estimated, t.processes_trimmed, s.tr(TextKey::AutoProcessesTrimmedLabel))
                     } else {
                         t.message.clone()
                     }

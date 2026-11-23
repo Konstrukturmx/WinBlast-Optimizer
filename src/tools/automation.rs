@@ -599,6 +599,7 @@ pub struct MemoryTrimResult {
 /// Trims working sets of running user/system processes and requests GC/standby purge.
 pub fn trim_system_memory_and_cache() -> MemoryTrimResult {
     let start = Instant::now();
+    let avail_before_kb = crate::hardware::sys_inventory::available_physical_ram_kb();
 
     // Use PowerShell to iterate processes and invoke EmptyWorkingSet on accessible handles
     let script = r#"
@@ -629,20 +630,29 @@ pub fn trim_system_memory_and_cache() -> MemoryTrimResult {
                 .trim()
                 .lines()
                 .last()
-                .and_then(|l| l.parse().ok())
-                .unwrap_or(24);
+                .and_then(|l| l.trim().parse().ok())
+                .unwrap_or(0);
 
-            let freed_mb = (trimmed_count as f64 * 16.5).min(1850.0);
+            // Measured, not estimated: change in available physical RAM across the trim
+            // (v1.6.1 reported processes × 16.5 MB as "freed").
+            let avail_after_kb = crate::hardware::sys_inventory::available_physical_ram_kb();
+            let (freed_mb, ram_note) = match (avail_before_kb, avail_after_kb) {
+                (Some(b), Some(a)) => {
+                    let delta = (a as f64 - b as f64) / 1024.0;
+                    (
+                        delta.max(0.0),
+                        format!("Available RAM {:.0} MB → {:.0} MB ({:+.0} MB).", b as f64 / 1024.0, a as f64 / 1024.0, delta),
+                    )
+                }
+                _ => (0.0, "Available RAM could not be measured.".to_string()),
+            };
 
             MemoryTrimResult {
                 freed_mb_estimated: freed_mb,
                 processes_trimmed: trimmed_count,
                 duration_ms,
                 success: true,
-                message: format!(
-                    "Successfully trimmed working set of {} processes. Freed ~{:.1} MB of physical RAM.",
-                    trimmed_count, freed_mb
-                ),
+                message: format!("Trimmed the working set of {trimmed_count} processes. {ram_note}"),
             }
         }
         Ok(out) => MemoryTrimResult {

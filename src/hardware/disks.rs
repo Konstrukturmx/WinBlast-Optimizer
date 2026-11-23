@@ -32,8 +32,11 @@ pub struct PhysicalDriveHealth {
     pub model: String,
     pub interface_type: String, // "NVMe", "SATA SSD", "HDD"
     pub total_size_gb: f64,
-    pub health_percentage: u32, // e.g. 98%
-    pub status: String,         // "Good", "Caution", "Bad"
+    /// Wear/health indicator reported by the drive (SMART / Storage API). `None` = not reported;
+    /// never estimated (AGENTS.md rule 2).
+    pub health_percentage: Option<u32>,
+    pub status: String, // e.g. "Healthy (Good)", "Caution — …", "Health not reported"
+    /// Drive temperature in °C; 0.0 = not reported by the drive.
     pub temperature_c: f32,
     pub lifetime_writes_tb: f64, // TBW
     pub power_on_hours: u32,
@@ -335,7 +338,7 @@ fn probe_physical_drive(index: u32, trim_enabled: bool) -> Option<PhysicalDriveH
         let final_size = if ioctl_size_gb > 0.0 {
             ioctl_size_gb
         } else {
-            let (_, _, _, _, _, w_size) = query_smart_health_wmi(index, is_nvme || is_ssd);
+            let (_, _, _, _, _, w_size) = query_smart_health_wmi(index);
             w_size
         };
 
@@ -351,11 +354,9 @@ fn probe_physical_drive(index: u32, trim_enabled: bool) -> Option<PhysicalDriveH
         });
 
         (
-            smart
-                .health_percentage
-                .unwrap_or(if is_ssd { 100 } else { 98 }),
+            smart.health_percentage,
             smart.status,
-            smart.temperature_c.unwrap_or(36.0),
+            smart.temperature_c.unwrap_or(0.0),
             final_tbw,
             smart.power_on_hours.unwrap_or(0),
             final_size,
@@ -363,7 +364,7 @@ fn probe_physical_drive(index: u32, trim_enabled: bool) -> Option<PhysicalDriveH
     } else {
         // Fallback: Query WMI Storage API
         let (w_health, w_status, w_temp, w_tbw, w_poh, w_size) =
-            query_smart_health_wmi(index, is_nvme || is_ssd);
+            query_smart_health_wmi(index);
 
         let final_size = if ioctl_size_gb > 0.0 {
             ioctl_size_gb
@@ -385,18 +386,9 @@ fn probe_physical_drive(index: u32, trim_enabled: bool) -> Option<PhysicalDriveH
             0.0
         };
 
-        // Honest status reporting for unprivileged/virtual controllers
-        let final_status = if w_status == "Healthy (Good)" && w_tbw == 0.0 && w_poh == 0 {
-            if kernel_perf.is_some() {
-                "Healthy (Kernel Monitored)".to_string()
-            } else {
-                "Healthy (Active)".to_string()
-            }
-        } else {
-            w_status
-        };
-
-        (w_health, final_status, w_temp, final_tbw, w_poh, final_size)
+        // Status comes only from what Windows / the drive reported (v1.6.1 relabelled "no data"
+        // as "Healthy (Active)").
+        (w_health, w_status, w_temp, final_tbw, w_poh, final_size)
     };
 
     Some(PhysicalDriveHealth {
@@ -885,7 +877,8 @@ pub fn parse_ata_smart_attributes(buf: &[u8; 512]) -> DriveSmartData {
             "Degraded".to_string()
         }
     } else {
-        "Healthy (Good)".to_string()
+        // SMART was readable but has no wear indicator: say so instead of claiming "Good".
+        "SMART OK — no wear indicator".to_string()
     };
 
     DriveSmartData {
@@ -897,29 +890,29 @@ pub fn parse_ata_smart_attributes(buf: &[u8; 512]) -> DriveSmartData {
     }
 }
 
+/// Status shown when neither SMART nor the Storage API reported a health state.
+pub const NOT_REPORTED: &str = "Health not reported";
+
 /// Query real SMART / reliability data for a physical disk via PowerShell WMI / CIM Storage API.
 ///
 /// Uses `Get-PhysicalDisk` + `Get-StorageReliabilityCounter` with graceful fallback to
 /// `Win32_DiskDrive` and honest telemetry bounds.
 /// Returns `(health_pct, status, temp_c, tbw_tb, poh, size_gb)`.
-fn query_smart_health_wmi(
-    disk_index: u32,
-    is_solid_state: bool,
-) -> (u32, String, f32, f64, u32, f64) {
+fn query_smart_health_wmi(disk_index: u32) -> (Option<u32>, String, f32, f64, u32, f64) {
     let script = format!(
         "$c=[System.Globalization.CultureInfo]::InvariantCulture;\
 $d=Get-PhysicalDisk|Where-Object{{$_.DeviceId -eq '{idx}'}}|Select-Object -First 1;\
 if($d){{$sz=($d.Size/1GB).ToString('0.0',$c);$r=$null;\
 try{{$r=$d|Get-StorageReliabilityCounter -ErrorAction SilentlyContinue}}catch{{}};\
-$wear=if($r -and $r.Wear -ne $null){{100-[int]$r.Wear}}else{{99}};\
-$tmp=if($r -and $r.Temperature -ne $null -and $r.Temperature -gt 0){{$r.Temperature}}else{{38}};\
+$wear=if($r -and $r.Wear -ne $null){{100-[int]$r.Wear}}else{{''}};\
+$tmp=if($r -and $r.Temperature -ne $null -and $r.Temperature -gt 0){{$r.Temperature}}else{{''}};\
 $tbw=if($r -and $r.TotalBytesWritten -ne $null){{($r.TotalBytesWritten/1TB).ToString('0.00',$c)}}else{{'0.00'}};\
 $poh=if($r -and $r.PowerOnHours -ne $null){{[int]$r.PowerOnHours}}else{{0}};\
-$hs=if($d.HealthStatus){{$d.HealthStatus}}else{{'Healthy'}};\
+$hs=if($d.HealthStatus){{$d.HealthStatus}}else{{''}};\
 Write-Output \"$wear|$tmp|$tbw|$poh|$sz|$hs\"}}\
 else{{\
 $w=Get-CimInstance Win32_DiskDrive|Where-Object{{$_.Index -eq {idx}}}|Select-Object -First 1;\
-if($w){{$sz=($w.Size/1GB).ToString('0.0',$c);Write-Output \"99|38|0.00|0|$sz|Healthy\"}}\
+if($w){{$sz=($w.Size/1GB).ToString('0.0',$c);Write-Output \"||0.00|0|$sz|\"}}\
 else{{Write-Output ''}}\
 }}",
         idx = disk_index
@@ -929,73 +922,47 @@ else{{Write-Output ''}}\
         .args(["-NoProfile", "-NonInteractive", "-Command", &script])
         .output();
 
-    let default_health = if is_solid_state { 99u32 } else { 95u32 };
-    let default_temp = if is_solid_state { 38.0f32 } else { 42.0f32 };
+    // Nothing is estimated: missing values stay None / 0.0 and the status says so (rule 2).
+    let not_reported = || (None, NOT_REPORTED.to_string(), 0.0f32, 0.0f64, 0u32, 0.0f64);
 
     match output {
         Ok(o) if o.status.success() => {
             let raw = String::from_utf8_lossy(&o.stdout);
             let line = raw.trim();
             if line.is_empty() {
-                return (
-                    default_health,
-                    "Healthy (Good)".to_string(),
-                    default_temp,
-                    0.0,
-                    0,
-                    0.0,
-                );
+                return not_reported();
             }
             let parts: Vec<&str> = line.split('|').collect();
             if parts.len() < 6 {
-                return (
-                    default_health,
-                    "Healthy (Good)".to_string(),
-                    default_temp,
-                    0.0,
-                    0,
-                    0.0,
-                );
+                return not_reported();
             }
             let parse_f64 =
                 |s: &str| -> f64 { s.trim().replace(',', ".").parse::<f64>().unwrap_or(0.0) };
             let parse_f32 =
                 |s: &str| -> f32 { s.trim().replace(',', ".").parse::<f32>().unwrap_or(0.0) };
-            let health_pct = parts[0]
-                .trim()
-                .parse::<u32>()
-                .unwrap_or(default_health)
-                .clamp(0, 100);
-            let temp_c = parse_f32(parts[1]);
+            let health_pct = parts[0].trim().parse::<u32>().ok().map(|h| h.min(100));
+            let temp_c = parse_f32(parts[1]).max(0.0);
             let tbw = parse_f64(parts[2]);
             let poh = parts[3].trim().parse::<u32>().unwrap_or(0);
             let size_gb = parse_f64(parts[4]);
             let health_str = parts[5].trim();
             let status = if health_str.eq_ignore_ascii_case("Healthy") {
-                if health_pct >= 90 {
-                    "Healthy (Good)"
-                } else if health_pct >= 75 {
-                    "Healthy (Caution)"
-                } else {
-                    "Degraded"
+                match health_pct {
+                    Some(h) if h >= 90 => "Healthy (Good)",
+                    Some(h) if h >= 75 => "Healthy (Caution)",
+                    Some(_) => "Degraded",
+                    None => "Healthy (Windows status)",
                 }
             } else if health_str.eq_ignore_ascii_case("Warning") {
                 "Caution — Reliability Risk"
             } else if health_str.eq_ignore_ascii_case("Unhealthy") {
                 "Unhealthy — Replace Drive"
             } else {
-                "Healthy (Good)"
+                NOT_REPORTED
             };
             (health_pct, status.to_string(), temp_c, tbw, poh, size_gb)
         }
-        _ => (
-            default_health,
-            "Healthy (Good)".to_string(),
-            default_temp,
-            0.0,
-            0,
-            0.0,
-        ),
+        _ => not_reported(),
     }
 }
 
@@ -1069,9 +1036,9 @@ fn probe_volume_fallback(
         model,
         interface_type: "Fixed System Volume".to_string(),
         total_size_gb: (total_gb * 10.0).round() / 10.0,
-        health_percentage: 99,
-        status: "Healthy (Volume Active)".to_string(),
-        temperature_c: 36.0,
+        health_percentage: None,
+        status: "Volume only — drive health not accessible".to_string(),
+        temperature_c: 0.0,
         lifetime_writes_tb: 0.0,
         power_on_hours: 0,
         trim_enabled,
@@ -1089,15 +1056,11 @@ mod tests {
 
     #[test]
     fn test_query_smart_health_wmi_fallback() {
-        // For disk index 255 (non-existent), should return safe defaults without panic.
-        let (health, status, temp, tbw, poh, size) = query_smart_health_wmi(255, true);
-        assert!(
-            health >= 90,
-            "SSD default health should be >= 90, got {}",
-            health
-        );
-        assert!(!status.is_empty(), "Status string should not be empty");
-        assert!(temp > 0.0, "Temperature default should be positive");
+        // For disk index 255 (non-existent): no invented values, just "not reported".
+        let (health, status, temp, tbw, poh, size) = query_smart_health_wmi(255);
+        assert_eq!(health, None, "missing health must not be estimated");
+        assert_eq!(status, NOT_REPORTED);
+        assert_eq!(temp, 0.0, "missing temperature must not be estimated");
         assert_eq!(tbw, 0.0, "TBW should default to 0.0 for non-existent disk");
         assert_eq!(poh, 0, "POH should default to 0 for non-existent disk");
         let _ = size;
@@ -1110,7 +1073,7 @@ mod tests {
         for drive in &report.drives {
             assert!(!drive.model.is_empty(), "Drive model should not be empty");
             assert!(
-                drive.health_percentage <= 100,
+                drive.health_percentage.is_none_or(|h| h <= 100),
                 "Health percentage out of range"
             );
             assert!(drive.total_size_gb > 0.0, "Physical drive size must be > 0");

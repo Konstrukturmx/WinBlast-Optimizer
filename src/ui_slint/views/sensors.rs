@@ -183,13 +183,22 @@ impl SensorsView {
                 .map(|d| DriveCard {
                     title: format!("Disk {}: {}", d.index, d.model).into(),
                     sub: format!("{} • {:.1} GB", d.interface_type, d.total_size_gb).into(),
-                    health: d.health_percentage as i32,
-                    health_text: format!("{}: {}%", s.tr_v(ViewTextKey::DiskHealthStatus), d.health_percentage).into(),
+                    health: d.health_percentage.map_or(-1, |h| h as i32),
+                    health_text: match d.health_percentage {
+                        Some(h) => format!("{}: {}%", s.tr_v(ViewTextKey::DiskHealthStatus), h).into(),
+                        None => format!("{}: {}", s.tr_v(ViewTextKey::DiskHealthStatus), DASH).into(),
+                    },
                     status: d.status.as_str().into(),
                     writes: format!("{}: {:.1} TB", s.tr_v(ViewTextKey::DiskLifetimeWrites), d.lifetime_writes_tb).into(),
                     hours: format!("{}: {} h", s.tr_v(ViewTextKey::DiskPowerOnHours), d.power_on_hours).into(),
                     temp: if d.temperature_c > 0.0 { format!("{:.0}°C", d.temperature_c).into() } else { DASH.into() },
-                    tone: if d.health_percentage >= 90 { "success" } else if d.health_percentage >= 75 { "warning" } else { "danger" }.into(),
+                    tone: match d.health_percentage {
+                        Some(h) if h >= 90 => "success",
+                        Some(h) if h >= 75 => "warning",
+                        Some(_) => "danger",
+                        None => "muted",
+                    }
+                    .into(),
                 })
                 .collect(),
         );

@@ -107,7 +107,20 @@ pub fn total_physical_ram_kb() -> u64 {
     if unsafe { GlobalMemoryStatusEx(&mut mem) }.is_ok() {
         mem.ullTotalPhys / 1024
     } else {
-        16 * 1024 * 1024
+        0 // unknown — never guessed (callers treat 0 as "not available")
+    }
+}
+
+/// Currently available physical RAM in KiB via `GlobalMemoryStatusEx` (`None` if the call fails).
+pub fn available_physical_ram_kb() -> Option<u64> {
+    let mut mem = MEMORYSTATUSEX {
+        dwLength: std::mem::size_of::<MEMORYSTATUSEX>() as u32,
+        ..Default::default()
+    };
+    if unsafe { GlobalMemoryStatusEx(&mut mem) }.is_ok() {
+        Some(mem.ullAvailPhys / 1024)
+    } else {
+        None
     }
 }
 

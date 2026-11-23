@@ -1,113 +1,117 @@
 # WinBlast0 — v1.6.1 (Rune) → v1.7.0 (Slint) Parity Matrix
 
-Generated 2026-11-22 by scanning the closures in tag `v1.6.1` `src/ui/**` that change `AppState`, and comparing them against `src/ui_slint/bridge.rs` at commit 5afc324.
-**Totals:** 146 action entries across views, 19 wired, 127 missing.
+Originally generated 2026-11-22 from the closures in tag `v1.6.1` `src/ui/**` that change `AppState`.
+**Re-audited 2026-11-23** against all of `src/ui_slint/**` on branch `1.7.0`.
 
-Status legend: **WIRED** = a Slint callback reaches this AppState action · **MISSING** = no Slint path · read-only lookups are left out.
+**Totals:** 146 action entries · 143 WIRED · 3 REPLACED by a safer path · 0 missing.
+
+Status legend: **WIRED** = a Slint callback reaches this AppState action · **REPLACED** = reached through a
+different, backend-routed or UI-local path (explained inline) · read-only lookups are left out.
+Behaviour of every view is exercised by `tests/ui_views.rs` (sandboxed backend, never the host).
 
 ## mod.rs
 
 | Action | Status |
 |---|---|
 | `navigate()` | WIRED |
-| `mode =` | **MISSING** |
-| `toggle_engine_mode()` | **MISSING** |
-| `nav_prev_view()` | **MISSING** |
-| `nav_next_view()` | **MISSING** |
+| `mode =` | WIRED |
+| `toggle_engine_mode()` | WIRED |
+| `nav_prev_view()` | WIRED |
+| `nav_next_view()` | WIRED |
 | `start_scan()` | WIRED |
-| `toggle_sidebar()` | **MISSING** |
-| `active_dropdown =` | **MISSING** |
-| `toggle_theme_mode()` | **MISSING** |
-| `relaunch_elevated()` | **MISSING** |
-| `toggle_changelog()` | **MISSING** |
-| `rollback_entry()` | **MISSING** |
-| `open_bug_report()` | **MISSING** |
-| `sidebar_open =` | **MISSING** |
-| `show_diff_preview =` | **MISSING** |
-| `inspected_tweak =` | **MISSING** |
-| `set_language()` | **MISSING** |
-| `set_theme_style()` | **MISSING** |
-| `set_theme_mode()` | **MISSING** |
-| `set_color_scheme()` | **MISSING** |
+| `toggle_sidebar()` | WIRED |
+| `active_dropdown =` | REPLACED — dropdown open/close is UI-local state (`AppStore.dropdown`) |
+| `toggle_theme_mode()` | WIRED |
+| `relaunch_elevated()` | WIRED |
+| `toggle_changelog()` | WIRED |
+| `rollback_entry()` | WIRED |
+| `open_bug_report()` | WIRED |
+| `sidebar_open =` | WIRED |
+| `show_diff_preview =` | WIRED |
+| `inspected_tweak =` | WIRED |
+| `set_language()` | WIRED |
+| `set_theme_style()` | WIRED |
+| `set_theme_mode()` | WIRED |
+| `set_color_scheme()` | WIRED |
 
 ## views/advanced_matrix.rs
 
 | Action | Status |
 |---|---|
-| `select_filtered_tweaks()` | **MISSING** |
-| `deselect_filtered_tweaks()` | **MISSING** |
+| `select_filtered_tweaks()` | WIRED |
+| `deselect_filtered_tweaks()` | WIRED |
 | `start_scan()` | WIRED |
-| `apply_selected()` | **MISSING** |
-| `revert_selected()` | **MISSING** |
-| `show_diff_preview =` | **MISSING** |
-| `open_diff_preview()` | **MISSING** |
-| `restart_explorer_safely()` | **MISSING** |
-| `apply_preset()` | **MISSING** |
-| `selected_category =` | **MISSING** |
-| `clear_advanced_filters()` | **MISSING** |
-| `matrix_sort_mode =` | **MISSING** |
-| `search_edit.text =` | **MISSING** |
-| `handle_switch_click()` | **MISSING** |
+| `apply_selected()` | WIRED |
+| `revert_selected()` | WIRED |
+| `show_diff_preview =` | WIRED |
+| `open_diff_preview()` | WIRED |
+| `restart_explorer_safely()` | WIRED |
+| `apply_preset()` | WIRED |
+| `selected_category =` | WIRED |
+| `clear_advanced_filters()` | WIRED |
+| `matrix_sort_mode =` | WIRED |
+| `search_edit.text =` | WIRED |
+| `handle_switch_click()` | WIRED |
 | `status_message =` | WIRED |
-| `toggle_category_selection()` | **MISSING** |
-| `inspect_tweak()` | **MISSING** |
+| `toggle_category_selection()` | WIRED |
+| `inspect_tweak()` | WIRED |
 
 ## views/automation_center.rs
 
 | Action | Status |
 |---|---|
-| `execute_auto_tune_profile()` | **MISSING** |
-| `execute_memory_trim()` | **MISSING** |
-| `selected_auto_tune_profile =` | **MISSING** |
+| `execute_auto_tune_profile()` | WIRED |
+| `execute_memory_trim()` | WIRED |
+| `selected_auto_tune_profile =` | WIRED |
 
 ## views/backup_center.rs
 
 | Action | Status |
 |---|---|
 | `create_restore_point()` | WIRED |
-| `refresh_restore_points()` | **MISSING** |
-| `export_profile()` | **MISSING** |
-| `import_profile()` | **MISSING** |
-| `rollback_entry()` | **MISSING** |
-| `apply_unattend_preset()` | **MISSING** |
-| `unattend_opts.architecture =` | **MISSING** |
-| `unattend_opts.bypass_tpm_ram_requirements =` | **MISSING** |
-| `unattend_opts.bypass_msa_oobe =` | **MISSING** |
-| `unattend_opts.skip_oobe_privacy_screens =` | **MISSING** |
-| `unattend_opts.include_selected_tweaks =` | **MISSING** |
-| `unattend_opts.auto_timezone_utc =` | **MISSING** |
-| `export_autounattend_xml()` | **MISSING** |
+| `refresh_restore_points()` | WIRED |
+| `export_profile()` | WIRED |
+| `import_profile()` | WIRED |
+| `rollback_entry()` | WIRED |
+| `apply_unattend_preset()` | WIRED |
+| `unattend_opts.architecture =` | WIRED |
+| `unattend_opts.bypass_tpm_ram_requirements =` | WIRED |
+| `unattend_opts.bypass_msa_oobe =` | WIRED |
+| `unattend_opts.skip_oobe_privacy_screens =` | WIRED |
+| `unattend_opts.include_selected_tweaks =` | WIRED |
+| `unattend_opts.auto_timezone_utc =` | WIRED |
+| `export_autounattend_xml()` | WIRED |
 
 ## views/clean_apps.rs
 
 | Action | Status |
 |---|---|
-| `clean_sub_tab =` | **MISSING** |
-| `select_all_clean_targets()` | **MISSING** |
-| `deselect_all_clean_targets()` | **MISSING** |
-| `scan_clean_targets_async()` | **MISSING** |
+| `clean_sub_tab =` | WIRED |
+| `select_all_clean_targets()` | WIRED |
+| `deselect_all_clean_targets()` | WIRED |
+| `scan_clean_targets_async()` | WIRED |
 | `execute_clean_selected()` | WIRED |
-| `toggle_clean_target()` | **MISSING** |
-| `scan_appx_and_features_async()` | **MISSING** |
+| `toggle_clean_target()` | WIRED |
+| `scan_appx_and_features_async()` | WIRED |
 | `remove_selected_appx_async()` | WIRED |
-| `select_filtered_appx()` | **MISSING** |
-| `select_safe_and_ai_appx()` | **MISSING** |
-| `deselect_all_appx()` | **MISSING** |
-| `uninstall_onedrive_async()` | **MISSING** |
-| `remove_edge_async()` | **MISSING** |
+| `select_filtered_appx()` | WIRED |
+| `select_safe_and_ai_appx()` | WIRED |
+| `deselect_all_appx()` | WIRED |
+| `uninstall_onedrive_async()` | WIRED |
+| `remove_edge_async()` | WIRED |
 | `toggle_appx_selection()` | WIRED |
-| `toggle_optional_feature_async()` | **MISSING** |
-| `deselect_all_winget()` | **MISSING** |
-| `install_selected_winget_async()` | **MISSING** |
-| `toggle_winget_selection()` | **MISSING** |
+| `toggle_optional_feature_async()` | WIRED |
+| `deselect_all_winget()` | WIRED |
+| `install_selected_winget_async()` | WIRED |
+| `toggle_winget_selection()` | WIRED |
 
 ## views/cpu_parking.rs
 
 | Action | Status |
 |---|---|
-| `unpark_all_cores()` | **MISSING** |
+| `unpark_all_cores()` | WIRED |
 | `restore_stock_parking()` | WIRED |
-| `refresh_core_parking()` | **MISSING** |
+| `refresh_core_parking()` | WIRED |
 
 ## views/disk_health.rs
 
@@ -119,46 +123,46 @@ Status legend: **WIRED** = a Slint callback reaches this AppState action · **MI
 
 | Action | Status |
 |---|---|
-| `scan_online_drivers()` | **MISSING** |
-| `test_sandbox_driver_install()` | **MISSING** |
-| `scan_bios_info_async()` | **MISSING** |
-| `driver_category_filter =` | **MISSING** |
-| `backup_driver()` | **MISSING** |
-| `install_driver_update()` | **MISSING** |
+| `scan_online_drivers()` | WIRED |
+| `test_sandbox_driver_install()` | WIRED |
+| `scan_bios_info_async()` | WIRED |
+| `driver_category_filter =` | WIRED |
+| `backup_driver()` | WIRED |
+| `install_driver_update()` | WIRED |
 
 ## views/easy_dashboard.rs
 
 | Action | Status |
 |---|---|
-| `reset_baseline()` | **MISSING** |
-| `apply_preset()` | **MISSING** |
+| `reset_baseline()` | WIRED |
+| `apply_preset()` | WIRED |
 | `navigate()` | WIRED |
-| `relaunch_as_admin()` | **MISSING** |
-| `check_for_updates()` | **MISSING** |
-| `download_and_install_update()` | **MISSING** |
-| `apply_and_restart()` | **MISSING** |
+| `relaunch_as_admin()` | WIRED |
+| `check_for_updates()` | WIRED |
+| `download_and_install_update()` | WIRED |
+| `apply_and_restart()` | WIRED |
 | `start_scan()` | WIRED |
 
 ## views/fault_diagnostics.rs
 
 | Action | Status |
 |---|---|
-| `fault_report =` | **MISSING** |
+| `fault_report =` | WIRED |
 | `navigate()` | WIRED |
 
 ## views/game_overlay.rs
 
 | Action | Status |
 |---|---|
-| `game_overlay.game_bar_disabled =` | **MISSING** |
+| `game_overlay.game_bar_disabled =` | REPLACED — `set_game_overlay_async()` (backend writes the real registry value; v1.6.1 only flipped a field) |
 
 ## views/game_prereqs.rs
 
 | Action | Status |
 |---|---|
-| `scan_game_prereqs()` | **MISSING** |
-| `install_all_missing_prereqs()` | **MISSING** |
-| `install_game_prereq()` | **MISSING** |
+| `scan_game_prereqs()` | WIRED |
+| `install_all_missing_prereqs()` | WIRED |
+| `install_game_prereq()` | WIRED |
 
 ## views/game_profiles.rs
 
@@ -170,90 +174,90 @@ Status legend: **WIRED** = a Slint callback reaches this AppState action · **MI
 
 | Action | Status |
 |---|---|
-| `gaming_sub_tab =` | **MISSING** |
-| `game_telemetry =` | **MISSING** |
+| `gaming_sub_tab =` | WIRED |
+| `game_telemetry =` | WIRED |
 
 ## views/gpu_tuning.rs
 
 | Action | Status |
 |---|---|
-| `toggle_hide_tweak()` | **MISSING** |
-| `inspect_tweak()` | **MISSING** |
+| `toggle_hide_tweak()` | WIRED |
+| `inspect_tweak()` | WIRED |
 | `toggle_hags()` | WIRED |
-| `toggle_mpo()` | **MISSING** |
-| `toggle_gpu_msi()` | **MISSING** |
+| `toggle_mpo()` | WIRED |
+| `toggle_gpu_msi()` | WIRED |
 
 ## views/hardware_view.rs
 
 | Action | Status |
 |---|---|
-| `refresh_platform_inventory()` | **MISSING** |
-| `refresh_latency()` | **MISSING** |
+| `refresh_platform_inventory()` | WIRED |
+| `refresh_latency()` | WIRED |
 | `navigate()` | WIRED |
-| `set_active_power_plan()` | **MISSING** |
-| `activate_winblast_ultimate_power_plan()` | **MISSING** |
-| `toggle_hibernation()` | **MISSING** |
-| `toggle_usb_power_saving()` | **MISSING** |
+| `set_active_power_plan()` | WIRED |
+| `activate_winblast_ultimate_power_plan()` | WIRED |
+| `toggle_hibernation()` | WIRED |
+| `toggle_usb_power_saving()` | WIRED |
 
 ## views/latency_bench.rs
 
 | Action | Status |
 |---|---|
-| `start_latency_benchmark()` | **MISSING** |
-| `set_latency_baseline_before()` | **MISSING** |
-| `reset_latency_benchmark()` | **MISSING** |
+| `start_latency_benchmark()` | WIRED |
+| `set_latency_baseline_before()` | WIRED |
+| `reset_latency_benchmark()` | WIRED |
 
 ## views/network_diag.rs
 
 | Action | Status |
 |---|---|
-| `network_diag =` | **MISSING** |
-| `set_status()` | **MISSING** |
+| `network_diag =` | WIRED |
+| `set_status()` | REPLACED — `network_action_async()` reports the real netsh outcome (v1.6.1 always claimed success) |
 
 ## views/performance_tests.rs
 
 | Action | Status |
 |---|---|
-| `start_perf_benchmark_async()` | **MISSING** |
+| `start_perf_benchmark_async()` | WIRED |
 
 ## views/privacy_shield.rs
 
 | Action | Status |
 |---|---|
-| `run_telemetry_audit()` | **MISSING** |
-| `block_telemetry_hosts()` | **MISSING** |
-| `neutralize_telemetry_services()` | **MISSING** |
-| `deselect_all()` | **MISSING** |
-| `apply_selected()` | **MISSING** |
+| `run_telemetry_audit()` | WIRED |
+| `block_telemetry_hosts()` | WIRED |
+| `neutralize_telemetry_services()` | WIRED |
+| `deselect_all()` | WIRED |
+| `apply_selected()` | WIRED |
 
 ## views/startup_tasks.rs
 
 | Action | Status |
 |---|---|
-| `startup_sub_tab =` | **MISSING** |
-| `toggle_startup_entry_async()` | **MISSING** |
-| `toggle_startup_entry_selection()` | **MISSING** |
-| `toggle_scheduled_task_selection()` | **MISSING** |
-| `run_live_task_async()` | **MISSING** |
-| `toggle_live_task_async()` | **MISSING** |
-| `set_live_service_start_async()` | **MISSING** |
-| `select_all_filtered_startup()` | **MISSING** |
-| `deselect_all_startup()` | **MISSING** |
-| `batch_toggle_selected_startup_async()` | **MISSING** |
-| `select_all_filtered_tasks()` | **MISSING** |
-| `deselect_all_tasks()` | **MISSING** |
-| `batch_toggle_selected_tasks_async()` | **MISSING** |
-| `hide_microsoft_tasks =` | **MISSING** |
+| `startup_sub_tab =` | WIRED |
+| `toggle_startup_entry_async()` | WIRED |
+| `toggle_startup_entry_selection()` | WIRED |
+| `toggle_scheduled_task_selection()` | WIRED |
+| `run_live_task_async()` | WIRED |
+| `toggle_live_task_async()` | WIRED |
+| `set_live_service_start_async()` | WIRED |
+| `select_all_filtered_startup()` | WIRED |
+| `deselect_all_startup()` | WIRED |
+| `batch_toggle_selected_startup_async()` | WIRED |
+| `select_all_filtered_tasks()` | WIRED |
+| `deselect_all_tasks()` | WIRED |
+| `batch_toggle_selected_tasks_async()` | WIRED |
+| `hide_microsoft_tasks =` | WIRED |
 | `scan_startup_and_tasks_async()` | WIRED |
-| `startup_status_filter =` | **MISSING** |
-| `startup_sort_mode =` | **MISSING** |
+| `startup_status_filter =` | WIRED |
+| `startup_sort_mode =` | WIRED |
 
 ## views/support_about.rs
 
 | Action | Status |
 |---|---|
-| `open_bug_report()` | **MISSING** |
-| `set_theme_style()` | **MISSING** |
+| `open_bug_report()` | WIRED |
+| `set_theme_style()` | WIRED |
 
 ## views/thermal_monitor.rs
 
@@ -271,56 +275,17 @@ Status legend: **WIRED** = a Slint callback reaches this AppState action · **MI
 
 | Action | Status |
 |---|---|
-| `handle_switch_click()` | **MISSING** |
+| `handle_switch_click()` | WIRED |
 
 ## widgets/diff_modal.rs
 
 | Action | Status |
 |---|---|
-| `show_diff_preview =` | **MISSING** |
-| `inspected_tweak =` | **MISSING** |
+| `show_diff_preview =` | WIRED |
+| `inspected_tweak =` | WIRED |
 
 ## widgets/in_progress_hud.rs
 
 | Action | Status |
 |---|---|
-| `dismiss_progress_hud =` | **MISSING** |
-
-## Port status (v1.7.0)
-
-| View | Status | Tests |
-|---|---|---|
-| Shell (top bar, sidebar, progress, changelog, footer, dropdowns, HUD, diff) | DONE | tests/ui_parity.rs (14) |
-| Fault Diagnostics / Windows Repair / Performance Tests | DONE: async scans/remediations/repairs/benchmark, two-click restart, live repair log, "Run All"; fake default benchmark removed | tests/ui_views.rs fault_/repair_/perf_ (3) |
-| Goal Planner | DONE: 3 goal presets, A* solve, stage plan, 6 metrics, Dijkstra schedule (localized) | tests/ui_views.rs planner_* (1) |
-| Automation Center | DONE: 4 profiles, plan preview, auto-tune, async memory trim, health assessment (new button), scheduled maintenance tasks (newly exposed) | tests/ui_views.rs automation_* (1) |
-| Latency Bench | DONE: run, before-baseline, clear, comparison, KPIs, per-target ping stats; the KPI strip now shows "Offline" instead of a negative ping | tests/ui_views.rs latency_* (1) |
-| Driver & BIOS | DONE: online scan, 8 category chips, folded search, WHQL/state badges, async install/backup, sandbox test driver, board/firmware/Secure Boot, display drivers | tests/ui_views.rs drivers_* (1) |
-| Core Parking / Thermal / Disk Health | DONE: unpark/restore/refresh + per-core cards; thermal gauges + components; SMART drives + async TRIM. Fixed fake sensor values, a false DirectStorage claim and a UI-thread TRIM | tests/ui_views.rs core_parking_/thermal_/disk_ (3) |
-| Hardware | DONE: waveforms, CPU topology + per-core load, NT latency, power plans, Ultimate plan, hibernation, USB power, platform security, DIMMs, volumes | tests/ui_views.rs hardware_* (2) |
-| GPU Tuning | DONE: adapters, HAGS (OS-gated), MPO, MSI + interrupt priority per adapter, vendor-gated tweak cards with hide/unhide/inspect; fake overclock sliders from the pre-1.7.0 Slint view removed | tests/ui_views.rs gpu_* (2) |
-| Privacy Shield | DONE: stats, hosts/services audit, block hosts, neutralize services, privacy switch list; fixed an inconsistent Select All | tests/ui_views.rs privacy_* (2) |
-| Backup Center | DONE: restore points, profile export/import, Autounattend.xml (presets, arch, 5 options), ledger undo | tests/ui_views.rs backup_* (2) |
-| Startup, Tasks & Services | DONE: 3 sub-tabs, filters, 5 sorts, hide-Microsoft, batch enable/disable, run task, service start types (protected core locked). Fixed a stuck-busy bug after batch toggles | tests/ui_views.rs startup_*/services_* (3) |
-| Clean & Apps | DONE: disk cleaner (8 targets), AppX bloat with locked protected core, optional features, OneDrive/Edge, WinGet; "Select Safe & AI" localized | tests/ui_views.rs clean_apps_* (4) |
-| Easy Dashboard | DONE: all cards and actions; removed invented fallbacks ("Intel / AMD Processor", made-up 12.5 MB update size) | tests/ui_views.rs dashboard_* (4) |
-| Advanced Matrix | DONE: all actions wired, plus fixes for risk filtering, consistent Select All matching and a real Export | tests/ui_views.rs matrix_* (8) |
-
-## Cross-cutting features (checked by hand during implementation)
-
-| Feature | v1.6.1 source | Slint status |
-|---|---|---|
-| Sub-tabs (Clean/Apps/Features/Winget, Startup/Tasks/Services, Gaming, Hardware, Drivers, Repair) | `app.rs` *SubTab enums | partly missing |
-| Sort and filter modes (Matrix, Clean, Startup, Driver, Prereqs, Privacy) | `app.rs` *SortMode enums | missing |
-| Engine mode Easy/Advanced and preset staging/apply | `toggle_engine_mode`, `apply_preset` | missing |
-| Theme mode, 6 color schemes, 5 theme styles, live switch | `theme.rs`, `set_theme_*` | missing (Slint tokens are static) |
-| 8-language i18n (TextKey, ViewTextKey, tweak_i18n, status_i18n) | `core/*i18n*` | missing (Slint strings are hard-coded English) |
-| Settings persistence (language, theme, zoom, telemetry interval) | `AppState` and prefs | to verify |
-| Diff preview modal, tweak inspector | `widgets/diff_modal.rs` | not wired |
-| In-progress HUD with cancel/dismiss | `widgets/in_progress_hud.rs` | partly wired |
-| Auto-updater (check, download, apply, restart) | `core/updater.rs` | missing |
-| Relaunch elevated | `relaunch_elevated` | missing |
-| Autounattend.xml exporter and presets | `tools/autounattend.rs` | missing |
-| Profile export/import, Ed25519 .winpreset sharing | `backup/preset_sharing.rs` | missing |
-| Hotkeys and view cycling (nav_next/prev, sidebar) | `ui/mod.rs` | to verify |
-| Fabricated defaults in .slint properties (AGENTS rule 2) | n/a | ~65 to remove |
+| `dismiss_progress_hud =` | WIRED |

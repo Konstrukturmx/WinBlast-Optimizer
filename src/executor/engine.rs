@@ -376,6 +376,11 @@ fn apply_action_slice_with(
                     ..
                 } => {
                     let prev = backend.reg_get_dword(hive, path, name);
+                    if !crate::scanner::dynamic_dword_input_available(backend, *formula) {
+                        return Err(WinBlastError::TweakFailed(format!(
+                            "{name}: the hardware value this setting is computed from ({formula:?}) could not be read; refusing to write a guessed value"
+                        )));
+                    }
                     let target = crate::scanner::resolve_dynamic_dword(backend, *formula);
                     backend.reg_set_dword(hive, path, name, target)?;
                     let orig_str = prev

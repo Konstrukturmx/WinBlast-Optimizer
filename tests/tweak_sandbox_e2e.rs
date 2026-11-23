@@ -4771,3 +4771,31 @@ fn test_startup_sorting_filtering_and_dropdown_state_transitions() {
             || !report.pending_reboot.pending_files.is_empty()
     );
 }
+
+#[test]
+fn test_dynamic_dword_refuses_to_write_when_ram_is_unknown() {
+    use winblast0::core::risk::DynamicDwordFormula;
+    let tweak = make_synth_tweak(
+        "dyn_ram_guard_test",
+        Reversibility::Instant,
+        vec![TweakAction::RegistryDynamicDword {
+            hive: "HKLM".into(),
+            path: r"SYSTEM\CurrentControlSet\Control".into(),
+            name: "SvcHostSplitThresholdInKB".into(),
+            formula: DynamicDwordFormula::TotalRamInKb,
+            default_value: 3_670_016,
+            tolerance_pct: 0,
+        }],
+    );
+    let sbx = SandboxEnv::new();
+    sbx.state_write().total_ram_kb = 0; // the RAM query failed
+    let ledger = StateLedger::in_memory().expect("in_memory ledger");
+    let err = apply_tweak_with(&tweak, &ledger, &sbx).expect_err("must not write a guessed RAM-derived value");
+    assert!(err.to_string().contains("could not be read"), "{err}");
+    assert_eq!(sbx.reg_get_dword("HKLM", r"SYSTEM\CurrentControlSet\Control", "SvcHostSplitThresholdInKB"), None);
+
+    // With a real RAM size the value is written.
+    sbx.state_write().total_ram_kb = 16 * 1024 * 1024;
+    apply_tweak_with(&tweak, &ledger, &sbx).expect("apply with known RAM");
+    assert_eq!(sbx.reg_get_dword("HKLM", r"SYSTEM\CurrentControlSet\Control", "SvcHostSplitThresholdInKB"), Some(16 * 1024 * 1024));
+}

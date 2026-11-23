@@ -913,7 +913,7 @@ fn test_real_windows_disk_and_thermal_telemetry() {
     println!("Found {} physical drives on host:", report.drives.len());
     for drv in &report.drives {
         println!(
-            "Drive {}: {} ({}) -> {:.1} GB, Health: {}%, Temp: {:.1}°C, TBW: {:.2} TB, POH: {} h",
+            "Drive {}: {} ({}) -> {:.1} GB, Health: {:?}%, Temp: {:.1}°C, TBW: {:.2} TB, POH: {} h",
             drv.index,
             drv.model,
             drv.interface_type,
