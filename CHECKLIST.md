@@ -1,4 +1,4 @@
-# WinBlast0 v1.7.0 — Migration Checklist (updated 2026-11-23)
+# WinBlast0 v1.7.0 — Migration Checklist (updated 2026-11-23 — v1.7.0 complete, local only)
 
 Branch: `1.7.0` (local only, never pushed). Reference: tag `v1.6.1` in `../WinBlast0-v161`.
 
@@ -30,9 +30,19 @@ Branch: `1.7.0` (local only, never pushed). Reference: tag `v1.6.1` in `../WinBl
 - [x] `cargo test --all-targets`: 269 passed, 0 failed, 6 ignored (VM-only)
 - [x] `cargo clippy --all-targets -- -D warnings` clean (also with `--features vm-tests`)
 
-## ⏳ Remaining
-- [ ] Build Hyper-V Win10 VM (ISO at `D:\Hive\VMs\iso`) and run all suites there incl. `--features vm-tests` + screenshots
-- [ ] `graphify update .`; CHANGELOG / README / release notes
-- [ ] 1.7.0 release build
-- [ ] New code-signing cert, remove 11 old duplicates, fix `sign_binary.ps1`, sign + DigiCert timestamp + verify
-- [ ] Final local commit on `1.7.0` (no push)
+### VM, release, signing
+- [x] Hyper-V test VM `WinBlast-Test` (Win10 Enterprise Eval 22H2, build 19045) at `D:\Hive\VMs\WinBlast-Test`, checkpoint `clean-install`; driven via PowerShell Direct (pwsh 7 — Windows PowerShell 5.1 hangs)
+- [x] All suites in the VM incl. `--features vm-tests`: 274 passed, 0 failed (after fixing 2 Win11-only assumptions in real_windows_env.rs)
+- [x] Release build running in the VM; screenshots of all 26 views in `D:\Hive\VMs\WinBlast-Test\screenshots-1.7.0`; real ping probe verified
+- [x] UI fixes found in the VM: top-bar overlap at ~1024 px, DNS count, emoji on Windows 10; Slint licence attribution (AboutSlint) added
+- [x] CHANGELOG v1.7.0 entry rewritten (old one claimed a Rune dual-build and a custom title bar); README updated
+- [x] `graphify update .` (4630 nodes, 9014 edges)
+- [x] `cargo build --release`; signed with the single new cert `070A70E017B5BB8F7A345688C82D8A578DAC404D` (valid to 2031-11-23), DigiCert RFC 3161 timestamp; 16 old duplicate certs removed from CurrentUser\My
+- [x] `scripts/sign_binary.ps1` rewritten: signs by thumbprint from the store, no cert generation, no password
+- [x] Final local commit on `1.7.0` (not pushed)
+
+## Open items for the owner
+- Push / tag / publish the release (your call — nothing was pushed).
+- The self-signed signature shows as "untrusted" on other PCs unless the cert is trusted there; a commercial cert would fix that.
+- `scripts/Konstrukturmx_CodeSigning.pfx` (git-ignored) belongs to a deleted old cert and its password was in the old script — delete it if you don't need it.
+- `FpsReferenceNotice` says figures come "from WinBlast lab test systems"; I could not verify that source.

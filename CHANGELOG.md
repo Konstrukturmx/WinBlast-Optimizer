@@ -4,31 +4,26 @@ All notable changes to **WinBlast Optimizer** are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
+## [v1.7.0] - 2026-11-23
 
-## [v1.7.0] - 2026-11-22
+### Changed
+- **Rune removed; the UI is now Slint 1.19 only.** All 26 views were rebuilt on Slint global stores (`ui/stores/*.slint`) with per-view Rust binders (`src/ui_slint/views/*.rs`). There is no `--ui=rune` mode any more.
+- Native Windows window frame (snap layouts, DPI), live switching between 8 languages, 6 colour schemes × 5 styles × dark/light, and zoom (Ctrl + / − / 0). Settings persist in `%LOCALAPPDATA%\WinBlast0\settings.json`.
+- Long-running work (driver install/backup, SFC/DISM/Winsock repair, TRIM, health assessment, memory trim, prerequisite installs, DNS actions, game-profile/overlay changes, network probes) runs on background workers; the window no longer freezes.
+- Every system-changing action goes through the `SystemBackend` trait, so the test sandbox never touches the real machine.
+- Support & About shows the 1.7.0 notes, repository links, bug report, the style studio and the Slint licence attribution.
 
-### ⚡ Next-Generation Slint 1.19 Declarative GUI Engine Migration
-- **Declarative Slint Architecture (`ui-slint`)**:
-  - Successfully migrated 100% of the presentation layer from legacy imperative widgets to declarative Slint 1.19 (`slint-project.json`, Edition `1.19`).
-  - Implemented the Hexagonal Core Boundary (`src/core/commands.rs` & `src/core/events.rs`): 100% decoupled all Windows OS mutations, Win32 APIs, and registry writes from the UI thread.
-  - Added real-time reactive state bridge (`src/ui_slint/bridge.rs`) seamlessly binding core `AppState` with Slint properties and callbacks.
-- **Hardware-Accelerated Dual-Backend Rasterization**:
-  - Backed by `renderer-femtovg-wgpu` (GPU wgpu pipeline) delivering fluid 60+ FPS spring animations, instant navigation, and sub-15ms cold launch latency.
-  - Automatic zero-glitch fallback to `renderer-software` on virtual machines or systems without hardware acceleration, automatically adjusting glass alpha and collapsing blur filters.
-- **Comprehensive 26-Feature-View Parity**:
-  - Full 1:1 parity migration across all 26 views: Easy Dashboard, 230-Tweak Matrix, Deep Junk Cleaner, AppX Debloater, GPU Silicon Tuning, CPU Core Parking, DPC Latency, SMART Disk Health, Driver & BIOS, FPS Benchmark, Gaming Stats, Network Diagnostics, Game Profiles, HUD Overlay, Game Suitability, Game Prerequisites, Automation Center, Goal Planner, Windows Repair, Fault Diagnostics, Backup Center, Privacy Shield, and Support & About.
-- **Desktop AppShell & Accessibility**:
-  - Custom frameless window chrome (`AppTitlebar`) with native `WindowMoveArea` drag band and vector caption controls.
-  - Collapsible/resizable navigation drawer (`AppSidebar`) with section headers and vector icons.
-  - Bottom real-time telemetry strip (`AppStatusbar`) with CPU/RAM gauges and pending reboot notifications.
-  - 3-layer DPI scaling architecture (`Scale.px(...)`, 0.75x to 2.0x zoom) and OKLCH semantic theme tokens.
-  - Window-wide keyboard shortcut routing (`FocusScope`): `Ctrl+K` (Search), `Ctrl+B` (Sidebar toggle), `Ctrl++`/`Ctrl+-`/`Ctrl+0` (Zoom scaling), `Esc` (Dismiss modals).
-- **Licensing & Compliance**:
-  - Embedded official Slint Royalty-Free Desktop License attribution (`AboutSlint` in Support & About view). Retains WinBlast0 MIT open-source license.
-- **Strangler-Fig Dual-Build**:
-  - `default = ["ui-slint", "ui-rune"]`: Defaults to the next-gen Slint engine (`cargo run`) while preserving `--ui=rune` for backwards compatibility.
+### Fixed
+- 33 defects — see [docs/v1.7.0-bugfixes.md](docs/v1.7.0-bugfixes.md). Highlights:
+  - Removed invented values (AGENTS.md rule 2): fake hardware names, benchmark scores, gaming frame-pacing/DirectX/G-Sync claims, disk health/temperature defaults, memory-trim "freed MB", RAM/core-count guesses, a fabricated suitability machine.
+  - Registry tweaks derived from RAM size or core count refuse to write when that value cannot be read.
+  - Game Bar toggle, DNS actions and game profiles report their real result instead of always claiming success.
+  - Startup view stuck busy after batch toggles; Select All not matching the visible filter; Export Selected did nothing; "Restart PC" needed only one click.
+  - Top bar overlapped at ~1024 px; emoji icons missing on Windows 10; English-only strings localised (≈90 new catalog keys × 8 languages).
 
----
+### Testing
+- Host suite (sandboxed): 268 passed, 0 failed; clippy `-D warnings` clean.
+- Tests that touch a real Windows install are gated behind `--features vm-tests` and run in a disposable Hyper-V Windows 10 22H2 VM: all suites pass there (274 tests).
 
 ## [v1.6.1] - 2026-11-21
 

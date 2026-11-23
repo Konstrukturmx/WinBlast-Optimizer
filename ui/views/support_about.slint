@@ -1,7 +1,7 @@
 // ui/views/support_about.slint
 // Support & About (port of v1.6.1 support_about): version, repository links, bug report,
 // 1.7.0 release highlights and the live UI style studio.
-import { ScrollView } from "std-widgets.slint";
+import { ScrollView, AboutSlint } from "std-widgets.slint";
 import { Scale, Theme, Tr } from "../theme.slint";
 import { AppStore } from "../stores/app.slint";
 import { AboutStore } from "../stores/about.slint";
@@ -48,6 +48,15 @@ export component SupportAboutView inherits Rectangle {
                         WbButton { variant: "danger"; text: Tr.s("FaultReportToGithub"); clicked => { AppStore.open-bug-report(); } }
                     }
                     Note { text: Tr.s("AboutBuiltWith"); }
+                }
+            }
+
+            // Slint Royalty-Free Desktop licence: attribution must be shown in the application.
+            WbPanel {
+                HorizontalLayout {
+                    padding: Scale.px(12px);
+                    alignment: start;
+                    AboutSlint { max-height: Scale.px(140px); }
                 }
             }
 

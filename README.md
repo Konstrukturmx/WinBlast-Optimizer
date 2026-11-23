@@ -53,21 +53,14 @@
 
 Derived from the formal [**WinBlast0 Architecture Guide**](DEVELOPMENT.md), WinBlast Optimizer is engineered with four fundamental pillars:
 
-### 1. ⚡ Next-Gen Slint 1.19 Declarative GUI Engine & Dual-Build Architecture
-* **Slint 1.19 Declarative UI (`ui-slint`)**: Replaces legacy imperative widgets with Slint 1.19 declarative components (`slint-project.json`, Edition `1.19`).
-* **Hardware-Accelerated Rasterization**: Backed by `renderer-femtovg-wgpu` (GPU wgpu pipeline) with automatic zero-glitch fallback to `renderer-software` on virtual machines or headless hosts.
-* **26 Full Feature Views**: 1:1 parity migration covering Dashboard, 230-Tweak Matrix, Deep Junk Cleaner, AppX Debloater, GPU Silicon Tuning, CPU Core Parking, DPC Latency, SMART Disk Health, and more.
-* **Strangler-Fig Dual-Build**: Default build targets the ultra-modern Slint engine (`cargo run`), while retaining the legacy Rune engine via `--ui=rune` for 100% backwards compatibility.
-* **Accessible & Scalable**: 3-layer DPI scaling ramp (`Scale.px(...)`, 0.75x to 2.0x zoom), OKLCH semantic theme tokens with backdrop-blur glass elevation, and screen reader accessibility.
-* **License Compliance**: Includes official Slint Royalty-Free Desktop License attribution (`AboutSlint` in Support & About view).
-* **Legacy Engine Support**: Still supports the custom immediate-mode Rune GUI with hardware V-Sync synchronization and 5 theme styles when launching with `--ui=rune`:
-  * **💎 Glassy (Mica / Acrylic)**: Translucent frosted glass fills, luminous glow borders (`border_accent`), 12px pill radiuses, and bouncy spring motion.
-  * **📐 Minimalistic (Flat Swiss)**: Razor-sharp 1px monochromatic borders, zero elevation, 0px card radius, and instantaneous transitions.
-  * **🖥️ Classic (Win2000 Retro)**: Workstation aesthetic with 2px beveled borders, tactile snap animations, and high functional density.
-  * **⚡ Compact (High Density)**: Micro-padding (8px), 4px corners, 180px sidebar, maximized information per square inch.
-  * **🎨 Materialistic (Material Design 3)**: Soft 18px rounded cards, 24px pill buttons, tonal surfaces, and smooth decelerated spring motion.
+### 1. ⚡ Slint 1.19 Desktop UI (v1.7.0)
+* **Slint-only UI**: The legacy Rune engine was removed in 1.7.0. All 26 views are Slint 1.19 components bound to the Rust core through per-view binders; system changes go through the `SystemBackend` trait.
+* **GPU rendering with software fallback**: `renderer-femtovg-wgpu`, with `renderer-software` available for machines without a usable GPU.
+* **Responsive & scalable**: three width tiers (compact / medium / wide), zoom from 0.75× to 2.0× (Ctrl + / − / 0), live language switching (8 languages).
+* **Licence compliance**: Slint Royalty-Free Desktop licence attribution is shown in Support & About; WinBlast0 itself is MIT.
+* **5 theme styles**: Glassy, Minimalistic, Classic, Compact and Materialistic.
 * **6 WCAG AA Color Schemes**: *Cyber Indigo*, *Midnight Stealth*, *Emerald Mint*, *Crimson Sunset*, *Solar Amber*, and *Arctic Aurora* with Dark and Light mode support.
-* **Permanent High-Resolution Icon**: Embedded `winblast.ico` with full PE Version Information (`Konstrukturmx`, `WinBlast Optimizer`, version `1.6.1.0`).
+* **Permanent High-Resolution Icon**: Embedded `winblast.ico` with full PE Version Information (`Konstrukturmx`, `WinBlast Optimizer`, version `1.7.0.0`).
 * **Themed Always-On Scroll Bars**: Every overflowing viewport renders a custom palette-driven scroll bar (6 pt muted thumb at rest, 9 pt theme-accent thumb on hover/drag) with dedicated `14.0pt` to `16.0pt` right gutters preventing thumb-button collisions.
 
 ### 2. ⚡ Milestone 2 Cryptographic Platform, Fuzzing & Hardware Engine (v1.6.0)
@@ -174,7 +167,7 @@ The optimizer features **230 validated declarative optimizations** indexed acros
 
 Because WinBlast Optimizer adjusts low-level system settings, Windows Registry parameters, and hardware power states, transparency and security are paramount.
 
-* **Target Binary**: `winblast0.exe` (v1.6.1)
+* **Target Binary**: `winblast0.exe` (v1.7.0)
 * **Digital Signature**: Microsoft Authenticode signed by `Konstrukturmx` with DigiCert RFC 3161 SHA-256 timestamping
 * **File Size**: `32,348,160` bytes (30.85 MB)
 * **SHA-256 Checksum**:
