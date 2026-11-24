@@ -13,4 +13,8 @@ export global Fx {
     in-out property <bool> entering: false;
     in-out property <int> stagger: 0;
     in-out property <int> view-serial: 0;
+    // True when a hardware GPU drives Slint's default femtovg-wgpu renderer (set by Rust at
+    // startup from a DXGI probe). Enables the 3D depth layer: pointer-tracked light, parallax
+    // shadows and lift. Components combine it with !Theme.reduced-motion.
+    in-out property <bool> gpu: false;
 }

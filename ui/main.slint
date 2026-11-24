@@ -82,8 +82,10 @@ export component MainWindow inherits Window {
     pure function compute-tier() -> int {
         return root.width / Scale.factor < 680px ? 0 : root.width / Scale.factor < 1020px ? 1 : 2;
     }
-    init => { root.tier = root.compute-tier(); root.wide-header = root.width / Scale.factor >= 1360px; }
-    changed width => { root.tier = root.compute-tier(); root.wide-header = root.width / Scale.factor >= 1360px; }
+    // Logical window width for the top bar's progressive disclosure (see AppTopBar.avail).
+    in-out property <float> header-w: 1280;
+    init => { root.tier = root.compute-tier(); root.wide-header = root.width / Scale.factor >= 1600px; root.header-w = root.width / Scale.factor / 1px; }
+    changed width => { root.tier = root.compute-tier(); root.wide-header = root.width / Scale.factor >= 1600px; root.header-w = root.width / Scale.factor / 1px; }
 
     forward-focus: keys;
     keys := FocusScope {
@@ -114,7 +116,7 @@ export component MainWindow inherits Window {
 
         VerticalLayout {
             spacing: 0;
-            topbar := AppTopBar { tier: root.tier; roomy: root.wide-header; }
+            topbar := AppTopBar { tier: root.tier; roomy: root.wide-header; avail: root.header-w; }
             HorizontalLayout {
                 spacing: 0;
                 vertical-stretch: 1;

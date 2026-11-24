@@ -88,7 +88,7 @@ export component DriverBiosView inherits Rectangle {
                                     Text { text: d.versions; font-size: Scale.font-2xs; color: Theme.text-secondary; }
                                     Text { text: d.date; font-size: Scale.font-2xs; color: Theme.text-muted; }
                                 }
-                                WbPill { text: d.whql ? "✔ WHQL" : "Unverified"; tone: d.whql ? "success" : "muted"; }
+                                WbPill { text: d.whql ? "✓ WHQL" : "Unverified"; tone: d.whql ? "success" : "muted"; }
                                 WbPill { text: d.badge; tone: d.badge-tone; }
                                 WbChip { text: Tr.s("DriverBackupBtn"); enabled: !d.busy && !DriverStore.any-in-flight; clicked => { DriverStore.backup(d.id); } }
                                 WbChip {

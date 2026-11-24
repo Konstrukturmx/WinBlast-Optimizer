@@ -1,6 +1,7 @@
 //! Dynamic theming system for WinBlast0 (framework-agnostic palette model consumed by the Slint bridge).
 //!
-//! Provides Light & Dark modes paired with 4 distinct WCAG AA compliant color schemes:
+//! Provides Light & Dark modes x 5 layout styles paired with 4 OKLCH-designed color schemes
+//! (every combination is unit-tested against WCAG 2.1 AA):
 //! - Cyber Indigo (Default)
 //! - Midnight Stealth
 //! - Emerald Mint
@@ -258,22 +259,32 @@ pub enum ColorScheme {
     #[default]
     CyberIndigo,
     MidnightStealth,
+    /// `ArcticAurora` (removed in 1.7.0) loads as its nearest replacement.
+    #[serde(alias = "ArcticAurora")]
     EmeraldMint,
+    /// `SolarAmber` (removed in 1.7.0) loads as its nearest replacement.
+    #[serde(alias = "SolarAmber")]
     CrimsonSunset,
-    SolarAmber,
-    ArcticAurora,
 }
 
 impl ColorScheme {
-    #[allow(dead_code)]
-    pub const ALL: [ColorScheme; 6] = [
+    pub const ALL: [ColorScheme; 4] = [
         ColorScheme::CyberIndigo,
         ColorScheme::MidnightStealth,
         ColorScheme::EmeraldMint,
         ColorScheme::CrimsonSunset,
-        ColorScheme::SolarAmber,
-        ColorScheme::ArcticAurora,
     ];
+
+    /// Colour-theory recipe: indigo (split-complementary magenta data hue), graphite (near-mono
+    /// steel), emerald-teal (analogous cyan) and raspberry rose (analogous sunset orange).
+    const fn spec(self) -> SchemeSpec {
+        match self {
+            ColorScheme::CyberIndigo => SchemeSpec { hue: 268.0, accent_chroma: 0.16, tint: 0.018, hue2: 330.0, accent_l_dark: 0.835, accent_l_light: 0.475 },
+            ColorScheme::MidnightStealth => SchemeSpec { hue: 245.0, accent_chroma: 0.045, tint: 0.006, hue2: 200.0, accent_l_dark: 0.815, accent_l_light: 0.465 },
+            ColorScheme::EmeraldMint => SchemeSpec { hue: 172.0, accent_chroma: 0.13, tint: 0.014, hue2: 220.0, accent_l_dark: 0.80, accent_l_light: 0.435 },
+            ColorScheme::CrimsonSunset => SchemeSpec { hue: 355.0, accent_chroma: 0.16, tint: 0.014, hue2: 45.0, accent_l_dark: 0.87, accent_l_light: 0.485 },
+        }
+    }
 
     pub const fn text_key(self) -> crate::core::i18n::TextKey {
         match self {
@@ -281,8 +292,6 @@ impl ColorScheme {
             ColorScheme::MidnightStealth => crate::core::i18n::TextKey::ColorSchemeMidnight,
             ColorScheme::EmeraldMint => crate::core::i18n::TextKey::ColorSchemeEmerald,
             ColorScheme::CrimsonSunset => crate::core::i18n::TextKey::ColorSchemeCrimson,
-            ColorScheme::SolarAmber => crate::core::i18n::TextKey::ColorSchemeSolar,
-            ColorScheme::ArcticAurora => crate::core::i18n::TextKey::ColorSchemeArctic,
         }
     }
 
@@ -292,8 +301,6 @@ impl ColorScheme {
             ColorScheme::MidnightStealth => "⚫ Midnight Stealth",
             ColorScheme::EmeraldMint => "🟢 Emerald Mint",
             ColorScheme::CrimsonSunset => "🔴 Crimson Sunset",
-            ColorScheme::SolarAmber => "🟡 Solar Amber",
-            ColorScheme::ArcticAurora => "❄️ Arctic Aurora",
         }
     }
 }
@@ -303,6 +310,7 @@ impl ColorScheme {
 #[derive(Debug, Clone)]
 pub struct ThemePalette {
     pub theme_style: UiThemeStyle,
+    pub scheme: ColorScheme,
     pub card_radius: f32,
     pub btn_radius: f32,
     pub input_radius: f32,
@@ -323,6 +331,10 @@ pub struct ThemePalette {
     pub accent: Color,
     pub accent_hover: Color,
     pub accent_press: Color,
+    /// Label colour on accent fills (dark on the light dark-mode accents, white in light mode).
+    pub text_on_accent: Color,
+    /// Label colour on danger fills.
+    pub text_on_danger: Color,
 
     pub btn_secondary: Color,
     pub btn_secondary_hover: Color,
@@ -345,472 +357,149 @@ pub struct ThemePalette {
 }
 
 impl ThemePalette {
-    /// Card fill color customized for the active UI theme style (acrylic translucent, flat Swiss, retro beveled, compact, or tonal Material 3).
+    /// Card fill for `style` in this palette's mode and scheme (style studio previews).
     pub fn card_fill_styled(&self, style: UiThemeStyle) -> Color {
         if style == self.theme_style {
             return self.bg_card;
         }
-        match style {
-            UiThemeStyle::Glassy => {
-                if self.is_dark {
-                    rgba(0.032, 0.040, 0.062, 0.70)
-                } else {
-                    rgba(1.0, 1.0, 1.0, 0.78)
-                }
-            }
-            UiThemeStyle::Minimalistic => {
-                if self.is_dark {
-                    rgb(0.022, 0.022, 0.026)
-                } else {
-                    rgb(1.0, 1.0, 1.0)
-                }
-            }
-            UiThemeStyle::Classic => {
-                if self.is_dark {
-                    rgb(0.065, 0.074, 0.095)
-                } else {
-                    rgb(0.93, 0.94, 0.96)
-                }
-            }
-            UiThemeStyle::Compact => {
-                if self.is_dark {
-                    rgb(0.032, 0.040, 0.058)
-                } else {
-                    rgb(1.0, 1.0, 1.0)
-                }
-            }
-            UiThemeStyle::Materialistic => {
-                if self.is_dark {
-                    rgb(0.044, 0.050, 0.070)
-                } else {
-                    rgb(0.99, 1.0, 1.0)
-                }
-            }
-        }
+        Self::new(self.mode(), self.scheme, style).bg_card
     }
 
-    /// Border stroke color customized for the active UI theme style.
+    /// Card border for `style` in this palette's mode and scheme (style studio previews).
     pub fn border_styled(&self, style: UiThemeStyle) -> Color {
         if style == self.theme_style {
             return self.border;
         }
-        match style {
-            UiThemeStyle::Glassy => self.accent.alpha(0.30),
-            UiThemeStyle::Minimalistic => {
-                if self.is_dark {
-                    rgba(1.0, 1.0, 1.0, 0.12)
-                } else {
-                    rgba(0.0, 0.0, 0.0, 0.14)
-                }
-            }
-            UiThemeStyle::Classic => {
-                if self.is_dark {
-                    rgba(1.0, 1.0, 1.0, 0.24)
-                } else {
-                    rgba(0.0, 0.0, 0.0, 0.35)
-                }
-            }
-            UiThemeStyle::Compact => self.border,
-            UiThemeStyle::Materialistic => self.accent.alpha(0.22),
+        Self::new(self.mode(), self.scheme, style).border
+    }
+
+    /// Light or dark mode this palette was built for.
+    pub fn mode(&self) -> ThemeMode {
+        if self.is_dark {
+            ThemeMode::Dark
+        } else {
+            ThemeMode::Light
         }
     }
 
-    /// Generate a theme palette given mode, scheme, and layout/geometry style, tuned for WCAG 2.1 AA compliance.
+    /// Generate a theme palette for mode x scheme x style. Every combination is verified against
+    /// WCAG 2.1 AA (4.5:1 text, 3:1 UI graphics) by the unit tests below.
     pub fn new(mode: ThemeMode, scheme: ColorScheme, style: UiThemeStyle) -> Self {
-        match mode {
-            ThemeMode::Dark => Self::build_dark(scheme, style),
-            ThemeMode::Light => Self::build_light(scheme, style),
+        let dark = mode == ThemeMode::Dark;
+        let spec = scheme.spec();
+        let surf = SurfaceSpec::of(dark, style);
+        let h = spec.hue;
+        let tint = spec.tint * surf.tint;
+        // Neutral surfaces carry a faint tint of the scheme hue (pure white stays untinted).
+        let surface = |l: f32, a: f32| {
+            let c = if l > 0.985 { 0.0 } else { tint };
+            oklch(l, c, h).alpha(a)
+        };
+        let hover_alpha = (surf.card_alpha + 0.1).min(1.0);
+        let classic = style == UiThemeStyle::Classic;
+
+        let (accent, accent_hover, accent_press, text_on_accent, text_on_danger);
+        let (text_primary, text_secondary, text_muted);
+        let (success, warning, danger);
+        let (btn_secondary, btn_secondary_hover, btn_secondary_press);
+        let (sparkline_cpu, sparkline_ram, sparkline_bg, neutral_badge, border, border_hover);
+        if dark {
+            // Tonal dark theme: light, desaturated accents carry dark labels (Material 3 "on" colours).
+            let l = spec.accent_l_dark;
+            accent = oklch(l, spec.accent_chroma, h);
+            accent_hover = oklch(l + 0.05, spec.accent_chroma * 0.9, h);
+            accent_press = oklch(l - 0.07, spec.accent_chroma, h);
+            text_on_accent = oklch(0.18, 0.02, h);
+            text_on_danger = oklch(0.18, 0.02, 25.0);
+            text_primary = oklch(0.97, 0.004, h);
+            text_secondary = oklch(0.86, 0.008, h);
+            text_muted = oklch(0.74, 0.012, h);
+            success = oklch(0.80, 0.14, HUE_SUCCESS);
+            warning = oklch(0.82, 0.14, 80.0);
+            danger = oklch(0.865, 0.14, 22.0);
+            btn_secondary = surface(surf.card + 0.06, 1.0);
+            btn_secondary_hover = surface(surf.card + 0.10, 1.0);
+            btn_secondary_press = surface(surf.card + 0.02, 1.0);
+            sparkline_cpu = oklch(0.76, 0.13, h);
+            sparkline_ram = oklch(0.76, 0.13, spec.hue2);
+            sparkline_bg = rgba(1.0, 1.0, 1.0, 0.04);
+            neutral_badge = oklch(0.60, 0.01, h);
+            border = rgba(1.0, 1.0, 1.0, if classic { 0.22 } else { 0.10 });
+            border_hover = rgba(1.0, 1.0, 1.0, if classic { 0.40 } else { 0.24 });
+        } else {
+            let l = spec.accent_l_light;
+            accent = oklch(l, spec.accent_chroma, h);
+            accent_hover = oklch(l + 0.05, spec.accent_chroma, h);
+            accent_press = oklch(l - 0.06, spec.accent_chroma, h);
+            text_on_accent = rgb(1.0, 1.0, 1.0);
+            text_on_danger = rgb(1.0, 1.0, 1.0);
+            text_primary = oklch(0.22, 0.02, h);
+            text_secondary = oklch(0.36, 0.02, h);
+            text_muted = oklch(0.45, 0.02, h);
+            success = oklch(0.45, 0.12, HUE_SUCCESS);
+            warning = oklch(0.475, 0.12, 60.0);
+            danger = oklch(0.475, 0.18, 25.0);
+            btn_secondary = surface(surf.card - 0.05, 1.0);
+            btn_secondary_hover = surface(surf.card - 0.08, 1.0);
+            btn_secondary_press = surface(surf.card - 0.11, 1.0);
+            sparkline_cpu = oklch(0.52, 0.15, h);
+            sparkline_ram = oklch(0.52, 0.15, spec.hue2);
+            sparkline_bg = rgba(0.0, 0.0, 0.0, 0.04);
+            neutral_badge = oklch(0.80, 0.01, h);
+            border = rgba(0.0, 0.0, 0.0, if classic { 0.28 } else { 0.12 });
+            border_hover = rgba(0.0, 0.0, 0.0, if classic { 0.50 } else { 0.28 });
+        }
+
+        Self {
+            theme_style: style,
+            scheme,
+            card_radius: style.card_radius(),
+            btn_radius: style.btn_radius(),
+            input_radius: style.input_radius(),
+            badge_radius: style.badge_radius(),
+            card_padding: style.card_padding(),
+            border_width: style.border_width(),
+            sidebar_width: style.sidebar_width(),
+            motion: style.motion(),
+
+            bg_primary: surface(surf.bg, 1.0),
+            bg_sidebar: surface(surf.sidebar, surf.sidebar_alpha),
+            bg_card: surface(surf.card, surf.card_alpha),
+            bg_card_hover: surface(surf.hover, hover_alpha),
+            border,
+            border_hover,
+            border_accent: accent,
+
+            accent,
+            accent_hover,
+            accent_press,
+            text_on_accent,
+            text_on_danger,
+
+            btn_secondary,
+            btn_secondary_hover,
+            btn_secondary_press,
+
+            sparkline_cpu,
+            sparkline_ram,
+            sparkline_bg,
+
+            text_primary,
+            text_secondary,
+            text_muted,
+
+            success,
+            warning,
+            danger,
+            neutral_badge,
+
+            is_dark: dark,
         }
     }
 
     /// Fallback constructor with default theme style.
     pub fn default_for(mode: ThemeMode, scheme: ColorScheme) -> Self {
         Self::new(mode, scheme, UiThemeStyle::default())
-    }
-
-    fn build_dark(scheme: ColorScheme, style: UiThemeStyle) -> Self {
-        let (accent, accent_hover, accent_press) = match scheme {
-            ColorScheme::CyberIndigo => (
-                rgb(0.20, 0.42, 0.95), // #336BFF
-                rgb(0.28, 0.52, 1.00),
-                rgb(0.14, 0.32, 0.80),
-            ),
-            ColorScheme::MidnightStealth => (
-                rgb(0.40, 0.46, 0.58), // Slate 500
-                rgb(0.52, 0.58, 0.70),
-                rgb(0.30, 0.35, 0.45),
-            ),
-            ColorScheme::EmeraldMint => (
-                rgb(0.03, 0.54, 0.37), // High-contrast Emerald for WCAG AA button labels
-                rgb(0.05, 0.64, 0.44),
-                rgb(0.02, 0.42, 0.28),
-            ),
-            ColorScheme::CrimsonSunset => (
-                rgb(0.82, 0.14, 0.27), // Accessible Rose 600 (>= 4.8:1 contrast with white)
-                rgb(0.92, 0.22, 0.35),
-                rgb(0.68, 0.10, 0.21),
-            ),
-            ColorScheme::SolarAmber => (
-                rgb(0.96, 0.62, 0.04), // Amber 500 #F59E0B
-                rgb(0.98, 0.72, 0.15),
-                rgb(0.82, 0.50, 0.02),
-            ),
-            ColorScheme::ArcticAurora => (
-                rgb(0.00, 0.831, 0.667), // #00d4aa
-                rgb(0.12, 0.92, 0.76),
-                rgb(0.00, 0.68, 0.54),
-            ),
-        };
-
-        let (
-            bg_primary,
-            bg_sidebar,
-            bg_card,
-            bg_card_hover,
-            border,
-            border_hover,
-            border_accent,
-            btn_secondary,
-            btn_secondary_hover,
-            btn_secondary_press,
-        ) = match style {
-            UiThemeStyle::Glassy => (
-                rgb(0.012, 0.015, 0.024),
-                rgba(0.018, 0.022, 0.035, 0.88),
-                rgba(0.032, 0.040, 0.062, 0.70),
-                rgba(0.052, 0.066, 0.098, 0.82),
-                accent.alpha(0.30),
-                accent.alpha(0.60),
-                accent.alpha(0.80),
-                rgba(0.06, 0.08, 0.12, 0.75),
-                rgba(0.10, 0.13, 0.19, 0.85),
-                rgba(0.04, 0.05, 0.08, 0.90),
-            ),
-            UiThemeStyle::Minimalistic => (
-                rgb(0.008, 0.008, 0.010),
-                rgb(0.014, 0.014, 0.016),
-                rgb(0.022, 0.022, 0.026),
-                rgb(0.035, 0.035, 0.042),
-                rgba(1.0, 1.0, 1.0, 0.12),
-                rgba(1.0, 1.0, 1.0, 0.35),
-                accent,
-                rgb(0.04, 0.04, 0.05),
-                rgb(0.07, 0.07, 0.08),
-                rgb(0.02, 0.02, 0.03),
-            ),
-            UiThemeStyle::Classic => (
-                rgb(0.040, 0.045, 0.058),
-                rgb(0.050, 0.058, 0.075),
-                rgb(0.065, 0.074, 0.095),
-                rgb(0.085, 0.096, 0.122),
-                rgba(1.0, 1.0, 1.0, 0.24),
-                rgba(1.0, 1.0, 1.0, 0.48),
-                accent,
-                rgb(0.08, 0.09, 0.12),
-                rgb(0.12, 0.14, 0.18),
-                rgb(0.05, 0.06, 0.08),
-            ),
-            UiThemeStyle::Compact => (
-                rgb(0.016, 0.019, 0.028),
-                rgb(0.022, 0.026, 0.038),
-                rgb(0.032, 0.040, 0.058),
-                rgb(0.052, 0.062, 0.088),
-                rgba(1.0, 1.0, 1.0, 0.18),
-                rgba(1.0, 1.0, 1.0, 0.35),
-                accent.alpha(0.60),
-                rgb(0.065, 0.078, 0.110),
-                rgb(0.095, 0.115, 0.165),
-                rgb(0.048, 0.058, 0.082),
-            ),
-            UiThemeStyle::Materialistic => (
-                rgb(0.024, 0.027, 0.038),
-                rgb(0.032, 0.037, 0.052),
-                rgb(0.044, 0.050, 0.070),
-                rgb(0.062, 0.070, 0.098),
-                accent.alpha(0.22),
-                accent.alpha(0.44),
-                accent.alpha(0.70),
-                rgb(0.07, 0.085, 0.12),
-                rgb(0.10, 0.12, 0.17),
-                rgb(0.05, 0.06, 0.09),
-            ),
-        };
-
-        let (bg_primary, bg_card, bg_sidebar, bg_card_hover) =
-            if scheme == ColorScheme::ArcticAurora {
-                (
-                    rgb(0.039, 0.086, 0.157), // #0a1628
-                    rgb(0.071, 0.122, 0.200), // #121f33
-                    rgba(0.051, 0.102, 0.180, 0.90),
-                    rgb(0.102, 0.165, 0.260),
-                )
-            } else {
-                (bg_primary, bg_card, bg_sidebar, bg_card_hover)
-            };
-
-        let (text_primary, text_secondary, text_muted) = if scheme == ColorScheme::ArcticAurora {
-            (
-                rgb(0.878, 0.941, 1.0), // #e0f0ff
-                rgb(0.70, 0.82, 0.92),
-                rgb(0.48, 0.60, 0.72),
-            )
-        } else if style == UiThemeStyle::Compact {
-            // Enhanced contrast for Compact high-density mode
-            (
-                rgb(0.98, 0.99, 1.00),
-                rgb(0.82, 0.85, 0.90),
-                rgb(0.62, 0.65, 0.72),
-            )
-        } else {
-            (
-                rgb(0.95, 0.96, 0.98),
-                rgb(0.70, 0.72, 0.76),
-                rgb(0.48, 0.50, 0.55),
-            )
-        };
-
-        Self {
-            theme_style: style,
-            card_radius: style.card_radius(),
-            btn_radius: style.btn_radius(),
-            input_radius: style.input_radius(),
-            badge_radius: style.badge_radius(),
-            card_padding: style.card_padding(),
-            border_width: style.border_width(),
-            sidebar_width: style.sidebar_width(),
-            motion: style.motion(),
-
-            bg_primary,
-            bg_sidebar,
-            bg_card,
-            bg_card_hover,
-            border,
-            border_hover,
-            border_accent,
-
-            accent,
-            accent_hover,
-            accent_press,
-
-            btn_secondary,
-            btn_secondary_hover,
-            btn_secondary_press,
-
-            sparkline_cpu: if scheme == ColorScheme::ArcticAurora {
-                rgb(0.00, 0.831, 0.667)
-            } else {
-                rgb(0.20, 0.70, 0.95)
-            },
-            sparkline_ram: if scheme == ColorScheme::ArcticAurora {
-                rgb(0.40, 0.85, 0.95)
-            } else {
-                rgb(0.85, 0.45, 0.95)
-            },
-            sparkline_bg: rgba(1.0, 1.0, 1.0, 0.04),
-
-            text_primary,
-            text_secondary,
-            text_muted,
-
-            success: rgb(0.09, 0.56, 0.30),
-            warning: rgb(0.95, 0.65, 0.15),
-            danger: rgb(0.84, 0.18, 0.22),
-            neutral_badge: rgb(0.25, 0.27, 0.32),
-
-            is_dark: true,
-        }
-    }
-
-    fn build_light(scheme: ColorScheme, style: UiThemeStyle) -> Self {
-        let (accent, accent_hover, accent_press) = match scheme {
-            ColorScheme::CyberIndigo => (
-                rgb(0.11, 0.31, 0.85), // Deep Blue #1D4ED8 (WCAG AAA on white)
-                rgb(0.15, 0.38, 0.95),
-                rgb(0.08, 0.22, 0.68),
-            ),
-            ColorScheme::MidnightStealth => (
-                rgb(0.20, 0.25, 0.33), // Slate 700 #334155
-                rgb(0.28, 0.34, 0.44),
-                rgb(0.12, 0.16, 0.22),
-            ),
-            ColorScheme::EmeraldMint => (
-                rgb(0.02, 0.47, 0.34), // Emerald 700 #047857 (>5:1 contrast)
-                rgb(0.03, 0.58, 0.42),
-                rgb(0.01, 0.35, 0.25),
-            ),
-            ColorScheme::CrimsonSunset => (
-                rgb(0.75, 0.07, 0.24), // Rose 700 #BE123C (>6:1 contrast)
-                rgb(0.88, 0.12, 0.30),
-                rgb(0.58, 0.04, 0.18),
-            ),
-            ColorScheme::SolarAmber => (
-                rgb(0.85, 0.45, 0.02),
-                rgb(0.95, 0.55, 0.10),
-                rgb(0.70, 0.35, 0.01),
-            ),
-            ColorScheme::ArcticAurora => (
-                rgb(0.00, 0.659, 0.541), // #00a88a
-                rgb(0.05, 0.76, 0.62),
-                rgb(0.00, 0.52, 0.42),
-            ),
-        };
-
-        let (
-            bg_primary,
-            bg_sidebar,
-            bg_card,
-            bg_card_hover,
-            border,
-            border_hover,
-            border_accent,
-            btn_secondary,
-            btn_secondary_hover,
-            btn_secondary_press,
-        ) = match style {
-            UiThemeStyle::Glassy => (
-                rgb(0.95, 0.96, 0.98),
-                rgba(0.93, 0.95, 0.97, 0.88),
-                rgba(1.0, 1.0, 1.0, 0.78),
-                rgba(0.94, 0.96, 1.0, 0.90),
-                accent.alpha(0.28),
-                accent.alpha(0.55),
-                accent.alpha(0.75),
-                rgba(0.90, 0.93, 0.97, 0.85),
-                rgba(0.84, 0.88, 0.93, 0.92),
-                rgba(0.78, 0.82, 0.88, 0.95),
-            ),
-            UiThemeStyle::Minimalistic => (
-                rgb(0.99, 0.99, 1.00),
-                rgb(0.96, 0.96, 0.97),
-                rgb(1.0, 1.0, 1.0),
-                rgb(0.93, 0.93, 0.95),
-                rgba(0.0, 0.0, 0.0, 0.14),
-                rgba(0.0, 0.0, 0.0, 0.40),
-                accent,
-                rgb(0.92, 0.92, 0.94),
-                rgb(0.85, 0.85, 0.88),
-                rgb(0.78, 0.78, 0.82),
-            ),
-            UiThemeStyle::Classic => (
-                rgb(0.87, 0.88, 0.90),
-                rgb(0.83, 0.84, 0.87),
-                rgb(0.93, 0.94, 0.96),
-                rgb(0.85, 0.87, 0.90),
-                rgba(0.0, 0.0, 0.0, 0.35),
-                rgba(0.0, 0.0, 0.0, 0.65),
-                accent,
-                rgb(0.82, 0.83, 0.86),
-                rgb(0.75, 0.77, 0.80),
-                rgb(0.68, 0.70, 0.74),
-            ),
-            UiThemeStyle::Compact => (
-                rgb(0.96, 0.97, 0.98),
-                rgb(0.92, 0.94, 0.96),
-                rgb(1.0, 1.0, 1.0),
-                rgb(0.90, 0.93, 0.96),
-                rgba(0.0, 0.0, 0.0, 0.20),
-                rgba(0.0, 0.0, 0.0, 0.38),
-                accent.alpha(0.55),
-                rgb(0.89, 0.92, 0.95),
-                rgb(0.83, 0.86, 0.90),
-                rgb(0.76, 0.80, 0.85),
-            ),
-            UiThemeStyle::Materialistic => (
-                rgb(0.96, 0.97, 1.00),
-                rgb(0.92, 0.94, 0.98),
-                rgb(0.99, 1.0, 1.0),
-                rgb(0.91, 0.93, 0.98),
-                accent.alpha(0.20),
-                accent.alpha(0.42),
-                accent.alpha(0.65),
-                rgb(0.90, 0.92, 0.97),
-                rgb(0.84, 0.87, 0.93),
-                rgb(0.77, 0.81, 0.88),
-            ),
-        };
-
-        let (bg_primary, bg_card, bg_sidebar, bg_card_hover) =
-            if scheme == ColorScheme::ArcticAurora {
-                (
-                    rgb(0.941, 0.973, 1.0), // #f0f8ff
-                    rgb(1.0, 1.0, 1.0),     // #ffffff
-                    rgba(0.92, 0.96, 0.99, 0.92),
-                    rgb(0.91, 0.95, 0.98),
-                )
-            } else {
-                (bg_primary, bg_card, bg_sidebar, bg_card_hover)
-            };
-
-        let (text_primary, text_secondary, text_muted) = if scheme == ColorScheme::ArcticAurora {
-            (
-                rgb(0.102, 0.165, 0.227), // #1a2a3a
-                rgb(0.20, 0.30, 0.40),
-                rgb(0.32, 0.42, 0.52),
-            )
-        } else if style == UiThemeStyle::Compact {
-            (
-                rgb(0.03, 0.05, 0.10),
-                rgb(0.12, 0.16, 0.22),
-                rgb(0.22, 0.26, 0.34),
-            )
-        } else {
-            (
-                rgb(0.06, 0.09, 0.16),
-                rgb(0.20, 0.25, 0.33),
-                rgb(0.31, 0.37, 0.46),
-            )
-        };
-
-        Self {
-            theme_style: style,
-            card_radius: style.card_radius(),
-            btn_radius: style.btn_radius(),
-            input_radius: style.input_radius(),
-            badge_radius: style.badge_radius(),
-            card_padding: style.card_padding(),
-            border_width: style.border_width(),
-            sidebar_width: style.sidebar_width(),
-            motion: style.motion(),
-
-            bg_primary,
-            bg_sidebar,
-            bg_card,
-            bg_card_hover,
-            border,
-            border_hover,
-            border_accent,
-
-            accent,
-            accent_hover,
-            accent_press,
-
-            btn_secondary,
-            btn_secondary_hover,
-            btn_secondary_press,
-
-            sparkline_cpu: if scheme == ColorScheme::ArcticAurora {
-                rgb(0.00, 0.659, 0.541)
-            } else {
-                rgb(0.10, 0.55, 0.85)
-            },
-            sparkline_ram: if scheme == ColorScheme::ArcticAurora {
-                rgb(0.20, 0.60, 0.80)
-            } else {
-                rgb(0.65, 0.25, 0.80)
-            },
-            sparkline_bg: rgba(0.0, 0.0, 0.0, 0.04),
-
-            text_primary,
-            text_secondary,
-            text_muted,
-
-            success: rgb(0.02, 0.47, 0.34),
-            warning: rgb(0.70, 0.33, 0.04), // Dark Amber #B45309
-            danger: rgb(0.73, 0.11, 0.11),  // Dark Red #B91C1C
-            neutral_badge: rgb(0.88, 0.90, 0.94),
-
-            is_dark: false,
-        }
     }
 }
 
@@ -866,3 +555,190 @@ pub const WARNING: Color = rgb(0.95, 0.65, 0.15);
 pub const DANGER: Color = rgb(0.92, 0.24, 0.28);
 #[allow(dead_code)]
 pub const NEUTRAL_BADGE: Color = rgb(0.25, 0.27, 0.32);
+
+/// Hue (OKLCH degrees) of the success role, kept clear of every scheme accent.
+const HUE_SUCCESS: f32 = 145.0;
+
+/// Colour-theory parameters of one scheme. Accent lightness per mode was solved so that every
+/// style passes WCAG AA (see the tests at the end of this file).
+struct SchemeSpec {
+    hue: f32,
+    accent_chroma: f32,
+    /// Chroma of the hue tint on neutral surfaces.
+    tint: f32,
+    /// Second data-series hue (split-complementary / analogous partner of `hue`).
+    hue2: f32,
+    accent_l_dark: f32,
+    accent_l_light: f32,
+}
+
+/// OKLab lightness / alpha of the surfaces for one style in one mode.
+struct SurfaceSpec {
+    bg: f32,
+    sidebar: f32,
+    card: f32,
+    hover: f32,
+    tint: f32,
+    card_alpha: f32,
+    sidebar_alpha: f32,
+}
+
+impl SurfaceSpec {
+    const fn of(dark: bool, style: UiThemeStyle) -> Self {
+        const fn s(bg: f32, sidebar: f32, card: f32, hover: f32, tint: f32, card_alpha: f32, sidebar_alpha: f32) -> SurfaceSpec {
+            SurfaceSpec { bg, sidebar, card, hover, tint, card_alpha, sidebar_alpha }
+        }
+        match (dark, style) {
+            (true, UiThemeStyle::Glassy) => s(0.160, 0.185, 0.215, 0.240, 1.2, 0.80, 0.92),
+            (true, UiThemeStyle::Minimalistic) => s(0.140, 0.158, 0.180, 0.205, 0.35, 1.0, 1.0),
+            (true, UiThemeStyle::Classic) => s(0.185, 0.205, 0.225, 0.250, 0.6, 1.0, 1.0),
+            (true, UiThemeStyle::Compact) => s(0.155, 0.178, 0.205, 0.230, 0.9, 1.0, 1.0),
+            (true, UiThemeStyle::Materialistic) => s(0.168, 0.192, 0.222, 0.248, 2.0, 1.0, 1.0),
+            (false, UiThemeStyle::Glassy) => s(0.955, 0.935, 1.0, 0.965, 1.0, 0.80, 0.90),
+            (false, UiThemeStyle::Minimalistic) => s(0.990, 0.970, 1.0, 0.955, 0.3, 1.0, 1.0),
+            (false, UiThemeStyle::Classic) => s(0.930, 0.915, 0.970, 0.945, 0.5, 1.0, 1.0),
+            (false, UiThemeStyle::Compact) => s(0.970, 0.945, 1.0, 0.955, 0.8, 1.0, 1.0),
+            (false, UiThemeStyle::Materialistic) => s(0.965, 0.940, 0.985, 0.950, 1.8, 1.0, 1.0),
+        }
+    }
+}
+
+/// OKLCH (lightness 0..1, chroma, hue in degrees) to linear sRGB, clamped into gamut.
+pub fn oklch(l: f32, c: f32, hue_deg: f32) -> Color {
+    let h = hue_deg.to_radians();
+    let (a, b) = (c * h.cos(), c * h.sin());
+    let l_ = l + 0.396_337_78 * a + 0.215_803_76 * b;
+    let m_ = l - 0.105_561_346 * a - 0.063_854_17 * b;
+    let s_ = l - 0.089_484_18 * a - 1.291_485_5 * b;
+    let (l3, m3, s3) = (l_ * l_ * l_, m_ * m_ * m_, s_ * s_ * s_);
+    let clamp = |v: f32| if v.is_finite() { v.clamp(0.0, 1.0) } else { 0.0 };
+    rgb(
+        clamp(4.076_741_7 * l3 - 3.307_711_6 * m3 + 0.230_969_94 * s3),
+        clamp(-1.268_438 * l3 + 2.609_757_4 * m3 - 0.341_319_38 * s3),
+        clamp(-0.004_196_086_3 * l3 - 0.703_418_6 * m3 + 1.707_614_7 * s3),
+    )
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// Linear -> 8-bit sRGB -> float sRGB (what the renderer actually stores and blends).
+    fn srgb(c: Color) -> [f32; 4] {
+        let [r, g, b, a] = c.to_srgb8();
+        [r as f32 / 255.0, g as f32 / 255.0, b as f32 / 255.0, a as f32 / 255.0]
+    }
+
+    /// Source-over in gamma-encoded sRGB space, like Slint's renderers.
+    fn over(fg: [f32; 4], bg: [f32; 4]) -> [f32; 4] {
+        let m = |f: f32, b: f32| f * fg[3] + b * (1.0 - fg[3]);
+        [m(fg[0], bg[0]), m(fg[1], bg[1]), m(fg[2], bg[2]), 1.0]
+    }
+
+    fn luminance(c: [f32; 4]) -> f32 {
+        let d = |v: f32| if v <= 0.04045 { v / 12.92 } else { ((v + 0.055) / 1.055).powf(2.4) };
+        0.2126 * d(c[0]) + 0.7152 * d(c[1]) + 0.0722 * d(c[2])
+    }
+
+    fn contrast(a: [f32; 4], b: [f32; 4]) -> f32 {
+        let (x, y) = (luminance(a), luminance(b));
+        (x.max(y) + 0.05) / (x.min(y) + 0.05)
+    }
+
+    fn with_alpha(c: [f32; 4], a: f32) -> [f32; 4] {
+        [c[0], c[1], c[2], a]
+    }
+
+    /// Alpha of tinted badge backgrounds (`safe-bg`, `high-bg`, ... in ui/tokens/theme.slint).
+    const BADGE_ALPHA: f32 = 0.12;
+
+    fn failures(mode: ThemeMode, scheme: ColorScheme, style: UiThemeStyle) -> Vec<String> {
+        let p = ThemePalette::new(mode, scheme, style);
+        let bg = srgb(p.bg_primary);
+        let card = over(srgb(p.bg_card), bg);
+        let hover = over(srgb(p.bg_card_hover), bg);
+        let sidebar = over(srgb(p.bg_sidebar), bg);
+        let btn = over(srgb(p.btn_secondary), bg);
+        let btn_hover = over(srgb(p.btn_secondary_hover), bg);
+        let mut out = Vec::new();
+        let mut check = |name: &str, fg: [f32; 4], back: [f32; 4], min: f32| {
+            let v = contrast(over(fg, back), back);
+            if v < min {
+                out.push(format!("{mode:?}/{scheme:?}/{style:?}: {name} {v:.2} < {min}"));
+            }
+        };
+        let surfaces = [("bg", bg), ("card", card), ("hover", hover), ("sidebar", sidebar), ("btn", btn), ("btn-hover", btn_hover)];
+        for (sn, s) in surfaces {
+            check(&format!("text-primary/{sn}"), srgb(p.text_primary), s, 4.5);
+            check(&format!("text-secondary/{sn}"), srgb(p.text_secondary), s, 4.5);
+            check(&format!("text-muted/{sn}"), srgb(p.text_muted), s, 4.5);
+        }
+        for (sn, s) in &surfaces[..4] {
+            for (k, c) in [("accent", p.accent), ("success", p.success), ("warning", p.warning), ("danger", p.danger)] {
+                let c = srgb(c);
+                check(&format!("{k}/{sn}"), c, *s, 4.5);
+                check(&format!("{k}-badge/{sn}"), c, over(with_alpha(c, BADGE_ALPHA), *s), 4.5);
+            }
+            check(&format!("sparkline-cpu/{sn}"), srgb(p.sparkline_cpu), *s, 3.0);
+            check(&format!("sparkline-ram/{sn}"), srgb(p.sparkline_ram), *s, 3.0);
+            check(&format!("focus-ring/{sn}"), srgb(p.border_accent), *s, 3.0);
+        }
+        for (k, c) in [("accent", p.accent), ("accent-hover", p.accent_hover), ("accent-press", p.accent_press)] {
+            check(&format!("on-accent/{k}"), srgb(p.text_on_accent), srgb(c), 4.5);
+        }
+        check("on-danger/danger", srgb(p.text_on_danger), srgb(p.danger), 4.5);
+        out
+    }
+
+    #[test]
+    fn every_theme_combination_meets_wcag_aa() {
+        let mut all = Vec::new();
+        for mode in [ThemeMode::Dark, ThemeMode::Light] {
+            for scheme in ColorScheme::ALL {
+                for style in UiThemeStyle::ALL {
+                    all.extend(failures(mode, scheme, style));
+                }
+            }
+        }
+        assert!(all.is_empty(), "WCAG AA contrast failures:\n{}", all.join("\n"));
+    }
+
+    #[test]
+    fn accent_stays_distinct_from_danger_and_success() {
+        // Hue distance in OKLCH degrees between each scheme accent and the semantic roles.
+        let dist = |a: f32, b: f32| {
+            let d = (a - b).rem_euclid(360.0);
+            d.min(360.0 - d)
+        };
+        for scheme in ColorScheme::ALL {
+            let h = scheme.spec().hue;
+            assert!(dist(h, 22.0) >= 25.0, "{scheme:?} accent too close to danger");
+            assert!(dist(h, HUE_SUCCESS) >= 25.0, "{scheme:?} accent too close to success");
+        }
+    }
+
+    #[test]
+    fn removed_schemes_load_as_their_nearest_replacement() {
+        let s: ColorScheme = serde_json::from_str("\"SolarAmber\"").expect("alias");
+        assert_eq!(s, ColorScheme::CrimsonSunset);
+        let a: ColorScheme = serde_json::from_str("\"ArcticAurora\"").expect("alias");
+        assert_eq!(a, ColorScheme::EmeraldMint);
+        assert_eq!(serde_json::to_string(&ColorScheme::EmeraldMint).expect("ser"), "\"EmeraldMint\"");
+    }
+
+    #[test]
+    fn oklch_round_trips_white_black_and_grey() {
+        assert_eq!(oklch(1.0, 0.0, 0.0).to_srgb8(), [255, 255, 255, 255]);
+        assert_eq!(oklch(0.0, 0.0, 0.0).to_srgb8(), [0, 0, 0, 255]);
+        let g = oklch(0.6, 0.0, 120.0).to_srgb8();
+        assert!(g[0] == g[1] && g[1] == g[2], "achromatic stays grey: {g:?}");
+    }
+
+    #[test]
+    fn style_previews_follow_mode_and_scheme() {
+        let p = ThemePalette::new(ThemeMode::Light, ColorScheme::EmeraldMint, UiThemeStyle::Glassy);
+        let c = p.card_fill_styled(UiThemeStyle::Classic);
+        assert_eq!(c, ThemePalette::new(ThemeMode::Light, ColorScheme::EmeraldMint, UiThemeStyle::Classic).bg_card);
+        assert_eq!(p.card_fill_styled(UiThemeStyle::Glassy), p.bg_card);
+    }
+}

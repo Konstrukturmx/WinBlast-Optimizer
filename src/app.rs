@@ -791,7 +791,9 @@ pub struct AppState {
     pub drivers_sub_tab: DriversSubTab,
     pub repair_sub_tab: RepairSubTab,
     pub current_time_secs: f64,
-    pub dismiss_progress_hud: bool,
+    /// Busy-operation bitmask (see `busy_mask`) captured when the user dismissed the HUD.
+    /// The HUD stays hidden only while no *other* operation starts; it is cleared once idle.
+    pub hud_dismissed_mask: u32,
 }
 
 impl Default for AppState {
@@ -1041,7 +1043,7 @@ impl AppState {
             drivers_sub_tab: DriversSubTab::Drivers,
             repair_sub_tab: RepairSubTab::WindowsRepair,
             current_time_secs: 0.0,
-            dismiss_progress_hud: false,
+            hud_dismissed_mask: 0,
         }
     }
 
@@ -1156,6 +1158,7 @@ impl AppState {
             self.apply_worker_event(event);
             count += 1;
         }
+        self.reset_hud_dismissal_if_idle();
         count
     }
 
@@ -1178,25 +1181,45 @@ impl AppState {
         self.startup_tasks_inflight > 0
     }
 
+    /// One bit per kind of background operation that shows the in-progress HUD.
+    pub fn busy_mask(&self) -> u32 {
+        [
+            self.is_scanning,
+            self.is_applying,
+            self.is_rolling_back,
+            self.clean_apps_busy,
+            self.startup_tasks_busy,
+            self.driver_install_in_flight.is_some(),
+            self.prereq_install_in_flight.is_some(),
+            self.is_bios_scanning,
+            self.is_driver_scanning,
+            self.is_thermal_scanning,
+            self.is_disk_scanning,
+            self.disk_trim_inflight,
+            self.repair_running.is_some(),
+            self.is_benchmarking_latency,
+        ]
+        .iter()
+        .enumerate()
+        .fold(0u32, |m, (i, &busy)| if busy { m | (1 << i) } else { m })
+    }
+
+    /// Hide the HUD for the operations running right now (they keep running in the background).
+    /// A different operation starting later, or any operation after the app went idle, shows it again.
+    pub fn dismiss_progress_hud(&mut self) {
+        self.hud_dismissed_mask = self.busy_mask();
+    }
+
+    /// Forget a HUD dismissal once nothing is running any more.
+    pub fn reset_hud_dismissal_if_idle(&mut self) {
+        if self.busy_mask() == 0 {
+            self.hud_dismissed_mask = 0;
+        }
+    }
+
     /// True if any operation is actively executing in background and progress HUD is not dismissed.
     pub fn is_in_progress(&self) -> bool {
-        if self.dismiss_progress_hud {
-            return false;
-        }
-        self.is_scanning
-            || self.is_applying
-            || self.is_rolling_back
-            || self.clean_apps_busy
-            || self.startup_tasks_busy
-            || self.driver_install_in_flight.is_some()
-            || self.prereq_install_in_flight.is_some()
-            || self.is_bios_scanning
-            || self.is_driver_scanning
-            || self.is_thermal_scanning
-            || self.is_disk_scanning
-            || self.disk_trim_inflight
-            || self.repair_running.is_some()
-            || self.is_benchmarking_latency
+        self.busy_mask() & !self.hud_dismissed_mask != 0
     }
 
     /// Dynamic status description for the centered in-progress HUD overlay.
@@ -1968,7 +1991,7 @@ impl AppState {
             WorkerEvent::RepairStepDone { id, result, finished } => {
                 match result {
                     Ok(msg) => {
-                        self.repair_log.push(format!("✔ [{id}] {msg}"));
+                        self.repair_log.push(format!("✓ [{id}] {msg}"));
                         self.set_status(format!("{}: {id}", self.tr_v(crate::core::view_i18n::ViewTextKey::RepairDonePrefix)));
                     }
                     Err(err) => {

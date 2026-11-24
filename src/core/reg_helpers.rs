@@ -42,6 +42,11 @@ pub fn encode_hex(bytes: &[u8]) -> String {
 /// Decode lowercase/uppercase hexadecimal bytes, rejecting odd lengths or invalid nibbles.
 pub fn decode_hex(s: &str) -> Result<Vec<u8>> {
     let clean: String = s.chars().filter(|c| !c.is_whitespace()).collect();
+    // Byte-wise slicing below is only sound for ASCII; reject anything else up front
+    // (a multi-byte char straddling a pair boundary used to panic).
+    if let Some(bad) = clean.chars().find(|c| !c.is_ascii_hexdigit()) {
+        return Err(WinBlastError::TweakFailed(format!("Invalid hex character '{bad}'")));
+    }
     if !clean.len().is_multiple_of(2) {
         return Err(WinBlastError::Serialization(serde_json::Error::io(
             std::io::Error::new(std::io::ErrorKind::InvalidData, "Odd hex byte length"),
@@ -533,5 +538,14 @@ mod tests {
             "AutoRepeatRate"
         ));
         assert!(!is_known_numeric_reg_sz("Software\\Test", "MenuShowDelay"));
+    }
+
+    #[test]
+    fn decode_hex_rejects_non_ascii_without_panicking() {
+        // 'é' is two bytes: "aé0" has an even byte length but a char straddles byte 2.
+        assert!(decode_hex("aé0").is_err());
+        assert!(decode_hex("éé").is_err());
+        assert!(decode_hex("zz").is_err());
+        assert_eq!(decode_hex("0A ff").expect("valid hex"), vec![0x0a, 0xff]);
     }
 }

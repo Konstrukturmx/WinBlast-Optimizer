@@ -128,7 +128,7 @@ impl DriversView {
                         icon: d.category.icon().into(),
                         name: d.name.as_str().into(),
                         details: details.into(),
-                        versions: format!("{}: {} ➔ {}: {}", s.tr(TextKey::DriverCurrentLabel), d.current_version, s.tr(TextKey::DriverLatestLabel), d.latest_version).into(),
+                        versions: format!("{}: {} → {}: {}", s.tr(TextKey::DriverCurrentLabel), d.current_version, s.tr(TextKey::DriverLatestLabel), d.latest_version).into(),
                         date: if d.download_size_mb > 0.0 {
                             format!("{}: {} ({:.1} MB)", s.tr(TextKey::DriverDateLabel), d.release_date, d.download_size_mb).into()
                         } else {

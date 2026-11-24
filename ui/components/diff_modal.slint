@@ -60,7 +60,7 @@ export component WbDiffModal inherits Rectangle {
                             if r.is-pair : HorizontalLayout {
                                 spacing: Scale.px(10px);
                                 Text { text: r.left; font-size: Scale.font-xs; color: Theme.danger; wrap: word-wrap; horizontal-stretch: 1; }
-                                Text { text: "➔"; color: Theme.text-muted; vertical-alignment: center; }
+                                Text { text: "→"; color: Theme.text-muted; vertical-alignment: center; }
                                 Text { text: r.right; font-size: Scale.font-xs; color: Theme.success; wrap: word-wrap; horizontal-stretch: 1; }
                             }
                             if !r.is-pair : Text {

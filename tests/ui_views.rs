@@ -650,7 +650,7 @@ fn privacy_audit_and_hosts_block_run_in_sandbox() {
     st.invoke_run_audit();
     h.wait("audit", |s| s.telemetry_audit.is_some());
     assert!(st.get_audit_available());
-    assert!(st.get_hosts_status().contains('✔'));
+    assert!(st.get_hosts_status().contains('✓'));
     st.invoke_block_hosts();
     h.wait("hosts blocked", |s| !s.telemetry_hosts_inflight);
     st.invoke_neutralize_services();
@@ -1167,4 +1167,42 @@ fn about_shows_real_version_and_style_studio_switches_style() {
     h.bridge.sync();
     assert_ne!(h.state.borrow().theme_style, before);
     assert!(app.get_theme_styles().row_data(target).unwrap().selected);
+}
+
+
+// ───────────────────────────── In-progress HUD ─────────────────────────────
+
+#[test]
+fn hud_close_hides_it_and_a_new_operation_shows_it_again() {
+    let h = Harness::scanned();
+    let app = h.window.global::<AppStore>();
+    h.state.borrow_mut().is_disk_scanning = true;
+    h.bridge.sync();
+    assert!(app.get_hud_visible(), "HUD shows while an operation runs");
+
+    // Close button / outside click / Esc all route to dismiss-hud.
+    app.invoke_dismiss_hud();
+    h.bridge.sync();
+    assert!(!app.get_hud_visible(), "Close must hide the HUD");
+    assert!(h.state.borrow().is_disk_scanning, "dismissing never cancels the operation");
+
+    // A different operation starting while the first still runs brings the HUD back.
+    h.state.borrow_mut().is_thermal_scanning = true;
+    h.bridge.sync();
+    assert!(app.get_hud_visible(), "a new operation must show the HUD again");
+
+    // After going idle the dismissal is forgotten, so the same kind of operation shows it again.
+    app.invoke_dismiss_hud();
+    h.bridge.sync();
+    assert!(!app.get_hud_visible());
+    {
+        let mut st = h.state.borrow_mut();
+        st.is_disk_scanning = false;
+        st.is_thermal_scanning = false;
+        st.drain_worker_events();
+        st.is_disk_scanning = true;
+    }
+    h.bridge.sync();
+    assert!(app.get_hud_visible(), "HUD dismissal must not stick after the app went idle");
+    h.state.borrow_mut().is_disk_scanning = false;
 }

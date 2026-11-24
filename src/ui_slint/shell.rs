@@ -58,14 +58,7 @@ pub const THEME_STYLES: [(UiThemeStyle, &str); 5] = [
     (UiThemeStyle::Materialistic, "🎨 Materialistic (MD3 Expressive)"),
 ];
 
-pub const COLOR_SCHEMES: [ColorScheme; 6] = [
-    ColorScheme::CyberIndigo,
-    ColorScheme::MidnightStealth,
-    ColorScheme::EmeraldMint,
-    ColorScheme::CrimsonSunset,
-    ColorScheme::SolarAmber,
-    ColorScheme::ArcticAurora,
-];
+pub const COLOR_SCHEMES: [ColorScheme; 4] = ColorScheme::ALL;
 
 const LANGUAGE_EN_NAMES: [&str; 8] = [
     "English", "Turkish", "German", "French", "Spanish", "Russian", "Simplified Chinese", "Japanese",
@@ -275,7 +268,7 @@ impl Shell {
         });
         let c = ctx.clone();
         store.on_dismiss_hud(move || {
-            c.act(|s| s.dismiss_progress_hud = true);
+            c.act(|s| s.dismiss_progress_hud());
         });
         let c = ctx.clone();
         store.on_close_diff(move || {

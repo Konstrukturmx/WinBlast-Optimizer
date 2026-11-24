@@ -55,16 +55,25 @@ pub fn relaunch_as_admin() -> Result<(), String> {
     let raw_str = current_exe.to_string_lossy();
     let clean_str = crate::core::updater::clean_exe_path(&raw_str);
 
-    let escaped_exe = clean_str.replace('\'', "''");
-    let cmd = format!("Start-Process -FilePath '{}' -Verb RunAs", escaped_exe);
-    let status = std::process::Command::new("powershell")
-        .args(["-WindowStyle", "Hidden", "-Command", &cmd])
-        .status()
-        .map_err(|e| format!("Failed to invoke PowerShell RunAs: {}", e))?;
-
-    if status.success() {
+    // Native "runas" verb: no PowerShell console flash, no command-line quoting of the path.
+    let file_w: Vec<u16> = clean_str.encode_utf16().chain(std::iter::once(0)).collect();
+    let verb_w: Vec<u16> = "runas".encode_utf16().chain(std::iter::once(0)).collect();
+    // SAFETY: both buffers are NUL-terminated UTF-16 strings that outlive the call.
+    let hinstance = unsafe {
+        windows::Win32::UI::Shell::ShellExecuteW(
+            None,
+            windows::core::PCWSTR(verb_w.as_ptr()),
+            windows::core::PCWSTR(file_w.as_ptr()),
+            None,
+            None,
+            windows::Win32::UI::WindowsAndMessaging::SW_SHOWNORMAL,
+        )
+    };
+    // ShellExecuteW returns a value greater than 32 on success; a declined UAC prompt
+    // (ERROR_CANCELLED) or a missing file comes back as a small error code.
+    let code = hinstance.0 as usize;
+    if code > 32 {
         std::process::exit(0);
-    } else {
-        Err("UAC elevation request was canceled or rejected by the user".to_string())
     }
+    Err(format!("UAC elevation request was canceled or failed (ShellExecute code {code})"))
 }

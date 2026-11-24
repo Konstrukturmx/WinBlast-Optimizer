@@ -19,6 +19,14 @@ fn run_slint() {
         }
     };
 
+    // 3D depth effects only when a hardware GPU drives the renderer (and no software override).
+    let software_forced = std::env::var("SLINT_BACKEND")
+        .map(|b| b.to_ascii_lowercase().contains("software") || b.to_ascii_lowercase().ends_with("-sw"))
+        .unwrap_or(false);
+    let gpu = !software_forced && winblast0::hardware::gpu::hardware_render_adapter_present();
+    tracing::info!("GPU depth effects: {}", if gpu { "on" } else { "off" });
+    window.global::<winblast0::ui_slint::Fx>().set_gpu(gpu);
+
     let settings = UserSettings::load();
     let mut state = winblast0::app::AppState::new();
     apply_settings(&mut state, &settings);

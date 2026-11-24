@@ -202,8 +202,14 @@ pub(crate) fn expand_system_root_vars(raw: &str) -> String {
     let mut expanded = replace_ascii_ci(trimmed, "%SystemRoot%", windir_clean);
     expanded = replace_ascii_ci(&expanded, "%windir%", windir_clean);
     let norm = expanded.replace('/', "\\");
-    if norm.len() >= 12 && norm[..12].eq_ignore_ascii_case("\\systemroot\\") {
-        format!("{}\\{}", windir_clean, &norm[12..]).to_lowercase()
+    // `get` instead of byte slicing: localized paths (é, ü, ç, кириллица) may put a multi-byte
+    // char across byte 12, which used to panic while listing startup entries.
+    let systemroot_tail = match (norm.get(..12), norm.get(12..)) {
+        (Some(head), Some(tail)) if head.eq_ignore_ascii_case("\\systemroot\\") => Some(tail),
+        _ => None,
+    };
+    if let Some(tail) = systemroot_tail {
+        format!("{}\\{}", windir_clean, tail).to_lowercase()
     } else {
         norm.to_lowercase()
     }
@@ -957,5 +963,14 @@ mod tests {
         assert_eq!(dis.len(), 12);
         assert_eq!(en[0] & 0x01, 0);
         assert_eq!(dis[0] & 0x01, 1);
+    }
+
+    #[test]
+    fn expand_system_root_vars_handles_multibyte_paths() {
+        // 'é' occupies bytes 11..13, so the old norm[..12] check panicked.
+        let out = expand_system_root_vars("C:\\Programmé\\app.exe");
+        assert!(out.ends_with("programmé\\app.exe"), "{out}");
+        let sys = expand_system_root_vars("\\SystemRoot\\system32\\drivers\\x.sys");
+        assert!(sys.ends_with("\\system32\\drivers\\x.sys") && !sys.starts_with("\\systemroot"), "{sys}");
     }
 }

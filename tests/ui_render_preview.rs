@@ -74,7 +74,7 @@ fn render_preview_frames() {
     ui.global::<Tr>().on_lookup(|key, _| winblast0::ui_slint::i18n::lookup(Language::English, key.as_str()));
     theme::apply(&ui, &ThemePalette::new(ThemeMode::Dark, ColorScheme::default(), UiThemeStyle::default()), false);
     let app = ui.global::<AppStore>();
-    app.set_app_version("1.8.0".into());
+    app.set_app_version(env!("CARGO_PKG_VERSION").into());
     app.set_metrics_available(true);
     app.set_cpu_usage(37.0);
     app.set_ram_usage(58.0);
@@ -125,4 +125,33 @@ fn render_preview_frames() {
 
     window.set_size(PhysicalSize::new(560, 760));
     settle_and_save(&window, &dir, "07-compact-light", 1200);
+
+    // 1.7.0 palettes: every scheme in dark and light (Glassy style), dashboard view.
+    window.set_size(PhysicalSize::new(W, H));
+    for scheme in ColorScheme::ALL {
+        for mode in [ThemeMode::Dark, ThemeMode::Light] {
+            theme::apply(&ui, &ThemePalette::new(mode, scheme, UiThemeStyle::default()), false);
+            settle_and_save(&window, &dir, &format!("10-{scheme:?}-{mode:?}"), 700);
+        }
+    }
+
+    // In-progress HUD with its Close button, then a hovered card with the GPU depth layer.
+    theme::apply(&ui, &ThemePalette::new(ThemeMode::Dark, ColorScheme::default(), UiThemeStyle::default()), false);
+    app.set_hud_status("Probing SMBIOS motherboard tables & UEFI firmware...".into());
+    app.set_hud_elapsed("12s".into());
+    app.set_hud_visible(true);
+    settle_and_save(&window, &dir, "11-hud", 900);
+    // Glyph probe: which symbols the UI font + system fallback can actually draw.
+    if let Ok(probe) = std::env::var("WINBLAST_GLYPH_PROBE") {
+        app.set_hud_status(probe.into());
+        settle_and_save(&window, &dir, "11b-glyph-probe", 300);
+    }
+    app.set_hud_visible(false);
+    ui.global::<winblast0::ui_slint::Fx>().set_gpu(true);
+    window.dispatch_event(slint::platform::WindowEvent::PointerMoved { position: slint::LogicalPosition::new(560.0, 260.0) });
+    settle_and_save(&window, &dir, "12-depth-hover", 700);
+    for (w, h) in [(800, 760), (1024, 768)] {
+        window.set_size(PhysicalSize::new(w, h));
+        settle_and_save(&window, &dir, &format!("13-topbar-{w}"), 700);
+    }
 }

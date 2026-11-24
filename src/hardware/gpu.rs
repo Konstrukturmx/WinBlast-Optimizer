@@ -291,6 +291,13 @@ fn detect_dxgi_vram_table() -> Vec<(u32, u32, u64)> {
     table
 }
 
+/// True when a real hardware DXGI adapter exists (not WARP / Basic Render / Hyper-V synthetic,
+/// i.e. not a Microsoft vendor id), so Slint's default femtovg-wgpu renderer runs on a GPU.
+/// Used only to switch the UI's 3D depth layer on; it never fabricates adapter data.
+pub fn hardware_render_adapter_present() -> bool {
+    detect_dxgi_vram_table().iter().any(|&(vendor, _, _)| vendor != 0x1414)
+}
+
 /// Resolve display adapter class path dynamically for multi-GPU / hybrid (Optimus) systems,
 /// routing exclusively to adapters matching `target_vendor` (when specified) and preserving subkey suffixes.
 pub fn resolve_gpu_class_path_for_vendor(

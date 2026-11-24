@@ -1,6 +1,6 @@
 // ui/tokens/theme.slint
 // Runtime theme tokens. The Rust bridge writes the base palette from core::theme::ThemePalette
-// (6 color schemes x 5 styles x dark/light, linear->sRGB converted) whenever the user changes theme.
+// (4 OKLCH color schemes x 5 styles x dark/light, WCAG AA unit-tested) whenever the user changes theme.
 
 export enum ThemeMode { dark, light, system }
 
@@ -57,8 +57,9 @@ export global Theme {
     out property <length> blur-radius:      supports-blur ? 16px : 0px;
     out property <color> scrim:             #000000a0;
 
-    out property <color> text-on-accent:    #ffffff;
-    out property <color> text-on-danger:    #ffffff;
+    // Written by Rust: dark labels on the light dark-mode accents, white in light mode.
+    in-out property <color> text-on-accent: #ffffff;
+    in-out property <color> text-on-danger: #ffffff;
 
     out property <color> border-subtle:     border;
     out property <color> border-default:    border-hover;
@@ -72,19 +73,19 @@ export global Theme {
     out property <color> danger-pressed:    danger.darker(0.15);
 
     out property <color> safe:              success;
-    out property <color> safe-bg:           success.with-alpha(0.14);
+    out property <color> safe-bg:           success.with-alpha(0.12);
     out property <color> safe-border:       success.with-alpha(0.35);
     out property <color> low:               success.mix(accent, 0.5);
-    out property <color> low-bg:            low.with-alpha(0.14);
+    out property <color> low-bg:            low.with-alpha(0.12);
     out property <color> low-border:        low.with-alpha(0.35);
     out property <color> moderate:          warning;
-    out property <color> moderate-bg:       warning.with-alpha(0.14);
+    out property <color> moderate-bg:       warning.with-alpha(0.12);
     out property <color> moderate-border:   warning.with-alpha(0.35);
     out property <color> high:              danger;
-    out property <color> high-bg:           danger.with-alpha(0.14);
+    out property <color> high-bg:           danger.with-alpha(0.12);
     out property <color> high-border:       danger.with-alpha(0.35);
     out property <color> info:              accent;
-    out property <color> info-bg:           accent.with-alpha(0.14);
+    out property <color> info-bg:           accent.with-alpha(0.12);
     out property <color> info-border:       accent.with-alpha(0.35);
     out property <color> neutral:           text-muted;
     out property <color> neutral-bg:        neutral-badge.with-alpha(0.18);

@@ -11,6 +11,13 @@ export component AppTopBar inherits Rectangle {
     // The live CPU/RAM badge and OS text only fit next to all controls on wide windows.
     // Set by MainWindow from width change handlers (a binding on our own width forms a layout loop).
     in property <bool> roomy;
+    // Logical window width. Controls collapse progressively (labels shorten, then the least
+    // used switches move to the sidebar / palette) so nothing ever overlaps the brand.
+    in property <float> avail: 1280;
+    private property <bool> show-engine: root.tier != 0 && root.avail >= 1240;
+    private property <bool> show-scheme: root.tier != 0 && root.avail >= 940;
+    private property <bool> show-mode: root.tier != 0 && root.avail >= 760;
+    private property <bool> short-labels: root.avail < 1500;
 
     height: Scale.px(44px);
     background: Theme.bg-sidebar;
@@ -65,39 +72,41 @@ export component AppTopBar inherits Rectangle {
             spacing: Scale.px(6px);
             alignment: end;
             WbChip {
-                text: root.tier == 0 ? "🔍" : "🔍 Ctrl+K";
+                text: root.avail < 1100 ? "🔍" : "🔍 Ctrl+K";
                 tooltip: Tr.s("PaletteOpenTip");
                 active: AppStore.palette-open;
                 clicked => { AppStore.dropdown = ""; AppStore.palette-open = true; }
             }
             lang-chip := WbChip {
-                text: "🌐 " + (root.tier == 0 ? AppStore.language-code : AppStore.language-label) + " ▾";
+                text: "🌐 " + (root.short-labels ? AppStore.language-code : AppStore.language-label) + " ⌄";
                 active: AppStore.dropdown == "language";
                 clicked => { AppStore.dropdown = AppStore.dropdown == "language" ? "" : "language"; }
             }
             WbChip {
-                text: (AppStore.theme-dark ? "🌙 " + Tr.s("ThemeDark") : "☀️ " + Tr.s("ThemeLight"));
+                text: root.short-labels ? (AppStore.theme-dark ? "🌙" : "☀️")
+                    : (AppStore.theme-dark ? "🌙 " + Tr.s("ThemeDark") : "☀️ " + Tr.s("ThemeLight"));
+                tooltip: AppStore.theme-dark ? Tr.s("ThemeDark") : Tr.s("ThemeLight");
                 clicked => { AppStore.dropdown = ""; AppStore.toggle-theme-mode(); }
             }
             WbChip {
-                text: "🎨 " + AppStore.theme-style-label + " ▾";
+                text: root.avail < 1100 ? "🎨 ⌄" : "🎨 " + AppStore.theme-style-label + " ⌄";
                 tone: "accent";
                 active: AppStore.dropdown == "style";
                 clicked => { AppStore.dropdown = AppStore.dropdown == "style" ? "" : "style"; }
             }
-            if root.tier != 0 : WbChip {
-                text: AppStore.color-scheme-label + " ▾";
+            if root.show-scheme : WbChip {
+                text: AppStore.color-scheme-label + " ⌄";
                 active: AppStore.dropdown == "scheme";
                 clicked => { AppStore.dropdown = AppStore.dropdown == "scheme" ? "" : "scheme"; }
             }
-            if root.tier != 0 : WbSegmented {
-                left-text: root.tier == 1 ? Tr.s("TopbarDashboardShort") : Tr.s("EasyMode");
-                right-text: root.tier == 1 ? Tr.s("TopbarMatrixShort") : Tr.s("AdvancedMatrix");
+            if root.show-mode : WbSegmented {
+                left-text: root.short-labels ? Tr.s("TopbarDashboardShort") : Tr.s("EasyMode");
+                right-text: root.short-labels ? Tr.s("TopbarMatrixShort") : Tr.s("AdvancedMatrix");
                 left-active: AppStore.mode-easy;
                 left-clicked => { AppStore.set-mode-easy(true); }
                 right-clicked => { AppStore.set-mode-easy(false); }
             }
-            if root.tier != 0 : WbSegmented {
+            if root.show-engine : WbSegmented {
                 left-text: Tr.s("HeaderInstant");
                 right-text: Tr.s("HeaderNormal");
                 left-active: AppStore.engine-instant;
@@ -128,8 +137,8 @@ export component AppTopBar inherits Rectangle {
             WbChip {
                 tone: AppStore.is-elevated ? "success" : "warning";
                 text: AppStore.is-elevated
-                    ? (root.tier == 0 ? Tr.s("TopbarElevatedShort") : Tr.s("AdminElevated"))
-                    : (root.tier == 0 ? Tr.s("TopbarAdminShort") : Tr.s("AdminStandard") + " (↗)");
+                    ? (root.short-labels ? Tr.s("TopbarElevatedShort") : Tr.s("AdminElevated"))
+                    : (root.short-labels ? Tr.s("TopbarAdminShort") : Tr.s("AdminStandard") + " (↗)");
                 clicked => { if !AppStore.is-elevated { AppStore.relaunch-elevated(); } }
             }
         }

@@ -50,7 +50,7 @@ export component GpuTuningView inherits Rectangle {
                     Text { text: "🟢"; vertical-alignment: center; }
                     Text { text: "#" + g.index + " " + g.name; font-size: Scale.font-sm; font-weight: 600; color: Theme.text-primary; vertical-alignment: center; horizontal-stretch: 1; overflow: elide; }
                     WbPill {
-                        text: g.vendor + " (✔)";
+                        text: g.vendor + " (✓)";
                         tone: g.vendor == "NVIDIA" ? "accent" : g.vendor == "AMD" ? "danger" : g.vendor == "Intel" ? "success" : "muted";
                     }
                 }

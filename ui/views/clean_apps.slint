@@ -22,15 +22,17 @@ component SelectRow inherits Rectangle {
     in property <bool> busy;
     callback toggled();
     border-radius: Scale.px(Theme.card-radius);
-    background: locked ? Theme.bg-card.with-alpha(0.75) : selected ? Theme.bg-card-hover : Theme.bg-card;
+    background: locked ? Theme.bg-card.with-alpha(0.75) : selected || ta.has-hover ? Theme.bg-card-hover : Theme.bg-card;
     border-width: 1px;
-    border-color: locked ? Theme.danger.with-alpha(0.28) : selected ? Theme.accent.with-alpha(0.35) : Theme.border;
-    TouchArea {
+    border-color: locked ? Theme.danger.with-alpha(0.28) : selected ? Theme.accent.with-alpha(ta.has-hover ? 0.6 : 0.35) : ta.has-hover ? Theme.border-hover : Theme.border;
+    animate background, border-color { duration: Theme.anim; }
+    // Wraps the content so hover stays on while the pointer is over child controls.
+    ta := TouchArea {
         enabled: !root.locked && !root.busy;
         mouse-cursor: self.enabled ? pointer : default;
         clicked => { root.toggled(); }
+        @children
     }
-    @children
 }
 
 export component CleanAppsView inherits Rectangle {

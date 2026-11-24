@@ -47,17 +47,19 @@ component RowCard inherits Rectangle {
     in property <StartupRow> data;
     in property <int> tab;
     border-radius: Scale.px(Theme.card-radius);
-    background: data.selected ? Theme.bg-card-hover : Theme.bg-card;
+    background: data.selected || hover.has-hover ? Theme.bg-card-hover : Theme.bg-card;
     border-width: 1px;
-    border-color: data.selected ? Theme.accent.with-alpha(0.35) : Theme.border;
+    border-color: data.selected ? Theme.accent.with-alpha(hover.has-hover ? 0.6 : 0.35) : hover.has-hover ? Theme.border-hover : Theme.border;
+    animate background, border-color { duration: Theme.anim; }
 
+    hover := TouchArea {
     FlexboxLayout {
         padding: Scale.px(10px);
         spacing: Scale.px(8px);
         alignment: stretch;
         cross-axis-alignment: center;
         if root.tab != 2 : WbChip {
-            text: data.selected ? "☑" : "☐";
+            text: data.selected ? "■" : "□";
             active: data.selected;
             clicked => { StartupStore.toggle-select(data.id); }
         }
@@ -75,6 +77,7 @@ component RowCard inherits Rectangle {
             Text { text: data.sub; font-size: Scale.font-2xs; color: Theme.text-muted; overflow: elide; }
         }
         Actions { data: root.data; tab: root.tab; }
+    }
     }
 }
 
@@ -119,7 +122,7 @@ export component StartupTasksView inherits Rectangle {
                         clicked => { StartupStore.batch-set(true); }
                     }
                     WbChip {
-                        text: (StartupStore.hide-microsoft ? "☑ " : "☐ ") + Tr.s("HideMicrosoftTasks");
+                        text: (StartupStore.hide-microsoft ? "■ " : "□ ") + Tr.s("HideMicrosoftTasks");
                         active: StartupStore.hide-microsoft;
                         clicked => { StartupStore.toggle-hide-microsoft(); }
                     }

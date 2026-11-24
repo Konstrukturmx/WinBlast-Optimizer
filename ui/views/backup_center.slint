@@ -11,7 +11,7 @@ import { WbPill, WbPanel } from "../components/toggle.slint";
 component Check inherits WbChip {
     in property <bool> on;
     in property <string> label;
-    text: (on ? "☑ " : "☐ ") + label;
+    text: (on ? "■ " : "□ ") + label;
     active: on;
 }
 

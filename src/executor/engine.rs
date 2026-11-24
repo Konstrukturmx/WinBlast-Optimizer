@@ -81,7 +81,9 @@ fn rollback_recorded_ids(
     if let Ok(history) = ledger.get_history() {
         for id in recorded_ids.into_iter().rev() {
             if let Some(entry) = history.iter().find(|e| e.id == id && !e.rolled_back) {
-                let _ = rollback_entry_with(entry, ledger, backend);
+                if let Err(e) = rollback_entry_with(entry, ledger, backend) {
+                    tracing::warn!("compensating rollback of ledger entry {id} failed: {e}");
+                }
             }
         }
     }

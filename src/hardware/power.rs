@@ -57,6 +57,9 @@ pub fn parse_guid(s: &str) -> Result<GUID> {
         || parts[2].len() != 4
         || parts[3].len() != 4
         || parts[4].len() != 12
+        // Segments are sliced by byte offset below: only ASCII hex digits are valid
+        // (a non-ASCII char of the right byte length used to panic).
+        || !clean.chars().all(|c| c == '-' || c.is_ascii_hexdigit())
     {
         return Err(WinBlastError::Hardware(format!(
             "Invalid GUID format: {}",
@@ -819,5 +822,13 @@ mod tests {
             fallback_scheme_name("00000000-0000-0000-0000-000000000002", "Custom Plan"),
             "Custom Plan"
         );
+    }
+
+    #[test]
+    fn parse_guid_rejects_non_ascii_without_panicking() {
+        // Last segment is 12 bytes but only 7 chars: byte slicing used to split 'é'.
+        assert!(parse_guid("381b4222-f694-41f0-9685-ff5bb260dféééé").is_err());
+        assert!(parse_guid("381b4222-f694-41f0-9685-ff5bb260df5x").is_err());
+        assert!(parse_guid("{381b4222-f694-41f0-9685-ff5bb260df2e}").is_ok());
     }
 }

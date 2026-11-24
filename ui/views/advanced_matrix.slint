@@ -27,7 +27,7 @@ component MatrixHeaderRow inherits Rectangle {
         padding-left: Scale.px(10px);
         padding-right: Scale.px(8px);
         spacing: Scale.px(8px);
-        Text { text: "▾"; color: Theme.accent; vertical-alignment: center; }
+        Text { text: "⌄"; color: Theme.accent; vertical-alignment: center; }
         Text {
             text: "📂  " + data.category-label + " (" + data.category-count + ")";
             font-size: Scale.font-sm;
@@ -49,10 +49,12 @@ component MatrixTweakRow inherits Rectangle {
     in property <MatrixRow> data;
     in property <int> tier;
     border-radius: Scale.px(Theme.card-radius);
-    background: Theme.bg-card;
+    background: hover.has-hover ? Theme.bg-card-hover : Theme.bg-card;
     border-width: Theme.border-width;
-    border-color: data.active ? Theme.accent.with-alpha(0.35) : Theme.border;
+    border-color: data.active ? Theme.accent.with-alpha(hover.has-hover ? 0.6 : 0.35) : hover.has-hover ? Theme.border-hover : Theme.border;
+    animate background, border-color { duration: Theme.anim; }
 
+    hover := TouchArea {
     VerticalLayout {
         padding: Scale.px(10px);
         spacing: Scale.px(6px);
@@ -104,6 +106,7 @@ component MatrixTweakRow inherits Rectangle {
             }
             WbChip { text: "🔍 " + Tr.s("InspectDiff"); clicked => { MatrixStore.inspect(data.id); } }
         }
+    }
     }
 }
 

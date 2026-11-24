@@ -1,8 +1,8 @@
 // ui/views/support_about.slint
 // Support & About (port of v1.6.1 support_about): version, repository links, bug report,
-// 1.8.0 release highlights, the live UI style studio and the reduced-motion switch.
+// release highlights, the live UI style studio, the reduced-motion switch and the 3D depth status.
 import { ScrollView, AboutSlint } from "std-widgets.slint";
-import { Scale, Theme, Tr } from "../theme.slint";
+import { Scale, Theme, Tr, Fx } from "../theme.slint";
 import { AppStore } from "../stores/app.slint";
 import { AboutStore } from "../stores/about.slint";
 import { WbButton } from "../components/button.slint";
@@ -96,6 +96,11 @@ export component SupportAboutView inherits Rectangle {
                                 clicked => { AppStore.toggle-reduced-motion(); }
                             }
                         }
+                    }
+                    // Honest status of the GPU-only depth layer (Fx.gpu comes from a DXGI probe).
+                    Note {
+                        text: Fx.gpu && !Theme.reduced-motion ? Tr.s("AboutDepthOn") : Tr.s("AboutDepthOff");
+                        color: Fx.gpu && !Theme.reduced-motion ? Theme.success : Theme.text-muted;
                     }
                     FlexboxLayout {
                         spacing: Scale.px(8px);

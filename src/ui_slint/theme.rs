@@ -24,6 +24,8 @@ pub fn apply(window: &MainWindow, p: &ThemePalette, reduced_motion: bool) {
     t.set_accent(to_slint(p.accent));
     t.set_accent_hover(to_slint(p.accent_hover));
     t.set_accent_press(to_slint(p.accent_press));
+    t.set_text_on_accent(to_slint(p.text_on_accent));
+    t.set_text_on_danger(to_slint(p.text_on_danger));
     t.set_btn_secondary(to_slint(p.btn_secondary));
     t.set_btn_secondary_hover(to_slint(p.btn_secondary_hover));
     t.set_btn_secondary_press(to_slint(p.btn_secondary_press));

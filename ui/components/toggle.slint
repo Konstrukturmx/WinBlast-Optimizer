@@ -102,19 +102,26 @@ export component WbPanel inherits Rectangle {
     private property <bool> shown: true;
     private property <int> order: 0;
     private property <bool> hot: root.hoverable && hover.has-hover;
+    // 3D depth layer (GPU renderer only, never with reduced motion): the card lifts toward the
+    // viewer, a soft light spot follows the pointer and the shadow falls away from it (parallax).
+    private property <bool> depth: Fx.gpu && !Theme.reduced-motion && root.hot;
+    private property <float> px: root.width > 0 ? hover.mouse-x / root.width - 0.5 : 0;
+    private property <float> py: root.height > 0 ? hover.mouse-y / root.height - 0.5 : 0;
 
     border-radius: Scale.px(Theme.card-radius);
     background: Theme.bg-card;
     border-width: Theme.border-width;
     border-color: root.glow ? transparent : root.hot ? Theme.border-accent : Theme.border;
-    drop-shadow-blur: root.hot ? Scale.px(20px) : root.glow ? Scale.px(16px) : 0px;
-    drop-shadow-offset-y: root.hot ? Scale.px(4px) : 0px;
+    drop-shadow-blur: root.depth ? Scale.px(30px) : root.hot ? Scale.px(20px) : root.glow ? Scale.px(16px) : 0px;
+    drop-shadow-offset-x: root.depth ? Scale.px(-10px) * root.px : 0px;
+    drop-shadow-offset-y: root.depth ? Scale.px(10px) - Scale.px(8px) * root.py : root.hot ? Scale.px(4px) : 0px;
     drop-shadow-color: root.hot ? Theme.accent.with-alpha(Theme.dark ? 0.24 : 0.18)
         : root.glow ? Theme.accent.with-alpha(0.14) : Theme.accent.with-alpha(0);
     opacity: root.shown ? 1 : 0;
-    transform-scale: root.shown ? 1 : 0.97;
+    transform-scale: !root.shown ? 0.97 : root.depth ? 1.012 : 1;
     animate opacity, transform-scale { duration: Theme.anim-enter; easing: cubic-bezier(0.2, 0.9, 0.25, 1); }
     animate border-color, drop-shadow-blur, drop-shadow-color, drop-shadow-offset-y { duration: Theme.anim; }
+    animate drop-shadow-offset-x { duration: 90ms; }
 
     init => {
         if Fx.entering && !Theme.reduced-motion {
@@ -133,6 +140,18 @@ export component WbPanel inherits Rectangle {
         border-radius: root.border-radius;
         border-width: 1.5px;
         border-color: @linear-gradient(135deg, Theme.accent.with-alpha(0.85) 0%, Theme.sparkline-ram.with-alpha(0.40) 50%, Theme.accent.with-alpha(0.10) 100%);
+    }
+    // Pointer-tracked specular light (behind the content, clipped to the card shape).
+    if root.depth : Rectangle {
+        border-radius: root.border-radius;
+        clip: true;
+        Rectangle {
+            width: max(root.width, root.height) * 1.4;
+            height: self.width;
+            x: hover.mouse-x - self.width / 2;
+            y: hover.mouse-y - self.height / 2;
+            background: @radial-gradient(circle, Theme.text-primary.with-alpha(Theme.dark ? 0.07 : 0.10) 0%, Theme.text-primary.with-alpha(0) 55%);
+        }
     }
     // Wraps the content so hover stays true while the pointer is over child buttons.
     hover := TouchArea {

@@ -103,8 +103,8 @@ export component EasyDashboardView inherits Rectangle {
                     cross-axis-alignment: center;
                     Text {
                         text: DashboardStore.update-state == "available" ? "🚀" : DashboardStore.update-state == "downloading" ? "📥"
-                            : DashboardStore.update-state == "checking" ? "⟳" : DashboardStore.update-state == "failed" ? "⚠"
-                            : DashboardStore.update-state == "idle" ? "📦" : "✔";
+                            : DashboardStore.update-state == "checking" ? "↻" : DashboardStore.update-state == "failed" ? "⚠"
+                            : DashboardStore.update-state == "idle" ? "📦" : "✓";
                         font-size: Scale.font-md;
                         color: DashboardStore.update-state == "failed" ? Theme.danger : Theme.accent;
                     }

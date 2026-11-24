@@ -23,7 +23,7 @@ component OverlayRow inherits WbPanel {
             Text { text: root.title; font-size: Scale.font-sm; font-weight: 700; color: Theme.text-primary; wrap: word-wrap; }
             Text { text: root.desc; font-size: Scale.font-xs; color: Theme.text-muted; wrap: word-wrap; }
         }
-        WbPill { text: root.on ? "✔ " + Tr.s("OverlayActiveState") : Tr.s("OverlayDisabledState"); tone: root.on ? "success" : "muted"; }
+        WbPill { text: root.on ? "✓ " + Tr.s("OverlayActiveState") : Tr.s("OverlayDisabledState"); tone: root.on ? "success" : "muted"; }
         WbToggle {
             on: root.on;
             busy: GamingStore.overlay-busy;

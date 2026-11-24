@@ -320,7 +320,13 @@ pub fn apply_and_restart(new_binary: &Path) -> Result<(), String> {
     // 2. Copy new binary to current exe location
     if let Err(e) = std::fs::copy(new_binary, &current_exe) {
         // Rollback rename if copy fails
-        let _ = std::fs::rename(&backup_exe, &current_exe);
+        if let Err(restore) = std::fs::rename(&backup_exe, &current_exe) {
+            tracing::error!("Could not restore {:?} after a failed update: {}", backup_exe, restore);
+            return Err(format!(
+                "Failed to install new binary: {e}; restoring the previous executable also failed: {restore} (it is kept at {})",
+                backup_exe.display()
+            ));
+        }
         return Err(format!("Failed to install new binary: {}", e));
     }
 

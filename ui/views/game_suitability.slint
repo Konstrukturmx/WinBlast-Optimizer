@@ -47,7 +47,7 @@ export component GameSuitabilityBody inherits VerticalLayout {
             HorizontalLayout {
                 spacing: Scale.px(8px);
                 Text { text: c.name; font-size: Scale.font-sm; font-weight: 700; color: Theme.text-primary; vertical-alignment: center; horizontal-stretch: 1; wrap: word-wrap; }
-                WbPill { text: c.ok ? "✔ " + Tr.s("SuitabilityReadyBadge") : Tr.s("SuitabilityLimitedBadge"); tone: c.ok ? "success" : "warning"; }
+                WbPill { text: c.ok ? "✓ " + Tr.s("SuitabilityReadyBadge") : Tr.s("SuitabilityLimitedBadge"); tone: c.ok ? "success" : "warning"; }
             }
             Text { text: c.desc; font-size: Scale.font-xs; color: Theme.text-secondary; wrap: word-wrap; }
             if c.recommendation != "" : Text { text: c.recommendation; font-size: Scale.font-xs; color: Theme.text-muted; wrap: word-wrap; }

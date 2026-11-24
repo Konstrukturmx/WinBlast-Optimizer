@@ -276,7 +276,7 @@ impl HardwareView {
                 .iter()
                 .map(|p| ChipItem {
                     id: p.guid.as_str().into(),
-                    label: format!("{}{}", if p.is_active { "✔ " } else { "" }, power_plan_name(s, &p.guid, &p.friendly_name)).into(),
+                    label: format!("{}{}", if p.is_active { "✓ " } else { "" }, power_plan_name(s, &p.guid, &p.friendly_name)).into(),
                     active: p.is_active,
                 })
                 .collect(),

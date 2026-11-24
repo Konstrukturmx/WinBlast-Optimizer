@@ -1,51 +1,80 @@
 // ui/components/in_progress_hud.slint
-// Centered modal "IN PROGRESS" HUD (port of v1.6.1 in_progress_hud): orbit spinner, pulsing
-// lightning badge, elapsed timer and wrapped live status. Click outside / Dismiss hides it
-// (the operation keeps running in the background, exactly like v1.6.1).
+// Centered modal "IN PROGRESS" HUD: comet-ring spinner with a counter-rotating inner orbit,
+// breathing core, indeterminate sweep bar, elapsed timer and wrapped live status.
+// Close button / click outside / Esc hide it; the operation keeps running in the background
+// (AppState::dismiss_progress_hud). Everything is static when reduced motion is on.
 import { Scale, Theme, Tr } from "../theme.slint";
 import { AppStore } from "../stores/app.slint";
+import { WbButton } from "button.slint";
 
 export component WbInProgressHud inherits Rectangle {
     background: Theme.scrim;
-    private property <float> phase: Theme.reduced-motion ? 0 : mod(animation-tick() / 1ms, 1800) / 1800;
+    private property <float> phase: Theme.reduced-motion ? 0 : mod(animation-tick() / 1ms, 2400) / 2400;
+    private property <bool> shown: false;
+    init => { root.shown = true; }
+    opacity: root.shown ? 1 : 0;
+    animate opacity { duration: Theme.anim; }
 
+    // Scrim: outside click dismisses.
     TouchArea { clicked => { AppStore.dismiss-hud(); } }
 
     card := Rectangle {
-        width: min(root.width - Scale.px(32px), Scale.px(420px));
+        width: min(root.width - Scale.px(32px), Scale.px(440px));
         height: content.preferred-height;
         border-radius: Scale.px(Theme.card-radius);
-        background: Theme.bg-card;
+        background: Theme.bg-card.with-alpha(1);
         border-width: 1.5px;
         border-color: Theme.border-accent;
-        drop-shadow-blur: 24px;
+        drop-shadow-blur: 28px;
+        drop-shadow-offset-y: 6px;
         drop-shadow-color: Theme.shadow-lg;
+        transform-scale: root.shown ? 1 : 0.94;
+        animate transform-scale { duration: Theme.anim-enter; easing: cubic-bezier(0.2, 0.9, 0.25, 1); }
+        // Swallow clicks on the card so only the scrim / Close button dismiss.
         TouchArea {}
 
         content := VerticalLayout {
-            padding: Scale.px(20px);
+            padding: Scale.px(22px);
             spacing: Scale.px(12px);
             alignment: center;
-            Rectangle {
-                height: Scale.px(72px);
-                // 10-dot orbital radar
-                for i in 10 : Rectangle {
-                    property <angle> a: (i / 10) * 360deg + root.phase * 360deg;
+
+            spinner := Rectangle {
+                height: Scale.px(100px);
+                // Outer comet ring: 14 dots, the head is largest/brightest, the tail fades over 300deg.
+                for i in 14 : Rectangle {
+                    property <float> t: i / 14;
+                    property <angle> a: root.phase * 360deg - t * 300deg;
+                    property <length> size: Scale.px(9px) * (1 - t * 0.7);
+                    width: self.size;
+                    height: self.size;
+                    border-radius: self.size / 2;
+                    x: parent.width / 2 + cos(self.a) * Scale.px(38px) - self.width / 2;
+                    y: parent.height / 2 + sin(self.a) * Scale.px(38px) - self.height / 2;
+                    background: Theme.accent.with-alpha(1 - self.t * 0.85);
+                }
+                // Inner orbit: 3 dots counter-rotating at double speed in the second data hue.
+                for i in 3 : Rectangle {
+                    property <angle> a: i * 120deg - root.phase * 720deg;
                     width: Scale.px(6px);
                     height: Scale.px(6px);
                     border-radius: self.width / 2;
-                    x: parent.width / 2 + cos(a) * Scale.px(30px) - self.width / 2;
-                    y: parent.height / 2 + sin(a) * Scale.px(30px) - self.height / 2;
-                    background: Theme.accent.with-alpha(0.25 + 0.75 * (i / 10));
+                    x: parent.width / 2 + cos(self.a) * Scale.px(22px) - self.width / 2;
+                    y: parent.height / 2 + sin(self.a) * Scale.px(22px) - self.height / 2;
+                    background: Theme.sparkline-ram;
                 }
+                // Breathing core.
                 Rectangle {
-                    width: Scale.px(36px);
-                    height: Scale.px(36px);
+                    property <float> breath: 0.5 + 0.5 * sin(root.phase * 720deg);
+                    width: Scale.px(30px);
+                    height: Scale.px(30px);
                     border-radius: self.width / 2;
-                    background: Theme.accent.with-alpha(0.18 + 0.12 * abs(sin(root.phase * 360deg)));
+                    background: Theme.accent.with-alpha(0.16 + 0.14 * self.breath);
+                    drop-shadow-blur: Scale.px(6px) + Scale.px(10px) * self.breath;
+                    drop-shadow-color: Theme.glow;
                     Text { text: "⚡"; font-size: Scale.font-lg; color: Theme.accent; }
                 }
             }
+
             HorizontalLayout {
                 alignment: center;
                 spacing: Scale.px(6px);
@@ -60,11 +89,37 @@ export component WbInProgressHud inherits Rectangle {
                 wrap: word-wrap;
                 horizontal-alignment: center;
             }
+
+            // Indeterminate sweep (a calm static track under reduced motion).
+            Rectangle {
+                height: Scale.px(4px);
+                border-radius: self.height / 2;
+                background: Theme.accent.with-alpha(0.16);
+                clip: true;
+                Rectangle {
+                    width: Theme.reduced-motion ? parent.width : parent.width * 0.35;
+                    height: parent.height;
+                    x: Theme.reduced-motion ? 0 : (parent.width + self.width) * mod(root.phase * 2, 1) - self.width;
+                    border-radius: parent.border-radius;
+                    background: Theme.reduced-motion ? Theme.accent.with-alpha(0.45)
+                        : @linear-gradient(90deg, Theme.accent.with-alpha(0) 0%, Theme.accent 50%, Theme.accent.with-alpha(0) 100%);
+                }
+            }
+
             Text {
-                text: Tr.s("CloseBtn");
+                text: Tr.s("HudBackgroundHint");
                 font-size: Scale.font-2xs;
                 color: Theme.text-muted;
+                wrap: word-wrap;
                 horizontal-alignment: center;
+            }
+            HorizontalLayout {
+                alignment: center;
+                close := WbButton {
+                    variant: "secondary";
+                    text: Tr.s("CloseBtn");
+                    clicked => { AppStore.dismiss-hud(); }
+                }
             }
         }
     }

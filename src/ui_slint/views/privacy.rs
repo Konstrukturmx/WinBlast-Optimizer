@@ -76,7 +76,7 @@ impl PrivacyView {
             Some(a) => {
                 st.set_audit_available(true);
                 st.set_hosts_status(
-                    format!("{} {} ✔ / {} ⚠", s.tr(TextKey::HostsLabel), a.blocked_hosts.len(), a.unblocked_hosts.len()).into(),
+                    format!("{} {} ✓ / {} ⚠", s.tr(TextKey::HostsLabel), a.blocked_hosts.len(), a.unblocked_hosts.len()).into(),
                 );
                 st.set_services_status(
                     format!(
