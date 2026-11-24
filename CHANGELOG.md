@@ -4,9 +4,38 @@ All notable changes to **WinBlast Optimizer** are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
-## [v1.8.0] - 2026-11-23
+## [v1.7.0] - 2026-11-24
+
+This release ships everything built on 2026-11-23 (the Slint migration and the unreleased 1.8.0 visual layer, listed below) plus the following changes, under the 1.7.0 version number.
 
 ### Added
+- **Colour theory themes**: 4 schemes (Cyber Indigo, Midnight Stealth, Emerald Mint, Crimson Sunset) generated in OKLCH. Surfaces carry a faint tint of the scheme hue, data series use split-complementary/analogous partner hues, and accent hues stay clear of the success/danger colours. Dark mode uses light tonal accents with dark labels. A unit test checks all 40 mode × scheme × style combinations against WCAG 2.1 AA (4.5:1 text, 3:1 UI graphics), blending in sRGB with 8-bit quantisation as the renderer does.
+- **Loading screen**: comet-ring spinner with a counter-rotating orbit, breathing core, indeterminate sweep bar, a note that closing keeps the task running, and a real **Close** button (static with Reduced motion).
+- **Hover feedback**: buttons grow on hover and squash on press; Advanced Matrix, Startup and Clean & Apps rows highlight under the pointer.
+- **3D depth layer** (GPU only): cards lift, a light spot follows the pointer and the shadow falls away from it. It is enabled only when a DXGI probe finds a real hardware adapter (WARP, Basic Render and Hyper-V adapters excluded) and Reduced motion is off; Support & About shows whether it is on.
+
+### Changed
+- Solar Amber and Arctic Aurora were removed; saved settings load as Crimson Sunset and Emerald Mint.
+- The top bar collapses progressively (shorter labels, then the scheme and engine switches move to the sidebar) so it never overlaps the brand, in all 8 languages.
+- The health ring caption shows the real count ("13/194 · Optimized") instead of a fixed "Optimized" that also appeared at 7 %.
+- `winblast0.exe` links the C runtime statically and no longer needs the Visual C++ Redistributable (a clean Windows 10 VM could not start the previous build).
+- PE file/product version now follows `Cargo.toml` (it was hard-coded).
+- Relaunch as Administrator uses ShellExecute "runas" instead of a PowerShell process.
+
+### Fixed
+- The loading screen's Close was plain text behind a click-blocking card, so it did nothing; after one dismissal the screen also never came back that session.
+- Three panics on non-ASCII input: hex decoding of registry values, GUID parsing and `%SystemRoot%` expansion of startup paths such as `C:\Programmé\…`.
+- 17 symbols that neither Inter nor the Windows font fallback draws rendered as blank gaps (e.g. every ✔, the ✕ in "✕ Close", the ▾ on dropdown chips); replaced with ones verified by an offline render probe.
+- Failed compensating rollbacks and a failed restore of the executable during an update are now logged/reported instead of ignored.
+
+### Testing
+- Host (sandboxed): 287 passed, 0 failed; clippy `--all-targets -D warnings` clean.
+- New: theme contrast test, layout collision sweep (26 views × 5 widths, German/Russian at 800 px, top bar in 8 languages × 10 widths), page reachability test, glyph coverage test, HUD dismissal and health caption tests, UTF-8 panic regressions.
+- VM (Hyper-V Windows 10 Enterprise 19044, no VC++ runtime, Basic Render adapter): full `--features vm-tests` suite and a manual run of the signed release exe — see CHECKLIST.md.
+
+### Visual layer (built 2026-11-23 as the unreleased 1.8.0)
+
+#### Added
 - **Typography**: Inter (UI) and JetBrains Mono (numbers, logs, telemetry) are embedded in the executable (SIL OFL 1.1, subset to Latin/Greek/Cyrillic and symbols; ~560 KB). Chinese and Japanese text falls back to the Windows system fonts. Sources and rebuild steps: `ui/fonts/README.md`.
 - **Motion**: views fade and slide in; cards appear with a short stagger right after a view switch; the sidebar's active highlight is a pill that glides between entries; cards lift (accent border + soft shadow) on hover.
 - **Visual effects**: an aurora backdrop of accent-coloured glows that drifts to a new position on each navigation and is static otherwise (no idle redraws); glowing primary buttons and focus rings; a gradient border on the dashboard header card.
@@ -17,25 +46,25 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - **Tooltips** on risk badges explaining each risk level, and on the command palette chip.
 - **Reduced motion** switch in Support & About → UI Design & Theme Studio (also in the palette). It turns every new animation off and is saved in `settings.json`.
 
-### Fixed
+#### Fixed
 - 17 English-only labels localised in all 8 languages: Windows Repair "Run All", Automation "Assess Health" and "+N more optimizations", Driver & BIOS scan and Secure Boot status lines, the progress overlay text, the language/style/scheme dropdown titles and the compact top-bar labels.
 - Symbols that neither embedded font contains (☰ ✕ ✖) were replaced with ones that render reliably (≡ ×).
 
-### Testing
+#### Testing
 - Host suite (sandboxed): 273 passed, 0 failed, 7 ignored (6 VM-only tests and one manual render check); clippy `-D warnings` clean.
 - New tests: command-palette catalogue covers every view and only known i18n keys, ranking and accent-insensitive search; toast tone classification.
 - New manual check `tests/ui_render_preview.rs` renders the real `MainWindow` offline with Slint's software renderer (dashboard, toasts, palette, shimmer, About, light theme, compact width).
 
-## [v1.7.0] - 2026-11-23
+### Slint migration (2026-11-23)
 
-### Changed
+#### Changed
 - **Rune removed; the UI is now Slint 1.19 only.** All 26 views were rebuilt on Slint global stores (`ui/stores/*.slint`) with per-view Rust binders (`src/ui_slint/views/*.rs`). There is no `--ui=rune` mode any more.
 - Native Windows window frame (snap layouts, DPI), live switching between 8 languages, 6 colour schemes × 5 styles × dark/light, and zoom (Ctrl + / − / 0). Settings persist in `%LOCALAPPDATA%\WinBlast0\settings.json`.
 - Long-running work (driver install/backup, SFC/DISM/Winsock repair, TRIM, health assessment, memory trim, prerequisite installs, DNS actions, game-profile/overlay changes, network probes) runs on background workers; the window no longer freezes.
 - Every system-changing action goes through the `SystemBackend` trait, so the test sandbox never touches the real machine.
 - Support & About shows the 1.7.0 notes, repository links, bug report, the style studio and the Slint licence attribution.
 
-### Fixed
+#### Fixed
 - 33 defects — see [docs/v1.7.0-bugfixes.md](docs/v1.7.0-bugfixes.md). Highlights:
   - Removed invented values (AGENTS.md rule 2): fake hardware names, benchmark scores, gaming frame-pacing/DirectX/G-Sync claims, disk health/temperature defaults, memory-trim "freed MB", RAM/core-count guesses, a fabricated suitability machine.
   - Registry tweaks derived from RAM size or core count refuse to write when that value cannot be read.
@@ -43,7 +72,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   - Startup view stuck busy after batch toggles; Select All not matching the visible filter; Export Selected did nothing; "Restart PC" needed only one click.
   - Top bar overlapped at ~1024 px; emoji icons missing on Windows 10; English-only strings localised (≈90 new catalog keys × 8 languages).
 
-### Testing
+#### Testing
 - Host suite (sandboxed): 268 passed, 0 failed; clippy `-D warnings` clean.
 - Tests that touch a real Windows install are gated behind `--features vm-tests` and run in a disposable Hyper-V Windows 10 22H2 VM: all suites pass there (274 tests).
 

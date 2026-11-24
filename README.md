@@ -58,7 +58,10 @@ Derived from the formal [**WinBlast0 Architecture Guide**](DEVELOPMENT.md), WinB
 * **GPU rendering with software fallback**: `renderer-femtovg-wgpu`, with `renderer-software` available for machines without a usable GPU.
 * **Responsive & scalable**: three width tiers (compact / medium / wide), zoom from 0.75× to 2.0× (Ctrl + / − / 0), live language switching (8 languages).
 * **Licence compliance**: Slint Royalty-Free Desktop licence attribution is shown in Support & About; WinBlast0 itself is MIT.
-* **1.8.0 visual layer**: embedded Inter + JetBrains Mono fonts (SIL OFL 1.1, see `ui/fonts/`), view transitions, staggered card entrance, gliding sidebar pill, hover lift, aurora backdrop, live radial gauges, shimmer loaders, Ctrl+K command palette, toasts, risk tooltips and a Reduced motion switch.
+* **1.7.0 visual layer**: embedded Inter + JetBrains Mono fonts (SIL OFL 1.1, see `ui/fonts/`), view transitions, staggered card entrance, gliding sidebar pill, hover lift, aurora backdrop, live radial gauges, shimmer loaders, Ctrl+K command palette, toasts, risk tooltips and a Reduced motion switch.
+* **Themes**: 4 OKLCH colour schemes (Cyber Indigo, Midnight Stealth, Emerald Mint, Crimson Sunset) × 5 styles × dark/light; every combination is unit-tested for WCAG 2.1 AA contrast.
+* **3D depth layer**: on PCs with a hardware GPU (detected via DXGI), cards lift and catch a pointer-tracked light with parallax shadows; off on software rendering, in VMs and with Reduced motion.
+* **No runtime prerequisites**: the C runtime is linked statically, so `winblast0.exe` runs on a clean Windows 10/11 without the Visual C++ Redistributable.
 * **5 theme styles**: Glassy, Minimalistic, Classic, Compact and Materialistic.
 * **6 WCAG AA Color Schemes**: *Cyber Indigo*, *Midnight Stealth*, *Emerald Mint*, *Crimson Sunset*, *Solar Amber*, and *Arctic Aurora* with Dark and Light mode support.
 * **Permanent High-Resolution Icon**: Embedded `winblast.ico` with full PE Version Information (`Konstrukturmx`, `WinBlast Optimizer`, version `1.7.0.0`).

@@ -149,7 +149,7 @@ export component EasyDashboardView inherits Rectangle {
                         VerticalLayout {
                             alignment: center;
                             Text { text: Tr.s("SystemHealth"); font-size: Scale.font-sm; font-weight: 700; color: Theme.text-primary; }
-                            Text { text: Tr.s("OptimizedLabel"); font-size: Scale.font-xs; color: Theme.text-muted; }
+                            Text { text: DashboardStore.health-caption; font-size: Scale.font-xs; color: Theme.text-muted; }
                         }
                     }
                     WbButton {

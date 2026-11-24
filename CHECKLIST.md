@@ -1,6 +1,22 @@
 # WinBlast0 — Release Checklist
 
-## v1.8.0 (2026-11-23, local branch `1.8.0`, not pushed)
+## v1.7.0 (rebuild, 2026-11-24, local branch `1.7.0-rebuild` from `1.8.0`, not pushed)
+Ships the 1.8.0 visual layer and the Slint migration under version 1.7.0, plus:
+- [x] Loading screen: real Close button (was click-blocked text), dismissal resets for new operations; redesigned animation
+- [x] Every page reachable: 26 views routed + in sidebar + in Ctrl+K (test `every_view_is_routed_listed_and_searchable`)
+- [x] Themes: 4 OKLCH schemes × 5 styles × dark/light; WCAG AA unit test over all 40 combinations; removed schemes migrate
+- [x] Hover feedback on buttons and list rows; GPU-only 3D depth layer (DXGI probe, off on WARP/Basic Render/Hyper-V)
+- [x] Responsive: layout collision sweep (26 views × 5 widths, DE/RU at 800 px, top bar 8 languages × 10 widths) — 0 collisions
+- [x] Heuristic sweep: UTF-8 slicing (3 real panics fixed), discarded Results in mutating code (2 now logged), raw Command spawns (elevation via ShellExecute)
+- [x] Glyphs: 17 symbols that render blank replaced; `tests/glyph_coverage.rs` guards it
+- [x] Health caption shows real counts instead of a fixed "Optimized"
+- [x] Static CRT: exe no longer needs the VC++ Redistributable (imports verified)
+- [x] Host: 287 passed, 0 failed, 8 ignored; clippy `--all-targets -D warnings` clean
+- [x] VM (Hyper-V "Windows 10 MSIX packaging environment", Win10 Ent 19044, no VC++ runtime, Basic Render adapter): `--features vm-tests` suite 293 passed, 0 failed; signed release launched on the desktop, Close-during-scan verified with synthetic mouse clicks (`docs/vm-test-1.7.0/`); VM rolled back to checkpoint `clean`
+- [x] Release built and signed: SHA-256 A7BE2879026A9D82B664FC0B19EA5501594C1F35678AD1FB6BCD8E662247AA80, signer CN=Konstrukturmx (070A70E0…404D, self-signed, untrusted root as expected), DigiCert RFC 3161 timestamp, FileVersion 1.7.0.0
+- [ ] Push / tag / publish (owner)
+
+## Visual layer (built 2026-11-23 as the unreleased 1.8.0; superseded by the 1.7.0 rebuild above)
 - [x] Embedded fonts: Inter (UI) + JetBrains Mono (mono), subset, OFL licences in `ui/fonts/`
 - [x] Motion: view transitions, staggered card entrance, gliding sidebar pill, hover lift
 - [x] Visual FX: aurora backdrop (static at idle), glow accents, live radial gauges, shimmer loaders

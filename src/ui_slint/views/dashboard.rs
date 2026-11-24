@@ -14,14 +14,28 @@ use super::super::ctx::Ctx;
 use super::super::models::{new_model, sync_vec};
 use super::super::{CategoryStat, DashboardStore, MainWindow};
 
+/// (already optimized, applicable) tweak counts behind the health score.
+pub fn health_counts(results: &[ScanResult]) -> (usize, usize) {
+    let eligible = results.iter().filter(|r| r.current_state != TweakState::NotApplicable);
+    eligible.fold((0, 0), |(o, e), r| (o + usize::from(r.current_state == TweakState::AlreadyOptimized), e + 1))
+}
+
 /// 0-100 share of applicable tweaks already optimized (v1.6.1 formula).
 pub fn health_score(results: &[ScanResult]) -> u32 {
-    let eligible: Vec<&ScanResult> = results.iter().filter(|r| r.current_state != TweakState::NotApplicable).collect();
-    if eligible.is_empty() {
+    let (optimized, eligible) = health_counts(results);
+    if eligible == 0 {
         return 0;
     }
-    let optimized = eligible.iter().filter(|r| r.current_state == TweakState::AlreadyOptimized).count();
-    ((optimized as f64 / eligible.len() as f64) * 100.0).round() as u32
+    ((optimized as f64 / eligible as f64) * 100.0).round() as u32
+}
+
+/// Caption under the health ring. It used to be a fixed "Optimized", which read as a verdict
+/// even at 7 %; now it states the real count.
+pub fn health_caption(results: &[ScanResult], optimized_word: &str) -> String {
+    match health_counts(results) {
+        (_, 0) => String::new(),
+        (o, e) => format!("{o}/{e} · {optimized_word}"),
+    }
 }
 
 pub fn health_tone(score: u32) -> &'static str {
@@ -149,6 +163,7 @@ impl DashboardView {
         let score = health_score(&s.scan_results);
         st.set_health_score(score as i32);
         st.set_health_tone(health_tone(score).into());
+        st.set_health_caption(health_caption(&s.scan_results, s.tr(TextKey::OptimizedLabel)).into());
         st.set_is_scanning(s.is_scanning);
 
         // Telemetry

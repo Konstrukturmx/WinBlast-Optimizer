@@ -20,6 +20,8 @@ export global DashboardStore {
     // Health
     in-out property <int> health-score;
     in-out property <string> health-tone: "danger";
+    // "13/194 · Optimized": the real count behind the score (empty before the first scan).
+    in-out property <string> health-caption;
     in-out property <bool> is-scanning;
 
     // Live telemetry

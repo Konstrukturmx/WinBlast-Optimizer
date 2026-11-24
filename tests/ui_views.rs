@@ -1206,3 +1206,13 @@ fn hud_close_hides_it_and_a_new_operation_shows_it_again() {
     assert!(app.get_hud_visible(), "HUD dismissal must not stick after the app went idle");
     h.state.borrow_mut().is_disk_scanning = false;
 }
+
+#[test]
+fn health_caption_states_the_real_count_not_a_verdict() {
+    let h = Harness::scanned();
+    h.goto(ActiveView::EasyDashboard);
+    let st = h.window.global::<DashboardStore>();
+    let (opt, elig) = winblast0::ui_slint::views::dashboard::health_counts(&h.state.borrow().scan_results);
+    assert!(elig > 0);
+    assert_eq!(st.get_health_caption().as_str(), format!("{opt}/{elig} · Optimized"));
+}
