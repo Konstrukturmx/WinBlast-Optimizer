@@ -1,6 +1,6 @@
 # WinBlast0 — Improvement checklist (v1.7.0, local branch `1.7.0-rebuild`)
 
-Source: the 2026-11-24 VM analysis (`docs/IMPROVEMENT_OPTIONS.md`, findings F-1…F-23) and the
+Source: the 2026-11-24 VM analysis (`IMPROVEMENT_OPTIONS.md`, findings F-1…F-23) and the
 2026-11-25 page-by-page review (all 26 pages rendered offline with `render_all_views` in
 `tests/ui_render_preview.rs`). The version stays **1.7.0**; each package is one local commit
 (never pushed). An item is ticked only after it is implemented **and** verified (clippy
@@ -93,7 +93,7 @@ Target sidebar:
 - [-] G7 German/Russian Windows image and a Windows 11 VM — not available on this host; C6 is verified by unit tests on captured output instead.
 
 ## Release (still v1.7.0, local only)
-- [~] R1 CHANGELOG, README and About "What's new" updated in 8 languages. — CHANGELOG [Unreleased] rewritten; About "What's new" points to Settings for Reduced motion; README and new About bullets for this pass not written
+- [x] R1 CHANGELOG, README and About "What's new" updated in 8 languages. — CHANGELOG [Unreleased] rewritten; About "What's new" points to Settings for Reduced motion — README rewritten with real screenshots (2026-11-25)
 - [x] R2 `cargo clippy --all-targets -- -D warnings` clean (also with `--features vm-tests`); `cargo test --all-targets` 100 % pass. — clippy clean with and without vm-tests; host 321 passed, 0 failed
 - [x] R3 VM suite (`--features vm-tests` + `WINBLAST_VM_AGGRESSIVE=1`) in "Windows 10 MSIX packaging environment" from checkpoint `clean-test`, then reverted. — VM run 3: 16 suites green, vm_aggressive 8/8 (catalog byte-exact, crash 6/6, foreign 0/420, stress, planted rules, corruption); `docs/vm-test-1.7.0/run3-summary.txt`; VM reverted to clean-test
 - [x] R4 `cargo build --release`, signed by thumbprint with the DigiCert timestamp; SHA-256 recorded here. — signed by 070A70E0…404D + DigiCert timestamp; SHA-256 0D7193901AED264DAC82AB76280D7AB2B0AC81BEE26D4B9114F983147BCBC477 (60,502,432 bytes)

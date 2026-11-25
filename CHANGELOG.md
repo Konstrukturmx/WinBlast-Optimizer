@@ -4,9 +4,9 @@ All notable changes to **WinBlast Optimizer** are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
-## [Unreleased]
+## [v1.7.0] - 2026-11-25
 
-Everything below is on the local branch `1.7.0-rebuild`; the version number stays 1.7.0. The full list with evidence is in `checklist.md`.
+The first public 1.7.0 release. Every item below is tracked with its evidence in [docs/checklist-1.7.0.md](docs/checklist-1.7.0.md).
 
 ### Undo you can trust
 - Every change is written to the undo ledger **before** it is made, so a crash or power cut can still be undone (VM: 6 of 6 hard kills recovered exactly; before, 0 of 6).
@@ -50,19 +50,20 @@ Everything below is on the local branch `1.7.0-rebuild`; the version number stay
 
 ### Tests
 - Unit tests read raw SMART hex dumps from real drives; the sandbox lifecycle test checks byte-exact rollback for all 230 tweaks; `PROPTEST_CASES` is honoured (it found a re-apply bug, now fixed); VM tests can no longer pass by skipping.
+- `WINBLAST_SCREENSHOT_DIR` opens each page and saves a screenshot for the docs (read-only; it never presses a button).
 
 ---
-## [v1.7.0] - 2026-11-24
+### Also in 1.7.0: Slint UI rebuild (2026-11-23/24)
 
 This release ships everything built on 2026-11-23 (the Slint migration and the unreleased 1.8.0 visual layer, listed below) plus the following changes, under the 1.7.0 version number.
 
-### Added
+#### Added
 - **Colour theory themes**: 4 schemes (Cyber Indigo, Midnight Stealth, Emerald Mint, Crimson Sunset) generated in OKLCH. Surfaces carry a faint tint of the scheme hue, data series use split-complementary/analogous partner hues, and accent hues stay clear of the success/danger colours. Dark mode uses light tonal accents with dark labels. A unit test checks all 40 mode × scheme × style combinations against WCAG 2.1 AA (4.5:1 text, 3:1 UI graphics), blending in sRGB with 8-bit quantisation as the renderer does.
 - **Loading screen**: comet-ring spinner with a counter-rotating orbit, breathing core, indeterminate sweep bar, a note that closing keeps the task running, and a real **Close** button (static with Reduced motion).
 - **Hover feedback**: buttons grow on hover and squash on press; Advanced Matrix, Startup and Clean & Apps rows highlight under the pointer.
 - **3D depth layer** (GPU only): cards lift, a light spot follows the pointer and the shadow falls away from it. It is enabled only when a DXGI probe finds a real hardware adapter (WARP, Basic Render and Hyper-V adapters excluded) and Reduced motion is off; Support & About shows whether it is on.
 
-### Changed
+#### Changed
 - Solar Amber and Arctic Aurora were removed; saved settings load as Crimson Sunset and Emerald Mint.
 - The top bar collapses progressively (shorter labels, then the scheme and engine switches move to the sidebar) so it never overlaps the brand, in all 8 languages.
 - The health ring caption shows the real count ("13/194 · Optimized") instead of a fixed "Optimized" that also appeared at 7 %.
@@ -70,18 +71,18 @@ This release ships everything built on 2026-11-23 (the Slint migration and the u
 - PE file/product version now follows `Cargo.toml` (it was hard-coded).
 - Relaunch as Administrator uses ShellExecute "runas" instead of a PowerShell process.
 
-### Fixed
+#### Fixed
 - The loading screen's Close was plain text behind a click-blocking card, so it did nothing; after one dismissal the screen also never came back that session.
 - Three panics on non-ASCII input: hex decoding of registry values, GUID parsing and `%SystemRoot%` expansion of startup paths such as `C:\Programmé\…`.
 - 17 symbols that neither Inter nor the Windows font fallback draws rendered as blank gaps (e.g. every ✔, the ✕ in "✕ Close", the ▾ on dropdown chips); replaced with ones verified by an offline render probe.
 - Failed compensating rollbacks and a failed restore of the executable during an update are now logged/reported instead of ignored.
 
-### Testing
+#### Testing
 - Host (sandboxed): 287 passed, 0 failed; clippy `--all-targets -D warnings` clean.
 - New: theme contrast test, layout collision sweep (26 views × 5 widths, German/Russian at 800 px, top bar in 8 languages × 10 widths), page reachability test, glyph coverage test, HUD dismissal and health caption tests, UTF-8 panic regressions.
 - VM (Hyper-V Windows 10 Enterprise 19044, no VC++ runtime, Basic Render adapter): full `--features vm-tests` suite and a manual run of the signed release exe — see CHECKLIST.md.
 
-### Visual layer (built 2026-11-23 as the unreleased 1.8.0)
+#### Visual layer (built 2026-11-23 as the unreleased 1.8.0)
 
 #### Added
 - **Typography**: Inter (UI) and JetBrains Mono (numbers, logs, telemetry) are embedded in the executable (SIL OFL 1.1, subset to Latin/Greek/Cyrillic and symbols; ~560 KB). Chinese and Japanese text falls back to the Windows system fonts. Sources and rebuild steps: `ui/fonts/README.md`.
@@ -103,7 +104,7 @@ This release ships everything built on 2026-11-23 (the Slint migration and the u
 - New tests: command-palette catalogue covers every view and only known i18n keys, ranking and accent-insensitive search; toast tone classification.
 - New manual check `tests/ui_render_preview.rs` renders the real `MainWindow` offline with Slint's software renderer (dashboard, toasts, palette, shimmer, About, light theme, compact width).
 
-### Slint migration (2026-11-23)
+#### Slint migration (2026-11-23)
 
 #### Changed
 - **Rune removed; the UI is now Slint 1.19 only.** All 26 views were rebuilt on Slint global stores (`ui/stores/*.slint`) with per-view Rust binders (`src/ui_slint/views/*.rs`). There is no `--ui=rune` mode any more.

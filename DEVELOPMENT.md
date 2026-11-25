@@ -1,68 +1,69 @@
-# WinBlast Optimizer — Developer & Architecture Guide
+# WinBlast0 — Developer & Architecture Guide
 
-Welcome to the internal engineering guide for **WinBlast Optimizer**. This document explains the system design, code layout, sandbox testing environment, and guidelines for adding new tweaks and features.
+How WinBlast0 is put together, how it is tested and how to add a tweak. For users, see [README.md](README.md).
 
 ---
 
-## 🏛️ System Architecture
+## 🏛️ Architecture
 
 ```mermaid
 graph TD
-    UI[Rune GPU UI Engine] -->|User Events / Staged Tweaks| AppState[AppState Reactive State Machine]
-    AppState -->|Background Tasks| Worker[Guarded Worker Threads]
-    Worker -->|Read / Probe| Scanner[Multi-Engine Scanner Subsystem]
-    Worker -->|Mutate / Rollback| Executor[Execution & Rollback Engine]
-    
-    Scanner --> SysBackend[SystemBackend Trait]
-    Executor --> SysBackend
-    Executor -->|Log Transitions| Ledger[(SQLite WAL State Ledger)]
-    
-    SysBackend -->|Production| RealWin32[Win32 API / NT Kernel / Registry / SCM]
-    SysBackend -->|Testing / CI| Sandbox[In-Memory SandboxEnv]
+    UI[Slint 1.19 UI<br/>ui/*.slint] -->|callbacks| Bridge[ui_slint bridge + per-view binders]
+    Bridge -->|act / sync| AppState[AppState]
+    AppState -->|background work| Workers[Guarded worker threads]
+    Workers -->|read| Scanner[Scanner]
+    Workers -->|change / undo| Executor[Executor]
+    Executor -->|write-ahead: begin, change, commit| Ledger[(SQLite undo ledger)]
+    Scanner --> Backend[SystemBackend trait]
+    Executor --> Backend
+    Backend -->|production| Real[RealBackend: Registry, SCM, Task Scheduler, powercfg, IOCTLs]
+    Backend -->|tests| Sandbox[SandboxEnv: in-memory Windows model]
 ```
 
-### Key Subsystems:
-1. **`src/ui/`**: Pure-Rust Rune immediate-mode GUI engine with dynamic responsive tiering, 60 FPS spring animations, theme styling, and palette-driven scroll bars (`widgets/scrollbar.rs`).
-2. **`src/core/`**: Core definitions, OS version detection, elevation token verification, internationalization (`i18n.rs` & `tweak_i18n/`), unified `WinBlastError` hierarchy (`Registry`, `Service`, `Com`, `NtStatus`, `Io`, `InvalidInput`), and the `SystemBackend` abstraction.
-3. **`src/scanner/`**: Detection engines for 64-bit/32-bit Registry values, Win32 SCM services, scheduled tasks, provisioned AppX packages, and Rayon-powered multi-threaded parallel catalog evaluation (`scan_all_tweaks_parallel`).
-4. **`src/executor/`**: Transactional mutators for registry keys, Windows services, hosts blocking, and power scheme parameters with atomic intermediate rollback.
-5. **`src/backup/`**: SQLite Write-Ahead Logging (`winblast0_ledger.db`) transaction engine, automated pre-flight VSS restore point verification (`ensure_preflight_restore_point`), and Windows VSS Restore Point manager.
-6. **`src/hardware/`**: NT kernel timer resolution FFI, CPU core topology (`GetLogicalProcessorInformationEx`), core parking manager, and DXGI/SetupDi GPU vendor detection.
-7. **`src/tools/`**: System tools including the Junk File & Recycle Bin cleaner, AppX deprovisioner, WinGet integration, startup manager, and `autounattend.xml` generator.
+| Path | What lives there |
+|---|---|
+| `ui/` | Slint markup: `shell/` (window, sidebar, header), `views/` (one file per page or tab), `components/`, `stores/` (globals such as `nav.slint`), `tokens/` (theme), `fonts/` (embedded Inter and JetBrains Mono) |
+| `src/ui_slint/` | The bridge between Slint and `AppState`: `bridge.rs` (UI tick, settings, screenshot tour), `shell.rs`, `views/<page>.rs` binders, `i18n.rs` |
+| `src/app.rs` | `AppState`, navigation (`ActiveView`, 28 views on 17 pages) and worker events |
+| `src/core/` | `SystemBackend` trait with `RealBackend` and `SandboxEnv`, i18n catalogs (`i18n.rs`, `view_i18n.rs`), `process.rs` (`SilentCommand`/`TimedCommand` with timeouts, System32 resolution), `updater.rs` (signed updates), settings, elevation |
+| `src/scanner/` | Reads current state for each tweak (registry, services, tasks, AppX, power) |
+| `src/executor/` | `engine.rs` (apply, undo, write-ahead, mutation lock), `reg_mutator.rs`, service and power mutators |
+| `src/backup/` | `state_ledger.rs` (SQLite ledger, schema v2, crash reconciliation) and restore points |
+| `src/hardware/` | CPU, GPU, thermal, disks (`disks.rs` SMART/NVMe, `tbw.rs` SATA unit table), drivers |
+| `src/tools/` | Cleaner, AppX, WinGet, startup, repair, network, benchmarks, automation, Windows Setup file |
+| `assets/rules/*.toml` | The tweak catalog (230 tweaks), built into the exe |
+
+### Rules that keep it honest
+- **No invented values.** If a sensor or API can't be read, show N/A or *Requires admin*. Never derive or hard-code a reading.
+- **Write-ahead.** Every system change goes through `begin_change → change → commit_change` in the ledger, with the exact prior value (`RegValuePrior` for registry values).
+- **One mutation at a time.** Changes take the global `MUTATION_LOCK` (`mutation_guard()`).
+- **External tools** are started with `SilentCommand`, which resolves them in System32 and enforces a timeout.
 
 ---
 
-## 🧪 Testing with `SystemBackend` & `SandboxEnv`
+## 🧪 Testing
 
-WinBlast uses the object-safe `SystemBackend` trait to separate optimization logic from live Windows APIs. This allows 100% test coverage without mutating the host machine's registry:
+All default tests run against `SandboxEnv` or read-only APIs; **none of them change the machine they run on.**
 
-```rust
-pub trait SystemBackend: Send + Sync {
-    fn read_registry_dword(&self, root: RegRoot, path: &str, value: &str) -> Result<Option<u32>>;
-    fn write_registry_dword(&self, root: RegRoot, path: &str, value: &str, data: u32) -> Result<()>;
-    fn query_service_status(&self, name: &str) -> Result<Option<ServiceStatus>>;
-    fn set_service_startup(&self, name: &str, mode: ServiceStartMode) -> Result<()>;
-    // ...
-}
-```
-
-### Running Tests:
 ```powershell
-# Run all unit tests (115 tests)
-cargo test --lib
-
-# Run isolated sandbox regression tests (25 tests)
-cargo test --test tweak_sandbox_e2e
-
-# Run headless UI responsive matrix & multi-locale sweeps (13 tests)
-cargo test --test ui_responsive_e2e
-
-# Run headless scroll-bar geometry, hover & drag interaction E2E tests (5 tests)
-cargo test --test ui_scrollbar_test
-
-# Run live Windows environment read-only audit (3 tests)
-cargo test --test real_windows_env
+cargo test --all-targets                      # 321 tests
+cargo clippy --all-targets -- -D warnings     # must be clean
+cargo clippy --all-targets --features vm-tests -- -D warnings
 ```
+
+| Suite | Covers |
+|---|---|
+| `--lib` | Unit tests, including raw SMART hex-dump fixtures in `tests/fixtures/smart/` |
+| `tweak_sandbox_e2e` | Apply → scan → re-apply → undo for all 230 tweaks, checked byte-for-byte |
+| `fuzz_mutation_properties` | proptest reversibility and idempotence (`PROPTEST_CASES=400` for a deeper run) |
+| `edge_cases_unorthodox`, `selection_automation_e2e`, `dual_engine_validation_test` | Edge cases, selection and automation flows |
+| `ui_views`, `ui_parity`, `ui_layout_collision`, `nav_labels`, `ui_render_preview` | Headless UI: every view renders, every callback is wired, labels and layout |
+| `font_coverage`, `glyph_coverage` | Every UI character exists in the embedded fonts |
+| `real_windows_env` | Read-only checks against the real Windows APIs |
+| `vm_aggressive` | **VM only** (`--features vm-tests`, `WINBLAST_VM_AGGRESSIVE=1`): real-registry byte-exact round trips, hard-kill crash recovery, concurrency stress, ledger corruption |
+
+### Screenshots
+`WINBLAST_SCREENSHOT_DIR=<dir>` makes the app open each view, wait for its read-only data and save it as a BMP, then quit. `WINBLAST_SCREENSHOT_VIEWS=dashboard,matrix,…` picks views; `WINBLAST_SCREENSHOT_WAIT=8` sets the wait in seconds. The tour only navigates and never presses a button.
 
 ---
 

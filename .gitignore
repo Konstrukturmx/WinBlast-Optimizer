@@ -9,3 +9,8 @@ graphify-out/20*
 graphify-out/.graphify_python
 *.pfx
 .vscode/
+
+# Local secrets and scratch output
+virustotalapi.txt
+*.apikey
+*.bmp

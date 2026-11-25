@@ -330,45 +330,21 @@
     "semantic_hash": ""
   },
   "CHANGELOG.md": {
-    "mtime": 1795606076.9685285,
-    "seen": 1795606967.4860342,
-    "ast_hash": "6ae6743745a85400c14660821ba4ebd8",
+    "mtime": 1795610466.4499173,
+    "seen": 1795610490.621491,
+    "ast_hash": "d4a61130f76175d96415fa5c40fcca14",
     "semantic_hash": ""
   },
   "DEVELOPMENT.md": {
-    "mtime": 1794925365.4772713,
-    "seen": 1794925398.8099866,
-    "ast_hash": "f1f928bc4c6bfd360042e83a87a0a4c1",
+    "mtime": 1795610442.5189595,
+    "seen": 1795610490.6214921,
+    "ast_hash": "5c1ed7e9e8702a6b12198132de94f8f3",
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1795509292.3794558,
-    "seen": 1795509300.2940345,
-    "ast_hash": "9a04534e66c86065ac5fe9eea946c7cd",
-    "semantic_hash": ""
-  },
-  "assets/screenshots/advanced_matrix.png": {
-    "mtime": 1795366298.033452,
-    "seen": 1795373840.066668,
-    "ast_hash": "5ba99fae380140b0408cd3833fff4337",
-    "semantic_hash": ""
-  },
-  "assets/screenshots/cpu_parking.png": {
-    "mtime": 1795366298.0384607,
-    "seen": 1795373840.0666692,
-    "ast_hash": "467f7de7e01b4d2ac713b31189b3e5e5",
-    "semantic_hash": ""
-  },
-  "assets/screenshots/dashboard.png": {
-    "mtime": 1795366298.0434606,
-    "seen": 1795373840.0666707,
-    "ast_hash": "c772b7a4c5ed5eae890fa475cae62a75",
-    "semantic_hash": ""
-  },
-  "assets/screenshots/gpu_tuning.png": {
-    "mtime": 1795366298.0524707,
-    "seen": 1795373840.0666728,
-    "ast_hash": "641c62f3949692edc20f13d03af44201",
+    "mtime": 1795610439.9899766,
+    "seen": 1795610490.6214936,
+    "ast_hash": "bdfc2edf8f7ff9b4a3a33ebc182d9742",
     "semantic_hash": ""
   },
   "src/graph/astar.rs": {
@@ -479,24 +455,6 @@
     "ast_hash": "dc5a3aa03fafd21b7f788fb0a1c2e645",
     "semantic_hash": ""
   },
-  "assets/screenshots/fault_diagnostics.png": {
-    "mtime": 1795366298.047466,
-    "seen": 1795373840.0666718,
-    "ast_hash": "0b5a2f7d20effd5a73b285946eb05b86",
-    "semantic_hash": ""
-  },
-  "assets/screenshots/minimalistic_theme.png": {
-    "mtime": 1795366298.0569746,
-    "seen": 1795373840.0666742,
-    "ast_hash": "b429bbc404942c39161f9a1b4e70ee85",
-    "semantic_hash": ""
-  },
-  "assets/screenshots/support_about.png": {
-    "mtime": 1795366298.0634832,
-    "seen": 1795373840.0666754,
-    "ast_hash": "576e2e0f1e140f904eda55f167c3a077",
-    "semantic_hash": ""
-  },
   "winblast.png": {
     "mtime": 1794724336.3489544,
     "seen": 1794744496.5999053,
@@ -570,9 +528,9 @@
     "semantic_hash": "ae71620c092285d1e429f67f762249cf"
   },
   "SECURITY.md": {
-    "mtime": 1795099910.248797,
-    "seen": 1795100442.8573353,
-    "ast_hash": "8d7ae730d049cb3250c0ade3d574a302",
+    "mtime": 1795610442.932873,
+    "seen": 1795610490.6214945,
+    "ast_hash": "ef4467d97df15a5a9ff9aaf661829edb",
     "semantic_hash": ""
   },
   "src/graph/topological_scheduler.rs": {
@@ -654,9 +612,9 @@
     "semantic_hash": "846317317b21a60c90cb816f5048dad8"
   },
   "src/ui_slint/bridge.rs": {
-    "mtime": 1795367771.7100062,
-    "seen": 1795373840.0665975,
-    "ast_hash": "0061b60095967f34ef2e0d74c4f45362",
+    "mtime": 1795609490.2417748,
+    "seen": 1795610490.621423,
+    "ast_hash": "c5cecf3493aa445a022367292c6ab52e",
     "semantic_hash": ""
   },
   "src/ui_slint/mod.rs": {
@@ -705,48 +663,6 @@
     "mtime": 1795366298.248749,
     "seen": 1795373840.0666335,
     "ast_hash": "50a18731ee5dd66fd8266cff0a65ca8f",
-    "semantic_hash": ""
-  },
-  "docs/migration_baselines/advanced_matrix.png": {
-    "mtime": 1795366298.0664916,
-    "seen": 1795373840.0666764,
-    "ast_hash": "b7cd562f7bc215388ed81a891114958a",
-    "semantic_hash": ""
-  },
-  "docs/migration_baselines/cpu_parking.png": {
-    "mtime": 1795366298.068997,
-    "seen": 1795373840.066678,
-    "ast_hash": "f72ea7625662cb263d4369529f42cc5e",
-    "semantic_hash": ""
-  },
-  "docs/migration_baselines/dashboard.png": {
-    "mtime": 1795366298.0714958,
-    "seen": 1795373840.0666792,
-    "ast_hash": "6645c87e17c1a5b2de0652f564fc78b4",
-    "semantic_hash": ""
-  },
-  "docs/migration_baselines/fault_diagnostics.png": {
-    "mtime": 1795366298.0734954,
-    "seen": 1795373840.0666807,
-    "ast_hash": "7c4249d4ccd2e2888218ebebabd402ba",
-    "semantic_hash": ""
-  },
-  "docs/migration_baselines/gpu_tuning.png": {
-    "mtime": 1795366298.075997,
-    "seen": 1795373840.0666816,
-    "ast_hash": "961bc49fcc672721eec4f969b839d105",
-    "semantic_hash": ""
-  },
-  "docs/migration_baselines/minimalistic_theme.png": {
-    "mtime": 1795366298.078001,
-    "seen": 1795373840.0666828,
-    "ast_hash": "7a056755556cf0df7f834393b158f27e",
-    "semantic_hash": ""
-  },
-  "docs/migration_baselines/support_about.png": {
-    "mtime": 1795366298.0810237,
-    "seen": 1795373840.0666842,
-    "ast_hash": "58c48c3603b068d3f2e78c97406fd612",
     "semantic_hash": ""
   },
   "src/core/settings.rs": {
@@ -905,18 +821,6 @@
     "ast_hash": "5c22d4bfb068be73b660374d55b713c6",
     "semantic_hash": ""
   },
-  "CHECKLIST.md": {
-    "mtime": 1795509279.111616,
-    "seen": 1795509300.2940276,
-    "ast_hash": "83b8af2d97cd1986c5eb1cad18a9ce65",
-    "semantic_hash": ""
-  },
-  "PARITY_MATRIX.md": {
-    "mtime": 1795427599.153672,
-    "seen": 1795443512.5023174,
-    "ast_hash": "2778aca88028a45d51df894f3038e567",
-    "semantic_hash": ""
-  },
   "docs/v1.7.0-bugfixes.md": {
     "mtime": 1795428848.0372088,
     "seen": 1795443512.5023272,
@@ -969,168 +873,6 @@
     "mtime": 1795601029.9605558,
     "seen": 1795606967.4860234,
     "ast_hash": "42800f944ad3c58413454abe2fefe73f",
-    "semantic_hash": ""
-  },
-  "docs/screenshots-1.7.0/01-dashboard.png": {
-    "mtime": 1795504653.493389,
-    "seen": 1795509300.29407,
-    "ast_hash": "bce9f99073a8a685f62cd4d4ae0957cd",
-    "semantic_hash": ""
-  },
-  "docs/screenshots-1.7.0/02-hardware.png": {
-    "mtime": 1795504653.506421,
-    "seen": 1795509300.294071,
-    "ast_hash": "21652fe479fd1c9d49d5fd5cfc7cd562",
-    "semantic_hash": ""
-  },
-  "docs/screenshots-1.7.0/03-driver_bios.png": {
-    "mtime": 1795504653.516456,
-    "seen": 1795509300.2940743,
-    "ast_hash": "b954b47595e9c3368bc9eb5ae5cfeff9",
-    "semantic_hash": ""
-  },
-  "docs/screenshots-1.7.0/04-performance_tests.png": {
-    "mtime": 1795504653.5214717,
-    "seen": 1795509300.2940755,
-    "ast_hash": "dfed62a07cd6d24545d068d3154f090c",
-    "semantic_hash": ""
-  },
-  "docs/screenshots-1.7.0/05-fault_diagnostics.png": {
-    "mtime": 1795504653.532001,
-    "seen": 1795509300.2940767,
-    "ast_hash": "c0ceea6f3762a53cfe7d7ab3b1144e47",
-    "semantic_hash": ""
-  },
-  "docs/screenshots-1.7.0/06-latency.png": {
-    "mtime": 1795504653.5380177,
-    "seen": 1795509300.2940776,
-    "ast_hash": "bfdc9ce620eb7a3caff9c7095431359e",
-    "semantic_hash": ""
-  },
-  "docs/screenshots-1.7.0/07-cpu_parking.png": {
-    "mtime": 1795504653.5440426,
-    "seen": 1795509300.2940788,
-    "ast_hash": "9e07fa16313b5c93dc90adf406995808",
-    "semantic_hash": ""
-  },
-  "docs/screenshots-1.7.0/08-thermal.png": {
-    "mtime": 1795504653.5500684,
-    "seen": 1795509300.29408,
-    "ast_hash": "cee26ecdb904ecb38d270e816ad8ac0c",
-    "semantic_hash": ""
-  },
-  "docs/screenshots-1.7.0/09-disk_health.png": {
-    "mtime": 1795504653.5540864,
-    "seen": 1795509300.294081,
-    "ast_hash": "c3094679570c9f438a41d3c0dfbba15b",
-    "semantic_hash": ""
-  },
-  "docs/screenshots-1.7.0/10-gaming_stats.png": {
-    "mtime": 1795504653.5565958,
-    "seen": 1795509300.2940822,
-    "ast_hash": "800bb0a11092991cd27a0a348d306dcc",
-    "semantic_hash": ""
-  },
-  "docs/screenshots-1.7.0/11-fps_benchmark.png": {
-    "mtime": 1795504653.5606158,
-    "seen": 1795509300.294083,
-    "ast_hash": "07b1820e6868fa336da5f0c544682599",
-    "semantic_hash": ""
-  },
-  "docs/screenshots-1.7.0/12-network_diag.png": {
-    "mtime": 1795504653.563632,
-    "seen": 1795509300.294084,
-    "ast_hash": "661f30dfa7d03c678d0f9fa32bf0f6d4",
-    "semantic_hash": ""
-  },
-  "docs/screenshots-1.7.0/12b-network_after_ping.png": {
-    "mtime": 1795504653.5676436,
-    "seen": 1795509300.2940853,
-    "ast_hash": "278eecee4791aeae18c6247c728dfacf",
-    "semantic_hash": ""
-  },
-  "docs/screenshots-1.7.0/13-matrix.png": {
-    "mtime": 1795504653.5716627,
-    "seen": 1795509300.2940865,
-    "ast_hash": "3bd1e5c6083ce6aac07ddf8ac48ed958",
-    "semantic_hash": ""
-  },
-  "docs/screenshots-1.7.0/14-goal_planner.png": {
-    "mtime": 1795504653.5751731,
-    "seen": 1795509300.2940876,
-    "ast_hash": "a509774917afc32f9db7e8f76e83aabc",
-    "semantic_hash": ""
-  },
-  "docs/screenshots-1.7.0/15-game_profiles.png": {
-    "mtime": 1795504653.5781775,
-    "seen": 1795509300.2940886,
-    "ast_hash": "31ffc311030180a89f407d8798cd67a8",
-    "semantic_hash": ""
-  },
-  "docs/screenshots-1.7.0/16-game_overlay.png": {
-    "mtime": 1795504653.580683,
-    "seen": 1795509300.2940898,
-    "ast_hash": "e4804e834c6bb33ae5356d4281575bed",
-    "semantic_hash": ""
-  },
-  "docs/screenshots-1.7.0/17-game_suitability.png": {
-    "mtime": 1795504653.5851989,
-    "seen": 1795509300.294091,
-    "ast_hash": "33518f4c1dac8fc6bc8b796bad742bdb",
-    "semantic_hash": ""
-  },
-  "docs/screenshots-1.7.0/18-game_prereqs.png": {
-    "mtime": 1795504653.5882068,
-    "seen": 1795509300.2940917,
-    "ast_hash": "87d5447900e3f7778c38c7b7ce10bb36",
-    "semantic_hash": ""
-  },
-  "docs/screenshots-1.7.0/19-automation.png": {
-    "mtime": 1795504653.591718,
-    "seen": 1795509300.2940931,
-    "ast_hash": "13f9f74aeead78f73059882b206f71de",
-    "semantic_hash": ""
-  },
-  "docs/screenshots-1.7.0/20-clean_apps.png": {
-    "mtime": 1795504653.5952287,
-    "seen": 1795509300.294094,
-    "ast_hash": "02d585c25535887b7f401f8569eab716",
-    "semantic_hash": ""
-  },
-  "docs/screenshots-1.7.0/21-startup_tasks.png": {
-    "mtime": 1795504653.5982366,
-    "seen": 1795509300.2940953,
-    "ast_hash": "82d9291e8a55f320dad3836d3e9a12db",
-    "semantic_hash": ""
-  },
-  "docs/screenshots-1.7.0/22-windows_repair.png": {
-    "mtime": 1795504653.6022522,
-    "seen": 1795509300.2940965,
-    "ast_hash": "527cb057d0bdfd7709d444537d3ef9df",
-    "semantic_hash": ""
-  },
-  "docs/screenshots-1.7.0/23-backup.png": {
-    "mtime": 1795504653.6052604,
-    "seen": 1795509300.2940974,
-    "ast_hash": "e948307fad17acce12cb6789d66deab8",
-    "semantic_hash": ""
-  },
-  "docs/screenshots-1.7.0/24-gpu.png": {
-    "mtime": 1795504653.6082695,
-    "seen": 1795509300.2940984,
-    "ast_hash": "2b8ca7305435f318e37e014705456819",
-    "semantic_hash": ""
-  },
-  "docs/screenshots-1.7.0/25-privacy.png": {
-    "mtime": 1795504653.6122804,
-    "seen": 1795509300.2940996,
-    "ast_hash": "eacf241bf1d6d79fde3cd3a19ed9bba4",
-    "semantic_hash": ""
-  },
-  "docs/screenshots-1.7.0/26-support_about.png": {
-    "mtime": 1795504653.6157908,
-    "seen": 1795509300.2941005,
-    "ast_hash": "b27ef860ce341da142f868ff3002e085",
     "semantic_hash": ""
   },
   "docs/vm-test-1.7.0/01-dashboard-before-fix.png": {
@@ -1217,12 +959,6 @@
     "ast_hash": "6ccbc55a6b4a307b6e9e88d3121349c1",
     "semantic_hash": ""
   },
-  "checklist.md": {
-    "mtime": 1795606959.9549115,
-    "seen": 1795606967.486041,
-    "ast_hash": "02cacd00d18b54bfd1b8e9707fdc74bc",
-    "semantic_hash": ""
-  },
   "tests/nav_labels.rs": {
     "mtime": 1795602347.6055262,
     "seen": 1795606967.4860163,
@@ -1239,6 +975,60 @@
     "mtime": 1795606429.2783973,
     "seen": 1795606967.486045,
     "ast_hash": "2435ad5dcf095e1d062724d183567dd4",
+    "semantic_hash": ""
+  },
+  "docs/checklist-1.7.0.md": {
+    "mtime": 1795610484.621457,
+    "seen": 1795610490.6214976,
+    "ast_hash": "d8427d2d2cfd63cb0081561ce103fa8e",
+    "semantic_hash": ""
+  },
+  "docs/screenshots/backup-undo.png": {
+    "mtime": 1795609565.2899752,
+    "seen": 1795610490.6215062,
+    "ast_hash": "f65dec172decbc687a98ba0632c077f9",
+    "semantic_hash": ""
+  },
+  "docs/screenshots/dashboard.png": {
+    "mtime": 1795609561.3143694,
+    "seen": 1795610490.6215076,
+    "ast_hash": "ba4be039411eee393667ef7cbd6a4bad",
+    "semantic_hash": ""
+  },
+  "docs/screenshots/disk-health.png": {
+    "mtime": 1795609563.7164087,
+    "seen": 1795610490.6215088,
+    "ast_hash": "472c46430af177cdaebaf01874869658",
+    "semantic_hash": ""
+  },
+  "docs/screenshots/hardware.png": {
+    "mtime": 1795609562.9679987,
+    "seen": 1795610490.6215098,
+    "ast_hash": "d193d32e7075a745dc1cf52f2afeba01",
+    "semantic_hash": ""
+  },
+  "docs/screenshots/icon.png": {
+    "mtime": 1795610451.2494793,
+    "seen": 1795610490.621511,
+    "ast_hash": "0cf041cd2d1a181ac9a348a37ac713ff",
+    "semantic_hash": ""
+  },
+  "docs/screenshots/privacy.png": {
+    "mtime": 1795609564.4558032,
+    "seen": 1795610490.621512,
+    "ast_hash": "a56464c66010efed80e72788b8b3e348",
+    "semantic_hash": ""
+  },
+  "docs/screenshots/settings.png": {
+    "mtime": 1795609566.0426097,
+    "seen": 1795610490.6215131,
+    "ast_hash": "a61d7aa6ee0a37e3e43995c86b81a95c",
+    "semantic_hash": ""
+  },
+  "docs/screenshots/tweaks.png": {
+    "mtime": 1795609562.136384,
+    "seen": 1795610490.621519,
+    "ast_hash": "9d21ba22749d5c2587232230f9f49c16",
     "semantic_hash": ""
   }
 }
