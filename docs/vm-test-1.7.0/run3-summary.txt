@@ -1,0 +1,61 @@
+VM run 3 (2026-11-25, Hyper-V "Windows 10 MSIX packaging environment", checkpoint clean-test, --features vm-tests, WINBLAST_VM_AGGRESSIVE=1)
+
+Suites:
+start dual_engine_validation_test 2026-11-25T14:27:30.9591347+03:00
+end dual_engine_validation_test exit=0 2026-11-25T14:27:31.3966435+03:00
+start edge_cases_unorthodox 2026-11-25T14:27:31.4122608+03:00
+end edge_cases_unorthodox exit=0 2026-11-25T14:27:43.6304119+03:00
+start font_coverage 2026-11-25T14:27:43.6304119+03:00
+end font_coverage exit=0 2026-11-25T14:27:43.9429022+03:00
+start fuzz_mutation_properties 2026-11-25T14:27:43.9585289+03:00
+end fuzz_mutation_properties exit=0 2026-11-25T14:27:48.0835367+03:00
+start glyph_coverage 2026-11-25T14:27:48.0835367+03:00
+end glyph_coverage exit=0 2026-11-25T14:27:48.7397892+03:00
+start nav_labels 2026-11-25T14:27:48.7397892+03:00
+end nav_labels exit=0 2026-11-25T14:27:48.9897841+03:00
+start real_windows_env 2026-11-25T14:27:49.0210414+03:00
+end real_windows_env exit=0 2026-11-25T14:27:55.0661352+03:00
+start selection_automation_e2e 2026-11-25T14:27:55.0661352+03:00
+end selection_automation_e2e exit=0 2026-11-25T14:27:56.0036434+03:00
+start startup_timing 2026-11-25T14:27:56.0036434+03:00
+end startup_timing exit=0 2026-11-25T14:27:56.4880237+03:00
+start tweak_sandbox_e2e 2026-11-25T14:27:56.4880237+03:00
+end tweak_sandbox_e2e exit=0 2026-11-25T14:28:05.0687243+03:00
+start ui_layout_collision 2026-11-25T14:28:05.0687243+03:00
+end ui_layout_collision exit=0 2026-11-25T14:29:39.9995403+03:00
+start ui_parity 2026-11-25T14:29:39.9995403+03:00
+end ui_parity exit=0 2026-11-25T14:29:43.1440026+03:00
+start ui_render_preview 2026-11-25T14:29:43.1440026+03:00
+end ui_render_preview exit=0 2026-11-25T14:29:44.7078712+03:00
+start ui_views 2026-11-25T14:29:44.7078712+03:00
+end ui_views exit=0 2026-11-25T14:29:56.0837425+03:00
+start winblast0 2026-11-25T14:29:56.0837425+03:00
+end winblast0 exit=0 2026-11-25T14:30:05.0396696+03:00
+start vm_aggressive 2026-11-25T14:30:05.0396696+03:00
+end vm_aggressive exit=0 2026-11-25T14:33:13.8179979+03:00
+ALLDONE
+
+
+vm_aggressive summary:
+test vm_concurrent_apply_rollback_stress ... ok
+test vm_crash_child ... ok
+test vm_crash_mid_apply_recovers_from_ledger ... 
+round 0: killed after 150 ms, 12 ledger entries, 0 rollback errors, 0 keys differ
+test vm_crash_child ... 
+round 1: killed after 400 ms, 31 ledger entries, 0 rollback errors, 0 keys differ
+test vm_crash_child ... 
+round 2: killed after 900 ms, 31 ledger entries, 0 rollback errors, 0 keys differ
+test vm_crash_child ... 
+round 3: killed after 1700 ms, 31 ledger entries, 0 rollback errors, 0 keys differ
+test vm_crash_child ... 
+round 4: killed after 3000 ms, 99 ledger entries, 0 rollback errors, 0 keys differ
+test vm_crash_child ... 
+round 5: killed after 5200 ms, 104 ledger entries, 0 rollback errors, 0 keys differ
+test vm_crash_child ... ok
+foreign priors: 60 tweaks, 420 seeded round trips, 0 failures
+test vm_foreign_prior_types_survive_round_trip ... ok
+test vm_ledger_corruption_is_survivable ... ok
+test vm_planted_rules_file_is_not_loaded ... ok
+test vm_real_catalog_apply_rollback_is_byte_exact ... ok
+test vm_scan_fingerprint ... ok
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 187.87s

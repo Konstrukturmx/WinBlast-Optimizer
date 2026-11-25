@@ -6,18 +6,50 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ---
 ## [Unreleased]
 
-### Fixed
-- **NVMe SMART was never read**: the log-page query sent ProtocolType 1 (SCSI) and DataType 1 (Identify) with a 48-byte input buffer, and parsed the reply 8 bytes early. It now sends ProtocolTypeNvme (3) / NVMeDataTypeLogPage (2) with the full buffer, tries StorageAdapterProtocolSpecificProperty first, and locates the log at 8 + ProtocolDataOffset. ProtocolDataRequestSubValue stays 0 (it is the log-page offset; 0xFFFFFFFF fails with ERROR_IO_DEVICE). On the dev PC a KINGSTON SNV3S500G now shows 82 % health / 37.1 TB written / 3420 h instead of 99 % / 0.10 TB.
-- **TBW no longer comes from the wrong counters**: the kernel IOCTL_DISK_GET_PERFORMANCE byte count (resets at boot) and a non-existent Storage API property are no longer shown as lifetime writes. The v1.5 note "verified live: CX400 0.04 TBW, SNV3S500G 0.10 TBW" was based on those fallbacks.
+Everything below is on the local branch `1.7.0-rebuild`; the version number stays 1.7.0. The full list with evidence is in `checklist.md`.
 
-### Changed
-- **SATA TBW uses a vendor-unit table** (`src/hardware/tbw.rs`) keyed on the ATA IDENTIFY DEVICE model and firmware, following smartmontools drivedb attribute units (512-byte LBAs, 32 MiB, GiB, GB). Drives that are not listed, HDDs and virtual disks show **N/A**; an ERROR_ACCESS_DENIED from SMART shows **Requires admin**. Kingston A400 and Goodram CX400 count only with Phison firmware, because other controller variants use a different unit.
-- **SMART refreshes every 60 s** while Disk Health is open, on a worker thread.
-- PerMonitorV2 DPI awareness is set explicitly in `build.rs`.
+### Undo you can trust
+- Every change is written to the undo ledger **before** it is made, so a crash or power cut can still be undone (VM: 6 of 6 hard kills recovered exactly; before, 0 of 6).
+- Registry values are recorded with their exact type and bytes. A value that was text, QWORD or binary comes back unchanged instead of being deleted (VM: 0 failures in 420 round trips; before, 301). Keys WinBlast created are removed again when empty.
+- **Undo restores your own previous values**, not catalog defaults. "Reset to Windows defaults" is a separate, confirmed button, and it never creates values that did not exist.
+- Settings that are already at their target are not touched or recorded again; all changes go through one lock, so parallel workers cannot overwrite each other.
+- Network-adapter and GPU values are recorded per adapter key; a ledger that cannot be opened is reported instead of silently looking empty.
+- Stopping a service that refuses to stop no longer aborts after its start type was changed.
+
+### Security
+- Release builds use only the tweak catalog built into the exe; a rules file placed next to the exe or in `C:\assets` is ignored.
+- Updates: one repository, HTTPS only (also after redirects), `.exe` only, staged in an admin-only folder, and installed only if signed by the release certificate — checked after download and again before the swap. Nothing installs without clicking Restart.
+- Windows tools are started by their full System32 path; Edge removal runs only Microsoft-signed `setup.exe` files from Program Files.
+- The weekly temp cleaner runs as you on your own %TEMP% (it ran `del /s` as SYSTEM in C:\Windows\Temp).
+- The hosts file is replaced atomically; undoing one block removes only its own entries.
+- Fault Diagnostics no longer deletes Windows' pending-restart records. Web links open without admin rights. `1.7.0-rc.1` no longer counts as newer than `1.7.0`.
+
+### Only real data
+- Removed calculated values presented as measurements: CPU max-core and GPU hotspot temperatures, fan RPM, ambient temperature, the fixed RAM latency (58.5 ns) and disk speed (6850 MB/s), per-category driver sizes and the "stock vs optimized" FPS table.
+- The benchmark now measures RAM latency (pointer chasing) and uncached disk reads. Game profiles say what they do (High CPU priority) and are undone through the ledger.
+- Pages no longer show verdicts before a scan ("System Stable", "Secure Boot Disabled", a red 0 % health ring, "Default"); they show "Not scanned yet".
+- DNS changes go to the adapter with the default route and report the real result; repair tools report the tool's own exit code and output.
+- Driver, thermal and scheduled-task readings no longer depend on the Windows display language.
+- Restore-point age is compared in UTC; "created" is reported only if Windows made a new one. The no-op "memory purge" task is no longer offered.
+- "DPC latency" is now called what it measures: timer jitter.
+
+### Robustness
+- Every external command has a timeout and is stopped with its child processes when it hangs.
+- Ledger history loads on a worker, 500 rows at a time; thermals (and the disk probe behind them) run only while the Sensors page is open.
+- A tweak whose registry key cannot be read without admin rights says so instead of "not set".
+- Only one WinBlast0 window can run at a time; CPU detection no longer delays the first window.
+
+### Navigation and UI
+- 26 pages became 17: Benchmarks, Sensors, Repair, Gaming, Presets & Automation and Backup & Undo group related pages as tabs. New **Settings** page (language, appearance, zoom, motion, Instant/Normal) and a **Windows Setup File** tab. Old page links still work.
+- Buttons that change the system ask for a second click. Plain-language Goal Planner; one toolbar on the Tweaks page; even dashboard grid; the footer shows the version instead of marketing text.
+
+### Disks and fonts
+- **NVMe SMART was never read**: the log-page query sent ProtocolType 1 (SCSI) and DataType 1 (Identify) with a 48-byte input buffer, and parsed the reply 8 bytes early. It now sends ProtocolTypeNvme (3) / NVMeDataTypeLogPage (2) with the full buffer. On the dev PC a KINGSTON SNV3S500G now shows 82 % health / 37.1 TB written / 3420 h instead of 99 % / 0.10 TB.
+- SATA TBW uses a vendor-unit table (`src/hardware/tbw.rs`) from smartmontools' drive database; unknown drives, HDDs and virtual disks show **N/A**, access denied shows **Requires admin**. SMART refreshes every 60 s while the page is open.
+- Font tests: every UI letter (Turkish included) exists in the embedded fonts, and the weight axes match the weights used. PerMonitorV2 DPI awareness is set explicitly.
 
 ### Tests
-- Unit tests read raw hex dumps captured from real drives (`tests/fixtures/smart/`: NVMe descriptor + log page 0x02, ATA SMART table and IDENTIFY with the serial number blanked).
-- `tests/font_coverage.rs`: every Latin/Greek/Cyrillic letter in the UI text (Turkish included) exists in Inter-UI.ttf, ASCII + Turkish exist in JetBrainsMono-UI.ttf, and both `wght` axes span exactly the weights the UI uses (400-800).
+- Unit tests read raw SMART hex dumps from real drives; the sandbox lifecycle test checks byte-exact rollback for all 230 tweaks; `PROPTEST_CASES` is honoured (it found a re-apply bug, now fixed); VM tests can no longer pass by skipping.
 
 ---
 ## [v1.7.0] - 2026-11-24
