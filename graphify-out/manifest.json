@@ -1,8 +1,8 @@
 {
   "Cargo.toml": {
-    "mtime": 1795619615.0077033,
-    "seen": 1795625156.150801,
-    "ast_hash": "3198f883595db7119518acf7465ede13",
+    "mtime": 1795628054.3641615,
+    "seen": 1795629469.8333905,
+    "ast_hash": "a5bcb3f3da041f2b85dbe7bdb5314822",
     "semantic_hash": ""
   },
   "build.rs": {
@@ -60,9 +60,9 @@
     "semantic_hash": "003d1424d83a1fc0e768698e9b2e8cec"
   },
   "src/core/i18n.rs": {
-    "mtime": 1795610523.4712236,
-    "seen": 1795625156.1508496,
-    "ast_hash": "41ac7a796d8558face5c4ca11a5bde7e",
+    "mtime": 1795628053.9386227,
+    "seen": 1795629469.8334491,
+    "ast_hash": "e770bff7b26a605e3000e58f02cc899c",
     "semantic_hash": ""
   },
   "src/core/mod.rs": {
@@ -330,9 +330,9 @@
     "semantic_hash": ""
   },
   "CHANGELOG.md": {
-    "mtime": 1795625147.378029,
-    "seen": 1795625156.1510158,
-    "ast_hash": "f0b0b0b82604b008813653ef7989da74",
+    "mtime": 1795628081.9808435,
+    "seen": 1795629469.8336396,
+    "ast_hash": "50c028d87974e2de525f985d07783fa1",
     "semantic_hash": ""
   },
   "DEVELOPMENT.md": {
@@ -342,9 +342,9 @@
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1795610523.166967,
-    "seen": 1795625156.151018,
-    "ast_hash": "e28b2503bd0c7e46da685fd0a568e11d",
+    "mtime": 1795628080.5496106,
+    "seen": 1795629469.8336422,
+    "ast_hash": "6d5723dafdf73ad172a4b3a459ea92a7",
     "semantic_hash": ""
   },
   "src/graph/astar.rs": {
@@ -1032,9 +1032,9 @@
     "semantic_hash": ""
   },
   "crates/winblast-text/Cargo.toml": {
-    "mtime": 1795619244.986467,
-    "seen": 1795625156.150809,
-    "ast_hash": "c309640fff4ce29b6637a396e93363ba",
+    "mtime": 1795628054.7687416,
+    "seen": 1795629469.8334012,
+    "ast_hash": "680fef2994ed9870174079e466e71d4f",
     "semantic_hash": ""
   },
   "crates/winblast-text/src/atlas.rs": {

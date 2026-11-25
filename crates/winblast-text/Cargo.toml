@@ -1,6 +1,6 @@
 [package]
 name = "winblast-text"
-version = "1.7.0"
+version = "1.7.1"
 edition = "2021"
 description = "WinBlast0 text engine: hinted, pixel-aligned glyph rasterizer, contrast curve and atlas packer"
 license = "MIT"

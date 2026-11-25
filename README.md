@@ -7,12 +7,12 @@
 **A Windows optimizer that measures before it changes anything, and can undo everything it changes.**
 
 [![Latest release](https://img.shields.io/github/v/release/Konstrukturmx/WinBlast-Optimizer?style=for-the-badge&color=6366f1&label=release)](https://github.com/Konstrukturmx/WinBlast-Optimizer/releases/latest)
-[![VirusTotal](https://img.shields.io/badge/VirusTotal-0%2F69%20clean-22c55e?style=for-the-badge&logo=virustotal&logoColor=white)](https://www.virustotal.com/gui/file/a31d6712a830d929ef50bac754b751c5d5d58df2646732a08685acd7945bbb1a)
+[![VirusTotal](https://img.shields.io/badge/VirusTotal%20(v1.7.0)-0%2F69%20clean-22c55e?style=for-the-badge&logo=virustotal&logoColor=white)](https://www.virustotal.com/gui/file/a31d6712a830d929ef50bac754b751c5d5d58df2646732a08685acd7945bbb1a)
 [![Windows 10 | 11](https://img.shields.io/badge/Windows-10%20%7C%2011%20x64-0078D6?style=for-the-badge&logo=windows&logoColor=white)](#-prerequisites)
 [![Rust](https://img.shields.io/badge/Rust-Slint%201.19-DEA584?style=for-the-badge&logo=rust&logoColor=white)](#-build-from-source)
 [![License: MIT](https://img.shields.io/badge/license-MIT-22c55e?style=for-the-badge)](LICENSE)
 
-[**⬇ Download v1.7.0**](https://github.com/Konstrukturmx/WinBlast-Optimizer/releases/latest) &nbsp;·&nbsp; [What's new](#-whats-new-in-170) &nbsp;·&nbsp; [Prerequisites](#-prerequisites) &nbsp;·&nbsp; [Changelog](CHANGELOG.md) &nbsp;·&nbsp; [Security](SECURITY.md)
+[**⬇ Download v1.7.1**](https://github.com/Konstrukturmx/WinBlast-Optimizer/releases/latest) &nbsp;·&nbsp; [What's new](#-whats-new-in-171) &nbsp;·&nbsp; [Prerequisites](#-prerequisites) &nbsp;·&nbsp; [Changelog](CHANGELOG.md) &nbsp;·&nbsp; [Security](SECURITY.md)
 
 <br/>
 
@@ -90,6 +90,14 @@ English, Türkçe, Deutsch, Français, Español, Русский, 简体中文 an
 
 ---
 
+## 🆕 What's new in 1.7.1
+
+- **New text engine**: text stays sharp and on one straight line at 125 %/150 % display scaling, including on the card under the mouse (cards grow slightly on hover, and the old renderer broke words apart there). WinBlast0 now fits every letter to the pixel grid itself.
+- **Settings → Text**: choose the font (Inter, Atkinson Hyperlegible, IBM Plex Sans, Noto Sans, Source Sans 3 or Segoe UI), the rendering (Sharp, Crisp, Smooth or Classic) and the contrast, with a live preview.
+- **Chinese fixed**: the Chinese UI was missing characters (设置 showed as 置) and showed boxes for ⌄ ↩ ↺. It now uses a built-in Noto Sans SC.
+
+Before/after pictures: [docs/text-engine](docs/text-engine/README.md).
+
 ## 🆕 What's new in 1.7.0
 
 - **Write-ahead undo ledger**: a change is recorded before it is made. In VM tests, 6 of 6 hard kills mid-apply recovered exactly, and 420 round trips with text, QWORD and binary values came back byte-for-byte.
@@ -141,7 +149,7 @@ WinBlast0 keeps its data in `C:\ProgramData\WinBlast0` (undo ledger, update stag
 git clone https://github.com/Konstrukturmx/WinBlast-Optimizer.git
 cd WinBlast-Optimizer
 cargo build --release          # target\release\winblast0.exe
-cargo test --all-targets       # 321 tests, none of them change your system
+cargo test --workspace --all-targets   # 348 tests, none of them change your system
 ```
 
 - Tests run against `SandboxEnv`, an in-memory Windows model. Tests that change a real system are behind `--features vm-tests` and run only in a disposable VM.

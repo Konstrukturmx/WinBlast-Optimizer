@@ -1,18 +1,18 @@
 # Graph Report - WinBlast0  (2026-11-25)
 
 ## Corpus Check
-- 164 files · ~344,302 words
+- 164 files · ~344,489 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 110 file(s) not represented in the graph (top: .slint 73, .toml 13, .ttf 7)
 - WARNING: 110 of 317 files seen (35%) have no supported extractor and are missing from this graph entirely. It may look complete while representing only part of the codebase.
 
 ## Summary
 - 5631 nodes · 11264 edges · 293 communities (157 shown, 136 thin omitted)
-- Extraction: 96% EXTRACTED · 4% INFERRED · 0% AMBIGUOUS · INFERRED: 485 edges (avg confidence: 0.74)
+- Extraction: 96% EXTRACTED · 4% INFERRED · 0% AMBIGUOUS · INFERRED: 485 edges (avg confidence: 0.75)
 - Token cost: 13,424 input · 14,275 output
 
 ## Graph Freshness
-- Built from commit: `74166a38`
+- Built from commit: `45584ced`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -214,6 +214,8 @@
 10. `PanickingBackend` - 81 edges
 
 ## Surprising Connections (you probably didn't know these)
+- `WinBlast Optimizer — Developer & Architecture Guide` --references--> `SandboxEnv`  [EXTRACTED]
+  DEVELOPMENT.md → src/core/backend.rs
 - `Changelog` --references--> `AppState`  [EXTRACTED]
   CHANGELOG.md → src/app.rs
 - `WinBlast Optimizer — Developer & Architecture Guide` --references--> `AppState`  [EXTRACTED]
@@ -222,17 +224,15 @@
   CHANGELOG.md → src/core/backend.rs
 - `WinBlast Optimizer — Developer & Architecture Guide` --references--> `SystemBackend`  [EXTRACTED]
   DEVELOPMENT.md → src/core/backend.rs
-- `WinBlast Optimizer — Developer & Architecture Guide` --references--> `SandboxEnv`  [EXTRACTED]
-  DEVELOPMENT.md → src/core/backend.rs
 
 ## Import Cycles
 - 1-file cycle: `src/ui_sync/diff_sync.rs -> src/ui_sync/diff_sync.rs`
-- 2-file cycle: `vendor/i-slint-renderer-femtovg/itemrenderer.rs -> vendor/i-slint-renderer-femtovg/lib.rs -> vendor/i-slint-renderer-femtovg/itemrenderer.rs`
-- 2-file cycle: `src/backup/restore_point.rs -> src/core/backend.rs -> src/backup/restore_point.rs`
-- 2-file cycle: `src/core/backend.rs -> src/hardware/parking.rs -> src/core/backend.rs`
 - 2-file cycle: `src/ui_slint/palette.rs -> src/ui_slint/shell.rs -> src/ui_slint/palette.rs`
+- 2-file cycle: `src/core/backend.rs -> src/hardware/parking.rs -> src/core/backend.rs`
+- 2-file cycle: `vendor/i-slint-renderer-femtovg/itemrenderer.rs -> vendor/i-slint-renderer-femtovg/lib.rs -> vendor/i-slint-renderer-femtovg/itemrenderer.rs`
 - 2-file cycle: `vendor/i-slint-renderer-femtovg/images.rs -> vendor/i-slint-renderer-femtovg/itemrenderer.rs -> vendor/i-slint-renderer-femtovg/images.rs`
 - 2-file cycle: `vendor/i-slint-renderer-femtovg/lib.rs -> vendor/i-slint-renderer-femtovg/wgpu.rs -> vendor/i-slint-renderer-femtovg/lib.rs`
+- 2-file cycle: `src/backup/restore_point.rs -> src/core/backend.rs -> src/backup/restore_point.rs`
 - 3-file cycle: `vendor/i-slint-renderer-femtovg/images.rs -> vendor/i-slint-renderer-femtovg/itemrenderer.rs -> vendor/i-slint-renderer-femtovg/lib.rs -> vendor/i-slint-renderer-femtovg/images.rs`
 
 ## Communities (293 total, 136 thin omitted)
@@ -866,24 +866,24 @@ Cohesion: 0.40
 Nodes (5): HardwareSubTab, CpuParking, Disks, Specs, Thermals
 
 ## Knowledge Gaps
-- **1525 isolated node(s):** `Sharp`, `Crisp`, `Smooth`, `Classic`, `Easy` (+1520 more)
+- **1525 isolated node(s):** `English`, `Turkish`, `German`, `French`, `Spanish` (+1520 more)
   These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 2437 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
 - **136 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `AppState` connect `Disk Cleaning & Temporary File Purger` to `spawn_guarded_worker`, `FailAtMutationBackend`, `Scandetailkind Appxinstalled Appxinstalledps`, `astar.rs`, `power.rs`, `in_progress_hud.rs`, `SandboxEnv`, `super`, `matrix.rs`, `System Architecture Changelog`, `clean_apps.rs`, `UiThemeStyle`, `cleaner.rs`, `startup.rs`, `registry_scanner.rs`, `spawn_guarded_worker`, `game_prereqs.rs`, `parking.rs`, `FailAtMutationBackend`, `Language`, `ui_views.rs`, `backend.rs`, `ColorScheme`, `dijkstra.rs`, `TaskCache`, `net_latency.rs`, `tr_view`, `.setup`, `app.rs`, `backend.rs`, `shell.rs`, `componenthandle`, `disks.rs`, `AutoTuneProfile`, `FeatureInstallState`, `RestorePoint`, `DriverUpdateItem`, `TaskCache`, `InstalledAppxPackage`, `backup.rs`, `ui_parity.rs`, `HibernationStatus`, `PdhParkingCollector`, `UpdateStatus`, `Changelog`, `views/startup.rs`, `TaskCache`, `gaming.rs`, `sync_vec`, `SystemMetrics`, `BiosSystemInfo`, `StartupEntry`, `ui_layout_collision.rs`, `dijkstra.rs`, `hardware.rs`, `super`, `ColorScheme`, `hashmap`, `diff.rs`, `views/latency.rs`, `tools/automation.rs`, `LiveServiceInfo`, `windows_repair.rs`, `WinBlast Optimizer — Developer & Architecture Guide`, `dashboard.rs`, `drivers.rs`, `DiskSubsystemReport`, `network_diag.rs`, `WindowsInfo`, `Ctx`, `serialize`, `.navigate`, `instant`, `duration`, `clean_exe_path`, `ActiveDropdown`, `HardwareSubTab`?**
-  _High betweenness centrality (0.213) - this node is a cross-community bridge._
+- **Why does `TextKey` connect `Core UI Internationalization & Text Catalog` to `Disk Cleaning & Temporary File Purger`, `hardware.rs`, `theme.rs`, `diff.rs`, `views/latency.rs`, `matrix.rs`, `clean_apps.rs`, `dashboard.rs`, `drivers.rs`, `Ctx`, `ColorScheme`, `palette.rs`, `app.rs`, `shell.rs`, `AutoTuneProfile`, `ui_parity.rs`, `ui_scrollbar_test.rs`, `views/startup.rs`, `gaming.rs`, `sync_vec`?**
+  _High betweenness centrality (0.217) - this node is a cross-community bridge._
 - **Are the 23 inferred relationships involving `AppState` (e.g. with `UiThemeStyle` and `OptimizationPlan`) actually correct?**
   _`AppState` has 23 INFERRED edges - model-reasoned connections that need verification._
-- **What connects `Sharp`, `Crisp`, `Smooth` to the rest of the system?**
+- **What connects `English`, `Turkish`, `German` to the rest of the system?**
   _1525 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Core UI Internationalization & Text Catalog` be split into smaller, more focused modules?**
   _Cohesion score 0.00315955766192733 - nodes in this community are weakly interconnected._
-- **Why does `TextKey` connect `Core UI Internationalization & Text Catalog` to `Disk Cleaning & Temporary File Purger`, `hardware.rs`, `theme.rs`, `diff.rs`, `views/latency.rs`, `matrix.rs`, `clean_apps.rs`, `dashboard.rs`, `drivers.rs`, `Ctx`, `ColorScheme`, `palette.rs`, `app.rs`, `shell.rs`, `AutoTuneProfile`, `ui_parity.rs`, `ui_scrollbar_test.rs`, `views/startup.rs`, `gaming.rs`, `sync_vec`?**
-  _High betweenness centrality (0.173) - this node is a cross-community bridge._
+- **Why does `AppState` connect `Disk Cleaning & Temporary File Purger` to `spawn_guarded_worker`, `FailAtMutationBackend`, `Scandetailkind Appxinstalled Appxinstalledps`, `astar.rs`, `power.rs`, `in_progress_hud.rs`, `SandboxEnv`, `super`, `matrix.rs`, `System Architecture Changelog`, `clean_apps.rs`, `UiThemeStyle`, `cleaner.rs`, `startup.rs`, `registry_scanner.rs`, `spawn_guarded_worker`, `game_prereqs.rs`, `parking.rs`, `FailAtMutationBackend`, `Language`, `ui_views.rs`, `backend.rs`, `ColorScheme`, `dijkstra.rs`, `TaskCache`, `net_latency.rs`, `tr_view`, `.setup`, `app.rs`, `backend.rs`, `shell.rs`, `componenthandle`, `disks.rs`, `AutoTuneProfile`, `FeatureInstallState`, `RestorePoint`, `DriverUpdateItem`, `TaskCache`, `InstalledAppxPackage`, `backup.rs`, `ui_parity.rs`, `HibernationStatus`, `PdhParkingCollector`, `UpdateStatus`, `Changelog`, `views/startup.rs`, `TaskCache`, `gaming.rs`, `sync_vec`, `SystemMetrics`, `BiosSystemInfo`, `StartupEntry`, `ui_layout_collision.rs`, `dijkstra.rs`, `hardware.rs`, `super`, `ColorScheme`, `hashmap`, `diff.rs`, `views/latency.rs`, `tools/automation.rs`, `LiveServiceInfo`, `windows_repair.rs`, `WinBlast Optimizer — Developer & Architecture Guide`, `dashboard.rs`, `drivers.rs`, `DiskSubsystemReport`, `network_diag.rs`, `WindowsInfo`, `Ctx`, `serialize`, `.navigate`, `instant`, `duration`, `clean_exe_path`, `ActiveDropdown`, `HardwareSubTab`?**
+  _High betweenness centrality (0.180) - this node is a cross-community bridge._
 - **Should `action_button_guarded` be split into smaller, more focused modules?**
   _Cohesion score 0.008298755186721992 - nodes in this community are weakly interconnected._
-- **Why does `ViewTextKey` connect `action_button_guarded` to `dashboard.rs`, `palette.rs`, `tr_view`, `hardware.rs`, `componenthandle`, `gaming.rs`, `sync_vec`?**
-  _High betweenness centrality (0.108) - this node is a cross-community bridge._
+- **Why does `Language` connect `Language` to `spawn_guarded_worker`, `ColorScheme`, `palette.rs`, `Disk Cleaning & Temporary File Purger`, `ui_parity.rs`, `tr_view`, `Ctx`, `theme.rs`, `app.rs`, `app.rs`, `ui_scrollbar_test.rs`, `full_telemetry_audit_with`, `ColorScheme`, `shell.rs`, `super`, `ui_render_preview.rs`, `GPU Silicon & Hardware Tuning Policies`?**
+  _High betweenness centrality (0.061) - this node is a cross-community bridge._
