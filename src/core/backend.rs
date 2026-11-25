@@ -1806,6 +1806,27 @@ impl SandboxEnv {
         }
     }
 
+    /// Every registry value in the sandbox as `hive\\path\\name -> type:hex`, read through
+    /// `reg_get_raw`, so tests can compare exact bytes and types, not just scan states (G2).
+    pub fn registry_snapshot(&self) -> std::collections::BTreeMap<String, String> {
+        let keys: Vec<(String, String, String)> = {
+            let st = self.state_read();
+            st.registry
+                .keys()
+                .chain(st.reg_strings.keys())
+                .chain(st.reg_binaries.keys())
+                .chain(st.reg_raw.keys())
+                .cloned()
+                .collect()
+        };
+        keys.into_iter()
+            .filter_map(|(h, p, n)| {
+                let raw = self.reg_get_raw(&h, &p, &n)?;
+                Some((format!("{h}\\{p}\\{n}").to_ascii_lowercase(), format!("{}:{}", raw.reg_type, raw.hex_bytes)))
+            })
+            .collect()
+    }
+
     /// Seed initial "stock unoptimized" Windows values matching all given tweak actions.
     pub fn seed_tweak_defaults(&self, actions: &[TweakAction]) {
         self.seed_actions_with_vendor(actions, None);

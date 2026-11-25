@@ -824,7 +824,9 @@ fn apply_action_slice_with(
                 }
             }
         }
-        if applied == 0 && skipped_power > 0 {
+        // Fail only when every action was an unsupported power setting; "already at target"
+        // skips (F-15) also leave applied == 0 and are a success.
+        if applied == 0 && skipped_power > 0 && skipped_power == actions.len() {
             if let Some(err) = last_power_err {
                 return Err(err);
             }

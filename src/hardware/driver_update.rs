@@ -1053,6 +1053,7 @@ mod tests {
     use super::*;
 
     #[test]
+    #[cfg_attr(not(feature = "vm-tests"), ignore = "runs pnputil /scan-devices on the host; VM only")]
     fn test_driver_sandbox_lifecycle_execution() {
         let res = test_driver_sandbox_lifecycle();
         assert!(

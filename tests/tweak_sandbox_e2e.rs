@@ -169,6 +169,8 @@ fn test_all_embedded_tweaks_full_sandbox_lifecycle() {
             st.os_info.edition = test_edition.to_string();
         }
 
+        let seeded_snapshot = sbx.registry_snapshot();
+
         // 1. Seeded stock state must scan as NotOptimized
         let scan_initial = scan_single_tweak_with(&sbx, tweak, test_build, test_edition);
         if scan_initial.current_state != TweakState::NotOptimized {
@@ -238,6 +240,20 @@ fn test_all_embedded_tweaks_full_sandbox_lifecycle() {
                         "[{}] not all entries marked rolled_back after rollback",
                         tweak.id
                     ));
+                    continue;
+                }
+                // G2: rollback must restore the exact registry bytes and types, not just a
+                // NotOptimized scan state (that is how F-3/F-6 went unnoticed).
+                let after_rb_snapshot = sbx.registry_snapshot();
+                if after_rb_snapshot != seeded_snapshot {
+                    let diff: Vec<String> = seeded_snapshot
+                        .iter()
+                        .filter(|(k, v)| after_rb_snapshot.get(*k) != Some(*v))
+                        .map(|(k, v)| format!("{k}: {v} -> {:?}", after_rb_snapshot.get(k)))
+                        .chain(after_rb_snapshot.keys().filter(|k| !seeded_snapshot.contains_key(*k)).map(|k| format!("{k}: left behind")))
+                        .take(5)
+                        .collect();
+                    failures.push(format!("[{}] rollback not byte-exact: {}", tweak.id, diff.join("; ")));
                     continue;
                 }
                 let scan_rb = scan_single_tweak_with(&sbx, tweak, test_build, test_edition);
@@ -1210,13 +1226,13 @@ fn test_real_win32_hkcu_reg_sz_and_cleanup() {
     {
         Ok(k) => k,
         Err(e) if e.kind() == std::io::ErrorKind::PermissionDenied => {
-            eprintln!("Skipping HKCU scratch test: sandbox restricted HKCU write access: {e}");
+            { if cfg!(feature = "vm-tests") { panic!("G4: under vm-tests this must not be skipped: Skipping "); } eprintln!("Skipping HKCU scratch test: sandbox restricted HKCU write access: {e}"); }
             return;
         }
         Err(_) => match hkcu.create_subkey(&scratch_path) {
             Ok(k) => k,
             Err(e) if e.kind() == std::io::ErrorKind::PermissionDenied => {
-                eprintln!("Skipping HKCU scratch test: sandbox restricted HKCU write access: {e}");
+                { if cfg!(feature = "vm-tests") { panic!("G4: under vm-tests this must not be skipped: Skipping "); } eprintln!("Skipping HKCU scratch test: sandbox restricted HKCU write access: {e}"); }
                 return;
             }
             Err(e) => panic!("Failed to create temporary HKCU scratch key: {e}"),

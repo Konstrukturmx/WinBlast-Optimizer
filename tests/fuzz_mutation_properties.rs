@@ -26,7 +26,11 @@ use winblast0::executor::engine::{apply_tweak_with, rollback_entry_with};
 use winblast0::scanner::{scan_single_tweak_with, TweakState};
 
 proptest! {
-    #![proptest_config(ProptestConfig::with_cases(50))]
+    // G3: PROPTEST_CASES overrides the default (it was ignored because of a fixed with_cases(50)).
+    #![proptest_config(ProptestConfig {
+        cases: std::env::var("PROPTEST_CASES").ok().and_then(|v| v.parse().ok()).unwrap_or(50),
+        ..ProptestConfig::default()
+    })]
 
     /// Property 1 & 2: Reversibility & Idempotence across arbitrary catalog tweaks.
     ///

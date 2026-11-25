@@ -84,12 +84,12 @@ Target sidebar:
 - [x] F11 Matrix: one action toolbar (no duplicate "Apply Selected"), honest revert wording (see A4). — single Apply in the batch toolbar; "Reset to Windows defaults" is explicit and confirmed
 
 ## G. Tests
-- [ ] G1 `tests/vm_aggressive.rs` committed and part of the pre-release VM run.
-- [ ] G2 The sandbox lifecycle test compares exact values (`SandboxState: PartialEq`), not scan state.
-- [ ] G3 `fuzz_mutation_properties` honours `PROPTEST_CASES`, counts the tweaks it exercised, and seeds absent / string / 0 / `u32::MAX` priors.
-- [ ] G4 "Skipping…" fails under `vm-tests`; tests that cannot fail are fixed or deleted; the test-only `pnputil /scan-devices` helper leaves shipped code.
-- [ ] G5 `render_all_views` renders the new page set; a check fails on empty labels in the rendered tree.
-- [ ] G6 New VM scenarios: tampered/zip/redirect updater assets from a local mirror; standard user; adapter switch between apply and rollback; UTC+10 / UTC−8; two instances; 100k-row ledger with a UI tick-time check.
+- [x] G1 `tests/vm_aggressive.rs` committed and part of the pre-release VM run. — committed with A+B+C; runs in every VM pass
+- [x] G2 The sandbox lifecycle test compares exact values (`SandboxState: PartialEq`), not scan state. — `SandboxEnv::registry_snapshot`; all 230 tweaks roll back byte-exact
+- [x] G3 `fuzz_mutation_properties` honours `PROPTEST_CASES`, counts the tweaks it exercised, and seeds absent / string / 0 / `u32::MAX` priors. — PROPTEST_CASES honoured; at 400 cases it found a real bug (re-apply failed when registry actions were already at target and power settings unsupported) — fixed
+- [x] G4 "Skipping…" fails under `vm-tests`; tests that cannot fail are fixed or deleted; the test-only `pnputil /scan-devices` helper leaves shipped code. — "Skipping…" panics under vm-tests; the pnputil test-driver button removed and its test VM-gated
+- [~] G5 `render_all_views` renders the new page set; a check fails on empty labels in the rendered tree. — `render_all_views` renders all 28 views; an automatic empty-label check is still open
+- [-] G6 New VM scenarios: tampered/zip/redirect updater assets from a local mirror; standard user; adapter switch between apply and rollback; UTC+10 / UTC−8; two instances; 100k-row ledger with a UI tick-time check. — not done in this pass: updater mirror, standard user, adapter switch, time zones, two instances, 100k-row ledger
 - [-] G7 German/Russian Windows image and a Windows 11 VM — not available on this host; C6 is verified by unit tests on captured output instead.
 
 ## Release (still v1.7.0, local only)

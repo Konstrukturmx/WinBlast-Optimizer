@@ -401,7 +401,7 @@ fn test_real_win32_registry_types_numeric_sz_binary_and_tree_roundtrip() {
         match hkcu.create_subkey_with_flags(&root_subkey, KEY_READ | KEY_WRITE | KEY_WOW64_64KEY) {
             Ok(k) => k,
             Err(e) if e.kind() == std::io::ErrorKind::PermissionDenied => {
-                eprintln!("Skipping HKCU test: sandbox restricted HKCU write access: {e}");
+                { if cfg!(feature = "vm-tests") { panic!("G4: under vm-tests this must not be skipped: Skipping "); } eprintln!("Skipping HKCU test: sandbox restricted HKCU write access: {e}"); }
                 return;
             }
             Err(e) => panic!("Failed to create isolated HKCU test key: {e}"),
@@ -652,7 +652,7 @@ fn test_real_win32_registry_types_numeric_sz_binary_and_tree_roundtrip() {
     {
         Ok(k) => k,
         Err(e) if e.kind() == std::io::ErrorKind::PermissionDenied => {
-            eprintln!("Skipping HKCU test: sandbox restricted HKCU write access: {e}");
+            { if cfg!(feature = "vm-tests") { panic!("G4: under vm-tests this must not be skipped: Skipping "); } eprintln!("Skipping HKCU test: sandbox restricted HKCU write access: {e}"); }
             return;
         }
         Err(e) => panic!("Failed to create grandchild subkey: {e}"),
@@ -833,7 +833,7 @@ fn test_ntfs_junction_and_readonly_cleanup_sandbox() {
         if err_str.to_lowercase().contains("access is denied")
             || err_str.to_lowercase().contains("erişim engellendi")
         {
-            eprintln!("Skipping NTFS junction test: sandbox or un-elevated token does not permit mklink /J: {err_str}");
+            { if cfg!(feature = "vm-tests") { panic!("G4: under vm-tests this must not be skipped: Skipping "); } eprintln!("Skipping NTFS junction test: sandbox or un-elevated token does not permit mklink /J: {err_str}"); }
             return;
         }
         panic!(

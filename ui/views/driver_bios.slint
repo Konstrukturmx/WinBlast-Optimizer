@@ -37,7 +37,8 @@ export component DriverBiosView inherits Rectangle {
                     loading: DriverStore.scanning;
                     clicked => { DriverStore.scan-online(); }
                 }
-                WbButton { variant: "secondary"; text: Tr.s("DriverTestInstallSandbox"); enabled: !DriverStore.any-in-flight; clicked => { DriverStore.test-sandbox-install(); } }
+                // G4: the "test driver" button ran pnputil /scan-devices on the user's PC and reported a
+                // fake install; it was test scaffolding, not a feature.
                 WbButton { variant: "secondary"; text: Tr.s("DriverRescanBios"); loading: DriverStore.bios-scanning; clicked => { DriverStore.rescan-bios(); } }
             }
 
