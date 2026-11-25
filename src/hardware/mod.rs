@@ -15,5 +15,6 @@ pub mod parking;
 pub mod power;
 pub mod power_governor;
 pub mod storage;
+pub mod tbw;
 pub mod sys_inventory;
 pub mod thermal;

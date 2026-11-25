@@ -92,6 +92,7 @@ uuid = { version = "1", features = ["v4"] }
 [dev-dependencies]
 proptest = "1.6"
 i-slint-backend-testing = "1.19.0"
+ttf-parser = "0.25"
 
 [build-dependencies]
 embed-manifest = "1.4"

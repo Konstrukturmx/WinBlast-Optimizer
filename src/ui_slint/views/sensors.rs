@@ -8,6 +8,7 @@ use slint::{ComponentHandle, SharedString, VecModel};
 use crate::app::AppState;
 use crate::core::i18n::TextKey;
 use crate::core::view_i18n::ViewTextKey;
+use crate::hardware::tbw::HostWrites;
 use crate::hardware::thermal::ThermalHealth;
 
 use super::super::ctx::Ctx;
@@ -189,7 +190,14 @@ impl SensorsView {
                         None => format!("{}: {}", s.tr_v(ViewTextKey::DiskHealthStatus), DASH).into(),
                     },
                     status: d.status.as_str().into(),
-                    writes: format!("{}: {:.1} TB", s.tr_v(ViewTextKey::DiskLifetimeWrites), d.lifetime_writes_tb).into(),
+                    writes: {
+                        let value = match d.host_writes {
+                            HostWrites::Reported(tb) => format!("{tb:.2} TB"),
+                            HostWrites::NotAvailable => s.tr_v(ViewTextKey::DiskWritesNotAvailable).to_string(),
+                            HostWrites::RequiresAdmin => s.tr_v(ViewTextKey::DiskWritesRequiresAdmin).to_string(),
+                        };
+                        format!("{}: {value}", s.tr_v(ViewTextKey::DiskLifetimeWrites)).into()
+                    },
                     hours: format!("{}: {} h", s.tr_v(ViewTextKey::DiskPowerOnHours), d.power_on_hours).into(),
                     temp: if d.temperature_c > 0.0 { format!("{:.0}°C", d.temperature_c).into() } else { DASH.into() },
                     tone: match d.health_percentage {

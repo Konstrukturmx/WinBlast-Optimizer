@@ -9,11 +9,12 @@
 //! (0x00070020) across all privilege tiers without placebo values.
 
 use crate::core::process::SilentCommand;
+use crate::hardware::tbw::{self, HostWrites, SataWriteCounter};
 use rayon::prelude::*;
 use serde::{Deserialize, Serialize};
 use std::mem::size_of;
 use windows::core::PCWSTR;
-use windows::Win32::Foundation::{CloseHandle, HANDLE};
+use windows::Win32::Foundation::{CloseHandle, ERROR_ACCESS_DENIED, HANDLE};
 use windows::Win32::Storage::FileSystem::{
     CreateFileW, GetDiskFreeSpaceExW, GetLogicalDrives, GetVolumeInformationW, FILE_SHARE_READ,
     FILE_SHARE_WRITE, OPEN_EXISTING,
@@ -38,7 +39,8 @@ pub struct PhysicalDriveHealth {
     pub status: String, // e.g. "Healthy (Good)", "Caution — …", "Health not reported"
     /// Drive temperature in °C; 0.0 = not reported by the drive.
     pub temperature_c: f32,
-    pub lifetime_writes_tb: f64, // TBW
+    /// Lifetime host writes (TBW) as reported by the drive; never estimated (AGENTS.md rule 2).
+    pub host_writes: HostWrites,
     pub power_on_hours: u32,
     pub trim_enabled: bool,
 }
@@ -69,6 +71,25 @@ pub struct DriveSmartData {
     pub temperature_c: Option<f32>,
     pub lifetime_writes_tb: Option<f64>,
     pub power_on_hours: Option<u32>,
+}
+
+/// Why a SMART query returned no data.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum SmartQueryError {
+    /// ERROR_ACCESS_DENIED: the process is not elevated (ATA pass-through needs write access).
+    AccessDenied,
+    /// The device, driver or bus does not answer the query.
+    Unavailable,
+}
+
+impl From<windows::core::Error> for SmartQueryError {
+    fn from(e: windows::core::Error) -> Self {
+        if e.code() == windows::core::HRESULT::from_win32(ERROR_ACCESS_DENIED.0) {
+            SmartQueryError::AccessDenied
+        } else {
+            SmartQueryError::Unavailable
+        }
+    }
 }
 
 struct HandleGuard(HANDLE);
@@ -271,6 +292,11 @@ fn probe_physical_drive(index: u32, trim_enabled: bool) -> Option<PhysicalDriveH
     if model_str.is_empty() {
         model_str = format!("Physical Disk {}", index);
     }
+    let firmware_str = if desc.ProductRevisionOffset > 0 && (desc.ProductRevisionOffset as usize) < sz {
+        extract_null_terminated_str(&buf[desc.ProductRevisionOffset as usize..])
+    } else {
+        String::new()
+    };
 
     // Determine Bus & Interface Type
     // BusTypeNvme = 17, BusTypeSata = 11, BusTypeUsb = 7, BusTypeScsi = 1
@@ -317,78 +343,81 @@ fn probe_physical_drive(index: u32, trim_enabled: bool) -> Option<PhysicalDriveH
     // 2. Direct Win32 IOCTL for disk capacity
     let ioctl_size_gb = query_disk_capacity_ioctl(handle).unwrap_or(0.0);
 
-    // 3. Direct NT Storage driver performance telemetry (0x00070020)
-    let kernel_perf = query_disk_performance_ioctl(handle);
-
-    // 4. Query Physical SMART Telemetry
-    // Try NVMe SMART Log Page 0x02 if NVMe bus
-    let mut smart_data = if is_nvme {
-        query_nvme_smart_ioctl(handle)
-    } else {
+    // 3. Physical SMART telemetry. Virtual disks (BusTypeVirtual = 14, BusTypeFileBackedVirtual = 15)
+    //    have no physical counters, so they are not queried.
+    let is_virtual = matches!(desc.BusType.0, 14 | 15) || tbw::is_virtual_disk_model(&model_str);
+    let mut host_writes = HostWrites::NotAvailable;
+    let smart_data = if is_virtual {
         None
+    } else if is_nvme {
+        match query_nvme_smart_ioctl(handle) {
+            Ok(smart) => {
+                if let Some(tb) = smart.lifetime_writes_tb {
+                    host_writes = HostWrites::Reported(tb);
+                }
+                Some(smart)
+            }
+            Err(SmartQueryError::AccessDenied) => {
+                host_writes = HostWrites::RequiresAdmin;
+                None
+            }
+            Err(SmartQueryError::Unavailable) => None,
+        }
+    } else {
+        match query_ata_smart_ioctl(handle, index) {
+            Ok(table) => {
+                // The vendor-unit table is keyed on the IDENTIFY DEVICE model/firmware; the
+                // storage descriptor strings are the fallback when IDENTIFY is refused.
+                let (id_model, id_fw) = query_ata_identify_ioctl(handle, index)
+                    .map(|id| parse_ata_identify(&id))
+                    .unwrap_or_else(|| (model_str.clone(), firmware_str.clone()));
+                // Hard disks: no host-write counter is decoded (N/A), only SSDs.
+                let counter = if is_ssd {
+                    tbw::lookup_sata_write_counter(&id_model, &id_fw)
+                } else {
+                    None
+                };
+                let smart = parse_ata_smart_attributes(&table, counter);
+                if let Some(tb) = smart.lifetime_writes_tb {
+                    host_writes = HostWrites::Reported(tb);
+                }
+                Some(smart)
+            }
+            Err(SmartQueryError::AccessDenied) => {
+                host_writes = HostWrites::RequiresAdmin;
+                None
+            }
+            Err(SmartQueryError::Unavailable) => None,
+        }
     };
 
-    // If not NVMe or NVMe returned None, query ATA SMART (0x0007c088) for SATA SSD/HDD
-    if smart_data.is_none() && !is_nvme {
-        smart_data = query_ata_smart_ioctl(handle, index);
-    }
-
-    // 5. Unified Telemetry Fusion & Honest Degradation (Rule 2: Zero Fabricated Telemetry)
-    let (health_pct, status_str, temp_c, tbw, poh, size_gb) = if let Some(smart) = smart_data {
+    // 4. Unified telemetry with honest degradation (rule 2: zero fabricated telemetry).
+    //    Lifetime writes come only from the drive's own counter: the kernel's
+    //    IOCTL_DISK_GET_PERFORMANCE byte count restarts at boot and is not a TBW value.
+    let (health_pct, status_str, temp_c, poh, size_gb) = if let Some(smart) = smart_data {
         let final_size = if ioctl_size_gb > 0.0 {
             ioctl_size_gb
         } else {
-            let (_, _, _, _, _, w_size) = query_smart_health_wmi(index);
-            w_size
+            query_smart_health_wmi(index).4
         };
-
-        // If SMART lacks lifetime writes, fallback to authentic kernel storage driver performance
-        let final_tbw = smart.lifetime_writes_tb.unwrap_or_else(|| {
-            if let Some(perf) = &kernel_perf {
-                if perf.bytes_written > 0 {
-                    let tb = perf.bytes_written as f64 / 1_000_000_000_000.0;
-                    return (tb * 100.0).round() / 100.0;
-                }
-            }
-            0.0
-        });
-
         (
             smart.health_percentage,
             smart.status,
             smart.temperature_c.unwrap_or(0.0),
-            final_tbw,
             smart.power_on_hours.unwrap_or(0),
             final_size,
         )
     } else {
-        // Fallback: Query WMI Storage API
-        let (w_health, w_status, w_temp, w_tbw, w_poh, w_size) =
-            query_smart_health_wmi(index);
-
+        // Fallback: Windows Storage API (Get-PhysicalDisk / Get-StorageReliabilityCounter).
+        let (w_health, w_status, w_temp, w_poh, w_size) = query_smart_health_wmi(index);
         let final_size = if ioctl_size_gb > 0.0 {
             ioctl_size_gb
         } else {
             w_size
         };
-
-        // Fallback TBW: If WMI didn't report TBW, derive authentic physical bytes written from kernel performance
-        let final_tbw = if w_tbw > 0.0 {
-            w_tbw
-        } else if let Some(perf) = &kernel_perf {
-            if perf.bytes_written > 0 {
-                let tb = perf.bytes_written as f64 / 1_000_000_000_000.0;
-                (tb * 100.0).round() / 100.0
-            } else {
-                0.0
-            }
-        } else {
-            0.0
-        };
-
         // Status comes only from what Windows / the drive reported (v1.6.1 relabelled "no data"
         // as "Healthy (Active)").
-        (w_health, w_status, w_temp, final_tbw, w_poh, final_size)
+        (w_health, w_status, w_temp, w_poh, final_size)
     };
 
     Some(PhysicalDriveHealth {
@@ -399,7 +428,7 @@ fn probe_physical_drive(index: u32, trim_enabled: bool) -> Option<PhysicalDriveH
         health_percentage: health_pct,
         status: status_str,
         temperature_c: (temp_c * 10.0).round() / 10.0,
-        lifetime_writes_tb: tbw,
+        host_writes,
         power_on_hours: poh,
         trim_enabled: is_ssd && trim_enabled,
     })
@@ -508,88 +537,80 @@ pub fn query_disk_performance_ioctl(handle: HANDLE) -> Option<DiskPerformanceSna
 }
 
 /// Query NVMe SMART / Health Information log page 0x02 via IOCTL_STORAGE_QUERY_PROPERTY.
-pub fn query_nvme_smart_ioctl(handle: HANDLE) -> Option<DriveSmartData> {
-    #[repr(C)]
-    struct NvmeProtocolQuery {
-        property_id: u32,
-        query_type: u32,
-        protocol_type: u32,
-        data_type: u32,
-        protocol_data_request_value: u32,
-        protocol_data_request_sub_value: u32,
-        protocol_data_offset: u32,
-        protocol_data_length: u32,
-        fixed_protocol_return_data: u32,
-        protocol_data_request_sub_value2: u32,
-        protocol_data_request_sub_value3: u32,
-        reserved: u32,
-    }
+///
+/// Layout (Microsoft "Working with NVMe drives"): STORAGE_PROPERTY_QUERY header (PropertyId,
+/// QueryType) followed by STORAGE_PROTOCOL_SPECIFIC_DATA (10 × u32) and room for the 512-byte log.
+/// The reply is a STORAGE_PROTOCOL_DATA_DESCRIPTOR (Version, Size, STORAGE_PROTOCOL_SPECIFIC_DATA,
+/// data); see [`nvme_log_from_descriptor`].
+///
+/// `ProtocolDataRequestSubValue` is the lower 32 bits of the log page *offset* on current
+/// StorNVMe drivers, so it stays 0: 0xFFFFFFFF there fails with ERROR_IO_DEVICE (verified on a
+/// KINGSTON SNV3S500G). The adapter property (49) is tried first, then the device property (50).
+pub fn query_nvme_smart_ioctl(handle: HANDLE) -> Result<DriveSmartData, SmartQueryError> {
+    const QUERY_HEADER: usize = 8;
+    const PROTOCOL_DATA: usize = 40;
+    const LOG_LEN: usize = 512;
+    const PROTOCOL_TYPE_NVME: u32 = 3;
+    const NVME_DATA_TYPE_LOG_PAGE: u32 = 2;
+    const NVME_LOG_PAGE_HEALTH_INFO: u32 = 0x02;
 
-    // Try Property 50 (StorageDeviceProtocolSpecificProperty), fallback to Property 49 (StorageAdapterProtocolSpecificProperty)
-    for prop_id in [50u32, 49u32] {
-        let query = NvmeProtocolQuery {
-            property_id: prop_id,
-            query_type: 0,                     // PropertyStandardQuery
-            protocol_type: 1,                  // ProtocolTypeNvme
-            data_type: 1,                      // NVMeDataTypeLogPage
-            protocol_data_request_value: 0x02, // NVME_LOG_PAGE_SMART
-            protocol_data_request_sub_value: 0,
-            protocol_data_offset: 40,
-            protocol_data_length: 512,
-            fixed_protocol_return_data: 0,
-            protocol_data_request_sub_value2: 0,
-            protocol_data_request_sub_value3: 0,
-            reserved: 0,
-        };
+    let mut last_err = SmartQueryError::Unavailable;
+    for property_id in [49u32, 50u32] {
+        let mut query = [0u8; QUERY_HEADER + PROTOCOL_DATA + LOG_LEN];
+        let fields: [(usize, u32); 7] = [
+            (0, property_id),
+            (4, 0), // PropertyStandardQuery
+            (8, PROTOCOL_TYPE_NVME),
+            (12, NVME_DATA_TYPE_LOG_PAGE),
+            (16, NVME_LOG_PAGE_HEALTH_INFO),
+            (24, PROTOCOL_DATA as u32), // ProtocolDataOffset (from STORAGE_PROTOCOL_SPECIFIC_DATA)
+            (28, LOG_LEN as u32),       // ProtocolDataLength
+        ];
+        for (offset, value) in fields {
+            query[offset..offset + 4].copy_from_slice(&value.to_le_bytes());
+        }
 
-        let mut out_buffer = [0u8; 48 + 512];
+        let mut out = [0u8; QUERY_HEADER + PROTOCOL_DATA + LOG_LEN];
         let mut bytes_ret = 0u32;
-
-        let ok = unsafe {
+        let res = unsafe {
             DeviceIoControl(
                 handle,
                 IOCTL_STORAGE_QUERY_PROPERTY,
-                Some((&query as *const NvmeProtocolQuery).cast()),
-                size_of::<NvmeProtocolQuery>() as u32,
-                Some(out_buffer.as_mut_ptr().cast()),
-                out_buffer.len() as u32,
+                Some(query.as_ptr().cast()),
+                query.len() as u32,
+                Some(out.as_mut_ptr().cast()),
+                out.len() as u32,
                 Some(&mut bytes_ret),
                 None,
             )
         };
-
-        if ok.is_err() || (bytes_ret as usize) < (40 + 128) {
+        if let Err(e) = res {
+            last_err = e.into();
             continue;
         }
-
-        // Dynamically parse ProtocolDataOffset from STORAGE_PROTOCOL_DATA_DESCRIPTOR
-        let data_offset = if bytes_ret >= 28 {
-            u32::from_le_bytes([
-                out_buffer[24],
-                out_buffer[25],
-                out_buffer[26],
-                out_buffer[27],
-            ]) as usize
-        } else {
-            48
-        };
-
-        let smart_start = if data_offset >= 40 && data_offset + 128 <= bytes_ret as usize {
-            data_offset
-        } else if (bytes_ret as usize) >= 48 + 128 {
-            48
-        } else if (bytes_ret as usize) >= 40 + 128 {
-            40
-        } else {
-            continue;
-        };
-
-        if let Some(smart_data) = parse_nvme_smart_log(&out_buffer[smart_start..]) {
-            return Some(smart_data);
+        let returned = &out[..(bytes_ret as usize).min(out.len())];
+        if let Some(smart) = nvme_log_from_descriptor(returned).and_then(parse_nvme_smart_log) {
+            return Ok(smart);
         }
     }
 
-    None
+    Err(last_err)
+}
+
+/// The NVMe log inside a STORAGE_PROTOCOL_DATA_DESCRIPTOR. `ProtocolDataOffset` (bytes 24..28)
+/// counts from the STORAGE_PROTOCOL_SPECIFIC_DATA, which starts at byte 8 after Version and Size,
+/// so the log normally begins at byte 48.
+pub fn nvme_log_from_descriptor(desc: &[u8]) -> Option<&[u8]> {
+    let read_u32 = |at: usize| -> Option<usize> {
+        Some(u32::from_le_bytes(desc.get(at..at + 4)?.try_into().ok()?) as usize)
+    };
+    let offset = read_u32(24)?;
+    let length = read_u32(28)?;
+    if length < 128 {
+        return None;
+    }
+    let start = 8usize.checked_add(offset)?;
+    desc.get(start..start.checked_add(length.min(512))?)
 }
 
 /// Parse NVMe SMART/Health Information log page 0x02 payload.
@@ -612,11 +633,8 @@ pub fn parse_nvme_smart_log(smart: &[u8]) -> Option<DriveSmartData> {
     let percentage_used = smart[5];
     let health_pct = 100u32.saturating_sub(percentage_used as u32);
 
-    // Bytes 48..64: Data Units Written (128-bit little endian, each unit represents 1,000 * 512 bytes = 512,000 bytes)
-    let mut duw_bytes = [0u8; 16];
-    duw_bytes.copy_from_slice(&smart[48..64]);
-    let data_units_written = u128::from_le_bytes(duw_bytes);
-    let tbw = (data_units_written as f64 * 512_000.0) / 1_000_000_000_000.0;
+    // Bytes 48..64: Data Units Written (u128 LE, one unit = 1000 × 512 bytes).
+    let tbw = tbw::nvme_data_units_written_tb(smart)?;
 
     // Bytes 128..136: Power-On Hours (lowest 64 bits = hours)
     let power_on_hours = if smart.len() >= 136 {
@@ -648,15 +666,12 @@ pub fn parse_nvme_smart_log(smart: &[u8]) -> Option<DriveSmartData> {
     })
 }
 
-/// Query ATA SMART Attributes via SMART_GET_VERSION (0x00074080) and SMART_RCV_DRIVE_DATA (0x0007c088).
+/// Query the ATA SMART attribute table via SMART_GET_VERSION (0x00074080) and
+/// SMART_RCV_DRIVE_DATA (0x0007c088, SMART READ DATA).
 ///
-/// Implemented for SATA SSDs and mechanical drives. Parses the 512-byte ATA SMART table:
-/// - 0xE7 / 0xA9 / 0xCA: SSD Life Left / Wear indicator (Health %)
-/// - 0xF1 / 0xF6: Lifetime LBAs Written (TBW) using Dual-Engine LBA/block translation
-/// - 0x09: Power-On Hours
-/// - 0xC2 / 0xBE: Temperature in Celsius
-/// - 0x05: Reallocated Sectors Count
-pub fn query_ata_smart_ioctl(handle: HANDLE, drive_index: u32) -> Option<DriveSmartData> {
+/// Needs a handle opened with GENERIC_READ | GENERIC_WRITE, i.e. an elevated process; otherwise
+/// Windows answers ERROR_ACCESS_DENIED, reported as [`SmartQueryError::AccessDenied`].
+pub fn query_ata_smart_ioctl(handle: HANDLE, drive_index: u32) -> Result<[u8; 512], SmartQueryError> {
     #[repr(C, packed)]
     #[derive(Default, Copy, Clone)]
     struct GetVersionInParams {
@@ -668,6 +683,43 @@ pub fn query_ata_smart_ioctl(handle: HANDLE, drive_index: u32) -> Option<DriveSm
         _dw_reserved: [u32; 4],
     }
 
+    let mut ver = GetVersionInParams::default();
+    let mut bytes_ret = 0u32;
+    unsafe {
+        DeviceIoControl(
+            handle,
+            0x00074080, // SMART_GET_VERSION
+            None,
+            0,
+            Some((&mut ver as *mut GetVersionInParams).cast()),
+            size_of::<GetVersionInParams>() as u32,
+            Some(&mut bytes_ret),
+            None,
+        )
+    }?;
+    // CAP_ATA_ID_CMD (0x01) or CAP_SMART_CMD (0x04)
+    if ver.f_capabilities & 0x04 == 0 && ver.f_capabilities & 0x01 == 0 {
+        return Err(SmartQueryError::Unavailable);
+    }
+
+    // SMART READ DATA: features 0xD0, command 0xB0, cylinder 0xC24F.
+    ata_receive_drive_data(handle, drive_index, 0xD0, 0x4F, 0xC2, 0xB0)
+}
+
+/// Read the 512-byte ATA IDENTIFY DEVICE block (command 0xEC) via SMART_RCV_DRIVE_DATA.
+pub fn query_ata_identify_ioctl(handle: HANDLE, drive_index: u32) -> Option<[u8; 512]> {
+    ata_receive_drive_data(handle, drive_index, 0, 0, 0, 0xEC).ok()
+}
+
+/// Issue one SMART_RCV_DRIVE_DATA command that returns a 512-byte sector.
+fn ata_receive_drive_data(
+    handle: HANDLE,
+    drive_index: u32,
+    features: u8,
+    cyl_low: u8,
+    cyl_high: u8,
+    command: u8,
+) -> Result<[u8; 512], SmartQueryError> {
     #[repr(C, packed)]
     #[derive(Default, Copy, Clone)]
     struct IdeRegs {
@@ -707,37 +759,16 @@ pub fn query_ata_smart_ioctl(handle: HANDLE, drive_index: u32) -> Option<DriveSm
         b_buffer: [u8; 512],
     }
 
-    // 1. Verify SMART capability via SMART_GET_VERSION (0x00074080)
-    let mut ver = GetVersionInParams::default();
-    let mut bytes_ret = 0u32;
-    let ok_ver = unsafe {
-        DeviceIoControl(
-            handle,
-            0x00074080, // SMART_GET_VERSION
-            None,
-            0,
-            Some((&mut ver as *mut GetVersionInParams).cast()),
-            size_of::<GetVersionInParams>() as u32,
-            Some(&mut bytes_ret),
-            None,
-        )
-    };
-
-    if ok_ver.is_err() || (ver.f_capabilities & 0x04 == 0 && ver.f_capabilities & 0x01 == 0) {
-        return None;
-    }
-
-    // 2. Submit SMART READ ATTRIBUTE VALUES (0xD0) via SMART_RCV_DRIVE_DATA (0x0007c088)
     let in_params = SendCmdInParams {
         c_buffer_size: 512,
         ir_drive_regs: IdeRegs {
-            b_features_reg: 0xD0, // SMART READ ATTRIBUTE VALUES
+            b_features_reg: features,
             b_sector_count_reg: 1,
             b_sector_number_reg: 1,
-            b_cyl_low_reg: 0x4F,  // SMART_CYL_LOW
-            b_cyl_high_reg: 0xC2, // SMART_CYL_HI
+            b_cyl_low_reg: cyl_low,
+            b_cyl_high_reg: cyl_high,
             b_drive_head_reg: 0xA0 | ((drive_index as u8 & 1) << 4),
-            b_command_reg: 0xB0, // SMART_CMD
+            b_command_reg: command,
             _b_reserved: 0,
         },
         b_drive_number: drive_index as u8,
@@ -746,8 +777,8 @@ pub fn query_ata_smart_ioctl(handle: HANDLE, drive_index: u32) -> Option<DriveSm
     };
 
     let mut out_params = std::mem::MaybeUninit::<SendCmdOutParams>::zeroed();
-    bytes_ret = 0;
-    let ok_smart = unsafe {
+    let mut bytes_ret = 0u32;
+    unsafe {
         DeviceIoControl(
             handle,
             0x0007c088, // SMART_RCV_DRIVE_DATA
@@ -758,18 +789,36 @@ pub fn query_ata_smart_ioctl(handle: HANDLE, drive_index: u32) -> Option<DriveSm
             Some(&mut bytes_ret),
             None,
         )
-    };
+    }?;
 
-    if ok_smart.is_err() || (bytes_ret as usize) < 16 + 362 {
-        return None;
+    if (bytes_ret as usize) < size_of::<SendCmdOutParams>() {
+        return Err(SmartQueryError::Unavailable);
     }
 
     let out_ref = unsafe { &*out_params.as_ptr() };
-    Some(parse_ata_smart_attributes(&out_ref.b_buffer))
+    Ok(out_ref.b_buffer)
+}
+
+/// Model (words 27..47) and firmware revision (words 23..27) from ATA IDENTIFY DEVICE. ATA strings
+/// store two characters per 16-bit word with the bytes swapped.
+pub fn parse_ata_identify(id: &[u8; 512]) -> (String, String) {
+    let ata_string = |first_word: usize, last_word: usize| -> String {
+        let mut s = Vec::with_capacity((last_word - first_word) * 2);
+        for w in first_word..last_word {
+            s.push(id[w * 2 + 1]);
+            s.push(id[w * 2]);
+        }
+        String::from_utf8_lossy(&s).trim_matches(|c: char| c == ' ' || c == '\0').to_string()
+    };
+    (ata_string(27, 47), ata_string(23, 27))
 }
 
 /// Parse ATA SMART attributes table (up to 30 attribute entries of 12 bytes each).
-pub fn parse_ata_smart_attributes(buf: &[u8; 512]) -> DriveSmartData {
+///
+/// `writes` names the attribute and unit that hold lifetime host writes for this drive family
+/// (from [`tbw::lookup_sata_write_counter`]); with `None` no TBW value is produced, because 0xF1 /
+/// 0xF6 units differ between vendors and cannot be inferred from the raw value.
+pub fn parse_ata_smart_attributes(buf: &[u8; 512], writes: Option<SataWriteCounter>) -> DriveSmartData {
     let mut health_pct: Option<u32> = None;
     let mut temp_c: Option<f32> = None;
     let mut lifetime_writes_tb: Option<f64> = None;
@@ -797,6 +846,11 @@ pub fn parse_ata_smart_attributes(buf: &[u8; 512]) -> DriveSmartData {
             0,
             0,
         ]);
+
+        if let Some(counter) = writes.filter(|c| c.attribute == attr_id) {
+            let tb = tbw::sata_raw_to_tb(raw_val, counter.unit);
+            lifetime_writes_tb = Some((tb * 100.0).round() / 100.0);
+        }
 
         match attr_id {
             // 0x05: Reallocated Sectors Count
@@ -827,40 +881,12 @@ pub fn parse_ata_smart_attributes(buf: &[u8; 512]) -> DriveSmartData {
                 }
             }
             // 0xA9 (169): Remaining Life Percentage (Silicon Motion / Realtek SSDs)
-            0xA9 => {
-                if health_pct.is_none() && (1..=100).contains(&current_val) {
-                    health_pct = Some(current_val as u32);
-                }
+            0xA9 if health_pct.is_none() && (1..=100).contains(&current_val) => {
+                health_pct = Some(current_val as u32);
             }
             // 0xCA (202): Percentage Lifetime Used (Micron)
-            0xCA => {
-                if health_pct.is_none() && raw_val <= 100 {
-                    health_pct = Some(100u32.saturating_sub(raw_val as u32));
-                }
-            }
-            // 0xF1 (241): Lifetime LBAs Written (TBW)
-            0xF1 => {
-                if raw_val > 0 {
-                    // Standard ATA: 512-byte LBAs converted to Terabytes
-                    let tb = (raw_val as f64 * 512.0) / 1_000_000_000_000.0;
-                    if tb > 0.0 && tb < 50_000.0 {
-                        lifetime_writes_tb = Some((tb * 100.0).round() / 100.0);
-                    } else {
-                        // Alternative controller unit: 32MB blocks (SandForce/Phison CX400 variant)
-                        let tb_32mb =
-                            (raw_val as f64 * 32.0 * 1024.0 * 1024.0) / 1_000_000_000_000.0;
-                        if tb_32mb > 0.0 && tb_32mb < 50_000.0 {
-                            lifetime_writes_tb = Some((tb_32mb * 100.0).round() / 100.0);
-                        }
-                    }
-                }
-            }
-            // 0xF6 (246): Cumulative Host Writes
-            0xF6 if lifetime_writes_tb.is_none() && raw_val > 0 => {
-                let tb = (raw_val as f64 * 512.0) / 1_000_000_000_000.0;
-                if (0.0..50_000.0).contains(&tb) {
-                    lifetime_writes_tb = Some((tb * 100.0).round() / 100.0);
-                }
+            0xCA if health_pct.is_none() && raw_val <= 100 => {
+                health_pct = Some(100u32.saturating_sub(raw_val as u32));
             }
             _ => {}
         }
@@ -897,8 +923,9 @@ pub const NOT_REPORTED: &str = "Health not reported";
 ///
 /// Uses `Get-PhysicalDisk` + `Get-StorageReliabilityCounter` with graceful fallback to
 /// `Win32_DiskDrive` and honest telemetry bounds.
-/// Returns `(health_pct, status, temp_c, tbw_tb, poh, size_gb)`.
-fn query_smart_health_wmi(disk_index: u32) -> (Option<u32>, String, f32, f64, u32, f64) {
+/// Returns `(health_pct, status, temp_c, poh, size_gb)`. MSFT_StorageReliabilityCounter has no
+/// lifetime-writes property, so TBW never comes from here.
+fn query_smart_health_wmi(disk_index: u32) -> (Option<u32>, String, f32, u32, f64) {
     let script = format!(
         "$c=[System.Globalization.CultureInfo]::InvariantCulture;\
 $d=Get-PhysicalDisk|Where-Object{{$_.DeviceId -eq '{idx}'}}|Select-Object -First 1;\
@@ -906,13 +933,12 @@ if($d){{$sz=($d.Size/1GB).ToString('0.0',$c);$r=$null;\
 try{{$r=$d|Get-StorageReliabilityCounter -ErrorAction SilentlyContinue}}catch{{}};\
 $wear=if($r -and $r.Wear -ne $null){{100-[int]$r.Wear}}else{{''}};\
 $tmp=if($r -and $r.Temperature -ne $null -and $r.Temperature -gt 0){{$r.Temperature}}else{{''}};\
-$tbw=if($r -and $r.TotalBytesWritten -ne $null){{($r.TotalBytesWritten/1TB).ToString('0.00',$c)}}else{{'0.00'}};\
 $poh=if($r -and $r.PowerOnHours -ne $null){{[int]$r.PowerOnHours}}else{{0}};\
 $hs=if($d.HealthStatus){{$d.HealthStatus}}else{{''}};\
-Write-Output \"$wear|$tmp|$tbw|$poh|$sz|$hs\"}}\
+Write-Output \"$wear|$tmp|$poh|$sz|$hs\"}}\
 else{{\
 $w=Get-CimInstance Win32_DiskDrive|Where-Object{{$_.Index -eq {idx}}}|Select-Object -First 1;\
-if($w){{$sz=($w.Size/1GB).ToString('0.0',$c);Write-Output \"||0.00|0|$sz|\"}}\
+if($w){{$sz=($w.Size/1GB).ToString('0.0',$c);Write-Output \"||0|$sz|\"}}\
 else{{Write-Output ''}}\
 }}",
         idx = disk_index
@@ -923,7 +949,7 @@ else{{Write-Output ''}}\
         .output();
 
     // Nothing is estimated: missing values stay None / 0.0 and the status says so (rule 2).
-    let not_reported = || (None, NOT_REPORTED.to_string(), 0.0f32, 0.0f64, 0u32, 0.0f64);
+    let not_reported = || (None, NOT_REPORTED.to_string(), 0.0f32, 0u32, 0.0f64);
 
     match output {
         Ok(o) if o.status.success() => {
@@ -933,7 +959,7 @@ else{{Write-Output ''}}\
                 return not_reported();
             }
             let parts: Vec<&str> = line.split('|').collect();
-            if parts.len() < 6 {
+            if parts.len() < 5 {
                 return not_reported();
             }
             let parse_f64 =
@@ -942,10 +968,9 @@ else{{Write-Output ''}}\
                 |s: &str| -> f32 { s.trim().replace(',', ".").parse::<f32>().unwrap_or(0.0) };
             let health_pct = parts[0].trim().parse::<u32>().ok().map(|h| h.min(100));
             let temp_c = parse_f32(parts[1]).max(0.0);
-            let tbw = parse_f64(parts[2]);
-            let poh = parts[3].trim().parse::<u32>().unwrap_or(0);
-            let size_gb = parse_f64(parts[4]);
-            let health_str = parts[5].trim();
+            let poh = parts[2].trim().parse::<u32>().unwrap_or(0);
+            let size_gb = parse_f64(parts[3]);
+            let health_str = parts[4].trim();
             let status = if health_str.eq_ignore_ascii_case("Healthy") {
                 match health_pct {
                     Some(h) if h >= 90 => "Healthy (Good)",
@@ -960,7 +985,7 @@ else{{Write-Output ''}}\
             } else {
                 NOT_REPORTED
             };
-            (health_pct, status.to_string(), temp_c, tbw, poh, size_gb)
+            (health_pct, status.to_string(), temp_c, poh, size_gb)
         }
         _ => not_reported(),
     }
@@ -1039,7 +1064,7 @@ fn probe_volume_fallback(
         health_percentage: None,
         status: "Volume only — drive health not accessible".to_string(),
         temperature_c: 0.0,
-        lifetime_writes_tb: 0.0,
+        host_writes: HostWrites::NotAvailable,
         power_on_hours: 0,
         trim_enabled,
     })
@@ -1057,11 +1082,10 @@ mod tests {
     #[test]
     fn test_query_smart_health_wmi_fallback() {
         // For disk index 255 (non-existent): no invented values, just "not reported".
-        let (health, status, temp, tbw, poh, size) = query_smart_health_wmi(255);
+        let (health, status, temp, poh, size) = query_smart_health_wmi(255);
         assert_eq!(health, None, "missing health must not be estimated");
         assert_eq!(status, NOT_REPORTED);
         assert_eq!(temp, 0.0, "missing temperature must not be estimated");
-        assert_eq!(tbw, 0.0, "TBW should default to 0.0 for non-existent disk");
         assert_eq!(poh, 0, "POH should default to 0 for non-existent disk");
         let _ = size;
     }
@@ -1136,12 +1160,113 @@ mod tests {
         let poh = 3200u64;
         buf[offset3 + 5..offset3 + 11].copy_from_slice(&poh.to_le_bytes()[0..6]);
 
-        let res = parse_ata_smart_attributes(&buf);
+        let lba = SataWriteCounter { attribute: 0xF1, unit: tbw::WriteUnit::Lba512 };
+        let res = parse_ata_smart_attributes(&buf, Some(lba));
         assert_eq!(res.health_percentage, Some(96));
         assert_eq!(res.status, "Healthy (Good)");
         assert_eq!(res.temperature_c, Some(34.0));
         assert_eq!(res.lifetime_writes_tb, Some(8.00));
         assert_eq!(res.power_on_hours, Some(3200));
+
+        // Without a known vendor unit the same table yields no TBW at all.
+        assert_eq!(parse_ata_smart_attributes(&buf, None).lifetime_writes_tb, None);
+    }
+
+    /// Bytes from a hex-dump fixture (`offset: xx xx ...` lines, `#` comments).
+    fn hex_fixture(text: &str) -> Vec<u8> {
+        text.lines()
+            .filter(|l| !l.trim_start().starts_with('#'))
+            .filter_map(|l| l.split_once(':').map(|(_, bytes)| bytes))
+            .flat_map(|bytes| bytes.split_whitespace())
+            .map(|b| u8::from_str_radix(b, 16).expect("hex byte"))
+            .collect()
+    }
+
+    fn sector(bytes: Vec<u8>) -> [u8; 512] {
+        bytes.try_into().expect("fixture must hold exactly 512 bytes")
+    }
+
+    #[test]
+    fn nvme_descriptor_fixture_kingston_snv3s500g() {
+        // Raw IOCTL output captured on a KINGSTON SNV3S500G (2026-11-25).
+        let desc = hex_fixture(include_str!("../../tests/fixtures/smart/kingston_snv3s500g_nvme_descriptor.hex"));
+        assert_eq!(desc.len(), 560);
+        // ProtocolType 3 (NVMe), DataType 2 (log page), ProtocolDataOffset 40, length 512.
+        assert_eq!(&desc[8..12], &3u32.to_le_bytes());
+        assert_eq!(&desc[12..16], &2u32.to_le_bytes());
+        assert_eq!(&desc[24..28], &40u32.to_le_bytes());
+
+        let log = nvme_log_from_descriptor(&desc).expect("log page inside descriptor");
+        assert_eq!(log.len(), 512);
+        assert_eq!(log.as_ptr(), desc[48..].as_ptr(), "log starts 8 + ProtocolDataOffset bytes in");
+
+        let smart = parse_nvme_smart_log(log).expect("valid log page 0x02");
+        // Percentage Used 0x12 = 18 % -> 82 % health; Data Units Written 0x0452A42C = 72,524,844
+        // units × 512,000 B = 37.13 TB; Power-On Hours 0x0D5C = 3420.
+        assert_eq!(smart.health_percentage, Some(82));
+        assert_eq!(smart.lifetime_writes_tb, Some(37.13));
+        assert_eq!(smart.power_on_hours, Some(3420));
+        let t = smart.temperature_c.expect("composite temperature");
+        assert!((30.0..45.0).contains(&t), "temperature {t}");
+    }
+
+    #[test]
+    fn nvme_descriptor_rejects_short_or_bad_offsets() {
+        assert_eq!(nvme_log_from_descriptor(&[]), None);
+        let mut desc = vec![0u8; 560];
+        desc[24..28].copy_from_slice(&40u32.to_le_bytes());
+        desc[28..32].copy_from_slice(&64u32.to_le_bytes()); // shorter than a SMART log
+        assert_eq!(nvme_log_from_descriptor(&desc), None);
+        desc[28..32].copy_from_slice(&512u32.to_le_bytes());
+        desc[24..28].copy_from_slice(&u32::MAX.to_le_bytes()); // offset beyond the buffer
+        assert_eq!(nvme_log_from_descriptor(&desc), None);
+    }
+
+    #[test]
+    fn ata_fixture_goodram_cx400_g2_unknown_unit_is_not_available() {
+        // Raw SMART READ DATA + IDENTIFY captured on a Goodram SSDPR-CX400-01T-G2 (fw SN20728).
+        let id = sector(hex_fixture(include_str!("../../tests/fixtures/smart/goodram_cx400_g2_identify.hex")));
+        let table = sector(hex_fixture(include_str!("../../tests/fixtures/smart/goodram_cx400_g2_ata_smart.hex")));
+
+        let (model, fw) = parse_ata_identify(&id);
+        assert_eq!(model, "SSDPR-CX400-01T-G2");
+        assert_eq!(fw, "SN20728");
+
+        // This firmware is not the Phison variant smartmontools documents, so 0xF1's unit is
+        // unknown and no TBW is reported (the raw value 4718 could be GiB or 32 MiB blocks).
+        let counter = tbw::lookup_sata_write_counter(&model, &fw);
+        assert_eq!(counter, None);
+        let smart = parse_ata_smart_attributes(&table, counter);
+        assert_eq!(smart.lifetime_writes_tb, None);
+        assert_eq!(smart.power_on_hours, Some(496));
+        assert_eq!(smart.temperature_c, Some(28.0));
+        assert_eq!(smart.health_percentage, None);
+        assert_eq!(smart.status, "SMART OK — no wear indicator");
+
+        // The raw48 decoding itself: the same bytes read as GiB give 4718 GiB = 5.07 TB.
+        let gib = SataWriteCounter { attribute: 0xF1, unit: tbw::WriteUnit::GiB };
+        assert_eq!(parse_ata_smart_attributes(&table, Some(gib)).lifetime_writes_tb, Some(5.07));
+    }
+
+    #[test]
+    fn access_denied_maps_to_requires_admin() {
+        let denied = windows::core::Error::from_hresult(windows::core::HRESULT::from_win32(ERROR_ACCESS_DENIED.0));
+        assert_eq!(SmartQueryError::from(denied), SmartQueryError::AccessDenied);
+        let io = windows::core::Error::from_hresult(windows::core::HRESULT::from_win32(1117));
+        assert_eq!(SmartQueryError::from(io), SmartQueryError::Unavailable);
+    }
+
+    /// Read-only: prints what this PC's drives report, to compare with CrystalDiskInfo / smartctl.
+    /// `cargo test --lib print_live_disk_report -- --ignored --nocapture`
+    #[test]
+    #[ignore = "prints live drive data for manual comparison"]
+    fn print_live_disk_report() {
+        for d in DiskSubsystemReport::probe().drives {
+            println!(
+                "Disk {}: {} [{}] health={:?} temp={} poh={} writes={:?} status={}",
+                d.index, d.model, d.interface_type, d.health_percentage, d.temperature_c, d.power_on_hours, d.host_writes, d.status
+            );
+        }
     }
 
     #[test]

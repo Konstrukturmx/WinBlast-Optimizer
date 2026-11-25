@@ -79,6 +79,9 @@ pub enum AppMode {
     Advanced,
 }
 
+/// SMART / TBW refresh interval while the Disk Health view is open.
+pub const DISK_SMART_REFRESH_SECS: f64 = 60.0;
+
 /// Active view tab in the navigation.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum ActiveView {
@@ -738,6 +741,8 @@ pub struct AppState {
     pub is_thermal_scanning: bool,
     pub disk_report: Option<crate::hardware::disks::DiskSubsystemReport>,
     pub is_disk_scanning: bool,
+    /// `current_time_secs` when the last disk report arrived (drives the 60 s SMART refresh).
+    pub disk_report_at_secs: f64,
     pub disk_trim_inflight: bool,
     pub perf_score: Option<crate::tools::performance_tests::BenchmarkScore>,
     pub is_benchmarking_perf: bool,
@@ -993,6 +998,7 @@ impl AppState {
             is_thermal_scanning: false,
             disk_report: None,
             is_disk_scanning: false,
+            disk_report_at_secs: 0.0,
             disk_trim_inflight: false,
             perf_score: None,
             is_benchmarking_perf: false,
@@ -1117,8 +1123,21 @@ impl AppState {
             .as_secs_f64();
         self.current_time_secs = now;
         self.sync_search_state();
+        self.schedule_disk_smart_refresh();
         let processed = self.drain_worker_events_bounded(64);
         processed > 0 || self.is_in_progress() || !self.rx_events.is_empty()
+    }
+
+    /// While the Disk Health view is open, re-read SMART every [`DISK_SMART_REFRESH_SECS`]. The tick
+    /// only compares timestamps; the IOCTL probe runs on a worker thread (`scan_disk_health_async`).
+    pub fn schedule_disk_smart_refresh(&mut self) {
+        if self.active_view == ActiveView::DiskHealth
+            && self.disk_report.is_some()
+            && !self.is_disk_scanning
+            && self.current_time_secs - self.disk_report_at_secs >= DISK_SMART_REFRESH_SECS
+        {
+            self.scan_disk_health_async();
+        }
     }
 
     /// Synchronize `search_query` and `search_edit.text` so clearing either never resurrects stale text.
@@ -1958,6 +1977,7 @@ impl AppState {
             WorkerEvent::DiskReportLoaded(report) => {
                 self.disk_report = Some(report);
                 self.is_disk_scanning = false;
+                self.disk_report_at_secs = self.current_time_secs;
             }
             WorkerEvent::HealthAssessed(assessment) => {
                 self.is_assessing_health = false;

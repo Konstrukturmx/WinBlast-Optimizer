@@ -155,3 +155,29 @@ fn render_preview_frames() {
         settle_and_save(&window, &dir, &format!("13-topbar-{w}"), 700);
     }
 }
+
+
+/// Every navigation page in its empty / first-open state (no data, no system access).
+/// `WINBLAST_PREVIEW_DIR=<dir> cargo test --test ui_render_preview render_all_views -- --ignored`
+#[test]
+#[ignore = "manual visual check; writes images to WINBLAST_PREVIEW_DIR"]
+fn render_all_views() {
+    let Some(dir) = std::env::var_os("WINBLAST_PREVIEW_DIR").map(std::path::PathBuf::from) else {
+        eprintln!("WINBLAST_PREVIEW_DIR not set; nothing rendered");
+        return;
+    };
+    std::fs::create_dir_all(&dir).expect("preview dir");
+    let window = MinimalSoftwareWindow::new(RepaintBufferType::NewBuffer);
+    window.set_size(PhysicalSize::new(W, H));
+    slint::platform::set_platform(Box::new(Headless { window: window.clone(), start: Instant::now() }))
+        .expect("platform");
+    let ui = MainWindow::new().expect("MainWindow");
+    ui.global::<Tr>().on_lookup(|key, _| winblast0::ui_slint::i18n::lookup(Language::English, key.as_str()));
+    theme::apply(&ui, &ThemePalette::new(ThemeMode::Dark, ColorScheme::default(), UiThemeStyle::default()), true);
+    ui.global::<AppStore>().set_app_version(env!("CARGO_PKG_VERSION").into());
+    ui.show().expect("show");
+    for (i, (id, ..)) in palette::VIEWS.iter().enumerate() {
+        ui.global::<AppStore>().set_active_view((*id).into());
+        settle_and_save(&window, &dir, &format!("v{i:02}-{id}"), 400);
+    }
+}

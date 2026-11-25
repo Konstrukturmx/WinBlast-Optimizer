@@ -4,6 +4,22 @@ All notable changes to **WinBlast Optimizer** are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
+## [Unreleased]
+
+### Fixed
+- **NVMe SMART was never read**: the log-page query sent ProtocolType 1 (SCSI) and DataType 1 (Identify) with a 48-byte input buffer, and parsed the reply 8 bytes early. It now sends ProtocolTypeNvme (3) / NVMeDataTypeLogPage (2) with the full buffer, tries StorageAdapterProtocolSpecificProperty first, and locates the log at 8 + ProtocolDataOffset. ProtocolDataRequestSubValue stays 0 (it is the log-page offset; 0xFFFFFFFF fails with ERROR_IO_DEVICE). On the dev PC a KINGSTON SNV3S500G now shows 82 % health / 37.1 TB written / 3420 h instead of 99 % / 0.10 TB.
+- **TBW no longer comes from the wrong counters**: the kernel IOCTL_DISK_GET_PERFORMANCE byte count (resets at boot) and a non-existent Storage API property are no longer shown as lifetime writes. The v1.5 note "verified live: CX400 0.04 TBW, SNV3S500G 0.10 TBW" was based on those fallbacks.
+
+### Changed
+- **SATA TBW uses a vendor-unit table** (`src/hardware/tbw.rs`) keyed on the ATA IDENTIFY DEVICE model and firmware, following smartmontools drivedb attribute units (512-byte LBAs, 32 MiB, GiB, GB). Drives that are not listed, HDDs and virtual disks show **N/A**; an ERROR_ACCESS_DENIED from SMART shows **Requires admin**. Kingston A400 and Goodram CX400 count only with Phison firmware, because other controller variants use a different unit.
+- **SMART refreshes every 60 s** while Disk Health is open, on a worker thread.
+- PerMonitorV2 DPI awareness is set explicitly in `build.rs`.
+
+### Tests
+- Unit tests read raw hex dumps captured from real drives (`tests/fixtures/smart/`: NVMe descriptor + log page 0x02, ATA SMART table and IDENTIFY with the serial number blanked).
+- `tests/font_coverage.rs`: every Latin/Greek/Cyrillic letter in the UI text (Turkish included) exists in Inter-UI.ttf, ASCII + Turkish exist in JetBrainsMono-UI.ttf, and both `wght` axes span exactly the weights the UI uses (400-800).
+
+---
 ## [v1.7.0] - 2026-11-24
 
 This release ships everything built on 2026-11-23 (the Slint migration and the unreleased 1.8.0 visual layer, listed below) plus the following changes, under the 1.7.0 version number.

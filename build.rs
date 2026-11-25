@@ -1,4 +1,5 @@
 // build.rs — Embeds UAC manifest, Windows icon & PE metadata
+use embed_manifest::manifest::DpiAwareness;
 use embed_manifest::manifest::ExecutionLevel::{AsInvoker, HighestAvailable};
 use embed_manifest::{embed_manifest, new_manifest};
 
@@ -52,8 +53,14 @@ fn main() {
                 AsInvoker
             };
 
-            embed_manifest(new_manifest("WinBlast0.Optimizer").requested_execution_level(level))
-                .expect("Failed to embed UAC manifest");
+            // PerMonitorV2 is set explicitly (it is also embed-manifest's default) so text and
+            // vector UI are rasterised at each monitor's real scale instead of bitmap-stretched.
+            embed_manifest(
+                new_manifest("WinBlast0.Optimizer")
+                    .requested_execution_level(level)
+                    .dpi_awareness(DpiAwareness::PerMonitorV2Only),
+            )
+            .expect("Failed to embed UAC manifest");
         }
     }
 }

@@ -240,6 +240,8 @@ pub enum ViewTextKey {
     AboutNew7,
     AboutNew8,
     AboutNew9,
+    DiskWritesNotAvailable,
+    DiskWritesRequiresAdmin,
     COUNT,
 }
 
@@ -463,6 +465,8 @@ static VIEW_TRANSLATIONS: [[&str; ViewTextKey::TOTAL_KEYS]; 8] = [
         "• Redesigned colour schemes: four OKLCH palettes (Cyber Indigo, Midnight Stealth, Emerald Mint, Crimson Sunset) in dark and light, every combination checked for WCAG AA contrast.",
         "• New loading screen with a working Close button (the task keeps running), hover feedback on buttons and lists, and 3D depth effects on PCs with a hardware GPU.",
         "• Fixes: runs without the Visual C++ runtime, the top bar no longer overlaps at narrow widths, missing symbols now render, the health caption shows real counts, and three crashes on non-English paths are gone.",
+        "N/A",
+        "Requires admin",
     ],
 
     // 1: Turkish (TR)
@@ -679,6 +683,8 @@ static VIEW_TRANSLATIONS: [[&str; ViewTextKey::TOTAL_KEYS]; 8] = [
         "• Yeniden tasarlanan renk şemaları: koyu ve açık modda dört OKLCH paleti (Cyber Indigo, Midnight Stealth, Emerald Mint, Crimson Sunset); her kombinasyon WCAG AA kontrastı için denetlendi.",
         "• Çalışan bir Kapat düğmesine sahip yeni yükleme ekranı (görev sürer), düğme ve listelerde fareyle üzerine gelme geri bildirimi ve donanım GPU'lu bilgisayarlarda 3B derinlik efektleri.",
         "• Düzeltmeler: Visual C++ çalışma zamanı olmadan çalışır, üst çubuk dar genişliklerde çakışmaz, eksik simgeler artık görünür, sağlık açıklaması gerçek sayıları gösterir ve İngilizce olmayan yollardaki üç çökme giderildi.",
+        "Yok",
+        "Yönetici gerekli",
     ],
 
     // 2: German (DE)
@@ -895,6 +901,8 @@ static VIEW_TRANSLATIONS: [[&str; ViewTextKey::TOTAL_KEYS]; 8] = [
         "• Neu gestaltete Farbschemata: vier OKLCH-Paletten (Cyber Indigo, Midnight Stealth, Emerald Mint, Crimson Sunset) in Dunkel und Hell, jede Kombination auf WCAG-AA-Kontrast geprüft.",
         "• Neuer Ladebildschirm mit funktionierender Schließen-Schaltfläche (die Aufgabe läuft weiter), Hover-Feedback für Schaltflächen und Listen sowie 3D-Tiefeneffekte auf PCs mit Hardware-GPU.",
         "• Korrekturen: läuft ohne Visual-C++-Laufzeit, die obere Leiste überlappt bei geringer Breite nicht mehr, fehlende Symbole werden angezeigt, die Statusbeschriftung zeigt echte Zahlen, und drei Abstürze bei nicht-englischen Pfaden sind behoben.",
+        "k. A.",
+        "Adminrechte nötig",
     ],
 
     // 3: French (FR)
@@ -1111,6 +1119,8 @@ static VIEW_TRANSLATIONS: [[&str; ViewTextKey::TOTAL_KEYS]; 8] = [
         "• Jeux de couleurs repensés : quatre palettes OKLCH (Cyber Indigo, Midnight Stealth, Emerald Mint, Crimson Sunset) en sombre et en clair, chaque combinaison vérifiée pour le contraste WCAG AA.",
         "• Nouvel écran de chargement avec un bouton Fermer fonctionnel (la tâche continue), retour visuel au survol des boutons et des listes, et effets de profondeur 3D sur les PC dotés d'un GPU matériel.",
         "• Corrections : fonctionne sans le runtime Visual C++, la barre supérieure ne se chevauche plus en largeur réduite, les symboles manquants s'affichent, la légende de santé indique les vrais chiffres et trois plantages sur des chemins non anglais sont corrigés.",
+        "N/D",
+        "Droits admin requis",
     ],
 
     // 4: Spanish (ES)
@@ -1327,6 +1337,8 @@ static VIEW_TRANSLATIONS: [[&str; ViewTextKey::TOTAL_KEYS]; 8] = [
         "• Esquemas de color rediseñados: cuatro paletas OKLCH (Cyber Indigo, Midnight Stealth, Emerald Mint, Crimson Sunset) en oscuro y claro, cada combinación verificada con contraste WCAG AA.",
         "• Nueva pantalla de carga con un botón Cerrar que funciona (la tarea sigue), respuesta visual al pasar el ratón por botones y listas, y efectos de profundidad 3D en equipos con GPU.",
         "• Correcciones: funciona sin el runtime de Visual C++, la barra superior ya no se superpone en anchos estrechos, los símbolos que faltaban se muestran, el texto de estado indica cifras reales y se corrigieron tres cierres con rutas no inglesas.",
+        "N/D",
+        "Requiere administrador",
     ],
 
     // 5: Russian (RU)
@@ -1543,6 +1555,8 @@ static VIEW_TRANSLATIONS: [[&str; ViewTextKey::TOTAL_KEYS]; 8] = [
         "• Новые цветовые схемы: четыре палитры OKLCH (Cyber Indigo, Midnight Stealth, Emerald Mint, Crimson Sunset) в тёмном и светлом режимах, каждая комбинация проверена на контраст WCAG AA.",
         "• Новый экран загрузки с работающей кнопкой «Закрыть» (задача продолжается), отклик при наведении на кнопки и списки и 3D-эффекты глубины на ПК с аппаратным GPU.",
         "• Исправления: работает без среды Visual C++, верхняя панель не перекрывается при малой ширине, недостающие символы отображаются, подпись состояния показывает реальные числа, устранены три сбоя на неанглийских путях.",
+        "Н/Д",
+        "Нужны права администратора",
     ],
 
     // 6: Chinese (ZH)
@@ -1759,6 +1773,8 @@ static VIEW_TRANSLATIONS: [[&str; ViewTextKey::TOTAL_KEYS]; 8] = [
         "• 重新设计的配色方案：四套 OKLCH 调色板（Cyber Indigo、Midnight Stealth、Emerald Mint、Crimson Sunset），支持深色和浅色，所有组合均通过 WCAG AA 对比度检查。",
         "• 全新加载界面，“关闭”按钮可正常使用（任务继续运行）；按钮和列表支持悬停反馈；配备硬件 GPU 的电脑可显示 3D 景深效果。",
         "• 修复：无需 Visual C++ 运行库即可运行；窄窗口下顶栏不再重叠；缺失的符号现可显示；健康说明显示真实数量；修复了非英文路径导致的三处崩溃。",
+        "不可用",
+        "需要管理员权限",
     ],
 
     // 7: Japanese (JA)
@@ -1975,6 +1991,8 @@ static VIEW_TRANSLATIONS: [[&str; ViewTextKey::TOTAL_KEYS]; 8] = [
         "• 配色を一新：ダーク／ライト対応の 4 つの OKLCH パレット（Cyber Indigo、Midnight Stealth、Emerald Mint、Crimson Sunset）。すべての組み合わせで WCAG AA のコントラストを確認済み。",
         "• 新しい読み込み画面（「閉じる」ボタンが機能し、タスクは継続）、ボタンとリストのホバー表示、ハードウェア GPU 搭載 PC での 3D 奥行き効果。",
         "• 修正：Visual C++ ランタイムなしで動作、狭い幅でも上部バーが重ならない、欠けていた記号を表示、ヘルス表示が実際の件数を表示、英語以外のパスでの 3 件のクラッシュを解消。",
+        "該当なし",
+        "管理者権限が必要",
     ],
 ];
 
