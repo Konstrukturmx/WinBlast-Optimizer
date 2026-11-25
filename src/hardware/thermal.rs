@@ -170,8 +170,8 @@ impl SystemThermalSnapshot {
             }); }
         }
 
-        // 4. Physical Storage SMART thermal sensors
-        for drive in crate::hardware::disks::DiskSubsystemReport::probe().drives {
+        // 4. Physical Storage SMART thermal sensors (probe cached for 60 s: it opens every disk)
+        for drive in cached_disk_report().drives {
             if drive.temperature_c > 0.0 {
                 let status = if drive.temperature_c > 65.0 {
                     ThermalHealth::Hot
@@ -220,6 +220,7 @@ fn probe_acpi_wmi_and_perf() -> Option<(f32, bool)> {
     // Try WMI MSAcpi_ThermalZoneTemperature first (tenths of Kelvin, e.g. 3082 = 35.0°C)
     let wmi_script = r#"$t=Get-CimInstance -Namespace root/wmi -ClassName MSAcpi_ThermalZoneTemperature -ErrorAction SilentlyContinue; if($t){$k=$t.CurrentTemperature; if($k -is [array]){$k=$k[0]}; if($k -gt 2732 -and $k -lt 3800){Write-Output "$k"}}"#;
     if let Ok(o) = SilentCommand::new("powershell.exe")
+        .timeout(std::time::Duration::from_secs(20))
         .args(["-NoProfile", "-NonInteractive", "-Command", wmi_script])
         .output()
     {
@@ -242,6 +243,7 @@ fn probe_acpi_wmi_and_perf() -> Option<(f32, bool)> {
     // Get-Counter '\\Thermal Zone Information(*)\\*' path is translated on non-English Windows (C6).
     let perf_script = r#"$z = Get-CimInstance Win32_PerfFormattedData_Counters_ThermalZoneInformation -ErrorAction SilentlyContinue | Select-Object -First 1; if ($z) { if ($z.HighPrecisionTemperature -gt 2732 -and $z.HighPrecisionTemperature -lt 3800) { Write-Output "$($z.HighPrecisionTemperature)|$($z.ThrottleReasons)" } elseif ($z.Temperature -gt 273 -and $z.Temperature -lt 380) { Write-Output "$($z.Temperature * 10)|$($z.ThrottleReasons)" } }"#;
     if let Ok(o) = SilentCommand::new("powershell.exe")
+        .timeout(std::time::Duration::from_secs(20))
         .args(["-NoProfile", "-NonInteractive", "-Command", perf_script])
         .output()
     {
@@ -271,11 +273,27 @@ fn probe_acpi_wmi_and_perf() -> Option<(f32, bool)> {
 }
 
 /// Query GPU core temperature, hotspot, and fan speed percentage.
+/// The disk report used for drive temperatures, re-probed at most once a minute (D4).
+fn cached_disk_report() -> crate::hardware::disks::DiskSubsystemReport {
+    use std::sync::Mutex;
+    static CACHE: Mutex<Option<(std::time::Instant, crate::hardware::disks::DiskSubsystemReport)>> = Mutex::new(None);
+    let mut guard = CACHE.lock().unwrap_or_else(|p| p.into_inner());
+    if let Some((at, report)) = guard.as_ref() {
+        if at.elapsed() < std::time::Duration::from_secs(60) {
+            return report.clone();
+        }
+    }
+    let report = crate::hardware::disks::DiskSubsystemReport::probe();
+    *guard = Some((std::time::Instant::now(), report.clone()));
+    report
+}
+
 fn probe_gpu_thermals() -> Option<(f32, f32, Option<f32>)> {
     // 1. Try nvidia-smi with cached presence detection (avoids failing child process spawns on AMD/Intel)
     let status = NVIDIA_SMI_STATUS.load(Ordering::Relaxed);
     if status != 2 {
         if let Ok(o) = SilentCommand::new("nvidia-smi")
+            .timeout(std::time::Duration::from_secs(20))
             .args([
                 "--query-gpu=temperature.gpu,fan.speed",
                 "--format=csv,noheader,nounits",

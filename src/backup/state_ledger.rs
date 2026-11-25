@@ -360,6 +360,37 @@ impl StateLedger {
         Ok(latest)
     }
 
+    /// One page of history, newest first (D3: the UI reads a bounded page, never the whole table).
+    pub fn history_page(&self, limit: usize, offset: usize) -> crate::core::error::Result<Vec<LedgerEntry>> {
+        let mut stmt = self.conn.prepare(
+            "SELECT id, tweak_id, action_type, original_value, new_value, timestamp, rolled_back
+             FROM ledger ORDER BY id DESC LIMIT ?1 OFFSET ?2",
+        )?;
+        let mut rows = stmt.query(params![limit as i64, offset as i64])?;
+        let mut out = Vec::with_capacity(limit.min(1024));
+        while let Some(row) = rows.next()? {
+            let view = LedgerEntryView {
+                id: row.get(0)?,
+                tweak_id: row.get_ref(1)?.as_str()?,
+                action_type: row.get_ref(2)?.as_str()?,
+                original_value: row.get_ref(3)?.as_str()?,
+                new_value: row.get_ref(4)?.as_str()?,
+                timestamp_str: row.get_ref(5)?.as_str()?,
+                rolled_back: row.get::<_, i32>(6)? != 0,
+            };
+            out.push(view.to_owned());
+        }
+        Ok(out)
+    }
+
+    /// Number of changes that have not been rolled back.
+    pub fn count_active(&self) -> crate::core::error::Result<usize> {
+        let n: i64 = self
+            .conn
+            .query_row("SELECT COUNT(1) FROM ledger WHERE rolled_back = 0", [], |r| r.get(0))?;
+        Ok(n.max(0) as usize)
+    }
+
     /// Retrieve the full change history, newest first.
     pub fn get_history(&self) -> crate::core::error::Result<Vec<LedgerEntry>> {
         let count = self.count_history().unwrap_or(0);

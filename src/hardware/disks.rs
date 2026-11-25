@@ -111,6 +111,7 @@ impl DiskSubsystemReport {
         // Check global Windows TRIM status via fsutil
         let mut trim_active = true;
         if let Ok(output) = SilentCommand::new("fsutil")
+            .timeout(std::time::Duration::from_secs(20))
             .args(["behavior", "query", "DisableDeleteNotify"])
             .output()
         {
@@ -164,6 +165,7 @@ impl DiskSubsystemReport {
     /// Run TRIM on all SSD volumes via PowerShell `Optimize-Volume -ReTrim`.
     pub fn run_trim_all() -> Result<String, String> {
         let output = SilentCommand::new("powershell")
+            .timeout(std::time::Duration::from_secs(20))
             .args([
                 "-NoProfile",
                 "-NonInteractive",
@@ -945,6 +947,7 @@ else{{Write-Output ''}}\
     );
 
     let output = SilentCommand::new("powershell.exe")
+        .timeout(std::time::Duration::from_secs(20))
         .args(["-NoProfile", "-NonInteractive", "-Command", &script])
         .output();
 

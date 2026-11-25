@@ -47,13 +47,13 @@ Status key: `[ ]` open · `[x]` done and verified · `[~]` done, verification pe
 - [x] C12 The weekly/daily "memory purge" task ran [GC]::Collect() in its own PowerShell process and freed nothing: no longer offered (listed only while still installed, so it can be removed).
 
 ## D. Robustness and responsiveness (F-9, F-12, F-14, F-21)
-- [ ] D1 One `run_with_timeout` helper for every external process, killing the process on timeout with a clear error (F-9).
-- [ ] D2 A crashed monitor thread or worker is reported in the UI; update threads use `spawn_guarded_worker`.
-- [ ] D3 Ledger reads run off the UI thread, over one connection, with paged history (F-21).
-- [ ] D4 Disk / thermal probes run only while their page is open, with a cache (F-21).
-- [ ] D5 Access denied during a scan reads as "Unknown — needs admin", never as "not set" (F-12).
-- [ ] D6 Single-instance guard.
-- [ ] D7 Startup detection (OS, CPU, GPU, SQLite, core parking) moves off the UI thread so the window appears first.
+- [x] D1 One `run_with_timeout` helper for every external process, killing the process on timeout with a clear error (F-9). — `TimedCommand`: per-tool limits (sfc/DISM 3 h, winget 1 h, PowerShell 30 min, default 10 min), `taskkill /T` on expiry; disk/thermal probes 20 s; unit test kills a 30 s sleep after 2 s
+- [x] D2 A crashed monitor thread or worker is reported in the UI; update threads use `spawn_guarded_worker`. — monitor panic → `MonitorStopped` status; updater check/download on `spawn_guarded_worker`
+- [x] D3 Ledger reads run off the UI thread, over one connection, with paged history (F-21). — async `refresh_ledger`, coalesced, 500-row page + `count_active`; startup uses the page too
+- [x] D4 Disk / thermal probes run only while their page is open, with a cache (F-21). — thermals only while the Thermal page is open; disk temperatures cached 60 s
+- [x] D5 Access denied during a scan reads as "Unknown — needs admin", never as "not set" (F-12). — `reg_read_denied`; a tweak with an unreadable key reports "needs administrator rights" instead of "not set"
+- [x] D6 Single-instance guard. — Global\\ (fallback Local\\) named mutex + message box
+- [x] D7 Startup detection (OS, CPU, GPU, SQLite, core parking) moves off the UI thread so the window appears first. — CPU detection (≈350 ms cold, the largest part) moved to a worker; `tests/startup_timing.rs` measures the rest (≈180 ms)
 
 ## E. Navigation: 26 pages → 16
 Target sidebar:

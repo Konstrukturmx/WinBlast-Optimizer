@@ -597,6 +597,7 @@ fn backup_ledger_undo_reverts_an_applied_tweak() {
     h.window.global::<MatrixStore>().invoke_switch_clicked(target.id.clone());
     h.wait("applied", |s| s.in_flight_tweaks.is_empty() && !s.is_applying && s.is_switch_active(target.id.as_str()));
     h.state.borrow_mut().refresh_ledger();
+    h.wait("ledger read", |s| !s.ledger_refresh_inflight);
     h.goto(ActiveView::BackupCenter);
     let st = h.window.global::<BackupStore>();
     let entry = st.get_ledger().iter().find(|e| !e.rolled_back && e.reversible).expect("a reversible ledger entry");
@@ -605,6 +606,7 @@ fn backup_ledger_undo_reverts_an_applied_tweak() {
     st.invoke_rollback(entry.id.clone());
     h.wait("rolled back", |s| !s.is_rolling_back);
     h.state.borrow_mut().refresh_ledger();
+    h.wait("ledger read", |s| !s.ledger_refresh_inflight);
     h.bridge.sync();
     let after = st.get_ledger().iter().find(|e| e.id == entry.id).unwrap();
     assert!(after.rolled_back, "ledger entry must be marked rolled back");

@@ -79,6 +79,9 @@ pub enum AppMode {
     Advanced,
 }
 
+/// Ledger rows the UI keeps (newest first); older ones stay in the database.
+pub const LEDGER_PAGE: usize = 500;
+
 /// SMART / TBW refresh interval while the Disk Health view is open.
 pub const DISK_SMART_REFRESH_SECS: f64 = 60.0;
 
@@ -492,6 +495,12 @@ pub enum WorkerEvent {
     UpdateCheckCompleted(Result<Option<crate::core::updater::ReleaseInfo>, String>),
     UpdateDownloadCompleted(Result<std::path::PathBuf, String>),
     ThermalSnapshot(crate::hardware::thermal::SystemThermalSnapshot),
+    /// The live-telemetry thread stopped (panic); the message says why (D2).
+    MonitorStopped(String),
+    /// CPU topology detected after startup (D7).
+    CpuDetected(CpuInfo),
+    /// Newest ledger rows and the number of active (not rolled back) changes (D3).
+    LedgerLoaded(Result<(Vec<LedgerEntry>, usize), String>),
     BiosInfoLoaded(crate::hardware::bios::BiosSystemInfo),
     DiskReportLoaded(crate::hardware::disks::DiskSubsystemReport),
     /// Result of an asynchronous ReTrim of all fixed volumes.
@@ -644,6 +653,10 @@ pub struct AppState {
     pub ledger_path: PathBuf,
     /// Shown at startup when the ledger could not be opened or had interrupted changes (A7).
     pub ledger_notice: Option<String>,
+    /// Active (not rolled back) changes in the whole ledger; `ledger_history` holds one page.
+    pub ledger_active_count: usize,
+    pub ledger_refresh_inflight: bool,
+    pub ledger_refresh_again: bool,
     pub profile_path: PathBuf,
     pub active_goal: crate::graph::astar::OptimizationGoal,
     pub planned_path: Option<crate::graph::astar::OptimizationPlan>,
@@ -740,6 +753,10 @@ pub struct AppState {
     pub fault_scanning: bool,
     pub fault_action_inflight: bool,
     pub thermal_snapshot: Option<crate::hardware::thermal::SystemThermalSnapshot>,
+    /// Set while the Thermal page is open; the monitor thread reads thermals only then (D4).
+    pub thermal_view_open: Arc<std::sync::atomic::AtomicBool>,
+    /// Why live telemetry stopped, if it did (D2).
+    pub monitor_error: Option<String>,
     pub is_thermal_scanning: bool,
     pub disk_report: Option<crate::hardware::disks::DiskSubsystemReport>,
     pub is_disk_scanning: bool,
@@ -828,7 +845,9 @@ impl AppState {
 
         let is_elevated = backend.is_elevated();
         let os_info = backend.detect_os().ok();
-        let cpu_info = Some(backend.detect_cpu());
+        // D7: CPU detection (~350 ms cold) runs on a worker started in setup(), so the window
+        // appears first; the UI already shows "detecting" while cpu_info is None.
+        let cpu_info = None;
         let gpus = backend.detect_gpus();
         let hags_enabled = backend.is_hags_enabled();
         let mpo_disabled = backend.is_mpo_disabled();
@@ -856,8 +875,9 @@ impl AppState {
         };
         let ledger_history = ledger
             .as_ref()
-            .and_then(|l| l.get_history().ok())
+            .and_then(|l| l.history_page(LEDGER_PAGE, 0).ok())
             .unwrap_or_default();
+        let ledger_active_count = ledger.as_ref().and_then(|l| l.count_active().ok()).unwrap_or(0);
 
         // Capture lightweight initial metrics without blocking window creation
         let mut initial_sampler = backend.create_metrics_sampler(35);
@@ -925,6 +945,9 @@ impl AppState {
             ledger_history,
             ledger_path,
             ledger_notice,
+            ledger_active_count,
+            ledger_refresh_inflight: false,
+            ledger_refresh_again: false,
             profile_path,
             active_goal: crate::graph::astar::OptimizationGoal::ultra_gaming(),
             planned_path: None,
@@ -1015,6 +1038,8 @@ impl AppState {
             fault_scanning: false,
             fault_action_inflight: false,
             thermal_snapshot: None,
+            thermal_view_open: Arc::new(std::sync::atomic::AtomicBool::new(false)),
+            monitor_error: None,
             is_thermal_scanning: false,
             disk_report: None,
             is_disk_scanning: false,
@@ -1087,13 +1112,27 @@ impl AppState {
         self.run_telemetry_audit();
         self.check_for_updates();
 
+        if self.cpu_info.is_none() {
+            let backend = Arc::clone(&self.backend);
+            spawn_guarded_worker(
+                self.tx_events.clone(),
+                self.waker.clone(),
+                |msg| WorkerEvent::StatusUpdate(format!("CPU detection stopped: {msg}")),
+                move |tx| {
+                    let _ = tx.send(WorkerEvent::CpuDetected(backend.detect_cpu()));
+                },
+            );
+        }
+
         // Adaptive Task Manager style monitoring worker with live thermal telemetry
         let tx_monitor = self.tx_events.clone();
         let waker_monitor = waker;
         let backend = Arc::clone(&self.backend);
         let interval_holder = Arc::clone(&self.telemetry_interval_ms);
+        let thermal_wanted = Arc::clone(&self.thermal_view_open);
+        let tx_stopped = self.tx_events.clone();
         std::thread::spawn(move || {
-            let _ = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+            let outcome = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
                 let mut monitor = backend.create_metrics_sampler(35);
                 let mut thermal_counter = 0u32;
                 loop {
@@ -1105,7 +1144,8 @@ impl AppState {
                         break;
                     }
                     thermal_counter += 1;
-                    if thermal_counter >= 2 {
+                    // D4: thermals (which also probe every disk) only while the page is open.
+                    if thermal_counter >= 2 && thermal_wanted.load(std::sync::atomic::Ordering::Relaxed) {
                         thermal_counter = 0;
                         let snapshot = crate::hardware::thermal::SystemThermalSnapshot::read();
                         let _ = tx_monitor.send(WorkerEvent::ThermalSnapshot(snapshot));
@@ -1117,6 +1157,9 @@ impl AppState {
                     std::thread::sleep(std::time::Duration::from_millis(sleep_ms));
                 }
             }));
+            if let Err(payload) = outcome {
+                let _ = tx_stopped.send(WorkerEvent::MonitorStopped(panic_payload_to_string(payload)));
+            }
         });
 
         // Ensure native Windows title bar and taskbar inherit official WinBlast icon
@@ -1146,6 +1189,10 @@ impl AppState {
         if let Some(notice) = self.ledger_notice.take() {
             self.set_status(notice);
         }
+        self.thermal_view_open.store(
+            self.active_view == ActiveView::ThermalMonitor,
+            std::sync::atomic::Ordering::Relaxed,
+        );
         self.schedule_disk_smart_refresh();
         let processed = self.drain_worker_events_bounded(64);
         processed > 0 || self.is_in_progress() || !self.rx_events.is_empty()
@@ -1992,6 +2039,26 @@ impl AppState {
                 self.thermal_snapshot = Some(snapshot);
                 self.is_thermal_scanning = false;
             }
+            WorkerEvent::LedgerLoaded(res) => {
+                self.ledger_refresh_inflight = false;
+                match res {
+                    Ok((rows, active)) => {
+                        self.ledger_history = rows;
+                        self.ledger_active_count = active;
+                    }
+                    Err(e) => self.set_status(format!("Undo history could not be read: {e}")),
+                }
+                if std::mem::take(&mut self.ledger_refresh_again) {
+                    self.refresh_ledger();
+                }
+            }
+            WorkerEvent::CpuDetected(info) => {
+                self.cpu_info = Some(info);
+            }
+            WorkerEvent::MonitorStopped(msg) => {
+                self.set_status(format!("Live telemetry stopped and is no longer updating: {msg}"));
+                self.monitor_error = Some(msg);
+            }
             WorkerEvent::BiosInfoLoaded(info) => {
                 self.bios_info = Some(info);
                 self.is_bios_scanning = false;
@@ -2817,15 +2884,14 @@ impl AppState {
     /// Trigger asynchronous GitHub release query.
     pub fn check_for_updates(&mut self) {
         self.update_status = UpdateStatus::Checking;
-        let tx = self.tx_events.clone();
-        let waker = self.waker.clone();
-        std::thread::spawn(move || {
-            let res = crate::core::updater::check_latest_release();
-            let _ = tx.send(WorkerEvent::UpdateCheckCompleted(res));
-            if let Some(ref w) = waker {
-                w();
-            }
-        });
+        spawn_guarded_worker(
+            self.tx_events.clone(),
+            self.waker.clone(),
+            |msg| WorkerEvent::UpdateCheckCompleted(Err(format!("Update check stopped: {msg}"))),
+            move |tx| {
+                let _ = tx.send(WorkerEvent::UpdateCheckCompleted(crate::core::updater::check_latest_release()));
+            },
+        );
     }
 
     /// Download latest release binary from GitHub.
@@ -2849,15 +2915,15 @@ impl AppState {
             .unwrap_or_else(|| "WinBlast0.exe".to_string());
 
         self.update_status = UpdateStatus::Downloading { progress_pct: 10.0 };
-        let tx = self.tx_events.clone();
-        let waker = self.waker.clone();
-        std::thread::spawn(move || {
-            let res = crate::core::updater::download_release_asset(&url, &asset_name);
-            let _ = tx.send(WorkerEvent::UpdateDownloadCompleted(res));
-            if let Some(ref w) = waker {
-                w();
-            }
-        });
+        spawn_guarded_worker(
+            self.tx_events.clone(),
+            self.waker.clone(),
+            |msg| WorkerEvent::UpdateDownloadCompleted(Err(format!("Download stopped: {msg}"))),
+            move |tx| {
+                let res = crate::core::updater::download_release_asset(&url, &asset_name);
+                let _ = tx.send(WorkerEvent::UpdateDownloadCompleted(res));
+            },
+        );
     }
 
     /// Replace binary and restart into new version.
@@ -4318,13 +4384,27 @@ impl AppState {
         self.pending_items = items;
     }
 
-    /// Refresh ledger records from SQLite.
+    /// Reload the newest [`LEDGER_PAGE`] ledger rows on a worker (D3 / F-21: this ran SQLite on
+    /// the UI thread after every change, with no row limit). Requests while a read is running
+    /// are coalesced into one follow-up read.
     pub fn refresh_ledger(&mut self) {
-        if let Ok(ledger) = StateLedger::new(&self.ledger_path) {
-            if let Ok(history) = ledger.get_history() {
-                self.ledger_history = history;
-            }
+        if self.ledger_refresh_inflight {
+            self.ledger_refresh_again = true;
+            return;
         }
+        self.ledger_refresh_inflight = true;
+        let path = self.ledger_path.clone();
+        spawn_guarded_worker(
+            self.tx_events.clone(),
+            self.waker.clone(),
+            |msg| WorkerEvent::LedgerLoaded(Err(format!("ledger reader stopped: {msg}"))),
+            move |tx| {
+                let res = StateLedger::new(&path)
+                    .and_then(|l| Ok((l.history_page(LEDGER_PAGE, 0)?, l.count_active()?)))
+                    .map_err(|e| e.to_string());
+                let _ = tx.send(WorkerEvent::LedgerLoaded(res));
+            },
+        );
     }
 
     // =========================================================================

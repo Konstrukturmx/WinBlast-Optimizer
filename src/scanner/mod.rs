@@ -258,10 +258,14 @@ fn evaluate_single_action(
             optimized_value,
             default_value,
         } => {
+            let current = cached.inner().reg_get_dword_for_vendor(hive, path, name, vendor_ref);
+            if current.is_none() && cached.inner().reg_read_denied(hive, path) {
+                return ActionEval::FeatureAuthRequired(format!(
+                    "Reading {hive}\\{path} needs administrator rights"
+                ));
+            }
             let (optimized, detail, kind) = registry_scanner::evaluate_dword_value_with_kind(
-                cached
-                    .inner()
-                    .reg_get_dword_for_vendor(hive, path, name, vendor_ref),
+                current,
                 *optimized_value,
                 *default_value,
             );
@@ -281,6 +285,9 @@ fn evaluate_single_action(
             absent_is_default,
             case_insensitive,
         } => match cached.inner().reg_get_string(hive, path, name, vendor_ref) {
+            None if cached.inner().reg_read_denied(hive, path) => ActionEval::FeatureAuthRequired(
+                format!("Reading {hive}\\{path} needs administrator rights"),
+            ),
             Some(cur) => {
                 let text_eq = if *case_insensitive {
                     cur.value.eq_ignore_ascii_case(optimized_value)
@@ -690,7 +697,9 @@ fn evaluate_tweak(
     }
 
     if let Some(ref feat_err) = feature_scan_err {
-        if total_count == 0 {
+        // D5 / F-12: something could not be read without admin rights, so the state is
+        // unknown — never "not set" / not optimized.
+        if total_count == 0 || feat_err.contains("administrator") {
             return make_scan_result(
                 tweak,
                 TweakState::NotApplicable,

@@ -126,6 +126,11 @@ pub trait SystemBackend: Send + Sync + 'static {
     fn reg_snapshot_tree(&self, hive: &str, path: &str) -> Result<Option<RegTreeSnapshot>>;
     fn reg_delete_tree(&self, hive: &str, path: &str) -> Result<()>;
     fn reg_restore_tree(&self, hive: &str, path: &str, snapshot: &RegTreeSnapshot) -> Result<()>;
+    /// True when reading `path` fails with access denied (scan shows "needs admin", D5 / F-12).
+    fn reg_read_denied(&self, hive: &str, path: &str) -> bool {
+        let _ = (hive, path);
+        false
+    }
 
     // Literal (per concrete key) registry primitives used by the write-ahead ledger (F-3, F-13,
     // F-16). Defaults delegate to the routing variants, which is exact for backends that do not
@@ -653,6 +658,16 @@ impl SystemBackend for RealBackend {
     ) -> Result<Vec<String>> {
         crate::scanner::registry_scanner::resolve_target_paths(hive, path, gpu_vendor, delete_mode)
             .map(|(_, paths)| paths)
+    }
+
+    fn reg_read_denied(&self, hive: &str, path: &str) -> bool {
+        let Ok(root) = crate::scanner::registry_scanner::resolve_hive(hive) else {
+            return false;
+        };
+        matches!(
+            crate::scanner::registry_scanner::open_subkey_read_64(&root, path),
+            Err(e) if e.kind() == std::io::ErrorKind::PermissionDenied
+        )
     }
 
     fn reg_set_dword_literal(&self, hive: &str, path: &str, name: &str, value: u32) -> Result<()> {

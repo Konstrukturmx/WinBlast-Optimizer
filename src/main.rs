@@ -61,6 +61,17 @@ fn main() {
 
     tracing::info!("WinBlast0 v{} starting up", env!("CARGO_PKG_VERSION"));
 
+    // D6: one instance at a time. Two windows would mutate the same settings and ledger and
+    // could undo each other's changes. The mutex is held until the process exits.
+    #[cfg(windows)]
+    let _single_instance = match acquire_single_instance() {
+        Some(handle) => handle,
+        None => {
+            show_already_running();
+            return;
+        }
+    };
+
     // Verify Administrator elevation
     if !winblast0::core::elevation::is_elevated() {
         tracing::warn!("Process is not elevated. Running in inspection mode.");
@@ -69,6 +80,39 @@ fn main() {
     }
 
     run_slint();
+}
+
+/// Named mutex shared by every WinBlast0 process in this logon session (and across sessions when
+/// allowed). `None` when another instance already holds it.
+#[cfg(windows)]
+fn acquire_single_instance() -> Option<windows::Win32::Foundation::HANDLE> {
+    use windows::core::w;
+    use windows::Win32::Foundation::{GetLastError, ERROR_ALREADY_EXISTS};
+    use windows::Win32::System::Threading::CreateMutexW;
+    for name in [w!("Global\\WinBlast0.SingleInstance"), w!("Local\\WinBlast0.SingleInstance")] {
+        if let Ok(handle) = unsafe { CreateMutexW(None, true, name) } {
+            if unsafe { GetLastError() } == ERROR_ALREADY_EXISTS {
+                return None;
+            }
+            return Some(handle);
+        }
+    }
+    // Could not create either mutex (unusual): do not block startup.
+    Some(windows::Win32::Foundation::HANDLE::default())
+}
+
+#[cfg(windows)]
+fn show_already_running() {
+    use windows::core::w;
+    use windows::Win32::UI::WindowsAndMessaging::{MessageBoxW, MB_ICONINFORMATION, MB_OK};
+    unsafe {
+        MessageBoxW(
+            None,
+            w!("WinBlast0 is already running. Switch to the open window (check the taskbar)."),
+            w!("WinBlast0"),
+            MB_OK | MB_ICONINFORMATION,
+        );
+    }
 }
 
 /// Automatically detect the primary display resolution and return the full desktop work area

@@ -126,7 +126,7 @@ impl BackupView {
                 })
                 .collect(),
         );
-        st.set_active_changes(s.ledger_history.iter().filter(|e| !e.rolled_back).count() as i32);
+        st.set_active_changes(s.ledger_active_count as i32);
         st.set_can_undo(!s.is_rolling_back && !s.is_applying && s.in_flight_tweaks.is_empty());
         st.set_rolling_back(s.is_rolling_back);
         st.set_ledger_path(s.ledger_path.display().to_string().into());
