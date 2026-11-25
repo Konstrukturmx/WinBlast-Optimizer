@@ -119,7 +119,7 @@ export component DriverBiosView inherits Rectangle {
                     title: "💾 " + Tr.s("DriverBiosFirmwareSection");
                     Text { text: DriverStore.firmware-title; font-size: Scale.font-md; font-weight: 600; color: Theme.text-primary; wrap: word-wrap; }
                     if DriverStore.firmware-sub != "" : Text { text: DriverStore.firmware-sub; font-size: Scale.font-xs; color: Theme.text-muted; wrap: word-wrap; }
-                    WbPill {
+                    if DriverStore.bios-loaded : WbPill {
                         text: DriverStore.secure-boot ? Tr.s("SecureBootActive") : Tr.s("SecureBootDisabled");
                         tone: DriverStore.secure-boot ? "success" : "warning";
                     }

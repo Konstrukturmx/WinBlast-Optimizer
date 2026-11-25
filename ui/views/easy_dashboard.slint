@@ -141,10 +141,18 @@ export component EasyDashboardView inherits Rectangle {
                     }
                     HorizontalLayout {
                         spacing: Scale.px(10px);
-                        WbGauge {
+                        if DashboardStore.has-scan : WbGauge {
                             width: Scale.px(72px);
                             value: DashboardStore.health-score;
                             tone: root.health-color;
+                        }
+                        if !DashboardStore.has-scan : Rectangle {
+                            width: Scale.px(72px);
+                            height: Scale.px(72px);
+                            border-radius: self.width / 2;
+                            border-width: Scale.px(6px);
+                            border-color: Theme.text-muted.with-alpha(0.35);
+                            Text { text: "—"; font-size: Scale.font-lg; font-weight: 700; color: Theme.text-muted; }
                         }
                         VerticalLayout {
                             alignment: center;

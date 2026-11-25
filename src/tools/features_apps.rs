@@ -1056,7 +1056,7 @@ pub fn remove_edge_preserve_webview2() -> Result<String> {
     }
 
     let script = r#"
-$baseDirs = @(${env:ProgramFiles(x86)}, $env:ProgramFiles, $env:LOCALAPPDATA) | Where-Object { -not [string]::IsNullOrWhiteSpace($_) }
+$baseDirs = @(${env:ProgramFiles(x86)}, $env:ProgramFiles) | Where-Object { -not [string]::IsNullOrWhiteSpace($_) }
 $roots = $baseDirs | ForEach-Object { [System.IO.Path]::Combine($_, 'Microsoft\Edge\Application') } | Select-Object -Unique
 $foundAny = $false
 $failed = @()
@@ -1069,6 +1069,11 @@ foreach ($r in $roots) {
   $foundAny = $true
   foreach ($s in $setups) {
     if (!(Test-Path $r) -or !(Test-Path $s.FullName)) { break }
+    $sig = Get-AuthenticodeSignature -LiteralPath $s.FullName
+    if ($sig.Status -ne 'Valid' -or -not $sig.SignerCertificate -or $sig.SignerCertificate.Subject -notmatch 'O=Microsoft Corporation') {
+      $failed += "Skipped $($s.FullName): not signed by Microsoft"
+      continue
+    }
     $argStr = if ($isUser) { "--uninstall --verbose-logging --force-uninstall" } else { "--uninstall --system-level --verbose-logging --force-uninstall" }
     $proc = Start-Process -FilePath $s.FullName -ArgumentList $argStr -Wait -PassThru
     if ($proc.ExitCode -ne 0 -and $proc.ExitCode -ne 19) {

@@ -63,110 +63,129 @@ impl RepairTask {
         ]
     }
 
-    /// Execute a real repair task on the Windows host.
+    /// Execute a repair task. Success and failure come from the tools' exit codes, and the
+    /// message quotes what the tool itself printed (no English text matching, C5/C6).
     pub fn execute(id: &str) -> Result<String, String> {
         match id {
-            "dns" => {
-                let out = SilentCommand::new("ipconfig")
-                    .arg("/flushdns")
-                    .output()
-                    .map_err(|e| format!("Failed to launch ipconfig /flushdns: {}", e))?;
-                if out.status.success() {
-                    Ok("DNS resolver cache was successfully flushed and refreshed.".to_string())
-                } else {
-                    Err(String::from_utf8_lossy(&out.stderr).to_string())
-                }
-            }
+            "dns" => run_tool("ipconfig", &["/flushdns"]).map(|o| summary("ipconfig /flushdns", &o)),
             "winsock" => {
-                let _ = SilentCommand::new("netsh")
-                    .args(["winsock", "reset"])
-                    .output();
-                let _ = SilentCommand::new("netsh")
-                    .args(["int", "ip", "reset"])
-                    .output();
-                Ok("Winsock catalog and TCP/IP stack were successfully reset (system reboot recommended).".to_string())
+                let a = run_tool("netsh", &["winsock", "reset"]);
+                let b = run_tool("netsh", &["int", "ip", "reset"]);
+                match (a, b) {
+                    (Ok(_), Ok(_)) => Ok("Winsock catalog and TCP/IP stack reset. Restart Windows to finish.".to_string()),
+                    (Err(e), _) | (_, Err(e)) => Err(e),
+                }
             }
             "icon_cache" => {
                 let local_app_data = std::env::var("LOCALAPPDATA").unwrap_or_default();
                 if !local_app_data.is_empty() {
                     let cache = std::path::Path::new(&local_app_data).join("IconCache.db");
                     if cache.is_file() {
-                        if let Err(e) = std::fs::remove_file(&cache) {
-                            tracing::warn!("Failed to remove IconCache.db {:?}: {}", cache, e);
+                        std::fs::remove_file(&cache)
+                            .map_err(|e| format!("IconCache.db could not be deleted: {e}"))?;
+                    }
+                }
+                crate::tools::explorer_ctrl::restart_explorer_safely()
+                    .map(|_| "Icon cache cleared and Explorer restarted.".to_string())
+                    .map_err(|e| format!("Icon cache cleared, but Explorer did not restart: {e}"))
+            }
+            "sfc" => run_tool("sfc", &["/scannow"]).map(|o| summary("SFC", &o)),
+            "dism" => run_tool("dism", &["/Online", "/Cleanup-Image", "/RestoreHealth"]).map(|o| summary("DISM RestoreHealth", &o)),
+            "wu_reset" => {
+                let mut problems = Vec::new();
+                for svc in ["wuauserv", "bits"] {
+                    if let Err(e) = run_tool("net", &["stop", svc]) {
+                        // 3521 = "service is not started": not a problem here.
+                        if !e.contains("3521") {
+                            problems.push(e);
                         }
                     }
                 }
-                let _ = crate::tools::explorer_ctrl::restart_explorer_safely();
-                Ok("Shell icon cache database cleared and Windows Explorer restarted.".to_string())
-            }
-            "sfc" => {
-                let out = SilentCommand::new("sfc")
-                    .arg("/scannow")
-                    .output()
-                    .map_err(|e| format!("Failed to launch sfc.exe: {}", e))?;
-                let text = String::from_utf8_lossy(&out.stdout);
-                if text.contains("Windows Resource Protection found corrupt files and successfully repaired them") {
-                    Ok("SFC Scannow: Corrupted system files were detected and successfully repaired.".to_string())
-                } else if text.contains("did not find any integrity violations") {
-                    Ok("SFC Scannow: Windows Resource Protection did not find any integrity violations.".to_string())
-                } else if out.status.success() {
-                    Ok("SFC Scannow completed successfully (system integrity verified).".to_string())
-                } else {
-                    Err(format!("SFC Scannow requires administrator privileges or returned an error: {}", text))
-                }
-            }
-            "dism" => {
-                let out = SilentCommand::new("dism")
-                    .args(["/Online", "/Cleanup-Image", "/RestoreHealth"])
-                    .output()
-                    .map_err(|e| format!("Failed to launch dism.exe: {}", e))?;
-                let text = String::from_utf8_lossy(&out.stdout);
-                if text.contains("The restore operation completed successfully")
-                    || out.status.success()
-                {
-                    Ok(
-                        "DISM RestoreHealth: Windows component store was successfully repaired."
-                            .to_string(),
-                    )
-                } else {
-                    Err(format!("DISM component repair error: {}", text))
-                }
-            }
-            "wu_reset" => {
-                let _ = SilentCommand::new("net")
-                    .args(["stop", "wuauserv"])
-                    .output();
-                let _ = SilentCommand::new("net").args(["stop", "bits"]).output();
-                let windir = std::env::var("WINDIR").unwrap_or_else(|_| "C:\\Windows".to_string());
-                let download_cache = std::path::Path::new(&windir)
-                    .join("SoftwareDistribution")
-                    .join("Download");
+                let windir = crate::core::process::system32_dir()
+                    .parent()
+                    .map(std::path::Path::to_path_buf)
+                    .unwrap_or_else(|| std::path::PathBuf::from(r"C:\Windows"));
+                let download_cache = windir.join("SoftwareDistribution").join("Download");
                 if download_cache.is_dir() {
                     if let Err(e) = std::fs::remove_dir_all(&download_cache) {
-                        tracing::warn!(
-                            "Failed to clear SoftwareDistribution download cache {:?}: {}",
-                            download_cache,
-                            e
-                        );
+                        problems.push(format!("Download cache not cleared: {e}"));
                     }
-                    if let Err(e) = std::fs::create_dir_all(&download_cache) {
-                        tracing::warn!(
-                            "Failed to recreate SoftwareDistribution download cache {:?}: {}",
-                            download_cache,
-                            e
-                        );
+                    let _ = std::fs::create_dir_all(&download_cache);
+                }
+                for svc in ["wuauserv", "bits"] {
+                    if let Err(e) = run_tool("net", &["start", svc]) {
+                        problems.push(e);
                     }
                 }
-                let _ = SilentCommand::new("net")
-                    .args(["start", "wuauserv"])
-                    .output();
-                let _ = SilentCommand::new("net").args(["start", "bits"]).output();
-                Ok(
-                    "Windows Update services and SoftwareDistribution download cache were reset."
-                        .to_string(),
-                )
+                if problems.is_empty() {
+                    Ok("Windows Update services restarted and download cache cleared.".to_string())
+                } else {
+                    Err(problems.join("; "))
+                }
             }
             _ => Err("Unknown repair task ID".to_string()),
         }
+    }
+}
+
+/// Decode console output: `sfc` writes UTF-16LE, the others use the OEM code page.
+pub fn decode_tool_output(bytes: &[u8]) -> String {
+    let looks_utf16 = bytes.len() >= 4 && bytes.iter().skip(1).step_by(2).filter(|b| **b == 0).count() * 2 >= bytes.len() / 2;
+    if looks_utf16 {
+        let units: Vec<u16> = bytes.as_chunks::<2>().0.iter().map(|c| u16::from_le_bytes(*c)).collect();
+        String::from_utf16_lossy(&units).replace('\0', "")
+    } else {
+        crate::scanner::task_scanner::decode_oem_bytes(bytes)
+    }
+}
+
+/// Run a repair tool; `Ok(output)` on exit code 0, otherwise `Err` with the exit code and output.
+fn run_tool(program: &str, args: &[&str]) -> Result<String, String> {
+    let out = SilentCommand::new(program)
+        .args(args)
+        .output()
+        .map_err(|e| format!("{program} could not be started: {e}"))?;
+    let text = format!("{}\n{}", decode_tool_output(&out.stdout), decode_tool_output(&out.stderr));
+    if out.status.success() {
+        Ok(text)
+    } else {
+        Err(format!("{program} {} failed (exit {:?}): {}", args.join(" "), out.status.code(), last_lines(&text, 3)))
+    }
+}
+
+/// The last `n` non-empty lines of tool output (progress bars removed).
+fn last_lines(text: &str, n: usize) -> String {
+    let lines: Vec<&str> = text
+        .split(['\r', '\n'])
+        .map(str::trim)
+        .filter(|l| !l.is_empty() && !l.contains('%'))
+        .collect();
+    lines[lines.len().saturating_sub(n)..].join(" ")
+}
+
+fn summary(tool: &str, output: &str) -> String {
+    let tail = last_lines(output, 2);
+    if tail.is_empty() {
+        format!("{tool} finished.")
+    } else {
+        format!("{tool} finished: {tail}")
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn utf16_output_is_decoded() {
+        let s = "Windows Resource Protection did not find any integrity violations.\r\n";
+        let bytes: Vec<u8> = s.encode_utf16().flat_map(|u| u.to_le_bytes()).collect();
+        assert_eq!(decode_tool_output(&bytes), s);
+        assert_eq!(last_lines(&decode_tool_output(&bytes), 1), s.trim());
+    }
+
+    #[test]
+    fn progress_lines_are_dropped() {
+        assert_eq!(last_lines("[==== 40.0% ====]\r\nDone.\r\n", 2), "Done.");
     }
 }

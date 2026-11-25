@@ -36,6 +36,7 @@ export global ThermalStore {
 }
 
 export global DiskStore {
+    in-out property <bool> loaded;
     in-out property <bool> trim-active;
     in-out property <string> trim-banner;
     in-out property <[DriveCard]> drives: [];

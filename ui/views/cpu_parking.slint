@@ -38,7 +38,7 @@ export component CpuParkingView inherits Rectangle {
                         Text { text: Tr.s("CoreParkingTitle"); font-size: Scale.font-xl; font-weight: 800; color: Theme.text-primary; wrap: word-wrap; }
                         Text { text: Tr.s("CoreParkingSub"); font-size: Scale.font-xs; color: Theme.text-muted; wrap: word-wrap; }
                     }
-                    WbPill {
+                    if ParkingStore.total > 0 : WbPill {
                         text: ParkingStore.fully-unparked ? Tr.s("CoreParkingStatusUnparked") : Tr.s("CoreParkingStatusParked");
                         tone: ParkingStore.fully-unparked ? "success" : "warning";
                     }

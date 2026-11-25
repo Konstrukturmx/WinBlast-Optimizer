@@ -1,0 +1,11 @@
+LEDGER CORRUPTION REPORT:
+zero bytes: open -> Ok; history=Ok(0); write=Ok(())
+random garbage: open -> Err(Database error: file is not a database)
+truncated half: open -> Err(Database error: database disk image is malformed)
+header only: open -> Err(Database error: database disk image is malformed)
+bit flips: open -> Err(Database error: malformed database schema (ledger))
+text file: open -> Err(Database error: file is not a database)
+is a directory: open -> Err(Database error: unable to open database file: C:\Users\test\AppData\Local\Temp\wb_corrupt_babfd244-64da-4210-9f42-e64cdef5a5da\is_a_directory.db)
+read-only good db: open -> Ok; history=Ok(200); write=Err(Database(SqliteFailure(Error { code: ReadOnly, extended_code: 8 }, Some("attempt to write a readonly database"))))
+foreign schema: open -> Ok; history=Err(Database(SqlInputError { error: Error { code: Unknown, extended_code: 1 }, msg: "no such column: rolled_back", sql: "SELECT id, tweak_id, action_type, original_value, new_value, timestamp, rolled_back\n             FROM ledger ORDER BY id DESC", offset: 72 })); write=Ok(())
+two concurrent writers: 0+0/600 writes failed; rows 800 (expected 800)

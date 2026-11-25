@@ -163,6 +163,7 @@ impl SensorsView {
     pub fn sync_disks(&self, window: &MainWindow, s: &AppState) {
         let st = window.global::<DiskStore>();
         st.set_scanning(s.is_disk_scanning);
+        st.set_loaded(s.disk_report.is_some());
         st.set_trim_inflight(s.disk_trim_inflight);
         let r = s.disk_report.clone().unwrap_or_default();
         st.set_trim_active(r.global_trim_active);

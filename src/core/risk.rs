@@ -467,6 +467,14 @@ pub fn load_embedded_rules() -> Vec<TweakDefinition> {
 /// Ensures the application NEVER runs with 0 tweaks, regardless of working directory
 /// or invocation method.
 pub fn load_rules_with_fallback(preferred_dir: Option<&std::path::Path>) -> Vec<TweakDefinition> {
+    // The app runs elevated, so a rules file on disk would let anyone who can write next to the
+    // exe (or to C:\assets) choose what it writes to HKLM, services and tasks (F-1). Only the
+    // catalog compiled into the exe is trusted; loading from disk needs the `dev-rules` feature.
+    if !cfg!(feature = "dev-rules") {
+        let _ = preferred_dir;
+        return load_embedded_rules();
+    }
+
     // 1. Try preferred directory if given
     if let Some(dir) = preferred_dir {
         if let Ok(tweaks) = load_rules_from_dir(dir) {

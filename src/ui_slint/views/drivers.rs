@@ -157,6 +157,7 @@ impl DriversView {
             SharedString::new()
         });
         st.set_secure_boot(b.secure_boot);
+        st.set_bios_loaded(s.bios_info.is_some());
         sync_vec(
             &self.display,
             b.display_drivers

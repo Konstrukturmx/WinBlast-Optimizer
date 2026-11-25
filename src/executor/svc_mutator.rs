@@ -117,11 +117,22 @@ pub fn set_service_start_type(service_name: &str, start_type: u32) -> Result<()>
         let _ = key.set_value("DelayedAutostart", &1u32);
     }
 
+    // The start type is the persistent setting and it is already changed. Stopping or starting
+    // the running instance is best effort: a service that refuses (DiagTrack 1052, SysMain
+    // 1061) takes the new start type at the next boot. Failing here would leave a changed start
+    // type behind an error that no rollback could see (F-5).
     if !is_user_service_template {
-        if start_type == 4 {
-            stop_service(clean_name)?;
+        let live = if start_type == 4 {
+            stop_service(clean_name)
         } else if start_type == 2 {
-            start_service(clean_name)?;
+            start_service(clean_name)
+        } else {
+            Ok(())
+        };
+        if let Err(e) = live {
+            tracing::warn!(
+                "{clean_name}: start type set to {start_type}, but the running state was not changed: {e}"
+            );
         }
     }
 

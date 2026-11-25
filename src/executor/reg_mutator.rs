@@ -146,6 +146,84 @@ pub fn set_dword_for_vendor(
     Ok(())
 }
 
+/// Literal DWORD write: `path` is one concrete key (no `<NET_INTERFACE_GUID>` placeholder, no
+/// display-class adapter expansion), as recorded per adapter in the ledger (F-16).
+pub fn set_dword_literal(hive: &str, path: &str, name: &str, value: u32) -> Result<()> {
+    crate::core::reg_helpers::validate_registry_mutation_path(hive, path, false)?;
+    let root = resolve_hive(hive)?;
+    let key = create_subkey_64(&root, path).map_err(WinBlastError::from_reg_err)?;
+    write_dword_or_numeric_sz(&key, path, name, value)
+}
+
+/// Literal `REG_SZ` / `REG_EXPAND_SZ` write on one concrete key path.
+pub fn set_string_literal(hive: &str, path: &str, name: &str, value: &str, expand_sz: bool) -> Result<()> {
+    crate::core::reg_helpers::validate_registry_mutation_path(hive, path, false)?;
+    let root = resolve_hive(hive)?;
+    let norm_name = crate::core::risk::normalize_reg_value_name(name);
+    let key = create_subkey_64(&root, path).map_err(WinBlastError::from_reg_err)?;
+    if expand_sz {
+        let bytes: Vec<u8> = value
+            .encode_utf16()
+            .chain(std::iter::once(0))
+            .flat_map(|w| w.to_le_bytes())
+            .collect();
+        let raw = winreg::RegValue { bytes, vtype: REG_EXPAND_SZ };
+        key.set_raw_value(norm_name, &raw).map_err(WinBlastError::from_reg_err)
+    } else {
+        key.set_value(norm_name, &value).map_err(WinBlastError::from_reg_err)
+    }
+}
+
+/// Literal value delete on one concrete key path; a missing key or value is not an error.
+pub fn delete_value_literal(hive: &str, path: &str, name: &str) -> Result<()> {
+    crate::core::reg_helpers::validate_registry_mutation_path(hive, path, false)?;
+    let root = resolve_hive(hive)?;
+    let norm_name = crate::core::risk::normalize_reg_value_name(name);
+    let key = match open_subkey_flags_64(&root, path, KEY_SET_VALUE) {
+        Ok(k) => k,
+        Err(e) if e.kind() == std::io::ErrorKind::NotFound => return Ok(()),
+        Err(e) => return Err(WinBlastError::from_reg_err(e)),
+    };
+    match key.delete_value(norm_name) {
+        Ok(()) => Ok(()),
+        Err(e) if e.kind() == std::io::ErrorKind::NotFound => Ok(()),
+        Err(e) => Err(WinBlastError::from_reg_err(e)),
+    }
+}
+
+/// Delete `path` only if it has no values and no subkeys (a key WinBlast created and that is
+/// empty again after rollback, F-13). Missing keys are fine; non-empty keys are left alone.
+pub fn delete_key_if_empty(hive: &str, path: &str) -> Result<()> {
+    // Value-level validation, not the tree guard: only an empty key that WinBlast created is
+    // removed, which is safe even directly under Services or Policies (VM: Services\USB).
+    crate::core::reg_helpers::validate_registry_mutation_path(hive, path, false)?;
+    let clean = path.trim().trim_matches(['\\', '/']);
+    let Some((parent_path, leaf_name)) = clean.rsplit_once('\\') else {
+        return Ok(());
+    };
+    let root = resolve_hive(hive)?;
+    let key = match open_subkey_flags_64(&root, clean, KEY_READ) {
+        Ok(k) => k,
+        Err(e) if e.kind() == std::io::ErrorKind::NotFound => return Ok(()),
+        Err(e) => return Err(WinBlastError::from_reg_err(e)),
+    };
+    let info = key.query_info().map_err(WinBlastError::from_reg_err)?;
+    if info.sub_keys != 0 || info.values != 0 {
+        return Ok(());
+    }
+    drop(key);
+    let parent = match open_subkey_flags_64(&root, parent_path, KEY_READ | KEY_WRITE | REG_DELETE_RIGHT) {
+        Ok(k) => k,
+        Err(e) if e.kind() == std::io::ErrorKind::NotFound => return Ok(()),
+        Err(e) => return Err(WinBlastError::from_reg_err(e)),
+    };
+    match parent.delete_subkey_with_flags(leaf_name, KEY_WOW64_64KEY) {
+        Ok(()) => Ok(()),
+        Err(e) if e.kind() == std::io::ErrorKind::NotFound => Ok(()),
+        Err(e) => Err(WinBlastError::from_reg_err(e)),
+    }
+}
+
 /// Delete a value from a registry key (64-bit view aware, with `(Default)` normalization & GPU routing).
 pub fn delete_value(hive: &str, path: &str, name: &str) -> Result<()> {
     delete_value_for_vendor(hive, path, name, None)

@@ -506,15 +506,29 @@ pub fn install_maintenance_task(kind: MaintenanceTaskKind) -> Result<(), String>
         .unwrap_or_else(|_| "winblast0.exe".to_string());
 
     let action_cmd = match kind {
+        // C12: [GC]::Collect() in a fresh PowerShell process only collects that process's own
+        // heap; it never freed system memory. The task is no longer installed.
         MaintenanceTaskKind::DailyMemoryPurge => {
-            "powershell.exe -NoProfile -Command \"[System.GC]::Collect(); [System.GC]::WaitForPendingFinalizers()\"".to_string()
+            return Err("The daily memory purge was removed: it did not free any memory. Remove it if it is still installed.".to_string());
         }
-        MaintenanceTaskKind::WeeklyTempCleaner => {
-            "cmd.exe /c del /q /f /s \"%TEMP%\\*\" 2>nul".to_string()
-        }
-        MaintenanceTaskKind::TelemetryGuard => {
-            "sc.exe config DiagTrack start= disabled".to_string()
-        }
+        // B3 / F-10: this used to run `del /q /f /s %TEMP%\*` as SYSTEM, i.e. in the
+        // user-writable C:\Windows\Temp, where a junction could redirect it. It now runs as the
+        // signed-in user, only on that user's own %TEMP%, deletes files only (never follows or
+        // removes directories) and keeps anything changed in the last two days.
+        MaintenanceTaskKind::WeeklyTempCleaner => format!(
+            "\"{}\" -NoProfile -NonInteractive -Command \"Get-ChildItem -LiteralPath $env:TEMP -Force -File -Recurse -Attributes !ReparsePoint -ErrorAction SilentlyContinue | Where-Object {{ $_.LastWriteTime -lt (Get-Date).AddDays(-2) }} | Remove-Item -Force -ErrorAction SilentlyContinue\"",
+            crate::core::process::resolve_program(std::ffi::OsStr::new("powershell")).display()
+        ),
+        MaintenanceTaskKind::TelemetryGuard => format!(
+            "\"{}\" config DiagTrack start= disabled",
+            crate::core::process::resolve_program(std::ffi::OsStr::new("sc")).display()
+        ),
+    };
+    // Tasks that only touch the user's own files run as that user (interactive, no stored
+    // password); only the service change needs SYSTEM.
+    let run_as: &[&str] = match kind {
+        MaintenanceTaskKind::WeeklyTempCleaner | MaintenanceTaskKind::DailyMemoryPurge => &["/it"],
+        MaintenanceTaskKind::TelemetryGuard => &["/ru", "SYSTEM"],
     };
 
     let status = SilentCommand::new("schtasks.exe")
@@ -529,9 +543,8 @@ pub fn install_maintenance_task(kind: MaintenanceTaskKind) -> Result<(), String>
             frequency,
             "/st",
             time,
-            "/ru",
-            "SYSTEM",
         ])
+        .args(run_as)
         .status();
 
     match status {
@@ -565,8 +578,11 @@ pub fn remove_maintenance_task(kind: MaintenanceTaskKind) -> Result<(), String> 
 pub fn query_all_maintenance_tasks() -> Vec<MaintenanceTaskStatus> {
     MaintenanceTaskKind::all()
         .iter()
-        .map(|&kind| {
-            let installed = is_maintenance_task_installed(kind);
+        .map(|&kind| (kind, is_maintenance_task_installed(kind)))
+        // The memory purge is no longer offered (C12); it is listed only so an old install
+        // can be removed.
+        .filter(|(kind, installed)| *installed || *kind != MaintenanceTaskKind::DailyMemoryPurge)
+        .map(|(kind, installed)| {
             MaintenanceTaskStatus {
                 kind,
                 is_installed: installed,
@@ -847,8 +863,10 @@ mod tests {
             assert!(time.contains(':'), "Trigger time must contain ':'");
         }
 
+        // The retired memory purge (C12) is listed only while it is still installed.
         let queried = query_all_maintenance_tasks();
-        assert_eq!(queried.len(), 3);
+        let purge_installed = is_maintenance_task_installed(MaintenanceTaskKind::DailyMemoryPurge);
+        assert_eq!(queried.len(), if purge_installed { 3 } else { 2 });
         for item in &queried {
             assert!(!item.task_name.is_empty());
             assert!(!item.schedule.is_empty());

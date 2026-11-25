@@ -9,6 +9,9 @@ use winreg::enums::*;
 use winreg::RegKey;
 
 /// Individual BSOD Crash Dump metadata.
+/// Why WinBlast no longer deletes Windows servicing state (F-22).
+pub const SERVICING_STATE_REFUSAL: &str = "WinBlast no longer deletes Windows' pending-restart records: that can leave an update half-installed. Restart Windows to finish the pending work instead.";
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct MinidumpEntry {
     pub file_name: String,
@@ -178,31 +181,17 @@ impl FaultDiagnosticsReport {
         Ok(count)
     }
 
-    /// Clear pending file rename operations in Windows registry (requires elevation).
+    /// Removed (B6 / F-22). Deleting `PendingFileRenameOperations` drops file replacements that
+    /// an update or installer scheduled for the next boot and can leave it half-installed; the
+    /// only safe way to clear it is to restart. Kept so old callers get a clear answer.
     pub fn clear_pending_renames() -> Result<(), String> {
-        let hklm = RegKey::predef(HKEY_LOCAL_MACHINE);
-        let sm_key = hklm
-            .open_subkey_with_flags(
-                "SYSTEM\\CurrentControlSet\\Control\\Session Manager",
-                KEY_SET_VALUE,
-            )
-            .map_err(|e| format!("Failed to open Session Manager key: {e}"))?;
-        sm_key
-            .delete_value("PendingFileRenameOperations")
-            .map_err(|e| format!("Failed to clear PendingFileRenameOperations: {e}"))?;
-        Ok(())
+        Err(SERVICING_STATE_REFUSAL.to_string())
     }
 
-    /// Clear CBS / Windows Update reboot pending flags.
+    /// Removed (B6 / F-22): deleting the CBS `RebootPending` / Windows Update `RebootRequired`
+    /// keys hides an unfinished servicing operation instead of finishing it.
     pub fn clear_cbs_reboot_flags() -> Result<(), String> {
-        let hklm = RegKey::predef(HKEY_LOCAL_MACHINE);
-        let _ = hklm.delete_subkey_all(
-            "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Component Based Servicing\\RebootPending",
-        );
-        let _ = hklm.delete_subkey_all(
-            "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\WindowsUpdate\\Auto Update\\RebootRequired",
-        );
-        Ok(())
+        Err(SERVICING_STATE_REFUSAL.to_string())
     }
 
     /// Restart Windows to finalize pending installations.

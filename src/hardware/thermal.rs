@@ -86,7 +86,7 @@ impl SystemThermalSnapshot {
                 if temp_val > 2732 && temp_val < 3800 {
                     let c = (temp_val as f32 - 2732.0) / 10.0;
                     snapshot.cpu_package_temp_c = c;
-                    snapshot.cpu_max_core_temp_c = c + 4.0;
+                    // The ACPI zone has one reading; a per-core maximum is not measured here.
                     snapshot.sensors_available = true;
                     found_cpu = true;
                 }
@@ -97,7 +97,6 @@ impl SystemThermalSnapshot {
         if !found_cpu {
             if let Some((temp_c, throttling)) = probe_acpi_wmi_and_perf() {
                 snapshot.cpu_package_temp_c = temp_c;
-                snapshot.cpu_max_core_temp_c = temp_c + 3.5;
                 snapshot.cpu_throttling_active = throttling;
                 snapshot.sensors_available = true;
                 found_cpu = true;
@@ -105,8 +104,9 @@ impl SystemThermalSnapshot {
         }
 
         if found_cpu {
+            // Throttling is reported only from the "Throttle Reasons" counter, never assumed
+            // from a temperature threshold.
             let cpu_health = if snapshot.cpu_package_temp_c > 85.0 {
-                snapshot.cpu_throttling_active = true;
                 ThermalHealth::Hot
             } else if snapshot.cpu_package_temp_c > 75.0 {
                 ThermalHealth::Warm
@@ -133,7 +133,6 @@ impl SystemThermalSnapshot {
             snapshot.sensors_available = true;
 
             let gpu_health = if gpu_temp > 83.0 {
-                snapshot.gpu_throttling_active = true;
                 ThermalHealth::Hot
             } else if gpu_temp > 72.0 {
                 ThermalHealth::Warm
@@ -143,10 +142,8 @@ impl SystemThermalSnapshot {
                 ThermalHealth::Cool
             };
 
-            if let Some(pct) = fan_pct {
-                // If fan percentage is reported, estimate RPM (max ~2400 RPM typical for desktop GPU)
-                snapshot.fan_speed_rpm = ((pct / 100.0) * 2400.0).round() as u32;
-            }
+            // The GPU reports fan duty in percent only; an RPM figure would be invented, so
+            // fan_speed_rpm stays 0 ("—") and the percentage is shown as reported.
 
             snapshot.components.push(ComponentThermal {
                 name: "GPU Core Telemetry".to_string(),
@@ -157,7 +154,7 @@ impl SystemThermalSnapshot {
                 status: gpu_health,
             });
 
-            snapshot.components.push(ComponentThermal {
+            if hotspot_temp > 0.0 { snapshot.components.push(ComponentThermal {
                 name: "GPU Hotspot / Junction".to_string(),
                 current_temp_c: hotspot_temp,
                 max_temp_c: 105.0,
@@ -170,7 +167,7 @@ impl SystemThermalSnapshot {
                 } else {
                     ThermalHealth::Cool
                 },
-            });
+            }); }
         }
 
         // 4. Physical Storage SMART thermal sensors
@@ -206,14 +203,7 @@ impl SystemThermalSnapshot {
                 parts.push("GPU Hardware");
             }
             snapshot.status_message = format!("Live telemetry active ({})", parts.join(" + "));
-            if snapshot.ambient_estimate_c == 0.0 && snapshot.cpu_package_temp_c > 0.0 {
-                let baseline = if snapshot.gpu_core_temp_c > 0.0 {
-                    snapshot.cpu_package_temp_c.min(snapshot.gpu_core_temp_c)
-                } else {
-                    snapshot.cpu_package_temp_c
-                };
-                snapshot.ambient_estimate_c = (baseline - 10.0).max(20.0);
-            }
+            // No ambient estimate: there is no ambient sensor, and "CPU - 10 °C" is not one.
         }
 
         snapshot
@@ -248,7 +238,9 @@ fn probe_acpi_wmi_and_perf() -> Option<(f32, bool)> {
     }
 
     // Try Windows Performance Counter: \Thermal Zone Information(*)\High Precision Temperature
-    let perf_script = r#"$c=(Get-Counter '\Thermal Zone Information(*)\*' -ErrorAction SilentlyContinue).CounterSamples; if($c){$hp=$c|?{$_.Path -like '*high precision temperature*'}|select -first 1 -expand CookedValue; $tr=$c|?{$_.Path -like '*throttle reasons*'}|select -first 1 -expand CookedValue; if($hp -gt 2732 -and $hp -lt 3800){Write-Output "$hp|$tr"}else{$tp=$c|?{$_.Path -like '*\temperature*'}|select -first 1 -expand CookedValue; if($tp -gt 273 -and $tp -lt 380){Write-Output "$($tp*10)|$tr"}}}"#;
+    // CIM class and property names are the same in every Windows language; the old
+    // Get-Counter '\\Thermal Zone Information(*)\\*' path is translated on non-English Windows (C6).
+    let perf_script = r#"$z = Get-CimInstance Win32_PerfFormattedData_Counters_ThermalZoneInformation -ErrorAction SilentlyContinue | Select-Object -First 1; if ($z) { if ($z.HighPrecisionTemperature -gt 2732 -and $z.HighPrecisionTemperature -lt 3800) { Write-Output "$($z.HighPrecisionTemperature)|$($z.ThrottleReasons)" } elseif ($z.Temperature -gt 273 -and $z.Temperature -lt 380) { Write-Output "$($z.Temperature * 10)|$($z.ThrottleReasons)" } }"#;
     if let Ok(o) = SilentCommand::new("powershell.exe")
         .args(["-NoProfile", "-NonInteractive", "-Command", perf_script])
         .output()
@@ -263,7 +255,8 @@ fn probe_acpi_wmi_and_perf() -> Option<(f32, bool)> {
                             WMI_ACPI_STATUS.store(1, Ordering::Relaxed);
                         }
                         let c = (hp - 2732.0) / 10.0;
-                        let throttle = tr_str.trim().parse::<u32>().map(|r| r > 1).unwrap_or(false);
+                        // "Throttle Reasons" is a bit mask; any set bit (including bit 0) means throttling.
+                        let throttle = tr_str.trim().parse::<f64>().map(|r| r as u64 != 0).unwrap_or(false);
                         return Some((c, throttle));
                     }
                 }
@@ -296,8 +289,8 @@ fn probe_gpu_thermals() -> Option<(f32, f32, Option<f32>)> {
                 if let Some((temp_str, fan_str)) = line.split_once(',') {
                     if let Ok(temp) = temp_str.trim().parse::<f32>() {
                         let fan = fan_str.trim().parse::<f32>().ok();
-                        let hotspot = temp + 8.5; // Typical hotspot delta on modern GPUs
-                        return Some((temp, hotspot, fan));
+                        // nvidia-smi does not report the hotspot sensor here: 0.0 = not measured.
+                        return Some((temp, 0.0, fan));
                     }
                 }
             } else {
@@ -319,7 +312,7 @@ fn probe_gpu_thermals() -> Option<(f32, f32, Option<f32>)> {
                     if let Ok(temp_val) = dev_key.get_value::<u32, _>("CurrentTemperature") {
                         if temp_val > 0 && temp_val < 120 {
                             let temp = temp_val as f32;
-                            return Some((temp, temp + 10.0, None));
+                            return Some((temp, 0.0, None));
                         }
                     }
                 }

@@ -18,7 +18,9 @@ pub const ISSUES_URL: &str = "https://github.com/Konstrukturmx/WinBlast-Optimize
 pub(crate) fn open_external(target: &str) {
     #[cfg(windows)]
     {
-        let _ = crate::core::process::SilentCommand::new("rundll32").args(["url.dll,FileProtocolHandler", target]).spawn();
+        if let Err(e) = crate::core::process::open_url_unelevated(target) {
+            tracing::warn!("could not open {target}: {e}");
+        }
     }
     #[cfg(not(windows))]
     {
@@ -108,6 +110,7 @@ impl DiagnosticsView {
         f.set_scanning(s.fault_scanning);
         f.set_action_busy(s.fault_action_inflight);
         f.set_confirm_restart(self.restart_armed.get());
+        f.set_loaded(s.fault_report.is_some());
         let r = s.fault_report.clone().unwrap_or_default();
         f.set_critical(r.total_critical_faults as i32);
         let pr = &r.pending_reboot;
@@ -176,8 +179,16 @@ impl DiagnosticsView {
                 p.set_cpu_multi(format!("{} {}", sc.cpu_multi_score, s.tr_v(ViewTextKey::PerfMultiCoreSuffix)).into());
                 p.set_cpu_single(format!("1-Core: {} {pts}", sc.cpu_single_score).into());
                 p.set_ram_read(format!("{:.1} {}", sc.ram_read_gb_s, s.tr_v(ViewTextKey::PerfThroughputSuffix)).into());
-                p.set_ram_latency(format!("Latency: {:.1} ns", sc.ram_latency_ns).into());
-                p.set_disk_read(format!("{:.0} {}", sc.disk_seq_read_mb_s, s.tr_v(ViewTextKey::PerfIoSuffix)).into());
+                p.set_ram_latency(if sc.ram_latency_ns > 0.0 {
+                    format!("Latency: {:.1} ns", sc.ram_latency_ns).into()
+                } else {
+                    SharedString::new()
+                });
+                p.set_disk_read(if sc.disk_seq_read_mb_s > 0.0 {
+                    format!("{:.0} {}", sc.disk_seq_read_mb_s, s.tr_v(ViewTextKey::PerfIoSuffix)).into()
+                } else {
+                    "—".into()
+                });
             }
             _ => {
                 // No run yet (or an empty result): show placeholders, never zeros as if measured.

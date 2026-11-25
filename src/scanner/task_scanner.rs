@@ -124,6 +124,16 @@ impl TaskCache {
 
     /// Load all scheduled tasks on the system using a single fast `schtasks /Query /FO CSV /NH` call.
     pub fn load() -> Self {
+        // Language independent first (C6 / F-19): Get-ScheduledTask reports State as an enum
+        // number (1 = Disabled), unlike schtasks, whose Status column is translated.
+        if let Some(tasks) = Self::load_via_powershell() {
+            return Self {
+                tasks,
+                loaded: true,
+                live_os: true,
+            };
+        }
+
         let mut tasks = HashMap::new();
 
         let output = crate::core::process::SilentCommand::new("schtasks")
@@ -162,6 +172,20 @@ impl TaskCache {
         }
     }
 
+    fn load_via_powershell() -> Option<HashMap<String, bool>> {
+        let script = "[Console]::OutputEncoding = [Text.Encoding]::UTF8; Get-ScheduledTask -ErrorAction Stop | ForEach-Object { '{0}{1}|{2}' -f $_.TaskPath, $_.TaskName, $_.State.value__ }";
+        let out = crate::core::process::SilentCommand::new("powershell")
+            .args(["-NoProfile", "-NonInteractive", "-Command", script])
+            .output()
+            .ok()?;
+        if !out.status.success() {
+            return None;
+        }
+        let text = String::from_utf8_lossy(&out.stdout);
+        let tasks = parse_task_state_lines(&text);
+        (!tasks.is_empty()).then_some(tasks)
+    }
+
     /// Evaluate a scheduled task returning `(is_optimized, diagnostic_description, detail_kind)`.
     pub fn evaluate_task_with_kind(
         &self,
@@ -172,8 +196,19 @@ impl TaskCache {
 
         let norm = normalize_task_path(task_path);
 
-        // 1. Exact path match
-        if let Some(&enabled) = self.tasks.get(&norm) {
+        // 1. Exact path match. On a live OS a mismatch is confirmed with a direct query: in the
+        // VM the batch listing reported Edge-update / Compatibility-Appraiser tasks as enabled
+        // right after they were disabled, while the direct query (and Task Scheduler) said
+        // disabled.
+        if let Some(&cached_enabled) = self.tasks.get(&norm) {
+            let enabled = if cached_enabled != expected_enabled && self.live_os {
+                match query_single_task_detailed(task_path) {
+                    Ok(Some((_, live))) => live,
+                    _ => cached_enabled,
+                }
+            } else {
+                cached_enabled
+            };
             let is_opt = enabled == expected_enabled;
             let desc = if enabled {
                 "Active (Running/Ready)"
@@ -518,6 +553,14 @@ pub fn get_task_enabled(task_path: &str) -> Option<bool> {
         .map(|(_, en)| en)
 }
 
+/// Parse `<full task path>|<state number>` lines; state 1 = Disabled (MSFT_ScheduledTask).
+pub fn parse_task_state_lines(text: &str) -> HashMap<String, bool> {
+    text.lines()
+        .filter_map(|l| l.trim().rsplit_once('|'))
+        .filter_map(|(path, state)| state.trim().parse::<u32>().ok().map(|s| (normalize_task_path(path), s != 1)))
+        .collect()
+}
+
 /// Parse a CSV line handling standard double quotes.
 pub fn parse_csv_line(line: &str) -> Vec<String> {
     let mut fields = Vec::new();
@@ -541,6 +584,14 @@ pub fn parse_csv_line(line: &str) -> Vec<String> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn task_state_lines_are_language_independent() {
+        let m = parse_task_state_lines("\\Microsoft\\Windows\\Foo\\Bar|1\r\n\\Baz|3\nbad line\n");
+        assert_eq!(m.get(&normalize_task_path("\\Microsoft\\Windows\\Foo\\Bar")), Some(&false));
+        assert_eq!(m.get(&normalize_task_path("\\Baz")), Some(&true));
+        assert_eq!(m.len(), 2);
+    }
 
     #[test]
     fn test_multilingual_disabled_statuses() {

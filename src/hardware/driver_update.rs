@@ -254,84 +254,10 @@ pub fn compare_versions(a: &str, b: &str) -> i32 {
 struct PnpDeviceInfo {
     instance_id: String,
     description: String,
-    class_name: String,
     class_guid: String,
-    driver_version: String,
-    driver_date: String,
-    provider: String,
     is_signed: bool,
 }
 
-/// Parse the text output of `pnputil /enum-devices /connected /drivers` into structured records.
-fn parse_pnputil_devices(output: &str) -> Vec<PnpDeviceInfo> {
-    let mut devices = Vec::new();
-    let mut current = PnpDeviceInfo {
-        instance_id: String::new(),
-        description: String::new(),
-        class_name: String::new(),
-        class_guid: String::new(),
-        driver_version: String::new(),
-        driver_date: String::new(),
-        provider: String::new(),
-        is_signed: false,
-    };
-    let mut in_record = false;
-
-    for line in output.lines() {
-        let trimmed = line.trim();
-
-        // Record separator (blank line)
-        if trimmed.is_empty() {
-            if in_record && !current.instance_id.is_empty() {
-                devices.push(current.clone());
-                current = PnpDeviceInfo {
-                    instance_id: String::new(),
-                    description: String::new(),
-                    class_name: String::new(),
-                    class_guid: String::new(),
-                    driver_version: String::new(),
-                    driver_date: String::new(),
-                    provider: String::new(),
-                    is_signed: false,
-                };
-                in_record = false;
-            }
-            continue;
-        }
-
-        // Key : Value pairs
-        if let Some((key, value)) = trimmed.split_once(':') {
-            let key = key.trim().to_lowercase();
-            let value = value.trim().to_string();
-            in_record = true;
-
-            if key.contains("instance id") || key.contains("instance path") {
-                current.instance_id = value;
-            } else if key.contains("device description") || key == "description" {
-                current.description = value;
-            } else if key.contains("class name") {
-                current.class_name = value;
-            } else if key.contains("class guid") {
-                current.class_guid = value.to_lowercase();
-            } else if key.contains("driver version") {
-                current.driver_version = value;
-            } else if key.contains("driver date") {
-                current.driver_date = value;
-            } else if key.contains("driver provider") || key.contains("provider name") {
-                current.provider = value;
-            } else if key.contains("signer") || key.contains("signed") {
-                current.is_signed = !value.is_empty()
-                    && !value.eq_ignore_ascii_case("not signed")
-                    && !value.eq_ignore_ascii_case("unsigned");
-            }
-        }
-    }
-    // Flush last record
-    if in_record && !current.instance_id.is_empty() {
-        devices.push(current);
-    }
-    devices
-}
 
 /// Information for an installed driver package parsed from `pnputil /enum-drivers`.
 #[derive(Debug, Clone)]
@@ -341,99 +267,77 @@ struct PnpDriverPackage {
     class_guid: String,
     driver_version: String,
     provider: String,
-    signer: String,
 }
 
-/// Parse the output of `pnputil /enum-drivers` to get available driver store versions.
-fn parse_pnputil_drivers(output: &str) -> Vec<PnpDriverPackage> {
-    let mut packages = Vec::new();
-    let mut current = PnpDriverPackage {
-        published_name: String::new(),
-        original_name: String::new(),
-        class_guid: String::new(),
-        driver_version: String::new(),
-        provider: String::new(),
-        signer: String::new(),
-    };
-    let mut in_record = false;
 
-    for line in output.lines() {
-        let trimmed = line.trim();
-        if trimmed.is_empty() {
-            if in_record
-                && (!current.published_name.is_empty() || !current.original_name.is_empty())
-            {
-                packages.push(current.clone());
-                current = PnpDriverPackage {
-                    published_name: String::new(),
-                    original_name: String::new(),
-                    class_guid: String::new(),
-                    driver_version: String::new(),
-                    provider: String::new(),
-                    signer: String::new(),
-                };
-                in_record = false;
-            }
-            continue;
-        }
-        if let Some((key, value)) = trimmed.split_once(':') {
-            let key = key.trim().to_lowercase();
-            let value = value.trim().to_string();
-            in_record = true;
+/// PowerShell prologue: UTF-8 output so non-ASCII device names survive.
+const PS_UTF8: &str = "[Console]::OutputEncoding = [Text.Encoding]::UTF8; ";
 
-            if key.contains("published name") {
-                current.published_name = value.to_lowercase();
-            } else if key.contains("original name") {
-                current.original_name = value.to_lowercase();
-            } else if key.contains("class guid") {
-                current.class_guid = value.to_lowercase();
-            } else if key.contains("driver version") {
-                // May contain "mm/dd/yyyy X.Y.Z.W" — extract version part
-                let parts: Vec<&str> = value.splitn(2, ' ').collect();
-                if parts.len() == 2 {
-                    current.driver_version = parts[1].to_string();
-                } else {
-                    current.driver_version = value;
-                }
-            } else if key.contains("provider") {
-                current.provider = value;
-            } else if key.contains("signer") {
-                current.signer = value;
-            }
-        }
-    }
-    if in_record && (!current.published_name.is_empty() || !current.original_name.is_empty()) {
-        packages.push(current);
-    }
-    packages
-}
-
-/// Query PnPUtil for connected devices. Returns parsed device list, or empty on failure.
+/// Connected devices and their drivers from CIM (`Win32_PnPSignedDriver`). Property names do
+/// not depend on the Windows display language, unlike `pnputil` text output (C6 / F-19).
 fn enumerate_pnputil_devices() -> Vec<PnpDeviceInfo> {
-    let output = SilentCommand::new("pnputil.exe")
-        .args(["/enum-devices", "/connected", "/drivers"])
-        .output();
-    match output {
-        Ok(o) if o.status.success() => {
-            let text = String::from_utf8_lossy(&o.stdout);
-            parse_pnputil_devices(&text)
-        }
+    let script = format!(
+        "{PS_UTF8}Get-CimInstance Win32_PnPSignedDriver | Where-Object {{ $_.DeviceID }} | Select-Object DeviceID, DeviceName, DeviceClass, ClassGuid, DriverVersion, @{{n='DriverDate';e={{ if ($_.DriverDate) {{ $_.DriverDate.ToString('MM/dd/yyyy', [Globalization.CultureInfo]::InvariantCulture) }} else {{ '' }} }}}}, DriverProviderName, IsSigned | ConvertTo-Json -Compress"
+    );
+    match SilentCommand::new("powershell").args(["-NoProfile", "-NonInteractive", "-Command", &script]).output() {
+        Ok(o) if o.status.success() => parse_cim_devices(&String::from_utf8_lossy(&o.stdout)),
         _ => Vec::new(),
     }
 }
 
-/// Query PnPUtil for driver store packages. Returns parsed list, or empty on failure.
+/// Driver store packages from `Get-WindowsDriver -Online` (language independent).
 fn enumerate_pnputil_driver_store() -> Vec<PnpDriverPackage> {
-    let output = SilentCommand::new("pnputil.exe")
-        .args(["/enum-drivers"])
-        .output();
-    match output {
-        Ok(o) if o.status.success() => {
-            let text = String::from_utf8_lossy(&o.stdout);
-            parse_pnputil_drivers(&text)
-        }
+    let script = format!(
+        "{PS_UTF8}Get-WindowsDriver -Online -ErrorAction Stop | Select-Object Driver, OriginalFileName, ClassGuid, Version, ProviderName | ConvertTo-Json -Compress"
+    );
+    match SilentCommand::new("powershell").args(["-NoProfile", "-NonInteractive", "-Command", &script]).output() {
+        Ok(o) if o.status.success() => parse_store_packages(&String::from_utf8_lossy(&o.stdout)),
         _ => Vec::new(),
     }
+}
+
+/// `ConvertTo-Json` emits an object for one item and an array for several.
+fn json_items(text: &str) -> Vec<serde_json::Value> {
+    match serde_json::from_str::<serde_json::Value>(text.trim()) {
+        Ok(serde_json::Value::Array(a)) => a,
+        Ok(v @ serde_json::Value::Object(_)) => vec![v],
+        _ => Vec::new(),
+    }
+}
+
+fn json_str(v: &serde_json::Value, key: &str) -> String {
+    v.get(key).and_then(|x| x.as_str()).unwrap_or("").trim().to_string()
+}
+
+fn parse_cim_devices(text: &str) -> Vec<PnpDeviceInfo> {
+    json_items(text)
+        .iter()
+        .map(|v| PnpDeviceInfo {
+            instance_id: json_str(v, "DeviceID"),
+            description: json_str(v, "DeviceName"),
+            class_guid: json_str(v, "ClassGuid").to_lowercase(),
+            is_signed: v.get("IsSigned").and_then(|x| x.as_bool()).unwrap_or(false),
+        })
+        .filter(|d| !d.instance_id.is_empty())
+        .collect()
+}
+
+fn parse_store_packages(text: &str) -> Vec<PnpDriverPackage> {
+    json_items(text)
+        .iter()
+        .map(|v| {
+            let original = json_str(v, "OriginalFileName");
+            let original_name = original.rsplit(['\\', '/']).next().unwrap_or("").to_lowercase();
+            PnpDriverPackage {
+                published_name: json_str(v, "Driver").to_lowercase(),
+                original_name,
+                class_guid: json_str(v, "ClassGuid").to_lowercase(),
+                driver_version: json_str(v, "Version"),
+                provider: json_str(v, "ProviderName"),
+            }
+        })
+        .filter(|p| !p.published_name.is_empty() || !p.original_name.is_empty())
+        .collect()
 }
 
 // ---------------------------------------------------------------------------
@@ -675,7 +579,8 @@ fn evaluate_version_from_store(
     if let Some(store_ver) = best_store_version {
         if compare_versions(current_ver, store_ver) < 0 {
             let url = vendor_download_url(&name_upper, provider);
-            let size = estimate_download_size(category);
+            // The real package size is only known on the vendor's site; 0 = not shown (C3).
+            let size = 0.0;
             return (
                 store_ver.to_string(),
                 DriverUpdateState::UpdateAvailable,
@@ -727,22 +632,6 @@ fn vendor_download_url(name_upper: &str, provider: &str) -> String {
     }
 }
 
-/// Estimate download size in MB based on driver category.
-fn estimate_download_size(category: DriverCategory) -> f32 {
-    match category {
-        DriverCategory::Display => 650.0,
-        DriverCategory::Network => 120.0,
-        DriverCategory::Audio => 250.0,
-        DriverCategory::Storage => 80.0,
-        DriverCategory::Chipset => 350.0,
-        DriverCategory::Bluetooth => 60.0,
-        DriverCategory::Usb => 40.0,
-        DriverCategory::Biometric => 90.0,
-        DriverCategory::Camera => 100.0,
-        DriverCategory::Input => 30.0,
-        DriverCategory::VirtualSandbox => 2.5,
-    }
-}
 
 // ---------------------------------------------------------------------------
 // Signature verification
@@ -1002,9 +891,7 @@ pub fn download_and_install_driver_with_progress(
     if !driver.download_url.is_empty() {
         let mut last_err = String::new();
         for attempt in 1..=MAX_RETRIES {
-            let result = SilentCommand::new("rundll32")
-                .args(["url.dll,FileProtocolHandler", &driver.download_url])
-                .spawn();
+            let result = crate::core::process::open_url_unelevated(&driver.download_url);
             match result {
                 Ok(_) => {
                     driver.status_message =
@@ -1037,14 +924,18 @@ pub fn download_and_install_driver_with_progress(
         return Err(DriverError::DownloadFailed(last_err));
     }
 
-    // No download URL — driver is already at latest
-    driver.state = DriverUpdateState::Installed;
-    driver.current_version = driver.latest_version.clone();
-    driver.status_message = format!("Driver package verified: {}", driver.name);
+    // No vendor download is known. This used to mark the driver "Installed" and copy the store
+    // version into current_version without installing anything (C3).
+    let msg = format!(
+        "No download is known for {}; use Windows Update or the device maker's support site.",
+        driver.name
+    );
+    driver.state = DriverUpdateState::Failed;
+    driver.status_message = msg.clone();
     if let Some(cb) = progress_cb {
-        cb(DriverProgress::Complete);
+        cb(DriverProgress::Failed(msg.clone()));
     }
-    Ok(format!("{} updated", driver.name))
+    Err(DriverError::InstallFailed(msg))
 }
 
 /// Run the isolated Virtual Sandbox Driver lifecycle.
@@ -1219,54 +1110,22 @@ mod tests {
         }
     }
 
-    #[test]
-    fn test_parse_pnputil_devices_empty() {
-        let devices = parse_pnputil_devices("");
-        assert!(devices.is_empty());
-    }
+
+
 
     #[test]
-    fn test_parse_pnputil_devices_sample() {
-        let sample = r#"
-Instance ID:     PCI\VEN_10DE&DEV_2684&SUBSYS_16F11043&REV_A1\4&1F4FC6F&0&0019
-Device Description:  NVIDIA GeForce RTX 4090
-Class Name:      Display
-Class GUID:      {4d36e968-e325-11ce-bfc1-08002be10318}
-Driver Version:  31.0.15.6614
-Driver Date:     10/22/2024
-Driver Provider: NVIDIA
-Signer:          Microsoft Windows Hardware Compatibility Publisher
-
-Instance ID:     PCI\VEN_8086&DEV_7A70&SUBSYS_86941043&REV_11\3&11583659&0&E0
-Device Description:  Intel(R) Ethernet Controller I225-V
-Class Name:      Net
-Class GUID:      {4d36e972-e325-11ce-bfc1-08002be10318}
-Driver Version:  1.0.3.30
-Driver Date:     03/14/2024
-Driver Provider: Intel
-Signer:          Microsoft Windows Hardware Compatibility Publisher
-"#;
-        let devices = parse_pnputil_devices(sample);
-        assert_eq!(devices.len(), 2);
-        assert!(devices[0].description.contains("NVIDIA"));
-        assert!(devices[0].is_signed);
-        assert!(devices[1].description.contains("Intel"));
-    }
-
-    #[test]
-    fn test_parse_pnputil_drivers_sample() {
-        let sample = r#"
-Published Name:  oem42.inf
-Original Name:   nvlddmkm.inf
-Provider Name:   NVIDIA
-Class GUID:      {4d36e968-e325-11ce-bfc1-08002be10318}
-Driver Version:  10/22/2024 31.0.15.6614
-Signer:          Microsoft Windows Hardware Compatibility Publisher
-"#;
-        let packages = parse_pnputil_drivers(sample);
-        assert_eq!(packages.len(), 1);
-        assert_eq!(packages[0].driver_version, "31.0.15.6614");
-        assert!(packages[0].provider.contains("NVIDIA"));
+    fn cim_and_store_json_parse() {
+        let one = r#"{"DeviceID":"PCI\\VEN_10DE&DEV_2684","DeviceName":"NVIDIA GeForce RTX 4090","DeviceClass":"DISPLAY","ClassGuid":"{4D36E968-E325-11CE-BFC1-08002BE10318}","DriverVersion":"31.0.15.6614","DriverDate":"10/22/2024","DriverProviderName":"NVIDIA","IsSigned":true}"#;
+        let d = parse_cim_devices(one);
+        assert_eq!(d.len(), 1);
+        assert_eq!(d[0].class_guid, "{4d36e968-e325-11ce-bfc1-08002be10318}");
+        assert!(d[0].is_signed);
+        let many = r#"[{"Driver":"oem42.inf","OriginalFileName":"C:\\Windows\\System32\\DriverStore\\FileRepository\\nvlddmkm.inf_amd64_x\\nvlddmkm.inf","ClassGuid":"{4D36E968-E325-11CE-BFC1-08002BE10318}","Version":"31.0.15.6614","ProviderName":"NVIDIA"},{"Driver":"oem7.inf","OriginalFileName":"net.inf","ClassGuid":"{4d36e972-e325-11ce-bfc1-08002be10318}","Version":"1.0.3.30","ProviderName":"Intel"}]"#;
+        let p = parse_store_packages(many);
+        assert_eq!(p.len(), 2);
+        assert_eq!(p[0].original_name, "nvlddmkm.inf");
+        assert_eq!(p[0].driver_version, "31.0.15.6614");
+        assert!(parse_cim_devices("not json").is_empty());
     }
 
     #[test]

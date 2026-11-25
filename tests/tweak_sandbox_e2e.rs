@@ -2200,11 +2200,13 @@ fn test_atomic_partial_failure_rollback_and_partially_optimized_lifecycle() {
         sbx.reg_get_dword("HKCU", r"Software\WinBlast0Test\Atomic", "ThirdValue"),
         Some(10)
     );
+    // Write-ahead ledger (F-4): the failed action is recorded before it runs, so both rows exist
+    // and both are rolled back by the compensating rollback.
     let hist = ledger.get_history().unwrap();
-    assert_eq!(hist.len(), 1);
+    assert_eq!(hist.len(), 2);
     assert!(
-        hist[0].rolled_back,
-        "First action's ledger entry must be marked rolled_back after atomic failure"
+        hist.iter().all(|e| e.rolled_back),
+        "Every ledger entry of the failed apply must be marked rolled_back"
     );
     assert_eq!(
         scan_single_tweak_with(&sbx, &multi_tweak, 26100, "Pro").current_state,
@@ -4798,4 +4800,162 @@ fn test_dynamic_dword_refuses_to_write_when_ram_is_unknown() {
     sbx.state_write().total_ram_kb = 16 * 1024 * 1024;
     apply_tweak_with(&tweak, &ledger, &sbx).expect("apply with known RAM");
     assert_eq!(sbx.reg_get_dword("HKLM", r"SYSTEM\CurrentControlSet\Control", "SvcHostSplitThresholdInKB"), Some(16 * 1024 * 1024));
+}
+
+
+// ---- Package A (rollback you can trust) ----------------------------------------------------
+
+fn raw_sz(s: &str) -> winblast0::core::reg_helpers::RegRawSnapshot {
+    let mut bytes: Vec<u8> = s.encode_utf16().flat_map(|u| u.to_le_bytes()).collect();
+    bytes.extend_from_slice(&[0, 0]);
+    winblast0::core::reg_helpers::RegRawSnapshot {
+        reg_type: 1,
+        hex_bytes: winblast0::core::reg_helpers::encode_hex(&bytes),
+    }
+}
+
+fn dword_tweak(id: &str, path: &str, name: &str) -> TweakDefinition {
+    make_synth_tweak(
+        id,
+        Reversibility::Instant,
+        vec![TweakAction::RegistryDword {
+            hive: "HKCU".into(),
+            path: path.into(),
+            name: name.into(),
+            optimized_value: 1,
+            default_value: 0,
+        }],
+    )
+}
+
+/// F-3: a value that existed with another type (text, QWORD, binary) comes back byte-exact
+/// instead of being deleted as "absent".
+#[test]
+fn a2_foreign_prior_types_round_trip_byte_exact() {
+    let priors = [
+        raw_sz("user text"),
+        winblast0::core::reg_helpers::RegRawSnapshot { reg_type: 11, hex_bytes: "0100000002000000".into() },
+        winblast0::core::reg_helpers::RegRawSnapshot { reg_type: 3, hex_bytes: "deadbeef".into() },
+        winblast0::core::reg_helpers::RegRawSnapshot { reg_type: 7, hex_bytes: "610000000000".into() },
+    ];
+    for (i, prior) in priors.iter().enumerate() {
+        let sbx = SandboxEnv::new();
+        let ledger = StateLedger::in_memory().expect("ledger");
+        let path = r"Software\WinBlast0Test\Foreign";
+        let name = format!("Value{i}");
+        sbx.reg_set_raw("HKCU", path, &name, prior).expect("seed");
+        let tweak = dword_tweak(&format!("foreign_{i}"), path, &name);
+        apply_tweak_with(&tweak, &ledger, &sbx).expect("apply");
+        assert_eq!(sbx.reg_get_dword("HKCU", path, &name), Some(1));
+        let n = winblast0::executor::engine::undo_tweak_with(&tweak.id, &ledger, &sbx)
+            .expect("undo")
+            .expect("recorded");
+        assert_eq!(n, 1);
+        assert_eq!(sbx.reg_get_raw("HKCU", path, &name).as_ref(), Some(prior), "prior #{i} not restored exactly");
+    }
+}
+
+/// F-15: applying a tweak that is already at its target records nothing, so a second apply can
+/// never make the optimized value the "original".
+#[test]
+fn a5_reapply_records_nothing() {
+    let sbx = SandboxEnv::new();
+    let ledger = StateLedger::in_memory().expect("ledger");
+    let path = r"Software\WinBlast0Test\Twice";
+    sbx.reg_set_dword("HKCU", path, "V", 5).expect("seed");
+    let tweak = dword_tweak("twice", path, "V");
+    assert_eq!(apply_tweak_with(&tweak, &ledger, &sbx).expect("apply 1"), 1);
+    assert_eq!(apply_tweak_with(&tweak, &ledger, &sbx).expect("apply 2"), 0);
+    assert_eq!(ledger.get_history().expect("history").len(), 1);
+    winblast0::executor::engine::undo_tweak_with(&tweak.id, &ledger, &sbx).expect("undo");
+    assert_eq!(sbx.reg_get_dword("HKCU", path, "V"), Some(5));
+}
+
+/// F-6 / A4: undo restores the user's own value, not the catalog default.
+#[test]
+fn a4_undo_restores_user_value_not_default() {
+    let sbx = SandboxEnv::new();
+    let ledger = StateLedger::in_memory().expect("ledger");
+    let path = r"Software\WinBlast0Test\Custom";
+    sbx.reg_set_dword("HKCU", path, "V", 7).expect("seed custom");
+    let tweak = dword_tweak("custom", path, "V");
+    apply_tweak_with(&tweak, &ledger, &sbx).expect("apply");
+    let ids = vec![tweak.id.clone()];
+    winblast0::executor::engine::undo_or_reset_tweaks_by_id_with(&ids, std::slice::from_ref(&tweak), &ledger, &sbx)
+        .expect("undo");
+    assert_eq!(sbx.reg_get_dword("HKCU", path, "V"), Some(7));
+}
+
+/// F-6: "reset to default" does not create a value (or policy key) that never existed.
+#[test]
+fn a4_reset_to_default_leaves_absent_values_absent() {
+    let sbx = SandboxEnv::new();
+    let ledger = StateLedger::in_memory().expect("ledger");
+    let path = r"Software\Policies\WinBlast0Test\NeverThere";
+    let tweak = dword_tweak("never_there", path, "V");
+    assert_eq!(revert_tweak_with(&tweak, &ledger, &sbx).expect("reset"), 0);
+    assert_eq!(sbx.reg_get_dword("HKCU", path, "V"), None);
+    assert!(!sbx.reg_key_exists("HKCU", path));
+}
+
+/// F-13: keys created by apply are gone again after rollback.
+#[test]
+fn a2_rollback_removes_created_keys() {
+    let sbx = SandboxEnv::new();
+    let ledger = StateLedger::in_memory().expect("ledger");
+    let path = r"Software\Policies\WinBlast0Test\Created\Deep";
+    assert!(!sbx.reg_key_exists("HKCU", path));
+    let tweak = dword_tweak("created", path, "V");
+    apply_tweak_with(&tweak, &ledger, &sbx).expect("apply");
+    assert!(sbx.reg_key_exists("HKCU", path));
+    winblast0::executor::engine::undo_tweak_with(&tweak.id, &ledger, &sbx).expect("undo");
+    assert_eq!(sbx.reg_get_dword("HKCU", path, "V"), None);
+    assert!(!sbx.reg_key_exists("HKCU", path), "created key left behind");
+}
+
+/// A1: every row is written before its change; nothing is left pending after a normal apply.
+#[test]
+fn a1_write_ahead_rows_are_committed() {
+    let sbx = SandboxEnv::new();
+    let ledger = StateLedger::in_memory().expect("ledger");
+    let tweak = dword_tweak("wal", r"Software\WinBlast0Test\Wal", "V");
+    apply_tweak_with(&tweak, &ledger, &sbx).expect("apply");
+    assert_eq!(ledger.pending_count().expect("pending"), 0);
+    let id = ledger.begin_change("crash", "RegistryDword:HKCU|X|Y", "0", "1").expect("begin");
+    assert_eq!(ledger.pending_count().expect("pending"), 1);
+    assert_eq!(ledger.reconcile_pending().expect("reconcile"), 1);
+    assert!(ledger.get_history().expect("history").iter().any(|e| e.id == id));
+}
+
+/// F-11: an older ledger is migrated; a foreign table is refused instead of accepting writes.
+#[test]
+fn a7_ledger_migration_and_foreign_schema() {
+    let dir = std::env::temp_dir().join(format!("wb_ledger_{}", std::process::id()));
+    std::fs::create_dir_all(&dir).expect("dir");
+    let old = dir.join("old.db");
+    let _ = std::fs::remove_file(&old);
+    {
+        let c = rusqlite::Connection::open(&old).expect("open");
+        c.execute_batch(
+            "CREATE TABLE ledger (id INTEGER PRIMARY KEY AUTOINCREMENT, tweak_id TEXT NOT NULL,
+             action_type TEXT NOT NULL, original_value TEXT NOT NULL, new_value TEXT NOT NULL,
+             timestamp TEXT NOT NULL, rolled_back INTEGER NOT NULL DEFAULT 0);
+             INSERT INTO ledger (tweak_id, action_type, original_value, new_value, timestamp)
+             VALUES ('t', 'RegistryDword:HKCU|A|B', '0', '1', '2026-01-01T00:00:00Z');",
+        )
+        .expect("old schema");
+    }
+    let l = StateLedger::new(&old).expect("migrates");
+    assert_eq!(l.get_history().expect("history").len(), 1);
+    assert_eq!(l.pending_count().expect("pending"), 0);
+    drop(l);
+
+    let foreign = dir.join("foreign.db");
+    let _ = std::fs::remove_file(&foreign);
+    {
+        let c = rusqlite::Connection::open(&foreign).expect("open");
+        c.execute_batch("CREATE TABLE ledger (id INTEGER PRIMARY KEY, something TEXT);").expect("foreign");
+    }
+    assert!(StateLedger::new(&foreign).is_err(), "foreign ledger layout must be refused");
+    let _ = std::fs::remove_dir_all(&dir);
 }

@@ -254,66 +254,47 @@ impl NetworkDiagnostics {
         }
     }
 
-    /// Apply DNS servers to the active network adapter using netsh.
+    /// Apply DNS servers to the adapter that carries the default route (lowest route + interface
+    /// metric), via `Set-DnsClientServerAddress -InterfaceIndex`. The result is the real one (C4 / F-8).
     pub fn apply_dns_servers(primary: &str, secondary: &str) -> Result<String, String> {
-        let p_clean = primary.trim();
-        let s_clean = secondary.trim();
-        let p_ip: std::net::IpAddr = p_clean
+        let p_ip: std::net::IpAddr = primary
+            .trim()
             .parse()
-            .map_err(|e| format!("Invalid primary DNS IP address '{}': {}", p_clean, e))?;
-        let s_ip: std::net::IpAddr = s_clean
+            .map_err(|e| format!("Invalid primary DNS IP address '{}': {}", primary.trim(), e))?;
+        let s_ip: std::net::IpAddr = secondary
+            .trim()
             .parse()
-            .map_err(|e| format!("Invalid secondary DNS IP address '{}': {}", s_clean, e))?;
-
-        // Query active adapter name from netsh interface ipv4 show interfaces
-        let ps_cmd = format!(
-            r#"$adapter = Get-NetAdapter | Where-Object {{ $_.Status -eq 'Up' -and $_.InterfaceMetric -ne $null }} | Select-Object -First 1;
-if ($adapter) {{
-    Set-DnsClientServerAddress -InterfaceIndex $adapter.InterfaceIndex -ServerAddresses ('{}', '{}');
-    Write-Output "SUCCESS"
-}} else {{
-    netsh interface ipv4 set dnsservers name="Ethernet" source=static address="{}" register=primary;
-    netsh interface ipv4 add dnsservers name="Ethernet" address="{}" index=2;
-    Write-Output "SUCCESS"
-}}"#,
-            p_ip, s_ip, p_ip, s_ip
-        );
-
-        let out = SilentCommand::new("powershell")
-            .args(["-NoProfile", "-NonInteractive", "-Command", &ps_cmd])
-            .output()
-            .map_err(|e| format!("Failed to configure DNS: {e}"))?;
-
-        if out.status.success() {
-            Ok(format!(
-                "Configured primary DNS: {} and secondary: {}",
-                primary, secondary
-            ))
-        } else {
-            Err("Failed to set DNS servers on active adapter.".to_string())
-        }
+            .map_err(|e| format!("Invalid secondary DNS IP address '{}': {}", secondary.trim(), e))?;
+        let script = format!("{}\nSet-DnsClientServerAddress -InterfaceIndex $idx -ServerAddresses ('{p_ip}', '{s_ip}') -ErrorAction Stop\nWrite-Output \"OK|$alias\"", DEFAULT_ROUTE_ADAPTER);
+        run_dns_script(&script).map(|alias| format!("DNS servers {p_ip} and {s_ip} set on \"{alias}\"."))
     }
 
-    /// Reset DNS configuration to DHCP (Automatic) on active network adapter.
+    /// Reset DNS on the default-route adapter to automatic (DHCP).
     pub fn reset_dns_dhcp() -> Result<String, String> {
-        let ps_cmd = r#"$adapter = Get-NetAdapter | Where-Object { $_.Status -eq 'Up' } | Select-Object -First 1;
-if ($adapter) {
-    Set-DnsClientServerAddress -InterfaceIndex $adapter.InterfaceIndex -ResetServerAddresses;
-    Write-Output "SUCCESS"
-} else {
-    netsh interface ipv4 set dnsservers name="Ethernet" source=dhcp;
-    Write-Output "SUCCESS"
-}"#;
+        let script = format!("{}\nSet-DnsClientServerAddress -InterfaceIndex $idx -ResetServerAddresses -ErrorAction Stop\nWrite-Output \"OK|$alias\"", DEFAULT_ROUTE_ADAPTER);
+        run_dns_script(&script).map(|alias| format!("DNS on \"{alias}\" reset to automatic (DHCP)."))
+    }
+}
 
-        let out = SilentCommand::new("powershell")
-            .args(["-NoProfile", "-NonInteractive", "-Command", ps_cmd])
-            .output()
-            .map_err(|e| format!("Failed to reset DNS: {e}"))?;
+/// PowerShell that finds the adapter with the best default route and sets `$idx` / `$alias`.
+const DEFAULT_ROUTE_ADAPTER: &str = r#"$ErrorActionPreference = 'Stop'
+$routes = @(Get-NetRoute -DestinationPrefix '0.0.0.0/0' -ErrorAction SilentlyContinue) + @(Get-NetRoute -DestinationPrefix '::/0' -ErrorAction SilentlyContinue) | Where-Object { $_ }
+if (-not $routes) { Write-Output 'ERR|no adapter has a default route'; exit 2 }
+$best = $routes | Sort-Object { $_.RouteMetric + (Get-NetIPInterface -InterfaceIndex $_.ifIndex -AddressFamily $_.AddressFamily).InterfaceMetric } | Select-Object -First 1
+$idx = $best.ifIndex
+$alias = (Get-NetAdapter -InterfaceIndex $idx).Name"#;
 
-        if out.status.success() {
-            Ok("Reset DNS servers to Automatic (DHCP).".to_string())
-        } else {
-            Err("Failed to reset DNS configuration.".to_string())
-        }
+fn run_dns_script(script: &str) -> Result<String, String> {
+    let wrapped = format!("try {{\n{script}\n}} catch {{ Write-Output (\"ERR|\" + $_.Exception.Message); exit 1 }}");
+    let out = SilentCommand::new("powershell")
+        .args(["-NoProfile", "-NonInteractive", "-Command", &wrapped])
+        .output()
+        .map_err(|e| format!("PowerShell could not be started: {e}"))?;
+    let text = String::from_utf8_lossy(&out.stdout);
+    let line = text.lines().map(str::trim).rfind(|l| l.starts_with("OK|") || l.starts_with("ERR|")).unwrap_or("");
+    match line.split_once('|') {
+        Some(("OK", alias)) if out.status.success() => Ok(alias.to_string()),
+        Some((_, msg)) => Err(format!("DNS change failed: {msg}")),
+        None => Err(format!("DNS change failed (exit {:?})", out.status.code())),
     }
 }

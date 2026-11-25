@@ -11,6 +11,8 @@ import { WbPill, WbPanel } from "../components/toggle.slint";
 component StateCard inherits WbPanel {
     in property <string> label;
     in property <bool> ok;
+    /// False until the network was probed: shows "—" instead of "Default".
+    in property <bool> known: true;
     min-width: Scale.px(200px);
     horizontal-stretch: 1;
     VerticalLayout {
@@ -18,7 +20,7 @@ component StateCard inherits WbPanel {
         spacing: Scale.px(4px);
         Text { text: root.label; font-size: Scale.font-xs; color: Theme.text-secondary; wrap: word-wrap; }
         Text {
-            text: root.ok ? Tr.s("NetDiagLowLatencyBadge") : Tr.s("NetDiagDefaultLatencyBadge");
+            text: !root.known ? "—" : root.ok ? Tr.s("NetDiagLowLatencyBadge") : Tr.s("NetDiagDefaultLatencyBadge");
             font-size: Scale.font-md;
             font-weight: 700;
             color: root.ok ? Theme.success : Theme.text-muted;
@@ -65,8 +67,8 @@ export component NetworkDiagView inherits Rectangle {
                         Text { text: NetworkStore.ip-mtu; font-size: Scale.font-2xs; color: Theme.text-muted; wrap: word-wrap; }
                     }
                 }
-                StateCard { label: Tr.s("NetDiagTcpAckLabel"); ok: NetworkStore.ack-optimized; }
-                StateCard { label: Tr.s("NetDiagTcpNoDelayLabel"); ok: NetworkStore.nodelay-optimized; }
+                StateCard { label: Tr.s("NetDiagTcpAckLabel"); ok: NetworkStore.ack-optimized; known: NetworkStore.loaded; }
+                StateCard { label: Tr.s("NetDiagTcpNoDelayLabel"); ok: NetworkStore.nodelay-optimized; known: NetworkStore.loaded; }
             }
             HorizontalLayout {
                 spacing: Scale.px(8px);

@@ -1,0 +1,76 @@
+round 0: killed after 150 ms, 31 ledger entries, 0 rollback errors, 2 keys differ
+round 1: killed after 400 ms, 32 ledger entries, 0 rollback errors, 2 keys differ
+round 2: killed after 900 ms, 103 ledger entries, 0 rollback errors, 2 keys differ
+round 3: killed after 1700 ms, 110 ledger entries, 0 rollback errors, 3 keys differ
+round 4: killed after 3000 ms, 125 ledger entries, 0 rollback errors, 3 keys differ
+round 5: killed after 5200 ms, 224 ledger entries, 0 rollback errors, 6 keys differ
+
+thread 'vm_crash_mid_apply_recovers_from_ledger' (7632) panicked at tests\vm_aggressive.rs:341:5:
+crash recovery left the system changed:
+round 0 (kill at 150 ms, 31 entries):
+
+    reg HKLM\SOFTWARE\Policies\Microsoft\Windows\CloudContent
+      before: 
+      after:  DisableWindowsConsumerFeatures=REG_DWORD:[01, 00, 00, 00]
+    reg HKLM\Software\Policies\Microsoft\Windows\CloudContent
+      before: 
+      after:  DisableWindowsConsumerFeatures=REG_DWORD:[01, 00, 00, 00]
+round 1 (kill at 400 ms, 32 entries):
+
+    reg HKLM\SOFTWARE\Policies\Microsoft\Windows\CloudContent
+      before: 
+      after:  DisableWindowsConsumerFeatures=REG_DWORD:[01, 00, 00, 00]
+    reg HKLM\Software\Policies\Microsoft\Windows\CloudContent
+      before: 
+      after:  DisableWindowsConsumerFeatures=REG_DWORD:[01, 00, 00, 00]
+round 2 (kill at 900 ms, 103 entries):
+
+    reg HKLM\SOFTWARE\Policies\Microsoft\Windows\CloudContent
+      before: 
+      after:  DisableWindowsConsumerFeatures=REG_DWORD:[01, 00, 00, 00]
+    reg HKLM\Software\Policies\Microsoft\Windows\CloudContent
+      before: 
+      after:  DisableWindowsConsumerFeatures=REG_DWORD:[01, 00, 00, 00]
+round 3 (kill at 1700 ms, 110 entries):
+
+    reg HKLM\SOFTWARE\Policies\Microsoft\Windows\CloudContent
+      before: 
+      after:  DisableWindowsConsumerFeatures=REG_DWORD:[01, 00, 00, 00]
+    reg HKLM\Software\Policies\Microsoft\Windows\CloudContent
+      before: 
+      after:  DisableWindowsConsumerFeatures=REG_DWORD:[01, 00, 00, 00]
+    task \MicrosoftEdgeUpdateTaskMachineCore
+      before: Some(true)
+      after:  Some(false)
+round 4 (kill at 3000 ms, 125 entries):
+
+    reg HKLM\SOFTWARE\Policies\Microsoft\Windows\CloudContent
+      before: 
+      after:  DisableWindowsConsumerFeatures=REG_DWORD:[01, 00, 00, 00]
+    reg HKLM\Software\Policies\Microsoft\Windows\CloudContent
+      before: 
+      after:  DisableWindowsConsumerFeatures=REG_DWORD:[01, 00, 00, 00]
+    task \MicrosoftEdgeUpdateTaskMachineCore
+      before: Some(true)
+      after:  Some(false)
+round 5 (kill at 5200 ms, 224 entries):
+
+    reg HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Search
+      before: CortanaStateLastRun=REG_BINARY:[c2, 19, 05, 6b, 00, 00, 00, 00] | InstalledPackagedAppsRevision=REG_SZ:[7b, 00, 31, 00, 30, 00, 30, 00, 44, 00, 31, 00, 34, 00, 36, 00, 41, 00, 2d, 00, 30, 00, 30, 00, 31, 00, 45, 00, 2d, 00, 34, 00, 39, 00, 34, 00, 45, 00, 2d, 00, 41, 00, 30, 00, 35, 00, 35, 00, 2d, 00, 45, 00, 46, 00, 33, 00, 41, 00, 41, 00, 46, 00, 46, 00, 33, 00, 45, 00, 42, 00, 37, 00, 41, 00, 7d, 00, 00, 00] | InstalledWin32AppsRevision=REG_SZ:[7b, 00, 42, 00, 36, 00, 34, 00, 37, 00, 46, 00, 31, 00, 36, 00, 33, 00, 2d, 00, 39, 00, 41, 00, 45, 00, 33, 00, 2d, 00, 34, 00, 31, 00, 42, 00, 37, 00, 2d, 00, 38, 00, 38, 00, 39, 00, 39, 00, 2d, 00, 36, 00, 38, 00, 42, 00, 37, 00, 35, 00, 44, 00, 36, 00, 37, 00, 34, 00, 30, 00, 34, 00, 43, 00, 7d, 00, 00, 00] | IsAssignedAccess=REG_DWORD:[00, 00, 00, 00] | NamespaceSettingsRevision=REG_SZ:[7b, 00, 32, 00, 35, 00, 39, 00, 30, 00, 39, 00, 37, 00, 32, 00, 36, 00, 2d, 00, 37, 00, 39, 00, 37, 00, 37, 00, 2d, 00, 34, 00, 42, 00, 31, 00, 43, 00, 2d, 00, 42, 00, 39, 00, 39, 00, 38, 00, 2d, 00, 32, 00, 36, 00, 38, 00, 42, 00, 39, 00, 43, 00, 42, 00, 41, 00, 35, 00, 36, 00, 42, 00, 41, 00, 7d, 00, 00, 00]
+      after:  CortanaStateLastRun=REG_BINARY:[c2, 19, 05, 6b, 00, 00, 00, 00] | InstalledPackagedAppsRevision=REG_SZ:[7b, 00, 33, 00, 41, 00, 34, 00, 31, 00, 32, 00, 34, 00, 33, 00, 41, 00, 2d, 00, 38, 00, 41, 00, 32, 00, 34, 00, 2d, 00, 34, 00, 34, 00, 39, 00, 46, 00, 2d, 00, 42, 00, 41, 00, 31, 00, 34, 00, 2d, 00, 30, 00, 33, 00, 36, 00, 46, 00, 34, 00, 46, 00, 32, 00, 37, 00, 39, 00, 38, 00, 46, 00, 41, 00, 7d, 00, 00, 00] | InstalledWin32AppsRevision=REG_SZ:[7b, 00, 42, 00, 36, 00, 34, 00, 37, 00, 46, 00, 31, 00, 36, 00, 33, 00, 2d, 00, 39, 00, 41, 00, 45, 00, 33, 00, 2d, 00, 34, 00, 31, 00, 42, 00, 37, 00, 2d, 00, 38, 00, 38, 00, 39, 00, 39, 00, 2d, 00, 36, 00, 38, 00, 42, 00, 37, 00, 35, 00, 44, 00, 36, 00, 37, 00, 34, 00, 30, 00, 34, 00, 43, 00, 7d, 00, 00, 00] | IsAssignedAccess=REG_DWORD:[00, 00, 00, 00] | NamespaceSettingsRevision=REG_SZ:[7b, 00, 32, 00, 35, 00, 39, 00, 30, 00, 39, 00, 37, 00, 32, 00, 36, 00, 2d, 00, 37, 00, 39, 00, 37, 00, 37, 00, 2d, 00, 34, 00, 42, 00, 31, 00, 43, 00, 2d, 00, 42, 00, 39, 00, 39, 00, 38, 00, 2d, 00, 32, 00, 36, 00, 38, 00, 42, 00, 39, 00, 43, 00, 42, 00, 41, 00, 35, 00, 36, 00, 42, 00, 41, 00, 7d, 00, 00, 00]
+    reg HKCU\Software\Microsoft\Windows\CurrentVersion\Search
+      before: CortanaStateLastRun=REG_BINARY:[c2, 19, 05, 6b, 00, 00, 00, 00] | InstalledPackagedAppsRevision=REG_SZ:[7b, 00, 31, 00, 30, 00, 30, 00, 44, 00, 31, 00, 34, 00, 36, 00, 41, 00, 2d, 00, 30, 00, 30, 00, 31, 00, 45, 00, 2d, 00, 34, 00, 39, 00, 34, 00, 45, 00, 2d, 00, 41, 00, 30, 00, 35, 00, 35, 00, 2d, 00, 45, 00, 46, 00, 33, 00, 41, 00, 41, 00, 46, 00, 46, 00, 33, 00, 45, 00, 42, 00, 37, 00, 41, 00, 7d, 00, 00, 00] | InstalledWin32AppsRevision=REG_SZ:[7b, 00, 42, 00, 36, 00, 34, 00, 37, 00, 46, 00, 31, 00, 36, 00, 33, 00, 2d, 00, 39, 00, 41, 00, 45, 00, 33, 00, 2d, 00, 34, 00, 31, 00, 42, 00, 37, 00, 2d, 00, 38, 00, 38, 00, 39, 00, 39, 00, 2d, 00, 36, 00, 38, 00, 42, 00, 37, 00, 35, 00, 44, 00, 36, 00, 37, 00, 34, 00, 30, 00, 34, 00, 43, 00, 7d, 00, 00, 00] | IsAssignedAccess=REG_DWORD:[00, 00, 00, 00] | NamespaceSettingsRevision=REG_SZ:[7b, 00, 32, 00, 35, 00, 39, 00, 30, 00, 39, 00, 37, 00, 32, 00, 36, 00, 2d, 00, 37, 00, 39, 00, 37, 00, 37, 00, 2d, 00, 34, 00, 42, 00, 31, 00, 43, 00, 2d, 00, 42, 00, 39, 00, 39, 00, 38, 00, 2d, 00, 32, 00, 36, 00, 38, 00, 42, 00, 39, 00, 43, 00, 42, 00, 41, 00, 35, 00, 36, 00, 42, 00, 41, 00, 7d, 00, 00, 00]
+      after:  CortanaStateLastRun=REG_BINARY:[c2, 19, 05, 6b, 00, 00, 00, 00] | InstalledPackagedAppsRevision=REG_SZ:[7b, 00, 33, 00, 41, 00, 34, 00, 31, 00, 32, 00, 34, 00, 33, 00, 41, 00, 2d, 00, 38, 00, 41, 00, 32, 00, 34, 00, 2d, 00, 34, 00, 34, 00, 39, 00, 46, 00, 2d, 00, 42, 00, 41, 00, 31, 00, 34, 00, 2d, 00, 30, 00, 33, 00, 36, 00, 46, 00, 34, 00, 46, 00, 32, 00, 37, 00, 39, 00, 38, 00, 46, 00, 41, 00, 7d, 00, 00, 00] | InstalledWin32AppsRevision=REG_SZ:[7b, 00, 42, 00, 36, 00, 34, 00, 37, 00, 46, 00, 31, 00, 36, 00, 33, 00, 2d, 00, 39, 00, 41, 00, 45, 00, 33, 00, 2d, 00, 34, 00, 31, 00, 42, 00, 37, 00, 2d, 00, 38, 00, 38, 00, 39, 00, 39, 00, 2d, 00, 36, 00, 38, 00, 42, 00, 37, 00, 35, 00, 44, 00, 36, 00, 37, 00, 34, 00, 30, 00, 34, 00, 43, 00, 7d, 00, 00, 00] | IsAssignedAccess=REG_DWORD:[00, 00, 00, 00] | NamespaceSettingsRevision=REG_SZ:[7b, 00, 32, 00, 35, 00, 39, 00, 30, 00, 39, 00, 37, 00, 32, 00, 36, 00, 2d, 00, 37, 00, 39, 00, 37, 00, 37, 00, 2d, 00, 34, 00, 42, 00, 31, 00, 43, 00, 2d, 00, 42, 00, 39, 00, 39, 00, 38, 00, 2d, 00, 32, 00, 36, 00, 38, 00, 42, 00, 39, 00, 43, 00, 42, 00, 41, 00, 35, 00, 36, 00, 42, 00, 41, 00, 7d, 00, 00, 00]
+    reg HKLM\SOFTWARE\Policies\Microsoft\Windows\CloudContent
+      before: 
+      after:  DisableWindowsConsumerFeatures=REG_DWORD:[01, 00, 00, 00]
+    reg HKLM\Software\Policies\Microsoft\Windows\CloudContent
+      before: 
+      after:  DisableWindowsConsumerFeatures=REG_DWORD:[01, 00, 00, 00]
+    svc Fax
+      before: DependOnService=REG_MULTI_SZ:[54, 00, 61, 00, 70, 00, 69, 00, 53, 00, 72, 00, 76, 00, 00, 00, 52, 00, 70, 00, 63, 00, 53, 00, 73, 00, 00, 00, 53, 00, 70, 00, 6f, 00, 6f, 00, 6c, 00, 65, 00, 72, 00, 00, 00, 00, 00] | Description=REG_SZ:[40, 00, 25, 00, 73, 00, 79, 00, 73, 00, 74, 00, 65, 00, 6d, 00, 72, 00, 6f, 00, 6f, 00, 74, 00, 25, 00, 5c, 00, 73, 00, 79, 00, 73, 00, 74, 00, 65, 00, 6d, 00, 33, 00, 32, 00, 5c, 00, 66, 00, 78, 00, 73, 00, 72, 00, 65, 00, 73, 00, 6d, 00, 2e, 00, 64, 00, 6c, 00, 6c, 00, 2c, 00, 2d, 00, 31, 00, 32, 00, 32, 00, 00, 00] | DisplayName=REG_SZ:[40, 00, 25, 00, 73, 00, 79, 00, 73, 00, 74, 00, 65, 00, 6d, 00, 72, 00, 6f, 00, 6f, 00, 74, 00, 25, 00, 5c, 00, 73, 00, 79, 00, 73, 00, 74, 00, 65, 00, 6d, 00, 33, 00, 32, 00, 5c, 00, 66, 00, 78, 00, 73, 00, 72, 00, 65, 00, 73, 00, 6d, 00, 2e, 00, 64, 00, 6c, 00, 6c, 00, 2c, 00, 2d, 00, 31, 00, 31, 00, 38, 00, 00, 00] | ErrorControl=REG_DWORD:[01, 00, 00, 00] | FailureActions=REG_BINARY:[2c, 01, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 03, 00, 00, 00, 14, 00, 00, 00, 01, 00, 00, 00, 60, ea, 00, 00, 01, 00, 00, 00, 60, ea, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00] | ImagePath=REG_EXPAND_SZ:[25, 00, 73, 00, 79, 00, 73, 00, 74, 00, 65, 00, 6d, 00, 72, 00, 6f, 00, 6f, 00, 74, 00, 25, 00, 5c, 00, 73, 00, 79, 00, 73, 00, 74, 00, 65, 00, 6d, 00, 33, 00, 32, 00, 5c, 00, 66, 00, 78, 00, 73, 00, 73, 00, 76, 00, 63, 00, 2e, 00, 65, 00, 78, 00, 65, 00, 00, 00] | ObjectName=REG_SZ:[4e, 00, 54, 00, 20, 00, 41, 00, 55, 00, 54, 00, 48, 00, 4f, 00, 52, 00, 49, 00, 54, 00, 59, 00, 5c, 00, 4e, 00, 65, 00, 74, 00, 77, 00, 6f, 00, 72, 00, 6b, 00, 53, 00, 65, 00, 72, 00, 76, 00, 69, 00, 63, 00, 65, 00, 00, 00] | RequiredPrivileges=REG_MULTI_SZ:[53, 00, 65, 00, 41, 00, 73, 00, 73, 00, 69, 00, 67, 00, 6e, 00, 50, 00, 72, 00, 69, 00, 6d, 00, 61, 00, 72, 00, 79, 00, 54, 00, 6f, 00, 6b, 00, 65, 00, 6e, 00, 50, 00, 72, 00, 69, 00, 76, 00, 69, 00, 6c, 00, 65, 00, 67, 00, 65, 00, 00, 00, 53, 00, 65, 00, 41, 00, 75, 00, 64, 00, 69, 00, 74, 00, 50, 00, 72, 00, 69, 00, 76, 00, 69, 00, 6c, 00, 65, 00, 67, 00, 65, 00, 00, 00, 53, 00, 65, 00, 43, 00, 68, 00, 61, 00, 6e, 00, 67, 00, 65, 00, 4e, 00, 6f, 00, 74, 00, 69, 00, 66, 00, 79, 00, 50, 00, 72, 00, 69, 00, 76, 00, 69, 00, 6c, 00, 65, 00, 67, 00, 65, 00, 00, 00, 53, 00, 65, 00, 43, 00, 72, 00, 65, 00, 61, 00, 74, 00, 65, 00, 47, 00, 6c, 00, 6f, 00, 62, 00, 61, 00, 6c, 00, 50, 00, 72, 00, 69, 00, 76, 00, 69, 00, 6c, 00, 65, 00, 67, 00, 65, 00, 00, 00, 53, 00, 65, 00, 49, 00, 6d, 00, 70, 00, 65, 00, 72, 00, 73, 00, 6f, 00, 6e, 00, 61, 00, 74, 00, 65, 00, 50, 00, 72, 00, 69, 00, 76, 00, 69, 00, 6c, 00, 65, 00, 67, 00, 65, 00, 00, 00, 53, 00, 65, 00, 49, 00, 6e, 00, 63, 00, 72, 00, 65, 00, 61, 00, 73, 00, 65, 00, 51, 00, 75, 00, 6f, 00, 74, 00, 61, 00, 50, 00, 72, 00, 69, 00, 76, 00, 69, 00, 6c, 00, 65, 00, 67, 00, 65, 00, 00, 00, 00, 00] | ServiceSidType=REG_DWORD:[01, 00, 00, 00] | Start=REG_DWORD:[03, 00, 00, 00] | Type=REG_DWORD:[10, 00, 00, 00]
+      after:  DependOnService=REG_MULTI_SZ:[54, 00, 61, 00, 70, 00, 69, 00, 53, 00, 72, 00, 76, 00, 00, 00, 52, 00, 70, 00, 63, 00, 53, 00, 73, 00, 00, 00, 53, 00, 70, 00, 6f, 00, 6f, 00, 6c, 00, 65, 00, 72, 00, 00, 00, 00, 00] | Description=REG_SZ:[40, 00, 25, 00, 73, 00, 79, 00, 73, 00, 74, 00, 65, 00, 6d, 00, 72, 00, 6f, 00, 6f, 00, 74, 00, 25, 00, 5c, 00, 73, 00, 79, 00, 73, 00, 74, 00, 65, 00, 6d, 00, 33, 00, 32, 00, 5c, 00, 66, 00, 78, 00, 73, 00, 72, 00, 65, 00, 73, 00, 6d, 00, 2e, 00, 64, 00, 6c, 00, 6c, 00, 2c, 00, 2d, 00, 31, 00, 32, 00, 32, 00, 00, 00] | DisplayName=REG_SZ:[40, 00, 25, 00, 73, 00, 79, 00, 73, 00, 74, 00, 65, 00, 6d, 00, 72, 00, 6f, 00, 6f, 00, 74, 00, 25, 00, 5c, 00, 73, 00, 79, 00, 73, 00, 74, 00, 65, 00, 6d, 00, 33, 00, 32, 00, 5c, 00, 66, 00, 78, 00, 73, 00, 72, 00, 65, 00, 73, 00, 6d, 00, 2e, 00, 64, 00, 6c, 00, 6c, 00, 2c, 00, 2d, 00, 31, 00, 31, 00, 38, 00, 00, 00] | ErrorControl=REG_DWORD:[01, 00, 00, 00] | FailureActions=REG_BINARY:[2c, 01, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 03, 00, 00, 00, 14, 00, 00, 00, 01, 00, 00, 00, 60, ea, 00, 00, 01, 00, 00, 00, 60, ea, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00] | ImagePath=REG_EXPAND_SZ:[25, 00, 73, 00, 79, 00, 73, 00, 74, 00, 65, 00, 6d, 00, 72, 00, 6f, 00, 6f, 00, 74, 00, 25, 00, 5c, 00, 73, 00, 79, 00, 73, 00, 74, 00, 65, 00, 6d, 00, 33, 00, 32, 00, 5c, 00, 66, 00, 78, 00, 73, 00, 73, 00, 76, 00, 63, 00, 2e, 00, 65, 00, 78, 00, 65, 00, 00, 00] | ObjectName=REG_SZ:[4e, 00, 54, 00, 20, 00, 41, 00, 55, 00, 54, 00, 48, 00, 4f, 00, 52, 00, 49, 00, 54, 00, 59, 00, 5c, 00, 4e, 00, 65, 00, 74, 00, 77, 00, 6f, 00, 72, 00, 6b, 00, 53, 00, 65, 00, 72, 00, 76, 00, 69, 00, 63, 00, 65, 00, 00, 00] | RequiredPrivileges=REG_MULTI_SZ:[53, 00, 65, 00, 41, 00, 73, 00, 73, 00, 69, 00, 67, 00, 6e, 00, 50, 00, 72, 00, 69, 00, 6d, 00, 61, 00, 72, 00, 79, 00, 54, 00, 6f, 00, 6b, 00, 65, 00, 6e, 00, 50, 00, 72, 00, 69, 00, 76, 00, 69, 00, 6c, 00, 65, 00, 67, 00, 65, 00, 00, 00, 53, 00, 65, 00, 41, 00, 75, 00, 64, 00, 69, 00, 74, 00, 50, 00, 72, 00, 69, 00, 76, 00, 69, 00, 6c, 00, 65, 00, 67, 00, 65, 00, 00, 00, 53, 00, 65, 00, 43, 00, 68, 00, 61, 00, 6e, 00, 67, 00, 65, 00, 4e, 00, 6f, 00, 74, 00, 69, 00, 66, 00, 79, 00, 50, 00, 72, 00, 69, 00, 76, 00, 69, 00, 6c, 00, 65, 00, 67, 00, 65, 00, 00, 00, 53, 00, 65, 00, 43, 00, 72, 00, 65, 00, 61, 00, 74, 00, 65, 00, 47, 00, 6c, 00, 6f, 00, 62, 00, 61, 00, 6c, 00, 50, 00, 72, 00, 69, 00, 76, 00, 69, 00, 6c, 00, 65, 00, 67, 00, 65, 00, 00, 00, 53, 00, 65, 00, 49, 00, 6d, 00, 70, 00, 65, 00, 72, 00, 73, 00, 6f, 00, 6e, 00, 61, 00, 74, 00, 65, 00, 50, 00, 72, 00, 69, 00, 76, 00, 69, 00, 6c, 00, 65, 00, 67, 00, 65, 00, 00, 00, 53, 00, 65, 00, 49, 00, 6e, 00, 63, 00, 72, 00, 65, 00, 61, 00, 73, 00, 65, 00, 51, 00, 75, 00, 6f, 00, 74, 00, 61, 00, 50, 00, 72, 00, 69, 00, 76, 00, 69, 00, 6c, 00, 65, 00, 67, 00, 65, 00, 00, 00, 00, 00] | ServiceSidType=REG_DWORD:[01, 00, 00, 00] | Start=REG_DWORD:[04, 00, 00, 00] | Type=REG_DWORD:[10, 00, 00, 00]
+    task \MicrosoftEdgeUpdateTaskMachineCore
+      before: Some(true)
+      after:  Some(false)
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace

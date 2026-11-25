@@ -642,6 +642,8 @@ pub struct AppState {
     pub restore_points: Vec<RestorePoint>,
     pub ledger_history: Vec<LedgerEntry>,
     pub ledger_path: PathBuf,
+    /// Shown at startup when the ledger could not be opened or had interrupted changes (A7).
+    pub ledger_notice: Option<String>,
     pub profile_path: PathBuf,
     pub active_goal: crate::graph::astar::OptimizationGoal,
     pub planned_path: Option<crate::graph::astar::OptimizationPlan>,
@@ -834,7 +836,24 @@ impl AppState {
         let ledger_path = backend.default_ledger_path();
         let profile_path = backend.default_profile_path();
 
-        let ledger = StateLedger::new(&ledger_path).ok();
+        // A7 / F-11: a ledger that cannot be opened must not look like an empty history.
+        let (ledger, ledger_notice) = match StateLedger::new(&ledger_path) {
+            Ok(l) => {
+                let recovered = l.reconcile_pending().unwrap_or(0);
+                let notice = (recovered > 0).then(|| {
+                    format!(
+                        "{recovered} change(s) were interrupted when WinBlast last closed; they are listed in Backup & Undo and can be undone."
+                    )
+                });
+                (Some(l), notice)
+            }
+            Err(e) => (
+                None,
+                Some(format!(
+                    "Undo history unavailable: the change ledger could not be opened ({e}). Changes made now cannot be undone from WinBlast."
+                )),
+            ),
+        };
         let ledger_history = ledger
             .as_ref()
             .and_then(|l| l.get_history().ok())
@@ -905,6 +924,7 @@ impl AppState {
             restore_points: Vec::new(),
             ledger_history,
             ledger_path,
+            ledger_notice,
             profile_path,
             active_goal: crate::graph::astar::OptimizationGoal::ultra_gaming(),
             planned_path: None,
@@ -1123,6 +1143,9 @@ impl AppState {
             .as_secs_f64();
         self.current_time_secs = now;
         self.sync_search_state();
+        if let Some(notice) = self.ledger_notice.take() {
+            self.set_status(notice);
+        }
         self.schedule_disk_smart_refresh();
         let processed = self.drain_worker_events_bounded(64);
         processed > 0 || self.is_in_progress() || !self.rx_events.is_empty()
@@ -1953,11 +1976,10 @@ impl AppState {
                     self.update_status = UpdateStatus::ReadyToRestart {
                         new_binary_path: path.clone(),
                     };
-                    self.set_status("Update downloaded. Applying and restarting WinBlast0...");
-                    if let Err(e) = crate::core::updater::apply_and_restart(&path) {
-                        self.update_status =
-                            UpdateStatus::Failed(format!("Failed to auto-restart: {e}"));
-                    }
+                    // B2: never install without the user's click (Dashboard "Restart").
+                    self.set_status(
+                        "Update downloaded and its signature verified. Click Restart on the Dashboard to install it.",
+                    );
                 }
                 Err(e) => {
                     self.update_status = UpdateStatus::Failed(e.clone());
@@ -2798,7 +2820,7 @@ impl AppState {
         let tx = self.tx_events.clone();
         let waker = self.waker.clone();
         std::thread::spawn(move || {
-            let res = crate::core::updater::check_latest_release(crate::core::updater::GITHUB_REPO);
+            let res = crate::core::updater::check_latest_release();
             let _ = tx.send(WorkerEvent::UpdateCheckCompleted(res));
             if let Some(ref w) = waker {
                 w();
@@ -2964,16 +2986,15 @@ impl AppState {
                         max1,
                     }
                 };
-                let (state, msg) = match backend.unpark_all_cores() {
+                let (state, msg) = match crate::executor::engine::record_then_change(
+                    StateLedger::new(&ledger_path).ok().as_ref(),
+                    "cpu_unpark_all",
+                    "CoreParking:AllLogicalCores",
+                    &prev_snap.serialize(),
+                    "unparked",
+                    || backend.unpark_all_cores(),
+                ) {
                     Ok(()) => {
-                        if let Ok(l) = StateLedger::new(&ledger_path) {
-                            let _ = l.record_change(
-                                "cpu_unpark_all",
-                                "CoreParking:AllLogicalCores",
-                                &prev_snap.serialize(),
-                                "unparked",
-                            );
-                        }
                         (
                             Some(backend.detect_core_parking_sampled()),
                             Ok("All CPU cores successfully unparked.".to_string()),
@@ -3044,16 +3065,15 @@ impl AppState {
                         max1,
                     }
                 };
-                let (state, msg) = match backend.restore_stock_parking() {
+                let (state, msg) = match crate::executor::engine::record_then_change(
+                    StateLedger::new(&ledger_path).ok().as_ref(),
+                    "cpu_parking_stock",
+                    "CoreParking:AllLogicalCores",
+                    &prev_snap.serialize(),
+                    "parked",
+                    || backend.restore_stock_parking(),
+                ) {
                     Ok(()) => {
-                        if let Ok(l) = StateLedger::new(&ledger_path) {
-                            let _ = l.record_change(
-                                "cpu_parking_stock",
-                                "CoreParking:AllLogicalCores",
-                                &prev_snap.serialize(),
-                                "parked",
-                            );
-                        }
                         (
                             Some(backend.detect_core_parking_sampled()),
                             Ok("Stock core parking thresholds restored.".to_string()),
@@ -3291,9 +3311,17 @@ impl AppState {
                                 &tweak_def, &ledger, &*backend,
                             )
                         } else {
-                            crate::executor::engine::revert_tweak_with(
-                                &tweak_def, &ledger, &*backend,
-                            )
+                            // Undo restores the user's recorded values; only a tweak WinBlast
+                            // never changed falls back to the Windows default (A4).
+                            match crate::executor::engine::undo_tweak_with(
+                                &tweak_def.id, &ledger, &*backend,
+                            ) {
+                                Ok(Some(n)) => Ok(n),
+                                Ok(None) => crate::executor::engine::revert_tweak_with(
+                                    &tweak_def, &ledger, &*backend,
+                                ),
+                                Err(e) => Err(e),
+                            }
                         };
 
                         match res {
@@ -3413,7 +3441,7 @@ impl AppState {
                         .map_err(|e| format!("Failed to open ledger: {}", e))?;
                     let mut count = 0usize;
                     if !to_revert.is_empty() {
-                        count += crate::executor::engine::revert_tweaks_by_id_with(
+                        count += crate::executor::engine::undo_or_reset_tweaks_by_id_with(
                             &to_revert, &tweaks, &ledger, &*backend,
                         )
                         .map_err(|e| format!("Revert error: {}", e))?;
@@ -3661,18 +3689,16 @@ impl AppState {
                     .find(|g| g.pnp_instance_id == pnp_id)
                     .map(|g| (g.msi_enabled, g.interrupt_priority))
                     .unwrap_or((!enable, 2));
-                let res = backend
-                    .set_gpu_msi_mode(&pnp_id, enable, new_prio)
+                let res = crate::executor::engine::record_then_change(
+                    StateLedger::new(&ledger_path).ok().as_ref(),
+                    "gpu_msi_mode",
+                    &format!("GpuMsi:{}", pnp_id),
+                    &format!("{}|{}", prev_msi, prev_prio),
+                    &format!("{}|{}", enable, new_prio),
+                    || backend.set_gpu_msi_mode(&pnp_id, enable, new_prio),
+                )
                     .map_err(|e| format!("MSI configuration error: {}", e));
                 let gpus = if res.is_ok() {
-                    if let Ok(l) = StateLedger::new(&ledger_path) {
-                        let _ = l.record_change(
-                            "gpu_msi_mode",
-                            &format!("GpuMsi:{}", pnp_id),
-                            &format!("{}|{}", prev_msi, prev_prio),
-                            &format!("{}|{}", enable, new_prio),
-                        );
-                    }
                     Some(backend.detect_gpus())
                 } else {
                     None
@@ -3703,17 +3729,14 @@ impl AppState {
             },
             move |tx| {
                 let prev = backend.is_hags_enabled();
-                let res = backend.set_hags(enable).map_err(|e| e.to_string());
-                if res.is_ok() {
-                    if let Ok(l) = StateLedger::new(&ledger_path) {
-                        let _ = l.record_change(
-                            "gpu_hags",
-                            "GpuHags:HwSchMode",
-                            if prev { "true" } else { "false" },
-                            if enable { "true" } else { "false" },
-                        );
-                    }
-                }
+                let res = crate::executor::engine::record_then_change(
+                    StateLedger::new(&ledger_path).ok().as_ref(),
+                    "gpu_hags",
+                    "GpuHags:HwSchMode",
+                    if prev { "true" } else { "false" },
+                    if enable { "true" } else { "false" },
+                    || backend.set_hags(enable),
+                ).map_err(|e| e.to_string());
                 let _ = tx.send(WorkerEvent::HagsUpdated {
                     enable,
                     result: res,
@@ -3739,17 +3762,14 @@ impl AppState {
             },
             move |tx| {
                 let prev = backend.is_mpo_disabled();
-                let res = backend.set_mpo_disabled(disable).map_err(|e| e.to_string());
-                if res.is_ok() {
-                    if let Ok(l) = StateLedger::new(&ledger_path) {
-                        let _ = l.record_change(
-                            "gpu_mpo",
-                            "GpuMpo:OverlayTestMode",
-                            if prev { "true" } else { "false" },
-                            if disable { "true" } else { "false" },
-                        );
-                    }
-                }
+                let res = crate::executor::engine::record_then_change(
+                    StateLedger::new(&ledger_path).ok().as_ref(),
+                    "gpu_mpo",
+                    "GpuMpo:OverlayTestMode",
+                    if prev { "true" } else { "false" },
+                    if disable { "true" } else { "false" },
+                    || backend.set_mpo_disabled(disable),
+                ).map_err(|e| e.to_string());
                 let _ = tx.send(WorkerEvent::MpoUpdated {
                     disable,
                     result: res,
@@ -3834,21 +3854,21 @@ impl AppState {
             self.waker.clone(),
             |msg| WorkerEvent::TelemetryHostsBlocked(Err(format!("Hosts block panic: {}", msg))),
             move |tx| {
-                let res = backend
-                    .block_telemetry_hosts(TELEMETRY_HOSTS)
-                    .map_err(|e| e.to_string());
-                if let Ok(count) = res {
-                    if count > 0 {
-                        if let Ok(l) = StateLedger::new(&ledger_path) {
-                            let _ = l.record_change(
-                                "privacy_hosts_block",
-                                "HostsBlock:TelemetryDomains",
-                                "unblocked",
-                                &format!("+{} blocked", count),
-                            );
-                        }
-                    }
-                }
+                let res = crate::executor::engine::record_then_change(
+                    StateLedger::new(&ledger_path).ok().as_ref(),
+                    "privacy_hosts_block",
+                    "HostsBlock:TelemetryDomains",
+                    "unblocked",
+                    &format!(
+                        "hosts:{}",
+                        crate::executor::ps_runner::hosts_not_yet_blocked(
+                            &backend.read_hosts_file().unwrap_or_default(),
+                            TELEMETRY_HOSTS,
+                        )
+                        .join(",")
+                    ),
+                    || backend.block_telemetry_hosts(TELEMETRY_HOSTS),
+                );
                 let _ = tx.send(WorkerEvent::TelemetryHostsBlocked(res));
             },
         );
@@ -3876,15 +3896,14 @@ impl AppState {
                 let ledger = StateLedger::new(&ledger_path).ok();
                 for (svc, _) in KNOWN_TELEMETRY_SERVICES {
                     if let Some(prev_start) = backend.get_service_start_type(svc) {
-                        if prev_start != 4 && backend.set_service_start_type(svc, 4).is_ok() {
-                            if let Some(ref l) = ledger {
-                                let _ = l.record_change(
-                                    "privacy_neutralize_services",
-                                    &format!("ServiceState:{}", svc),
-                                    &prev_start.to_string(),
-                                    "4",
-                                );
-                            }
+                        if prev_start != 4 && crate::executor::engine::record_then_change(
+                    ledger.as_ref(),
+                    "privacy_neutralize_services",
+                    &format!("ServiceState:{}", svc),
+                    &prev_start.to_string(),
+                    "4",
+                    || backend.set_service_start_type(svc, 4),
+                ).is_ok() {
                             disabled_count += 1;
                         }
                     }
@@ -4356,16 +4375,15 @@ impl AppState {
             },
             move |tx| {
                 let prev = backend.get_active_power_scheme().unwrap_or_default();
-                let msg = match backend.set_active_power_scheme(&guid) {
+                let msg = match crate::executor::engine::record_then_change(
+                    StateLedger::new(&ledger_path).ok().as_ref(),
+                    "power_active_scheme",
+                    "PowerCfg:ActiveScheme",
+                    &prev,
+                    &guid,
+                    || backend.set_active_power_scheme(&guid),
+                ) {
                     Ok(()) => {
-                        if let Ok(l) = StateLedger::new(&ledger_path) {
-                            let _ = l.record_change(
-                                "power_active_scheme",
-                                "PowerCfg:ActiveScheme",
-                                &prev,
-                                &guid,
-                            );
-                        }
                         Ok(format!("Activated power scheme {}.", guid))
                     }
                     Err(e) => Err(format!("Failed to set power plan: {}", e)),
@@ -4402,16 +4420,15 @@ impl AppState {
             },
             move |tx| {
                 let prev = backend.get_active_power_scheme().unwrap_or_default();
-                let msg = match backend.create_and_activate_performance_plan() {
+                let msg = match crate::executor::engine::record_then_change(
+                    StateLedger::new(&ledger_path).ok().as_ref(),
+                    "power_ultimate_plan",
+                    "PowerCfg:UltimateScheme",
+                    &prev,
+                    "WinBlast0 Ultimate Performance",
+                    || backend.create_and_activate_performance_plan(),
+                ) {
                     Ok(guid) => {
-                        if let Ok(l) = StateLedger::new(&ledger_path) {
-                            let _ = l.record_change(
-                                "power_ultimate_plan",
-                                "PowerCfg:UltimateScheme",
-                                &prev,
-                                &guid,
-                            );
-                        }
                         Ok(format!("WinBlast0 Ultimate Performance active ({}).", guid))
                     }
                     Err(e) => Err(format!("Power plan error: {}", e)),
@@ -4448,16 +4465,15 @@ impl AppState {
             },
             move |tx| {
                 let prev = backend.query_hibernation_status().hibernation_enabled;
-                let (hib, msg) = match backend.set_hibernation_enabled(enable) {
+                let (hib, msg) = match crate::executor::engine::record_then_change(
+                    StateLedger::new(&ledger_path).ok().as_ref(),
+                    "power_hibernation",
+                    "PowerCfg:Hibernation",
+                    if prev { "enabled" } else { "disabled" },
+                    if enable { "enabled" } else { "disabled" },
+                    || backend.set_hibernation_enabled(enable),
+                ) {
                     Ok(new_hib) => {
-                        if let Ok(l) = StateLedger::new(&ledger_path) {
-                            let _ = l.record_change(
-                                "power_hibernation",
-                                "PowerCfg:Hibernation",
-                                if prev { "enabled" } else { "disabled" },
-                                if enable { "enabled" } else { "disabled" },
-                            );
-                        }
                         (
                             new_hib,
                             Ok(format!(
@@ -4512,20 +4528,19 @@ impl AppState {
                     .map(|(ac, _)| ac != 0)
                     .unwrap_or(disable_power_saving);
                 let msg =
-                    match backend.set_usb_power_saving_enabled(!disable_power_saving) {
+                    match crate::executor::engine::record_then_change(
+                    StateLedger::new(&ledger_path).ok().as_ref(),
+                    "power_usb_hub_idle",
+                    "PowerCfg:UsbPowerSaving",
+                    if prev_enabled { "enabled" } else { "disabled" },
+                    if disable_power_saving {
+                    "disabled"
+                    } else {
+                    "enabled"
+                    },
+                    || backend.set_usb_power_saving_enabled(!disable_power_saving),
+                ) {
                         Ok(n) => {
-                            if let Ok(l) = StateLedger::new(&ledger_path) {
-                                let _ = l.record_change(
-                                    "power_usb_hub_idle",
-                                    "PowerCfg:UsbPowerSaving",
-                                    if prev_enabled { "enabled" } else { "disabled" },
-                                    if disable_power_saving {
-                                        "disabled"
-                                    } else {
-                                        "enabled"
-                                    },
-                                );
-                            }
                             Ok(format!(
                             "Updated {} USB Root Hub controller power states (power saving {}).",
                             n,
@@ -4824,23 +4839,19 @@ impl AppState {
                     })
                     .or(prev_enabled_opt)
                     .unwrap_or(!enable);
-                let result = backend
-                    .set_optional_feature(&name, kind, enable)
+                let result = crate::executor::engine::record_then_change(
+                    StateLedger::new(&ledger_path).ok().as_ref(),
+                    &format!("feature_{}", name),
+                    &format!(
+                    "WindowsFeature:{:?}|{}",
+                    kind,
+                    crate::core::reg_helpers::escape_pipe(&name)
+                    ),
+                    &prev_enabled.to_string(),
+                    &enable.to_string(),
+                    || backend.set_optional_feature(&name, kind, enable),
+                )
                     .map_err(|e| e.to_string());
-                if result.is_ok() {
-                    if let Ok(l) = StateLedger::new(&ledger_path) {
-                        let _ = l.record_change(
-                            &format!("feature_{}", name),
-                            &format!(
-                                "WindowsFeature:{:?}|{}",
-                                kind,
-                                crate::core::reg_helpers::escape_pipe(&name)
-                            ),
-                            &prev_enabled.to_string(),
-                            &enable.to_string(),
-                        );
-                    }
-                }
                 let _ = tx.send(WorkerEvent::FeatureToggled { name, result });
             },
         );
@@ -5011,19 +5022,18 @@ impl AppState {
                     .and_then(|list| list.into_iter().find(|e| e.id == entry.id))
                     .unwrap_or(entry);
                 let prev_enabled = live_entry.enabled;
-                let res = match backend.set_startup_entry_enabled(&live_entry, enable) {
+                let res = match crate::executor::engine::record_then_change(
+                    StateLedger::new(&ledger_path).ok().as_ref(),
+                    &format!("startup_{}", live_entry.name),
+                    &format!(
+                    "StartupApproved:{}",
+                    crate::core::reg_helpers::escape_pipe(&live_entry.id)
+                    ),
+                    &prev_enabled.to_string(),
+                    &enable.to_string(),
+                    || backend.set_startup_entry_enabled(&live_entry, enable),
+                ) {
                     Ok(()) => {
-                        if let Ok(l) = StateLedger::new(&ledger_path) {
-                            let _ = l.record_change(
-                                &format!("startup_{}", live_entry.name),
-                                &format!(
-                                    "StartupApproved:{}",
-                                    crate::core::reg_helpers::escape_pipe(&live_entry.id)
-                                ),
-                                &prev_enabled.to_string(),
-                                &enable.to_string(),
-                            );
-                        }
                         Ok(format!(
                             "Startup item '{}' {}.",
                             live_entry.name,
@@ -5053,16 +5063,15 @@ impl AppState {
             |msg| WorkerEvent::ScheduledTaskRunResult(Err(format!("Task worker panic: {}", msg))),
             move |tx| {
                 let prev_enabled = backend.get_task_enabled(&task_path).unwrap_or(!enable);
-                let res = match backend.set_scheduled_task_enabled(&task_path, enable) {
+                let res = match crate::executor::engine::record_then_change(
+                    StateLedger::new(&ledger_path).ok().as_ref(),
+                    "scheduled_task_toggle",
+                    &format!("ScheduledTask:{}", task_path),
+                    &prev_enabled.to_string(),
+                    &enable.to_string(),
+                    || backend.set_scheduled_task_enabled(&task_path, enable),
+                ) {
                     Ok(()) => {
-                        if let Ok(l) = StateLedger::new(&ledger_path) {
-                            let _ = l.record_change(
-                                "scheduled_task_toggle",
-                                &format!("ScheduledTask:{}", task_path),
-                                &prev_enabled.to_string(),
-                                &enable.to_string(),
-                            );
-                        }
                         Ok(format!(
                             "Task '{}' {}.",
                             task_path,
@@ -5170,19 +5179,18 @@ impl AppState {
                 for id in &ids {
                     if let Some(entry) = entries.iter().find(|e| &e.id == id) {
                         let prev_enabled = entry.enabled;
-                        if backend.set_startup_entry_enabled(entry, enable).is_ok() {
+                        if crate::executor::engine::record_then_change(
+                    ledger.as_ref(),
+                    &format!("startup_{}", entry.name),
+                    &format!(
+                    "StartupApproved:{}",
+                    crate::core::reg_helpers::escape_pipe(&entry.id)
+                    ),
+                    &prev_enabled.to_string(),
+                    &enable.to_string(),
+                    || backend.set_startup_entry_enabled(entry, enable),
+                ).is_ok() {
                             updated += 1;
-                            if let Some(ref l) = ledger {
-                                let _ = l.record_change(
-                                    &format!("startup_{}", entry.name),
-                                    &format!(
-                                        "StartupApproved:{}",
-                                        crate::core::reg_helpers::escape_pipe(&entry.id)
-                                    ),
-                                    &prev_enabled.to_string(),
-                                    &enable.to_string(),
-                                );
-                            }
                         }
                     }
                 }
@@ -5255,19 +5263,17 @@ impl AppState {
                 let ledger = StateLedger::new(&ledger_path).ok();
                 for task_path in &paths {
                     let prev_enabled = backend.get_task_enabled(task_path).unwrap_or(!enable);
-                    if backend
-                        .set_scheduled_task_enabled(task_path, enable)
+                    if crate::executor::engine::record_then_change(
+                    ledger.as_ref(),
+                    "scheduled_task_batch_toggle",
+                    &format!("ScheduledTask:{}", task_path),
+                    &prev_enabled.to_string(),
+                    &enable.to_string(),
+                    || backend.set_scheduled_task_enabled(task_path, enable),
+                )
                         .is_ok()
                     {
                         updated += 1;
-                        if let Some(ref l) = ledger {
-                            let _ = l.record_change(
-                                "scheduled_task_batch_toggle",
-                                &format!("ScheduledTask:{}", task_path),
-                                &prev_enabled.to_string(),
-                                &enable.to_string(),
-                            );
-                        }
                     }
                 }
                 let _ = tx.send(WorkerEvent::TasksBatchToggled(Ok((updated, enable))));
@@ -5299,16 +5305,15 @@ impl AppState {
                         "Service '{}' not found or inaccessible.",
                         service_name
                     )),
-                    Some(prev) => match backend.set_service_start_type(&service_name, start_type) {
+                    Some(prev) => match crate::executor::engine::record_then_change(
+                    StateLedger::new(&ledger_path).ok().as_ref(),
+                    &format!("service_{}", service_name),
+                    &format!("ServiceState:{}", service_name),
+                    &prev.to_string(),
+                    &start_type.to_string(),
+                    || backend.set_service_start_type(&service_name, start_type),
+                ) {
                         Ok(()) => {
-                            if let Ok(l) = StateLedger::new(&ledger_path) {
-                                let _ = l.record_change(
-                                    &format!("service_{}", service_name),
-                                    &format!("ServiceState:{}", service_name),
-                                    &prev.to_string(),
-                                    &start_type.to_string(),
-                                );
-                            }
                             Ok(format!(
                                 "Service '{}' start mode set to {}.",
                                 service_name, start_type
@@ -5502,6 +5507,7 @@ impl AppState {
         };
         self.game_profile_inflight = Some(id.to_string());
         let backend = Arc::clone(&self.backend);
+        let ledger_path = self.ledger_path.clone();
         let applied_toast = self.tr_v(crate::core::view_i18n::ViewTextKey::GameProfilesAppliedToast).to_string();
         let reverted_toast = self.tr_v(crate::core::view_i18n::ViewTextKey::GameProfilesRevertedToast).to_string();
         spawn_guarded_worker(
@@ -5510,7 +5516,21 @@ impl AppState {
             |msg| WorkerEvent::GameProfilesLoaded { profiles: crate::tools::game_profiles::GameProfile::catalog(), message: Some(format!("worker panic: {msg}")) },
             move |tx| {
                 let want = !profile.is_applied;
-                let message = match backend.set_game_profile(&profile, want) {
+                // Through the ledger engine (C10/A): exact prior value recorded and restored.
+                let tweak = profile.as_tweak();
+                let res = match StateLedger::new(&ledger_path) {
+                    Err(e) => Err(format!("Undo history unavailable, nothing changed: {e}")),
+                    Ok(l) if want => crate::executor::engine::apply_tweak_with(&tweak, &l, &*backend)
+                        .map(|_| true)
+                        .map_err(|e| e.to_string()),
+                    Ok(l) => match crate::executor::engine::undo_tweak_with(&tweak.id, &l, &*backend) {
+                        Ok(Some(_)) => Ok(false),
+                        // Applied by an older version (no ledger entry): fall back to removing it.
+                        Ok(None) => backend.set_game_profile(&profile, false),
+                        Err(e) => Err(e.to_string()),
+                    },
+                };
+                let message = match res {
                     Ok(true) if want => applied_toast,
                     Ok(false) if !want => reverted_toast,
                     Ok(state) => format!("{}: state is now {}", profile.title, if state { "applied" } else { "not applied" }),

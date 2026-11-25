@@ -163,7 +163,13 @@ impl DashboardView {
         let score = health_score(&s.scan_results);
         st.set_health_score(score as i32);
         st.set_health_tone(health_tone(score).into());
-        st.set_health_caption(health_caption(&s.scan_results, s.tr(TextKey::OptimizedLabel)).into());
+        let has_scan = !s.scan_results.is_empty();
+        st.set_has_scan(has_scan);
+        st.set_health_caption(if has_scan {
+            health_caption(&s.scan_results, s.tr(TextKey::OptimizedLabel)).into()
+        } else {
+            s.tr_v(crate::core::view_i18n::ViewTextKey::NotScannedYet).into()
+        });
         st.set_is_scanning(s.is_scanning);
 
         // Telemetry

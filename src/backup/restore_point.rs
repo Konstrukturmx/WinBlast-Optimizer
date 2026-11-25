@@ -18,8 +18,14 @@ pub struct RestorePoint {
 
 /// Create a System Restore point with the given description.
 pub fn create_restore_point(description: &str) -> crate::core::error::Result<()> {
+    // Windows silently skips a checkpoint when one was made in the last 24 hours (only a
+    // warning). Compare the newest sequence number before and after, so "created" is never
+    // reported for a restore point that does not exist (C7).
     let script = format!(
-        "Checkpoint-Computer -Description '{}' -RestorePointType 'MODIFY_SETTINGS' -ErrorAction Stop",
+        "$before = (Get-ComputerRestorePoint | Measure-Object SequenceNumber -Maximum).Maximum; \
+         Checkpoint-Computer -Description '{}' -RestorePointType 'MODIFY_SETTINGS' -ErrorAction Stop -WarningAction SilentlyContinue; \
+         $after = (Get-ComputerRestorePoint | Measure-Object SequenceNumber -Maximum).Maximum; \
+         if ($after -eq $null -or $after -eq $before) {{ Write-Error 'Windows did not create a new restore point (it allows one every 24 hours)'; exit 3 }}",
         description.replace('\'', "''")
     );
 
@@ -53,7 +59,9 @@ pub fn create_restore_point(description: &str) -> crate::core::error::Result<()>
 
 /// List all available system restore points on the machine.
 pub fn list_restore_points() -> crate::core::error::Result<Vec<RestorePoint>> {
-    let script = "Get-ComputerRestorePoint | Select-Object SequenceNumber, Description, @{N='CreationTime';E={$_.ConvertToDateTime($_.CreationTime).ToString('yyyy-MM-dd HH:mm:ss')}} | ConvertTo-Json";
+    // ISO 8601 with the UTC offset: the age check compares in UTC (it used to read local time
+    // as UTC, so in UTC+1 and later every apply asked for a new restore point, C7).
+    let script = "Get-ComputerRestorePoint | Select-Object SequenceNumber, Description, @{N='CreationTime';E={$_.ConvertToDateTime($_.CreationTime).ToString('yyyy-MM-ddTHH:mm:sszzz', [Globalization.CultureInfo]::InvariantCulture)}} | ConvertTo-Json";
 
     let output = crate::core::process::SilentCommand::new("powershell")
         .args(["-NoProfile", "-NonInteractive", "-Command", script])

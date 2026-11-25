@@ -134,9 +134,10 @@ impl StateLedger {
     fn init_conn(conn: Connection, enable_wal: bool) -> crate::core::error::Result<Self> {
         conn.busy_timeout(std::time::Duration::from_secs(5))?;
         if enable_wal {
+            // FULL: a committed row survives power loss (NORMAL could drop the last rows).
             conn.execute_batch(
                 "PRAGMA journal_mode = WAL;
-                PRAGMA synchronous = NORMAL;",
+                PRAGMA synchronous = FULL;",
             )?;
         }
         conn.execute_batch(
@@ -161,7 +162,98 @@ impl StateLedger {
                 label               TEXT    NOT NULL
             );",
         )?;
+        Self::migrate(&conn)?;
         Ok(Self { conn })
+    }
+
+    /// Schema version written to `PRAGMA user_version`.
+    pub const SCHEMA_VERSION: i64 = 2;
+
+    /// Bring an existing ledger up to [`Self::SCHEMA_VERSION`] and refuse foreign tables, so a
+    /// file that only looks like a ledger never accepts writes it cannot read back (F-11).
+    fn migrate(conn: &Connection) -> crate::core::error::Result<()> {
+        let mut cols: Vec<String> = Vec::new();
+        {
+            let mut stmt = conn.prepare("PRAGMA table_info(ledger)")?;
+            let mut rows = stmt.query([])?;
+            while let Some(row) = rows.next()? {
+                cols.push(row.get::<_, String>(1)?);
+            }
+        }
+        const REQUIRED: [&str; 7] = [
+            "id",
+            "tweak_id",
+            "action_type",
+            "original_value",
+            "new_value",
+            "timestamp",
+            "rolled_back",
+        ];
+        if let Some(missing) = REQUIRED.iter().find(|c| !cols.iter().any(|have| have == *c)) {
+            return Err(crate::core::error::WinBlastError::Backup(format!(
+                "the ledger file has an unknown layout (column '{missing}' is missing)"
+            )));
+        }
+        if !cols.iter().any(|c| c == "committed") {
+            conn.execute_batch("ALTER TABLE ledger ADD COLUMN committed INTEGER NOT NULL DEFAULT 1;")?;
+        }
+        conn.execute_batch(&format!(
+            "CREATE INDEX IF NOT EXISTS idx_ledger_tweak ON ledger (tweak_id, id);
+             CREATE INDEX IF NOT EXISTS idx_ledger_rolled_back ON ledger (rolled_back);
+             PRAGMA user_version = {};",
+            Self::SCHEMA_VERSION
+        ))?;
+        Ok(())
+    }
+
+    /// Write-ahead step 1: record a change **before** it is made (`committed = 0`). If the app
+    /// dies before [`Self::commit_change`], the row is still there and can be undone.
+    pub fn begin_change(
+        &self,
+        tweak_id: &str,
+        action_type: &str,
+        original_value: &str,
+        new_value: &str,
+    ) -> crate::core::error::Result<i64> {
+        let now = Utc::now().to_rfc3339();
+        self.conn.execute(
+            "INSERT INTO ledger (tweak_id, action_type, original_value, new_value, timestamp, committed)
+             VALUES (?1, ?2, ?3, ?4, ?5, 0)",
+            params![tweak_id, action_type, original_value, new_value, now],
+        )?;
+        Ok(self.conn.last_insert_rowid())
+    }
+
+    /// Write-ahead step 2: the change was made.
+    pub fn commit_change(&self, entry_id: i64) -> crate::core::error::Result<()> {
+        self.conn
+            .execute("UPDATE ledger SET committed = 1 WHERE id = ?1", params![entry_id])?;
+        Ok(())
+    }
+
+    /// Remove a write-ahead row whose change was skipped before anything was written.
+    pub fn discard_change(&self, entry_id: i64) -> crate::core::error::Result<()> {
+        self.conn
+            .execute("DELETE FROM ledger WHERE id = ?1 AND committed = 0", params![entry_id])?;
+        Ok(())
+    }
+
+    /// Rows whose change was started but never confirmed (the app stopped mid-change). They
+    /// are kept as undoable entries — restoring a value that was never changed is harmless —
+    /// and marked committed. Returns how many there were, so the UI can say so.
+    pub fn reconcile_pending(&self) -> crate::core::error::Result<usize> {
+        let n = self
+            .conn
+            .execute("UPDATE ledger SET committed = 1 WHERE committed = 0", [])?;
+        Ok(n)
+    }
+
+    /// Number of rows still waiting for [`Self::commit_change`].
+    pub fn pending_count(&self) -> crate::core::error::Result<usize> {
+        let n: i64 = self
+            .conn
+            .query_row("SELECT COUNT(1) FROM ledger WHERE committed = 0", [], |r| r.get(0))?;
+        Ok(n.max(0) as usize)
     }
 
     /// Record a single mutation in the ledger.

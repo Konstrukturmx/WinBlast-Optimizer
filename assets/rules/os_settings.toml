@@ -432,6 +432,16 @@ name = "AppCaptureEnabled"
 optimized_value = 0
 default_value = 1
 
+# Windows keeps GameDVR_Enabled in step with AppCaptureEnabled (the Settings toggle writes
+# both). Recording it here means undoing this tweak restores both values (VM stress test, F-14).
+[[tweaks.actions]]
+type = "RegistryDword"
+hive = "HKCU"
+path = "System\\GameConfigStore"
+name = "GameDVR_Enabled"
+optimized_value = 0
+default_value = 1
+
 # -----------------------------------------------------------------------------
 
 [[tweaks]]

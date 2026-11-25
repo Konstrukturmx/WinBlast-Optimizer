@@ -127,6 +127,42 @@ pub trait SystemBackend: Send + Sync + 'static {
     fn reg_delete_tree(&self, hive: &str, path: &str) -> Result<()>;
     fn reg_restore_tree(&self, hive: &str, path: &str, snapshot: &RegTreeSnapshot) -> Result<()>;
 
+    // Literal (per concrete key) registry primitives used by the write-ahead ledger (F-3, F-13,
+    // F-16). Defaults delegate to the routing variants, which is exact for backends that do not
+    // expand placeholders (the sandbox).
+    /// Concrete key paths a catalog path resolves to (network-interface GUIDs, GPU class subkeys).
+    fn reg_resolve_paths(
+        &self,
+        hive: &str,
+        path: &str,
+        gpu_vendor: Option<&str>,
+        delete_mode: bool,
+    ) -> Result<Vec<String>> {
+        let _ = (hive, gpu_vendor, delete_mode);
+        Ok(vec![path.to_string()])
+    }
+    fn reg_set_dword_literal(&self, hive: &str, path: &str, name: &str, value: u32) -> Result<()> {
+        self.reg_set_dword(hive, path, name, value)
+    }
+    fn reg_set_string_literal(
+        &self,
+        hive: &str,
+        path: &str,
+        name: &str,
+        value: &str,
+        expand_sz: bool,
+    ) -> Result<()> {
+        self.reg_set_string(hive, path, name, value, expand_sz, None)
+    }
+    fn reg_delete_value_literal(&self, hive: &str, path: &str, name: &str) -> Result<()> {
+        self.reg_delete_value(hive, path, name)
+    }
+    /// Delete `path` if it is empty (no values, no subkeys); otherwise leave it.
+    fn reg_delete_key_if_empty(&self, hive: &str, path: &str) -> Result<()> {
+        let _ = (hive, path);
+        Ok(())
+    }
+
     // Hardware telemetry & dynamic formula support
     fn total_physical_ram_kb(&self) -> u64;
     fn logical_core_count(&self) -> u32;
@@ -606,6 +642,40 @@ impl SystemBackend for RealBackend {
 
     fn reg_restore_tree(&self, hive: &str, path: &str, snapshot: &RegTreeSnapshot) -> Result<()> {
         crate::executor::reg_mutator::restore_tree(hive, path, snapshot)
+    }
+
+    fn reg_resolve_paths(
+        &self,
+        hive: &str,
+        path: &str,
+        gpu_vendor: Option<&str>,
+        delete_mode: bool,
+    ) -> Result<Vec<String>> {
+        crate::scanner::registry_scanner::resolve_target_paths(hive, path, gpu_vendor, delete_mode)
+            .map(|(_, paths)| paths)
+    }
+
+    fn reg_set_dword_literal(&self, hive: &str, path: &str, name: &str, value: u32) -> Result<()> {
+        crate::executor::reg_mutator::set_dword_literal(hive, path, name, value)
+    }
+
+    fn reg_set_string_literal(
+        &self,
+        hive: &str,
+        path: &str,
+        name: &str,
+        value: &str,
+        expand_sz: bool,
+    ) -> Result<()> {
+        crate::executor::reg_mutator::set_string_literal(hive, path, name, value, expand_sz)
+    }
+
+    fn reg_delete_value_literal(&self, hive: &str, path: &str, name: &str) -> Result<()> {
+        crate::executor::reg_mutator::delete_value_literal(hive, path, name)
+    }
+
+    fn reg_delete_key_if_empty(&self, hive: &str, path: &str) -> Result<()> {
+        crate::executor::reg_mutator::delete_key_if_empty(hive, path)
     }
 
     fn total_physical_ram_kb(&self) -> u64 {
@@ -2326,6 +2396,102 @@ impl SystemBackend for SandboxEnv {
         Self::write_raw_in_state(&mut st, hive, path, name, raw)
     }
 
+    fn reg_resolve_paths(
+        &self,
+        hive: &str,
+        path: &str,
+        gpu_vendor: Option<&str>,
+        delete_mode: bool,
+    ) -> Result<Vec<String>> {
+        let _ = delete_mode;
+        let st = self.state_read();
+        Self::resolve_target_paths_in_state(&st, hive, path, gpu_vendor)
+    }
+
+    fn reg_set_dword_literal(&self, hive: &str, path: &str, name: &str, value: u32) -> Result<()> {
+        self.take_injected_error()?;
+        validate_registry_mutation_path(hive, path, false)?;
+        let norm_hive = Self::normalize_hive(hive);
+        let mut st = self.state_write();
+        Self::write_dword_in_state(&mut st, &norm_hive, path, name, value);
+        st.ops.push(SandboxOp::RegSet {
+            hive: norm_hive,
+            path: path.to_string(),
+            name: name.to_string(),
+            value,
+        });
+        Ok(())
+    }
+
+    fn reg_set_string_literal(
+        &self,
+        hive: &str,
+        path: &str,
+        name: &str,
+        value: &str,
+        expand_sz: bool,
+    ) -> Result<()> {
+        self.take_injected_error()?;
+        validate_registry_mutation_path(hive, path, false)?;
+        let norm_hive = Self::normalize_hive(hive);
+        let mut st = self.state_write();
+        let key = Self::reg_key(&norm_hive, path, name);
+        Self::clear_reg_value_in_state(&mut st, &key);
+        Self::ensure_tree_path_in_state(&mut st, &norm_hive, path);
+        st.reg_strings.insert(
+            key,
+            RegStringValue {
+                value: value.to_string(),
+                expand_sz,
+            },
+        );
+        st.ops.push(SandboxOp::RegSetString {
+            hive: norm_hive,
+            path: path.to_string(),
+            name: name.to_string(),
+            value: value.to_string(),
+            expand_sz,
+        });
+        Ok(())
+    }
+
+    fn reg_delete_value_literal(&self, hive: &str, path: &str, name: &str) -> Result<()> {
+        self.take_injected_error()?;
+        validate_registry_mutation_path(hive, path, false)?;
+        let norm_hive = Self::normalize_hive(hive);
+        let mut st = self.state_write();
+        let key = Self::reg_key(&norm_hive, path, name);
+        Self::clear_reg_value_in_state(&mut st, &key);
+        st.ops.push(SandboxOp::RegDelete {
+            hive: norm_hive,
+            path: path.to_string(),
+            name: name.to_string(),
+        });
+        Ok(())
+    }
+
+    fn reg_delete_key_if_empty(&self, hive: &str, path: &str) -> Result<()> {
+        let norm_hive = Self::normalize_hive(hive);
+        let norm_path = Self::normalize_reg_path(path);
+        let prefix = format!("{}\\", norm_path);
+        let mut st = self.state_write();
+        let has_values = st
+            .registry
+            .keys()
+            .chain(st.reg_strings.keys())
+            .chain(st.reg_binaries.keys())
+            .chain(st.reg_raw.keys())
+            .any(|(h, p, _)| h == &norm_hive && (p == &norm_path || p.starts_with(&prefix)));
+        let has_children = st
+            .reg_trees
+            .keys()
+            .any(|(h, p)| h == &norm_hive && p.starts_with(&prefix));
+        if !has_values && !has_children {
+            st.reg_trees.remove(&(norm_hive, norm_path));
+        }
+        Ok(())
+    }
+
     fn reg_key_exists(&self, hive: &str, path: &str) -> bool {
         let norm_hive = Self::normalize_hive(hive);
         let norm_path = Self::normalize_reg_path(path);
@@ -3016,10 +3182,10 @@ impl SystemBackend for SandboxEnv {
     }
 
     fn list_game_profiles(&self) -> Vec<crate::tools::game_profiles::GameProfile> {
-        let dir = self.temp_dir.path.join("game_profiles");
+        // Same source of truth as the real backend: IFEO CpuPriorityClass == 3 (High).
         let mut profiles = crate::tools::game_profiles::GameProfile::catalog();
         for p in &mut profiles {
-            p.is_applied = dir.join(p.id).exists();
+            p.is_applied = self.reg_get_dword("HKLM", &p.perf_options_path(), "CpuPriorityClass") == Some(3);
         }
         profiles
     }
@@ -3028,11 +3194,12 @@ impl SystemBackend for SandboxEnv {
         self.take_injected_error().map_err(|e| e.to_string())?;
         let dir = self.temp_dir.path.join("game_profiles");
         std::fs::create_dir_all(&dir).map_err(|e| e.to_string())?;
-        let marker = dir.join(profile.id);
+        let _ = dir;
+        let path = profile.perf_options_path();
         if apply {
-            std::fs::write(&marker, b"applied").map_err(|e| e.to_string())?;
-        } else if marker.exists() {
-            std::fs::remove_file(&marker).map_err(|e| e.to_string())?;
+            self.reg_set_dword("HKLM", &path, "CpuPriorityClass", 3).map_err(|e| e.to_string())?;
+        } else {
+            self.reg_delete_value("HKLM", &path, "CpuPriorityClass").map_err(|e| e.to_string())?;
         }
         Ok(apply)
     }

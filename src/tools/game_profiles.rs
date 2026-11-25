@@ -1,7 +1,8 @@
 //! Per-Game Optimization Profiles Engine.
 //!
-//! Applies real process priority boosts, fullscreen optimization flags, and GPU profiles for popular titles
-//! directly via Windows Image File Execution Options (IFEO).
+//! Sets the CPU priority a game starts with, through Windows Image File Execution Options
+//! (IFEO `PerfOptions\CpuPriorityClass`). That is all a profile does (checklist C10: the old
+//! descriptions promised FSO, core unparking, GPU clocks and shader tuning that never happened).
 
 use serde::{Deserialize, Serialize};
 use winreg::enums::*;
@@ -30,66 +31,66 @@ impl GameProfile {
                 title: "Counter-Strike 2",
                 executable: "cs2.exe",
                 icon_glyph: "🎯",
-                description: "Disables FSO, locks High CPU priority, optimizes DX11/Vulkan shader pipeline.",
+                description: "Starts the game at High CPU priority (Windows Image File Execution Options). Nothing else is changed for this game.",
                 is_applied: false,
                 high_priority: true,
-                disable_fso: true,
-                unpark_cores: true,
+                disable_fso: false,
+                unpark_cores: false,
             },
             Self {
                 id: "valorant",
                 title: "Valorant",
                 executable: "VALORANT-Win64-Shipping.exe",
                 icon_glyph: "⚡",
-                description: "Lowers input latency, optimizes Vanguard thread scheduling, locks maximum GPU clocks.",
+                description: "Starts the game at High CPU priority (Windows Image File Execution Options). Nothing else is changed for this game.",
                 is_applied: false,
                 high_priority: true,
-                disable_fso: true,
-                unpark_cores: true,
+                disable_fso: false,
+                unpark_cores: false,
             },
             Self {
                 id: "apex",
                 title: "Apex Legends",
                 executable: "r5apex.exe",
                 icon_glyph: "🏆",
-                description: "Mitigates micro-stutters during heavy combat, fixes Origin/EA App background polling.",
+                description: "Starts the game at High CPU priority (Windows Image File Execution Options). Nothing else is changed for this game.",
                 is_applied: false,
                 high_priority: true,
-                disable_fso: true,
-                unpark_cores: true,
+                disable_fso: false,
+                unpark_cores: false,
             },
             Self {
                 id: "warzone",
                 title: "Call of Duty: Warzone",
                 executable: "cod.exe",
                 icon_glyph: "🎖️",
-                description: "Optimizes CPU worker thread allocation in adv_options.ini, prevents packet burst lag.",
+                description: "Starts the game at High CPU priority (Windows Image File Execution Options). Nothing else is changed for this game.",
                 is_applied: false,
                 high_priority: true,
-                disable_fso: true,
-                unpark_cores: true,
+                disable_fso: false,
+                unpark_cores: false,
             },
             Self {
                 id: "cyberpunk",
                 title: "Cyberpunk 2077",
                 executable: "Cyberpunk2077.exe",
                 icon_glyph: "🌆",
-                description: "Enables ReBAR boost, optimizes crowd density thread scheduling, smooths frametimes.",
+                description: "Starts the game at High CPU priority (Windows Image File Execution Options). Nothing else is changed for this game.",
                 is_applied: false,
                 high_priority: true,
                 disable_fso: false,
-                unpark_cores: true,
+                unpark_cores: false,
             },
             Self {
                 id: "fortnite",
                 title: "Fortnite",
                 executable: "FortniteClient-Win64-Shipping.exe",
                 icon_glyph: "🛡️",
-                description: "Nanite and Lumen shader caching optimization, reduces shader compilation hitches.",
+                description: "Starts the game at High CPU priority (Windows Image File Execution Options). Nothing else is changed for this game.",
                 is_applied: false,
                 high_priority: true,
-                disable_fso: true,
-                unpark_cores: true,
+                disable_fso: false,
+                unpark_cores: false,
             },
         ]
     }
@@ -118,6 +119,49 @@ impl GameProfile {
         }
     }
 
+    /// IFEO `PerfOptions` key of this game.
+    pub fn perf_options_path(&self) -> String {
+        format!(
+            "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Image File Execution Options\\{}\\PerfOptions",
+            self.executable
+        )
+    }
+
+    /// The profile as a ledger-tracked tweak, so applying records the exact prior value and
+    /// undo restores it (including a `PerfOptions` key the user had made themselves).
+    pub fn as_tweak(&self) -> crate::core::risk::TweakDefinition {
+        use crate::core::risk::{OsRequirement, Reversibility, RiskLevel, RiskValuation, TweakAction, TweakDefinition};
+        TweakDefinition {
+            id: format!("game_profile_{}", self.id),
+            title: format!("{}: High CPU priority", self.title),
+            category: "Gaming".to_string(),
+            description: self.description.to_string(),
+            easy_mode_included: false,
+            os_req: OsRequirement { min_build: 0, max_build: None, editions: Vec::new() },
+            valuation: RiskValuation {
+                stability_risk: RiskLevel::Safe,
+                performance_gain: 1,
+                privacy_gain: 0,
+                reversibility: Reversibility::Instant,
+                broken_features: Vec::new(),
+            },
+            actions: vec![TweakAction::RegistryDword {
+                hive: "HKLM".to_string(),
+                path: self.perf_options_path(),
+                name: "CpuPriorityClass".to_string(),
+                optimized_value: 3,
+                default_value: 2,
+            }],
+            gpu_vendor: None,
+            sub_category: None,
+            unattend_safe: false,
+            source_attribution: None,
+            fallbacks: Vec::new(),
+            prerequisites: Vec::new(),
+            conflicts_with: Vec::new(),
+        }
+    }
+
     /// Apply real Windows IFEO high priority and I/O priority boost.
     pub fn apply(&self) -> Result<(), String> {
         let hklm = RegKey::predef(HKEY_LOCAL_MACHINE);
@@ -134,8 +178,6 @@ impl GameProfile {
 
         key.set_value("CpuPriorityClass", &3u32)
             .map_err(|e| format!("Failed to set CpuPriorityClass: {}", e))?;
-        key.set_value("IoPriority", &2u32)
-            .map_err(|e| format!("Failed to set IoPriority: {}", e))?;
 
         Ok(())
     }

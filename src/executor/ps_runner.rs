@@ -200,23 +200,106 @@ pub fn unblock_telemetry_hosts_with(
     Ok(changed)
 }
 
-/// Write raw content cleanly to `C:\Windows\System32\drivers\etc\hosts`.
+/// Path of the hosts file (System32 from `GetSystemDirectoryW`).
+pub fn hosts_file_path() -> std::path::PathBuf {
+    crate::core::process::system32_dir().join("drivers").join("etc").join("hosts")
+}
+
+/// Replace the hosts file atomically (F-23): the new content goes to a temporary file next to it,
+/// is flushed to disk, and is swapped in with `ReplaceFileW` (which keeps the original's ACL and
+/// attributes). A crash or an antivirus lock leaves either the old or the new file, never an
+/// empty one.
 pub fn write_hosts_file_raw(content: &str) -> crate::core::error::Result<()> {
-    let hosts_path = r"C:\Windows\System32\drivers\etc\hosts";
-    let mut file = OpenOptions::new()
-        .create(true)
-        .write(true)
-        .truncate(true)
-        .open(hosts_path)
-        .map_err(crate::core::error::WinBlastError::Io)?;
-    file.write_all(content.as_bytes())
-        .map_err(crate::core::error::WinBlastError::Io)?;
+    let hosts_path = hosts_file_path();
+    let tmp_path = hosts_path.with_file_name("hosts.winblast.tmp");
+    {
+        let mut tmp = OpenOptions::new()
+            .create(true)
+            .write(true)
+            .truncate(true)
+            .open(&tmp_path)
+            .map_err(crate::core::error::WinBlastError::Io)?;
+        tmp.write_all(content.as_bytes())
+            .map_err(crate::core::error::WinBlastError::Io)?;
+        tmp.sync_all().map_err(crate::core::error::WinBlastError::Io)?;
+    }
+    if !hosts_path.exists() {
+        return std::fs::rename(&tmp_path, &hosts_path).map_err(crate::core::error::WinBlastError::Io);
+    }
+    let wide = |p: &std::path::Path| -> Vec<u16> {
+        use std::os::windows::ffi::OsStrExt;
+        p.as_os_str().encode_wide().chain(std::iter::once(0)).collect()
+    };
+    let (dst, src) = (wide(&hosts_path), wide(&tmp_path));
+    let replaced = unsafe {
+        windows::Win32::Storage::FileSystem::ReplaceFileW(
+            windows::core::PCWSTR(dst.as_ptr()),
+            windows::core::PCWSTR(src.as_ptr()),
+            windows::core::PCWSTR::null(),
+            windows::Win32::Storage::FileSystem::REPLACE_FILE_FLAGS(0),
+            None,
+            None,
+        )
+    };
+    if let Err(e) = replaced {
+        let _ = std::fs::remove_file(&tmp_path);
+        return Err(crate::core::error::WinBlastError::Io(std::io::Error::other(format!(
+            "could not replace the hosts file: {e}"
+        ))));
+    }
     Ok(())
+}
+
+/// Hosts from `hosts` that the file does not block yet (what a block would add).
+pub fn hosts_not_yet_blocked(existing: &str, hosts: &[&str]) -> Vec<String> {
+    let already = crate::scanner::telemetry_scanner::parse_blocked_hosts_from_content(existing);
+    hosts
+        .iter()
+        .filter(|h| !already.iter().any(|b| b.eq_ignore_ascii_case(h)))
+        .map(|h| h.to_string())
+        .collect()
+}
+
+/// Remove only the given hosts from WinBlast's blocklist section (F-23: undoing one block must
+/// not remove entries another block added). The markers go once the section is empty.
+pub fn unblock_hosts_in_content(existing: &str, hosts: &[String]) -> (String, bool) {
+    let mut out = String::with_capacity(existing.len());
+    let mut in_section = false;
+    let mut removed = false;
+    let mut kept_in_section = 0usize;
+    let mut lines: Vec<&str> = Vec::new();
+    for line in existing.split_inclusive('\n') {
+        let trimmed = line.trim_start_matches('\u{FEFF}').trim();
+        if trimmed == HOSTS_BLOCK_HEADER {
+            in_section = true;
+        } else if trimmed == HOSTS_BLOCK_FOOTER {
+            in_section = false;
+        } else if in_section {
+            let mut toks = trimmed.split_whitespace();
+            let (ip, host) = (toks.next().unwrap_or(""), toks.next().unwrap_or(""));
+            if ip == "0.0.0.0" && hosts.iter().any(|h| h.eq_ignore_ascii_case(host)) {
+                removed = true;
+                continue;
+            }
+            if !trimmed.is_empty() {
+                kept_in_section += 1;
+            }
+        }
+        lines.push(line);
+    }
+    for line in lines {
+        let trimmed = line.trim_start_matches('\u{FEFF}').trim();
+        if kept_in_section == 0 && (trimmed == HOSTS_BLOCK_HEADER || trimmed == HOSTS_BLOCK_FOOTER) {
+            continue;
+        }
+        out.push_str(line);
+    }
+    (out, removed)
 }
 
 /// Block telemetry hostnames in `C:\Windows\System32\drivers\etc\hosts`.
 pub fn block_telemetry_hosts(hosts: &[&str]) -> crate::core::error::Result<usize> {
-    let hosts_path = r"C:\Windows\System32\drivers\etc\hosts";
+    let hosts_path = hosts_file_path();
     let existing = match std::fs::read_to_string(hosts_path) {
         Ok(c) => c,
         Err(e) if e.kind() == std::io::ErrorKind::NotFound => String::new(),
@@ -254,6 +337,27 @@ pub fn add_firewall_block_rule(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn undoing_one_block_keeps_other_blocked_hosts() {
+        let base = "127.0.0.1 localhost\r\n";
+        let (after_a, _) = block_telemetry_hosts_in_content(base, &["a.example", "b.example"]);
+        let (after_b, _) = block_telemetry_hosts_in_content(&after_a, &["c.example"]);
+        let (undo_a, changed) =
+            unblock_hosts_in_content(&after_b, &["a.example".to_string(), "b.example".to_string()]);
+        assert!(changed);
+        assert!(undo_a.contains("0.0.0.0 c.example"), "{undo_a}");
+        assert!(!undo_a.contains("a.example") && !undo_a.contains("b.example"));
+        assert!(undo_a.contains(HOSTS_BLOCK_HEADER), "section stays while it has entries");
+        let (empty, _) = unblock_hosts_in_content(&undo_a, &["c.example".to_string()]);
+        assert_eq!(empty, base, "markers go with the last entry");
+    }
+
+    #[test]
+    fn hosts_not_yet_blocked_lists_only_new_hosts() {
+        let existing = "0.0.0.0 a.example\r\n";
+        assert_eq!(hosts_not_yet_blocked(existing, &["a.example", "B.example"]), vec!["B.example".to_string()]);
+    }
 
     #[test]
     fn test_hosts_blocking_ignores_comments_and_subdomains() {

@@ -1,7 +1,14 @@
-//! WinBlast0 In-App Self-Updater via GitHub Releases API.
+//! WinBlast0 in-app updater (GitHub Releases).
 //!
-//! Provides background checking, release metadata parsing, asset download,
-//! and atomic Windows binary replacement with elevation support.
+//! Security model (F-2): an update is installed only when all of these hold —
+//! * metadata and the file come from the one release repository, over HTTPS only (curl
+//!   `--proto =https --proto-redir =https`, no PowerShell fallback, no downgrade on redirects);
+//! * the asset is a `.exe` under that repository's `releases/download/` URL;
+//! * it is staged in an admin-only folder (`%ProgramData%\WinBlast0\update`, Administrators and
+//!   SYSTEM only), so a standard user cannot swap it between download and install;
+//! * its Authenticode signature is intact and was made with the pinned release certificate
+//!   ([`RELEASE_SIGNER_THUMBPRINT`]) — checked after download and again right before the swap;
+//! * the user clicks Restart; nothing is installed automatically.
 
 use crate::core::process::SilentCommand;
 use serde::{Deserialize, Serialize};
@@ -32,38 +39,41 @@ pub enum UpdateState {
     Failed(String),
 }
 
-/// Primary and fallback GitHub repository targets for updates.
+/// The only repository updates are taken from (the former fallback repository was removed).
 pub const GITHUB_REPO: &str = "Konstrukturmx/WinBlast-Optimizer";
-pub const FALLBACK_REPO: &str = "Devinance/WinBlast-Optimizer";
 
-/// Check if a remote version tag is newer than the current application version.
+/// SHA-1 thumbprint of the certificate that signs releases (CN=Konstrukturmx, valid to
+/// 2031-11-23). When the certificate is renewed, ship one release signed with the old
+/// certificate that carries the new thumbprint here.
+pub const RELEASE_SIGNER_THUMBPRINT: &str = "070A70E017B5BB8F7A345688C82D8A578DAC404D";
+
+/// Release assets must be downloaded from below this URL.
+pub const DOWNLOAD_URL_PREFIX: &str = "https://github.com/Konstrukturmx/WinBlast-Optimizer/releases/download/";
+
+/// Split `v1.7.0-rc.1` into numeric parts and a pre-release flag.
+fn parse_version(v: &str) -> (Vec<u64>, bool) {
+    let clean = v.trim().trim_start_matches(['v', 'V']);
+    let (core, pre) = match clean.split_once(['-', '+']) {
+        Some((c, rest)) => (c, !rest.is_empty()),
+        None => (clean, false),
+    };
+    let nums = core.split('.').map(|p| p.trim().parse::<u64>().unwrap_or(0)).collect();
+    (nums, pre)
+}
+
+/// True when `remote_tag` is a newer version than `current_version`. A pre-release
+/// (`1.7.0-rc.1`) is older than the release with the same number (B8).
 pub fn is_version_newer(remote_tag: &str, current_version: &str) -> bool {
-    let clean_remote = remote_tag
-        .trim()
-        .trim_start_matches('v')
-        .trim_start_matches('V');
-    let clean_current = current_version
-        .trim()
-        .trim_start_matches('v')
-        .trim_start_matches('V');
-
-    let remote_parts: Vec<u64> = clean_remote
-        .split('.')
-        .filter_map(|s| s.split('-').next().and_then(|p| p.parse().ok()))
-        .collect();
-    let current_parts: Vec<u64> = clean_current
-        .split('.')
-        .filter_map(|s| s.split('-').next().and_then(|p| p.parse().ok()))
-        .collect();
-
-    for (r, c) in remote_parts.iter().zip(current_parts.iter()) {
-        if r > c {
-            return true;
-        } else if r < c {
-            return false;
+    let (r, r_pre) = parse_version(remote_tag);
+    let (c, c_pre) = parse_version(current_version);
+    let len = r.len().max(c.len());
+    for i in 0..len {
+        let (a, b) = (r.get(i).copied().unwrap_or(0), c.get(i).copied().unwrap_or(0));
+        if a != b {
+            return a > b;
         }
     }
-    remote_parts.len() > current_parts.len()
+    c_pre && !r_pre
 }
 
 #[derive(Deserialize)]
@@ -83,194 +93,176 @@ struct GhRelease {
     assets: Option<Vec<GhAsset>>,
 }
 
-/// Helper to fetch URL content via curl.exe or PowerShell.
+/// curl arguments that refuse anything but HTTPS, also after redirects.
+const CURL_HTTPS_ONLY: [&str; 4] = ["--proto", "=https", "--proto-redir", "=https"];
+
 fn fetch_url_json(url: &str) -> Result<String, String> {
-    // 1. Try native curl.exe first (fast, built-in on Win10/Win11)
-    if let Ok(output) = SilentCommand::new("curl.exe")
-        .args(["-s", "-f", "-H", "User-Agent: WinBlast0-Updater", url])
+    if !url.starts_with("https://api.github.com/") {
+        return Err(format!("Refusing to query {url}"));
+    }
+    let output = SilentCommand::new("curl.exe")
+        .args(CURL_HTTPS_ONLY)
+        .args(["-s", "-f", "--max-time", "20", "-H", "User-Agent: WinBlast0-Updater", url])
         .output()
-    {
-        if output.status.success() {
-            let s = String::from_utf8_lossy(&output.stdout).trim().to_string();
-            if !s.is_empty() && (s.starts_with('{') || s.starts_with('[')) {
-                return Ok(s);
-            }
-        }
+        .map_err(|e| format!("curl.exe could not be started: {e}"))?;
+    if !output.status.success() {
+        return Err(format!("Update server request failed (curl exit {:?})", output.status.code()));
     }
-
-    // 2. Fallback to PowerShell Invoke-RestMethod
-    let escaped_url = url.replace('\'', "''");
-    let ps_cmd = format!(
-        r#"[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12;
-try {{
-    $r = Invoke-WebRequest -Uri '{}' -Headers @{{'User-Agent'='WinBlast0-Updater'}} -UseBasicParsing -TimeoutSec 15;
-    Write-Output $r.Content
-}} catch {{
-    Write-Output "ERROR: $($_.Exception.Message)"
-}}"#,
-        escaped_url
-    );
-
-    let output = SilentCommand::new("powershell")
-        .args(["-NoProfile", "-NonInteractive", "-Command", &ps_cmd])
-        .output()
-        .map_err(|e| format!("Failed to spawn PowerShell: {}", e))?;
-
-    let out_str = String::from_utf8_lossy(&output.stdout).trim().to_string();
-    if out_str.starts_with("ERROR:") || out_str.is_empty() {
-        return Err(if out_str.is_empty() {
-            "Empty response from update server".to_string()
-        } else {
-            out_str
-        });
-    }
-    Ok(out_str)
-}
-
-/// Query GitHub Releases API for the latest published release.
-pub fn check_latest_release(repo: &str) -> Result<Option<ReleaseInfo>, String> {
-    let repos_to_try = [repo, GITHUB_REPO, FALLBACK_REPO];
-
-    let mut last_err = String::new();
-
-    for r in repos_to_try {
-        let latest_url = format!("https://api.github.com/repos/{}/releases/latest", r);
-        let all_url = format!("https://api.github.com/repos/{}/releases", r);
-
-        // Try /releases/latest first
-        let json_res = fetch_url_json(&latest_url).or_else(|_| fetch_url_json(&all_url));
-
-        let json_str = match json_res {
-            Ok(s) => s,
-            Err(e) => {
-                last_err = e;
-                continue;
-            }
-        };
-
-        // Try parsing single release object or array of releases
-        let release: Option<GhRelease> = if json_str.starts_with('[') {
-            if let Ok(releases) = serde_json::from_str::<Vec<GhRelease>>(&json_str) {
-                releases.into_iter().next()
-            } else {
-                None
-            }
-        } else {
-            serde_json::from_str::<GhRelease>(&json_str).ok()
-        };
-
-        if let Some(rel) = release {
-            let tag = rel.tag_name;
-            if tag.is_empty() {
-                continue;
-            }
-
-            let current_ver = env!("CARGO_PKG_VERSION");
-            let is_newer = is_version_newer(&tag, current_ver);
-
-            // Find executable asset
-            let mut download_url = None;
-            let mut asset_name = None;
-            let mut download_size_mb = None;
-
-            if let Some(assets) = rel.assets {
-                for a in assets {
-                    if a.name.ends_with(".exe") || a.name.ends_with(".zip") {
-                        download_url = Some(a.browser_download_url);
-                        download_size_mb = Some((a.size as f64) / (1024.0 * 1024.0));
-                        asset_name = Some(a.name);
-                        break;
-                    }
-                }
-            }
-
-            let info = ReleaseInfo {
-                tag_name: tag,
-                name: rel.name.unwrap_or_else(|| "WinBlast0 Update".to_string()),
-                body: rel.body.unwrap_or_default(),
-                html_url: rel.html_url.unwrap_or_default(),
-                published_at: rel.published_at.unwrap_or_default(),
-                download_url,
-                asset_name,
-                download_size_mb,
-            };
-
-            if is_newer {
-                return Ok(Some(info));
-            } else {
-                return Ok(None);
-            }
-        }
-    }
-
-    if last_err.is_empty() {
-        Err("Unable to contact GitHub Releases API".to_string())
+    let s = String::from_utf8_lossy(&output.stdout).trim().to_string();
+    if s.starts_with('{') || s.starts_with('[') {
+        Ok(s)
     } else {
-        Err(last_err)
+        Err("Unexpected response from the update server".to_string())
     }
 }
 
-/// Download release asset to a temporary directory and stage for atomic replacement.
-pub fn download_release_asset(download_url: &str, asset_name: &str) -> Result<PathBuf, String> {
-    let temp_dir = std::env::temp_dir().join("winblast0_update");
-    let _ = std::fs::create_dir_all(&temp_dir);
-    let target_file = temp_dir.join(asset_name);
+/// True for an asset this updater may install: a plain `.exe` name under the release URL.
+pub fn is_acceptable_asset(name: &str, url: &str) -> bool {
+    let safe_name = !name.is_empty()
+        && name.to_ascii_lowercase().ends_with(".exe")
+        && !name.contains(['\\', '/', ':', '"', '\''])
+        && !name.contains("..");
+    safe_name && url.starts_with(DOWNLOAD_URL_PREFIX) && url.ends_with(&format!("/{name}"))
+}
 
-    let target_path_str = target_file.to_string_lossy().to_string();
+/// Query GitHub for the latest release. `Ok(None)` = up to date.
+pub fn check_latest_release() -> Result<Option<ReleaseInfo>, String> {
+    let latest_url = format!("https://api.github.com/repos/{GITHUB_REPO}/releases/latest");
+    let json_str = fetch_url_json(&latest_url)?;
+    let rel: GhRelease = serde_json::from_str(&json_str).map_err(|e| format!("Bad release data: {e}"))?;
+    if rel.tag_name.trim().is_empty() || !is_version_newer(&rel.tag_name, env!("CARGO_PKG_VERSION")) {
+        return Ok(None);
+    }
+    let asset = rel
+        .assets
+        .unwrap_or_default()
+        .into_iter()
+        .find(|a| is_acceptable_asset(&a.name, &a.browser_download_url));
+    Ok(Some(ReleaseInfo {
+        tag_name: rel.tag_name,
+        name: rel.name.unwrap_or_else(|| "WinBlast0 Update".to_string()),
+        body: rel.body.unwrap_or_default(),
+        html_url: rel.html_url.unwrap_or_default(),
+        published_at: rel.published_at.unwrap_or_default(),
+        download_url: asset.as_ref().map(|a| a.browser_download_url.clone()),
+        asset_name: asset.as_ref().map(|a| a.name.clone()),
+        download_size_mb: asset.as_ref().map(|a| a.size as f64 / (1024.0 * 1024.0)),
+    }))
+}
 
-    // 1. Try curl.exe -L first (handles GitHub redirects seamlessly)
-    let curl_res = SilentCommand::new("curl.exe")
+/// `%ProgramData%\WinBlast0\update`, emptied and restricted to Administrators and SYSTEM.
+fn secure_staging_dir() -> Result<PathBuf, String> {
+    if !crate::core::elevation::is_elevated() {
+        return Err("Installing updates needs administrator rights; restart WinBlast0 as administrator.".to_string());
+    }
+    let program_data = crate::core::process::known_program_data_dir()
+        .ok_or_else(|| "The ProgramData folder could not be located".to_string())?;
+    let dir = program_data.join("WinBlast0").join("update");
+    if dir.exists() {
+        let meta = std::fs::symlink_metadata(&dir).map_err(|e| e.to_string())?;
+        if meta.file_type().is_symlink() {
+            return Err(format!("{} is a link; refusing to stage an update there", dir.display()));
+        }
+        std::fs::remove_dir_all(&dir).map_err(|e| format!("Could not clear {}: {e}", dir.display()))?;
+    }
+    std::fs::create_dir_all(&dir).map_err(|e| format!("Could not create {}: {e}", dir.display()))?;
+    let dir_s = dir.to_string_lossy().to_string();
+    let out = SilentCommand::new("icacls.exe")
         .args([
-            "-L",
-            "-s",
-            "-f",
-            "-H",
-            "User-Agent: WinBlast0-Updater",
-            "-o",
-            &target_path_str,
-            download_url,
+            dir_s.as_str(),
+            "/inheritance:r",
+            "/grant:r",
+            "*S-1-5-32-544:(OI)(CI)F",
+            "/grant:r",
+            "*S-1-5-18:(OI)(CI)F",
         ])
-        .output();
-
-    if let Ok(c_out) = curl_res {
-        if c_out.status.success() && target_file.is_file() {
-            if let Ok(meta) = target_file.metadata() {
-                if meta.len() > 1_000_000 {
-                    return Ok(target_file);
-                }
-            }
-        }
-    }
-
-    // 2. Fallback to PowerShell Invoke-WebRequest with redirect support
-    let escaped_url = download_url.replace('\'', "''");
-    let escaped_target = target_path_str.replace('\'', "''");
-    let ps_cmd = format!(
-        r#"[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12;
-try {{
-    Invoke-WebRequest -Uri '{}' -OutFile '{}' -Headers @{{'User-Agent'='WinBlast0-Updater'}} -UseBasicParsing -TimeoutSec 180;
-    if (Test-Path '{}') {{
-        Write-Output "SUCCESS"
-    }} else {{
-        Write-Output "ERROR: Target file not found after download"
-    }}
-}} catch {{
-    Write-Output "ERROR: $($_.Exception.Message)"
-}}"#,
-        escaped_url, escaped_target, escaped_target
-    );
-
-    let output = SilentCommand::new("powershell")
-        .args(["-NoProfile", "-NonInteractive", "-Command", &ps_cmd])
         .output()
-        .map_err(|e| format!("Failed to execute download script: {}", e))?;
-
-    let out_str = String::from_utf8_lossy(&output.stdout).trim().to_string();
-    if out_str.contains("SUCCESS") && target_file.exists() {
-        Ok(target_file)
-    } else {
-        Err(format!("Download failed: {}", out_str))
+        .map_err(|e| format!("icacls could not be started: {e}"))?;
+    if !out.status.success() {
+        return Err(format!("Could not restrict {} to administrators", dir.display()));
     }
+    Ok(dir)
+}
+
+/// Outcome of an Authenticode check.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct SignatureCheck {
+    /// `Get-AuthenticodeSignature` status name (Valid, UnknownError, NotSigned, HashMismatch …).
+    pub status: String,
+    /// Upper-case SHA-1 thumbprint of the signing certificate, empty when unsigned.
+    pub signer_thumbprint: String,
+}
+
+impl SignatureCheck {
+    /// Intact signature by the pinned release certificate. A self-signed certificate reports
+    /// `UnknownError`/`NotTrusted` (untrusted root) — accepted only together with the pinned
+    /// thumbprint; `HashMismatch` (tampered file) and `NotSigned` never are.
+    pub fn is_trusted_release(&self, pinned: &str) -> bool {
+        matches!(self.status.as_str(), "Valid" | "UnknownError" | "NotTrusted")
+            && !self.signer_thumbprint.is_empty()
+            && self.signer_thumbprint.eq_ignore_ascii_case(pinned)
+    }
+}
+
+/// Read the Authenticode status and signer thumbprint of `path`.
+pub fn read_signature(path: &Path) -> Result<SignatureCheck, String> {
+    let p = path.to_string_lossy().replace('\'', "''");
+    let script = format!(
+        "$s = Get-AuthenticodeSignature -LiteralPath '{p}'; $t = ''; if ($s.SignerCertificate) {{ $t = $s.SignerCertificate.Thumbprint }}; Write-Output (\"{{0}}|{{1}}\" -f $s.Status, $t)"
+    );
+    let out = SilentCommand::new("powershell.exe")
+        .args(["-NoProfile", "-NonInteractive", "-Command", &script])
+        .output()
+        .map_err(|e| format!("PowerShell could not be started: {e}"))?;
+    let text = String::from_utf8_lossy(&out.stdout);
+    let line = text.lines().map(str::trim).rfind(|l| l.contains('|')).unwrap_or("");
+    let (status, thumb) = line
+        .split_once('|')
+        .ok_or_else(|| "The signature of the downloaded file could not be read".to_string())?;
+    Ok(SignatureCheck {
+        status: status.trim().to_string(),
+        signer_thumbprint: thumb.trim().to_ascii_uppercase(),
+    })
+}
+
+/// Reject anything not signed by the release certificate.
+pub fn verify_release_signature(path: &Path) -> Result<(), String> {
+    let check = read_signature(path)?;
+    if check.is_trusted_release(RELEASE_SIGNER_THUMBPRINT) {
+        Ok(())
+    } else {
+        Err(format!(
+            "The downloaded file is not signed by the WinBlast0 release certificate (status {}, signer {}); it was deleted.",
+            check.status,
+            if check.signer_thumbprint.is_empty() { "none" } else { &check.signer_thumbprint }
+        ))
+    }
+}
+
+/// Download a release asset into the admin-only staging folder and verify its signature.
+pub fn download_release_asset(download_url: &str, asset_name: &str) -> Result<PathBuf, String> {
+    if !is_acceptable_asset(asset_name, download_url) {
+        return Err(format!("Refusing to download {asset_name} from {download_url}"));
+    }
+    let dir = secure_staging_dir()?;
+    let target_file = dir.join(asset_name);
+    let target = target_file.to_string_lossy().to_string();
+    let out = SilentCommand::new("curl.exe")
+        .args(CURL_HTTPS_ONLY)
+        .args(["-L", "-s", "-f", "--max-time", "900", "-H", "User-Agent: WinBlast0-Updater", "-o"])
+        .arg(&target)
+        .arg(download_url)
+        .output()
+        .map_err(|e| format!("curl.exe could not be started: {e}"))?;
+    if !out.status.success() || !target_file.is_file() {
+        let _ = std::fs::remove_file(&target_file);
+        return Err(format!("Download failed (curl exit {:?})", out.status.code()));
+    }
+    if let Err(e) = verify_release_signature(&target_file) {
+        let _ = std::fs::remove_file(&target_file);
+        return Err(e);
+    }
+    Ok(target_file)
 }
 
 /// Apply update by atomically replacing the running binary.
@@ -299,6 +291,8 @@ pub fn clean_exe_path(path_str: &str) -> String {
 /// 4. Fallback to detached process spawn if ShellExecute returns an error.
 /// 5. Exit current process cleanly.
 pub fn apply_and_restart(new_binary: &Path) -> Result<(), String> {
+    // Verified at download; checked again so nothing swapped in since then gets installed.
+    verify_release_signature(new_binary)?;
     let current_exe = std::env::current_exe().map_err(|e| e.to_string())?;
     let backup_exe = current_exe.with_extension("exe.old");
 
@@ -404,22 +398,46 @@ mod tests {
         assert!(!is_version_newer("v1.5.0", "1.5.0"));
         assert!(!is_version_newer("1.4.9", "1.5.0"));
         assert!(!is_version_newer("v1.0.0", "1.5.0"));
+        assert!(is_version_newer("1.7.1", "1.7"));
+        assert!(!is_version_newer("1.7", "1.7.0"));
     }
 
     #[test]
-    fn test_release_info_structure() {
-        let r = ReleaseInfo {
-            tag_name: "v1.6.0".to_string(),
-            name: "WinBlast0 v1.6.0".to_string(),
-            body: "Performance release".to_string(),
-            html_url: "https://github.com/Konstrukturmx/WinBlast-Optimizer".to_string(),
-            published_at: "2026-11-17".to_string(),
-            download_url: Some("https://example.com/winblast0.exe".to_string()),
-            asset_name: Some("winblast0.exe".to_string()),
-            download_size_mb: Some(30.0),
-        };
-        assert_eq!(r.tag_name, "v1.6.0");
-        assert!(is_version_newer(&r.tag_name, "1.5.0"));
+    fn prerelease_is_older_than_release() {
+        assert!(!is_version_newer("1.7.0-rc.1", "1.7.0"));
+        assert!(is_version_newer("1.7.0", "1.7.0-rc.1"));
+        assert!(is_version_newer("1.7.1-rc.1", "1.7.0"));
+        assert!(!is_version_newer("1.7.0-rc.2", "1.7.0-rc.1"), "pre-release order is not compared");
+    }
+
+    #[test]
+    fn only_release_exe_assets_are_accepted() {
+        let ok = format!("{DOWNLOAD_URL_PREFIX}v1.8.0/winblast0.exe");
+        assert!(is_acceptable_asset("winblast0.exe", &ok));
+        assert!(!is_acceptable_asset("winblast0.zip", &format!("{DOWNLOAD_URL_PREFIX}v1.8.0/winblast0.zip")));
+        assert!(!is_acceptable_asset("winblast0.exe", "http://github.com/Konstrukturmx/WinBlast-Optimizer/releases/download/v1/winblast0.exe"));
+        assert!(!is_acceptable_asset("winblast0.exe", "https://github.com/Devinance/WinBlast-Optimizer/releases/download/v1/winblast0.exe"));
+        assert!(!is_acceptable_asset("winblast0.exe", &format!("{DOWNLOAD_URL_PREFIX}v1.8.0/other.exe")));
+        assert!(!is_acceptable_asset("..\\evil.exe", &format!("{DOWNLOAD_URL_PREFIX}v1/..\\evil.exe")));
+    }
+
+    #[test]
+    fn signature_policy() {
+        let pin = RELEASE_SIGNER_THUMBPRINT;
+        let check = |status: &str, thumb: &str| SignatureCheck { status: status.into(), signer_thumbprint: thumb.into() };
+        assert!(check("Valid", pin).is_trusted_release(pin));
+        assert!(check("UnknownError", &pin.to_ascii_lowercase()).is_trusted_release(pin));
+        assert!(!check("HashMismatch", pin).is_trusted_release(pin), "tampered file");
+        assert!(!check("NotSigned", "").is_trusted_release(pin));
+        assert!(!check("Valid", "0000000000000000000000000000000000000000").is_trusted_release(pin), "other signer");
+    }
+
+    #[test]
+    fn unsigned_file_is_rejected() {
+        let p = std::env::temp_dir().join(format!("wb_unsigned_{}.exe", std::process::id()));
+        std::fs::write(&p, b"MZ not a real program").expect("write");
+        assert!(verify_release_signature(&p).is_err());
+        let _ = std::fs::remove_file(&p);
     }
 
     #[test]
@@ -432,17 +450,8 @@ mod tests {
             clean_exe_path(r"\\?\UNC\server\share\winblast0.exe"),
             r"\\server\share\winblast0.exe"
         );
-        assert_eq!(
-            clean_exe_path(r"C:\Tools\winblast0.exe"),
-            r"C:\Tools\winblast0.exe"
-        );
-        assert_eq!(
-            clean_exe_path(r#""C:\Tools\winblast0.exe""#),
-            r"C:\Tools\winblast0.exe"
-        );
-        assert_eq!(
-            clean_exe_path("  'C:/Tools/winblast0.exe'  "),
-            r"C:\Tools\winblast0.exe"
-        );
+        assert_eq!(clean_exe_path(r"C:\Tools\winblast0.exe"), r"C:\Tools\winblast0.exe");
+        assert_eq!(clean_exe_path(r#""C:\Tools\winblast0.exe""#), r"C:\Tools\winblast0.exe");
+        assert_eq!(clean_exe_path("  'C:/Tools/winblast0.exe'  "), r"C:\Tools\winblast0.exe");
     }
 }

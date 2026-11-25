@@ -9,6 +9,8 @@ export struct CategoryStat {
 }
 
 export global DashboardStore {
+    /// False until a scan has produced results (no verdict before data).
+    in-out property <bool> has-scan;
     in-out property <bool> admin-required;
 
     // Self-updater

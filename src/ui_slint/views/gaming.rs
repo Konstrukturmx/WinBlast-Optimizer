@@ -11,12 +11,11 @@ use crate::core::view_i18n::ViewTextKey;
 use crate::hardware::sys_inventory::DriveMediaKind;
 use crate::tools::game_overlay::{GameSuitabilityReport, OverlaySetting};
 use crate::tools::game_prereqs::PrereqInstallState;
-use crate::tools::gaming_stats::get_standard_game_benchmarks;
 use crate::tools::network_diag::NetAction;
 
 use super::super::ctx::Ctx;
 use super::super::models::{new_model, sync_vec};
-use super::super::{CheckRow, DnsRow, FpsRow, GamingStore, MainWindow, NetworkStore, PrereqRow, PrereqStore, ProfileRow};
+use super::super::{CheckRow, DnsRow, GamingStore, MainWindow, NetworkStore, PrereqRow, PrereqStore, ProfileRow};
 
 pub const SUB_TABS: [GamingSubTab; 5] = [
     GamingSubTab::LiveMonitor,
@@ -70,7 +69,6 @@ pub fn suitability(s: &AppState) -> Option<GameSuitabilityReport> {
 }
 
 pub struct GamingView {
-    fps: Rc<VecModel<FpsRow>>,
     profiles: Rc<VecModel<ProfileRow>>,
     checks: Rc<VecModel<CheckRow>>,
     prereqs: Rc<VecModel<PrereqRow>>,
@@ -80,17 +78,15 @@ pub struct GamingView {
 impl GamingView {
     pub fn new(window: &MainWindow) -> Self {
         let g = window.global::<GamingStore>();
-        let (fps, a) = new_model();
         let (profiles, b) = new_model();
         let (checks, c) = new_model();
-        g.set_fps(a);
         g.set_profiles(b);
         g.set_checks(c);
         let (prereqs, d) = new_model();
         window.global::<PrereqStore>().set_items(d);
         let (dns, e) = new_model();
         window.global::<NetworkStore>().set_probes(e);
-        Self { fps, profiles, checks, prereqs, dns }
+        Self { profiles, checks, prereqs, dns }
     }
 
     pub fn bind(&self, window: &MainWindow, ctx: &Ctx) {
@@ -175,20 +171,6 @@ impl GamingView {
         g.set_detected_game(s.game_telemetry.active_game_detected.clone().map(SharedString::from).unwrap_or_else(|| s.tr(TextKey::GamingNoGameDetected).into()));
         g.set_hags_on(s.hags_enabled);
         g.set_hags_text(if s.hags_enabled { s.tr(TextKey::HagsActiveStatus).into() } else { s.tr(TextKey::HagsDisabledStatus).into() });
-        sync_vec(
-            &self.fps,
-            get_standard_game_benchmarks()
-                .into_iter()
-                .map(|b| FpsRow {
-                    icon: b.icon_glyph.into(),
-                    title: b.game_title.as_str().into(),
-                    gain: format!("+{}% {}", b.fps_gain_pct(), s.tr_v(ViewTextKey::FpsBenchAvgFps)).into(),
-                    avg: format!("{} FPS → {} FPS", b.stock_avg_fps, b.optimized_avg_fps).into(),
-                    low: format!("{} FPS → {} FPS (+{}%)", b.stock_1pct_low, b.optimized_1pct_low, b.low_gain_pct()).into(),
-                    latency: format!("-{:.1} ms", b.latency_reduction_ms).into(),
-                })
-                .collect(),
-        );
         g.set_profile_busy(s.game_profile_inflight.is_some());
         sync_vec(
             &self.profiles,
@@ -280,6 +262,7 @@ impl GamingView {
         n.set_probing(s.network_probe_inflight);
         n.set_busy(s.network_action_inflight);
         let net = s.network_diag.clone().unwrap_or_default();
+        n.set_loaded(!net.adapter_name.is_empty());
         n.set_adapter(if net.adapter_name.is_empty() { "—".into() } else { net.adapter_name.as_str().into() });
         n.set_ip_mtu(
             format!(

@@ -6,6 +6,7 @@ export struct DriverRow { id: string, icon: string, name: string, details: strin
 export struct DisplayDriverRow { name: string, provider: string, version: string, date: string }
 
 export global DriverStore {
+    in-out property <bool> bios-loaded;
     in-out property <bool> scanning;
     in-out property <bool> bios-scanning;
     in-out property <bool> any-in-flight;

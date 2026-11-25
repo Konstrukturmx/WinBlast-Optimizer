@@ -1033,7 +1033,7 @@ fn gaming_hub_tabs_profiles_overlay_and_honest_monitor() {
     assert_eq!(g.get_sub_tab(), 0);
     assert!(h.state.borrow().game_telemetry.active_game_detected.is_none());
     assert!(!g.get_detected_game().is_empty(), "shows the localized 'no game' text, not a blank");
-    assert_eq!(g.get_fps().row_count(), 5);
+    assert_eq!(g.get_fps().row_count(), 0, "no invented stock-vs-optimized FPS figures (C9)");
 
     // Out-of-range sub-tab is ignored.
     g.invoke_set_sub_tab(99);

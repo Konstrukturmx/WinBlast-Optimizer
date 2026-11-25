@@ -38,7 +38,7 @@ export component DiskHealthView inherits Rectangle {
                 }
             }
 
-            Rectangle {
+            if DiskStore.loaded : Rectangle {
                 border-radius: Scale.px(Theme.card-radius);
                 background: DiskStore.trim-active ? Theme.success.with-alpha(0.12) : Theme.warning.with-alpha(0.12);
                 border-width: 1px;

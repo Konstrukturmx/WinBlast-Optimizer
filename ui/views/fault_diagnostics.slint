@@ -29,7 +29,7 @@ export component FaultDiagnosticsView inherits Rectangle {
                         min-width: Scale.px(220px);
                         Text { text: Tr.s("FaultTitle"); font-size: Scale.font-xl; font-weight: 800; color: Theme.text-primary; wrap: word-wrap; }
                     }
-                    WbPill {
+                    if FaultStore.loaded : WbPill {
                         text: FaultStore.critical > 0 ? Tr.s("FaultAlertBadgePrefix") + FaultStore.critical + Tr.s("FaultAlertBadgeSuffix") : Tr.s("FaultSystemStable");
                         tone: FaultStore.critical > 0 ? "danger" : "success";
                     }
@@ -73,12 +73,10 @@ export component FaultDiagnosticsView inherits Rectangle {
                             enabled: !FaultStore.action-busy;
                             clicked => { FaultStore.restart-now(); }
                         }
-                        if FaultStore.pending-rename : WbButton { variant: "secondary"; text: Tr.s("FaultClearPendingRenames"); enabled: !FaultStore.action-busy; clicked => { FaultStore.clear-renames(); } }
-                        if FaultStore.cbs-or-wu : WbButton { variant: "secondary"; text: Tr.s("FaultClearCbsBtn"); enabled: !FaultStore.action-busy; clicked => { FaultStore.clear-cbs(); } }
                     }
                 }
             }
-            if !FaultStore.pending : WbPanel {
+            if FaultStore.loaded && !FaultStore.pending : WbPanel {
                 min-height: Scale.px(44px);
                 Text { x: Scale.px(12px); width: parent.width - Scale.px(24px); text: FaultStore.scanning ? Tr.s("Scanning") : Tr.s("FaultPendingRebootClean"); font-size: Scale.font-sm; color: Theme.success; wrap: word-wrap; }
             }
@@ -86,7 +84,7 @@ export component FaultDiagnosticsView inherits Rectangle {
             WbSection {
                 title: "🛡️ " + Tr.s("FaultMinidumpSectionTitle");
                 HorizontalLayout { alignment: start; WbButton { variant: "secondary"; text: Tr.s("FaultOpenMinidumpFolder"); clicked => { FaultStore.open-minidump-folder(); } } }
-                if FaultStore.minidumps.length == 0 : Text { text: Tr.s("FaultMinidumpEmpty"); font-size: Scale.font-sm; color: Theme.text-muted; wrap: word-wrap; }
+                if FaultStore.loaded && FaultStore.minidumps.length == 0 : Text { text: Tr.s("FaultMinidumpEmpty"); font-size: Scale.font-sm; color: Theme.text-muted; wrap: word-wrap; }
                 WbTitledList { rows: FaultStore.minidumps; }
             }
 
