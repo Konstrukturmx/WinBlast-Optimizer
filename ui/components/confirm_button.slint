@@ -1,0 +1,34 @@
+// ui/components/confirm_button.slint
+// Two-step button for actions that change the system (checklist F2): the first click arms it
+// ("Click again to confirm"), a second click within 4 s runs the action; otherwise it disarms.
+import { Tr } from "../theme.slint";
+import { WbButton } from "button.slint";
+
+export component WbConfirmButton inherits HorizontalLayout {
+    in property <string> text;
+    in property <string> variant: "secondary";
+    in property <bool> enabled: true;
+    in property <bool> loading: false;
+    callback confirmed();
+    private property <bool> armed: false;
+
+    WbButton {
+        variant: root.armed ? "danger" : root.variant;
+        text: root.armed ? Tr.s("ConfirmClickAgain") : root.text;
+        enabled: root.enabled;
+        loading: root.loading;
+        clicked => {
+            if root.armed {
+                root.armed = false;
+                root.confirmed();
+            } else {
+                root.armed = true;
+            }
+        }
+    }
+    Timer {
+        interval: 4s;
+        running: root.armed;
+        triggered => { root.armed = false; }
+    }
+}

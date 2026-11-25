@@ -25,7 +25,8 @@ export component AppProgressStrip inherits Rectangle {
             min-width: 0;
             horizontal-stretch: 1;
         }
-        WbProgressBar {
+        // F5: the bar only shows while something is in progress (it was an empty strip at idle).
+        if AppStore.progress-value > 0 : WbProgressBar {
             horizontal-stretch: 2;
             height: Scale.px(7px);
             y: (parent.height - self.height) / 2;

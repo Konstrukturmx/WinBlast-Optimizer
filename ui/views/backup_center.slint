@@ -61,6 +61,7 @@ export component BackupCenterView inherits Rectangle {
             }
 
 
+            if BackupStore.ledger-path != "" : Text { text: Tr.s("LedgerDbLabel") + " " + BackupStore.ledger-path; font-size: Scale.font-2xs; color: Theme.text-muted; wrap: word-wrap; }
             HorizontalLayout {
                 spacing: Scale.px(8px);
                 Text { text: Tr.s("SqlLedgerTitle"); font-size: Scale.font-md; font-weight: 700; color: Theme.text-primary; vertical-alignment: center; horizontal-stretch: 1; }

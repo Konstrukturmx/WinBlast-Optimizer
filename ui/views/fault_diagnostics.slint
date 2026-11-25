@@ -6,6 +6,7 @@ import { Scale, Theme, Tr } from "../theme.slint";
 import { AppStore } from "../stores/app.slint";
 import { FaultStore } from "../stores/diagnostics.slint";
 import { WbButton } from "../components/button.slint";
+import { WbConfirmButton } from "../components/confirm_button.slint";
 import { WbPill, WbPanel } from "../components/toggle.slint";
 import { WbTitledList, WbSection } from "../components/kv.slint";
 
@@ -34,7 +35,7 @@ export component FaultDiagnosticsView inherits Rectangle {
                         tone: FaultStore.critical > 0 ? "danger" : "success";
                     }
                     WbButton { variant: "primary"; text: Tr.s("FaultRescanBtn"); loading: FaultStore.scanning; enabled: !FaultStore.scanning; clicked => { FaultStore.rescan(); } }
-                    WbButton { variant: "secondary"; text: Tr.s("FaultClearDumpsBtn"); enabled: !FaultStore.action-busy; clicked => { FaultStore.clear-dumps(); } }
+                    WbConfirmButton { text: Tr.s("FaultClearDumpsBtn"); enabled: !FaultStore.action-busy; confirmed => { FaultStore.clear-dumps(); } }
                     WbButton { variant: "secondary"; text: Tr.s("FaultReportToGithub"); clicked => { FaultStore.report-github(); } }
                 }
             }

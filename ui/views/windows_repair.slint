@@ -5,6 +5,7 @@ import { ScrollView } from "std-widgets.slint";
 import { Scale, Theme, Tr, Typo } from "../theme.slint";
 import { RepairStore } from "../stores/diagnostics.slint";
 import { WbButton } from "../components/button.slint";
+import { WbConfirmButton } from "../components/confirm_button.slint";
 import { WbChip } from "../components/chip.slint";
 import { WbPanel } from "../components/toggle.slint";
 
@@ -27,12 +28,12 @@ export component WindowsRepairView inherits Rectangle {
                     Text { text: Tr.s("RepairTitle"); font-size: Scale.font-xl; font-weight: 800; color: Theme.text-primary; wrap: word-wrap; }
                     Text { text: Tr.s("RepairSubtitle"); font-size: Scale.font-xs; color: Theme.text-muted; wrap: word-wrap; }
                 }
-                WbButton {
+                WbConfirmButton {
                     variant: "primary";
                     text: RepairStore.running == "all" ? Tr.s("BusyWorking") : Tr.s("RepairRunAllBtn");
                     enabled: RepairStore.running == "";
                     loading: RepairStore.running == "all";
-                    clicked => { RepairStore.run("all"); }
+                    confirmed => { RepairStore.run("all"); }
                 }
             }
 

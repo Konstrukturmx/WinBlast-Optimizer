@@ -45,7 +45,7 @@ export component SupportAboutView inherits Rectangle {
                             Text { text: AboutStore.repo-url; font-size: Scale.font-xs; color: Theme.text-muted; wrap: word-wrap; }
                         }
                         WbButton { variant: "primary"; text: Tr.s("AboutOpenGithub"); clicked => { AboutStore.open-github(); } }
-                        WbButton { variant: "danger"; text: Tr.s("FaultReportToGithub"); clicked => { AppStore.open-bug-report(); } }
+                        WbButton { variant: "secondary"; text: Tr.s("FaultReportToGithub"); clicked => { AppStore.open-bug-report(); } }
                     }
                     Note { text: Tr.s("AboutBuiltWith"); }
                 }

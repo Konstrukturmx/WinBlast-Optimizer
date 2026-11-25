@@ -45,7 +45,6 @@ export component WindowsSetupView inherits Rectangle {
                         Check { on: BackupStore.auto-timezone; label: Tr.s("UnattendAutoTimezone"); clicked => { BackupStore.toggle-option("timezone"); } }
                         WbButton { variant: "primary"; text: Tr.s("UnattendExportBtn"); clicked => { BackupStore.export-unattend(); } }
                     }
-                    Text { text: Tr.s("LedgerDbLabel") + " " + BackupStore.ledger-path; font-size: Scale.font-2xs; color: Theme.text-muted; wrap: word-wrap; }
                     if BackupStore.last-export != "" : Text { text: Tr.s("ExportedLabel") + " " + BackupStore.last-export; font-size: Scale.font-xs; color: Theme.success; wrap: word-wrap; }
                 }
             }

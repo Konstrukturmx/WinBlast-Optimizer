@@ -7,6 +7,7 @@ import { GpuStore } from "../stores/gpu.slint";
 import { MatrixStore } from "../stores/matrix.slint";
 import { WbChip } from "../components/chip.slint";
 import { WbButton } from "../components/button.slint";
+import { WbConfirmButton } from "../components/confirm_button.slint";
 import { WbToggle, WbRiskBadge, WbPill, WbPanel } from "../components/toggle.slint";
 
 component Section inherits WbPanel {
@@ -73,13 +74,12 @@ export component GpuTuningView inherits Rectangle {
                             wrap: word-wrap;
                         }
                     }
-                    WbButton {
-                        variant: GpuStore.hags-enabled ? "secondary" : "primary";
-                        text: !GpuStore.hags-supported ? Tr.s("StatusNotApplicable")
-                            : GpuStore.hags-inflight ? Tr.s("BusyWorking")
+                    // F8: no disabled "N/A" primary button; unsupported is stated in the text beside it.
+                    if GpuStore.hags-supported : WbConfirmButton {
+                        text: GpuStore.hags-inflight ? Tr.s("BusyWorking")
                             : GpuStore.hags-enabled ? Tr.s("DisableHags") : Tr.s("EnableHags");
-                        enabled: GpuStore.hags-supported && !GpuStore.hags-inflight && !GpuStore.rolling-back;
-                        clicked => { GpuStore.toggle-hags(!GpuStore.hags-enabled); }
+                        enabled: !GpuStore.hags-inflight && !GpuStore.rolling-back;
+                        confirmed => { GpuStore.toggle-hags(!GpuStore.hags-enabled); }
                     }
                 }
                 Rectangle { height: 1px; background: Theme.border; }
@@ -93,11 +93,10 @@ export component GpuTuningView inherits Rectangle {
                         Text { text: Tr.s("MpoTitle"); font-size: Scale.font-sm; font-weight: 600; color: Theme.text-primary; }
                         Text { text: GpuStore.mpo-disabled ? Tr.s("MpoFixedStatus") : Tr.s("MpoEnabledStatus"); font-size: Scale.font-xs; color: GpuStore.mpo-disabled ? Theme.success : Theme.text-muted; wrap: word-wrap; }
                     }
-                    WbButton {
-                        variant: GpuStore.mpo-disabled ? "secondary" : "primary";
+                    WbConfirmButton {
                         text: GpuStore.mpo-inflight ? Tr.s("BusyWorking") : GpuStore.mpo-disabled ? Tr.s("RestoreMpoDefault") : Tr.s("DisableMpoFix");
                         enabled: !GpuStore.mpo-inflight && !GpuStore.rolling-back;
-                        clicked => { GpuStore.toggle-mpo(!GpuStore.mpo-disabled); }
+                        confirmed => { GpuStore.toggle-mpo(!GpuStore.mpo-disabled); }
                     }
                 }
             }
@@ -118,11 +117,10 @@ export component GpuTuningView inherits Rectangle {
                             spacing: Scale.px(8px);
                             cross-axis-alignment: center;
                             Text { text: g.msi ? Tr.s("MsiEnabledStatus") : Tr.s("MsiDisabledStatus"); font-size: Scale.font-xs; color: g.msi ? Theme.success : Theme.warning; }
-                            WbButton {
-                                variant: g.msi ? "secondary" : "primary";
-                                text: g.busy ? Tr.s("BusyWorking") : !g.pnp-valid ? Tr.s("StatusNotApplicable") : g.msi ? Tr.s("SwitchToLineIrq") : Tr.s("EnableMsiMode");
-                                enabled: g.pnp-valid && !g.busy && !GpuStore.rolling-back;
-                                clicked => { GpuStore.set-msi(g.pnp, !g.msi, g.priority); }
+                            if g.pnp-valid : WbConfirmButton {
+                                text: g.busy ? Tr.s("BusyWorking") : g.msi ? Tr.s("SwitchToLineIrq") : Tr.s("EnableMsiMode");
+                                enabled: !g.busy && !GpuStore.rolling-back;
+                                confirmed => { GpuStore.set-msi(g.pnp, !g.msi, g.priority); }
                             }
                         }
                         FlexboxLayout {

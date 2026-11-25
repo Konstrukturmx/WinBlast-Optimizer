@@ -44,7 +44,8 @@ component QuickCard inherits WbPanel {
     in property <string> btn-key;
     in property <string> view;
     in property <bool> accent;
-    min-width: Scale.px(200px);
+    // F7: equal-width cards so the grid wraps evenly.
+    width: Scale.px(260px);
     VerticalLayout {
         padding: Scale.px(12px);
         spacing: Scale.px(6px);

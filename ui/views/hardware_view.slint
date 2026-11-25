@@ -7,6 +7,7 @@ import { AppStore } from "../stores/app.slint";
 import { HardwareStore } from "../stores/hardware.slint";
 import { WbChip } from "../components/chip.slint";
 import { WbButton } from "../components/button.slint";
+import { WbConfirmButton } from "../components/confirm_button.slint";
 import { WbPanel } from "../components/toggle.slint";
 import { WbSparkline } from "../components/sparkline.slint";
 import { WbProgressBar } from "../components/progress_bar.slint";
@@ -102,30 +103,27 @@ export component HardwareViewComponent inherits Rectangle {
                 }
                 FlexboxLayout {
                     spacing: Scale.px(6px);
-                    WbButton {
-                        variant: "primary";
+                    // System changes: secondary + click twice to confirm (checklist F2 / F6).
+                    WbConfirmButton {
                         text: HardwareStore.power-inflight ? Tr.s("BusyWorking") : Tr.s("UltimatePowerPlanBtn");
                         enabled: !HardwareStore.power-inflight && !HardwareStore.rolling-back;
-                        clicked => { HardwareStore.ultimate-plan(); }
+                        confirmed => { HardwareStore.ultimate-plan(); }
                     }
-                    WbButton {
-                        variant: "secondary";
+                    WbConfirmButton {
                         text: HardwareStore.hibernation-inflight ? Tr.s("BusyWorking")
                             : Tr.s("HibernationLabel") + ": " + (HardwareStore.hibernation-enabled ? Tr.s("ToggleDisable") : Tr.s("ToggleEnable"));
                         enabled: !HardwareStore.hibernation-inflight && !HardwareStore.rolling-back;
-                        clicked => { HardwareStore.toggle-hibernation(!HardwareStore.hibernation-enabled); }
+                        confirmed => { HardwareStore.toggle-hibernation(!HardwareStore.hibernation-enabled); }
                     }
-                    WbButton {
-                        variant: "secondary";
+                    WbConfirmButton {
                         text: HardwareStore.usb-inflight ? Tr.s("BusyWorking") : Tr.s("UsbPowerLabel") + " (" + Tr.s("ToggleDisable") + ")";
                         enabled: !HardwareStore.usb-inflight && !HardwareStore.rolling-back;
-                        clicked => { HardwareStore.usb-power-saving(true); }
+                        confirmed => { HardwareStore.usb-power-saving(true); }
                     }
-                    WbButton {
-                        variant: "secondary";
+                    WbConfirmButton {
                         text: HardwareStore.usb-inflight ? Tr.s("BusyWorking") : Tr.s("UsbPowerLabel") + " (" + Tr.s("ToggleEnable") + ")";
                         enabled: !HardwareStore.usb-inflight && !HardwareStore.rolling-back;
-                        clicked => { HardwareStore.usb-power-saving(false); }
+                        confirmed => { HardwareStore.usb-power-saving(false); }
                     }
                 }
             }

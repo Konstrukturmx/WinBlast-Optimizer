@@ -5,6 +5,7 @@ import { ScrollView } from "std-widgets.slint";
 import { Scale, Theme, Tr } from "../theme.slint";
 import { DiskStore } from "../stores/sensors.slint";
 import { WbButton } from "../components/button.slint";
+import { WbConfirmButton } from "../components/confirm_button.slint";
 import { WbPill, WbPanel } from "../components/toggle.slint";
 import { WbProgressBar } from "../components/progress_bar.slint";
 import { WbShimmer } from "../components/fx.slint";
@@ -29,12 +30,11 @@ export component DiskHealthView inherits Rectangle {
                     Text { text: Tr.s("DiskSubtitle"); font-size: Scale.font-xs; color: Theme.text-muted; wrap: word-wrap; }
                 }
                 WbButton { variant: "secondary"; text: Tr.s("DiskRefreshBtn"); loading: DiskStore.scanning; enabled: !DiskStore.scanning; clicked => { DiskStore.refresh(); } }
-                WbButton {
-                    variant: "primary";
+                WbConfirmButton {
                     text: DiskStore.trim-inflight ? Tr.s("BusyWorking") : Tr.s("DiskTrimAllBtn");
                     enabled: !DiskStore.trim-inflight;
                     loading: DiskStore.trim-inflight;
-                    clicked => { DiskStore.trim-all(); }
+                    confirmed => { DiskStore.trim-all(); }
                 }
             }
 

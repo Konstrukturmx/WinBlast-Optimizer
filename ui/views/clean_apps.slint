@@ -79,7 +79,7 @@ export component CleanAppsView inherits Rectangle {
                             WbButton { variant: "secondary"; text: Tr.s("ScanCleanupTargets"); enabled: !CleanAppsStore.busy; clicked => { CleanAppsStore.scan-targets(); } }
                             WbButton {
                                 variant: "primary";
-                                text: Tr.s("CleanSelectedNow") + " (" + CleanAppsStore.selected-reclaimable + ")";
+                                text: CleanAppsStore.selected-reclaimable == "" ? Tr.s("CleanSelectedNow") : Tr.s("CleanSelectedNow") + " (" + CleanAppsStore.selected-reclaimable + ")";
                                 enabled: !CleanAppsStore.busy;
                                 loading: CleanAppsStore.busy;
                                 clicked => { CleanAppsStore.clean-selected(); }

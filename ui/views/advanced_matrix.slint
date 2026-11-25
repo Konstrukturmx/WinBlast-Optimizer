@@ -7,6 +7,7 @@ import { AppStore } from "../stores/app.slint";
 import { MatrixStore, MatrixRow } from "../stores/matrix.slint";
 import { WbChip } from "../components/chip.slint";
 import { WbButton } from "../components/button.slint";
+import { WbConfirmButton } from "../components/confirm_button.slint";
 import { WbSearchInput } from "../components/search_input.slint";
 import { WbToggle, WbRiskBadge, WbPill, WbPanel } from "../components/toggle.slint";
 import { WbShimmer } from "../components/fx.slint";
@@ -137,23 +138,15 @@ export component AdvancedMatrixView inherits Rectangle {
                             loading: MatrixStore.is-scanning;
                             clicked => { AppStore.start-scan(); }
                         }
-                        WbButton {
-                            variant: "primary";
-                            text: MatrixStore.is-applying ? Tr.s("BusyWorking")
-                                : MatrixStore.selected-count == 0 ? Tr.s("ApplySelected")
-                                : Tr.s("ApplySelected") + " (" + MatrixStore.selected-count + ")";
-                            enabled: !MatrixStore.busy;
-                            loading: MatrixStore.is-applying;
-                            clicked => { MatrixStore.apply-selected(); }
-                        }
-                        WbButton {
-                            variant: "secondary";
+                        // F11: "Apply Selected" lives once, in the batch toolbar below. Resetting to Windows
+                        // defaults is a separate, explicit, confirmed action (Undo restores your own values).
+                        WbConfirmButton {
                             text: MatrixStore.selected-count == 0 ? Tr.s("RevertDefaultsBtn") : Tr.s("RevertDefaultsBtn") + " (" + MatrixStore.selected-count + ")";
                             enabled: !MatrixStore.busy && MatrixStore.selected-count > 0;
-                            clicked => { MatrixStore.revert-defaults(); }
+                            confirmed => { MatrixStore.revert-defaults(); }
                         }
                         WbButton { variant: "secondary"; text: Tr.s("PreviewDiff"); clicked => { MatrixStore.toggle-diff-preview(); } }
-                        WbButton { variant: "secondary"; text: Tr.s("RestartExplorerBtn"); clicked => { MatrixStore.restart-explorer(); } }
+                        WbConfirmButton { text: Tr.s("RestartExplorerBtn"); confirmed => { MatrixStore.restart-explorer(); } }
                     }
                 }
             }

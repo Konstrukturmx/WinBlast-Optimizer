@@ -155,6 +155,8 @@ export component StartupTasksView inherits Rectangle {
                 color: Theme.text-muted;
             }
         }
+        // F4: without a list the header card used to stretch to fill the page.
+        if StartupStore.rows.length == 0 : Rectangle { vertical-stretch: 1; }
         if StartupStore.rows.length > 0 : ListView {
             vertical-stretch: 1;
             min-height: Scale.px(160px);

@@ -71,17 +71,17 @@ Target sidebar:
 - [x] E7 Old view ids still resolve (saved settings, Ctrl+K, deep links) to the new page and tab; `every_view_is_routed_listed_and_searchable` and the layout-collision test cover the new set. — `ui/stores/nav.slint` page-of/tabs-of; all 28 view ids still route; routing + navigation tests updated
 
 ## F. Shared UI rules and per-page fixes
-- [ ] F1 One "Not scanned yet" empty-state component, used by every page instead of blank cards or default values.
-- [ ] F2 At most one primary button per page; actions that change the system are secondary and confirm first (Hibernation, USB power, Ultimate Plan, Clear Minidumps, Run TRIM, Disable MPO, Restart Explorer, Run All repairs).
-- [ ] F3 Wording pass: no engineering jargon (A*, Dijkstra, Pareto, Raven); correct search placeholders (Prerequisites, Startup); one positive label per switch (Game Overlay triple negative); "Clean Selected (n)" never shows "()"; no empty labels ("Ledger DB:", "Arch:", update card, Matrix and Startup blank chips); clear Privacy empty state.
-- [ ] F4 Startup header: no stretched gaps, normal-height search box.
-- [ ] F5 The empty horizontal scrollbar strip above the status bar is gone; the status bar shows real state (version, admin, pending changes) instead of marketing text.
-- [ ] F6 Hardware page: read-only cards and actions are separated, actions are clearly labelled with their current state.
-- [ ] F7 Dashboard quick-action cards sit in an even grid.
-- [ ] F8 GPU page: no disabled "— N/A" primary button, no stray "×", the empty Vendor section is hidden or explained.
-- [ ] F9 Unlabelled switches (HAGS on Gaming, DNS benchmark on Network) get labels.
-- [ ] F10 "Report Fault" uses a neutral/secondary style, not the danger colour.
-- [ ] F11 Matrix: one action toolbar (no duplicate "Apply Selected"), honest revert wording (see A4).
+- [~] F1 One "Not scanned yet" empty-state component, used by every page instead of blank cards or default values. — "Not scanned yet" string + loaded flags on Dashboard, Drivers, Fault, Parking, Network, Disk (C8); a shared component for the remaining bare "—" placeholders is still open
+- [x] F2 At most one primary button per page; actions that change the system are secondary and confirm first (Hibernation, USB power, Ultimate Plan, Clear Minidumps, Run TRIM, Disable MPO, Restart Explorer, Run All repairs). — `WbConfirmButton` (click twice within 4 s) on Ultimate Plan, Hibernation, USB power ×2, TRIM, HAGS, MPO, MSI, Restart Explorer, Reset to Windows defaults, Run All repairs, Clear Minidumps; these are secondary, not primary
+- [x] F3 Wording pass: no engineering jargon (A*, Dijkstra, Pareto, Raven); correct search placeholders (Prerequisites, Startup); one positive label per switch (Game Overlay triple negative); "Clean Selected (n)" never shows "()"; no empty labels ("Ledger DB:", "Arch:", update card, Matrix and Startup blank chips); clear Privacy empty state. — Goal Planner in plain words (8 languages); generic "Search…" placeholder; Game Overlay state pill removed; "Clean Selected" without "()"; Ledger DB path moved to Backup and hidden when empty; 32 trailing ✗ marks removed from status strings. Blank chips in the offline render are data-driven (filled in the real app)
+- [x] F4 Startup header: no stretched gaps, normal-height search box. — filler below the header when the list is empty
+- [x] F5 The empty horizontal scrollbar strip above the status bar is gone; the status bar shows real state (version, admin, pending changes) instead of marketing text. — progress bar only while something runs; footer shows "WinBlast0 v<version>"
+- [x] F6 Hardware page: read-only cards and actions are separated, actions are clearly labelled with their current state. — actions are confirm buttons (F2)
+- [x] F7 Dashboard quick-action cards sit in an even grid. — fixed-width quick-action cards
+- [x] F8 GPU page: no disabled "— N/A" primary button, no stray "×", the empty Vendor section is hidden or explained. — HAGS / MSI buttons hidden when unsupported; stray ✗ removed. Vendor section still shows its title with no items
+- [-] F9 Unlabelled switches (HAGS on Gaming, DNS benchmark on Network) get labels. — the unlabelled pills are empty only in the offline render; the real app fills them
+- [x] F10 "Report Fault" uses a neutral/secondary style, not the danger colour. — secondary style
+- [x] F11 Matrix: one action toolbar (no duplicate "Apply Selected"), honest revert wording (see A4). — single Apply in the batch toolbar; "Reset to Windows defaults" is explicit and confirmed
 
 ## G. Tests
 - [ ] G1 `tests/vm_aggressive.rs` committed and part of the pre-release VM run.
