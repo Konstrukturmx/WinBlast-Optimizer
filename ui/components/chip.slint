@@ -11,6 +11,8 @@ export component WbChip inherits Rectangle {
     in property <string> tooltip: "";
     // Render the label in the mono family (glyphs such as ≡ only exist there).
     in property <bool> mono: false;
+    // Explicit font family for the label (e.g. Typo.cjk for "简体中文"); empty = default.
+    in property <string> family: "";
     callback clicked();
 
     private property <color> tone-color:
@@ -51,7 +53,7 @@ export component WbChip inherits Rectangle {
             text: root.text;
             font-size: Scale.font-xs;
             font-weight: root.active ? 700 : 500;
-            font-family: root.mono ? Typo.mono : Typo.ui;
+            font-family: root.family != "" ? root.family : root.mono ? Typo.mono : Typo.ui;
             color: root.active ? Theme.accent : (root.tone == "neutral" ? Theme.text-primary : root.tone-color);
             vertical-alignment: center;
             overflow: elide;

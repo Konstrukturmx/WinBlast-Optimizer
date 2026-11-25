@@ -70,6 +70,10 @@ export global AppStore {
     in-out property <string> color-scheme-label: "";
     in-out property <[ChoiceItem]> color-schemes: [];
     in-out property <float> zoom: 1.0;
+    // Settings → Text
+    in-out property <[ChoiceItem]> ui-fonts: [];
+    in-out property <string> text-mode: "sharp";
+    in-out property <int> text-contrast: 35;
 
     // ---- Scan / staging ----
     in-out property <bool> is-scanning: false;
@@ -134,6 +138,9 @@ export global AppStore {
     callback palette-search(string);
     callback dismiss-toast(int);
     callback toggle-reduced-motion();
+    callback set-ui-font(int);
+    callback set-text-mode(string);
+    callback set-text-contrast(int);
     // Accent/diacritic-folding search match used by the sidebar filter (Rust: I18n::fold_search_str).
     pure callback nav-matches(string /* label */, string /* query */) -> bool;
 }

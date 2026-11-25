@@ -32,6 +32,9 @@ graph TD
 | `src/hardware/` | CPU, GPU, thermal, disks (`disks.rs` SMART/NVMe, `tbw.rs` SATA unit table), drivers |
 | `src/tools/` | Cleaner, AppX, WinGet, startup, repair, network, benchmarks, automation, Windows Setup file |
 | `assets/rules/*.toml` | The tweak catalog (230 tweaks), built into the exe |
+| `crates/winblast-text/` | The text engine: outlines and hinting (skrifa), exact-area rasterizer, contrast curve, pixel placement, atlas packer. `cargo test -p winblast-text` |
+| `vendor/i-slint-renderer-femtovg/` | Slint 1.19 GPU renderer, patched in via `[patch.crates-io]`; `winblast_glyphs.rs` routes text through the engine. See `vendor/README.md` before updating Slint |
+| `src/core/text_render.rs` | UI font catalog and text settings (Settings → Text); Chinese always uses the embedded Noto Sans SC |
 
 ### Rules that keep it honest
 - **No invented values.** If a sensor or API can't be read, show N/A or *Requires admin*. Never derive or hard-code a reading.
@@ -46,7 +49,7 @@ graph TD
 All default tests run against `SandboxEnv` or read-only APIs; **none of them change the machine they run on.**
 
 ```powershell
-cargo test --all-targets                      # 321 tests
+cargo test --workspace --all-targets          # 348 tests (app + text engine)
 cargo clippy --all-targets -- -D warnings     # must be clean
 cargo clippy --all-targets --features vm-tests -- -D warnings
 ```
@@ -63,7 +66,7 @@ cargo clippy --all-targets --features vm-tests -- -D warnings
 | `vm_aggressive` | **VM only** (`--features vm-tests`, `WINBLAST_VM_AGGRESSIVE=1`): real-registry byte-exact round trips, hard-kill crash recovery, concurrency stress, ledger corruption |
 
 ### Screenshots
-`WINBLAST_SCREENSHOT_DIR=<dir>` makes the app open each view, wait for its read-only data and save it as a BMP, then quit. `WINBLAST_SCREENSHOT_VIEWS=dashboard,matrix,…` picks views; `WINBLAST_SCREENSHOT_WAIT=8` sets the wait in seconds. The tour only navigates and never presses a button.
+`WINBLAST_SCREENSHOT_DIR=<dir>` makes the app open each view, wait for its read-only data and save it as a BMP, then quit. `WINBLAST_SCREENSHOT_VIEWS=dashboard,matrix,…` picks views; `WINBLAST_SCREENSHOT_WAIT=8` sets the wait in seconds. `WINBLAST_SCREENSHOT_HOVER=x,y` parks the pointer (logical px) to capture hover states; `WINBLAST_TEXT_RENDER=sharp|crisp|smooth|classic`, `WINBLAST_UI_FONT=<family>` and `WINBLAST_SETTINGS_PATH=<file>` change the text settings, font or language for one run without touching the saved settings. The tour only navigates and moves the pointer; it never presses a button.
 
 ---
 

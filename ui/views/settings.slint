@@ -2,7 +2,7 @@
 // Settings (checklist E4): language, appearance, motion and how changes are applied, in one
 // place. These used to be split between the top bar overflow and Support & About.
 import { ScrollView } from "std-widgets.slint";
-import { Scale, Theme, Tr, Fx } from "../theme.slint";
+import { Scale, Theme, Tr, Fx, Typo } from "../theme.slint";
 import { AppStore } from "../stores/app.slint";
 import { WbButton } from "../components/button.slint";
 import { WbChip, WbSegmented } from "../components/chip.slint";
@@ -44,6 +44,7 @@ export component SettingsView inherits Rectangle {
                         spacing: Scale.px(6px);
                         for l[i] in AppStore.languages : WbChip {
                             text: l.label;
+                            family: l.detail == "Simplified Chinese" ? Typo.cjk : "";
                             active: l.selected;
                             clicked => { AppStore.set-language(i); }
                         }
@@ -83,6 +84,61 @@ export component SettingsView inherits Rectangle {
                         WbButton { variant: "secondary"; text: "+"; clicked => { AppStore.set-zoom(AppStore.zoom + 0.1); } }
                         WbButton { variant: "ghost"; text: Tr.s("SettingsZoomReset"); clicked => { AppStore.set-zoom(1.0); } }
                     }
+                }
+            }
+
+            // Text: font, rendering mode and contrast (WinBlast0 text engine, crates/winblast-text).
+            WbPanel {
+                VerticalLayout {
+                    padding: Scale.px(12px);
+                    spacing: Scale.px(8px);
+                    SectionTitle { text: Tr.s("SettingsText"); }
+                    Note { text: Tr.s("SettingsFont"); }
+                    FlexboxLayout {
+                        spacing: Scale.px(6px);
+                        for f[i] in AppStore.ui-fonts : WbChip {
+                            text: f.label;
+                            active: f.selected;
+                            clicked => { AppStore.set-ui-font(i); }
+                        }
+                    }
+                    Rectangle {
+                        border-radius: Scale.px(Theme.card-radius);
+                        background: Theme.bg-card;
+                        border-width: Theme.border-width;
+                        border-color: Theme.border;
+                        VerticalLayout {
+                            padding: Scale.px(10px);
+                            spacing: Scale.px(4px);
+                            Text { text: Tr.s("SettingsTextPreview"); font-size: Scale.font-md; color: Theme.text-primary; wrap: word-wrap; }
+                            Text { text: "AaBbCc ĞğİıŞşÇçÖöÜü 0123456789 · Il1| O0 rn m · Жж Яя"; font-size: Scale.font-sm; color: Theme.text-secondary; wrap: word-wrap; }
+                            Text { text: Tr.s("SettingsTextPreview"); font-size: Scale.font-2xs; color: Theme.text-muted; wrap: word-wrap; }
+                        }
+                    }
+                    Note { text: Tr.s("SettingsTextRendering"); }
+                    FlexboxLayout {
+                        spacing: Scale.px(6px);
+                        WbChip { text: Tr.s("SettingsTextSharp"); active: AppStore.text-mode == "sharp"; clicked => { AppStore.set-text-mode("sharp"); } }
+                        WbChip { text: Tr.s("SettingsTextCrisp"); active: AppStore.text-mode == "crisp"; clicked => { AppStore.set-text-mode("crisp"); } }
+                        WbChip { text: Tr.s("SettingsTextSmooth"); active: AppStore.text-mode == "smooth"; clicked => { AppStore.set-text-mode("smooth"); } }
+                        WbChip { text: Tr.s("SettingsTextClassic"); active: AppStore.text-mode == "classic"; clicked => { AppStore.set-text-mode("classic"); } }
+                    }
+                    Note {
+                        text: AppStore.text-mode == "crisp" ? Tr.s("SettingsTextCrispDesc")
+                            : AppStore.text-mode == "smooth" ? Tr.s("SettingsTextSmoothDesc")
+                            : AppStore.text-mode == "classic" ? Tr.s("SettingsTextClassicDesc")
+                            : Tr.s("SettingsTextSharpDesc");
+                    }
+                    Note { text: Tr.s("SettingsTextContrast"); }
+                    HorizontalLayout {
+                        spacing: Scale.px(6px);
+                        alignment: start;
+                        WbButton { variant: "secondary"; text: "−"; enabled: AppStore.text-mode != "classic" && AppStore.text-contrast > 0; clicked => { AppStore.set-text-contrast(AppStore.text-contrast - 10); } }
+                        Text { text: AppStore.text-contrast + " %"; font-size: Scale.font-sm; font-weight: 700; color: Theme.text-primary; vertical-alignment: center; min-width: Scale.px(56px); horizontal-alignment: center; }
+                        WbButton { variant: "secondary"; text: "+"; enabled: AppStore.text-mode != "classic" && AppStore.text-contrast < 100; clicked => { AppStore.set-text-contrast(AppStore.text-contrast + 10); } }
+                        WbButton { variant: "ghost"; text: Tr.s("SettingsZoomReset"); clicked => { AppStore.set-text-contrast(35); } }
+                    }
+                    Note { text: Tr.s("SettingsTextNote"); color: Theme.text-muted; }
                 }
             }
 

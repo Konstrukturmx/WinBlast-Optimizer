@@ -4,6 +4,16 @@ All notable changes to **WinBlast Optimizer** are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
+## [Unreleased]
+
+### Text engine: sharp, straight text at any display scale
+- **New WinBlast0 text engine** (`crates/winblast-text`): reads glyph outlines from any TrueType/OpenType font, hints them (the font's own instructions or the autohinter, via skrifa), rasterizes them with its own exact-area coverage rasterizer and a contrast curve, and places every line on a whole-pixel baseline. It draws all plain text through Slint's GPU renderer, vendored in `vendor/i-slint-renderer-femtovg` with one added module.
+- **Fixed: uneven, blurry text on hovered cards.** Cards scale to 101.2 % under the mouse (buttons 103 %); the old renderer then snapped each letter separately, so words came apart ("Proces sor"). Before/after pictures: `docs/text-engine/`.
+- **Settings → Text**: font (Inter, Atkinson Hyperlegible, IBM Plex Sans, Noto Sans, Source Sans 3, Segoe UI), rendering (Sharp, Crisp, Smooth, Classic) and contrast, with a live preview. All new fonts are free (SIL OFL), embedded and subset; saved with the other preferences.
+- **Fixed: the Chinese UI was missing characters.** Windows fell back to a Japanese font that has no Simplified-only characters (设置 showed as 置, 系统 as 系) and no ⌄ ↩ ↺ (shown as boxes). Chinese now uses an embedded Noto Sans SC subset with every character the app uses.
+- Tests: 23 for the engine (exact coverage, winding, curve flattening, baseline snapping, hinting sharpness, sub-pixel bins, variable weights, every bundled font with Turkish and Chinese text, atlas packing), a headless Settings → Text test and a check that the Chinese font covers every CJK character in the source.
+- Screenshot tour: `WINBLAST_SCREENSHOT_HOVER=x,y` parks the pointer to capture hover states; `WINBLAST_TEXT_RENDER` and `WINBLAST_UI_FONT` override the text settings for one run (never saved).
+
 ## [v1.7.0] - 2026-11-25
 
 The first public 1.7.0 release. Every item below is tracked with its evidence in [docs/checklist-1.7.0.md](docs/checklist-1.7.0.md).

@@ -10,15 +10,44 @@ use crate::app::{ActiveView, AppMode, AppState, EngineMode};
 use crate::core::i18n::{I18n, Language, TextKey};
 use crate::core::settings::UserSettings;
 use crate::core::status_i18n::StatusMessageSpec;
+use crate::core::text_render::{self, RenderMode};
 use crate::core::theme::{ColorScheme, ThemeMode, UiThemeStyle};
 use crate::scanner::TweakState;
 
 use super::ctx::Ctx;
 use super::models::{new_model, sync_vec};
-use super::{i18n, palette, theme, AppStore, ChangelogEntry, ChoiceItem, DiffRowData, Fx, MainWindow, PaletteItem, Scale, ToastItem};
+use super::{i18n, palette, theme, AppStore, ChangelogEntry, ChoiceItem, DiffRowData, Fx, MainWindow, PaletteItem, Scale, ToastItem, Typo};
 
 /// Most toasts kept on screen at once (oldest is dropped first).
 pub const MAX_TOASTS: usize = 3;
+
+/// Text settings held by the shell (saved with the other UI preferences).
+pub struct TextSettings {
+    pub font: Cell<usize>,
+    pub mode: Cell<RenderMode>,
+    pub contrast: Cell<u8>,
+    /// The UI language is Simplified Chinese: the UI font is then Noto Sans SC.
+    pub chinese: Cell<bool>,
+}
+
+impl TextSettings {
+    fn from_settings(settings: &UserSettings) -> Self {
+        TextSettings {
+            font: Cell::new(text_render::font_index(&settings.ui_font).unwrap_or(0)),
+            mode: Cell::new(text_render::resolve_mode(&settings.text_rendering)),
+            contrast: Cell::new(settings.text_contrast.min(100)),
+            chinese: Cell::new(settings.language == Language::Chinese),
+        }
+    }
+
+    /// Push font, mode and contrast to Slint and the text engine, then repaint.
+    pub fn apply(&self, window: &MainWindow) {
+        let family = text_render::effective_family(self.chinese.get(), self.font.get());
+        window.global::<Typo>().set_ui(family.into());
+        text_render::apply(self.mode.get(), self.contrast.get());
+        window.window().request_redraw();
+    }
+}
 
 /// Toast tone for a finished status message, or `None` when the message is progress/selection
 /// chatter that the footer already shows (no toast).
@@ -80,6 +109,9 @@ pub struct Shell {
     applied_theme: Cell<Option<(ThemeMode, ColorScheme, UiThemeStyle, bool)>>,
     zoom: Rc<Cell<f32>>,
     reduced_motion: Rc<Cell<bool>>,
+    /// Settings → Text: index into UI_FONTS, render mode and contrast.
+    text: Rc<TextSettings>,
+    ui_fonts: Rc<VecModel<ChoiceItem>>,
     palette: Rc<VecModel<PaletteItem>>,
     toasts: Rc<VecModel<ToastItem>>,
     /// Last status spec seen by `sync` (None until the first sync, which never toasts).
@@ -97,6 +129,10 @@ impl Shell {
         let (schemes, sc_rc) = new_model();
         let (palette, p_rc) = new_model();
         let (toasts, t_rc) = new_model();
+        let (ui_fonts, uf_rc) = new_model();
+        store.set_ui_fonts(uf_rc);
+        let text = Rc::new(TextSettings::from_settings(settings));
+        text.apply(window);
         store.set_palette_items(p_rc);
         store.set_toasts(t_rc);
         store.set_changelog(c_rc);
@@ -118,6 +154,8 @@ impl Shell {
             applied_theme: Cell::new(None),
             zoom: Rc::new(Cell::new(zoom)),
             reduced_motion: Rc::new(Cell::new(settings.reduced_motion)),
+            text,
+            ui_fonts,
             palette,
             toasts,
             last_status: RefCell::new(None),
@@ -242,6 +280,32 @@ impl Shell {
                 model.remove(i);
             }
         });
+        let (c, t, w) = (ctx.clone(), self.text.clone(), window.as_weak());
+        store.on_set_ui_font(move |idx| {
+            if let (Ok(i), Some(win)) = (usize::try_from(idx), w.upgrade()) {
+                if i < text_render::UI_FONTS.len() {
+                    t.font.set(i);
+                    t.apply(&win);
+                    c.dirty.set(true);
+                }
+            }
+        });
+        let (c, t, w) = (ctx.clone(), self.text.clone(), window.as_weak());
+        store.on_set_text_mode(move |id| {
+            if let (Some(mode), Some(win)) = (RenderMode::from_id(id.as_str()), w.upgrade()) {
+                t.mode.set(mode);
+                t.apply(&win);
+                c.dirty.set(true);
+            }
+        });
+        let (c, t, w) = (ctx.clone(), self.text.clone(), window.as_weak());
+        store.on_set_text_contrast(move |v| {
+            if let Some(win) = w.upgrade() {
+                t.contrast.set(v.clamp(0, 100) as u8);
+                t.apply(&win);
+                c.dirty.set(true);
+            }
+        });
         let (c, rm) = (ctx.clone(), self.reduced_motion.clone());
         store.on_toggle_reduced_motion(move || {
             rm.set(!rm.get());
@@ -317,6 +381,9 @@ impl Shell {
             telemetry_interval_ms: s.telemetry_interval_ms(),
             sidebar_open: s.sidebar_open,
             reduced_motion: self.reduced_motion.get(),
+            ui_font: text_render::UI_FONTS[self.text.font.get()].family.to_string(),
+            text_rendering: self.text.mode.get().id().to_string(),
+            text_contrast: self.text.contrast.get(),
         }
         .sanitized()
     }
@@ -325,6 +392,10 @@ impl Shell {
         let store = window.global::<AppStore>();
         let lang = s.language;
         i18n::apply_language(window, ctx, lang);
+        if self.text.chinese.get() != (lang == Language::Chinese) {
+            self.text.chinese.set(lang == Language::Chinese);
+            self.text.apply(window);
+        }
 
         let key = (s.theme_mode, s.color_scheme, s.theme_style, self.reduced_motion.get());
         if self.applied_theme.get() != Some(key) {
@@ -370,6 +441,20 @@ impl Shell {
                 .map(|(l, en)| ChoiceItem { label: l.label().into(), detail: en.into(), selected: *l == lang })
                 .collect(),
         );
+        sync_vec(
+            &self.ui_fonts,
+            text_render::UI_FONTS
+                .iter()
+                .enumerate()
+                .map(|(i, f)| ChoiceItem {
+                    label: f.label.into(),
+                    detail: f.family.into(),
+                    selected: i == self.text.font.get(),
+                })
+                .collect(),
+        );
+        store.set_text_mode(self.text.mode.get().id().into());
+        store.set_text_contrast(i32::from(self.text.contrast.get()));
         store.set_theme_dark(s.theme_mode == ThemeMode::Dark);
         store.set_theme_style_label(s.theme_style.short_label().into());
         sync_vec(

@@ -3,8 +3,12 @@
 
 export global Typo {
     // Family names as stored in the embedded font files (ui/fonts/).
-    out property <string> ui: "Inter Variable";
+    // Set from Rust (Settings → Text → Font); one of core::text_render::UI_FONTS.
+    in-out property <string> ui: "Inter Variable";
     out property <string> mono: "JetBrains Mono";
+    // Simplified Chinese (embedded subset): Windows falls back to a Japanese font for Han text,
+    // which has no Simplified-only characters (简, 设, 优 …).
+    out property <string> cjk: "Noto Sans SC";
 }
 
 export global Fx {

@@ -1,7 +1,7 @@
 // ui/shell/dropdown.slint
 // Floating selector for Language / Theme Style / Color Scheme (port of v1.6.1 dropdown overlay).
 // A full-window scrim closes it on outside click.
-import { Scale, Theme, Tr } from "../theme.slint";
+import { Scale, Theme, Tr, Typo } from "../theme.slint";
 import { AppStore, ChoiceItem } from "../stores/app.slint";
 
 export component AppDropdown inherits Rectangle {
@@ -71,6 +71,7 @@ export component AppDropdown inherits Rectangle {
                     spacing: Scale.px(6px);
                     Text {
                         text: item.label;
+                        font-family: item.detail == "Simplified Chinese" ? Typo.cjk : Typo.ui;
                         font-size: Scale.font-sm;
                         color: item.selected ? Theme.accent : Theme.text-primary;
                         vertical-alignment: center;

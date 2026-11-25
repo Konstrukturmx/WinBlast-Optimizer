@@ -17,6 +17,9 @@ dev-rules = []
 [dependencies]
 crossbeam-channel = "0.5"
 
+# WinBlast0 text engine (hinted, pixel-aligned glyphs); also used by the patched Slint renderer.
+winblast-text = { path = "crates/winblast-text" }
+
 # Slint 1.19.0 Declarative GUI Toolkit
 slint = { version = "1.19.0", default-features = false, features = [
     "std",
@@ -108,3 +111,10 @@ lto = "thin"
 codegen-units = 1
 strip = true
 
+[workspace]
+members = [".", "crates/winblast-text"]
+exclude = ["vendor"]
+
+# Slint's GPU renderer with the winblast-text glyph path (see vendor/README.md).
+[patch.crates-io]
+i-slint-renderer-femtovg = { path = "vendor/i-slint-renderer-femtovg" }

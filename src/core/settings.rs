@@ -27,6 +27,12 @@ pub struct UserSettings {
     pub telemetry_interval_ms: u64,
     pub sidebar_open: bool,
     pub reduced_motion: bool,
+    /// UI font family (see `core::text_render::UI_FONTS`).
+    pub ui_font: String,
+    /// Text render mode id: sharp, crisp, smooth or classic.
+    pub text_rendering: String,
+    /// Text contrast 0-100.
+    pub text_contrast: u8,
 }
 
 impl Default for UserSettings {
@@ -40,6 +46,9 @@ impl Default for UserSettings {
             telemetry_interval_ms: 1000,
             sidebar_open: true,
             reduced_motion: false,
+            ui_font: crate::core::text_render::DEFAULT_UI_FONT.to_string(),
+            text_rendering: crate::core::text_render::DEFAULT_TEXT_RENDERING.to_string(),
+            text_contrast: crate::core::text_render::DEFAULT_TEXT_CONTRAST,
         }
     }
 }
@@ -47,6 +56,9 @@ impl Default for UserSettings {
 impl UserSettings {
     /// Clamp every numeric field into its supported range (NaN/inf fall back to defaults).
     pub fn sanitized(mut self) -> Self {
+        self.ui_font = crate::core::text_render::resolve_font(&self.ui_font).to_string();
+        self.text_rendering = crate::core::text_render::resolve_mode(&self.text_rendering).id().to_string();
+        self.text_contrast = self.text_contrast.min(100);
         self.ui_zoom = if self.ui_zoom.is_finite() {
             self.ui_zoom.clamp(MIN_ZOOM, MAX_ZOOM)
         } else {

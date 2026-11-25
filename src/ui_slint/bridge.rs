@@ -118,14 +118,20 @@ impl SlintBridge {
     /// Documentation helper: with `WINBLAST_SCREENSHOT_DIR` set, open each view named in
     /// `WINBLAST_SCREENSHOT_VIEWS` (comma-separated view ids, default: every view), wait
     /// `WINBLAST_SCREENSHOT_WAIT` seconds (default 6) for its read-only data, save the window as
-    /// `NN-<view>.bmp` and quit. It only navigates; it never presses a button.
+    /// `NN-<view>.bmp` and quit. `WINBLAST_SCREENSHOT_HOVER=x,y` (logical px) parks the pointer
+    /// there first to capture hover states. It only navigates and moves the pointer; it never
+    /// presses a button.
     fn start_screenshot_tour(self: &Rc<Self>, dir: std::path::PathBuf) -> slint::Timer {
         use crate::app::ActiveView;
         let views: Vec<ActiveView> = match std::env::var("WINBLAST_SCREENSHOT_VIEWS") {
             Ok(list) => list.split(',').filter_map(|n| crate::ui_slint::shell::view_from_name(n.trim())).collect(),
             Err(_) => ActiveView::ALL_VIEWS.to_vec(),
         };
-        let wait: u32 = std::env::var("WINBLAST_SCREENSHOT_WAIT").ok().and_then(|v| v.parse().ok()).unwrap_or(6);
+        let wait: u32 = std::env::var("WINBLAST_SCREENSHOT_WAIT").ok().and_then(|v| v.parse().ok()).unwrap_or(6).max(3);
+        let hover: Option<(f32, f32)> = std::env::var("WINBLAST_SCREENSHOT_HOVER").ok().and_then(|v| {
+            let (x, y) = v.split_once(',')?;
+            Some((x.trim().parse().ok()?, y.trim().parse().ok()?))
+        });
         let _ = std::fs::create_dir_all(&dir);
         let weak = Rc::downgrade(self);
         let step = std::cell::Cell::new(0u32);
@@ -141,6 +147,16 @@ impl SlintBridge {
                 let w = if i == 0 { first_wait } else { wait };
                 if elapsed == 0 {
                     b.ctx.act(|s| s.navigate(*view));
+                    return;
+                }
+                if elapsed + 2 == w {
+                    // Optional pointer position (logical px) so hover states (card lift, button
+                    // scale) show up in the screenshot. Moving the pointer never clicks.
+                    if let Some((x, y)) = hover {
+                        b.window.window().dispatch_event(slint::platform::WindowEvent::PointerMoved {
+                            position: slint::LogicalPosition::new(x, y),
+                        });
+                    }
                     return;
                 }
                 if elapsed == w {

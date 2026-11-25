@@ -20,3 +20,4 @@ pub mod view_i18n;
 pub mod theme;
 pub mod window_icon;
 pub mod settings;
+pub mod text_render;
