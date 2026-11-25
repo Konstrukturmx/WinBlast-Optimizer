@@ -152,15 +152,17 @@ fn linear_to_srgb_conversion_is_exact_at_the_endpoints() {
 }
 
 #[test]
-fn navigation_reaches_all_26_views_through_the_store() {
+fn navigation_reaches_all_views_through_the_store() {
     let (window, state, bridge) = harness();
     let store = window.global::<AppStore>();
-    assert_eq!(ActiveView::ALL_VIEWS.len(), 26);
+    assert_eq!(ActiveView::ALL_VIEWS.len(), 28);
     for view in ActiveView::ALL_VIEWS {
         store.invoke_navigate(view.name().into());
         bridge.sync();
-        assert_eq!(state.borrow().active_view, view);
-        assert_eq!(store.get_active_view().as_str(), view.name());
+        // The FPS page was merged into Gaming (checklist E1).
+        let expected = if view == ActiveView::FpsBenchmark { ActiveView::GamingStats } else { view };
+        assert_eq!(state.borrow().active_view, expected);
+        assert_eq!(store.get_active_view().as_str(), expected.name());
     }
     store.invoke_navigate("no-such-view".into());
     bridge.sync();

@@ -23,7 +23,7 @@ import { PlannerStore, PlanMetric, PlanStep } from "stores/planner.slint";
 import { AutomationStore, MaintenanceRow } from "stores/automation.slint";
 import { FaultStore, RepairStore, PerfStore, RepairRow } from "stores/diagnostics.slint";
 import { AboutStore } from "stores/about.slint";
-import { GamingStore, PrereqStore, NetworkStore, FpsRow, ProfileRow, CheckRow, PrereqRow, DnsRow } from "stores/gaming.slint";
+import { GamingStore, PrereqStore, NetworkStore, ProfileRow, CheckRow, PrereqRow, DnsRow } from "stores/gaming.slint";
 import { AppTopBar } from "shell/topbar.slint";
 import { AppSidebar } from "shell/sidebar.slint";
 import { AppProgressStrip, AppChangelog, AppFooter } from "shell/statusbar.slint";
@@ -44,7 +44,6 @@ import { ThermalMonitorView } from "views/thermal_monitor.slint";
 import { DiskHealthView } from "views/disk_health.slint";
 import { DriverBiosView } from "views/driver_bios.slint";
 import { LatencyBenchView } from "views/latency_bench.slint";
-import { FpsBenchmarkView } from "views/fps_benchmark.slint";
 import { GamingStatsView } from "views/gaming_stats.slint";
 import { NetworkDiagView } from "views/network_diag.slint";
 import { PerformanceTestsView } from "views/performance_tests.slint";
@@ -59,10 +58,16 @@ import { FaultDiagnosticsView } from "views/fault_diagnostics.slint";
 import { BackupCenterView } from "views/backup_center.slint";
 import { PrivacyShieldView } from "views/privacy_shield.slint";
 import { SupportAboutView } from "views/support_about.slint";
+import { SettingsView } from "views/settings.slint";
+import { WindowsSetupView } from "views/windows_setup.slint";
+import { Nav, NavTab } from "stores/nav.slint";
+import { WbPageTabs } from "components/page_tabs.slint";
 
-export { Scale, Theme, Motion, Tr, Typo, Fx, AppStore, ChangelogEntry, DiffRowData, ChoiceItem, PaletteItem, ToastItem, MatrixStore, MatrixRow, MatrixCategory, DashboardStore, CategoryStat, CleanAppsStore, CleanTargetRow, AppxRow, FeatureRow, WingetRow, StartupStore, StartupRow, BackupStore, RestorePointRow, LedgerRow, PrivacyStore, GpuStore, GpuAdapterRow, GpuTweakRow, HardwareStore, KvRow, TitledRow, ChipItem, MeterCell, ParkingStore, ThermalStore, DiskStore, CoreCard, ThermalRow, DriveCard, DriverStore, DriverRow, DisplayDriverRow, LatencyStore, LatencyMetric, PingRow, PlannerStore, PlanMetric, PlanStep, AutomationStore, MaintenanceRow, FaultStore, RepairStore, PerfStore, RepairRow, GamingStore, PrereqStore, NetworkStore, FpsRow, ProfileRow, CheckRow, PrereqRow, DnsRow, AboutStore }
+export { Scale, Theme, Motion, Tr, Typo, Fx, AppStore, ChangelogEntry, DiffRowData, ChoiceItem, PaletteItem, ToastItem, MatrixStore, MatrixRow, MatrixCategory, DashboardStore, CategoryStat, CleanAppsStore, CleanTargetRow, AppxRow, FeatureRow, WingetRow, StartupStore, StartupRow, BackupStore, RestorePointRow, LedgerRow, PrivacyStore, GpuStore, GpuAdapterRow, GpuTweakRow, HardwareStore, KvRow, TitledRow, ChipItem, MeterCell, ParkingStore, ThermalStore, DiskStore, CoreCard, ThermalRow, DriveCard, DriverStore, DriverRow, DisplayDriverRow, LatencyStore, LatencyMetric, PingRow, PlannerStore, PlanMetric, PlanStep, AutomationStore, MaintenanceRow, FaultStore, RepairStore, PerfStore, RepairRow, GamingStore, PrereqStore, NetworkStore, ProfileRow, CheckRow, PrereqRow, DnsRow, AboutStore }
 
 export component MainWindow inherits Window {
+    // Tabs of the merged page that owns the current view (checklist E).
+    property <[NavTab]> page-tabs: Nav.tabs-of(Nav.page-of(AppStore.active-view));
     title: "WinBlast0 v" + AppStore.app-version + " — Windows System Optimizer";
     icon: @image-url("../winblast.png");
     default-font-size: Scale.font-md;
@@ -121,8 +126,12 @@ export component MainWindow inherits Window {
                 spacing: 0;
                 vertical-stretch: 1;
                 if root.tier == 2 : AppSidebar { tier: root.tier; }
-                Rectangle {
+                VerticalLayout {
                     horizontal-stretch: 1;
+                    spacing: 0;
+                    if root.page-tabs.length > 1 : WbPageTabs { tabs: root.page-tabs; tier: root.tier; }
+                Rectangle {
+                    vertical-stretch: 1;
                     clip: true;
                     background: Theme.bg-primary;
                 WbAurora { seed: Fx.view-serial; }
@@ -137,7 +146,6 @@ export component MainWindow inherits Window {
                 if AppStore.active-view == "disk_health" : WbViewEnter { DiskHealthView { tier: root.tier; } }
                 if AppStore.active-view == "driver_bios" : WbViewEnter { DriverBiosView { tier: root.tier; } }
                 if AppStore.active-view == "latency" : WbViewEnter { LatencyBenchView { tier: root.tier; } }
-                if AppStore.active-view == "fps_benchmark" : WbViewEnter { FpsBenchmarkView { tier: root.tier; } }
                 if AppStore.active-view == "gaming_stats" : WbViewEnter { GamingStatsView { tier: root.tier; } }
                 if AppStore.active-view == "network_diag" : WbViewEnter { NetworkDiagView { tier: root.tier; } }
                 if AppStore.active-view == "performance_tests" : WbViewEnter { PerformanceTestsView { tier: root.tier; } }
@@ -152,6 +160,9 @@ export component MainWindow inherits Window {
                 if AppStore.active-view == "backup" : WbViewEnter { BackupCenterView { tier: root.tier; } }
                 if AppStore.active-view == "privacy" : WbViewEnter { PrivacyShieldView { tier: root.tier; } }
                 if AppStore.active-view == "support_about" : WbViewEnter { SupportAboutView { tier: root.tier; } }
+                if AppStore.active-view == "settings" : WbViewEnter { SettingsView { tier: root.tier; } }
+                if AppStore.active-view == "windows_setup" : WbViewEnter { WindowsSetupView { tier: root.tier; } }
+                }
                 }
             }
             if AppStore.show-changelog : AppChangelog { tier: root.tier; }

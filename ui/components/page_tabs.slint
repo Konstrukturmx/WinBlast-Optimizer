@@ -1,0 +1,27 @@
+// ui/components/page_tabs.slint
+// Tab strip of a merged page (checklist E). Each tab is a view id; clicking navigates to it.
+import { Scale, Theme, Tr } from "../theme.slint";
+import { AppStore } from "../stores/app.slint";
+import { NavTab } from "../stores/nav.slint";
+import { WbChip } from "chip.slint";
+
+export component WbPageTabs inherits Rectangle {
+    in property <[NavTab]> tabs;
+    in property <int> tier;
+    background: Theme.bg-primary.with-alpha(0.6);
+    min-height: Scale.px(40px);
+    VerticalLayout {
+        padding-left: root.tier == 0 ? Scale.px(10px) : Scale.px(14px);
+        padding-right: self.padding-left;
+        padding-top: Scale.px(8px);
+        padding-bottom: Scale.px(2px);
+        FlexboxLayout {
+            spacing: Scale.px(6px);
+            for t in root.tabs : WbChip {
+                text: Tr.s(t.key);
+                active: AppStore.active-view == t.view;
+                clicked => { AppStore.navigate(t.view); }
+            }
+        }
+    }
+}

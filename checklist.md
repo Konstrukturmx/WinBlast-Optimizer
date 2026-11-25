@@ -55,20 +55,20 @@ Status key: `[ ]` open · `[x]` done and verified · `[~]` done, verification pe
 - [x] D6 Single-instance guard. — Global\\ (fallback Local\\) named mutex + message box
 - [x] D7 Startup detection (OS, CPU, GPU, SQLite, core parking) moves off the UI thread so the window appears first. — CPU detection (≈350 ms cold, the largest part) moved to a worker; `tests/startup_timing.rs` measures the rest (≈180 ms)
 
-## E. Navigation: 26 pages → 16
+## E. Navigation: 26 pages → 17
 Target sidebar:
 - Overview: **Dashboard** · **Hardware** (+ CPU Parking tab) · **Drivers & BIOS**
 - Diagnostics: **Benchmarks** (Performance + Latency) · **Sensors** (Thermals + Disk Health) · **Network** · **Repair** (Fault Diagnostics + Windows Repair)
 - Optimization: **Tweaks** (Advanced Matrix) · **Presets & Automation** (Automation + Goal Planner + all preset buttons) · **Gaming** (Monitor, FPS, Profiles, Overlay, Suitability, Prerequisites) · **GPU** · **Privacy** · **Clean & Apps** · **Startup & Services** · **Backup & Undo** (+ Windows Setup file tab)
 - Account: **Settings** (new) · **About**
 
-- [ ] E1 Gaming page with tabs replaces In-Game Monitor, FPS Benchmark, Game Profiles, Game Overlay, Game Suitability and Game Prerequisites.
-- [ ] E2 One preset system: Dashboard quick presets, Matrix presets, Automation profiles and Goal Planner goals become one "Presets & Automation" page; other pages link to it.
-- [ ] E3 Benchmarks, Sensors and Repair pages merge their pairs; CPU Parking becomes a Hardware tab.
-- [ ] E4 Settings page: language, theme scheme/style/mode, zoom, Reduced motion, depth effects, apply mode (Instant/Normal) — moved out of About and the top bar overflow.
-- [ ] E5 The sidebar no longer shows a doubled icon (the 🤖 is removed from the "Automation Center" label in all 8 languages; a test checks labels contain no leading emoji).
-- [ ] E6 The autounattend generator becomes the "Windows Setup file" tab of Backup & Undo.
-- [ ] E7 Old view ids still resolve (saved settings, Ctrl+K, deep links) to the new page and tab; `every_view_is_routed_listed_and_searchable` and the layout-collision test cover the new set.
+- [x] E1 Gaming page with tabs replaces In-Game Monitor, FPS Benchmark, Game Profiles, Game Overlay, Game Suitability and Game Prerequisites. — Gaming page = monitor + Profiles / Overlay / Suitability / Prerequisites tabs; the hub's duplicate chip row and the FPS page are gone (fps_benchmark opens Gaming)
+- [x] E2 One preset system: Dashboard quick presets, Matrix presets, Automation profiles and Goal Planner goals become one "Presets & Automation" page; other pages link to it. — Dashboard and Tweaks link to Presets & Automation instead of carrying their own preset buttons; Goal Planner is a tab of that page
+- [x] E3 Benchmarks, Sensors and Repair pages merge their pairs; CPU Parking becomes a Hardware tab. — Benchmarks (Performance + Latency), Sensors (Thermals + Disk Health), Repair (Fault + Windows Repair), Hardware + CPU Parking tab
+- [x] E4 Settings page: language, theme scheme/style/mode, zoom, Reduced motion, depth effects, apply mode (Instant/Normal) — moved out of About and the top bar overflow. — `ui/views/settings.slint`: language, dark mode, colour scheme, zoom, theme style, reduced motion, depth note, Instant/Normal with explanation; 18 new strings × 8 languages
+- [x] E5 The sidebar no longer shows a doubled icon (the 🤖 is removed from the "Automation Center" label in all 8 languages; a test checks labels contain no leading emoji). — `tests/nav_labels.rs` checks every sidebar/tab label in 8 languages; 🤖 and 🎮 prefixes removed
+- [x] E6 The autounattend generator becomes the "Windows Setup file" tab of Backup & Undo. — `ui/views/windows_setup.slint`
+- [x] E7 Old view ids still resolve (saved settings, Ctrl+K, deep links) to the new page and tab; `every_view_is_routed_listed_and_searchable` and the layout-collision test cover the new set. — `ui/stores/nav.slint` page-of/tabs-of; all 28 view ids still route; routing + navigation tests updated
 
 ## F. Shared UI rules and per-page fixes
 - [ ] F1 One "Not scanned yet" empty-state component, used by every page instead of blank cards or default values.

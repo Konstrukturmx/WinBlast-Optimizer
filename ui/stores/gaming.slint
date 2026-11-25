@@ -2,7 +2,6 @@
 // Gaming hub stores (ports of v1.6.1 gaming_stats, fps_benchmark, game_profiles, game_overlay,
 // game_suitability, game_prereqs) + Network diagnostics.
 
-export struct FpsRow { icon: string, title: string, gain: string, avg: string, low: string, latency: string }
 export struct ProfileRow { id: string, icon: string, title: string, target: string, desc: string, applied: bool, busy: bool, high-priority: bool, disable-fso: bool, unpark: bool }
 export struct CheckRow { name: string, ok: bool, desc: string, recommendation: string }
 export struct PrereqRow { id: string, name: string, sub: string, version: string, status: string, state: string, tone: string, installed: bool, busy: bool }
@@ -14,7 +13,6 @@ export global GamingStore {
     in-out property <string> detected-game;
     in-out property <string> hags-text;
     in-out property <bool> hags-on;
-    in-out property <[FpsRow]> fps: [];
     in-out property <[ProfileRow]> profiles: [];
     in-out property <bool> profile-busy;
     in-out property <bool> overlay-busy;

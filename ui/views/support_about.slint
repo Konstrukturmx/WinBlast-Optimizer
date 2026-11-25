@@ -76,63 +76,6 @@ export component SupportAboutView inherits Rectangle {
                     Note { text: Tr.s("AboutNew9"); }
                 }
             }
-
-            WbPanel {
-                VerticalLayout {
-                    padding: Scale.px(12px);
-                    spacing: Scale.px(8px);
-                    Text { text: Tr.s("AboutStudioTitle"); font-size: Scale.font-md; font-weight: 700; color: Theme.text-primary; wrap: word-wrap; }
-                    Note { text: Tr.s("AboutStudioSubtitle"); }
-                    HorizontalLayout {
-                        spacing: Scale.px(10px);
-                        VerticalLayout {
-                            horizontal-stretch: 1;
-                            spacing: Scale.px(2px);
-                            Text { text: Tr.s("ReducedMotionLabel"); font-size: Scale.font-sm; font-weight: 700; color: Theme.text-primary; wrap: word-wrap; }
-                            Note { text: Tr.s("ReducedMotionDesc"); }
-                        }
-                        VerticalLayout {
-                            alignment: center;
-                            WbToggle {
-                                on: Theme.reduced-motion;
-                                accessible-name: Tr.s("ReducedMotionLabel");
-                                clicked => { AppStore.toggle-reduced-motion(); }
-                            }
-                        }
-                    }
-                    // Honest status of the GPU-only depth layer (Fx.gpu comes from a DXGI probe).
-                    Note {
-                        text: Fx.gpu && !Theme.reduced-motion ? Tr.s("AboutDepthOn") : Tr.s("AboutDepthOff");
-                        color: Fx.gpu && !Theme.reduced-motion ? Theme.success : Theme.text-muted;
-                    }
-                    FlexboxLayout {
-                        spacing: Scale.px(8px);
-                        alignment: stretch;
-                        for st[i] in AppStore.theme-styles : Rectangle {
-                            min-width: Scale.px(170px);
-                            horizontal-stretch: 1;
-                            border-radius: Scale.px(Theme.card-radius);
-                            background: st.selected ? Theme.accent.with-alpha(0.18) : ta.has-hover ? Theme.bg-card-hover : Theme.bg-card;
-                            border-width: Theme.border-width;
-                            border-color: st.selected ? Theme.accent : Theme.border;
-                            ta := TouchArea {
-                                mouse-cursor: pointer;
-                                clicked => { AppStore.set-theme-style(i); }
-                            }
-                            VerticalLayout {
-                                padding: Scale.px(10px);
-                                spacing: Scale.px(4px);
-                                HorizontalLayout {
-                                    spacing: Scale.px(6px);
-                                    Text { text: st.label; font-size: Scale.font-sm; font-weight: 700; color: st.selected ? Theme.accent : Theme.text-primary; horizontal-stretch: 1; vertical-alignment: center; overflow: elide; }
-                                    if st.selected : WbPill { text: Tr.s("AboutActiveBadge"); tone: "accent"; }
-                                }
-                                if st.detail != "" : Text { text: st.detail; font-size: Scale.font-2xs; color: Theme.text-muted; wrap: word-wrap; }
-                            }
-                        }
-                    }
-                }
-            }
         }
     }
 }

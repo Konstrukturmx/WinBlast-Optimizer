@@ -115,10 +115,14 @@ pub enum ActiveView {
     SupportAbout,
     GamePrerequisites,
     AutomationCenter,
+    /// Settings page (checklist E4).
+    Settings,
+    /// Windows Setup file (autounattend.xml) tab of Backup & Undo (checklist E6).
+    WindowsSetup,
 }
 
 impl ActiveView {
-    pub const ALL_VIEWS: [ActiveView; 26] = [
+    pub const ALL_VIEWS: [ActiveView; 28] = [
         ActiveView::EasyDashboard,
         ActiveView::HardwareView,
         ActiveView::DriverBios,
@@ -144,6 +148,8 @@ impl ActiveView {
         ActiveView::BackupCenter,
         ActiveView::GpuTuning,
         ActiveView::PrivacyShield,
+        ActiveView::WindowsSetup,
+        ActiveView::Settings,
         ActiveView::SupportAbout,
     ];
 
@@ -189,6 +195,8 @@ impl ActiveView {
             ActiveView::GpuTuning => "gpu",
             ActiveView::PrivacyShield => "privacy",
             ActiveView::SupportAbout => "support_about",
+            ActiveView::Settings => "settings",
+            ActiveView::WindowsSetup => "windows_setup",
         }
     }
 }
@@ -2450,6 +2458,8 @@ impl AppState {
 
     /// Navigate to a view tab and close compact drawer, syncing mode & lazily warming view-specific scans.
     pub fn navigate(&mut self, view: ActiveView) {
+        // The FPS page was merged into Gaming (its figures were invented, C9 / E1).
+        let view = if view == ActiveView::FpsBenchmark { ActiveView::GamingStats } else { view };
         self.record_user_interaction();
         self.sync_search_state();
         self.active_view = view;

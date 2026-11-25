@@ -1,0 +1,54 @@
+// ui/views/windows_setup.slint
+// Windows Setup file (checklist E6): the autounattend.xml generator, moved out of Backup & Undo.
+import { ScrollView } from "std-widgets.slint";
+import { Scale, Theme, Tr } from "../theme.slint";
+import { BackupStore } from "../stores/backup.slint";
+import { WbChip } from "../components/chip.slint";
+import { WbButton } from "../components/button.slint";
+import { WbPill, WbPanel } from "../components/toggle.slint";
+
+component Check inherits WbChip {
+    in property <bool> on;
+    in property <string> label;
+    text: (on ? "■ " : "□ ") + label;
+    active: on;
+}
+
+export component WindowsSetupView inherits Rectangle {
+    in property <int> tier;
+    ScrollView {
+        VerticalLayout {
+            padding: root.tier == 0 ? Scale.px(10px) : Scale.px(14px);
+            spacing: Scale.px(12px);
+            alignment: start;
+            WbPanel {
+                VerticalLayout {
+                    padding: Scale.px(12px);
+                    spacing: Scale.px(8px);
+                    Text { text: Tr.s("UnattendTitle"); font-size: Scale.font-md; font-weight: 700; color: Theme.text-primary; }
+                    Text { text: Tr.s("UnattendSub"); font-size: Scale.font-xs; color: Theme.text-muted; wrap: word-wrap; }
+                    FlexboxLayout {
+                        spacing: Scale.px(6px);
+                        cross-axis-alignment: center;
+                        Text { text: Tr.s("UnattendPresetsLabel"); font-size: Scale.font-xs; color: Theme.text-secondary; }
+                        WbChip { text: Tr.s("UnattendPresetMinimal"); clicked => { BackupStore.unattend-preset("minimal"); } }
+                        WbChip { text: Tr.s("UnattendPresetPrivacy"); clicked => { BackupStore.unattend-preset("privacy"); } }
+                        WbChip { text: Tr.s("UnattendPresetGaming"); clicked => { BackupStore.unattend-preset("gaming"); } }
+                        WbChip { text: Tr.s("UnattendArchToggle") + " " + BackupStore.arch; tone: "accent"; clicked => { BackupStore.toggle-arch(); } }
+                    }
+                    FlexboxLayout {
+                        spacing: Scale.px(6px);
+                        Check { on: BackupStore.bypass-tpm; label: Tr.s("UnattendBypassTpm"); clicked => { BackupStore.toggle-option("tpm"); } }
+                        Check { on: BackupStore.bypass-msa; label: Tr.s("UnattendBypassMsa"); clicked => { BackupStore.toggle-option("msa"); } }
+                        Check { on: BackupStore.skip-privacy; label: Tr.s("UnattendSkipPrivacy"); clicked => { BackupStore.toggle-option("privacy"); } }
+                        Check { on: BackupStore.include-tweaks; label: Tr.s("UnattendIncludeTweaks"); clicked => { BackupStore.toggle-option("tweaks"); } }
+                        Check { on: BackupStore.auto-timezone; label: Tr.s("UnattendAutoTimezone"); clicked => { BackupStore.toggle-option("timezone"); } }
+                        WbButton { variant: "primary"; text: Tr.s("UnattendExportBtn"); clicked => { BackupStore.export-unattend(); } }
+                    }
+                    Text { text: Tr.s("LedgerDbLabel") + " " + BackupStore.ledger-path; font-size: Scale.font-2xs; color: Theme.text-muted; wrap: word-wrap; }
+                    if BackupStore.last-export != "" : Text { text: Tr.s("ExportedLabel") + " " + BackupStore.last-export; font-size: Scale.font-xs; color: Theme.success; wrap: word-wrap; }
+                }
+            }
+        }
+    }
+}

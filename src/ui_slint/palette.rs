@@ -10,7 +10,7 @@ use super::i18n::lookup;
 use super::PaletteItem;
 
 /// (view id, icon, label key, group key). Mirrors the sidebar groups in `ui/shell/sidebar.slint`.
-pub const VIEWS: [(&str, &str, &str, &str); 26] = [
+pub const VIEWS: [(&str, &str, &str, &str); 28] = [
     ("dashboard", "⚡", "NavSystemPanel", "NavGroupOverview"),
     ("hardware", "🖥️", "NavHardware", "NavGroupOverview"),
     ("driver_bios", "💾", "NavDriverBios", "NavGroupOverview"),
@@ -36,6 +36,8 @@ pub const VIEWS: [(&str, &str, &str, &str); 26] = [
     ("backup", "📄", "NavBackupReport", "NavGroupOptimization"),
     ("gpu", "🎛️", "NavGpuMsiHags", "NavGroupOptimization"),
     ("privacy", "🛡️", "NavPrivacyShield", "NavGroupOptimization"),
+    ("windows_setup", "🧩", "NavWindowsSetup", "NavGroupOptimization"),
+    ("settings", "🎨", "NavSettings", "NavGroupAccount"),
     ("support_about", "✉️", "NavSupportAbout", "NavGroupAccount"),
 ];
 

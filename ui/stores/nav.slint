@@ -1,0 +1,37 @@
+// ui/stores/nav.slint
+// Page structure (checklist E): the views are grouped into 17 sidebar pages. A page's tabs are
+// its member views. Every old view id still routes, so saved settings, Ctrl+K and links keep
+// working; the sidebar highlights the page that owns the current view.
+export struct NavTab { view: string, key: string }
+
+export global Nav {
+    /// The sidebar page a view belongs to.
+    pure public function page-of(v: string) -> string {
+        return v == "cpu_parking" ? "hardware"
+            : v == "latency" ? "performance_tests"
+            : v == "disk_health" ? "thermal"
+            : v == "windows_repair" ? "fault_diagnostics"
+            : v == "goal_planner" ? "automation"
+            : (v == "fps_benchmark" || v == "game_profiles" || v == "game_overlay" || v == "game_suitability" || v == "game_prereqs") ? "gaming_stats"
+            : v == "windows_setup" ? "backup"
+            : v;
+    }
+
+    /// Tabs of a page (empty for single-view pages).
+    pure public function tabs-of(page: string) -> [NavTab] {
+        return page == "hardware" ? [{ view: "hardware", key: "NavHardware" }, { view: "cpu_parking", key: "NavCoreParking" }]
+            : page == "performance_tests" ? [{ view: "performance_tests", key: "NavPerfTests" }, { view: "latency", key: "NavLatency" }]
+            : page == "thermal" ? [{ view: "thermal", key: "NavThermal" }, { view: "disk_health", key: "NavDisks" }]
+            : page == "fault_diagnostics" ? [{ view: "fault_diagnostics", key: "NavFaultDiag" }, { view: "windows_repair", key: "NavWindowsRepair" }]
+            : page == "automation" ? [{ view: "automation", key: "NavAutomationCenter" }, { view: "goal_planner", key: "NavGoalPlanner" }]
+            : page == "gaming_stats" ? [
+                { view: "gaming_stats", key: "NavGamingStats" },
+                { view: "game_profiles", key: "NavGameProfiles" },
+                { view: "game_overlay", key: "NavGameOverlay" },
+                { view: "game_suitability", key: "NavGameSuitability" },
+                { view: "game_prereqs", key: "NavGamePrereqs" },
+            ]
+            : page == "backup" ? [{ view: "backup", key: "NavBackupReport" }, { view: "windows_setup", key: "NavWindowsSetup" }]
+            : [];
+    }
+}

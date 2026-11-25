@@ -8,10 +8,6 @@ import { GamingStore } from "../stores/gaming.slint";
 import { WbButton } from "../components/button.slint";
 import { WbChip } from "../components/chip.slint";
 import { WbPill, WbPanel } from "../components/toggle.slint";
-import { FpsBenchmarkBody } from "fps_benchmark.slint";
-import { GameProfilesBody } from "game_profiles.slint";
-import { GameOverlayBody } from "game_overlay.slint";
-import { GameSuitabilityBody } from "game_suitability.slint";
 
 component InfoCard inherits WbPanel {
     in property <string> label;
@@ -87,19 +83,7 @@ export component GamingStatsView inherits Rectangle {
                     clicked => { GamingStore.refresh(); }
                 }
             }
-            FlexboxLayout {
-                spacing: Scale.px(6px);
-                WbChip { text: Tr.s("TabInGameMonitor"); active: GamingStore.sub-tab == 0; clicked => { GamingStore.set-sub-tab(0); } }
-                WbChip { text: Tr.s("TabFpsBench"); active: GamingStore.sub-tab == 1; clicked => { GamingStore.set-sub-tab(1); } }
-                WbChip { text: Tr.s("TabGameProfiles"); active: GamingStore.sub-tab == 2; clicked => { GamingStore.set-sub-tab(2); } }
-                WbChip { text: Tr.s("TabGameOverlay"); active: GamingStore.sub-tab == 3; clicked => { GamingStore.set-sub-tab(3); } }
-                WbChip { text: Tr.s("TabGameSuitability"); active: GamingStore.sub-tab == 4; clicked => { GamingStore.set-sub-tab(4); } }
-            }
-            if GamingStore.sub-tab == 0 : LiveMonitorBody { tier: root.tier; }
-            if GamingStore.sub-tab == 1 : FpsBenchmarkBody { tier: root.tier; }
-            if GamingStore.sub-tab == 2 : GameProfilesBody { tier: root.tier; }
-            if GamingStore.sub-tab == 3 : GameOverlayBody { tier: root.tier; }
-            if GamingStore.sub-tab == 4 : GameSuitabilityBody { tier: root.tier; }
+            LiveMonitorBody { tier: root.tier; }
         }
     }
 }

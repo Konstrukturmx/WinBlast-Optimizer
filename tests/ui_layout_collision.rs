@@ -241,15 +241,21 @@ fn no_text_collisions_or_overflow_at_any_width() {
 fn every_view_is_routed_listed_and_searchable() {
     let main = include_str!("../ui/main.slint");
     let sidebar = include_str!("../ui/shell/sidebar.slint");
+    let nav = include_str!("../ui/stores/nav.slint");
     let palette = include_str!("../src/ui_slint/palette.rs");
     let mut missing = Vec::new();
     for view in ActiveView::ALL_VIEWS {
         let n = view.name();
+        // Merged into Gaming (E1): navigating there opens the Gaming page.
+        if view == ActiveView::FpsBenchmark {
+            continue;
+        }
         if !main.contains(&format!("active-view == \"{n}\"")) {
             missing.push(format!("{n}: not routed in ui/main.slint"));
         }
-        if !sidebar.contains(&format!("view: \"{n}\"")) {
-            missing.push(format!("{n}: missing from the sidebar"));
+        // A view is reachable from the sidebar directly or as a tab of a merged page (E).
+        if !sidebar.contains(&format!("view: \"{n}\"")) && !nav.contains(&format!("view: \"{n}\"")) {
+            missing.push(format!("{n}: neither in the sidebar nor a page tab"));
         }
         if !palette.contains(&format!("(\"{n}\",")) {
             missing.push(format!("{n}: missing from the command palette"));

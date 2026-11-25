@@ -165,9 +165,8 @@ export component AdvancedMatrixView inherits Rectangle {
                     spacing: Scale.px(8px);
                     cross-axis-alignment: center;
                     SectionTitle { text: "🎯 " + Tr.s("MatrixPresetsTitle"); }
-                    WbButton { variant: "primary"; text: Tr.s("GamingPreset"); clicked => { MatrixStore.apply-preset("gaming"); } }
-                    WbButton { variant: "secondary"; text: Tr.s("ProAudioPreset"); clicked => { MatrixStore.apply-preset("pro_audio"); } }
-                    WbButton { variant: "secondary"; text: Tr.s("LaptopBatteryPreset"); clicked => { MatrixStore.apply-preset("laptop_battery"); } }
+                    // One preset system (checklist E2): presets live on Presets & Automation.
+                    WbButton { variant: "secondary"; text: Tr.s("NavPresetsAutomation") + " →"; clicked => { AppStore.navigate("automation"); } }
                 }
             }
 

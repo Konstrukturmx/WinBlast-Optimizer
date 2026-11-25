@@ -5,6 +5,7 @@
 import { ScrollView } from "std-widgets.slint";
 import { Scale, Theme, Tr } from "../theme.slint";
 import { AppStore } from "../stores/app.slint";
+import { Nav } from "../stores/nav.slint";
 import { WbChip, WbSegmented } from "../components/chip.slint";
 import { WbSearchInput } from "../components/search_input.slint";
 import { WbButton } from "../components/button.slint";
@@ -19,7 +20,7 @@ component NavButton inherits Rectangle {
     in property <length> group-y;
     // When true the sidebar draws the active highlight as a shared gliding pill.
     in property <bool> pill-mode;
-    property <bool> active: AppStore.active-view == def.view;
+    property <bool> active: Nav.page-of(AppStore.active-view) == def.view;
     property <length> slot-y: self.y + root.group-y;
     property <bool> pending: false;
     // Reports the active slot to the sidebar (content coordinates).
@@ -104,39 +105,32 @@ component NavButton inherits Rectangle {
 export component AppSidebar inherits Rectangle {
     in property <int> tier;
 
+    // 17 pages (checklist E). Merged pages own several views; their tabs come from Nav.tabs-of.
+    // The old always-on yellow "dot" markers carried no information and were removed (F).
     property <[NavGroup]> groups: [
         { title-key: "NavGroupOverview", items: [
             { icon: "⚡", key: "NavSystemPanel", view: "dashboard", dot: false },
             { icon: "🖥️", key: "NavHardware", view: "hardware", dot: false },
-            { icon: "💾", key: "NavDriverBios", view: "driver_bios", dot: true },
+            { icon: "💾", key: "NavDriverBios", view: "driver_bios", dot: false },
         ] },
         { title-key: "NavGroupDiagnostics", items: [
-            { icon: "📈", key: "NavPerfTests", view: "performance_tests", dot: false },
-            { icon: "🛡️", key: "NavFaultDiag", view: "fault_diagnostics", dot: false },
-            { icon: "⏱️", key: "NavLatency", view: "latency", dot: true },
-            { icon: "🔲", key: "NavCoreParking", view: "cpu_parking", dot: true },
-            { icon: "❄️", key: "NavThermal", view: "thermal", dot: true },
-            { icon: "💽", key: "NavDisks", view: "disk_health", dot: true },
-            { icon: "🎮", key: "NavGamingStats", view: "gaming_stats", dot: false },
-            { icon: "📊", key: "NavFpsBench", view: "fps_benchmark", dot: false },
+            { icon: "📈", key: "NavBenchmarks", view: "performance_tests", dot: false },
+            { icon: "❄️", key: "NavSensors", view: "thermal", dot: false },
             { icon: "📶", key: "NavNetwork", view: "network_diag", dot: false },
+            { icon: "🛡️", key: "NavRepair", view: "fault_diagnostics", dot: false },
         ] },
         { title-key: "NavGroupOptimization", items: [
             { icon: "⚡", key: "NavFpsOptimization", view: "matrix", dot: false },
-            { icon: "🤖", key: "NavAutomationCenter", view: "automation", dot: false },
-            { icon: "🎮", key: "NavGamePrereqs", view: "game_prereqs", dot: false },
-            { icon: "🎯", key: "NavGoalPlanner", view: "goal_planner", dot: false },
-            { icon: "🕹️", key: "NavGameProfiles", view: "game_profiles", dot: false },
-            { icon: "🖥️", key: "NavGameOverlay", view: "game_overlay", dot: false },
-            { icon: "🎯", key: "NavGameSuitability", view: "game_suitability", dot: false },
-            { icon: "🗑️", key: "NavCleanApps", view: "clean_apps", dot: false },
-            { icon: "⚙️", key: "NavStartupTasks", view: "startup_tasks", dot: false },
-            { icon: "🔧", key: "NavWindowsRepair", view: "windows_repair", dot: false },
-            { icon: "📄", key: "NavBackupReport", view: "backup", dot: false },
+            { icon: "🤖", key: "NavPresetsAutomation", view: "automation", dot: false },
+            { icon: "🎮", key: "NavGaming", view: "gaming_stats", dot: false },
             { icon: "🎛️", key: "NavGpuMsiHags", view: "gpu", dot: false },
-            { icon: "🛡️", key: "NavPrivacyShield", view: "privacy", dot: false },
+            { icon: "🔒", key: "NavPrivacyShield", view: "privacy", dot: false },
+            { icon: "🗑️", key: "NavCleanApps", view: "clean_apps", dot: false },
+            { icon: "🚀", key: "NavStartupTasks", view: "startup_tasks", dot: false },
+            { icon: "📄", key: "NavBackupReport", view: "backup", dot: false },
         ] },
         { title-key: "NavGroupAccount", items: [
+            { icon: "🎨", key: "NavSettings", view: "settings", dot: false },
             { icon: "✉️", key: "NavSupportAbout", view: "support_about", dot: false },
         ] },
     ];
