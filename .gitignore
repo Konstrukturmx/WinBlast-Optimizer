@@ -22,6 +22,7 @@ virustotalapi.txt
 
 # Agent rules (also covered by .* above; listed explicitly)
 .agents/rules/
+AGENTS.md
 
 # Local config overrides
 *.local.toml
