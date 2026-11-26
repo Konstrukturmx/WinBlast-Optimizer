@@ -14,3 +14,16 @@ graphify-out/.graphify_python
 virustotalapi.txt
 *.apikey
 *.bmp
+
+# Dotfiles and dot-folders (local tool, editor and agent config)
+.*
+!.gitignore
+!.gitkeep
+
+# Agent rules (also covered by .* above; listed explicitly)
+.agents/rules/
+
+# Local config overrides
+*.local.toml
+*.local.json
+*.code-workspace
